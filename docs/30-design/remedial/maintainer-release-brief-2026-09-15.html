@@ -1,0 +1,6007 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/remedial/maintainer-release-brief-2026-09-15.html">
+      
+      
+        <link rel="prev" href="dev-cycle-review-harness-plan-2026-09-17.html">
+      
+      
+        <link rel="next" href="nightscout-backfix-register.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Phase 0 release brief — for the maintainer who merges - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#phase-0-release-brief--for-the-maintainer-who-merges" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Phase 0 release brief — for the maintainer who merges
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_24" id="__nav_5_24_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_24_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    30-design/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cgm-remote-monitor-telemetry-emitter-map-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor Telemetry Emitter Integration Map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-adoption-roadmap-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adoption roadmap: who builds what, in what order
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-integration-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Integration Guide for App Developers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-backend-service-design-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Backend Service Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-deployment-lifecycle-examples-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Deployment Lifecycle Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-implementation-breakdown-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Implementation Breakdown
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-lifecycle-policy-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Lifecycle Policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-local-integration-plan-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Local Integration Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-scheduling-dedupe-model-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Scheduling and Dedupe Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ns2parquet-keyed-pseudonyms.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ns2parquet keyed pseudonyms: design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../modernization/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    modernization/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../platform/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    platform/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24_14" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    remedial/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_24_14" id="__nav_5_24_14_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_24_14_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24_14">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    remedial/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="dev-cycle-review-harness-plan-2026-09-17.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    dev-cycle review harness — plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="maintainer-release-brief-2026-09-15.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 0 release brief — for the maintainer who merges
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-backfix-register.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backfix register — defects that ship to existing operators, independent of multitenancy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="phase0-pr-sequencing-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 0: how to land ten branches as pull requests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="rc-15.0.9-integration-record.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    15.0.9 integration record
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="trust-proxy-deployment-matrix.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TRUST_PROXY deployment matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tenancy/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenancy/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../60-research/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="phase-0-release-brief--for-the-maintainer-who-merges">Phase 0 release brief — for the maintainer who merges<a class="headerlink" href="#phase-0-release-brief--for-the-maintainer-who-merges" title="Permanent link">&para;</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Record</p>
+<p>Record as of 2026-09-15. A point-in-time document; it is not kept up to date.</p>
+</div>
+<p><strong>Date:</strong> 2026-09-15 · <strong>Audience:</strong> a Nightscout maintainer with merge rights on
+<code>nightscout/cgm-remote-monitor</code> and <code>nightscout/nightscout-connect</code>.
+<em>Contributor-facing.</em></p>
+<blockquote>
+<p><strong>Snapshot, 2026-09-15, against cgm-remote-monitor <code>origin/dev</code> <code>a8888f0d</code>. Superseded:</strong> the
+branch shapes changed the same evening (<a href="phase0-pr-sequencing-2026-09-15.html">Phase 0 sequencing</a>
+§3a). <code>bf/merge</code>, <code>bf/food</code>, <code>bf/parms</code>, <code>bf/coercion</code>, <code>bf/reads</code>, <code>bf/alarms</code> and <code>bf/cache</code> are
+merged into <code>dev</code> (#8734–#8740); <code>bf/auth</code> and the BF-30 throttle became #8754 (open); the connector
+pin is #8762 (exactly <code>0.1.0</code>, released 2026-09-24). Nothing past 15.0.8 is released, and release PR</p>
+<h1 id="8598-awaits-review-current-state-queuework-queueyaml-items">8598 awaits review. Current state: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a79d969c34632122b787927642e8b5cfc4514c6c/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a> items<a class="headerlink" href="#8598-awaits-review-current-state-queuework-queueyaml-items" title="Permanent link">&para;</a></h1>
+<p><code>P0-*</code>, <code>BF2-AUTH</code> and <code>RT-0</code>; defect facts in the <a href="nightscout-backfix-register.html">backfix register</a>.
+SHAs, test counts and pins below are as of 2026-09-15.</p>
+</blockquote>
+<p>This is the one document to read before you start typing. It is written so you can read it once and
+then act. Where a number appears, the sentence says how it was measured. Where the reasoning is
+inference rather than measurement, it says so.</p>
+<p>Read §1, §2, §3 and §4 before you touch anything. §5 is the per-branch detail you will want open
+while reviewing PRs. <strong>§9 and §9a are the rollback and the "how would I even notice" list — read
+§9a before you merge, not after</strong>, because most of what this batch touches fails silently.</p>
+<p>Figures marked as re-measured were reproduced independently by a second reviewer on 2026-09-15.</p>
+<hr />
+<h2 id="1-one-screen-what-ships-to-whom-what-an-operator-notices">1. One screen: what ships, to whom, what an operator notices<a class="headerlink" href="#1-one-screen-what-ships-to-whom-what-an-operator-notices" title="Permanent link">&para;</a></h2>
+<p><strong>What ships:</strong> nine bug-fix branches for <code>cgm-remote-monitor</code>, all based directly on <code>origin/dev</code>
+(<code>a8888f0d</code>), plus one release of the <code>nightscout-connect</code> connector (<code>v0.0.14</code>).</p>
+<p><strong>To whom:</strong> every self-hosted Nightscout operator who takes the next release off <code>dev</code>. There is no
+tenancy or multi-tenant content in this batch at all. Single-tenant self-hosting is the only
+consumer.</p>
+<p><strong>What an operator will actually notice.</strong> Six things, in the order they matter:</p>
+<ol>
+<li><strong>An urgent insulin-reservoir alarm starts arriving that never arrived before.</strong> If you run with
+   <code>IAGE_ENABLE_ALERTS</code> on, the "Insulin reservoir change overdue!" notification has never fired in
+   any release, because the code compared the reservoir age against a field that was never filled
+   in. It now fires <strong>once</strong>, in the single evaluation window where the reservoir age first equals
+   your configured <code>IAGE_URGENT</code> threshold (default 72 hours) and the clock is within 20 minutes
+   past the hour — it is not repeated afterwards. The reported level also stops being stuck at WARN
+   and reads URGENT for as long as the reservoir is overdue. On Pushover the notification carries
+   the <code>persistent</code> sound. <strong>This is a new alert on a safety surface for people who have never heard
+   it.</strong> It needs its own line in the release notes, in plain language, at the top, and the release
+   note must say it fires once rather than repeating — someone who expects it to nag will be
+   misled. (<code>bf/alarms</code>) <em>(Verified today by reading <code>lib/plugins/insulinage.js:91-115</code> on the
+   branch; not executed against a running site.)</em></li>
+<li><strong>The bolus calculator's quick-pick list stops naming one meal and loading another.</strong> This is the
+   most consequential fix in the batch: the carbohydrate total that reached the insulin calculation
+   could come from a record the user did not choose, under a label they did read, with no error
+   shown. It has shipped since 2017. (<code>bf/food</code>)</li>
+<li><strong>A page that used to freeze, or never load at all, keeps working.</strong> A URL with a bare flag
+   (<code>?debug</code>, a trailing <code>&amp;</code>) stopped the page loading entirely; a deleted treatment could freeze
+   the display until reload. (<code>bf/parms</code>, <code>bf/merge</code>)</li>
+<li><strong>API queries that quietly returned nothing start returning rows.</strong> Numeric and decimal filters
+   were compared as text, so many filters matched nothing and answered <code>200 OK</code> with an empty list.
+   (<code>bf/coercion</code>, <code>bf/reads</code>)</li>
+<li><strong>A handful of previously-accepted API query spellings now return <code>400</code>.</strong> <code>?count=0</code> and five
+   other spellings are rejected instead of being answered with the whole collection. This is the
+   only operator-facing <em>restriction</em> in the batch and the only thing that can break a working
+   integration. (<code>bf/reads</code>)</li>
+<li><strong>The connector retries a failing vendor far less aggressively.</strong> After an outage, data will
+   appear to resume <em>more slowly</em> than operators are used to. That is the fix, not a regression —
+   the old behaviour retried 586× too fast and in lockstep across every account.
+   (<code>nightscout-connect v0.0.14</code> + <code>bf/connect-pin</code>)</li>
+</ol>
+<p>Two security fixes are in the batch and are not operator-visible in normal use (<code>bf/auth</code>), and one
+pure performance fix changes no bytes on the wire (<code>bf/cache</code>).</p>
+<blockquote>
+<p><strong>Not medical advice.</strong> The release notes derived from this document go to people managing their
+own or a family member's diabetes. Keep every safety caveat, define any jargon, and do not
+describe alarm or algorithm behaviour in a way that could mislead someone relying on it. Point
+readers at their care team for anything about their own therapy.</p>
+</blockquote>
+<hr />
+<h2 id="2-the-three-human-decisions-in-order--and-the-fact-that-there-are-three">2. THE THREE HUMAN DECISIONS, IN ORDER — and the fact that there are three<a class="headerlink" href="#2-the-three-human-decisions-in-order--and-the-fact-that-there-are-three" title="Permanent link">&para;</a></h2>
+<p>A release here is <strong>three separate human decisions</strong>, not one. This batch needs all three, and they
+are not interchangeable:</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>decision</th>
+<th>what it does</th>
+<th>reversible?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1</strong></td>
+<td><strong>Merge the code</strong></td>
+<td>a PR merge into <code>dev</code></td>
+<td>yes — <code>git revert</code> (see §9)</td>
+</tr>
+<tr>
+<td><strong>2</strong></td>
+<td><strong>Push the tag</strong></td>
+<td><code>nightscout-connect v0.0.14</code> becomes a real, downloadable tarball</td>
+<td><strong>effectively no</strong> — a tag other people have fetched should be superseded, not moved</td>
+</tr>
+<tr>
+<td><strong>3</strong></td>
+<td><strong>Publish the package</strong></td>
+<td><code>npm publish</code> for <code>nightscout-connect</code></td>
+<td><strong>no</strong> — npm unpublish is time-limited and disruptive</td>
+</tr>
+</tbody>
+</table>
+<p>They are separate because each is a different kind of commitment and each gets its own review. The
+ordering below is not stylistic: <strong>decision 2 must happen before the <code>package-lock.json</code> in
+<code>bf/connect-pin</code> can be regenerated at all</strong> (see §3).</p>
+<p><strong>One correction you should have before you start.</strong> Decision 3 is <em>not</em> what delivers the connector
+fix to operators, and the sequencing document says otherwise. Measured on every relevant ref today
+(<code>git show &lt;ref&gt;:package.json</code>), <strong>nothing in the Nightscout tree depends on <code>nightscout-connect</code>
+from the npm registry.</strong> Every pin is a GitHub tarball URL:</p>
+<table>
+<thead>
+<tr>
+<th><code>cgm-remote-monitor</code> ref</th>
+<th><code>nightscout-connect</code> pin</th>
+<th>post-v0.0.13 fixes it carries</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>origin/master</code> (15.0.8 — what operators run)</td>
+<td><code>…/archive/refs/tags/**v0.0.13**.tar.gz</code></td>
+<td><strong>0 of 6</strong></td>
+</tr>
+<tr>
+<td><code>origin/dev</code> (15.0.9 candidate)</td>
+<td><code>…/archive/**234d47c8**.tar.gz</code></td>
+<td><strong>0 of 6</strong></td>
+</tr>
+<tr>
+<td><code>origin/chore/mime-exposure-review</code> (cut 4)</td>
+<td><code>…/archive/**c962a13f**.tar.gz</code></td>
+<td>4 of 6</td>
+</tr>
+<tr>
+<td><code>origin/chore/nightscout-modernization</code> (cut 5)</td>
+<td><code>…/archive/**b77e5bb**.tar.gz</code></td>
+<td>5 of 6</td>
+</tr>
+<tr>
+<td><strong><code>bf/connect-pin</code></strong></td>
+<td><code>…/archive/refs/tags/**v0.0.14**.tar.gz</code></td>
+<td><strong>6 of 6</strong></td>
+</tr>
+</tbody>
+</table>
+<p><em>Measured</em> by <code>git merge-base --is-ancestor &lt;commit&gt; &lt;pin&gt;</code> for each of the six commits
+(<code>9fa2c3c</code>, <code>5349d47</code>, <code>77e2396</code>, <code>8406edf</code>, <code>51b6e6e</code>, <code>c1cce2a</code>) against each pin, in
+<code>externals/nightscout-connect</code>. <strong>All five rows of the table above were re-measured independently
+during adversarial review on 2026-09-15 and reproduce exactly</strong>, including the five <code>package.json</code>
+pin strings. <strong><code>v0.0.14</code> is the first ref that carries all six</strong>, and the tarball pin means <strong>the tag
+push (decision 2), not the npm publish (decision 3), is what delivers it.</strong></p>
+<p>Note what the first two rows mean: <code>dev</code>'s pin is one commit past the <code>v0.0.13</code> tag and that commit
+is the debug-logging opt-in. <strong>The 15.0.9 candidate as currently pinned ships without any of the
+three connector log-redaction fixes.</strong> Turning debug logging on to diagnose a problem — precisely
+when an operator does it — can put Dexcom or MiniMed credentials and patient data into runtime logs.
+<code>bf/connect-pin</code> is the branch that closes that.</p>
+<p>Decision 3 remains a real decision you may still want to make (it retires the "three pinning
+mechanisms" defect and gives the release a nameable connector version), but <strong>it does not gate this
+batch.</strong> I could not check whether <code>nightscout-connect</code> is currently published on npm at all — this
+machine has no network egress by rule. See §11.</p>
+<h3 id="the-commands--these-are-the-ones-the-human-runs">The commands — <strong>these are the ones the HUMAN runs</strong><a class="headerlink" href="#the-commands--these-are-the-ones-the-human-runs" title="Permanent link">&para;</a></h3>
+<p>Everything below leaves this machine. Nothing above this line does.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># ── DECISION 1: merge the code ────────────────────────────────────────────────</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1"># Push branches to origin (or to your fork) and open PRs against `dev`.</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># NEVER push a branch ONTO dev or master — that is a publication event, see §4.</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1">#</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="c1"># NOTE ON REMOTES in this checkout (verified today with `git remote -v`): there are THREE.</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="c1">#   origin    https://github.com/nightscout/cgm-remote-monitor.git   &lt;- upstream, over HTTPS</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1">#   official  git@github.com:nightscout/cgm-remote-monitor.git       &lt;- the same repo, over SSH</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="c1">#   bewest    https://github.com/bewest/cgm-remote-monitor.git       &lt;- the fork</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="c1"># `origin` here is UPSTREAM, not a fork. If you would rather use SSH, substitute `official`.</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="c1"># If you push to `bewest` instead, read §6 first — one workflow can auto-close a fork PR.</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="nb">cd</span><span class="w"> </span>&lt;workspace&gt;/rag-nightscout-ecosystem-alignment/externals/cgm-remote-monitor-official
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="k">for</span><span class="w"> </span>b<span class="w"> </span><span class="k">in</span><span class="w"> </span>bf/alarms<span class="w"> </span>bf/cache<span class="w"> </span>bf/auth<span class="w"> </span>bf/food<span class="w"> </span>bf/merge<span class="w"> </span>bf/parms<span class="w"> </span>bf/coercion<span class="w"> </span>bf/reads<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="w">  </span>git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span><span class="s2">"</span><span class="nv">$b</span><span class="s2">"</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="k">done</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="c1"># Then open eight PRs. Base `dev` for all of them EXCEPT bf/reads —</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="c1"># open bf/reads against `bf/coercion` and retarget it to `dev` once bf/coercion merges.</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="c1"># (GitHub retargets automatically when the base branch merges.)</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="c1"># ── DECISION 2: push the tag ──────────────────────────────────────────────────</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="c1"># Fast-forwards nightscout-connect main to the release, then publishes the tag.</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="c1">#</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="c1"># FETCH FIRST. `origin/main` below is a cached remote-tracking ref; nothing on this machine has</span>
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="c1"># contacted GitHub, so it may be stale and the check would then pass on old information.</span>
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a><span class="c1"># (A stale check cannot cause damage — git refuses a non-fast-forward push — but it can give</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a><span class="c1"># false confidence.)  Also note the LOCAL branch `main` in that checkout is 28 commits behind</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a><span class="c1"># `origin/main`; do not push it, and do not use it in this check.</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>git<span class="w"> </span>-C<span class="w"> </span>&lt;workspace&gt;/rag-nightscout-ecosystem-alignment/externals/nightscout-connect<span class="w"> </span>fetch<span class="w"> </span>origin
+<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>
+<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a><span class="c1"># VERIFY THE FAST-FORWARD — this should print "fast-forward OK" and exit 0:</span>
+<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>git<span class="w"> </span>-C<span class="w"> </span>&lt;workspace&gt;/rag-nightscout-ecosystem-alignment/externals/nightscout-connect<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a><span class="w">    </span>merge-base<span class="w"> </span>--is-ancestor<span class="w"> </span>origin/main<span class="w"> </span>release/v0.0.14<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"fast-forward OK"</span>
+<a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>
+<a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>git<span class="w"> </span>-C<span class="w"> </span>&lt;workspace&gt;/rag-nightscout-ecosystem-alignment/externals/nightscout-connect<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a><span class="w">    </span>push<span class="w"> </span>origin<span class="w"> </span>release/v0.0.14:main
+<a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a>git<span class="w"> </span>-C<span class="w"> </span>&lt;workspace&gt;/rag-nightscout-ecosystem-alignment/externals/nightscout-connect<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a><span class="w">    </span>push<span class="w"> </span>origin<span class="w"> </span>v0.0.14
+<a id="__codelineno-0-37" name="__codelineno-0-37" href="#__codelineno-0-37"></a>
+<a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a><span class="c1"># ── DECISION 3: publish the package (optional for this batch — see above) ─────</span>
+<a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a>npm<span class="w"> </span>publish<span class="w">      </span><span class="c1"># run from externals/nightscout-connect, and only if you want it on npm</span>
+<a id="__codelineno-0-40" name="__codelineno-0-40" href="#__codelineno-0-40"></a>
+<a id="__codelineno-0-41" name="__codelineno-0-41" href="#__codelineno-0-41"></a><span class="c1"># ── AFTER the tag exists, and not one second before: regenerate the lock ──────</span>
+<a id="__codelineno-0-42" name="__codelineno-0-42" href="#__codelineno-0-42"></a><span class="nb">cd</span><span class="w"> </span>&lt;workspace&gt;/rag-nightscout-ecosystem-alignment/externals/work/crm-bf-connect-pin
+<a id="__codelineno-0-43" name="__codelineno-0-43" href="#__codelineno-0-43"></a>npm<span class="w"> </span>install<span class="w">                         </span><span class="c1"># regenerates package-lock.json against the real tarball</span>
+<a id="__codelineno-0-44" name="__codelineno-0-44" href="#__codelineno-0-44"></a>git<span class="w"> </span>commit<span class="w"> </span>-am<span class="w"> </span><span class="s2">"Regenerate the lock against connect v0.0.14"</span>
+<a id="__codelineno-0-45" name="__codelineno-0-45" href="#__codelineno-0-45"></a>git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>bf/connect-pin<span class="w">      </span><span class="c1"># then open the bf/connect-pin PR against dev</span>
+</code></pre></div>
+<p><strong>Order matters and the failure is silent if you get it wrong.</strong> <code>bf/connect-pin</code>'s PR should be
+opened <em>after</em> the tag is pushed and the lock regenerated, so that what a reviewer sees is a
+consistent pair. §3 explains why.</p>
+<hr />
+<h2 id="3-the-package-lock-trap--read-this-before-anyone-fixes-it">3. THE PACKAGE-LOCK TRAP — read this before anyone "fixes" it<a class="headerlink" href="#3-the-package-lock-trap--read-this-before-anyone-fixes-it" title="Permanent link">&para;</a></h2>
+<p><strong><code>bf/connect-pin</code> (<code>0807eb1c</code>) changes exactly one file, <code>package.json</code>, by one line. It does NOT
+update <code>package-lock.json</code>, and that is deliberate.</strong></p>
+<p>Measured in <code>externals/work/crm-bf-connect-pin</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>package.json:140        "nightscout-connect": "https://github.com/nightscout/nightscout-connect/archive/refs/tags/v0.0.14.tar.gz"
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>package-lock.json:58    "nightscout-connect": "https://github.com/nightscout/nightscout-connect/archive/234d47c85510a77f07b3be0d2c026dd0272715d6.tar.gz"
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>package-lock.json:7894  "resolved":  ".../archive/234d47c85510a77f07b3be0d2c026dd0272715d6.tar.gz"
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>package-lock.json:7895  "integrity": "sha512-gJCEEHXVDriBcYvDWPMCernrC5YPxB9zko4oeiYwUYYlWKN12G5CsgvFl7XH0Rxmfrtu2yLdpdqi/vmA3A9gwQ=="
+</code></pre></div>
+<p><code>git show --stat 0807eb1c</code> confirms: <strong>1 file changed, 1 insertion, 1 deletion.</strong></p>
+<p><strong>Why the lock is stale on purpose.</strong> That <code>integrity</code> field is a SHA-512 hash over the tarball
+<strong>GitHub generates on demand for a tag</strong>. Until <code>v0.0.14</code> is pushed, that tarball does not exist, so
+there is no hash to write. A hash invented locally — or copied from a locally-built archive — would
+not match what GitHub serves, and <strong><code>npm ci</code> would fail for every operator and every CI run, with an
+integrity error that looks like supply-chain tampering.</strong></p>
+<p><strong>Leaving the lock stale produces the correct failure instead.</strong> <code>npm ci</code> refuses to run when
+<code>package.json</code> and <code>package-lock.json</code> disagree, and says so loudly and unambiguously:
+<em>"npm ci can only install packages when your package.json and package-lock.json are in sync."</em> That
+is a clear, actionable, honest error. An invented hash is a confusing, dishonest one.</p>
+<blockquote>
+<h3 id="the-trap">The trap<a class="headerlink" href="#the-trap" title="Permanent link">&para;</a></h3>
+<p><strong>Anyone who "fixes" the out-of-sync lock before the tag is pushed has broken it.</strong>
+There is no way to produce a correct <code>integrity</code> value for a tarball that does not exist yet.
+A reviewer who sees the red <code>npm ci</code> and asks for the lock to be regenerated is asking for the
+right thing <strong>in the wrong order</strong>.</p>
+<p><strong>The correct sequence, and the only one:</strong>
+1. Push the tag (<code>git push origin v0.0.14</code>). GitHub now generates the tarball.
+2. <code>cd externals/work/crm-bf-connect-pin &amp;&amp; npm install</code>. npm fetches the real tarball and writes
+   the real hash.
+3. Commit the regenerated <code>package-lock.json</code> <strong>in the same PR</strong> as the <code>package.json</code> change.</p>
+<p>If you must open the PR before the tag exists, say in the PR description that the lock is
+deliberately stale, that CI is expected to be red on <code>npm ci</code>, and that the lock lands in a second
+commit after the tag. Do not merge it red.</p>
+</blockquote>
+<hr />
+<h2 id="4-which-pushes-publish--verified-against-the-workflow-files-today">4. WHICH PUSHES PUBLISH — verified against the workflow files today<a class="headerlink" href="#4-which-pushes-publish--verified-against-the-workflow-files-today" title="Permanent link">&para;</a></h2>
+<p>Every workflow file was re-read on 2026-09-15.</p>
+<h3 id="cgm-remote-monitor--githubworkflows-on-origindev-a8888f0d"><code>cgm-remote-monitor</code> — <code>.github/workflows/</code> on <code>origin/dev</code> (<code>a8888f0d</code>)<a class="headerlink" href="#cgm-remote-monitor--githubworkflows-on-origindev-a8888f0d" title="Permanent link">&para;</a></h3>
+<p>Three workflow files exist: <code>main.yml</code>, <code>codeql-analysis.yml</code>, <code>close-accidental-sync-prs.yml</code>.</p>
+<table>
+<thead>
+<tr>
+<th>you push to…</th>
+<th>publishes?</th>
+<th>what actually runs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>dev</code></strong></td>
+<td><strong>YES — PUBLISHES A DOCKER IMAGE</strong></td>
+<td><code>main.yml</code> job <code>docker-build</code></td>
+</tr>
+<tr>
+<td><strong><code>master</code></strong></td>
+<td><strong>YES — PUBLISHES A DOCKER IMAGE</strong></td>
+<td>same job, same condition</td>
+</tr>
+<tr>
+<td>any other branch on <code>origin</code></td>
+<td><strong>no</strong></td>
+<td><strong>nothing at all</strong></td>
+</tr>
+<tr>
+<td>a branch on your fork</td>
+<td><strong>no</strong></td>
+<td>nothing (the <code>repository_owner</code> guard also fails)</td>
+</tr>
+<tr>
+<td>opening a PR against <code>dev</code>/<code>master</code></td>
+<td>no</td>
+<td>full test matrix + <code>docker-build-pr</code>, which <strong>builds without publishing</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The publishing condition, read verbatim from <code>main.yml</code> (the <code>docker-build</code> job at line 94 and the
+<code>publish</code> job at line 145 both carry it):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">(github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev') &amp;&amp; github.repository_owner == 'nightscout'</span>
+</code></pre></div>
+<p>and the <code>publish</code> job logs in with</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ secrets.DOCKER_USER }}</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ secrets.DOCKER_PASS }}</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="nt">DOCKER_IMAGE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nightscout/cgm-remote-monitor</span>
+</code></pre></div>
+<p><code>main.yml</code>'s triggers are <code>push: branches: [master, dev]</code> and
+<code>pull_request: branches: [master, dev]</code>. <code>codeql-analysis.yml</code>'s are
+<code>push: branches: [dev, master]</code>, <code>pull_request: branches: [dev, master]</code>, plus a weekly cron.
+<strong>So a feature-branch push runs no workflow whatsoever</strong> — not CI, not CodeQL, not Docker.</p>
+<p><strong>On <code>chore/nightscout-modernization</code>, CodeQL does run on PRs targeting it.</strong> Measured with
+<code>git show origin/chore/nightscout-modernization:.github/workflows/codeql-analysis.yml</code> at
+<code>0a4109f6</code>: line 17 <code>push: branches: [ dev, master ]</code>, line 19
+<strong><code>pull_request: branches: [ dev, master, chore/nightscout-modernization ]</code></strong>.</p>
+<p>The split between the two workflow files is real. On <code>dev</code>,
+<code>main.yml</code>'s <code>pull_request</code> list is <code>[master, dev]</code> only; on <code>chore/nightscout-modernization</code> it is
+<code>[master, dev, chore/nightscout-modernization]</code>, and that branch's <code>main.yml</code> also carries a
+<code>concurrency</code> group and <strong>three</strong> extra jobs <code>dev</code> does not have (<code>maintained-mongo</code>,
+<code>replica-test</code>, <code>browser-test</code>). <strong>None of this affects Phase 0</strong>, because every PR in this batch
+targets <code>dev</code> (or <code>bf/coercion</code>) and gets the full <code>dev</code> matrix plus a non-publishing Docker
+build.</p>
+<h3 id="nightscout-connect--githubworkflows-on-releasev0014"><code>nightscout-connect</code> — <code>.github/workflows/</code> on <code>release/v0.0.14</code><a class="headerlink" href="#nightscout-connect--githubworkflows-on-releasev0014" title="Permanent link">&para;</a></h3>
+<p><strong>Exactly one workflow file exists.</strong> <code>test.yml</code>, read in full:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Connector regression tests</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nt">on</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">push</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">pull_request</span><span class="p p-Indicator">]</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="nt">permissions</span><span class="p">:</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span><span class="nt">contents</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">read</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="nt">jobs</span><span class="p">:</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">  </span><span class="nt">test</span><span class="p">:</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">    </span><span class="nt">strategy</span><span class="p">:</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">      </span><span class="nt">matrix</span><span class="p">:</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">        </span><span class="nt">node</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'22.23.2'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'24.20.0'</span><span class="p p-Indicator">]</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">    </span><span class="nt">steps</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">checkout</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">setup-node</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">npm install --ignore-scripts</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">npm test</span><span class="p p-Indicator">]</span>
+</code></pre></div>
+<p><code>permissions: contents: read</code>. <strong>No secrets are referenced. No registry login. No release workflow
+at all.</strong> Pushing the <code>v0.0.14</code> tag runs the test suite on Node 22 and 24 and <strong>publishes nothing</strong>.
+<code>npm publish</code> for the connector is entirely manual and always has been.</p>
+<p><strong>Bottom line for the nervous:</strong> you can push every <code>bf/*</code> branch to <code>origin</code> and push the connector
+tag without publishing a single artefact. The only two pushes that ship anything are onto
+<code>cgm-remote-monitor</code>'s <code>dev</code> or <code>master</code>, and you will only do those through a PR merge.</p>
+<hr />
+<h2 id="5-per-branch-what-it-fixes-what-changes-who-approves">5. Per branch: what it fixes, what changes, who approves<a class="headerlink" href="#5-per-branch-what-it-fixes-what-changes-who-approves" title="Permanent link">&para;</a></h2>
+<p>Semver classification is from the versioning analysis (GT4, <code>docs/60-research/modernization/gt4-semver-classification-2026-09-15.md</code>).
+Test evidence is stated per branch with the suite that was actually run; where a suite was <strong>not</strong>
+re-run, it says so and says why. <strong>See §11 before treating any green tick as complete.</strong></p>
+<p>Merge-tree state, <strong>re-measured independently during adversarial review on 2026-09-15</strong>: all nine
+branches merge cleanly against <code>origin/dev</code>, and <strong>all 36 unordered pairs among the nine branches —
+<code>bf/connect-pin</code> included — merge cleanly against each other.</strong> (<code>git merge-tree --write-tree
+--name-only</code> for every pair; a clean result is a single tree hash with no file list. 36 pairs, 0
+conflicts.) There is no <code>CHANGELOG.md</code> add/add conflict: <code>CHANGELOG.md</code> already exists on
+<code>origin/dev</code> (§5 branch G). <code>bf/reads</code> has since been rebased onto
+<code>bf/coercion</code> — see the ordering note below.</p>
+<h3 id="the-one-ordering-constraint">The one ordering constraint<a class="headerlink" href="#the-one-ordering-constraint" title="Permanent link">&para;</a></h3>
+<p>*[Superseded the same evening: the stack was dissolved and <code>bf/reads</code> re-cut directly on
+<code>origin/dev</code> as <code>2ecfeb53</code> (6 commits), independent of <code>bf/coercion</code>; the two merged separately as</p>
+<h1 id="8738-and-8737-see-phase-0-sequencing-1-and-3a">8738 and #8737. See <a href="phase0-pr-sequencing-2026-09-15.html">Phase 0 sequencing</a> §1 and §3a.]*<a class="headerlink" href="#8738-and-8737-see-phase-0-sequencing-1-and-3a" title="Permanent link">&para;</a></h1>
+<p><strong><code>bf/coercion</code> is now an ancestor of <code>bf/reads</code>.</strong> Verified:
+<code>git merge-base --is-ancestor bf/coercion bf/reads</code> succeeds, and <code>bf/reads</code> is 8 commits ahead of
+<code>dev</code> with <code>88d1f8a4</code> (<code>bf/coercion</code>'s only commit) as its first. The rebase described as pending in
+§3 of the sequencing document has been applied; the branch tip moved <code>824380a0</code> → <code>0d19bb31</code>.</p>
+<p><strong>Practical consequence:</strong> <em>merging <code>bf/reads</code> merges <code>bf/coercion</code> with it, whether or not you have
+approved <code>bf/coercion</code>.</em> Open <code>bf/reads</code> against base <code>bf/coercion</code> so the PR shows only its own
+seven commits. If you merge <code>bf/reads</code> against <code>dev</code> directly, you are approving both at once.</p>
+<p>No other pair has a containment relationship (checked all 72 ordered pairs).</p>
+<hr />
+<h3 id="a--bfalarms--5dcf783f--3-commits---needs-a-humans-explicit-yes">A — <code>bf/alarms</code> · <code>5dcf783f</code> · 3 commits · <strong>⚠ NEEDS A HUMAN'S EXPLICIT YES</strong><a class="headerlink" href="#a--bfalarms--5dcf783f--3-commits---needs-a-humans-explicit-yes" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Fixes</strong></td>
+<td>BF-28, BF-29, BF-31</td>
+</tr>
+<tr>
+<td><strong>Semver</strong></td>
+<td><strong>minor</strong> for the URGENT fix, <strong>patch</strong> for the ENABLE warning, <strong>major</strong> for the Alexa locale removal → <strong>the branch as a whole is major</strong></td>
+</tr>
+<tr>
+<td><strong>Evidence</strong></td>
+<td><code>docs/30-design/remedial/nightscout-backfix-register.md</code> BF-28/BF-29/BF-31; commit messages carry their own before/after measurements</td>
+</tr>
+<tr>
+<td><strong>Approver</strong></td>
+<td><strong>A maintainer must say yes in writing.</strong> This is the one branch in the batch that starts an alarm.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The operator-visible change, in plain language:</strong></p>
+<blockquote>
+<p>If you have insulin-reservoir alerts turned on (<code>IAGE_ENABLE_ALERTS</code> — the setting that lets the
+Insulin Age plugin raise notifications), you will start receiving an urgent "Insulin reservoir
+change overdue!" notification when your reservoir reaches the age you configured (72 hours unless
+you changed it). <strong>You have never received this notification before, on any version of
+Nightscout.</strong> The feature was documented and the code was broken: it compared the reservoir's age
+against a setting it never read. Nothing about your insulin, your pump or your therapy has
+changed — only whether Nightscout tells you.</p>
+<p><strong>It fires once, not repeatedly.</strong> The alert is raised in the single evaluation window where the
+age first equals your threshold and the clock is within 20 minutes past the hour. If you miss it,
+nothing raises it again; the on-screen Insulin Age pill will show URGENT for as long as the
+reservoir is overdue, and that pill is the thing to watch. <strong>Do not describe this as a repeating
+or persistent alarm in the release notes</strong> — someone who expects it to keep nagging will rely on
+something that will not happen. (On Pushover the notification is sent with the <code>persistent</code>
+sound; that is a Pushover sound name, not a promise that Nightscout repeats the alert.)</p>
+<p>This is not medical advice, and nothing here is guidance about insulin dosing. Nightscout is not a
+medical device and an alert is not a substitute for your own schedule for changing a reservoir.
+If you are unsure what reservoir-change interval is right for you, that is a question for your
+care team.</p>
+</blockquote>
+<p>Also on this branch: an <code>ENABLE</code> entry that names a plugin's <em>file</em> (<code>ENABLE=cannulaage</code> instead of
+<code>cage</code>) now prints a <code>console.warn</code> suggesting the right name, where before it was silently ignored;
+and <code>POST /api/v1/alexa</code> / <code>/api/v1/googlehome</code> <strong>stop honouring a per-request <code>locale</code></strong>, answering
+in the server's configured language instead. That last one is a capability removal with no
+replacement in the same changeset — it is why the branch classifies as major — and the removal is
+correct, because the old code set process-global state so one assistant request re-languaged every
+later request in the process.</p>
+<p><strong>Why a human, specifically.</strong> An alarm that has never fired starting to fire is the one change in
+this batch that reaches someone at 3 a.m. It is the right fix and it is documented behaviour, but
+"we restored a documented alarm" and "we added a new alarm" are the same event from the operator's
+chair. The decision to accept that, and the wording of the release note, is a maintainer's, not an
+agent's.</p>
+<p><strong>One thing to look at while reviewing.</strong> The fixed line is
+<code>if (insulinInfo.age &gt;= prefs.urgent)</code> (<code>lib/plugins/insulinage.js:91</code>), but the line under it is
+unchanged: <code>sendNotification = insulinInfo.age === prefs.urgent</code> (<code>:92</code>), and the notification is
+additionally gated on <code>prefs.enableAlerts &amp;&amp; sendNotification &amp;&amp; insulinInfo.minFractions &lt;= 20</code>
+(<code>:108</code>). The <em>level</em> is now correctly URGENT for as long as the reservoir is overdue, but the
+<em>notification</em> is still gated on exact equality <strong>and</strong> on being within 20 minutes past the hour.
+That matches how the three sibling plugins (<code>cannulaage</code>, <code>sensorage</code>, <code>batteryage</code>) behave, so it
+is consistent rather than wrong — but it means the notification fires in one evaluation window and
+not after. <strong>Worth an explicit decision rather than an assumption, and the release-note wording
+depends on it</strong> (see the plain-language box above). Verified by reading these lines on the branch
+during adversarial review; not executed.</p>
+<p><strong>Test evidence:</strong> the branch's <code>npm run test:unit</code> run was <strong>346 passing / 7 failing</strong> (GT1), and
+all seven are attributed to the environment, not the code. Three grounds, <strong>all three re-checked
+during adversarial review on 2026-09-15</strong>: (a) <code>mongod</code> on this worktree's configured port 27034 is
+still not listening (<code>ss -ltn</code>; the live ports are 27017, 27018, 27019, 27023, 27031, 27032, 27033,
+27044); (b) six failures are byte-identical to the <code>dev</code> baseline's mongo-down failures, and the
+branch's diff touches only <code>lib/api/alexa/index.js</code>, <code>lib/api/googlehome/index.js</code>,
+<code>lib/plugins/index.js</code>, <code>lib/plugins/insulinage.js</code> and their four test files — none of the failing
+files and none of the code they exercise; (c) the seventh is a missing client bundle,
+<code>node_modules/.cache/_ns_cache/public/js/bundle.app.js</code>, confirmed still absent in this worktree
+only (<code>npm run bundle</code> there fixes it).</p>
+<p><strong>The full CI-equivalent suite (<code>npm test</code>) has still not been run on this branch, and an attempt
+during adversarial review did not close the gap.</strong> Pointing the suite at a different live <code>mongod</code>
+without touching the worktree's files produced 1707 passing / 25 failing, but the failures were
+about the substituted environment — the same worktree is also missing
+<code>node_modules/.cache/_ns_cache/randomString</code>, so the server bootstraps differently. <strong>That run is
+not evidence about the code and is not counted anywhere in this document.</strong> Closing this gap
+properly needs the worktree's own <code>mongod</code> on 27034 started and <code>npm run bundle</code> run there. See
+§11.</p>
+<hr />
+<h3 id="c--bfauth--64db1f35--2-commits---needs-a-humans-explicit-yes">C — <code>bf/auth</code> · <code>64db1f35</code> · 2 commits · <strong>⚠ NEEDS A HUMAN'S EXPLICIT YES</strong><a class="headerlink" href="#c--bfauth--64db1f35--2-commits---needs-a-humans-explicit-yes" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Fixes</strong></td>
+<td>BF-17 (plaintext token persisted), BF-30 (auth throttle bypass)</td>
+</tr>
+<tr>
+<td><strong>Semver</strong></td>
+<td><strong>major</strong> — the storage allow-list discards unknown fields; the throttle change and the <code>notes</code> field are each minor</td>
+</tr>
+<tr>
+<td><strong>Evidence</strong></td>
+<td>register BF-17, BF-30 (both marked <em>reproduced live</em>)</td>
+</tr>
+<tr>
+<td><strong>Approver</strong></td>
+<td><strong>A maintainer, and ideally a second pair of eyes. This is security.</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>What it fixes.</strong> (1) Editing a subject through the stock admin UI <strong>wrote that subject's API access
+token into the database in plaintext</strong>, into a field the server otherwise only derives. Anyone with
+read access to the database got API access. (2) The failed-authentication delay was keyed on the
+caller-supplied <code>X-Forwarded-For</code> header, so a client that rotated that header was never throttled —
+brute-force guessing against <code>API_SECRET</code> and tokens ran unthrottled.</p>
+<p><strong>The operator-visible change, in plain language:</strong></p>
+<blockquote>
+<p>Nothing you do changes. Two security holes close. <strong>If any of your API tokens were written to the
+database in plaintext by editing a subject in the admin UI, this fix stops it happening again but
+does not undo it.</strong> Tokens are derived from the subject's id, its name and your site's key, so the
+fix cannot invalidate a token that already exists. If you think a token may have been exposed,
+rotating it is your action, not the software's.</p>
+</blockquote>
+<p><strong>Three things a reviewer must weigh, and the third is the sharp one:</strong></p>
+<ol>
+<li><strong>The fix does not invalidate existing tokens.</strong> Verified by reading <code>reload()</code>: <code>digest</code>,
+   <code>accessToken</code> and <code>accessTokenDigest</code> are recomputed from <code>subject._id</code>, <code>subject.name</code> and the
+   enclave key on every load. Rotation is the operator's action. <strong>The PR must carry a remediation
+   note saying which rotation options exist.</strong></li>
+<li><strong>The throttle now keys on the socket peer address plus a salted credential digest.</strong> Behind a
+   shared proxy, failing clients share one bucket. The reason this is minor and not major: the sleep
+   moved to the <em>failure</em> path and requests with no credential are never throttled, so <strong>no request
+   that successfully authenticates is ever delayed by another client's failures.</strong> Verified by
+   reading the diff.</li>
+<li><strong>⚠ The subject/role storage becomes an allow-list, and the write is a <code>replaceOne</code>.</strong> Measured
+   by reading <code>lib/authorization/storage.js:50-51, 58, 138-158</code> on the branch:
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kd">var</span><span class="w"> </span><span class="nx">SUBJECT_FIELDS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s1">'name'</span><span class="p">,</span><span class="w"> </span><span class="s1">'roles'</span><span class="p">,</span><span class="w"> </span><span class="s1">'notes'</span><span class="p">,</span><span class="w"> </span><span class="s1">'created_at'</span><span class="p">];</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kd">var</span><span class="w"> </span><span class="nx">ROLE_FIELDS</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s1">'name'</span><span class="p">,</span><span class="w"> </span><span class="s1">'permissions'</span><span class="p">,</span><span class="w"> </span><span class="s1">'notes'</span><span class="p">,</span><span class="w"> </span><span class="s1">'created_at'</span><span class="p">];</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="kd">function</span><span class="w"> </span><span class="nx">save</span><span class="w"> </span><span class="p">(</span><span class="nx">collection</span><span class="p">,</span><span class="w"> </span><span class="nx">fields</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">…</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="nx">doc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">ownedFields</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span><span class="w"> </span><span class="nx">fields</span><span class="p">);</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">                                     </span><span class="k">await</span><span class="w"> </span><span class="nx">collection</span><span class="p">.</span><span class="nx">replaceOne</span><span class="p">({</span><span class="nx">_id</span><span class="o">:</span><span class="w"> </span><span class="nx">doc</span><span class="p">.</span><span class="nx">_id</span><span class="p">},</span><span class="w"> </span><span class="nx">doc</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="nx">upsert</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">});</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+   <strong>Scope.</strong> The data loss is <em>mostly pre-existing, not introduced by this branch</em>, and
+   a reviewer needs the difference:</li>
+<li><strong>Already true on <code>dev</code> today.</strong> <code>origin/dev:lib/authorization/storage.js</code> <code>save()</code> is already
+     <code>collection.replaceOne({_id: obj._id}, obj, {upsert: true})</code> on the caller's object, and
+     <code>origin/dev:lib/authorization/endpoints.js:40</code> returns only
+     <code>pick(subject, ['_id','name','accessToken','roles'])</code>. The stock admin UI
+     (<code>lib/admin_plugins/subjects.js:35-53</code>) <code>PUT</code>s back exactly that object. <strong>So on today's
+     release, editing a subject in the admin UI already destroys <code>notes</code>, <code>created_at</code> and any
+     third-party field.</strong> <code>bf/auth</code> in fact <em>reduces</em> one case of this, by adding <code>notes</code> to the
+     <code>GET</code> response and to the allow-list.</li>
+<li><strong>What the branch newly removes</strong> is a third-party tool's ability to <em>keep</em> its own fields by
+     sending them in its own <code>PUT</code>: <code>ownedFields()</code> now strips anything outside the allow-list
+     regardless of what the caller sent. Before, such a tool round-tripping its full document kept
+     its fields; now it cannot store them through this API at all.
+   <strong>This is still the one change in the batch that a code revert cannot fully undo</strong> (see §9) — but
+   the honest question for the community is narrower than "do you run third-party tooling": it is
+   <em>"does any third-party tool write extra fields to subjects or roles through
+   <code>/api/v2/authorization/</code>, and does it depend on them surviving?"</em> Not reproduced against a real
+   deployment, and no third-party tool was inspected.</li>
+</ol>
+<p>Also: <code>GET /api/v1/subjects</code> gains a <code>notes</code> field (additive; it stops the admin edit dialog
+blanking notes).</p>
+<p><strong>Test evidence (2026-09-15).</strong> <code>npm run test:unit</code> on this
+branch: <strong>361 passing / 0 failing</strong> (GT1, in the worktree with its own <code>my.test.env</code> on port 27031).
+And <code>npm test</code> — the full <code>./tests/*.test.js</code> tree, which is what CI runs via <code>test-ci</code>, and which
+on this branch is 161 files — <strong>2047 passing, 3 pending, 0 failing, exit 0</strong>, run today in
+<code>externals/work/crm-bf-auth</code> against its own <code>mongod</code> on 27031 (server 7.0.43, driver 5.9.2).
+See §11.</p>
+<hr />
+<h3 id="b--bfcache--4f86bab1--2-commits">B — <code>bf/cache</code> · <code>4f86bab1</code> · 2 commits<a class="headerlink" href="#b--bfcache--4f86bab1--2-commits" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Fixes</strong></td>
+<td>BF-06 (fixed), BF-07 (<strong>partly</strong> fixed)</td>
+</tr>
+<tr>
+<td><strong>Semver</strong></td>
+<td><strong>patch</strong> — identical bytes on the wire</td>
+</tr>
+<tr>
+<td><strong>Evidence</strong></td>
+<td>register BF-06/BF-07; <code>docs/60-research/remedial/t02-t03-cache-clone-2026-09-15.md</code></td>
+</tr>
+<tr>
+<td><strong>Approver</strong></td>
+<td>ordinary review</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Operator-visible:</strong> the site gets faster under load and answers exactly the same. <code>/api/v1/entries</code>
+untyped read measured at <strong>0.837 ms → 0.025 ms</strong>; the three cache calls in the load cycle at
+<strong>3.747 ms → 2.657 ms</strong>. Both measured on this machine by the branch author's harness, not on a live
+site — treat the <em>ordering</em> (much faster) as solid and the absolute numbers as machine-specific.</p>
+<p><strong>Say this in the PR:</strong> the T0.3 gate was <code>&lt; 1 ms</code> and <strong>it was not met</strong> (2.657 ms). See §8.</p>
+<p>Also removes a <strong>dead write</strong> at <code>lib/data/dataloader.js:204</code> on <code>origin/dev</code>
+(<code>if (!element.mills) element.mills = element.date</code> on an array that is discarded), pinned by a test
+that fails if the write returns.</p>
+<p><strong>Test evidence (2026-09-15).</strong> <code>npm run test:unit</code>,
+<strong>371 passing / 0 failing</strong> (GT1). And <code>npm test</code> (the full <code>./tests/*.test.js</code> tree, 160 files on
+this branch) in <code>externals/work/crm-bf-cache</code>: <strong>2040 passing, 3 pending, 0 failing, exit 0</strong>, run
+today against its own <code>mongod</code> on 27033.</p>
+<hr />
+<h3 id="g--bffood--73495331--1-commit--read-this-one-first">G — <code>bf/food</code> · <code>73495331</code> · 1 commit · <strong>read this one first</strong><a class="headerlink" href="#g--bffood--73495331--1-commit--read-this-one-first" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Fixes</strong></td>
+<td>BF-16, and <strong>BF-35</strong> — the highest-severity defect in the batch</td>
+</tr>
+<tr>
+<td><strong>Semver</strong></td>
+<td><strong>minor</strong> — a v1 response changes contents</td>
+</tr>
+<tr>
+<td><strong>Evidence</strong></td>
+<td>register BF-16, BF-35; sequencing document §2 carries the annotated source</td>
+</tr>
+<tr>
+<td><strong>Approver</strong></td>
+<td>ordinary review, but read the BF-35 explanation before approving</td>
+</tr>
+</tbody>
+</table>
+<p><strong>BF-35, in plain language:</strong></p>
+<blockquote>
+<p>In the bolus calculator, the drop-down list of saved quick picks was built from your whole food
+database but the selection was looked up in a shorter, filtered list. <strong>So picking a quick pick by
+name could load a different record's food, and the carbohydrate total that went into the insulin
+calculation was not the one you chose.</strong> Nothing told you. The list also offered plain foods that
+are not quick picks, and choosing one of the last entries threw an error. This has been present
+since October 2017.</p>
+</blockquote>
+<p>Everything else in this batch returns a wrong answer to a query or fails to raise an alarm. <strong>This
+one puts a carbohydrate total the user did not choose into a bolus calculation, under a label they
+did read.</strong> It is the strongest argument in the batch for shipping rather than continuing to audit.</p>
+<p><strong>BF-16</strong> also lands: <code>/api/v1/food/quickpicks</code> filtered on the literal string <code>'false'</code>, so quick
+picks written by a JSON client vanished from it; and <code>restoreBoolValue</code> in the editor turned a real
+boolean <code>true</code> into <code>false</code>, silently un-hiding a hidden quick pick on every editor load.</p>
+<p><strong>Two things whoever lands this must know:</strong></p>
+<ol>
+<li><strong><code>CHANGELOG.md</code>.</strong> It
+   <strong>already exists on <code>origin/dev</code> (<code>a8888f0d</code>)</strong> — <code>git ls-tree --name-only origin/dev
+   CHANGELOG.md</code> returns it, and its <code>## [Unreleased]</code> section already carries the 15.0.9 entries.
+   Neither <code>bf/reads</code> nor <code>bf/coercion</code> <em>adds</em> the file; they <strong>append</strong> to it
+   (<code>git diff --numstat origin/dev &lt;branch&gt; -- CHANGELOG.md</code>: <code>bf/coercion</code> +40/-0, <code>bf/reads</code>
+   +90/-0, where <code>bf/reads</code>' 90 contains <code>bf/coercion</code>'s 40 because it now contains that commit).
+   The other six branches — <code>bf/alarms</code>, <code>bf/auth</code>, <code>bf/cache</code>, <code>bf/food</code>, <code>bf/merge</code>, <code>bf/parms</code> —
+   do not touch the file at all. <strong>There is no add/add conflict and there never was one</strong>, and
+   because <code>bf/reads</code> contains <code>bf/coercion</code> there is no conflict between those two either.</li>
+</ol>
+<p><em>[Superseded the same evening by the maintainer's rule that <code>CHANGELOG.md</code> is a release output
+   no branch edits; release-note text moved to <code>releases/</code> in this repository. See
+   <a href="phase0-pr-sequencing-2026-09-15.html">Phase 0 sequencing</a> §0b.]</em>
+   <code>bf/food</code> carries <strong>no <code>CHANGELOG.md</code> entry of its
+   own</strong>, and BF-35 is the highest-severity defect in the batch. Its release-note text is in the
+   register. Adding it is an ordinary edit to the existing <code>## [Unreleased]</code> section — the only
+   hazard is the usual one of two branches appending to the same section, which <code>git</code> resolves as a
+   normal content conflict, not an add/add. <strong>It needs an entry</strong>: the quick-pick list changes both
+   its contents and what selecting an entry does.
+2. <strong>A drift tripwire fires when this lands, and it is not a breakage.</strong>
+   <code>tools/nsschema/code_model.py</code>'s <code>SOURCE_ASSERTIONS</code> deliberately pins the quoted <code>'false'</code> in
+   <code>lib/server/food.js</code>, so that fixing it <em>forces</em> the food model to be revisited.
+   <code>make schema-code-drift</code> will fail the day this reaches the tooling repo's checkouts. What to
+   replace the anchors with is written into BF-16.</p>
+<p><strong>Test evidence — measured, and independently reproduced during adversarial review:</strong> <code>npm test</code>
+(the full <code>./tests/*.test.js</code> tree, which is what CI runs via <code>test-ci</code>; 161 files on this branch) in
+<code>externals/work/crm-bf-food</code>: <strong>2042 passing, 3 pending, 0 failing</strong> — run twice, by two different
+agents, same figures. This matters because <strong><code>npm run test:unit</code> never executes BF-35's test</strong> —
+<code>tests/boluscalc.quickpick.test.js</code> matches neither the <code>test:unit</code> nor the <code>test:integration</code> brace
+list (GT1 verified this by regex-matching the name against both lists). A green <code>test:unit</code> on this
+branch is not evidence for BF-35. A green <code>npm test</code> is.</p>
+<hr />
+<h3 id="h--bfmerge--b06c6faf--1-commit">H — <code>bf/merge</code> · <code>b06c6faf</code> · 1 commit<a class="headerlink" href="#h--bfmerge--b06c6faf--1-commit" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Fixes</strong></td>
+<td>BF-36</td>
+</tr>
+<tr>
+<td><strong>Semver</strong></td>
+<td><strong>patch</strong> — client only, no contract</td>
+</tr>
+<tr>
+<td><strong>Evidence</strong></td>
+<td>register BF-36</td>
+</tr>
+<tr>
+<td><strong>Approver</strong></td>
+<td>ordinary review</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Operator-visible:</strong> <em>"Delete a treatment, then edit an older one, and the page stops updating until
+you reload it."</em> The client's delta merge captured the cached array's length once and then spliced
+that array, so a removal followed by a non-matching item read past the end and threw. The throw
+escapes into <code>dataUpdate</code>, which has no <code>try</code>/<code>catch</code>.</p>
+<p><strong>Severity is medium, not high, and the reason sets the batch's priority order:</strong> the failure is
+<strong>not silent</strong>. <code>updateClock</code> runs on its own timer chain, so the time-ago indicator keeps working
+and visibly marks the page stale. <em>BF-35 tells you a wrong thing; BF-36 stops telling you things,
+visibly.</em></p>
+<p><strong>Test evidence — measured, and independently reproduced during adversarial review:</strong> <code>npm test</code>
+(the full <code>./tests/*.test.js</code> tree, 160 files on this branch) in <code>externals/work/crm-bf-merge</code>:
+<strong>2040 passing, 3 pending, 0 failing</strong>, exit 0 — run twice, same figures. <code>tests/receiveddata.merge.test.js</code> is also in neither local brace
+list, so the same caveat as <code>bf/food</code> applies to any <code>test:unit</code> result on this branch.</p>
+<hr />
+<h3 id="i--bfparms--eb0bc918--3-commits">I — <code>bf/parms</code> · <code>eb0bc918</code> · 3 commits<a class="headerlink" href="#i--bfparms--eb0bc918--3-commits" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Fixes</strong></td>
+<td>BF-37, BF-38, BF-39</td>
+</tr>
+<tr>
+<td><strong>Semver</strong></td>
+<td><strong>patch</strong> — client URL parsing and translation substitution</td>
+</tr>
+<tr>
+<td><strong>Evidence</strong></td>
+<td>register BF-37/BF-38/BF-39</td>
+</tr>
+<tr>
+<td><strong>Approver</strong></td>
+<td>ordinary review</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Operator-visible:</strong> <em>"A link with a trailing <code>&amp;</code>, or <code>?mute</code> instead of <code>?mute=true</code>, used to leave
+you staring at 'Loading' forever."</em> <code>queryParms()</code> read <code>[1]</code> of each <code>key=value</code> split without
+checking one existed, and it is the <strong>first real statement of <code>client.init</code></strong> — so the page stopped
+loading with nothing on screen but the loading message and a <code>TypeError</code> in a console nobody reads.
+Fixed by reading a valueless parameter as the empty string, which is what both existing callers
+already treat as absence.</p>
+<p>Also: <code>%1</code> no longer eats <code>%10</code> in translations (latent — no shipped catalogue uses more than <code>%3</code>),
+and <code>queryParms()</code> stops replacing <code>_</code> with a space, which was corrupting access tokens whose subject
+name contains an underscore. <strong>That corruption was measured to have no live effect</strong> — <code>checkToken</code>
+splits on <code>-</code> and matches the last segment, so the corruption landed entirely in the part nothing
+reads. It is fixed because it is an accidental coupling that breaks the moment either end is
+tightened, not because anything is broken today.</p>
+<p><strong>⚖ One behaviour note for the release notes:</strong> a bookmarked URL that relied on <code>_</code> being decoded as
+a space will behave differently. GT4 classified this as patch and flagged it as the judgement call.</p>
+<p><strong>Test evidence — measured, and independently reproduced during adversarial review:</strong> <code>npm test</code>
+(the full <code>./tests/*.test.js</code> tree, 160 files on this branch) in <code>externals/work/crm-bf-parms</code>:
+<strong>2035 passing, 3 pending, 0 failing</strong>, exit 0 — run twice, same figures.
+<code>tests/browser-utils.queryparms.test.js</code> is in neither local brace list, so the full-tree run is the
+one that counts — <code>npm run test:unit</code> (362 passing, GT1) never executes BF-37's test.</p>
+<hr />
+<h3 id="d--bfcoercion--88d1f8a4--1-commit">D — <code>bf/coercion</code> · <code>88d1f8a4</code> · 1 commit<a class="headerlink" href="#d--bfcoercion--88d1f8a4--1-commit" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Fixes</strong></td>
+<td>BF-02, BF-11, BF-03 (devicestatus + profile), BF-32</td>
+</tr>
+<tr>
+<td><strong>Semver</strong></td>
+<td><strong>minor</strong> — filters that returned nothing start returning rows</td>
+</tr>
+<tr>
+<td><strong>Evidence</strong></td>
+<td>register BF-02/BF-03/BF-11/BF-32</td>
+</tr>
+<tr>
+<td><strong>Approver</strong></td>
+<td>ordinary review. <strong>Merge this before <code>bf/reads</code>.</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Operator-visible:</strong> <em>"API queries that quietly returned an empty list now return your data."</em>
+Filters were compared as text against numeric fields. <strong>158</strong> schema-driven coercions across five
+collections (<code>devicestatus</code> 99, <code>treatments</code> 29, <code>entries</code> 20, <code>profile</code> 10, <code>activity</code> 0 — counted
+today from <code>lib/server/query-coercion.json</code>) replace the hand-written <code>walker</code> entries, of which the
+three regular-expression ones on <code>treatments</code> (<code>notes</code>, <code>eventType</code>, <code>enteredBy</code>) are deliberately
+kept because they are search affordances, not type claims. Measured old-vs-new <strong>during adversarial
+review on 2026-09-15</strong> by executing both versions of <code>lib/server/query.js</code> on the same inputs
+(<code>origin/dev</code>'s copy extracted to a scratch directory, the branch's copy in place):</p>
+<table>
+<thead>
+<tr>
+<th>query</th>
+<th>before</th>
+<th>after</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>treatments?find[duration][$gte]=30</code></td>
+<td><code>{"$gte":"30"}</code> — matched nothing</td>
+<td><code>{"$gte":30}</code></td>
+</tr>
+<tr>
+<td><code>treatments?find[insulin][$gte]=1.5</code></td>
+<td><code>{"$gte":1}</code> — rounded down</td>
+<td><code>{"$gte":1.5}</code></td>
+</tr>
+<tr>
+<td><code>entries?find[sgv][$exists]=true</code></td>
+<td><code>{"$exists":NaN}</code> — see the correction below; <strong>on a real MongoDB this already returned the right documents</strong></td>
+<td><code>{"$exists":"true"}</code></td>
+</tr>
+</tbody>
+</table>
+<p>That third row is BF-32, found while fixing the others: the old walker coerced operator <em>operands</em>
+as if they were field values, so <code>find[sgv][$exists]=true</code> reached the driver as <code>{$exists: NaN}</code>.</p>
+<blockquote>
+<h3 id="bf-32s-stated-impact-does-not-hold-on-a-real-mongodb">BF-32's stated impact does not hold on a real MongoDB<a class="headerlink" href="#bf-32s-stated-impact-does-not-hold-on-a-real-mongodb" title="Permanent link">&para;</a></h3>
+<p><strong>Measured 2026-09-15, against two live <code>mongod</code> servers</strong> (3.6.8 on
+port 27033 and 7.0.43 on ports 27019/27023/27031/27032, via driver 5.9.2), inserting
+<code>[{_id:1, sgv:100}, {_id:2}]</code> and running each operand spelling:</p>
+<table>
+<thead>
+<tr>
+<th>operand sent</th>
+<th>real MongoDB returns</th>
+<th><code>mingo</code> returns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>true</code> (boolean)</td>
+<td><code>[1]</code> — has the field</td>
+<td><code>[1]</code></td>
+</tr>
+<tr>
+<td><code>false</code> (boolean)</td>
+<td><code>[2]</code> — lacks the field</td>
+<td><code>[2]</code></td>
+</tr>
+<tr>
+<td><code>"true"</code> (string)</td>
+<td><code>[1]</code> — has</td>
+<td><code>[1]</code></td>
+</tr>
+<tr>
+<td><code>"false"</code> (string)</td>
+<td><code>[1]</code> — <strong>has</strong></td>
+<td><code>[1]</code></td>
+</tr>
+<tr>
+<td><code>NaN</code></td>
+<td><code>[1]</code> — <strong>has</strong></td>
+<td><strong><code>[2]</code></strong></td>
+</tr>
+</tbody>
+</table>
+<p>MongoDB's truthiness for a BSON double is <code>value != 0</code>, and <code>NaN != 0</code> is true, so the server
+treats <code>{$exists: NaN}</code> as <code>{$exists: true}</code>. JavaScript treats <code>NaN</code> as falsy, so <code>mingo</code> — the
+D8 differential-test oracle — does not. <strong>Consequences for this branch:</strong></p>
+<ol>
+<li><strong><code>find[sgv][$exists]=true</code> was <em>not</em> returning "the documents that lack the field" on <code>dev</code>.</strong>
+   <code>{$exists: NaN}</code> returned the documents that <em>have</em> it, which is the right answer, reached by
+   accident. The register's BF-32 wording and the
+   operator-facing sentence in <code>bf/reads</code>' own <code>CHANGELOG.md</code> ("which MongoDB reads as <em>false</em>, so
+   the query returned exactly the records you did not ask for") <strong>are all wrong on this point</strong>,
+   and the CHANGELOG one ships to operators. Raise it on the PR.</li>
+<li><strong>There is no <code>$exists=false</code> inversion.</strong> Both spellings produced <code>{$exists: NaN}</code> on <code>dev</code>
+   (verified by executing <code>origin/dev:lib/server/query.js</code>: the value is a literal <code>NaN</code> for both
+   <code>'true'</code> and <code>'false'</code>), and both therefore returned "has the field". After the branch both
+   return <code>"true"</code>/<code>"false"</code> as strings, and both still return "has the field". <strong>Nothing
+   observable about <code>$exists</code> changes on MongoDB.</strong> The open question §11 recorded — "is
+   <code>$exists=false</code> inverted by <code>bf/coercion</code>?" — <strong>is now settled: no.</strong></li>
+<li><strong>What BF-32 does still fix, and this part holds:</strong> the other non-value operators on the ten
+   numeric walker-covered fields were being run through <code>parseInt</code>. Measured by executing both
+   copies of <code>query.js</code>: <code>find[sgv][$type]=number</code> reached the driver as <code>NaN</code> on <code>dev</code> and as
+   <code>"number"</code> on the branch; <code>find[sgv][$regex]=^1</code> as <code>NaN</code> on <code>dev</code> and as <code>"^1"</code> on the branch.
+   So the branch is right to stop coercing operands; only the <em>headline example</em> chosen for it was
+   wrong.</li>
+<li><strong>A separate, pre-existing defect is exposed by this and is <em>not</em> fixed by the batch:</strong>
+   <code>find[&lt;any field&gt;][$exists]=false</code> has never meant "lacks the field" anywhere in API v1 — the
+   string <code>"false"</code> is truthy to MongoDB, so it returns the documents that <em>have</em> it, on <code>master</code>,
+   on <code>dev</code>, and after this branch, on every field of every collection. Filed as <strong>BF-40</strong>.
+   <em>[Correction: the BF-40 fix was folded into <code>bf/coercion</code> as a second commit on 2026-09-16
+   (tip <code>b7234753</code>) and #8737 does fix it — <code>lib/server/query.js</code> reads <code>$exists</code> operands as
+   booleans (<code>BOOLEAN_OPERANDS</code> / <code>readBooleanOperand</code>); measured 2026-09-17. Merged to <code>dev</code>,
+   not released.]</em></li>
+<li><strong><code>mingo</code> is not a faithful oracle for non-boolean <code>$exists</code> operands.</strong> Under D8 that matters
+   for the seam's differential tests, not for Phase 0, but it should be recorded.</li>
+</ol>
+<p>None of this changes whether <code>bf/coercion</code> should merge. The numeric and decimal rows above —
+which are the reason the branch exists — are unaffected and were re-checked.</p>
+</blockquote>
+<p><strong>Test evidence.</strong> Two runs, and the second is the one that counts. (1) <code>npm run test:unit</code> <strong>on this
+worktree</strong>, <strong>368 passing / 6 failing</strong> — the six are environmental, not defects: <code>mongod</code> on this
+worktree's configured port 27030 is not listening (confirmed by <code>ss -ltn</code>), the six failures are
+byte-identical to the <code>dev</code> baseline's mongo-down failures (<code>verifyauth</code> ×4, <code>API_SECRET</code> ×2), and
+the branch's diff touches none of those files. That run was not repeated; the port being down was
+re-confirmed during adversarial review. (2) <strong>This branch's commit is contained in <code>bf/reads</code></strong>, and
+the full <code>./tests/*.test.js</code> tree was run there twice today, by two agents:
+<strong>2076 passing, 3 pending, 0 failing</strong>, exit 0 both times. So <code>bf/coercion</code>'s code <em>is</em> covered green
+by a full-tree run — as merged with <code>bf/reads</code>, not in isolation. See §11.</p>
+<p><strong>Non-vacuity (GT1, measured):</strong> <code>tests/query.test.js</code> from this branch cannot even load against
+pristine <code>dev</code> code (<code>Cannot find module '../lib/server/query-coercion'</code>), so the test does
+distinguish fixed from unfixed.</p>
+<hr />
+<h3 id="e--bfreads--0d19bb31--8-commits-7-its-own-plus-bfcoercions">E — <code>bf/reads</code> · <code>0d19bb31</code> · 8 commits (7 its own, <strong>plus <code>bf/coercion</code>'s</strong>)<a class="headerlink" href="#e--bfreads--0d19bb31--8-commits-7-its-own-plus-bfcoercions" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Fixes</strong></td>
+<td>BF-01, BF-05, BF-13, BF-14, BF-15, BF-33</td>
+</tr>
+<tr>
+<td><strong>Semver</strong></td>
+<td><strong>major</strong>, driven by one row — the <code>?count=</code> restriction</td>
+</tr>
+<tr>
+<td><strong>Evidence</strong></td>
+<td>register BF-01/BF-05/BF-13/BF-14/BF-15/BF-33</td>
+</tr>
+<tr>
+<td><strong>Approver</strong></td>
+<td>ordinary review, <strong>but the restriction needs a conscious yes</strong></td>
+</tr>
+<tr>
+<td><strong>Base</strong></td>
+<td><strong><code>bf/coercion</code>, not <code>dev</code></strong></td>
+</tr>
+</tbody>
+</table>
+<p>Six read-path fixes: a count endpoint that built its filter from the defaults and counted nothing;
+v3 paging that lost and duplicated documents when the whole sort chain tied; a dotted <code>?fields=</code>
+that answered <code>{}</code> with <code>200</code>; <code>?limit=0x10</code> that removed the v3 bound entirely; and a <code>console.log</code>
+that printed every count request's filter <em>and its values</em> to stdout on the request path.</p>
+<p><strong>⚠ The restriction — this is the only thing in the batch that can break a working integration:</strong></p>
+<blockquote>
+<p>Six previously-accepted spellings of <code>?count=</code> now return <strong>HTTP 400</strong>: <code>0</code>, <code>0x10</code>, <code>2.5</code>, <code>-3</code>,
+<code>1e2</code>, <code>abc</code>, plus any integer above <code>Number.MAX_SAFE_INTEGER</code>. <code>1</code>, <code>10</code>, <code>" 5 "</code>, absent and
+empty are unchanged.</p>
+</blockquote>
+<p>GT4 measured this by executing the branch's <code>parseCount</code>/<code>hasCount</code> against an exact transcription
+of the old code over 11 inputs. <strong>Two details the branch's own CHANGELOG understates:</strong></p>
+<ul>
+<li><code>?count=0</code> previously reached the driver as <code>.limit(0)</code>, which on MongoDB means <strong>unbounded</strong> —
+  the whole collection. That is the defect. The other five spellings are the collateral.</li>
+<li><strong>The validator is <code>app.use</code>'d on the whole v1 app before every router</strong>, so it applies to
+  <strong>writes as well as reads</strong>. A <code>POST /api/v1/treatments?count=0</code> now returns <code>400</code> where it
+  previously succeeded. The branch <code>CHANGELOG.md</code> lists read routes only.
+  <strong>This belongs in the release notes as a restriction, in those words.</strong></li>
+</ul>
+<p><strong>Coverage, enumerated in full from <code>lib/api/index.js</code> on the branch (read line by line during
+  adversarial review; <code>validateCount</code> is <code>app.use</code>'d at line 51):</strong> everything mounted <em>after</em> it is
+  covered — <code>/entries*</code>, <code>/echo/*</code>, <code>/times/*</code>, <code>/slice/*</code>, <code>/count/*</code> (all five on the entries
+  router), <code>/treatments*</code>, <code>/profile*</code>, <code>/devicestatus*</code>, <code>/notifications*</code>, <code>/activity*</code>,
+  <code>/food*</code>, <code>/status*</code>, <code>/alexa*</code>, <code>/googlehome*</code>, plus the <code>verifyauth</code> and <code>adminnotifiesapi</code>
+  routers mounted at <code>/</code>. <strong>One route is NOT covered</strong>:
+  <code>app.use('/experiments', …)</code> is mounted at line 38, <em>before</em> the validator, so
+  <code>/api/v1/experiments?count=0</code> keeps the old behaviour. That is the whole list — 15 mount points
+  covered, 1 not.</p>
+<p><strong>Ordering constraint inside the branch:</strong> <code>1d0064bd</code> (BF-05, "Every count request printed its
+filter…") must follow <code>af717c8f</code> (BF-01, "count/:storage/where counted nothing…") — they share two
+files. The branch is already in that order.</p>
+<p><strong>The merge-correctness step this pair gets and neither PR gets alone.</strong> <code>bf/coercion</code> and <code>bf/reads</code>
+both rewrite query construction and share six files under <code>lib/server/</code>. A clean textual merge is
+not a correct merge. The known instance was that <code>aggregate.js</code> calls <code>query.js</code> and passed no
+options, so the count path could stay untyped after two PRs that each looked complete. <strong>On the
+merged tree that is not what happens</strong>: BF-01's fix delegates to each collection's own <code>query_for</code>,
+and every one of those already names its collection, so coercion's <code>collection:</code> option reaches
+<code>query.js</code> on the count path. <strong>That chain was verified by reading it, and the suites pass — but
+there is no end-to-end assertion that a numeric filter on <code>count/devicestatus/where</code> returns rows on
+the merged tree.</strong> That test does not exist. It is the one test worth adding, and until it exists
+this paragraph is reasoning, not measurement.</p>
+<p><strong>Test evidence — the strongest evidence in the batch, and now measured twice:</strong> <code>npm test</code>
+(the full <code>./tests/*.test.js</code> tree, 164 files on this branch) in <code>externals/work/crm-bf-reads</code>,
+which is now the <strong>merged D+E tree</strong>: <strong>2076 passing, 3 pending, 0 failing</strong>, exit 0. Run once by
+this document's author and <strong>reproduced independently during adversarial review on 2026-09-15</strong>,
+same figures, and it also reproduces the figure the sequencing document reported.</p>
+<p><em>One provenance note, because this document's rule is that a number says how it was obtained:</em> the
+additive arithmetic — base <strong>2028</strong> + <code>bf/reads</code> 35 + <code>bf/coercion</code> 13 = 2076 — rests on the base
+figure <strong>2028, which is quoted from <code>phase0-pr-sequencing-2026-09-15.md:503</code> and was NOT re-measured
+by either agent.</strong> No full-tree run of pristine <code>origin/dev</code> was made. The 2076 is measured; the
+decomposition of it is inherited. If the additivity matters to your review, run <code>npm test</code> in a
+worktree at <code>a8888f0d</code>.</p>
+<p><em>Operational note for whoever re-runs this:</em> the suite refuses to start if its test database holds
+more than 100 entries ("Production safety check activated"). A suite run that is interrupted leaves
+the database dirty and the next run halts. Let a run finish, or re-run with
+<code>TEST_SAFETY_MAX_ENTRIES</code> raised for that invocation only.</p>
+<p>Note what this run does and does not cover: it exercises <code>bf/coercion</code> <strong>as merged</strong>, so it is also
+the only full-tree evidence for <code>bf/coercion</code>'s code in this batch. It does <strong>not</strong> cover the
+end-to-end count-path assertion described above, which does not exist.</p>
+<p>A safety ref <code>bf/reads-prerebase</code> = <code>824380a0</code> exists locally; delete it after the PRs merge.</p>
+<hr />
+<h3 id="bfconnect-pin--0807eb1c--1-commit--gated-on-decision-2"><code>bf/connect-pin</code> · <code>0807eb1c</code> · 1 commit · <strong>gated on decision 2</strong><a class="headerlink" href="#bfconnect-pin--0807eb1c--1-commit--gated-on-decision-2" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Fixes</strong></td>
+<td>delivers BF-34, BF-08 and the three connector log-redaction commits to <code>dev</code></td>
+</tr>
+<tr>
+<td><strong>Semver</strong></td>
+<td><strong>minor</strong> — one line, but it is the vehicle for every connector change</td>
+</tr>
+<tr>
+<td><strong>Evidence</strong></td>
+<td>register BF-34, BF-08; <code>docs/60-research/modernization/gt4-semver-classification-2026-09-15.md</code> §6</td>
+</tr>
+<tr>
+<td><strong>Approver</strong></td>
+<td>ordinary review, <strong>after the tag is pushed and the lock regenerated</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Operator-visible, and it is counter-intuitive:</strong></p>
+<blockquote>
+<p><strong>After a Dexcom or CareLink outage, your glucose data will appear to come back more slowly than
+you are used to.</strong> That is the fix. The connector was retrying a failing vendor 586× faster than
+configured, and every account was retrying in exact lockstep — which is the behaviour least likely
+to get you reconnected and most likely to get the pool rate-limited. Retries now honour the
+configured 2.5-minute interval, spread randomly, capped at 30 minutes.</p>
+</blockquote>
+<p><strong>The measured precision, because the round number in circulation is imprecise:</strong> the ratio is
+<strong>585.94× exactly</strong> (150000 ÷ 256) at every attempt below the ceiling — not an average. The shipped
+ceiling is <strong>30 minutes</strong>, not the five years an uncapped exponent would give, because
+<code>lib/builder.js</code> supplies <code>max_interval_ms = expected_data_interval_ms × 6</code>. The load measurement:
+100 actors delivered the same 800 requests <strong>across 3 s before and 67 s after</strong>, with the upstream
+refusing authentication. <em>(Provenance: the 585.94× and the 30-minute ceiling are GT4's measurements
+— <code>docs/60-research/modernization/gt4-semver-classification-2026-09-15.md</code> — and the 3 s → 67 s figure is T0.4's
+author's, on this machine. Neither was re-measured for this document. Quote the direction with
+confidence; quote the absolute numbers with the method attached. See §11.)</em></p>
+<p>Also delivered: start/interval jitter (both windows default <code>0</code>, so nothing changes for anyone who
+does not set them), and <strong>three log-redaction commits that keep Dexcom and MiniMed credentials,
+sessions and patient data out of runtime logs</strong>. See §2 for why <code>dev</code> does not have those today.</p>
+<p><strong>Test evidence — re-run during adversarial review, 2026-09-15:</strong> the connector's own suite
+(<code>npm test</code> = <code>node --test</code>) in <code>externals/work/nc-jitter</code>: <strong>tests 135, pass 135, fail 0</strong>. That
+worktree is <code>fix/connect-timer-jitter</code> at <code>c1cce2a</code>, and <code>git diff --stat c1cce2a release/v0.0.14</code>
+is <code>package.json</code> + <code>package-lock.json</code>, version bump only — so the run covers exactly the code the
+tag ships. The 19 new tests and the revert-each-part-in-turn non-vacuity check are T0.4's author's
+work, not re-done here.</p>
+<p>The <code>cgm-remote-monitor</code> side is a one-line <code>package.json</code> change with no test of its own, and
+<strong><code>bf/connect-pin</code>'s worktree has no <code>node_modules</code> and no <code>my.test.env</code>, so no <code>cgm-remote-monitor</code>
+suite has been run there at all.</strong> That is fine — it is one line — but do not read a green tick that
+does not exist.</p>
+<hr />
+<h2 id="6-the-fork-route-trap">6. The fork-route trap<a class="headerlink" href="#6-the-fork-route-trap" title="Permanent link">&para;</a></h2>
+<p>If you push branches to your fork rather than to <code>origin</code>, one workflow can eat a PR.</p>
+<p><code>.github/workflows/close-accidental-sync-prs.yml</code> runs on <code>pull_request_target: types: [opened]</code> and
+<strong>auto-closes the PR when all three of these hold</strong>, read verbatim from the script:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kd">const</span><span class="w"> </span><span class="nx">isFromFork</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="nx">baseRepo</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="nx">headRepo</span><span class="p">;</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="kd">const</span><span class="w"> </span><span class="nx">isLikelySync</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sr">/\b(sync|merge|update|pull|new)\b/i</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">pr</span><span class="p">.</span><span class="nx">title</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="s2">""</span><span class="p">);</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="kd">const</span><span class="w"> </span><span class="nx">isEmptyPR</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="nx">pr</span><span class="p">.</span><span class="nx">changed_files</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">pr</span><span class="p">.</span><span class="nx">additions</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">pr</span><span class="p">.</span><span class="nx">deletions</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="p">[</span><span class="nx">isFromFork</span><span class="p">,</span><span class="w"> </span><span class="nx">isLikelySync</span><span class="p">,</span><span class="w"> </span><span class="nx">isEmptyPR</span><span class="p">].</span><span class="nx">every</span><span class="p">(</span><span class="nb">Boolean</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<p><strong>A real PR is never auto-closed, because the third condition fails</strong> — every branch in this batch
+has a non-empty diff. But several of the most natural titles for this work contain those words:
+<em>"Merge the read-path fixes"</em>, <em>"Update the connector pin"</em>, <em>"New quick-pick chooser fix"</em>. <strong>If a
+PR ever vanishes with a polite comment about syncing your fork, that is why</strong> — reopen it and
+rename it. Pushing to <code>origin</code> instead of a fork avoids the condition entirely.</p>
+<hr />
+<h2 id="7-why-the-review-gate-exists">7. Why the review gate exists<a class="headerlink" href="#7-why-the-review-gate-exists" title="Permanent link">&para;</a></h2>
+<p>Stated once, because it is load-bearing and not a lecture.</p>
+<p><strong>Two prescribed fixes in the backfix register turned out to be wrong when someone actually ran
+them</strong> (BF-14's prescribed fix was itself defective and copying it would have spread an unbounded
+read; BF-30's preferred fix measured as a net regression), and <strong>at least seven register entries
+have carried a claim that did not survive contact with running code.</strong> The register's own header
+names five — <strong>BF-12</strong> (a mis-transcription: the walker coerces <code>rssi</code>, not <code>rawbg</code>), <strong>BF-31</strong>
+("reaches alarm text" — it does not; the catalogue is read once at boot), <strong>BF-14</strong>, <strong>BF-16</strong> (the
+"wrong order in the built-in editor" half: real, and reached nobody, because the endpoint it named
+has no in-tree consumer), and <strong>BF-03</strong> (<code>food</code> never reaches <code>query.js</code>; <code>activity</code> has no numeric
+field). Its own §1 table flags two more the header omits: <strong>BF-08</strong> ("the interval half of this
+entry was wrong") and <strong>BF-30</strong>. GT3 counted the same seven.</p>
+<p><strong>An eighth: BF-32</strong>'s stated impact —
+that <code>{$exists: NaN}</code> "returned exactly the documents that lack the field" — is false against a real
+MongoDB, where <code>NaN != 0</code> makes it read as <code>true</code> (§5, branch D). That one was caught only because
+someone ran it against a server instead of reasoning about JavaScript truthiness, and the wrong
+version of it is currently in operator-facing <code>CHANGELOG.md</code> text on <code>bf/reads</code>.</p>
+<p><em>Two cautions about the sentence that usually follows this one.</em> The register asserts "not one entry
+that began with a reproduction has had to be retracted" — that is the register's own claim and was
+not independently checked here, and GT3 found three entries (BF-17, BF-30, BF-31) whose provenance
+markings contradict themselves, a prepended "reproduced" block above a body that still reads "not
+reproduced". And "two of <strong>five</strong>" prescribed fixes: the denominator is inherited from the briefing
+and was not verified. Review is where reading-derived confidence meets running code, and in this
+programme that meeting has changed the answer often enough to be the point of the exercise.</p>
+<p>The corollary is mechanical: <strong><code>dev</code> and <code>master</code> are publication events, not branches.</strong> A push to
+either pushes a Docker image (§4). Treat a merge as shipping, because it is.</p>
+<hr />
+<h2 id="8-known-incomplete--so-nothing-surprises-you-later">8. Known-incomplete — so nothing surprises you later<a class="headerlink" href="#8-known-incomplete--so-nothing-surprises-you-later" title="Permanent link">&para;</a></h2>
+<p><strong>These are deliberate, not oversights. Each has a reason on the record.</strong></p>
+<ol>
+<li><strong>T0.3's gate was not met, and the remainder was left on purpose.</strong> The gate was "the three cache
+   calls in the load cycle cost &lt; 1 ms"; measured result is <strong>2.657 ms</strong>, down from 3.747 ms.
+   <strong>2.6 ms of the remaining 2.66 ms is <code>devicestatus</code></strong>, whose caller rewrites <code>uploaderBattery</code>
+   into <code>uploader</code> on every document, and whose <code>mergeProcessSort</code> writes <code>_id</code> and <code>mills</code> on top,
+   on documents that then live in <code>ddata</code> for the life of the process. Taking that clone away means
+   <strong>proving no consumer anywhere in the plugin tier writes to a device-status document — and a grep
+   is not that proof.</strong> <code>entries</code> and <code>treatments</code> were taken (0.845 → 0.035 ms and
+   0.397 → 0.017 ms); <code>devicestatus</code> keeps its clone. <strong><code>bf/cache</code>'s PR description must say the
+   gate was not met and why</strong>, or it will read as a completed optimisation.</li>
+<li><strong>The <code>aggregate.js</code> follow-up is RESOLVED by the combination, but its test does not exist.</strong> The
+   prediction was that <code>bf/coercion</code> and <code>bf/reads</code> could both land clean and leave the count path
+   untyped. On the merged tree they compose correctly (§5, branch E). <strong>What is missing is an
+   end-to-end assertion that a numeric filter on <code>count/devicestatus/where</code> returns rows.</strong> Until
+   someone writes it, "the two fixes compose" is read-derived reasoning. It needs <strong>both D and E
+   merged</strong> to be testable at all.</li>
+<li><strong>The limit rule is written twice, on purpose.</strong> <code>lib/server/count.js</code> and v3's <code>parseLimit</code> each
+   carry their own copy, so that each commit could land alone. <strong>Unify them afterwards.</strong> This is a
+   debt with a name: <em>two readings of one rule is the root cause of this entire family of defects</em> —
+   BF-14 and BF-33 are the same bug in two dialects. Leaving it duplicated through the merge is the
+   right call; leaving it duplicated after is not.</li>
+<li><strong><code>CHANGELOG.md</code> and <code>bf/food</code></strong> (§5 branch G). <code>CHANGELOG.md</code> <strong>already exists on <code>origin/dev</code></strong>; <code>bf/coercion</code> and
+   <code>bf/reads</code> append to it (+40 and +90 lines), the other six branches do not touch it, and there
+   is no add/add conflict anywhere. <strong>What still needs doing is unchanged and is the point:
+   <code>bf/food</code> carries no <code>CHANGELOG.md</code> entry, and BF-35 is the highest-severity defect in the
+   batch. Its release note has to be written into the existing <code>## [Unreleased]</code> section by hand.</strong>
+   <em>[Superseded: release notes go in <code>releases/</code>, not <code>CHANGELOG.md</code> — Phase 0 sequencing §0b.]</em></li>
+<li><strong>A schema-drift tripwire will fire when <code>bf/food</code> lands</strong> (§5, branch G). It is a deliberate
+   anchor, not a breakage.</li>
+<li><strong>Four other follow-ups are recorded and not in these PRs:</strong> <code>plugins.isPluginEnabled</code> always
+   returns <code>true</code> (no caller, so no register id); a second unguarded <code>console.log</code> on a request path
+   in <code>lib/authorization/storage.js</code> (line <strong>113</strong>, not the <code>:84</code> the register cites — I confirmed
+   113 on <code>bf/auth</code>); the <code>alexa</code> <code>switch</code> has no <code>default</code>, so an unrecognised <code>request.type</code> calls
+   neither <code>res.json</code> nor <code>next()</code> and the request hangs until the client times out (it sits beside
+   a line <code>bf/alarms</code> already changes, so <strong>it should land with that branch</strong>); and BF-04 needs
+   <em>extraction</em> from the seam branch rather than a fresh fix.</li>
+<li><strong>After these land, <code>origin/dev</code> moves</strong>, so <code>chore/nightscout-modernization</code> and the seam branch
+   both need a refresh before more tenancy work.</li>
+</ol>
+<hr />
+<h2 id="9-if-something-goes-wrong-after-merge--rollback-per-branch">9. If something goes wrong after merge — rollback, per branch<a class="headerlink" href="#9-if-something-goes-wrong-after-merge--rollback-per-branch" title="Permanent link">&para;</a></h2>
+<p><strong>The general shape.</strong> Every branch is a small number of commits on <code>dev</code>, merged by PR. A revert is
+<code>git revert -m 1 &lt;merge-commit&gt;</code> on a branch, then a PR back into <code>dev</code>. <strong>Do not push the revert
+straight to <code>dev</code></strong> — that is still a publication event and still pushes an image (§4). The revert
+goes through the same PR path as the merge did.</p>
+<p><strong>Per branch, what a revert actually gets you:</strong></p>
+<table>
+<thead>
+<tr>
+<th>branch</th>
+<th>reverting is…</th>
+<th>what a revert does NOT undo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>bf/cache</code></td>
+<td><strong>clean and safe</strong></td>
+<td>nothing — no wire format, no schema, no persisted state. The safest revert in the batch.</td>
+</tr>
+<tr>
+<td><code>bf/merge</code></td>
+<td><strong>clean and safe</strong></td>
+<td>nothing — client-only code, no persisted state</td>
+</tr>
+<tr>
+<td><code>bf/parms</code></td>
+<td><strong>clean and safe</strong></td>
+<td>nothing — client-only URL parsing</td>
+</tr>
+<tr>
+<td><code>bf/food</code></td>
+<td><strong>clean</strong>, but see right</td>
+<td>nothing persisted, <strong>but</strong> the schema-drift anchors (§8.5) have to be reverted with it or <code>make schema-code-drift</code> stays red in the tooling repo</td>
+</tr>
+<tr>
+<td><code>bf/coercion</code></td>
+<td><strong>clean</strong></td>
+<td>nothing persisted. Reverting restores the old wrong answers: numeric and decimal filters go back to matching nothing or being rounded down. (It does <strong>not</strong> restore an "inverted <code>$exists</code>" — there was never one; see §5 branch D.)</td>
+</tr>
+<tr>
+<td><code>bf/reads</code></td>
+<td><strong>clean</strong>, but <strong>order matters</strong></td>
+<td>it contains <code>bf/coercion</code>'s commit. Reverting the <code>bf/reads</code> merge reverts coercion too unless coercion was merged separately first. <strong>Merge <code>bf/coercion</code> as its own PR so the two can be reverted independently.</strong></td>
+</tr>
+<tr>
+<td><code>bf/alarms</code></td>
+<td><strong>clean</strong> code-wise</td>
+<td><strong>an operator who received the new URGENT notification has already received it.</strong> A revert stops future ones; it cannot un-ring a phone. If the alarm turns out to be unwanted, the honest remedy is a release note and a settings answer, not a silent revert</td>
+</tr>
+<tr>
+<td><strong><code>bf/auth</code></strong></td>
+<td>⚠ <strong>clean code, IRREVERSIBLE DATA</strong></td>
+<td><strong>the storage allow-list is a <code>replaceOne</code> (§5, branch C). Any field outside the allow-list that a third-party tool stored on a subject or role, and that was dropped while the fix was live, is gone; reverting the code does not bring it back.</strong> Read §5 branch C for the scope: an admin-UI edit <strong>already</strong> destroys such fields on today's <code>dev</code>, so what this branch newly removes is a third-party tool's ability to preserve its own fields by sending them in its own <code>PUT</code>. Still the only one-way change in the batch. If you have any doubt about third-party subject tooling, the time to resolve it is <em>before</em> the merge, not after</td>
+</tr>
+<tr>
+<td><code>bf/connect-pin</code></td>
+<td><strong>clean</strong> — revert the one-line pin <strong>and</strong> the regenerated lock together</td>
+<td><strong>the pushed <code>v0.0.14</code> tag stays pushed</strong> and, if you published, the npm version stays published. Reverting the pin moves <code>dev</code> back to <code>234d47c8</code>; it does not unmake the release</td>
+</tr>
+</tbody>
+</table>
+<p><strong>If the connector release itself is wrong after the tag is pushed:</strong> do not move or delete the tag.
+Cut <code>v0.0.15</code> and move the pin. A tag other people may have fetched is part of the public record.</p>
+<p><strong>A rollback you will not need but should know exists:</strong> the merge order is unconstrained except for
+<code>bf/coercion</code> before <code>bf/reads</code>, and all 36 pairs merge cleanly (§5), so a revert of any one branch
+does not conflict with the others.</p>
+<h3 id="9a-how-you-would-notice--the-failure-modes-here-are-quiet">9a. How you would NOTICE — the failure modes here are quiet<a class="headerlink" href="#9a-how-you-would-notice--the-failure-modes-here-are-quiet" title="Permanent link">&para;</a></h3>
+<p><strong>A revert you never trigger is worthless.</strong> Most of what this batch touches fails <em>silently</em>: a
+query answers <code>200 OK</code> with the wrong rows, an alert does not arrive, data stops being written
+without anything turning red. This is the list of observable symptoms, so that an operator report
+can be matched to a branch instead of being absorbed as "Nightscout being odd".</p>
+<table>
+<thead>
+<tr>
+<th>if an operator reports…</th>
+<th>suspect</th>
+<th>first check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"my glucose data stopped arriving" or "there is a gap since the upgrade"</td>
+<td><code>bf/connect-pin</code> / connector <code>v0.0.14</code></td>
+<td>Is the gap <em>after a vendor outage</em>? Slower recovery is the intended fix (§5). A gap with <strong>no</strong> outage is not — check the connector log for retry lines and the last <code>entries</code> timestamp</td>
+</tr>
+<tr>
+<td>"my uploader/script started getting errors", HTTP <code>400 Bad count</code></td>
+<td><code>bf/reads</code></td>
+<td>Search the access log for <code>?count=</code> values that are <code>0</code>, <code>-3</code>, <code>2.5</code>, <code>1e2</code>, <code>0x10</code> or non-numeric. This is the one <em>intended</em> new rejection</td>
+</tr>
+<tr>
+<td>"a report or dashboard now shows far more (or fewer) rows than it did"</td>
+<td><code>bf/coercion</code> (+<code>bf/reads</code>)</td>
+<td>Expected: filters that used to match nothing now match. Decimal bounds are no longer rounded down, so a <code>$gte=1.5</code> bound now <strong>excludes</strong> 1.0-unit boluses it used to include</td>
+</tr>
+<tr>
+<td>"the page stopped updating / the time-ago stopped advancing"</td>
+<td><code>bf/merge</code></td>
+<td>Browser console for a <code>TypeError</code> out of <code>dataUpdate</code>. This one is <em>visible</em>: the time-ago indicator keeps running and marks the page stale</td>
+</tr>
+<tr>
+<td>"the page never finishes loading, just says Loading"</td>
+<td><code>bf/parms</code></td>
+<td>The URL. A bare flag or a trailing <code>&amp;</code> is the trigger. Browser console shows a <code>TypeError</code> on the first statement of <code>client.init</code></td>
+</tr>
+<tr>
+<td>"a bookmarked link stopped working"</td>
+<td><code>bf/parms</code></td>
+<td>Underscores in the query string are no longer turned into spaces</td>
+</tr>
+<tr>
+<td>"a quick pick loads the wrong food / wrong carbs"</td>
+<td><code>bf/food</code></td>
+<td><strong>This is what the batch fixes.</strong> If it is reported <em>after</em> the merge, that is a regression and is the highest-priority report in the batch</td>
+</tr>
+<tr>
+<td>"I got an insulin-reservoir alert I have never seen"</td>
+<td><code>bf/alarms</code></td>
+<td>Expected; see §5 branch A. It fires once, not repeatedly</td>
+</tr>
+<tr>
+<td>"my Alexa/Google Home replies switched language"</td>
+<td><code>bf/alarms</code></td>
+<td>Expected: per-request locale is gone, replies use the server's configured language</td>
+</tr>
+<tr>
+<td>"our admin tool's extra fields on a subject disappeared"</td>
+<td><code>bf/auth</code></td>
+<td>§5 branch C. <strong>Not recoverable by reverting</strong></td>
+</tr>
+<tr>
+<td>"everything is slower / nothing changed"</td>
+<td><code>bf/cache</code></td>
+<td>Byte-identical responses by design; a <em>behaviour</em> change here would be a bug</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Two silent ones worth watching for deliberately, because nobody will report them:</strong></p>
+<ol>
+<li><strong>A count or a filter that answers <code>200</code> with the wrong rows.</strong> Nothing logs this. If you have a
+   site you can query, run one numeric filter (<code>/api/v1/treatments.json?find[duration][$gte]=30</code>)
+   and one count (<code>/api/v1/count/entries/where</code>) before and after the merge and keep both answers.</li>
+<li><strong><code>npm ci</code> going red on <code>bf/connect-pin</code>.</strong> That is the <em>designed</em> failure (§3) and it is loud —
+   but only until someone "fixes" it. If the lock stops being red without the tag having been
+   pushed, something has invented a hash. Check <code>package-lock.json</code>'s <code>integrity</code> against the
+   tarball GitHub actually serves.</li>
+</ol>
+<p><strong>None of the above is medical advice, and none of it is guidance about anyone's therapy.</strong> If a
+data gap or a missing alert affects how someone is managing their own or a family member's diabetes,
+the right next step is their care team, not a release note.</p>
+<hr />
+<h2 id="10-suggested-merge-order">10. Suggested merge order<a class="headerlink" href="#10-suggested-merge-order" title="Permanent link">&para;</a></h2>
+<p>There is no technical requirement beyond D-before-E, but this order front-loads the review that
+matters and keeps the two decisions needing an explicit yes separate from everything else:</p>
+<ol>
+<li><strong><code>bf/food</code></strong> — highest severity, one commit, smallest thing to read</li>
+<li><strong><code>bf/parms</code></strong>, <strong><code>bf/merge</code></strong>, <strong><code>bf/cache</code></strong> — self-contained, low blast radius</li>
+<li><strong><code>bf/coercion</code></strong>, then <strong><code>bf/reads</code></strong> — in that order, with the merged-tree check from §5</li>
+<li><strong><code>bf/alarms</code></strong> — after an explicit maintainer yes and the alarm release note is drafted</li>
+<li><strong><code>bf/auth</code></strong> — after an explicit maintainer yes and the third-party-tooling question is answered</li>
+<li><strong><code>bf/connect-pin</code></strong> — last, after the tag is pushed and the lock regenerated</li>
+</ol>
+<hr />
+<h2 id="11-what-has-not-been-verified--read-this-before-trusting-a-green-tick">11. What has NOT been verified — read this before trusting a green tick<a class="headerlink" href="#11-what-has-not-been-verified--read-this-before-trusting-a-green-tick" title="Permanent link">&para;</a></h2>
+<p><strong>I am being explicit here because two things in this programme have already gone wrong by treating a
+green suite as evidence.</strong></p>
+<h3 id="which-suites-were-actually-run-and-on-what">Which suites were actually run, and on what<a class="headerlink" href="#which-suites-were-actually-run-and-on-what" title="Permanent link">&para;</a></h3>
+<p><code>npm test</code> runs <code>./tests/*.test.js</code> — <strong>every test file in the tree</strong>, the same glob CI runs via
+<code>test-ci</code> (<code>test-ci</code> differs only in using <code>tests/ci.test.env</code> and wrapping mocha in <code>nyc</code>). On
+<code>origin/dev</code> that is <strong>159 files</strong>; the branches add their own, so it is 160 on <code>bf/alarms</code>,
+<code>bf/cache</code>, <code>bf/merge</code> and <code>bf/parms</code>, 161 on <code>bf/auth</code> and <code>bf/food</code>, 159 on <code>bf/coercion</code> and 164
+on <code>bf/reads</code> (counted today with <code>git ls-tree</code>). <code>npm run test:unit</code> and <code>npm run test:integration</code>
+are <strong>brace lists</strong> resolving to <strong>44 and 89 files</strong> respectively, union <strong>107</strong>, leaving <strong>52 files
+matched by neither</strong> (GT1 expanded both lists with <code>shopt -s nullglob</code> on a worktree at <code>a8888f0d</code>
+and counted).</p>
+<p><strong>Four of those 52 unmatched files are the evidence for this very batch:</strong>
+<code>tests/boluscalc.quickpick.test.js</code> (BF-35), <code>tests/receiveddata.merge.test.js</code> (BF-36),
+<code>tests/browser-utils.queryparms.test.js</code> (BF-37) and <code>tests/dataloader.test.js</code>. <strong>A green
+<code>npm run test:unit</code> is not evidence that BF-35's fix works.</strong> Use <code>npm test</code>.</p>
+<table>
+<thead>
+<tr>
+<th>branch</th>
+<th>suite run</th>
+<th>result</th>
+<th>by whom</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>bf/food</code></td>
+<td><strong><code>npm test</code> (full tree)</strong></td>
+<td><strong>2042 passing, 3 pending, 0 failing</strong></td>
+<td>author, <strong>and reproduced by adversarial review</strong></td>
+</tr>
+<tr>
+<td><code>bf/merge</code></td>
+<td><strong><code>npm test</code> (full tree)</strong></td>
+<td><strong>2040 passing, 3 pending, 0 failing</strong></td>
+<td>author, <strong>and reproduced by adversarial review</strong></td>
+</tr>
+<tr>
+<td><code>bf/parms</code></td>
+<td><strong><code>npm test</code> (full tree)</strong></td>
+<td><strong>2035 passing, 3 pending, 0 failing</strong></td>
+<td>author, <strong>and reproduced by adversarial review</strong></td>
+</tr>
+<tr>
+<td><code>bf/reads</code> (= merged D+E)</td>
+<td><strong><code>npm test</code> (full tree)</strong></td>
+<td><strong>2076 passing, 3 pending, 0 failing</strong></td>
+<td>author, <strong>and reproduced by adversarial review</strong></td>
+</tr>
+<tr>
+<td><code>bf/auth</code></td>
+<td><strong><code>npm test</code> (full tree)</strong></td>
+<td><strong>2047 passing, 3 pending, 0 failing</strong>, exit 0</td>
+<td><strong>adversarial review, today</strong></td>
+</tr>
+<tr>
+<td><code>bf/cache</code></td>
+<td><strong><code>npm test</code> (full tree)</strong></td>
+<td><strong>2040 passing, 3 pending, 0 failing</strong>, exit 0</td>
+<td><strong>adversarial review, today</strong></td>
+</tr>
+<tr>
+<td><code>bf/coercion</code></td>
+<td><code>npm run test:unit</code> on the branch alone</td>
+<td>368 passing / <strong>6 failing — environmental</strong>. Its code is separately covered green by the <code>bf/reads</code> full-tree run above, which contains it</td>
+<td>GT1 (+ via <code>bf/reads</code>)</td>
+</tr>
+<tr>
+<td><code>bf/alarms</code></td>
+<td><code>npm run test:unit</code> only</td>
+<td>346 passing / <strong>7 failing — environmental</strong>. <strong>No valid full-tree run exists</strong> — an attempt during adversarial review, pointed at a substituted <code>mongod</code>, produced 1707/25 and is discarded as an environment artefact (§5 branch A)</td>
+<td>GT1</td>
+</tr>
+<tr>
+<td><code>bf/connect-pin</code></td>
+<td><strong>none — cannot be run</strong></td>
+<td>no <code>node_modules</code>, no <code>my.test.env</code> in that worktree</td>
+<td>—</td>
+</tr>
+<tr>
+<td>the connector</td>
+<td>its own suite (<code>node --test</code>)</td>
+<td>tests 135, pass 135, fail 0</td>
+<td>T0.4's author, <strong>and re-run by adversarial review today</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Why the integration suite was not re-run everywhere.</strong> The worktrees each point at their own
+<code>mongod</code> (<code>my.test.env</code> names ports 27030–27034, 27018, 27117; where a port is shared the database
+name differs), so they are better isolated than the programme's own warning claims — but <strong>two of the
+configured <code>mongod</code> instances are not running on this machine right now</strong> (ports 27030 for
+<code>bf/coercion</code> and 27034 for <code>bf/alarms</code> are absent from <code>ss -ltn</code>; re-checked during adversarial
+review). Running the full suite on those two branches would produce failures that are about this
+machine, not about the code — an attempt to substitute another <code>mongod</code> for <code>bf/alarms</code> demonstrated
+exactly that. Running several full integration suites concurrently against shared instances is
+exactly the interference this programme has already been bitten by.</p>
+<p><strong>And a caveat nobody in this programme has written down: the local <code>mongod</code> servers are not the
+ones CI or operators use.</strong> Measured today via <code>serverStatus()</code>: ports 27017, 27033 and 27044 are
+<strong>MongoDB 3.6.8</strong>; ports 27019, 27023, 27031 and 27032 are <strong>7.0.43</strong>. CI's matrix on <code>dev</code> is
+MongoDB <strong>4.4, 5.0 and 6.0</strong>, and <code>docker-compose.yml</code> on <code>dev</code> ships <strong>4.4</strong>. So every green figure
+in the table above was obtained on a server version that neither CI nor a stock self-hoster runs.
+Nothing in this batch is obviously version-sensitive, but a green local suite is <strong>not</strong> a
+prediction of a green CI matrix.</p>
+<p><strong>So, precisely:</strong> <code>bf/alarms</code> has <strong>no valid full-tree run at all</strong>. <code>bf/coercion</code> has no full-tree
+run <em>in isolation</em>, but its single commit is contained in <code>bf/reads</code>, whose full-tree run is green
+and was made twice — so coercion's code is covered as merged, which is how it will ship. For both
+branches, the <code>test:unit</code> failures are <strong>attributed</strong> to the environment on three grounds, all three
+re-checked during adversarial review: the configured port is demonstrably not listening, the failing
+files are byte-identical to the <code>dev</code> baseline's mongo-down failures, and neither branch's diff
+touches those files or the code they exercise. <strong>That is a strong attribution, not a measurement.</strong>
+<em>CI will settle it.</em></p>
+<p>The branches with no full-tree run of their own are <strong>two</strong> — <code>bf/alarms</code> and <code>bf/connect-pin</code>.
+<code>bf/auth</code> and <code>bf/cache</code> were run to completion on 2026-09-15 (2047/3/0 and 2040/3/0, both exit 0). <strong><code>bf/alarms</code> is still one of the two
+branches needing an explicit human yes, and it is still the one with the weakest test evidence in
+the batch.</strong> Starting its <code>mongod</code> on 27034 and running <code>npm run bundle</code> in that worktree would
+close it in about two minutes.</p>
+<h3 id="claims-in-this-document-that-are-inference-not-measurement">Claims in this document that are inference, not measurement<a class="headerlink" href="#claims-in-this-document-that-are-inference-not-measurement" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>"The two fixes compose correctly on the merged D+E tree."</strong> Verified by reading the call chain;
+  no end-to-end test asserts it (§8.2).</li>
+<li><strong>"<code>bf/auth</code> does not invalidate existing tokens."</strong> Verified by reading <code>reload()</code>; not
+  reproduced against a real deployment.</li>
+<li><strong>"The <code>bf/auth</code> allow-list drops third-party fields."</strong> Verified by reading <code>SUBJECT_FIELDS</code>,
+  <code>ownedFields()</code> and the <code>replaceOne</code> call. Not reproduced against a real deployment, and <strong>I do not
+  know whether any third-party tool actually stores extra fields.</strong></li>
+<li><strong>"<code>bf/alarms</code>' seventh unit failure is a missing bundle, not a defect."</strong> GT1 read the failure
+  text; adversarial review re-confirmed today that
+  <code>node_modules/.cache/_ns_cache/public/js/bundle.app.js</code> is absent in that worktree.</li>
+<li><strong>"<code>bf/alarms</code>' fixed alarm fires once, in one evaluation window."</strong> Verified by reading
+  <code>lib/plugins/insulinage.js:91-115</code> on the branch. <strong>Not executed.</strong> This is the claim the
+  operator-facing release note depends on, so it is the one worth running before the note ships.</li>
+<li><strong>"The two <code>bf/coercion</code> + <code>bf/reads</code> composition claims about <code>api.query_for</code>."</strong> Verified by
+  reading <code>lib/server/aggregate.js</code> and the five <code>collection:</code> declarations on the merged tree.
+  No test asserts it end to end.</li>
+<li><strong>"Base 2028" in the additive arithmetic for <code>bf/reads</code>.</strong> Quoted from
+  <code>phase0-pr-sequencing-2026-09-15.md:503</code>; no full-tree run of pristine <code>origin/dev</code> was made by
+  anyone. The 2076 total is measured; its decomposition is not.</li>
+<li><strong>All performance figures</strong> (<code>0.837 → 0.025 ms</code>, <code>3.747 → 2.657 ms</code>, <code>3 s → 67 s</code>) were measured on
+  this machine by their branch authors' harnesses, <strong>not on a live Nightscout site.</strong> Across four
+  measurement passes in this programme the <em>ordering</em> of options has been stable while the absolute
+  figures moved. Quote the direction with confidence; quote the absolute numbers with the method
+  attached.</li>
+<li><strong>CI state at any branch tip has not been checked.</strong> No network calls were made. Nothing in this
+  batch has been through GitHub Actions even once.</li>
+</ul>
+<h3 id="things-i-could-not-settle-at-all">Things I could not settle at all<a class="headerlink" href="#things-i-could-not-settle-at-all" title="Permanent link">&para;</a></h3>
+<p>See the open questions handed up with this document.</p>
+<p><strong>Settled:</strong> <code>bf/coercion</code>'s first commit does not invert <code>$exists=false</code>. Measured against
+live <code>mongod</code> 3.6.8 and 7.0.43, <code>{$exists: NaN}</code> returns the documents that <em>have</em> the field, so
+neither <code>$exists=true</code> nor <code>$exists=false</code> changes observable behaviour across this branch, and the
+register's BF-32 wording is wrong in the other direction. Full working in §5, branch D.
+<em>[The residual <code>$exists=false</code> defect, BF-40, was later fixed by <code>bf/coercion</code>'s second commit and
+merged as #8737 — see the correction in §5 branch D.]</em></p>
+<p><strong>The two that remain, and they do affect a merge decision:</strong></p>
+<ul>
+<li>whether any third-party tool writes extra fields to subjects or roles through
+  <code>/api/v2/authorization/</code> and depends on them surviving (only the community knows — and note from
+  §5 branch C that a stock admin-UI edit already destroys them today);</li>
+<li>whether <code>nightscout-connect</code> is currently published on npm at all (no network egress from this
+  machine). This only affects decision 3, which §2 shows does not gate the batch.</li>
+</ul>
+<hr />
+<h2 id="12-corrections-to-other-documents-in-this-repository">12. Corrections to other documents in this repository<a class="headerlink" href="#12-corrections-to-other-documents-in-this-repository" title="Permanent link">&para;</a></h2>
+<p>Recorded here, <strong>not applied</strong> — a later reconciliation pass owns those files, and concurrent edits
+to long shared documents is a failure mode this programme has already hit.</p>
+<ol>
+<li><strong><code>phase0-pr-sequencing-2026-09-15.md:409</code> and <code>:421</code></strong> state that <code>master</code> (15.0.8) depends on
+   <code>nightscout-connect</code> as <code>"^0.0.12"</code> from npm, and concludes that "none of this reaches a current
+   operator without an <code>npm publish</code>." <strong>Both are wrong.</strong> <code>git show origin/master:package.json</code>
+   line 139 reads
+   <code>https://github.com/nightscout/nightscout-connect/archive/refs/tags/v0.0.13.tar.gz</code>, and
+   <code>origin/master:package-lock.json</code> agrees. The <code>^0.0.12</code> was replaced by commits <code>a91e8ee4</code> and
+   <code>561974de</code> ("fix(connect): install 0.0.13 from public tarball"). The <code>^0.2.12</code> that does appear on
+   <code>master</code> is <code>share2nightscout-bridge</code>, a different package. <strong>There is no npm-range pin anywhere
+   in the tree</strong>, <code>master</code> is already on <code>v0.0.13</code>, and the tag push — not the npm publish — is what
+   delivers the connector fixes.</li>
+<li><strong>Same document, same table</strong>, "three pinning mechanisms": there are <strong>four</strong> in flight.
+   <code>chore/mime-exposure-review</code> (cut 4) pins <code>c962a13f</code>, which appears in no programme document.</li>
+<li><strong>Same document, §3</strong>: the <code>bf/coercion</code> + <code>bf/reads</code> <code>CHANGELOG.md</code> conflict and the
+   "rebase E onto D" instruction are both <strong>stale</strong> — the rebase is applied and <code>bf/reads</code> is
+   <code>0d19bb31</code>. <strong>Note on the reason:</strong> the conflict is gone because <code>bf/reads</code> now <em>contains</em>
+   <code>bf/coercion</code>, not because an add/add was resolved — <code>CHANGELOG.md</code> already exists on
+   <code>origin/dev</code> and neither branch adds it (§5 branch G). The trial-merge matrix at §1 covers 6
+   pairs; the <strong>full 9-branch matrix — all 36 unordered pairs, <code>bf/connect-pin</code> included — is
+   clean</strong>, measured during adversarial review on 2026-09-15, so the prose claims of "clean against
+   all six"/"all seven" now have a matrix behind them.</li>
+<li><strong>Same document, §2, branch I</strong>: the <code>bf/parms</code> commit order is given as
+   <code>522c6ffb</code>, <code>eb0bc918</code>, <code>c9a7a21c</code> mapped to BF-37, BF-39, BF-38. The actual branch order is
+   <code>522c6ffb</code> (BF-37), <code>c9a7a21c</code> (BF-38), <code>eb0bc918</code> (BF-39).</li>
+<li><strong>Same document, §0 table</strong> (CodeQL on PRs targeting <code>chore/nightscout-modernization</code>): no
+   change needed — <code>codeql-analysis.yml</code> line 19 on that branch lists it under <code>pull_request</code>. See §4.</li>
+<li><strong><code>nightscout-backfix-register.md</code>, BF-05 detail</strong>: the unfixed sibling <code>console.log('Loading', opts)</code>
+   is at <code>lib/authorization/storage.js:113</code>, not <code>:84</code>. Confirmed present on <code>bf/auth</code> today.</li>
+<li><strong><code>nightscout-backfix-register.md</code>, BF-32, and <code>bf/reads</code>' own <code>CHANGELOG.md</code></strong>: the claim that
+   <code>{$exists: NaN}</code> is read by MongoDB as <code>false</code> and "returned exactly the records you did not ask
+   for" is <strong>wrong</strong>. <code>NaN != 0</code>, so the server reads it as <code>true</code>. Measured against live <code>mongod</code>
+   3.6.8 and 7.0.43 (§5, branch D). The <code>CHANGELOG.md</code> copy is <strong>operator-facing text on a branch
+   that is about to be proposed for merge</strong>, so it should be fixed on the branch, not only in the
+   register. The comment in <code>lib/server/query-coercion.js:25-26</code> on <code>bf/coercion</code>
+   ("<code>$exists</code> it inverts the result, because NaN is falsy…") states the same wrong reasoning and
+   should go with it.</li>
+<li><strong><code>nightscout-backfix-register.md</code>, §5 branch G's schema tripwire</strong>: confirmed, not a correction —
+   <code>tools/nsschema/code_model.py:135-136</code> pins both <code>['"]hidden['"]\s*[,:]\s*['"]false['"]</code> in
+   <code>lib/server/food.js</code> <strong>and</strong> <code>record[key] = record[key] === 'true';</code> in <code>lib/food/food.js</code>, and
+   <code>bf/food</code> changes both lines. So <code>make schema-code-drift</code> fails on <strong>two</strong> anchors when this
+   lands, not one.</li>
+<li><strong>The register's own legend is the most important correction and it is not a typo.</strong> <code>fixed</code> means
+   <em>"repaired on a backfix branch — NOT YET MERGED."</em> No entry anywhere has status <code>landed</code>, and
+   nothing in this batch has been pushed. So the widely-repeated sentence <em>"only three open register
+   entries reach an operator on today's release"</em> is true of the register's bookkeeping and <strong>false
+   of operators</strong>: on today's release, all 26 §1 defects are present for every self-hoster. Any
+   document that uses the open/fixed column as a measure of operator exposure is mis-sizing this
+   release by an order of magnitude. <strong>That is the argument for shipping this batch.</strong></li>
+</ol>
+<hr />
+<p><strong>Snapshot status.</strong> This document was prepared for maintainer review. It is not a regulatory,
+legal or clinical artefact, and the release notes derived from it are user-facing and must be written
+in plain language with every safety caveat preserved. Nothing in it is medical advice; operators with
+questions about their own therapy should consult their care team.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

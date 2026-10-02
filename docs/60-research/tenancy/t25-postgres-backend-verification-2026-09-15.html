@@ -1,0 +1,7828 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/60-research/tenancy/t25-postgres-backend-verification-2026-09-15.html">
+      
+      
+        <link rel="prev" href="sort-key-typing-corpus-2026-09-15.html">
+      
+      
+        <link rel="next" href="tenant-resolution-adversarial-2026-09-15.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Verifying the T2.5 PostgreSQL backend — four predictions, two of them wrong - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#verifying-the-t25-postgresql-backend--four-predictions-two-of-them-wrong" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Verifying the T2.5 PostgreSQL backend — four predictions, two of them wrong
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../30-design/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_27" id="__nav_5_27_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_27_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_27">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    60-research/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-2844-phenotype-drilldown-report-2026-04-22.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-0001 to 2869
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-2870-envelope-crossover-report-2026-04-22.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2870 to 2909
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-2910-eight-dim-regrade-2026-04-23.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2910 to 2949
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-2950-uniform-action-curve-2026-04-23.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2950 to 2999
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-3000-3003-cf-replay-maturation-2026-04-25.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-3000 and later
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../AUTORESEARCH-SESSION-2026-04-26.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Programme, closeouts and syntheses
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../accuracy-validation-2026-04-05.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Productionization and pipelines
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../capability-report-clinical-decision-support.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Capability reports
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../circadian-therapy-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Therapy
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../aid-aware-settings-report-2026-04-09.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings and profiles
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../natural-experiment-deconfounding-2026-04-09.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Natural experiments
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../bilateral-deconfounding-report-2026-04-19.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EGP, supply-demand and deconfounding
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../autotune-uam-characterization-report.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Meals and carbohydrates
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../causal-pk-leakage-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Insulin, ISF and pharmacokinetics
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../acceleration-clinical-utility-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clinical, safety and hypoglycaemia
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../aid-author-recommendations-report-2026-04-20.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AID controllers, cohorts and waves
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../centering-dynamics-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forecasting, prediction and classification
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../advanced-architectures-benchmark-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ML methods and architectures
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../canonical/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    canonical/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../collaboration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    collaboration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../external-inventories/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    external-inventories/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../modernization/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    modernization/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../programme/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    programme/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../remedial/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    remedial/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27_26" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenancy/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_27_26" id="__nav_5_27_26_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_27_26_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_27_26">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    tenancy/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="alarm-critical-slice-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The alarm-critical slice, measured: 32.7 KB and 1.94 ms, not 852 KB and 27.5 ms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="auth-plane-ory-vs-inhouse-2026-09-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The auth plane: Ory Kratos/Hydra against building it ourselves
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="exp-mt-026-database-in-the-loop-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-MT-026: a real database in the loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="multitenancy-k-and-residency-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What sets K: residency, the load cycle, and two quadratics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ns-evaluator-spike-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ns-evaluator: what a per-tenant evaluation loop actually needs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="pgbouncer-tenant-binding-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    pgbouncer and the D3 tenant binding — isolation holds, and two of the three modes are usable
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="seam-filter-ast-three-arm-validation-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Three-arm validation of the storage seam's filter AST: closing §8.5
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="seam-filter-re-operator-validation-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    T2.3 — the nine operators in SQL, and what turning re on found
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="seam-limit-and-projection-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    limit and projection across the seam — and two live API defects
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="seam-ordering-and-pagination-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ordering across the seam — and a live pagination defect in API v3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="seam-readoptions-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    readOptions across the seam — a bound that stops holding exactly where it matters
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="seam-write-path-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The write path across the seam — three divergences, and a vacuity trap in my own harness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sort-key-typing-corpus-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Are sort keys really "one type in practice"? — measured against the corpus
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Verifying the T2.5 PostgreSQL backend — four predictions, two of them wrong
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="t25-postgres-backend-verification-2026-09-15.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Verifying the T2.5 PostgreSQL backend — four predictions, two of them wrong
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-what-makes-this-run-different-from-the-four-that-preceded-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. What makes this run different from the four that preceded it
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0. What makes this run different from the four that preceded it">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#verdicts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verdicts
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-claim-1--refuted-the-filter-ast-classes-are-closed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Claim 1 — REFUTED. The filter AST classes are closed.
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Claim 1 — REFUTED. The filter AST classes are closed.">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#non-vacuity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Non-vacuity
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-claim-2--confirmed-limit-0-is-a-wrong-answer-on-postgresql" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Claim 2 — CONFIRMED. limit: 0 is a wrong answer on PostgreSQL.
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Claim 2 — CONFIRMED. limit: 0 is a wrong answer on PostgreSQL.">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#non-vacuity_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Non-vacuity
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-claim-3--confirmed-bf-13-reappears-on-postgresql-smaller-and-deterministic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Claim 3 — CONFIRMED. BF-13 reappears on PostgreSQL, smaller and deterministic.
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Claim 3 — CONFIRMED. BF-13 reappears on PostgreSQL, smaller and deterministic.">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#non-vacuity_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Non-vacuity
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-claim-4--confirmed-at-the-seam-client-visible-impact-is-nil-and-that-was-measured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Claim 4 — CONFIRMED at the seam. Client-visible impact is nil, and that was measured.
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Claim 4 — CONFIRMED at the seam. Client-visible impact is nil, and that was measured.">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#also-measured-not-predicted" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Also measured, not predicted
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#non-vacuity_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Non-vacuity
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-materialisation--confirmed-through-the-shipping-read-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Materialisation — confirmed, through the shipping read path
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-not-predicted--two-findings-and-the-first-is-the-serious-one" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Not predicted — two findings, and the first is the serious one
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Not predicted — two findings, and the first is the serious one">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-the-index-accelerator-changes-an-answer-in-order-by--proposed-bf-19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 The index accelerator changes an answer in ORDER BY — proposed BF-19
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-a-date-valued-filter-bound-compares-differently-on-each-backend--proposed-bf-20-low" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 A Date-valued filter bound compares differently on each backend — proposed BF-20, low
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-checked-and-clean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Checked and clean
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-honest-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Honest limits
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-reproduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Reproduction
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tenant-resolution-adversarial-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Attacking tenant resolution — the half of isolation that runs before the database
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tenant-shared-state-audit-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module-level shared state: what T3.3 has to fix before it can exist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="v1-operator-census-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What API v1 operators clients actually send — the census behind T2.4's allowlist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-what-makes-this-run-different-from-the-four-that-preceded-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. What makes this run different from the four that preceded it
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0. What makes this run different from the four that preceded it">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#verdicts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verdicts
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-claim-1--refuted-the-filter-ast-classes-are-closed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Claim 1 — REFUTED. The filter AST classes are closed.
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Claim 1 — REFUTED. The filter AST classes are closed.">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#non-vacuity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Non-vacuity
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-claim-2--confirmed-limit-0-is-a-wrong-answer-on-postgresql" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Claim 2 — CONFIRMED. limit: 0 is a wrong answer on PostgreSQL.
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Claim 2 — CONFIRMED. limit: 0 is a wrong answer on PostgreSQL.">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#non-vacuity_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Non-vacuity
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-claim-3--confirmed-bf-13-reappears-on-postgresql-smaller-and-deterministic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Claim 3 — CONFIRMED. BF-13 reappears on PostgreSQL, smaller and deterministic.
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Claim 3 — CONFIRMED. BF-13 reappears on PostgreSQL, smaller and deterministic.">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#non-vacuity_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Non-vacuity
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-claim-4--confirmed-at-the-seam-client-visible-impact-is-nil-and-that-was-measured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Claim 4 — CONFIRMED at the seam. Client-visible impact is nil, and that was measured.
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Claim 4 — CONFIRMED at the seam. Client-visible impact is nil, and that was measured.">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#also-measured-not-predicted" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Also measured, not predicted
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#non-vacuity_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Non-vacuity
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-materialisation--confirmed-through-the-shipping-read-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Materialisation — confirmed, through the shipping read path
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-not-predicted--two-findings-and-the-first-is-the-serious-one" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Not predicted — two findings, and the first is the serious one
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Not predicted — two findings, and the first is the serious one">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-the-index-accelerator-changes-an-answer-in-order-by--proposed-bf-19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 The index accelerator changes an answer in ORDER BY — proposed BF-19
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-a-date-valued-filter-bound-compares-differently-on-each-backend--proposed-bf-20-low" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 A Date-valued filter bound compares differently on each backend — proposed BF-20, low
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-checked-and-clean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Checked and clean
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-honest-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Honest limits
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-reproduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Reproduction
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="verifying-the-t25-postgresql-backend--four-predictions-two-of-them-wrong">Verifying the T2.5 PostgreSQL backend — four predictions, two of them wrong<a class="headerlink" href="#verifying-the-t25-postgresql-backend--four-predictions-two-of-them-wrong" title="Permanent link">&para;</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Record</p>
+<p>Record as of 2026-09-15. A point-in-time document; it is not kept up to date.</p>
+</div>
+<blockquote>
+<p><strong>Snapshot — research as of 2026-09-15, measured against <code>crm-seam</code> <code>7cc03cda</code> (modules unchanged at <code>903bcec9</code>). Status: current — tenancy research, not on a shipping path; BF-19 and BF-20 are open (pre-release, register §1b); the shipping-side defects it re-measures (BF-13, BF-14, BF-15) are merged to dev in PR #8738 (unreleased). Current facts: <a href="../../30-design/remedial/nightscout-backfix-register.html">backfix register</a>.</strong></p>
+</blockquote>
+<p>Date: 2026-09-15 · Harness: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a79d969c34632122b787927642e8b5cfc4514c6c/tools/qc/pg-backend-arm.js"><code>tools/qc/pg-backend-arm.js</code></a>
+Under test: <code>crm-seam</code> at <strong><code>7cc03cda</code></strong> ("T2.5: entries runs on PostgreSQL with RLS"), read from
+an independent detached worktree. <strong>No shipping code was changed by this work, and nothing was
+committed to the branch under test.</strong></p>
+<p>Arms: real <code>mongod</code> 7.0.43 (driver 7.6.0) · real PostgreSQL 16.14, the <strong>emitted</strong> schema
+(<code>lib/storage/postgres/generated/entries.sql</code>) under RLS, connected as a
+<code>NOSUPERUSER NOBYPASSRLS</code> role.</p>
+<p><strong>The branch moved during this work and the findings still apply.</strong> <code>crm-seam</code> advanced to
+<code>903bcec9</code> (T3.4) while this ran; <code>git diff 7cc03cda..903bcec9</code> is <strong>empty</strong> for every module
+measured here — <code>lib/storage/filter.js</code>, <code>lib/api3/storage/pgCollection/</code>,
+<code>lib/storage/postgres-storage.js</code>, <code>lib/storage/postgres/</code>,
+<code>lib/api3/generic/search/input.js</code>, <code>lib/api3/shared/fieldsProjector.js</code> and
+<code>lib/server/entries.js</code> (checked, not assumed).</p>
+<table>
+<thead>
+<tr>
+<th>ref</th>
+<th>document</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>{F}</strong></td>
+<td><a href="seam-filter-ast-three-arm-validation-2026-09-14.html">three-arm validation of the filter AST</a></td>
+</tr>
+<tr>
+<td><strong>{O}</strong></td>
+<td><a href="seam-ordering-and-pagination-2026-09-14.html">ordering and pagination</a> (BF-13)</td>
+</tr>
+<tr>
+<td><strong>{L}</strong></td>
+<td><a href="seam-limit-and-projection-2026-09-14.html">limit and projection</a> (BF-14, BF-15)</td>
+</tr>
+<tr>
+<td><strong>{R}</strong></td>
+<td><a href="seam-readoptions-2026-09-15.html">readOptions across the seam</a> (BF-18 pre-release)</td>
+</tr>
+<tr>
+<td><strong>{B}</strong></td>
+<td><a href="../../30-design/remedial/nightscout-backfix-register.html">backfix register</a></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="0-what-makes-this-run-different-from-the-four-that-preceded-it">0. What makes this run different from the four that preceded it<a class="headerlink" href="#0-what-makes-this-run-different-from-the-four-that-preceded-it" title="Permanent link">&para;</a></h2>
+<p>Every earlier harness in <code>tools/qc/</code> compared a real <code>mongod</code> against a <strong>PostgreSQL arm the
+harness author wrote</strong>. {L} §4 says so in its own honest-limits section: <em>"The PostgreSQL arm here
+is a strawman by construction."</em> A strawman answers <em>where would a naive translation differ</em>. It
+cannot answer <em>does the translation that shipped differ</em>, and after T2.5 that is the only question
+left.</p>
+<p>So every PostgreSQL answer below comes from the shipping modules —
+<code>lib/storage/postgres-storage.js</code>, <code>lib/api3/storage/pgCollection/{index,sql,utils}.js</code>,
+<code>lib/storage/filter.js</code> — against the shipping emitted DDL, driven through the <strong>same interface</strong>
+the MongoDB arm is driven through:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nx">store</span><span class="p">.</span><span class="nx">storageCollection</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="w"> </span><span class="nx">env</span><span class="p">,</span><span class="w"> </span><span class="s1">'entries'</span><span class="p">,</span><span class="w"> </span><span class="p">[]).</span><span class="nx">findFiltered</span><span class="p">(</span><span class="nx">ast</span><span class="p">,</span><span class="w"> </span><span class="nx">opts</span><span class="p">)</span>
+</code></pre></div>
+<p>Both arms are constructed by their own store's <code>storageCollection()</code>. A divergence reported here
+is a divergence a caller above the seam would see.</p>
+<p><strong>One fixture change was forced and is worth stating.</strong> The emitted table is
+<code>PRIMARY KEY (tenant_id, "_id")</code> with <code>_id</code> a <code>text</code> generated column guarded by
+<code>jsonb_typeof = 'string'</code>, so a document with a numeric <code>_id</code> <strong>cannot be stored at all</strong>. {F}'s
+corpus uses numeric ids; this one uses zero-padded strings, document for document otherwise. That
+is a real property of the shipped schema, not a concession by the harness.</p>
+<h3 id="verdicts">Verdicts<a class="headerlink" href="#verdicts" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>prediction</th>
+<th>verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>filter AST classes A and C still unfixed in <code>toSql</code></td>
+<td><strong>REFUTED</strong> — all four classes closed, 3000/3000, zero runtime errors</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>limit: 0</code> is a wrong answer, not just an unbounded read</td>
+<td><strong>CONFIRMED</strong> — 10 rows vs 0 rows, end to end through <code>lib/server/entries.js</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>orderBy</code> has no <code>_id</code> tiebreak, so BF-13 reappears</td>
+<td><strong>CONFIRMED</strong> — but 3/1000 lost, not MongoDB's 476/1000</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>project</code> handles only top-level keys</td>
+<td><strong>CONFIRMED</strong> at the seam; <strong>client-visible impact is nil</strong>, established rather than assumed</td>
+</tr>
+<tr>
+<td>—</td>
+<td>does PostgreSQL materialise whole result sets?</td>
+<td><strong>yes</strong> — 35.4 MiB retained for 40,000 rows vs 0.0 MiB through a cursor</td>
+</tr>
+</tbody>
+</table>
+<p>Two findings that were <strong>not</strong> predicted are in §6. One of them is the most serious thing in this
+document.</p>
+<hr />
+<h2 id="1-claim-1--refuted-the-filter-ast-classes-are-closed">1. Claim 1 — REFUTED. The filter AST classes are closed.<a class="headerlink" href="#1-claim-1--refuted-the-filter-ast-classes-are-closed" title="Permanent link">&para;</a></h2>
+<p>The prediction was formed by reading for <code>IS DISTINCT FROM</code>, which is still the only place that
+spelling appears in <code>filter.js</code>. The reading was right and the conclusion was wrong: <code>toSql</code> now
+closes classes A and C by a <strong>different mechanism</strong>, and closes B and D as well.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>class  probe                                  mongod        postgres      verdict
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>-----  -------------------------------------  ------------  ------------  ----------------
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>A      lte null, field absent                 2,3           2,3           agree
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>A      gte null, field absent                 2,3           2,3           agree
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>A      eq  null, field absent                 2,3           2,3           agree
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>A      ne  null                               1,4           1,4           agree
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>A      lt  null                               -             -             agree
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>A      gt  null                               -             -             agree
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>A*     eq null on a COLUMN field              2,3           2,3           agree
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>A*     lte null on a COLUMN field             2,3           2,3           agree
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>B      lt STRING bound on numeric field       -             -             agree
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>B      lt STRING bound, orders agree          -             -             agree
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>B*     lt STRING bound on a COLUMN field      -             -             agree
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>B*     gte STRING bound on a COLUMN field     -             -             agree
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>C      in containing null, field absent       1,2,3,4       1,2,3,4       agree
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>C      nin containing null                    -             -             agree
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>C*     in containing null on a COLUMN field   1,2,3,4       1,2,3,4       agree
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>C      in with MIXED types                    1,2,3         1,2,3         agree
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>D      numeric bound against a text field     -             -             agree
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>D      boolean bound on a jsonb field         -             -             agree
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>D*     text bound on a numeric COLUMN         -             -             agree
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>D*     boolean bound on a numeric COLUMN      -             -             agree
+</code></pre></div>
+<p>The rows marked <code>*</code> are new: {F}'s PostgreSQL arm was handed a <strong>list</strong> of column names, so the
+type was unknown and every comparison took the jsonb path. It never exercised the column branch at
+all. This run passes the real <code>columnTypes</code> <strong>map</strong> from <code>lib/storage/postgres/generated/index.json</code>, so
+<code>sgv</code>, <code>date</code> and <code>type</code> are compared as typed generated columns — and they agree too.</p>
+<p>The mechanisms, all present in the shipped <code>filter.js</code>:</p>
+<ul>
+<li><strong>Class A</strong> — a <code>nullMatch()</code> helper that reads <code>doc #&gt; '{path}'</code> (where an absent key is SQL
+  NULL and an explicit null is jsonb <code>'null'</code>, still distinguishable) instead of casting. <code>lt</code>/<code>gt</code>
+  against null return literal <code>FALSE</code>, because there is no value above or below null inside its own
+  bracket. This is more than the predicted <code>IS NOT DISTINCT FROM</code> mirror would have given.</li>
+<li><strong>Class C</strong> — <code>in</code>/<code>nin</code> split the value list into one arm per JSON type, and the <code>null</code> arm goes
+  through the same <code>nullMatch()</code>.</li>
+<li><strong>Classes B and D</strong> — <code>typedRef()</code> wraps every extraction in
+  <code>CASE WHEN jsonb_typeof(...) = '&lt;type&gt;' THEN (...)::&lt;cast&gt; END</code>, chosen from the <strong>bound's</strong> JSON
+  type. That reproduces MongoDB's type bracketing and makes the cast total, so the 22P02 class
+  cannot fire.</li>
+</ul>
+<p>Randomised, same generator, same seed, same 12 % cross-type injection rate as {F} §3:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>3000 filters, cross-type injection 12%
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>  evaluated 3000, skipped-as-invalid 0, arm errors 0
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>  OK    mongod-vs-postgres  3000/3000  (100.00%)  disagreements 0
+</code></pre></div>
+<p><strong>Compare with {F} §3, which is the same generator against the same corpus:</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>{F} §3 (2026-09-14)</th>
+<th>this run (7cc03cda)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mongod-vs-postgres</td>
+<td>2694/2802 (96.15 %)</td>
+<td><strong>3000/3000 (100.00 %)</strong></td>
+</tr>
+<tr>
+<td>PostgreSQL runtime errors</td>
+<td><strong>198/3000 (6.6 %), all 22P02</strong></td>
+<td><strong>0</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="non-vacuity">Non-vacuity<a class="headerlink" href="#non-vacuity" title="Permanent link">&para;</a></h3>
+<p>Two ways this could be vacuous, so two separate breaks. Both are in the harness and both run on
+every invocation.</p>
+<p><strong>(a) Can the comparator see these classes at all?</strong> The <em>pre-fix</em> SQL is emitted by hand for three
+probes and run on the same connection through the same comparator:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>A  eq null, pre-fix `= $1`              mongod 2,3      pre-fix -          comparator RED
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>C  in [null,2], pre-fix `IN (...)`      mongod 1,2,3,4  pre-fix 1,4        comparator RED
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>D  gte 100 on text, pre-fix bare cast   mongod -        pre-fix ERR 22P02  comparator RED
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>comparator caught 3/3 planted regressions
+</code></pre></div>
+<p><strong>(b) Does the corpus exercise the property?</strong> {F} §5 records that an earlier differential proved
+much less than it appeared to because its generator was same-type throughout. The generator is
+therefore re-walked with the same seed and its shapes counted:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>comparison nodes 9454: null operand 222, in/nin containing null 61, cross-type bound 592
+</code></pre></div>
+<p>So the 3000/3000 is over a corpus that contains 222 null operands, 61 <code>in</code>/<code>nin</code> lists containing
+null, and 592 cross-type bounds. <strong>This pass has non-vacuity evidence of both kinds.</strong></p>
+<hr />
+<h2 id="2-claim-2--confirmed-limit-0-is-a-wrong-answer-on-postgresql">2. Claim 2 — CONFIRMED. <code>limit: 0</code> is a wrong answer on PostgreSQL.<a class="headerlink" href="#2-claim-2--confirmed-limit-0-is-a-wrong-answer-on-postgresql" title="Permanent link">&para;</a></h2>
+<p><code>pgCollection/index.js</code> gates on <code>o.limit !== undefined &amp;&amp; o.limit !== null</code> and then emits
+<code>LIMIT $n</code>. <code>mongoCollection/find.js</code> gates identically and calls <code>.limit(n)</code>. The gates match; the
+<strong>meaning of zero</strong> does not. MongoDB defines <code>.limit(0)</code> as <em>no limit</em>.</p>
+<p>At the seam interface, ten documents:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>?count=      v1 limit      mongod              postgres
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>-----------  ------------  ------------------  ------------------
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>'3'          3             3 rows              3 rows
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>'0'          0             10 rows             0 rows              DIFFERS
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>'abc'        NaN           10 rows             0 rows              DIFFERS
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>'-3'         -3            3 rows              ERR 2201W           DIFFERS
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>'2.7'        2             2 rows              2 rows
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>'1e2'        1             1 rows              1 rows
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>''           undefined     10 rows             10 rows
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>(absent)     undefined     10 rows             10 rows
+</code></pre></div>
+<p>And through the shipping v1 read path — <code>lib/server/entries.js</code> <code>list()</code>, called with the opts
+express would have built, not a transcription of its limit expression:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>GET /api/v1/entries?count=3     mongod 3 rows     postgres 3 rows
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>GET /api/v1/entries?count=0     mongod 10 rows    postgres 0 rows
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>GET /api/v1/entries?count=abc   mongod 10 rows    postgres 0 rows
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>GET /api/v1/entries?count=-3    mongod 3 rows     postgres ERR 2201W
+</code></pre></div>
+<p><strong>Three things this changes about BF-14.</strong> [Note 2026-09-22: BF-13, BF-14 and BF-15 are merged
+to dev in PR #8738, not released. Whether the seam branch's PostgreSQL <code>LIMIT</code>, <code>orderBy</code> and
+<code>project()</code> were brought into line with those fixes is not verified here; see the register.]</p>
+<ol>
+<li><strong>BF-14 was graded <em>medium</em> on the grounds that "it returns no wrong data"</strong> ({L} §2.2, {B}).
+   On PostgreSQL it returns wrong data. The same URL against the same collection returns the whole
+   thing on one backend and an empty <code>200</code> on the other — an empty <code>200</code> from a glucose read is
+   indistinguishable, to a client, from "no data".</li>
+<li><strong><code>?count=abc</code> behaves identically to <code>?count=0</code></strong>, by a second route: <code>parseInt('abc')</code> is
+   <code>NaN</code>, <code>NaN</code> is not <code>undefined</code> or <code>null</code> so the gate opens, and <code>toSafeInt(NaN, 0)</code> supplies
+   the zero. {L} §2 marked the <code>abc</code> row <code>—</code> rather than <code>match</code>, because its strawman declined to
+   emit <code>LIMIT NaN</code>. The shipped backend does not decline; it emits <code>LIMIT 0</code>. <strong>That row is now
+   measured, and it is a divergence.</strong></li>
+<li><strong><code>?count=-3</code> is an HTTP 500 on PostgreSQL</strong> (<code>2201W</code>, <em>LIMIT must not be negative</em>) where
+   MongoDB returns 3 documents. An availability difference on top of the correctness one.</li>
+</ol>
+<p>The fix {B} already names — give v1 the validation <code>lib/api3/generic/collection.js:76</code> already has
+— closes all three at once, and closes BF-18 as {R} §2.1 predicted. <strong>Nothing in the PostgreSQL
+backend needs to change for that fix to work</strong>, but if the backend is to be safe on its own terms,
+<code>toSafeInt(o.limit, 0)</code> should not default to the one value that means "no limit" on the other
+backend.</p>
+<h3 id="non-vacuity_1">Non-vacuity<a class="headerlink" href="#non-vacuity_1" title="Permanent link">&para;</a></h3>
+<p>The comparator is a differential, so its failure mode is being unable to print one of the two
+answers. Both are forced and both are printed:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>limit 3  -&gt; agree     (must be agree)
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>limit 0  -&gt; DIFFERS   (must be DIFFERS)
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>comparator distinguishes both outcomes
+</code></pre></div>
+<p><strong>This pass has non-vacuity evidence.</strong></p>
+<p><strong>One thing the harness got wrong first, recorded because it would have been an invisible false
+negative.</strong> The first run of this section reported <code>0 rows</code> on <em>both</em> backends for every count,
+including <code>count=3</code>. That is not a backend defect: <code>lib/server/query.js</code> <code>default_options()</code> adds
+<code>date &gt;= now - 4 days</code> to every v1 read, and the fixture corpus was stamped in 2023. The corpus was
+moved into the window; the probe was not adapted until it passed.</p>
+<hr />
+<h2 id="3-claim-3--confirmed-bf-13-reappears-on-postgresql-smaller-and-deterministic">3. Claim 3 — CONFIRMED. BF-13 reappears on PostgreSQL, smaller and deterministic.<a class="headerlink" href="#3-claim-3--confirmed-bf-13-reappears-on-postgresql-smaller-and-deterministic" title="Permanent link">&para;</a></h2>
+<p><code>sql.js</code> <code>orderBy()</code> emits only the client's sort terms plus an explicit <code>NULLS FIRST</code>/<code>NULLS LAST</code>.
+No unique final key. {O} §3.3 says in as many words: <em>"Carry it across the seam. Whatever ordering
+translation §2 produces must also append a unique final key, or the same defect reappears on
+PostgreSQL."</em> It was not appended.</p>
+<p>BF-13's precondition, unchanged: <strong>no <code>identifier</code></strong>, <strong>tied <code>created_at</code></strong>, <strong>tied <code>date</code></strong>, so
+v3's whole default sort chain <code>{identifier, created_at, date}</code> ties on every document.</p>
+<p><strong>Twelve documents, paged three at a time:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>mongod    lost  7/12   [001 002 003][001 003 006][001 003 007][001 003 007]
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>          duplicated: 001x4 003x4 007x2
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>postgres  lost  0/12   [002 003 001][004 005 006][007 008 009][010 011 012]
+</code></pre></div>
+<p>At this size PostgreSQL loses nothing. That is not the whole answer, and reporting it as one would
+have been the error.</p>
+<p><strong>One thousand documents, paged 100 at a time, three identical sweeps each:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>mongod    lost 476, duplicated 241   (3 trials: 476/241  476/241  476/241 — deterministic)
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>postgres  lost   3, duplicated   1   (3 trials:   3/1      3/1      3/1   — deterministic)
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>          lost: 00101 00201 00301
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>          dup:  00001 x4
+</code></pre></div>
+<p><strong>Three of a thousand documents are never returned by a full paginated sweep, and one is returned
+four times.</strong> Deterministic across trials — a blocking sort that is unstable, not a race.</p>
+<p>The plan says why:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>Limit
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>  -&gt;  Sort
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>        Sort Key: identifier NULLS FIRST, created_at NULLS FIRST, date NULLS FIRST
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>        -&gt;  Bitmap Heap Scan on entries
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>              Recheck Cond: (tenant_id = (NULLIF(current_setting(...), ''))::uuid)
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>              -&gt;  Bitmap Index Scan on entries_tenant_identifier
+</code></pre></div>
+<p>A blocking <code>Sort</code> under a <code>Limit</code>, re-executed for every page — structurally the same shape as
+{O} §3's <code>SORT &lt;- COLLSCAN</code> on MongoDB, and PostgreSQL promises no more about ties than MongoDB
+does. The pattern of the loss (documents <code>00101</code>, <code>00201</code>, <code>00301</code> lost; <code>00001</code> repeated on
+pages 1–4) is what a top-N sort selecting a different tie member for each <code>LIMIT+OFFSET</code> produces.</p>
+<p>Forcing parallelism (<code>parallel_setup_cost = 0</code>, four workers — a stress, <strong>not</strong> a self-hoster's
+settings) gives the same <code>3/1000</code>. Reported separately and never mixed into the default numbers.</p>
+<p><strong>The one-line fix works on both backends.</strong> Appending <code>_id</code> to the sort chain, which is exactly
+what <code>parseSort</code> would do:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>same sweep, sort chain + _id:
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>  mongod    lost 0, duplicated 0
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>  postgres  lost 0, duplicated 0
+</code></pre></div>
+<p><strong>Grading.</strong> MongoDB loses 47.6 % of a thousand tied documents; PostgreSQL loses 0.3 %. Both are
+silent data loss on a read, so the severity of the defect is the same; the <em>quantity</em> is two orders
+of magnitude apart, and that difference should not be smoothed over in either direction. It also
+means a PostgreSQL deployment is <strong>worse to diagnose</strong>: a sweep that loses 3 of 1000 looks like
+nothing at all, where losing 476 of 1000 gets noticed.</p>
+<h3 id="non-vacuity_2">Non-vacuity<a class="headerlink" href="#non-vacuity_2" title="Permanent link">&para;</a></h3>
+<p>If PostgreSQL had reported <code>0</code> at both sizes, "paging is safe" would have been a check that never
+went red. Two breaks:</p>
+<p><strong>(a) the same checker, on a corpus known to break it.</strong> <code>lost 7/12</code> on mongod, through the same
+<code>lossReport()</code> — the checker works.</p>
+<p><strong>(b) a planted ordering difference.</strong> A sort key holding <code>{100, '120', true, null, absent, 9}</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>mongod   004 005 006 001 002 003     (BSON: null/missing &lt; number &lt; string &lt; boolean)
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>postgres 005 004 002 006 001 003     (jsonb: SQL NULL, jsonb null, string, number, boolean)
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>order comparator RED
+</code></pre></div>
+<p><strong>This pass has non-vacuity evidence.</strong> Break (b) is also a finding in its own right — see §6.</p>
+<hr />
+<h2 id="4-claim-4--confirmed-at-the-seam-client-visible-impact-is-nil-and-that-was-measured">4. Claim 4 — CONFIRMED at the seam. Client-visible impact is nil, and that was measured.<a class="headerlink" href="#4-claim-4--confirmed-at-the-seam-client-visible-impact-is-nil-and-that-was-measured" title="Permanent link">&para;</a></h2>
+<p><code>sql.js</code> <code>project()</code> tests <code>Object.prototype.hasOwnProperty.call(doc, key)</code>, so a dotted key
+matches nothing. MongoDB walks the path and produces <strong>three different shapes</strong> depending on where
+the chain breaks.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>projection {"uploader.battery":1}            mongod                        postgres
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>  prj001 uploader.battery = 80    {"_id":"prj001","uploader":{"battery":80}}  {"_id":"prj001"}   DIFFERS
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>  prj002 uploader = {}            {"_id":"prj002","uploader":{}}              {"_id":"prj002"}   DIFFERS
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>  prj003 uploader absent          {"_id":"prj003"}                            {"_id":"prj003"}
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>  prj004 uploader = null          {"_id":"prj004"}                            {"_id":"prj004"}
+</code></pre></div>
+<p>Two of MongoDB's three shapes are lost. The two that agree agree by accident — <code>{}</code> is what
+<code>project()</code> returns for <em>every</em> dotted path, and for two of the four documents that is also the
+right answer.</p>
+<p><strong>Does it reach a client?</strong> {L} §4 left this open, and the instruction was to establish it rather
+than assume either way. The shipping <code>lib/api3/shared/fieldsProjector.js</code> was run, not described:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>?fields=uploader.battery
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>storageProjection {"uploader.battery":1,"identifier":1,"srvCreated":1,"created_at":1,"date":1}
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>mongod    from backend           {"_id":"prj001","date":1,"created_at":"…","uploader":{"battery":80}}  …
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>          after applyProjection  {} {} {} {}
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>postgres  from backend           {"created_at":"…","date":1,"_id":"prj001"}                            …
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>          after applyProjection  {} {} {} {}
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>client-visible bodies are identical on both backends
+</code></pre></div>
+<p><strong>BF-15 masks the divergence completely.</strong> <code>applyProjection</code> deletes every top-level key not
+string-equal to something the client typed, and <code>uploader.battery</code> never string-equals <code>uploader</code>,
+so both backends emit <code>{}</code>. The client-visible impact of claim 4 <strong>is nil today</strong> — and it stops
+being nil the moment BF-15 is fixed, because fixing BF-15 means teaching <code>applyProjection</code> about
+dotted paths, at which point MongoDB starts returning the nested document and PostgreSQL still
+returns nothing.</p>
+<p><strong>So these two must be fixed together.</strong> Fixing BF-15 alone converts a defect that returns <code>{}</code> on
+both backends into a defect that returns different data on each. That is a worse state than the one
+it replaces, and it is not obvious from either entry read alone.</p>
+<h3 id="also-measured-not-predicted">Also measured, not predicted<a class="headerlink" href="#also-measured-not-predicted" title="Permanent link">&para;</a></h3>
+<p><strong>Key order differs on every projection.</strong> MongoDB returns projected fields in the <em>document's</em>
+order, <code>sql.project()</code> in the <em>projection's</em>. No JSON client can observe it — an object has no
+order once parsed — so it is reported here as an observation and not counted as a divergence.</p>
+<p><strong>A mixed include/exclude projection raises on MongoDB and is silently answered on PostgreSQL.</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>projection {"sgv":1,"type":0}
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>  mongod   ERR Cannot do exclusion on field type in inclusion projection
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>  postgres ok  (treats it as an inclusion of sgv, and drops type silently)
+</code></pre></div>
+<p>Not client-reachable: <code>fieldsProjector</code> only ever writes <code>1</code>. Architectural, and the same shape as
+{L} §3.2's point that <code>projection</code> is an unmodelled expression language.</p>
+<h3 id="non-vacuity_3">Non-vacuity<a class="headerlink" href="#non-vacuity_3" title="Permanent link">&para;</a></h3>
+<p><strong>The non-vacuity check caught a bug in the harness, which is the best evidence it works.</strong> The
+first comparator was <code>JSON.stringify(a) !== JSON.stringify(b)</code>, which reported <em>every</em> projection
+as divergent including <code>{sgv: 1}</code>. The pair that must agree came back <code>DIFFERS</code>, the section
+printed <code>comparator IS VACUOUS</code>, and the fault was in the harness — key ordering — not the backend.
+Comparing raw strings would have published four false findings. After the fix to a canonical
+(key-sorted) comparison:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>{sgv:1}                -&gt; agree     (must be agree)
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>  [{"_id":"prj001","sgv":100}]  vs  [{"sgv":100,"_id":"prj001"}]
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>{'uploader.battery':1} -&gt; DIFFERS   (must be DIFFERS)
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>  [{"_id":"prj001","uploader":{"battery":80}}]  vs  [{"_id":"prj001"}]
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>comparator distinguishes both outcomes
+</code></pre></div>
+<p><strong>This pass has non-vacuity evidence.</strong></p>
+<hr />
+<h2 id="5-materialisation--confirmed-through-the-shipping-read-path">5. Materialisation — confirmed, through the shipping read path<a class="headerlink" href="#5-materialisation--confirmed-through-the-shipping-read-path" title="Permanent link">&para;</a></h2>
+<p><code>pgCollection/index.js</code> says <code>readOptions</code> is <em>"accepted and ignored"</em>, with the reason that there
+is no <code>getMore</code> to bound. The reason is right. The consequence is the one {R} §3 predicted, now
+measured on the shipping <code>findFiltered</code> rather than on a hand-written <code>pg.query</code>:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;">rows</th>
+<th style="text-align: right;">retained heap</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PgCollection.findFiltered</code> (<code>readOptions</code> passed and ignored)</td>
+<td style="text-align: right;">40,000</td>
+<td style="text-align: right;"><strong>+35.4 MiB</strong></td>
+</tr>
+<tr>
+<td><code>BEGIN; DECLARE …; FETCH 1000; COMMIT</code>, batches consumed and dropped</td>
+<td style="text-align: right;">40,000</td>
+<td style="text-align: right;"><strong>+0.0 MiB</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Two numbers, not a ratio: the cursor arm retains essentially nothing, so a ratio would be a
+division by noise. ~1 KB documents, retained heap after a forced collection, <code>--expose-gc</code>
+required.</p>
+<p>{R} §3's conclusion stands unchanged and is now a measured property of shipped code rather than a
+prediction: <strong>either the interface grows a streaming read and the bulk callers use it, or the
+PostgreSQL backend materialises whole result sets and <code>mongo-read-options.js</code> becomes a
+MongoDB-only comment describing a property the system no longer has.</strong></p>
+<p><strong>No non-vacuity evidence, and this is not a parity check.</strong> It is a single measurement of one
+implementation against one alternative implementation of the same read. There is no second arm to
+break. The <code>0.0 MiB</code> figure is the load-bearing one and it is a <em>negative</em> result — the honest
+weakness is that a measurement of "approximately zero" cannot itself be shown to be sensitive. The
+40,000-row / 35.4 MiB arm is the one that carries the claim.</p>
+<hr />
+<h2 id="6-not-predicted--two-findings-and-the-first-is-the-serious-one">6. Not predicted — two findings, and the first is the serious one<a class="headerlink" href="#6-not-predicted--two-findings-and-the-first-is-the-serious-one" title="Permanent link">&para;</a></h2>
+<h3 id="61-the-index-accelerator-changes-an-answer-in-order-by--proposed-bf-19">6.1 The index accelerator changes an answer in <code>ORDER BY</code> — proposed <strong>BF-19</strong><a class="headerlink" href="#61-the-index-accelerator-changes-an-answer-in-order-by--proposed-bf-19" title="Permanent link">&para;</a></h3>
+<p>The emitted DDL states the invariant in its own header, in capitals:</p>
+<blockquote>
+<p><strong>THE COLUMNS BELOW ARE AN INDEX ACCELERATOR. THE DOCUMENT IS THE RECORD.</strong>
+Dropping every generated column must not change an answer.</p>
+</blockquote>
+<p><code>filter.js</code> holds it on the <code>WHERE</code> side deliberately, with a comment explaining exactly why
+(<code>typedRef()</code>'s <code>CASE</code> is <em>"exactly what the emitted DDL builds its columns with, so the two paths
+agree by construction rather than by review"</em>). §1 above confirms it holds: 3000/3000.</p>
+<p><code>sql.js</code> <code>orderBy()</code> picks between the <strong>same two branches</strong> — typed column when
+<code>columnTypes</code> has the field, raw <code>doc #&gt; '{path}'</code> when it does not — and the two branches <strong>do not
+order the same values the same way</strong>. Nothing makes them agree, and nothing tests that they do.</p>
+<p>The probe puts <strong>identical values in two fields of the same documents</strong>: <code>sgv</code>, which has a
+generated column, and <code>noise</code>, which does not. Everything else is equal.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>values, both fields:  100  '120'  true  null  (absent)  9
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>mongod   sort sgv   (column on pg)  004 005 006 001 002 003
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>mongod   sort noise (no column)     004 005 006 001 002 003
+<a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>postgres sort sgv   (COLUMN)        005 004 003 002 006 001
+<a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>postgres sort noise (jsonb)         005 004 002 006 001 003
+<a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a>
+<a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a>mongod   orders the two identical fields THE SAME
+<a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a>postgres orders the two identical fields DIFFERENTLY   &lt;- the accelerator changed the answer
+</code></pre></div>
+<p>Three distinct orders where there should be one. The mechanism:</p>
+<ul>
+<li><strong>the typed column</strong> is <code>CASE WHEN jsonb_typeof(…) = 'number' THEN …::numeric END</code>, so it is SQL
+  <code>NULL</code> for an explicit null, for an absent key, <strong>and for every value of another type</strong>. All of
+  <code>null</code>, <code>absent</code>, <code>true</code> and <code>'120'</code> collapse into one NULL bucket and sort together.</li>
+<li><strong>the jsonb path</strong> keeps them apart and uses jsonb's own type order
+  (<code>Null &lt; String &lt; Number &lt; Boolean</code>).</li>
+<li><strong>MongoDB</strong> uses BSON's, which is a third order (<code>Null/missing &lt; Number &lt; String &lt; Boolean</code>).</li>
+</ul>
+<p><strong>It is client-reachable through API v3, and the code comment's reason for thinking it is not is
+incorrect.</strong> <code>sql.js</code> argues:</p>
+<blockquote>
+<p>Every sort this code path issues is on a field that is one type in practice (<code>date</code>,
+<code>srvModified</code>, <code>identifier</code>, <code>created_at</code>), so it does not bite today.</p>
+</blockquote>
+<p>But <code>lib/api3/generic/search/input.js</code> <code>parseSort</code> puts the <strong>client's</strong> <code>?sort=</code> field first in
+the chain, unvalidated:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">query</span><span class="p">.</span><span class="nx">sort$desc</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">sortDirection</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mf">1</span><span class="p">;</span><span class="w"> </span><span class="nx">sort</span><span class="p">[</span><span class="nx">req</span><span class="p">.</span><span class="nx">query</span><span class="p">.</span><span class="nx">sort$desc</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">sortDirection</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">query</span><span class="p">.</span><span class="nx">sort</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">sort</span><span class="p">[</span><span class="nx">req</span><span class="p">.</span><span class="nx">query</span><span class="p">.</span><span class="nx">sort</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">sortDirection</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<p>So the sort key is not drawn from a fixed set of four — it is any field name a client can put in a
+query string. <code>GET /api/v3/entries?sort=sgv</code> is a supported request, and the moment one document
+in the collection carries a non-numeric <code>sgv</code> the ordering diverges from MongoDB's and from the
+same field's ordering without a column.</p>
+<p><strong>Sizing, honestly, and it holds the grade down.</strong> The emitted manifest
+(<code>lib/storage/postgres/generated/index.json</code>) flags <strong>no</strong> ambiguous field on <code>entries</code>, which is the only
+collection T2.5 implements — so on the 11-site corpus this does not fire today. It is flagged on
+<code>NSCLIENT_ID</code> for <code>devicestatus</code>, <code>profile</code> <strong>and</strong> <code>treatments</code>, all of which are T2.6 and later.
+So the exposure arrives with the next collection, not with this one.</p>
+<p><strong>Why it still deserves an entry.</strong> It is not a translation difficulty; it is a stated invariant
+being violated by code that was written after the invariant was written down, in the one place
+nobody checked. The <code>WHERE</code> side got a <code>CASE</code> that mirrors the column definition precisely <em>because</em>
+somebody noticed the same hazard there — the comment in <code>typedRef()</code> records the measurement that
+caught it. <code>ORDER BY</code> got the same two branches and no such reconciliation.</p>
+<p><em>Proposed fix</em>: <code>orderBy()</code> must not use the generated column as a sort key unless it can produce
+the same order the jsonb path would. Ordering on <code>doc #&gt; '{path}'</code> unconditionally is correct and
+loses the index; ordering on a type-bucketed expression mirroring BSON's order is what {O} §2
+proposed for the seam and would satisfy both. Either way the choice must not depend on whether a
+column happens to exist.</p>
+<p><strong>Non-vacuity.</strong> The same comparison on a single-typed corpus:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>non-vacuity: single-typed corpus, postgres orders both fields THE SAME (comparison is not always red)
+</code></pre></div>
+<p>So the comparison is not simply always red. <strong>This finding has non-vacuity evidence.</strong></p>
+<h3 id="62-a-date-valued-filter-bound-compares-differently-on-each-backend--proposed-bf-20-low">6.2 A <code>Date</code>-valued filter bound compares differently on each backend — proposed <strong>BF-20</strong>, low<a class="headerlink" href="#62-a-date-valued-filter-bound-compares-differently-on-each-backend--proposed-bf-20-low" title="Permanent link">&para;</a></h3>
+<p><code>sql.js</code> <code>scalarize()</code> converts a <code>Date</code> to <code>value.toISOString()</code> on its way into SQL, for a stated
+and correct reason: <code>pg</code> would otherwise send something the jsonb comparison cannot use. But
+MongoDB compares a BSON <code>Date</code> <strong>only</strong> to a BSON <code>Date</code>, so the same AST node asks two different
+questions:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>created_at gte &lt;Date&gt;          mongod -      postgres 1,2    DIFFERS
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>created_at gte &lt;ISO string&gt;    mongod 1,2    postgres 1,2
+</code></pre></div>
+<p>Against documents whose <code>created_at</code> is an ISO <strong>string</strong> — which is what every Nightscout
+collection stores — a <code>Date</code> bound matches <strong>nothing</strong> on MongoDB and <strong>everything in range</strong> on
+PostgreSQL. This is {F}'s class B, silent cross-type comparison, moved out of the filter language
+and into the value adapter, where the type-bracketing <code>CASE</code> cannot see it.</p>
+<p><strong>Not reachable today, and that is most of the grade.</strong> Every shipping caller of <code>findFiltered</code>,
+<code>count</code> and <code>deleteMany</code> was checked; none passes a <code>Date</code>. <code>lib/server/query.js</code> emits
+<code>opts.useEpoch ? minDate : new Date(minDate).toISOString()</code> — an epoch number or an ISO string,
+never a <code>Date</code> object. It is recorded because <code>findFiltered</code> is a published interface, <code>scalarize()</code>
+accepts a <code>Date</code> deliberately rather than rejecting it, and the conversion is silent.</p>
+<p><em>Proposed fix</em>: either <code>scalarize()</code> refuses a <code>Date</code> on a jsonb comparison (the seam's stated rule
+is that no member accepts a driver object, and <code>Date</code> is the same class of problem as <code>ObjectId</code>),
+or the AST grows a date type that both adapters honour.</p>
+<h3 id="63-checked-and-clean">6.3 Checked and clean<a class="headerlink" href="#63-checked-and-clean" title="Permanent link">&para;</a></h3>
+<p>Reported so the absence is on the record rather than unexamined.</p>
+<ul>
+<li><strong><code>count()</code></strong> — 5 probes over 40 documents (everything, an equality, an ordered comparison, an
+  <code>exists false</code>, an <code>eq null</code>): identical on both backends, 40/19/11/0/9.</li>
+<li><strong>The <code>re</code> operator</strong> — 14 patterns including anchors, character classes, the <code>i</code> flag, <code>m</code> and
+  <code>s</code> newline modes, <code>^.*$</code> and <code>\d</code> against a corpus holding a number, a null, an absent key and
+  an embedded newline: <strong>14/14 identical</strong>. This exercises <code>toSql</code>'s newline-mode lookup, its
+  <code>~</code>/<code>~*</code> operator choice, and its <code>jsonb_typeof = 'string'</code> guard, all of which {F} §5 recorded
+  as untested.</li>
+<li><strong><code>skip</code>/<code>limit</code> edges</strong> — <code>skip: 5</code>, <code>skip: 20</code> (past the end), <code>skip: 3, limit: 4</code>,
+  <code>limit: 1000</code>, <code>skip: 'abc'</code>, <code>limit: 2.7</code>: identical. <code>skip: -3</code> raises on both (<code>51024</code> vs
+  <code>2201X</code>), so it is an error-message difference, not a correctness one.</li>
+</ul>
+<hr />
+<h2 id="7-honest-limits">7. Honest limits<a class="headerlink" href="#7-honest-limits" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>One collection.</strong> T2.5 implements <code>entries</code> and nothing else, so everything above is measured
+  on <code>entries</code>. The BF-19 exposure is sized against a census that says it does not fire on
+  <code>entries</code>; the collections it <em>does</em> fire on have no PostgreSQL implementation to test yet. That
+  makes §6.1's sizing a statement about the corpus, not a prediction about T2.6.</li>
+<li><strong>Nothing here was driven over HTTP.</strong> Claim 2 reaches <code>lib/server/entries.js</code> <code>list()</code>, which is
+  the shipping v1 read path, but express, the router and the response serialiser are not in the
+  loop. §6.1's reachability argument is read from <code>parseSort</code> rather than observed against a
+  running server, exactly as {O} §4 had to say about BF-13. <strong>A maintainer should confirm
+  <code>GET /api/v3/entries?sort=sgv</code> against a real deployment before §6.1 is treated as settled.</strong></li>
+<li><strong>One PostgreSQL version (16.14), one <code>mongod</code> (7.0.43), one driver (7.6.0), standalone, small
+  collections.</strong> §3's loss counts are properties of a plan the planner chose for this data at this
+  size; the <em>defect</em> does not depend on the version, the exact documents lost certainly do.</li>
+<li><strong>§3's 1000-document corpus is one tie group of 1000.</strong> Real <code>devicestatus</code> tie groups reach 69
+  ({O} §3.2) and none exceeds one page. A corpus of many small groups straddling page boundaries is
+  the realistic shape and was not built; the number measured here is therefore an upper bound on
+  loss per sweep, not an estimate of it.</li>
+<li><strong>The write path is barely touched.</strong> <code>insertOne</code> is used to seed, and <code>replaceOne</code>, <code>updateOne</code>,
+  <code>bulkUpsert</code>, <code>deleteOne</code> and <code>deleteManyOr</code> were not differentially tested at all. Three methods
+  (<code>insertMany</code>, <code>updateMany</code>, <code>replaceFiltered</code>) throw by name on PostgreSQL by design and were not
+  exercised.</li>
+<li><strong>§5 has no non-vacuity evidence and cannot easily have any</strong> (see the note in that section).
+  §1–§4 and §6.1 all do.</li>
+<li><strong>Nothing here tests RLS or tenant isolation.</strong> Every query runs under the single-tenant binding.
+  The run does connect as a <code>NOSUPERUSER NOBYPASSRLS</code> role, so the policy is enforced rather than
+  silently bypassed — but that is a precondition for the measurements above, not a measurement.</li>
+<li><strong>The <code>re</code> result is over 14 hand-chosen patterns, not a randomised sweep.</strong> {F} §5's note that
+  the allowed regex subset still needs writing down is not closed by it.</li>
+<li><strong>A path in a code comment does not exist.</strong> <code>filter.js</code>'s <code>toSql</code> comment points at
+  <code>specs/generated/postgres/index.json</code> for the columnTypes map; the emitted file is at
+  <code>lib/storage/postgres/generated/index.json</code>, which is where <code>postgres-storage.js</code> actually reads
+  it from. Cosmetic, and mentioned only because the comment is the one place a reader is told where
+  the map comes from.</li>
+<li><strong><code>?count=</code> was measured at the module boundary, so the exact HTTP status of the <code>2201W</code> was not
+  observed.</strong> It is reported as "an error where MongoDB returns rows", and the 500 is an inference
+  from the error escaping <code>list()</code>.</li>
+</ul>
+<h2 id="8-reproduction">8. Reproduction<a class="headerlink" href="#8-reproduction" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>git<span class="w"> </span>-C<span class="w"> </span>&lt;crm-seam&gt;<span class="w"> </span>worktree<span class="w"> </span>add<span class="w"> </span>--detach<span class="w"> </span>&lt;crm-verify&gt;<span class="w"> </span>7cc03cda
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="nb">cd</span><span class="w"> </span>&lt;crm-verify&gt;<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>npm<span class="w"> </span>install
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>
+<a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>--name<span class="w"> </span>verify-mongo<span class="w"> </span>--ulimit<span class="w"> </span><span class="nv">nofile</span><span class="o">=</span><span class="m">64000</span>:64000<span class="w"> </span>-p<span class="w"> </span><span class="m">27021</span>:27017<span class="w"> </span>mongo:7
+<a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>--name<span class="w"> </span>verify-pg<span class="w"> </span>-e<span class="w"> </span><span class="nv">POSTGRES_PASSWORD</span><span class="o">=</span><span class="s2">"</span><span class="nv">$PGPASSWORD</span><span class="s2">"</span><span class="w"> </span>-p<span class="w"> </span><span class="m">15436</span>:5432<span class="w"> </span>postgres:16-alpine
+<a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>
+<a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a><span class="nb">cd</span><span class="w"> </span>tools/qc<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>npm<span class="w"> </span>install
+<a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a><span class="nv">PGPASSWORD</span><span class="o">=</span>…<span class="w"> </span><span class="nv">WORKTREE</span><span class="o">=</span>&lt;crm-verify&gt;<span class="w"> </span>node<span class="w"> </span>--expose-gc<span class="w"> </span>pg-backend-arm.js
+<a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a><span class="c1"># or one section: filter | limit | order | project | extra | materialise</span>
+</code></pre></div>
+<p><code>--expose-gc</code> is required by the materialisation section, which refuses to run without it.
+The harness exits <code>2</code> with instructions if <code>PGPASSWORD</code> is unset and stores no credential anywhere:
+the unprivileged role it connects as is created per run by
+<code>tests/support/postgres.js</code> (not in the repository) with a
+password that exists only in the process's memory.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

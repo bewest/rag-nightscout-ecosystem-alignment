@@ -1,0 +1,4860 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/mapping/loop/quirks.html">
+      
+      
+        <link rel="prev" href="overrides.html">
+      
+      
+        <link rel="next" href="safety.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Loop Quirks and Edge Cases - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#loop-quirks-and-edge-cases" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Loop Quirks and Edge Cases
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../docs/00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../docs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    mapping/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../_template.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mapping: [Project] - [Scenario/Concept]
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../aaps/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    aaps/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../cgm-remote-monitor/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../cross-project/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cross-project/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../diable/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    diable/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_7" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    loop/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_7" id="__nav_6_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    loop/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="algorithm.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loop Prediction Algorithm
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="carb-math.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loop Carb Math
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="data-models.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loop Data Models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="dose-math.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loop Dose Math
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="insulin-math.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loop Insulin Math
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-sync.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loop Nightscout Sync
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="overrides.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loop Override Behavior
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loop Quirks and Edge Cases
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="quirks.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loop Quirks and Edge Cases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#timing-quirks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Timing Quirks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Timing Quirks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#delta-window-for-momentary-doses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delta Window for Momentary Doses
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#temp-basal-30-minute-duration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Temp Basal 30-Minute Duration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#retrospective-correction-grouping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Retrospective Correction Grouping
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dose-reconciliation-quirks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dose Reconciliation Quirks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Dose Reconciliation Quirks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#suspend-followed-by-temp-without-resume" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Suspend Followed by Temp Without Resume
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overlapping-temp-basals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overlapping Temp Basals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#basal-schedule-boundary-splitting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basal Schedule Boundary Splitting
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#insulin-model-quirks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Insulin Model Quirks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Insulin Model Quirks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#10-minute-delay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10-Minute Delay
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#afrezzas-different-duration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Afrezza's Different Duration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#walsh-model-deprecated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Walsh Model Deprecated
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#carb-quirks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Carb Quirks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Carb Quirks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#10-minute-carb-delay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10-Minute Carb Delay
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#maximum-absorption-overrun" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Maximum Absorption Overrun
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overlapping-carb-attribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overlapping Carb Attribution
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#override-quirks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Override Quirks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Override Quirks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#indefinite-duration-encoding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Indefinite Duration Encoding
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#precondition-crash-on-overlap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Precondition Crash on Overlap
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#override-ends-one-second-early" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Override Ends One Second Early
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prediction-quirks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prediction Quirks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Prediction Quirks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#momentum-blend-zone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Momentum Blend Zone
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#effect-delta-accumulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Effect Delta Accumulation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#empty-prediction-fallback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Empty Prediction Fallback
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nightscout-sync-quirks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nightscout Sync Quirks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Nightscout Sync Quirks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sync-identifier-reuse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sync Identifier Reuse
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-crud-for-overrides" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        No CRUD for Overrides
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resume-events-not-uploaded" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resume Events Not Uploaded
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iob-not-recalculated-for-nightscout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IOB Not Recalculated for Nightscout
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-model-quirks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Model Quirks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Model Quirks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#delivered-vs-programmed-units" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delivered vs Programmed Units
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#units-per-hour-vs-net-units" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Units Per Hour vs Net Units
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hkquantity-unit-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HKQuantity Unit Handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#algorithm-variant-quirks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Algorithm Variant Quirks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Algorithm Variant Quirks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#integral-vs-standard-retrospective-correction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integral vs Standard Retrospective Correction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#algorithm-effects-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Algorithm Effects Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#known-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known Issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Known Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-001-override-supersession-not-synced" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-001: Override Supersession Not Synced
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-002-effect-timelines-not-uploaded" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-002: Effect Timelines Not Uploaded
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-003-prediction-format-incompatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-003: Prediction Format Incompatibility
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="safety.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loop Safety Guardrails
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sync-identity-fields.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loop Sync Identity Fields Extraction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../loopcaregiver/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    loopcaregiver/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../loopfollow/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    loopfollow/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightguard/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightguard/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-connect/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-connect/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-librelink-up/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-librelink-up/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-reporter/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-reporter/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-roles-gateway/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-roles-gateway/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nocturne/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nocturne/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../openaps/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    openaps/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../oref0/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    oref0/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../share2nightscout-bridge/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    share2nightscout-bridge/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tconnectsync/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tconnectsync/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../trio/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    trio/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../xdrip/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../xdrip-android/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip-android/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../xdrip-js/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip-js/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../xdrip4ios/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip4ios/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#timing-quirks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Timing Quirks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Timing Quirks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#delta-window-for-momentary-doses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delta Window for Momentary Doses
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#temp-basal-30-minute-duration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Temp Basal 30-Minute Duration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#retrospective-correction-grouping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Retrospective Correction Grouping
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dose-reconciliation-quirks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dose Reconciliation Quirks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Dose Reconciliation Quirks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#suspend-followed-by-temp-without-resume" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Suspend Followed by Temp Without Resume
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overlapping-temp-basals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overlapping Temp Basals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#basal-schedule-boundary-splitting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basal Schedule Boundary Splitting
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#insulin-model-quirks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Insulin Model Quirks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Insulin Model Quirks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#10-minute-delay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10-Minute Delay
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#afrezzas-different-duration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Afrezza's Different Duration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#walsh-model-deprecated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Walsh Model Deprecated
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#carb-quirks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Carb Quirks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Carb Quirks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#10-minute-carb-delay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10-Minute Carb Delay
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#maximum-absorption-overrun" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Maximum Absorption Overrun
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overlapping-carb-attribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overlapping Carb Attribution
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#override-quirks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Override Quirks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Override Quirks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#indefinite-duration-encoding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Indefinite Duration Encoding
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#precondition-crash-on-overlap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Precondition Crash on Overlap
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#override-ends-one-second-early" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Override Ends One Second Early
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prediction-quirks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prediction Quirks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Prediction Quirks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#momentum-blend-zone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Momentum Blend Zone
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#effect-delta-accumulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Effect Delta Accumulation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#empty-prediction-fallback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Empty Prediction Fallback
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nightscout-sync-quirks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nightscout Sync Quirks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Nightscout Sync Quirks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sync-identifier-reuse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sync Identifier Reuse
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-crud-for-overrides" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        No CRUD for Overrides
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resume-events-not-uploaded" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resume Events Not Uploaded
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iob-not-recalculated-for-nightscout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IOB Not Recalculated for Nightscout
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-model-quirks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Model Quirks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Model Quirks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#delivered-vs-programmed-units" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delivered vs Programmed Units
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#units-per-hour-vs-net-units" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Units Per Hour vs Net Units
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hkquantity-unit-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HKQuantity Unit Handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#algorithm-variant-quirks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Algorithm Variant Quirks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Algorithm Variant Quirks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#integral-vs-standard-retrospective-correction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integral vs Standard Retrospective Correction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#algorithm-effects-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Algorithm Effects Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#known-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known Issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Known Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-001-override-supersession-not-synced" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-001: Override Supersession Not Synced
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-002-effect-timelines-not-uploaded" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-002: Effect Timelines Not Uploaded
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-003-prediction-format-incompatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-003: Prediction Format Incompatibility
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="loop-quirks-and-edge-cases">Loop Quirks and Edge Cases<a class="headerlink" href="#loop-quirks-and-edge-cases" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-01-16 at <code>eeb98a12</code>.</em></p>
+<p>This document captures non-obvious behaviors, timing details, and gotchas discovered in Loop's implementation.</p>
+<h2 id="timing-quirks">Timing Quirks<a class="headerlink" href="#timing-quirks" title="Permanent link">&para;</a></h2>
+<h3 id="delta-window-for-momentary-doses">Delta Window for Momentary Doses<a class="headerlink" href="#delta-window-for-momentary-doses" title="Permanent link">&para;</a></h3>
+<p><strong>Source</strong>: <code>InsulinMath.swift#L28-L35</code></p>
+<p>Loop considers a dose "momentary" (instantaneous) if its duration is ≤ 1.05× delta:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">if</span><span class="w"> </span><span class="n">endDate</span><span class="p">.</span><span class="n">timeIntervalSince</span><span class="p">(</span><span class="n">startDate</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mf">1.05</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">delta</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">netBasalUnits</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">model</span><span class="p">.</span><span class="n">percentEffectRemaining</span><span class="p">(</span><span class="n">at</span><span class="p">:</span><span class="w"> </span><span class="n">time</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">}</span>
+</code></pre></div>
+<p>With default delta of 5 minutes, this means:
+- Doses ≤ 5.25 minutes are treated as instant boluses
+- Doses &gt; 5.25 minutes use continuous delivery calculation</p>
+<p><strong>Implication</strong>: A 5-minute temp basal is treated as a bolus, but a 6-minute temp basal is treated as continuous.</p>
+<hr />
+<h3 id="temp-basal-30-minute-duration">Temp Basal 30-Minute Duration<a class="headerlink" href="#temp-basal-30-minute-duration" title="Permanent link">&para;</a></h3>
+<p>Loop issues 30-minute temp basals even though it evaluates every 5 minutes:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">TempBasalRecommendation</span><span class="p">(</span><span class="n">unitsPerHour</span><span class="p">:</span><span class="w"> </span><span class="n">rate</span><span class="p">,</span><span class="w"> </span><span class="n">duration</span><span class="p">:</span><span class="w"> </span><span class="p">.</span><span class="n">minutes</span><span class="p">(</span><span class="mi">30</span><span class="p">))</span>
+</code></pre></div>
+<p><strong>Why</strong>: If Loop stops running (app crash, phone off), the pump continues the temp for up to 30 minutes, providing some protection.</p>
+<hr />
+<h3 id="retrospective-correction-grouping">Retrospective Correction Grouping<a class="headerlink" href="#retrospective-correction-grouping" title="Permanent link">&para;</a></h3>
+<p><strong>Source</strong>: <code>LoopMath.swift</code></p>
+<p>Discrepancies are grouped in 30-minute windows:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kd">let</span><span class="w"> </span><span class="nv">retrospectiveCorrectionGroupingInterval</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">TimeInterval</span><span class="p">(</span><span class="n">minutes</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p">)</span>
+</code></pre></div>
+<p>Discrepancies are summed with a 1% tolerance:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">retrospectiveGlucoseDiscrepancies</span><span class="p">.</span><span class="n">combinedSums</span><span class="p">(</span><span class="n">of</span><span class="p">:</span><span class="w"> </span><span class="n">LoopMath</span><span class="p">.</span><span class="n">retrospectiveCorrectionGroupingInterval</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1.01</span><span class="p">)</span>
+</code></pre></div></p>
+<p>The 1% extra prevents floating-point edge cases at interval boundaries.</p>
+<hr />
+<h2 id="dose-reconciliation-quirks">Dose Reconciliation Quirks<a class="headerlink" href="#dose-reconciliation-quirks" title="Permanent link">&para;</a></h2>
+<h3 id="suspend-followed-by-temp-without-resume">Suspend Followed by Temp Without Resume<a class="headerlink" href="#suspend-followed-by-temp-without-resume" title="Permanent link">&para;</a></h3>
+<p>If pump history shows:
+1. Suspend at 10:00
+2. Temp basal at 10:30 (no explicit resume)</p>
+<p>Loop infers a resume at 10:30:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1">// If a temp basal follows suspend without resume, assume pump resumed at temp start</span>
+</code></pre></div></p>
+<p><strong>Implication</strong>: Missing resume events don't cause data corruption.</p>
+<hr />
+<h3 id="overlapping-temp-basals">Overlapping Temp Basals<a class="headerlink" href="#overlapping-temp-basals" title="Permanent link">&para;</a></h3>
+<p>When two temp basals overlap, Loop truncates the first:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>Input:
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>  Temp A: 10:00-10:45 at 1.5 U/hr
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>  Temp B: 10:30-11:30 at 2.0 U/hr
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>Output:
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>  Temp A: 10:00-10:30 at 1.5 U/hr  (truncated)
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>  Temp B: 10:30-11:30 at 2.0 U/hr
+</code></pre></div>
+<p>The pump may report overlapping records, but Loop handles this cleanly.</p>
+<hr />
+<h3 id="basal-schedule-boundary-splitting">Basal Schedule Boundary Splitting<a class="headerlink" href="#basal-schedule-boundary-splitting" title="Permanent link">&para;</a></h3>
+<p>If a temp basal crosses a schedule change:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>Scheduled: 1.0 U/hr until midnight, then 0.8 U/hr
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>Temp: 2.0 U/hr from 23:30 to 00:30
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>Result (annotated):
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>  Temp 2.0 U/hr 23:30-00:00, scheduledBasalRate=1.0
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>  Temp 2.0 U/hr 00:00-00:30, scheduledBasalRate=0.8
+</code></pre></div>
+<p>The temp is split so each segment has correct <code>netBasalUnits</code>.</p>
+<hr />
+<h2 id="insulin-model-quirks">Insulin Model Quirks<a class="headerlink" href="#insulin-model-quirks" title="Permanent link">&para;</a></h2>
+<h3 id="10-minute-delay">10-Minute Delay<a class="headerlink" href="#10-minute-delay" title="Permanent link">&para;</a></h3>
+<p>All insulin models include a 10-minute delay:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="nv">delay</span><span class="p">:</span><span class="w"> </span><span class="n">TimeInterval</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">.</span><span class="n">minutes</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="w">  </span><span class="c1">// All presets return 10 min</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="p">}</span>
+</code></pre></div>
+<p>This represents time from injection to first effect.</p>
+<hr />
+<h3 id="afrezzas-different-duration">Afrezza's Different Duration<a class="headerlink" href="#afrezzas-different-duration" title="Permanent link">&para;</a></h3>
+<p>Afrezza (inhaled insulin) has shorter action:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="k">case</span><span class="w"> </span><span class="p">.</span><span class="n">afrezza</span><span class="p">:</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">.</span><span class="n">minutes</span><span class="p">(</span><span class="mi">300</span><span class="p">)</span><span class="w">  </span><span class="c1">// 5 hours vs 6 hours for others</span>
+</code></pre></div>
+<hr />
+<h3 id="walsh-model-deprecated">Walsh Model Deprecated<a class="headerlink" href="#walsh-model-deprecated" title="Permanent link">&para;</a></h3>
+<p>Loop previously supported Walsh insulin curves but now only uses exponential models. Old profiles may need migration.</p>
+<hr />
+<h2 id="carb-quirks">Carb Quirks<a class="headerlink" href="#carb-quirks" title="Permanent link">&para;</a></h2>
+<h3 id="10-minute-carb-delay">10-Minute Carb Delay<a class="headerlink" href="#10-minute-carb-delay" title="Permanent link">&para;</a></h3>
+<p>Carbs don't start absorbing until 10 minutes after entry:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kd">let</span><span class="w"> </span><span class="nv">defaultEffectDelay</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">TimeInterval</span><span class="p">(</span><span class="n">minutes</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span>
+</code></pre></div>
+<p>This models digestion delay before glucose rises.</p>
+<hr />
+<h3 id="maximum-absorption-overrun">Maximum Absorption Overrun<a class="headerlink" href="#maximum-absorption-overrun" title="Permanent link">&para;</a></h3>
+<p>Carb effects can extend 1.5× beyond specified absorption time:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kd">let</span><span class="w"> </span><span class="nv">defaultAbsorptionTimeOverrun</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mf">1.5</span>
+</code></pre></div>
+<p>If 3-hour absorption is specified, effects may extend to 4.5 hours if dynamic absorption is running slow.</p>
+<hr />
+<h3 id="overlapping-carb-attribution">Overlapping Carb Attribution<a class="headerlink" href="#overlapping-carb-attribution" title="Permanent link">&para;</a></h3>
+<p>When multiple carb entries have overlapping absorption windows, they're grouped:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="kd">func</span><span class="w"> </span><span class="nf">groupedByOverlappingAbsorptionTimes</span><span class="p">(...)</span>
+</code></pre></div>
+<p>Glucose effects are attributed proportionally to each entry in the group.</p>
+<hr />
+<h2 id="override-quirks">Override Quirks<a class="headerlink" href="#override-quirks" title="Permanent link">&para;</a></h2>
+<h3 id="indefinite-duration-encoding">Indefinite Duration Encoding<a class="headerlink" href="#indefinite-duration-encoding" title="Permanent link">&para;</a></h3>
+<p>Internally: <code>.indefinite</code> with <code>TimeInterval.infinity</code>
+In Nightscout: encoded as <code>0</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="k">case</span><span class="w"> </span><span class="p">.</span><span class="n">indefinite</span><span class="p">:</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">    </span><span class="n">nsDuration</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">0</span>
+</code></pre></div>
+<hr />
+<h3 id="precondition-crash-on-overlap">Precondition Crash on Overlap<a class="headerlink" href="#precondition-crash-on-overlap" title="Permanent link">&para;</a></h3>
+<p>If the override system detects overlapping overrides:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="bp">preconditionFailure</span><span class="p">(</span><span class="s">"No overrides should overlap."</span><span class="p">)</span>
+</code></pre></div>
+<p>This crashes the app. It's a defensive measure that should never trigger in production.</p>
+<hr />
+<h3 id="override-ends-one-second-early">Override Ends One Second Early<a class="headerlink" href="#override-ends-one-second-early" title="Permanent link">&para;</a></h3>
+<p>Overrides ending "early" use <code>.nearestPrevious</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="kd">let</span><span class="w"> </span><span class="nv">overrideEnd</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="bp">min</span><span class="p">(</span><span class="kr">override</span><span class="p">.</span><span class="n">startDate</span><span class="p">.</span><span class="n">nearestPrevious</span><span class="p">,</span><span class="w"> </span><span class="n">enableDate</span><span class="p">)</span>
+</code></pre></div>
+<p>This prevents two overrides from sharing the exact same boundary timestamp.</p>
+<hr />
+<h2 id="prediction-quirks">Prediction Quirks<a class="headerlink" href="#prediction-quirks" title="Permanent link">&para;</a></h2>
+<h3 id="momentum-blend-zone">Momentum Blend Zone<a class="headerlink" href="#momentum-blend-zone" title="Permanent link">&para;</a></h3>
+<p>Momentum is blended with other effects over 15 minutes:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="kd">let</span><span class="w"> </span><span class="nv">blendCount</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">momentum</span><span class="p">.</span><span class="bp">count</span><span class="w">  </span><span class="c1">// Number of momentum samples</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="kd">let</span><span class="w"> </span><span class="nv">blendSlope</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mf">1.0</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nb">Double</span><span class="p">(</span><span class="n">blendCount</span><span class="p">)</span>
+</code></pre></div>
+<p>At each time point in the blend zone:
+- Earlier = more momentum weight
+- Later = more other-effects weight</p>
+<hr />
+<h3 id="effect-delta-accumulation">Effect Delta Accumulation<a class="headerlink" href="#effect-delta-accumulation" title="Permanent link">&para;</a></h3>
+<p>Effects are stored as cumulative values but applied as deltas:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="kd">let</span><span class="w"> </span><span class="nv">value</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">effect</span><span class="p">.</span><span class="n">quantity</span><span class="p">.</span><span class="n">doubleValue</span><span class="p">(</span><span class="k">for</span><span class="p">:</span><span class="w"> </span><span class="n">unit</span><span class="p">)</span>
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="n">effectValuesAtDate</span><span class="p">[</span><span class="n">effect</span><span class="p">.</span><span class="n">startDate</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">(</span><span class="n">effectValuesAtDate</span><span class="p">[</span><span class="n">effect</span><span class="p">.</span><span class="n">startDate</span><span class="p">]</span><span class="w"> </span><span class="p">??</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">previousEffectValue</span>
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="n">previousEffectValue</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">value</span>
+</code></pre></div>
+<p>This can be confusing when debugging—the raw effect values don't add directly.</p>
+<hr />
+<h3 id="empty-prediction-fallback">Empty Prediction Fallback<a class="headerlink" href="#empty-prediction-fallback" title="Permanent link">&para;</a></h3>
+<p>If prediction generation fails (no glucose data, etc):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="k">guard</span><span class="w"> </span><span class="o">!</span><span class="n">prediction</span><span class="p">.</span><span class="n">glucose</span><span class="p">.</span><span class="bp">isEmpty</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">.</span><span class="n">failure</span><span class="p">(.</span><span class="n">missingGlucoseData</span><span class="p">)</span>
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="p">}</span>
+</code></pre></div>
+<p>Loop returns an error rather than an empty prediction.</p>
+<hr />
+<h2 id="nightscout-sync-quirks">Nightscout Sync Quirks<a class="headerlink" href="#nightscout-sync-quirks" title="Permanent link">&para;</a></h2>
+<h3 id="sync-identifier-reuse">Sync Identifier Reuse<a class="headerlink" href="#sync-identifier-reuse" title="Permanent link">&para;</a></h3>
+<p>Loop uses <code>syncIdentifier</code> for idempotent uploads. If the same syncIdentifier is uploaded again:
+- Nightscout should update (not duplicate) the record
+- Currently uses POST (not PUT), which may cause duplicates in some Nightscout versions</p>
+<hr />
+<h3 id="no-crud-for-overrides">No CRUD for Overrides<a class="headerlink" href="#no-crud-for-overrides" title="Permanent link">&para;</a></h3>
+<p>Override treatments don't have full CRUD in Nightscout:
+- Created on start
+- No explicit update on early end
+- Supersession not tracked</p>
+<hr />
+<h3 id="resume-events-not-uploaded">Resume Events Not Uploaded<a class="headerlink" href="#resume-events-not-uploaded" title="Permanent link">&para;</a></h3>
+<p><code>.resume</code> dose type is never uploaded:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="k">case</span><span class="w"> </span><span class="p">.</span><span class="n">resume</span><span class="p">:</span>
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="kc">nil</span>
+</code></pre></div>
+<p>The suspend duration implicitly ends at resume time.</p>
+<hr />
+<h3 id="iob-not-recalculated-for-nightscout">IOB Not Recalculated for Nightscout<a class="headerlink" href="#iob-not-recalculated-for-nightscout" title="Permanent link">&para;</a></h3>
+<p>Loop uploads its own IOB, not Nightscout's:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="n">iob</span><span class="p">:</span><span class="w"> </span><span class="kc">nil</span><span class="p">,</span><span class="w">  </span><span class="c1">// Pump's reported IOB isn't relevant</span>
+</code></pre></div>
+<p>This ensures consistency but may differ from Nightscout's calculations.</p>
+<hr />
+<h2 id="data-model-quirks">Data Model Quirks<a class="headerlink" href="#data-model-quirks" title="Permanent link">&para;</a></h2>
+<h3 id="delivered-vs-programmed-units">Delivered vs Programmed Units<a class="headerlink" href="#delivered-vs-programmed-units" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="k">return</span><span class="w"> </span><span class="n">deliveredUnits</span><span class="w"> </span><span class="p">??</span><span class="w"> </span><span class="n">programmedUnits</span>
+</code></pre></div>
+<p>Loop prefers <code>deliveredUnits</code> (actual delivery) but falls back to <code>programmedUnits</code> (commanded) if delivery isn't confirmed.</p>
+<hr />
+<h3 id="units-per-hour-vs-net-units">Units Per Hour vs Net Units<a class="headerlink" href="#units-per-hour-vs-net-units" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>unitsPerHour</code> - The rate being delivered</li>
+<li><code>netBasalUnits</code> - Total units relative to scheduled basal</li>
+</ul>
+<p>These are different! A 2.0 U/hr temp for 30 min with scheduled 1.0 U/hr:
+- <code>unitsPerHour</code> = 2.0
+- <code>netBasalUnits</code> = +0.5 (net extra delivered)</p>
+<hr />
+<h3 id="hkquantity-unit-handling">HKQuantity Unit Handling<a class="headerlink" href="#hkquantity-unit-handling" title="Permanent link">&para;</a></h3>
+<p>Loop uses HealthKit quantities with units:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="bp">HKQuantity</span><span class="p">(</span><span class="n">unit</span><span class="p">:</span><span class="w"> </span><span class="p">.</span><span class="n">milligramsPerDeciliter</span><span class="p">,</span><span class="w"> </span><span class="n">doubleValue</span><span class="p">:</span><span class="w"> </span><span class="mi">120</span><span class="p">)</span>
+</code></pre></div>
+<p>All internal calculations are in mg/dL. Conversion to mmol/L happens only for display.</p>
+<hr />
+<h2 id="algorithm-variant-quirks">Algorithm Variant Quirks<a class="headerlink" href="#algorithm-variant-quirks" title="Permanent link">&para;</a></h2>
+<h3 id="integral-vs-standard-retrospective-correction">Integral vs Standard Retrospective Correction<a class="headerlink" href="#integral-vs-standard-retrospective-correction" title="Permanent link">&para;</a></h3>
+<p>Two implementations exist:</p>
+<ol>
+<li><strong>StandardRetrospectiveCorrection</strong>: Simple proportional</li>
+<li><strong>IntegralRetrospectiveCorrection</strong>: PID-like with integral/differential</li>
+</ol>
+<p>IRC parameters:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="kd">static</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nv">currentDiscrepancyGain</span><span class="p">:</span><span class="w"> </span><span class="nb">Double</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mf">1.0</span>
+<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="kd">static</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nv">persistentDiscrepancyGain</span><span class="p">:</span><span class="w"> </span><span class="nb">Double</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mf">2.0</span>
+<a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="kd">static</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nv">correctionTimeConstant</span><span class="p">:</span><span class="w"> </span><span class="n">TimeInterval</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">TimeInterval</span><span class="p">(</span><span class="n">minutes</span><span class="p">:</span><span class="w"> </span><span class="mf">60.0</span><span class="p">)</span>
+<a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a><span class="kd">static</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nv">differentialGain</span><span class="p">:</span><span class="w"> </span><span class="nb">Double</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mf">2.0</span>
+</code></pre></div></p>
+<hr />
+<h3 id="algorithm-effects-options">Algorithm Effects Options<a class="headerlink" href="#algorithm-effects-options" title="Permanent link">&para;</a></h3>
+<p>Effects can be selectively enabled/disabled:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nv">all</span><span class="p">:</span><span class="w"> </span><span class="n">AlgorithmEffectsOptions</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[.</span><span class="n">carbs</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">insulin</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">momentum</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">retrospection</span><span class="p">]</span>
+</code></pre></div>
+<p>This is mainly for testing—production uses all effects.</p>
+<hr />
+<h2 id="known-issues">Known Issues<a class="headerlink" href="#known-issues" title="Permanent link">&para;</a></h2>
+<h3 id="gap-001-override-supersession-not-synced">GAP-001: Override Supersession Not Synced<a class="headerlink" href="#gap-001-override-supersession-not-synced" title="Permanent link">&para;</a></h3>
+<p>When Override B supersedes Override A, the relationship isn't captured in Nightscout.</p>
+<h3 id="gap-002-effect-timelines-not-uploaded">GAP-002: Effect Timelines Not Uploaded<a class="headerlink" href="#gap-002-effect-timelines-not-uploaded" title="Permanent link">&para;</a></h3>
+<p>Individual <code>insulin</code>, <code>carbs</code>, <code>momentum</code>, <code>rc</code> effects aren't synced.</p>
+<h3 id="gap-003-prediction-format-incompatibility">GAP-003: Prediction Format Incompatibility<a class="headerlink" href="#gap-003-prediction-format-incompatibility" title="Permanent link">&para;</a></h3>
+<p>Loop's single <code>predicted[]</code> differs from oref0's <code>predBGs.IOB[]</code>, <code>predBGs.COB[]</code>, etc.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

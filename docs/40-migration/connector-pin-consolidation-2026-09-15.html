@@ -1,0 +1,6194 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/40-migration/connector-pin-consolidation-2026-09-15.html">
+      
+      
+        <link rel="prev" href="index.html">
+      
+      
+        <link rel="next" href="legacy-cgm-ingestion-to-connect-2026-09-15.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Consolidating how cgm-remote-monitor depends on nightscout-connect - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#consolidating-how-cgm-remote-monitor-depends-on-nightscout-connect" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Consolidating how cgm-remote-monitor depends on nightscout-connect
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../30-design/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_26" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_26" id="__nav_5_26_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_26_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_26">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    40-migration/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Consolidating how cgm-remote-monitor depends on nightscout-connect
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="connector-pin-consolidation-2026-09-15.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Consolidating how cgm-remote-monitor depends on nightscout-connect
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-read-this-first-three-premises-of-the-task-were-wrong" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. Read this first: three premises of the task were wrong
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0. Read this first: three premises of the task were wrong">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#01-master-does-not-depend-on-a-semver-range-there-is-no-npm-range-anywhere" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.1 master does not depend on a semver range. There is no npm range anywhere.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#02-devs-pin-is-not-missing-the-log-redaction-it-is-a-second-independent-and-more-complete-implementation-of-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.2 dev's pin is not missing the log redaction. It is a second, independent, and more complete implementation of it.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#03-there-are-four-axes-of-disagreement-not-one-the-fourth-is-overrides-and-on-master-it-is-a-live-defect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.3 There are four axes of disagreement, not one. The fourth is overrides, and on master it is a live defect.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-the-measured-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The measured state
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. The measured state">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-the-pins-and-where-each-sits-on-the-connectors-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 The pins, and where each sits on the connector's history
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-the-line-is-not-linear-and-the-briefs-ancestry-claim-needs-one-correction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 The line is NOT linear, and the brief's ancestry claim needs one correction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-the-npm-caret-rule-stated-and-applied" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 The npm caret rule, stated and applied
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-a-the-end-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. A. The end state
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. A. The end state">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#argued-against-the-alternatives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Argued against the alternatives
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-one-genuine-weakness-stated-plainly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The one genuine weakness, stated plainly
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-b-the-ordered-sequence-of-human-decisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. B. The ordered sequence of human decisions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. B. The ordered sequence of human decisions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-one-way-doors-and-what-rollback-actually-looks-like" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The one-way doors, and what rollback actually looks like
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-you-would-notice-it-went-wrong--the-failure-here-is-silent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How you would notice it went wrong — the failure here is SILENT
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-0--human-decision-before-anything-is-pushed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 0 — HUMAN DECISION, before anything is pushed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-1--human-pushes-the-connector-release-and-tag" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — HUMAN PUSHES the connector release and tag
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2--human-regenerates-the-lockfile-in-the-pr-branch-after-the-tag-exists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — HUMAN regenerates the lockfile, in the PR branch, after the tag exists
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3--human-opens-the-cgm-remote-monitor-pr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — HUMAN opens the cgm-remote-monitor PR
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4--human-merges-which-ships-an-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — HUMAN merges, which ships an image
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5--human-brings-the-remaining-refs-into-shape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5 — HUMAN brings the remaining refs into shape
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6--human-wires-the-gate-into-ci" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6 — HUMAN wires the gate into CI
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-c-the-package-lock-constraint--why-the-stale-lock-is-correct-and-must-not-be-fixed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. C. The package-lock constraint — why the stale lock is correct and must not be "fixed"
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-d-what-each-branchs-operators-actually-receive-and-when" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. D. What each branch's operators actually receive, and when
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. D. What each branch&#39;s operators actually receive, and when">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#d1-how-a-connector-fix-reaches-an-operator-at-all" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D.1 How a connector fix reaches an operator at all
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d2-the-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D.2 The table
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d3-the-finding-the-maintainer-needs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D.3 The finding the maintainer needs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d4-what-leaking-concretely-means-on-master" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D.4 What "leaking" concretely means on master
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d5-operator-facing-note-plain-language" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D.5 Operator-facing note (plain language)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-e-decisions-that-are-the-maintainers-not-mine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. E. Decisions that are the maintainer's, not mine
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. E. Decisions that are the maintainer&#39;s, not mine">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e1-does-1509-take-the-eleven-intervening-connector-commits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E.1 Does 15.0.9 take the eleven intervening connector commits?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2-does-master-get-a-connector-fix-and-is-the-exposure-disclosed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E.2 Does master get a connector fix, and is the exposure disclosed?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e3-which-tag-shape-if-the-release-asset-option-is-taken" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E.3 Which tag shape, if the release-asset option is taken
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-f-preventing-recurrence-the-whole-set-gate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. F. Preventing recurrence: the whole-set gate
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. F. Preventing recurrence: the whole-set gate">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#f1-what-it-has-to-check-and-why-single-branch-checks-cannot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F.1 What it has to check, and why single-branch checks cannot
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#f2-what-it-says-about-the-real-repository-today" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F.2 What it says about the real repository today
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#f3-break-it-matrix-rule-2-a-check-that-has-never-failed-is-not-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F.3 Break-it matrix (rule 2: a check that has never failed is not evidence)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#f4-queue-entry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F.4 Queue entry
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-open-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Open questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-a--how-things-were-measured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix A — how things were measured
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-b--corrections-this-document-makes-to-other-documents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix B — corrections this document makes to other documents
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="legacy-cgm-ingestion-to-connect-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Retiring the legacy Dexcom bridge and MiniMed mmconnect: migration plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="mongodb-to-postgres-hosted-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MongoDB to PostgreSQL — the hosted multi-tenant migration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="operator-upgrade-path-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator upgrade path across the adopted release train
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../60-research/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-read-this-first-three-premises-of-the-task-were-wrong" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. Read this first: three premises of the task were wrong
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0. Read this first: three premises of the task were wrong">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#01-master-does-not-depend-on-a-semver-range-there-is-no-npm-range-anywhere" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.1 master does not depend on a semver range. There is no npm range anywhere.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#02-devs-pin-is-not-missing-the-log-redaction-it-is-a-second-independent-and-more-complete-implementation-of-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.2 dev's pin is not missing the log redaction. It is a second, independent, and more complete implementation of it.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#03-there-are-four-axes-of-disagreement-not-one-the-fourth-is-overrides-and-on-master-it-is-a-live-defect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.3 There are four axes of disagreement, not one. The fourth is overrides, and on master it is a live defect.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-the-measured-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The measured state
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. The measured state">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-the-pins-and-where-each-sits-on-the-connectors-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 The pins, and where each sits on the connector's history
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-the-line-is-not-linear-and-the-briefs-ancestry-claim-needs-one-correction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 The line is NOT linear, and the brief's ancestry claim needs one correction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-the-npm-caret-rule-stated-and-applied" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 The npm caret rule, stated and applied
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-a-the-end-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. A. The end state
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. A. The end state">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#argued-against-the-alternatives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Argued against the alternatives
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-one-genuine-weakness-stated-plainly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The one genuine weakness, stated plainly
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-b-the-ordered-sequence-of-human-decisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. B. The ordered sequence of human decisions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. B. The ordered sequence of human decisions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-one-way-doors-and-what-rollback-actually-looks-like" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The one-way doors, and what rollback actually looks like
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-you-would-notice-it-went-wrong--the-failure-here-is-silent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How you would notice it went wrong — the failure here is SILENT
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-0--human-decision-before-anything-is-pushed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 0 — HUMAN DECISION, before anything is pushed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-1--human-pushes-the-connector-release-and-tag" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — HUMAN PUSHES the connector release and tag
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2--human-regenerates-the-lockfile-in-the-pr-branch-after-the-tag-exists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — HUMAN regenerates the lockfile, in the PR branch, after the tag exists
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3--human-opens-the-cgm-remote-monitor-pr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — HUMAN opens the cgm-remote-monitor PR
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4--human-merges-which-ships-an-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — HUMAN merges, which ships an image
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5--human-brings-the-remaining-refs-into-shape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5 — HUMAN brings the remaining refs into shape
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6--human-wires-the-gate-into-ci" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6 — HUMAN wires the gate into CI
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-c-the-package-lock-constraint--why-the-stale-lock-is-correct-and-must-not-be-fixed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. C. The package-lock constraint — why the stale lock is correct and must not be "fixed"
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-d-what-each-branchs-operators-actually-receive-and-when" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. D. What each branch's operators actually receive, and when
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. D. What each branch&#39;s operators actually receive, and when">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#d1-how-a-connector-fix-reaches-an-operator-at-all" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D.1 How a connector fix reaches an operator at all
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d2-the-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D.2 The table
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d3-the-finding-the-maintainer-needs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D.3 The finding the maintainer needs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d4-what-leaking-concretely-means-on-master" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D.4 What "leaking" concretely means on master
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d5-operator-facing-note-plain-language" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D.5 Operator-facing note (plain language)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-e-decisions-that-are-the-maintainers-not-mine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. E. Decisions that are the maintainer's, not mine
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. E. Decisions that are the maintainer&#39;s, not mine">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e1-does-1509-take-the-eleven-intervening-connector-commits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E.1 Does 15.0.9 take the eleven intervening connector commits?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2-does-master-get-a-connector-fix-and-is-the-exposure-disclosed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E.2 Does master get a connector fix, and is the exposure disclosed?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e3-which-tag-shape-if-the-release-asset-option-is-taken" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E.3 Which tag shape, if the release-asset option is taken
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-f-preventing-recurrence-the-whole-set-gate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. F. Preventing recurrence: the whole-set gate
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. F. Preventing recurrence: the whole-set gate">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#f1-what-it-has-to-check-and-why-single-branch-checks-cannot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F.1 What it has to check, and why single-branch checks cannot
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#f2-what-it-says-about-the-real-repository-today" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F.2 What it says about the real repository today
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#f3-break-it-matrix-rule-2-a-check-that-has-never-failed-is-not-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F.3 Break-it matrix (rule 2: a check that has never failed is not evidence)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#f4-queue-entry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F.4 Queue entry
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-open-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Open questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-a--how-things-were-measured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix A — how things were measured
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-b--corrections-this-document-makes-to-other-documents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix B — corrections this document makes to other documents
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="consolidating-how-cgm-remote-monitor-depends-on-nightscout-connect">Consolidating how cgm-remote-monitor depends on nightscout-connect<a class="headerlink" href="#consolidating-how-cgm-remote-monitor-depends-on-nightscout-connect" title="Permanent link">&para;</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Record</p>
+<p>Record as of 2026-09-15. A point-in-time document; it is not kept up to date.</p>
+</div>
+<p><strong>Status: DRAFT for maintainer review.</strong> Nothing in this document has been executed.
+Every command in section B is marked as something a <strong>human</strong> runs, and none of them has
+been run. No branch, tag or lockfile was modified in preparing it. No network call was
+made; the two npm experiments in section C ran offline against locally built tarballs.</p>
+<p><strong>Audience:</strong> maintainer and contributors. Section D.5 is the only operator-facing part and
+is written in plain language; the rest is deliberately technical.</p>
+<blockquote>
+<p><strong>Connector status, 2026-09-22:</strong> no <code>v0.0.14</code> was published and none will be. The connector
+line is <code>0.1.0</code>: connector <code>dev</code> <code>1946beb</code> carries every fix this document attributes to
+<code>v0.0.14</code>, and prerelease <code>0.1.0-dev.1</code> is on npm. Where this document says <code>v0.0.14</code>, read the
+full <code>0.1.0</code> release (queue <code>P0-TAG</code>); the pin move is <code>P0-PIN</code>.</p>
+<p><strong>ADVERSARIAL VERIFICATION PASS, 2026-09-15, main repo HEAD <code>08753474</code>.</strong> A second agent
+re-measured this document's load-bearing claims from the repositories rather than from the
+text. <strong>Reproduced independently and confirmed:</strong> the pin/override table for all seven refs;
+the <code>console.*</code> census (112/101, 108/44, 22/20, 22/20, 22/20) using a separately written
+comment-and-literal-stripping scanner; the <code>^0.0.12</code>/<code>^0.0.13</code>/<code>~0.0.12</code>/<code>^0.1.0</code> comparator
+sets and match matrix under semver 6.3.1; <code>1.16.0</code> failing <code>^1.18.1</code>; the ancestry results
+including <code>b394411</code> not being an ancestor of <code>234d47c</code> and its tree being identical to
+<code>6dfc4f0</code>; the 11-commit / 7-non-merge count; the reachability argument for v0.0.14's
+residual sites (<code>index.js</code> hardcodes <code>{name:'internal'}</code>, <code>config.capture</code> is never passed);
+the absence of publish automation and of a <code>files</code> field; the Dockerfile's
+<code>npm ci --cache /tmp/empty-cache --omit=optional --force</code>; and <strong>every row of §C's npm
+table</strong>, re-run over a loopback HTTP server rather than offline file tarballs — including
+the row-2 silent wrong install (exit 0, <code>demo-pkg/package.json</code> says <code>0.0.13</code>) and the
+verbatim EUSAGE text. <strong>Corrected:</strong> five items, each marked inline with <code>VERIFIER</code> and left
+in place rather than deleted — the "fourteen months" interval (§0.1), "safest of the three"
+(§0.2), cut 4's LibreLinkUp site count (§0.2), §C's claim that R3 catches the hand-edited
+lock, and §F.1's "and vice versa" for R4. <strong>Added:</strong> the boot-time credential leak and
+Glooko to §D.4 with a measured coverage statement, a one-way-door and rollback subsection
+and a silent-failure watch list to §B, and a how-to-check plus what-to-expect passage to the
+operator note in §D.5.</p>
+</blockquote>
+<p><strong>Date of measurement:</strong> 2026-09-15. Main repo HEAD <code>08753474</code>.
+<code>externals/cgm-remote-monitor-official</code> <code>origin/dev</code> = <code>a8888f0d</code>, <code>origin/master</code> = <code>92d08342</code>.
+<code>externals/nightscout-connect</code> <code>origin/main</code> = <code>b394411</code> (= tag <code>v0.0.13</code>).
+Every number below says how it was measured. Where I am reasoning rather than measuring it
+says INFERENCE.</p>
+<hr />
+<h2 id="0-read-this-first-three-premises-of-the-task-were-wrong">0. Read this first: three premises of the task were wrong<a class="headerlink" href="#0-read-this-first-three-premises-of-the-task-were-wrong" title="Permanent link">&para;</a></h2>
+<p>This document was commissioned on a description of the problem that measurement does not
+support. Two of the three corrections change what the maintainer should do, and the third
+changes <em>why</em> — which matters, because the "why" is going into a commit message and a PR
+that reviewers will rely on.</p>
+<h3 id="01-master-does-not-depend-on-a-semver-range-there-is-no-npm-range-anywhere">0.1 master does not depend on a semver range. There is no npm range anywhere.<a class="headerlink" href="#01-master-does-not-depend-on-a-semver-range-there-is-no-npm-range-anywhere" title="Permanent link">&para;</a></h3>
+<p>The brief, and <code>docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md:388</code>, say master pins
+<code>"^0.0.12"</code> — an npm range. It does not.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>origin/master:package.json
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  "nightscout-connect": "https://github.com/nightscout/nightscout-connect/archive/refs/tags/v0.0.13.tar.gz"
+</code></pre></div>
+<p>Measured with <code>git show origin/master:package.json</code> parsed as JSON. <code>^0.0.12</code> was adopted
+in October 2023 and replaced on <strong>2026-07-07</strong> — about two months before this measurement,
+not fourteen months (VERIFIER CORRECTION; the original text mis-stated the interval) — by
+two commits:</p>
+<table>
+<thead>
+<tr>
+<th>commit</th>
+<th>date</th>
+<th>change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>97a603fb</code></td>
+<td>2023-10-12</td>
+<td><code>^0.0.11</code> → <code>^0.0.12</code> (the last npm-range pin)</td>
+</tr>
+<tr>
+<td><code>a91e8ee4</code></td>
+<td>2026-07-07</td>
+<td><code>^0.0.12</code> → <code>github:nightscout/nightscout-connect#v0.0.13</code></td>
+</tr>
+<tr>
+<td><code>561974de</code></td>
+<td>2026-07-07</td>
+<td>→ <code>.../archive/refs/tags/v0.0.13.tar.gz</code></td>
+</tr>
+</tbody>
+</table>
+<p>Measured with <code>git log -L '/nightscout-connect/,+1:package.json' origin/master</code>.</p>
+<p><code>561974de</code>'s own message records why the <code>github:</code> shorthand was abandoned, and it is a
+constraint on the end state, so it is quoted here in full:</p>
+<blockquote>
+<p>Avoid locking the nightscout-connect GitHub dependency to git+ssh so release and deploy
+builds without GitHub SSH keys can install the package.</p>
+</blockquote>
+<p>The <code>^0.2.12</code> that <em>does</em> appear on master is <code>share2nightscout-bridge</code>, a different
+package. The two were probably conflated.</p>
+<p><strong>Consequences.</strong> master is already on v0.0.13, not something two releases stale. The
+"three pinning mechanisms" are really <strong>one mechanism (a GitHub archive tarball) used with
+two kinds of ref</strong> — a tag, or a bare commit — plus a fourth axis nobody has written down
+(§0.3). And the crux question the brief asked me to get exactly right is moot for master.
+I answer it anyway in §1.3, because it decides whether "publish to npm" is a viable end
+state.</p>
+<h3 id="02-devs-pin-is-not-missing-the-log-redaction-it-is-a-second-independent-and-more-complete-implementation-of-it">0.2 dev's pin is not missing the log redaction. It is a second, independent, and <em>more complete</em> implementation of it.<a class="headerlink" href="#02-devs-pin-is-not-missing-the-log-redaction-it-is-a-second-independent-and-more-complete-implementation-of-it" title="Permanent link">&para;</a></h3>
+<p>This is the correction that matters most, because the brief asks me to treat the pin move
+as a security fix and to give that "the weight it deserves" — and the prepared commit
+<code>0807eb1c</code> already says so in its message.</p>
+<p>The ancestry claim is true. <code>9fa2c3c</code>, <code>5349d47</code> and <code>77e2396</code> are not ancestors of
+<code>234d47c</code> (verified with <code>git merge-base --is-ancestor</code>; GT4 measured the same). But
+ancestry is not behaviour, and the behaviour is the opposite of what the ancestry suggests.</p>
+<p><code>234d47c</code> ("Make embedded connector debug logging opt-in") is not a flag added over leaky
+code. It is an 18-file rewrite that introduces <code>lib/logging.js</code> and replaces the leaking
+<code>console.log</code> calls outright. Its own comment states the policy:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">// Each connector owns its logger. Never replace the process-wide console or</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c1">// print source credentials, patient payloads, HTTP bodies or XState context.</span>
+</code></pre></div>
+<p>The same Dexcom call site, in the two parallel lines:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1">// v0.0.13 (what master ships today) - credentials and bodies, unconditional</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"ERROR AUTHENTICATING ACCOUNT"</span><span class="p">,</span><span class="w"> </span><span class="s2">"status="</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">status</span><span class="p">,</span><span class="w"> </span><span class="s2">"data="</span><span class="p">,</span><span class="w"> </span><span class="nx">data</span><span class="p">,</span><span class="w"> </span><span class="s2">"message="</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">err</span><span class="p">.</span><span class="nx">message</span><span class="p">);</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1">// 9fa2c3c (the redaction branch, in cut 4)</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"ERROR AUTHENTICATING ACCOUNT"</span><span class="p">,</span><span class="w"> </span><span class="s2">"status="</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="nb">Number</span><span class="p">.</span><span class="nx">isInteger</span><span class="p">(</span><span class="nx">status</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">status</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s2">"unavailable"</span><span class="p">));</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="c1">// 234d47c (dev's pin) - log.error prints a message plus an HTTP status and nothing else</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="nx">log</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">"Dexcom authentication failed"</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="p">);</span>
+</code></pre></div>
+<p>Both branches close the leak. They just do it differently.</p>
+<p>To measure this rather than argue it, I extracted each pinned tree with <code>git archive</code>
+into the scratchpad and counted <code>console.*</code> call sites <strong>with comments stripped</strong> (a first
+pass that did not strip comments gave badly inflated numbers, because the redaction work
+comments code out rather than deleting it — the corrected scanner is in §Appendix A.2).
+"Dynamic" means the call passes at least one non-string-literal argument, i.e. it can
+print a value.</p>
+<table>
+<thead>
+<tr>
+<th>tree</th>
+<th>pinned by</th>
+<th style="text-align: right;">live <code>console.*</code></th>
+<th style="text-align: right;">of those, passing a dynamic argument</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v0.0.13</code> <code>b394411</code></td>
+<td><strong>master</strong>, cuts 1, 2, 3</td>
+<td style="text-align: right;">112</td>
+<td style="text-align: right;"><strong>101</strong></td>
+</tr>
+<tr>
+<td><code>c962a13f</code></td>
+<td>cut 4</td>
+<td style="text-align: right;">108</td>
+<td style="text-align: right;">44</td>
+</tr>
+<tr>
+<td><code>234d47c</code></td>
+<td><strong>dev</strong></td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr>
+<td><code>b77e5bb</code></td>
+<td>cut 5</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr>
+<td><code>v0.0.14</code> <code>649a7de</code></td>
+<td>(prepared)</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">20</td>
+</tr>
+</tbody>
+</table>
+<p>Per-source, the ranking is unambiguous:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>MiniMed</th>
+<th>Dexcom</th>
+<th>LibreLinkUp</th>
+<th>internal output (the embedded path)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v0.0.13 — <strong>master</strong></td>
+<td>51 live sites: cookies, tokens, headers, patient lists, sensor data</td>
+<td>bodies + messages</td>
+<td>auth headers, response bodies, session incl. <code>authTicket</code></td>
+<td><code>INTERNAL PERSISTENCE &lt;batch&gt;</code> — every entry/treatment/profile/devicestatus, every cycle</td>
+</tr>
+<tr>
+<td><code>c962a13f</code> — cut 4</td>
+<td>redacted</td>
+<td>redacted</td>
+<td><strong>still leaking</strong>: 9 live <code>console.*</code> sites, 8 of them dynamic — four print authentication headers or response bodies (<code>:78</code>, <code>:92</code>, <code>:130</code>) or the session object containing <code>authTicket</code> (<code>:111</code>), and <code>:163</code> prints the transformed glucose batch</td>
+<td>redacted</td>
+</tr>
+<tr>
+<td><code>234d47c</code> — <strong>dev</strong></td>
+<td>redacted (0 <code>console.*</code>)</td>
+<td>redacted</td>
+<td>redacted</td>
+<td>redacted, and debug-gated</td>
+</tr>
+<tr>
+<td><code>v0.0.14</code></td>
+<td>redacted</td>
+<td>redacted</td>
+<td>redacted</td>
+<td>redacted, and debug-gated</td>
+</tr>
+</tbody>
+</table>
+<p>And v0.0.13 has <strong>no debug guard at all</strong> — <code>grep -rniE "if *\(.*(debug|verbose)"</code> over
+<code>lib/</code> and <code>index.js</code> of the v0.0.13 tree returns nothing. The logging is unconditional.</p>
+<p>So the true picture inverts the brief:</p>
+<ul>
+<li><strong>dev's current pin is redacted, and safer than master's and cut 4's.</strong> Moving it to
+  v0.0.14 is not a security fix. It is, for the log-redaction question specifically, a no-op.
+  <em>(VERIFIER CORRECTION. This bullet originally read "the safest of the three pins in the
+  brief", which is wrong: cut 5's pin <code>b77e5bb</code> has the identical census — 22 live / 20
+  dynamic — and </em><em>contains</em><em> <code>234d47c</code> as well as the cut-4 redaction line, so by ancestry it
+  is greater-or-equal, never worse. Independently reproduced: <code>git diff 234d47c b77e5bb --
+  lib index.js</code> touches only <code>index.js</code>, <code>lib/outputs/internal.js</code> and the MiniMed source.)</em></li>
+<li><strong>master's pin is the leaking one</strong>, and master is what operators actually run. It logs
+  patient CGM data on every poll cycle with no flag to turn it off.</li>
+<li><strong>cut 4 — the branch GT4 credits with "all the redaction" — still leaks LibreLinkUp</strong>
+  credentials, including the <code>authTicket</code> bearer token. That is a correction to GT4 too.</li>
+</ul>
+<p>I want to be careful about how far this goes. What I measured is which call sites can
+print a value, per tree, plus the argument expressions at those sites. I did <strong>not</strong> run
+the connector against a live vendor and read the output; nobody has (the connector's own
+evidence says no real account has been used). So "dev's pin redacts the Dexcom, MiniMed,
+LibreLinkUp and internal-output leaks" is a source-level finding, confidently measured at
+the call sites, not an end-to-end observation. It is strong enough to overturn the brief's
+claim, which was itself derived purely from ancestry.</p>
+<h3 id="03-there-are-four-axes-of-disagreement-not-one-the-fourth-is-overrides-and-on-master-it-is-a-live-defect">0.3 There are four axes of disagreement, not one. The fourth is <code>overrides</code>, and on master it is a live defect.<a class="headerlink" href="#03-there-are-four-axes-of-disagreement-not-one-the-fourth-is-overrides-and-on-master-it-is-a-live-defect" title="Permanent link">&para;</a></h3>
+<p>Running the gate (§F) over all seven refs surfaced something no programme document
+mentions: the branches also disagree about <code>overrides["nightscout-connect"]</code>.</p>
+<table>
+<thead>
+<tr>
+<th>ref</th>
+<th>pin</th>
+<th><code>overrides["nightscout-connect"]</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>origin/master</code></td>
+<td>v0.0.13 tag</td>
+<td><code>{"axios":"1.16.0"}</code></td>
+</tr>
+<tr>
+<td><code>origin/dev</code></td>
+<td><code>234d47c</code></td>
+<td><code>{"axios":"1.20.0"}</code></td>
+</tr>
+<tr>
+<td>cut 1 <code>chore/retire-jsdom</code></td>
+<td>v0.0.13 tag</td>
+<td><code>{"axios":"1.20.0"}</code></td>
+</tr>
+<tr>
+<td>cut 2 <code>chore/build-runtime-separation</code></td>
+<td>v0.0.13 tag</td>
+<td><code>{"axios":"1.20.0"}</code></td>
+</tr>
+<tr>
+<td>cut 3 <code>chore/compose-mongodb6</code></td>
+<td>v0.0.13 tag</td>
+<td><code>{"axios":"1.20.0"}</code></td>
+</tr>
+<tr>
+<td>cut 4 <code>chore/mime-exposure-review</code></td>
+<td><code>c962a13f</code></td>
+<td><code>{"axios":"1.20.0"}</code></td>
+</tr>
+<tr>
+<td>cut 5 <code>chore/nightscout-modernization</code></td>
+<td><code>b77e5bb</code></td>
+<td><strong>absent</strong> (no <code>overrides</code> block at all; axios 1.20.0 is a direct dependency instead)</td>
+</tr>
+</tbody>
+</table>
+<p>The connector declares <code>"axios": "^1.18.1"</code> at both v0.0.13 and v0.0.14 (measured:
+<code>git show v0.0.13^{commit}:package.json</code>). Measured with the repo's own semver 6.3.1:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>axios 1.16.0 satisfies ^1.18.1?  false
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>axios 1.20.0 satisfies ^1.18.1?  true
+</code></pre></div>
+<p><strong>master forces the connector to run on an axios below its own declared minimum.</strong>
+<code>overrides</code> exists precisely to suppress the <code>ERESOLVE</code> that would otherwise catch this, so
+it fails silently. master's lockfile confirms the override takes effect:
+<code>node_modules/nightscout-connect/node_modules/axios</code> = <code>1.16.0</code>.</p>
+<p>I am <em>not</em> claiming a user-visible failure from this. I did not find a specific axios API
+the connector uses that 1.16.0 lacks, and I did not look hard, because the finding stands
+on its own: a dependency constraint is being violated silently on the branch operators run.
+It is filed as a proposed register entry at medium severity, with the caveat stated.</p>
+<p>This is what made the whole-set gate worth building. Every individual branch's pin is
+defensible on its own. It is the <em>set</em> that is incoherent, and no single-branch check can
+see that.</p>
+<hr />
+<h2 id="1-the-measured-state">1. The measured state<a class="headerlink" href="#1-the-measured-state" title="Permanent link">&para;</a></h2>
+<h3 id="11-the-pins-and-where-each-sits-on-the-connectors-history">1.1 The pins, and where each sits on the connector's history<a class="headerlink" href="#11-the-pins-and-where-each-sits-on-the-connectors-history" title="Permanent link">&para;</a></h3>
+<p>All five pins are GitHub archive tarballs. Measured with
+<code>git rev-list --count b394411..&lt;sha&gt;</code> in <code>externals/nightscout-connect</code>:</p>
+<table>
+<thead>
+<tr>
+<th>pin</th>
+<th>shape</th>
+<th style="text-align: right;">commits past v0.0.13</th>
+<th>who pins it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>refs/tags/v0.0.13.tar.gz</code></td>
+<td>tag tarball</td>
+<td style="text-align: right;">0</td>
+<td>master, cut 1, cut 2, cut 3</td>
+</tr>
+<tr>
+<td><code>234d47c8…tar.gz</code></td>
+<td>commit tarball</td>
+<td style="text-align: right;">1</td>
+<td>dev</td>
+</tr>
+<tr>
+<td><code>c962a13f…tar.gz</code></td>
+<td>commit tarball</td>
+<td style="text-align: right;">5</td>
+<td>cut 4</td>
+</tr>
+<tr>
+<td><code>b77e5bb7…tar.gz</code></td>
+<td>commit tarball</td>
+<td style="text-align: right;">9</td>
+<td>cut 5</td>
+</tr>
+<tr>
+<td><code>refs/tags/v0.0.14.tar.gz</code></td>
+<td>tag tarball</td>
+<td style="text-align: right;">11</td>
+<td><code>bf/connect-pin</code> (prepared, unpushed)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="12-the-line-is-not-linear-and-the-briefs-ancestry-claim-needs-one-correction">1.2 The line is NOT linear, and the brief's ancestry claim needs one correction<a class="headerlink" href="#12-the-line-is-not-linear-and-the-briefs-ancestry-claim-needs-one-correction" title="Permanent link">&para;</a></h3>
+<p>The brief says "234d47c8 IS an ancestor of b77e5bb, so the line is linear with no
+divergence to reconcile." The first half is true. The second does not follow, and the set
+as a whole is not totally ordered:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>git merge-base --is-ancestor 234d47c b77e5bb    -&gt; YES
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>git merge-base --is-ancestor 234d47c c962a13f   -&gt; NO
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>git merge-base --is-ancestor c962a13f b77e5bb   -&gt; YES
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>git merge-base --is-ancestor b394411 234d47c    -&gt; NO   &lt;- the tag is not in dev's pin
+</code></pre></div>
+<p>dev's pin and cut 4's pin are <strong>incomparable</strong>: neither contains the other. dev has the
+logger rewrite without the redaction commits; cut 4 has the redaction commits without the
+logger rewrite. They converge only at <code>b77e5bb</code> (cut 5). GT4 found this for the two
+mitigations; the gate's R6 finds it mechanically for any future pin set.</p>
+<p>There is a subtlety worth recording, because a naive ancestry gate would trip over it.
+<code>b394411</code> (tag v0.0.13) is <strong>not</strong> an ancestor of <code>234d47c</code>. It is a merge commit whose
+tree is byte-identical to its second parent <code>6dfc4f0</code> (<code>git diff 6dfc4f0 b394411</code> is
+empty), and <code>234d47c</code> is <code>6dfc4f0</code> plus one commit. So dev's pin <em>content</em> really is
+"v0.0.13's tree plus one commit", which is what the brief and GT4 assert — but the commit
+graph does not say so, and <code>merge-base --is-ancestor b394411 234d47c</code> returns false. Both
+statements are true of different things.</p>
+<h3 id="13-the-npm-caret-rule-stated-and-applied">1.3 The npm caret rule, stated and applied<a class="headerlink" href="#13-the-npm-caret-rule-stated-and-applied" title="Permanent link">&para;</a></h3>
+<p>The brief asks for this exactly right, so: the rule first, then the application.</p>
+<p><strong>Rule.</strong> npm's caret allows changes that do not modify the left-most <strong>non-zero</strong> digit of
+the version. For <code>0.0.z</code> the left-most non-zero digit is the patch, so <code>^0.0.z</code> permits
+nothing but <code>0.0.z</code> itself.</p>
+<p><strong>Measured</strong>, with the semver library already in the tree
+(<code>externals/work/crm-bf-reads/node_modules/semver</code>, version 6.3.1 — npm's own
+implementation):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>^0.0.12 =&gt; comparator set: &gt;=0.0.12 &lt;0.0.13
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>^0.0.13 =&gt; comparator set: &gt;=0.0.13 &lt;0.0.14
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>^0.1.0  =&gt; comparator set: &gt;=0.1.0  &lt;0.2.0
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>range      0.0.11  0.0.12  0.0.13  0.0.14  0.1.0  0.2.0  1.0.0
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>^0.0.12    -       MATCH   -       -       -      -      -
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>^0.0.13    -       -       MATCH   -       -      -      -
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>~0.0.12    -       MATCH   MATCH   MATCH   -      -      -
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>^0.1.0     -       -       -       -       MATCH  -      -
+</code></pre></div>
+<p><strong>Application.</strong> Publishing 0.0.14 to npm would reach a <code>^0.0.12</code> dependant <strong>never</strong> — not
+automatically, not on next install, not on a fresh <code>npm install</code>. <code>^0.0.12</code> is an exact pin
+on 0.0.12 wearing a range's clothing. The same is true of <code>^0.0.13</code>, and it would be true of
+GT4's recommended <code>0.1.0</code> (<code>^0.0.13</code> does not match <code>0.1.0</code>).</p>
+<p>The practical reading: <strong>the <code>^0.0.12</code> era was never a floating dependency in the first
+place.</strong> Had master still been on <code>^0.0.12</code>, an npm publish would have changed nothing for
+anybody. This removes the one argument that would have favoured going back to npm — "at
+least operators get fixes without a cgm-remote-monitor release" — because under 0.x caret
+semantics they would not have. It also means the historical pin changes at <code>97a603fb</code> and
+before were each a deliberate, explicit version move, exactly like a tarball bump.</p>
+<p>The connector is on npm up to at least 0.0.12: <code>97a603fb</code>'s lockfile resolves it to
+<code>https://registry.npmjs.org/nightscout-connect/-/nightscout-connect-0.0.12.tgz</code> with an
+integrity hash. Whether 0.0.13 was ever published I could not determine without a network
+call (rule 0); the move to <code>github:</code> at <code>a91e8ee4</code> suggests it was not. See open questions.</p>
+<hr />
+<h2 id="2-a-the-end-state">2. A. The end state<a class="headerlink" href="#2-a-the-end-state" title="Permanent link">&para;</a></h2>
+<p><strong>Recommendation: one published, annotated git tag per connector release, referenced by
+every cgm-remote-monitor branch as a GitHub archive tag tarball, with an identical
+<code>overrides</code> entry, and a lockfile regenerated from the pushed tag.</strong></p>
+<p>Concretely, every branch's <code>package.json</code> reads:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nt">"nightscout-connect"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://github.com/nightscout/nightscout-connect/archive/refs/tags/vX.Y.Z.tar.gz"</span>
+</code></pre></div>
+<p>differing only in <code>X.Y.Z</code>, and <code>overrides["nightscout-connect"]</code> is the same object on all
+of them (or absent from all of them).</p>
+<p>Note what this does and does not require. It does <strong>not</strong> require every branch to pin the
+same <em>version</em> — dev and a modernization cut may legitimately be on different connector
+releases. It requires them to pin in the same <em>shape</em>, to pin something <em>nameable</em>, to keep
+the lockfile in agreement, and not to have two different trees both calling themselves
+0.0.13. Those four properties are exactly R1–R5 of the gate.</p>
+<h3 id="argued-against-the-alternatives">Argued against the alternatives<a class="headerlink" href="#argued-against-the-alternatives" title="Permanent link">&para;</a></h3>
+<p><strong>Alternative 1 — npm everywhere (<code>"nightscout-connect": "^0.1.0"</code>).</strong> Rejected.</p>
+<ul>
+<li>The argument for it is that it is the ecosystem-standard mechanism and gives operators
+  fixes without a Nightscout release. §1.3 kills the second half: under 0.x caret semantics
+  a range is an exact pin, so there is no float to gain until the connector reaches 1.0.0.</li>
+<li>It adds a publishing step that can fail independently of the tag, creating a <em>fifth</em>
+  state the gate would have to track (tag exists but npm does not, or npm is ahead).</li>
+<li>The connector has no publish automation: <code>release/v0.0.14</code> carries one workflow,
+  <code>.github/workflows/test.yml</code>, and <code>git grep</code> for <code>npm publish</code>/<code>NPM_TOKEN</code>/<code>npmjs</code> over
+  <code>.github</code> and <code>package.json</code> returns nothing. Publishing would be a human running
+  <code>npm publish</code> with registry credentials on a laptop — a manual step with a secret
+  attached, added to a project whose stated governance problem is too few humans in the
+  loop. <code>package.json</code> also has no <code>files</code> field, so a publish would pack whatever is not
+  git-ignored.</li>
+<li>It reintroduces a second source of truth for "what is 0.0.14", when the tag already is one.</li>
+</ul>
+<p>If the connector ever goes 1.0.0, revisit: at <code>^1.x</code> a range does float, and the argument
+changes. That is the trigger to re-open this decision, not a date.</p>
+<p><strong>Alternative 2 — tag tarball everywhere.</strong> This is the recommendation. Why it wins:</p>
+<ul>
+<li>It is where the project already is. Four of the seven refs use it today; master reached it
+  deliberately at <code>561974de</code> to solve a real problem (<code>git+ssh</code> broke deploy builds without
+  GitHub SSH keys). Choosing it preserves that fix. Choosing <code>github:</code> shorthand would undo it.</li>
+<li>A tag is nameable. <code>v0.0.14</code> goes in release notes; <code>234d47c85510a77…</code> does not. This is
+  the brief's third consequence and it is the one that survives intact.</li>
+<li>A tag is reviewable: it has a message, a signature if the project wants one, and a diff
+  against the previous tag. A bare commit on an unmerged branch has none of that.</li>
+<li><code>npm ci</code> gets a real integrity hash over a real artefact, which is the mechanism §C depends
+  on.</li>
+<li>It needs no credentials and no publish step. Pushing the tag is the whole release.</li>
+</ul>
+<p><strong>Alternative 3 — keep commit tarballs but require the commit be on <code>main</code>.</strong> Rejected: it
+fixes reviewability but not nameability, and the release notes problem is the one the
+maintainer will feel every release.</p>
+<h3 id="the-one-genuine-weakness-stated-plainly">The one genuine weakness, stated plainly<a class="headerlink" href="#the-one-genuine-weakness-stated-plainly" title="Permanent link">&para;</a></h3>
+<p>GitHub-generated archive tarballs are not contractually byte-stable. GitHub has changed
+archive compression before and checksums shifted. If that happens, every pinned
+<code>integrity</code> hash in every lockfile breaks at once and <code>npm ci</code> fails everywhere until the
+locks are regenerated — a loud, fleet-wide failure with an easy fix but a bad morning.
+INFERENCE: I did not verify GitHub's current archive stability policy (no network), and I
+am relying on recollection of the 2023 incident. A maintainer who wants this de-risked
+should attach a release asset — a tarball the project generates with <code>npm pack</code> and uploads
+to the GitHub release — and pin that URL instead, which is byte-stable by construction. That
+is a strictly better end state on this axis and costs one step in the release procedure.
+I am not recommending it now because it is a change to the release process that the current
+evidence does not force, and §B is already long. It is listed as an open question.</p>
+<hr />
+<h2 id="3-b-the-ordered-sequence-of-human-decisions">3. B. The ordered sequence of human decisions<a class="headerlink" href="#3-b-the-ordered-sequence-of-human-decisions" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p><strong>Everything in this section is run by a HUMAN.</strong> No agent may execute any of it. Steps 1
+and 4 push to a remote, which under this project's rule 0 is a deliberate human decision
+because this code is used by people dosing insulin. Nothing here has been run.</p>
+</blockquote>
+<p>The order is forced by one fact: <strong>the lockfile cannot be correct until the tag is pushed</strong>
+(§C). So the tag push comes first, and the lockfile regeneration happens after it inside the
+same PR.</p>
+<h3 id="the-one-way-doors-and-what-rollback-actually-looks-like">The one-way doors, and what rollback actually looks like<a class="headerlink" href="#the-one-way-doors-and-what-rollback-actually-looks-like" title="Permanent link">&para;</a></h3>
+<p><em>(Added by the verifier. The original §B named no one-way door at the step that opens it —
+the tag's immovability appeared only in §E.1 and open question 2 — and described no rollback
+at all. Read this before step 1.)</em></p>
+<table>
+<thead>
+<tr>
+<th>step</th>
+<th>reversible?</th>
+<th>what "undo" really costs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Step 1, <code>git push origin v0.0.14</code></td>
+<td><strong>NO</strong></td>
+<td>A pushed tag must be treated as immutable. Anyone who has already installed from it has its bytes in a lockfile and an npm cache; moving or deleting it makes those lockfiles resolve to something else, which is the EINTEGRITY/silent-swap failure of §C in reverse. The correct undo is <strong>a new tag</strong> (<code>v0.0.15</code>), never a moved one. This is also why open question 2 — <code>v0.0.14</code> or GT4's <code>v0.1.0</code> — has to be settled <em>before</em> this step.</td>
+</tr>
+<tr>
+<td>Step 1, <code>git push origin release/v0.0.14:main</code></td>
+<td>in principle</td>
+<td><code>main</code> can be reset, but only before anyone pulls. Treat it as one-way in practice.</td>
+</tr>
+<tr>
+<td>Step 2, lockfile regeneration</td>
+<td>yes</td>
+<td>It is a commit on a branch; drop the commit.</td>
+</tr>
+<tr>
+<td>Step 3, opening the PR</td>
+<td>yes</td>
+<td>Close it.</td>
+</tr>
+<tr>
+<td><strong>Step 4, merging to <code>dev</code></strong></td>
+<td><strong>NO, in effect</strong></td>
+<td>The merge pushes a Docker Hub image (GT2 measured the workflow condition). Once an operator has pulled it, the way back is a <strong>forward</strong> release, not a revert of the merge.</td>
+</tr>
+<tr>
+<td>Step 5, cuts 4/5/master</td>
+<td>yes, individually</td>
+<td>Each is a branch-level one-line change; revert the commit and regenerate the lock.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The rollback, concretely.</strong> If v0.0.14 turns out to be wrong after step 4, the recovery is
+to revert <code>bf/connect-pin</code>'s two commits on <code>dev</code> (the <code>package.json</code> line and the lockfile),
+run <code>npm install --package-lock-only nightscout-connect</code> again to put the lock back on
+<code>234d47c85510a77f07b3be0d2c026dd0272715d6</code>, and merge that — which ships another image. The
+connector tag stays where it is. Budget one release cycle, not one command.</p>
+<h3 id="how-you-would-notice-it-went-wrong--the-failure-here-is-silent">How you would notice it went wrong — the failure here is SILENT<a class="headerlink" href="#how-you-would-notice-it-went-wrong--the-failure-here-is-silent" title="Permanent link">&para;</a></h3>
+<p>The connector is a CGM ingestion path. If v0.0.14 misbehaves, nothing throws and no alarm
+fires; glucose data simply stops arriving, or arrives late, for someone managing diabetes.
+The two changes in this bump that could do that are <code>c1cce2a</code> (retry interval, ceiling and
+jitter — it changes <em>when</em> every source polls) and <code>8406edf</code> (what the MiniMed source
+reports as glucose and measurement time). Neither has been exercised against a live vendor
+by anyone (open question 5).</p>
+<p>So after step 4, watch for:</p>
+<ul>
+<li><strong>A gap in entries.</strong> Compare entry arrival rate per source before and after the release
+  window. A regression in <code>c1cce2a</code>'s backoff shows up as a widening interval, not an error.</li>
+<li><strong>MiniMed timestamps.</strong> <code>8406edf</code> touches measurement time; a systematic offset would show
+  as readings landing at the wrong clock position rather than as missing readings.</li>
+<li><strong><code>npm ci</code> failures in the field.</strong> A self-builder who pulls <code>dev</code> between the
+  <code>package.json</code> merge and the lockfile commit gets the loud EUSAGE of §C row 1. That is the
+  designed failure, but it will generate reports; expect them.</li>
+<li><strong>Silence itself.</strong> Debug logging is opt-in from <code>234d47c</code> onward, so a quiet log after
+  the upgrade is expected and is <em>not</em> evidence that ingestion is healthy. Check the data,
+  not the log.</li>
+</ul>
+<h3 id="step-0--human-decision-before-anything-is-pushed">Step 0 — HUMAN DECISION, before anything is pushed<a class="headerlink" href="#step-0--human-decision-before-anything-is-pushed" title="Permanent link">&para;</a></h3>
+<p>Answer §E: is dev's connector moving to v0.0.14 as part of 15.0.9, and if so is the
+maintainer content to ship the eleven intervening commits? If the answer is no, stop here; the
+rest of this document describes a different release.</p>
+<p>Verify the prepared work first (read-only, safe to re-run):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># HUMAN RUNS. Read-only.</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>git<span class="w"> </span>-C<span class="w"> </span>externals/nightscout-connect<span class="w"> </span>merge-base<span class="w"> </span>--is-ancestor<span class="w"> </span>v0.0.13<span class="w"> </span>release/v0.0.14<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"fast-forwards"</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>git<span class="w"> </span>-C<span class="w"> </span>externals/nightscout-connect<span class="w"> </span>cat-file<span class="w"> </span>-t<span class="w"> </span>v0.0.14<span class="w">            </span><span class="c1"># expect: tag (annotated)</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>git<span class="w"> </span>-C<span class="w"> </span>externals/nightscout-connect<span class="w"> </span>rev-parse<span class="w"> </span>v0.0.14^<span class="o">{</span>commit<span class="o">}</span><span class="w">     </span><span class="c1"># expect: 649a7de...</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>git<span class="w"> </span>-C<span class="w"> </span>externals/nightscout-connect<span class="w"> </span>log<span class="w"> </span>--oneline<span class="w"> </span>v0.0.13..v0.0.14
+</code></pre></div>
+<h3 id="step-1--human-pushes-the-connector-release-and-tag">Step 1 — HUMAN PUSHES the connector release and tag<a class="headerlink" href="#step-1--human-pushes-the-connector-release-and-tag" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># HUMAN RUNS. THIS LEAVES THE MACHINE.</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>git<span class="w"> </span>-C<span class="w"> </span>externals/nightscout-connect<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>release/v0.0.14:main
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>git<span class="w"> </span>-C<span class="w"> </span>externals/nightscout-connect<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>v0.0.14
+</code></pre></div>
+<p>Pushing the tag is what brings
+<code>https://github.com/nightscout/nightscout-connect/archive/refs/tags/v0.0.14.tar.gz</code> into
+existence. Until this moment that URL 404s and no lockfile anywhere can reference it.</p>
+<p>The connector repository has no release workflow beyond <code>test.yml</code>, so this publishes
+nothing to npm and triggers no image build. Verified by <code>git ls-tree -r --name-only
+release/v0.0.14 -- .github</code>.</p>
+<h3 id="step-2--human-regenerates-the-lockfile-in-the-pr-branch-after-the-tag-exists">Step 2 — HUMAN regenerates the lockfile, in the PR branch, after the tag exists<a class="headerlink" href="#step-2--human-regenerates-the-lockfile-in-the-pr-branch-after-the-tag-exists" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># HUMAN RUNS. Requires network (it fetches the tarball GitHub now generates).</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="nb">cd</span><span class="w"> </span>externals/work/crm-bf-connect-pin
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>npm<span class="w"> </span>install<span class="w"> </span>--package-lock-only<span class="w"> </span>nightscout-connect
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>git<span class="w"> </span>diff<span class="w"> </span>--stat<span class="w"> </span>package-lock.json<span class="w">      </span><span class="c1"># expect package-lock.json only</span>
+</code></pre></div>
+<p>Then confirm the lock now agrees with the manifest — this is gate rule R3, and it should
+flip from FAIL to PASS:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># HUMAN RUNS. Read-only.</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>node<span class="w"> </span>tools/qc/connector-pin-agreement-gate.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">  </span>--repo<span class="w"> </span>externals/cgm-remote-monitor-official<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">  </span>--connect-repo<span class="w"> </span>externals/nightscout-connect<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">  </span>--ref<span class="w"> </span>origin/master<span class="w"> </span>--ref<span class="w"> </span>bf/connect-pin<span class="w"> </span>--ref<span class="w"> </span>origin/chore/nightscout-modernization
+</code></pre></div>
+<p>Commit the lockfile <strong>into the same PR as the <code>package.json</code> change</strong>, not a follow-up.
+A merged <code>package.json</code> bump without its lockfile is a broken <code>npm ci</code> for everyone (§C).</p>
+<h3 id="step-3--human-opens-the-cgm-remote-monitor-pr">Step 3 — HUMAN opens the cgm-remote-monitor PR<a class="headerlink" href="#step-3--human-opens-the-cgm-remote-monitor-pr" title="Permanent link">&para;</a></h3>
+<p><code>bf/connect-pin</code> → <code>dev</code>. Two commits: <code>0807eb1c</code> (the pin) and the lockfile regeneration.</p>
+<p><strong>Amend <code>0807eb1c</code>'s message before opening the PR.</strong> Its current text is the security
+argument this document refutes in §0.2 — it says dev's pin "does not stop [the leaks]
+happening when an operator turns logging on", which the code contradicts. It is a good
+commit doing a right thing for reasons that will not survive review, and commit messages
+are permanent. Suggested replacement rationale, all of it measured:</p>
+<ul>
+<li>dev pins an untagged commit on an unmerged branch: reproducible, unreviewable, and
+  leaves 15.0.9 with no connector version to name in its notes.</li>
+<li>v0.0.14 is the first ref that contains <strong>both</strong> lines of connector work — the logger
+  rewrite (<code>234d47c</code>, on dev) and the redaction commits (<code>9fa2c3c</code>/<code>5349d47</code>/<code>77e2396</code>, on
+  cut 4). Those two pins are incomparable; neither contains the other.</li>
+<li>It brings BF-34: every configured retry interval was discarded, five vendor sources ran
+  585.94× too fast, in lockstep, with jitter forced off.</li>
+<li>It brings the MiniMed glucose/measurement-time contract fix and the listener-release fix.</li>
+<li>It is <strong>not</strong> a log-redaction fix for dev. dev already has equivalent redaction. It <em>is</em>
+  one for master, which is a separate decision (§E.2).</li>
+</ul>
+<h3 id="step-4--human-merges-which-ships-an-image">Step 4 — HUMAN merges, which ships an image<a class="headerlink" href="#step-4--human-merges-which-ships-an-image" title="Permanent link">&para;</a></h3>
+<p>Merging to <code>dev</code> triggers the Docker Hub image push (GT2 measured the workflow condition:
+<code>(ref == master || ref == dev) &amp;&amp; repository_owner == 'nightscout'</code>). Treat the merge, not
+the PR, as the shipping moment.</p>
+<h3 id="step-5--human-brings-the-remaining-refs-into-shape">Step 5 — HUMAN brings the remaining refs into shape<a class="headerlink" href="#step-5--human-brings-the-remaining-refs-into-shape" title="Permanent link">&para;</a></h3>
+<p>Not urgent, and not all at once. In increasing order of blast radius:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># HUMAN RUNS. Each is a one-line package.json edit plus `npm install --package-lock-only`,</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="c1"># on a branch, reviewed like any other change.</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="c1">#</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="c1">#   cut 4  chore/mime-exposure-review     c962a13f      -&gt; refs/tags/v0.0.14.tar.gz</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="c1">#   cut 5  chore/nightscout-modernization b77e5bb       -&gt; refs/tags/v0.0.14.tar.gz</span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="c1">#   master                                v0.0.13 tag   -&gt; see E.2, a release decision</span>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="c1">#</span>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="c1"># and reconcile overrides["nightscout-connect"] across the set (§0.3).</span>
+</code></pre></div>
+<p>Cuts 4 and 5 are mechanical once the tag exists: both currently pin commits that v0.0.14
+contains, so moving them forward adds two commits (cut 5) or six (cut 4) and removes the
+unnameable pin. master is not mechanical — see §E.2.</p>
+<h3 id="step-6--human-wires-the-gate-into-ci">Step 6 — HUMAN wires the gate into CI<a class="headerlink" href="#step-6--human-wires-the-gate-into-ci" title="Permanent link">&para;</a></h3>
+<p>§F. Once every ref is in shape, the gate's verdict on the full ref set becomes PASS and can
+be made blocking. Until then it is a reporting tool: it currently fails 5 of 6 rules, and a
+gate that is red on day one gets ignored unless the red is expected and written down, which
+is what §0.3 and §1 are for.</p>
+<hr />
+<h2 id="4-c-the-package-lock-constraint--why-the-stale-lock-is-correct-and-must-not-be-fixed">4. C. The package-lock constraint — why the stale lock is correct and must not be "fixed"<a class="headerlink" href="#4-c-the-package-lock-constraint--why-the-stale-lock-is-correct-and-must-not-be-fixed" title="Permanent link">&para;</a></h2>
+<p><code>bf/connect-pin</code> deliberately ships <code>package.json</code> pointing at v0.0.14 while
+<code>package-lock.json</code> still names <code>234d47c8…</code>. This looks like an oversight. It is not, and
+the next person to notice it will want to fix it. Here is why they must not, demonstrated
+rather than asserted.</p>
+<p><strong>The mechanism.</strong> A lockfile entry carries an <code>integrity</code> field: a SHA-512 over the exact
+bytes of the tarball. The tarball for <code>refs/tags/v0.0.14.tar.gz</code> is generated by GitHub, on
+demand, and <strong>does not exist until the tag is pushed</strong>. There is no way to compute the
+correct hash before step B.1. A hash invented, guessed, or copied locally is not merely
+useless — it is actively dangerous, as the experiment below shows.</p>
+<p><strong>The experiments.</strong> All run offline (<code>--offline</code>) against two locally built tarballs
+differing only in content, with npm 11.12.1 on Node v24.15.0. No network. Full method in
+Appendix A.3.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>lockfile state</th>
+<th>npm cache</th>
+<th>flags</th>
+<th>result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>stale: manifest on new, lock on old (<strong>this is <code>bf/connect-pin</code> today</strong>)</td>
+<td>any</td>
+<td>plain</td>
+<td><code>EUSAGE</code>, <strong>exit 1</strong>, nothing installed: <em>"lock file's demo-pkg@0.0.13 does not satisfy demo-pkg@0.0.14"</em></td>
+</tr>
+<tr>
+<td>2</td>
+<td>hand-edited: URL and version updated, <strong>old <code>integrity</code> left in place</strong></td>
+<td>warm (old tarball cached)</td>
+<td>plain</td>
+<td><strong>exit 0 — and it silently installed the OLD package</strong> while the lock claimed the new version</td>
+</tr>
+<tr>
+<td>2b</td>
+<td>same as 2</td>
+<td>cold</td>
+<td>plain</td>
+<td><code>EINTEGRITY</code>, exit 1, nothing installed</td>
+</tr>
+<tr>
+<td>2c</td>
+<td>same as 2</td>
+<td>cold</td>
+<td><code>--force --omit=optional</code> (the Dockerfile's flags)</td>
+<td><code>EINTEGRITY</code>, exit 1</td>
+</tr>
+<tr>
+<td>3</td>
+<td>correctly regenerated after the tag exists</td>
+<td>any</td>
+<td>plain</td>
+<td>exit 0, installs the new package</td>
+</tr>
+<tr>
+<td>4</td>
+<td>stale (as 1)</td>
+<td>cold</td>
+<td><code>--force --omit=optional</code></td>
+<td><code>EUSAGE</code>, exit 1</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Row 1 is the point.</strong> The stale lock produces a loud, specific, exit-1 failure that names
+both versions, and installs nothing. That is the correct failure: it stops the build and
+tells the operator exactly what is wrong. Leaving it stale is a feature.</p>
+<p><strong>Row 2 is the trap</strong>, and it is the reason this section exists. Someone "fixing" the lock
+by editing the URL and version but keeping the old integrity hash gets a <strong>green build that
+installs the wrong code</strong>. npm resolved the stale hash against its content-addressable
+cache, found the old tarball, and used it — exit 0, no warning. In the real case that old
+tarball is <code>234d47c8</code>'s archive, which is in the npm cache of every machine that has ever
+installed dev. The lock would say v0.0.14; the running code would be <code>234d47c8</code>.</p>
+<p>Rows 2b and 2c are the consolation: the failure mode is cache-dependent, and the official
+Docker build is safe from it. The Dockerfile runs <code>npm ci --cache /tmp/empty-cache
+--omit=optional --force</code> — always a cold cache — so it gets <code>EINTEGRITY</code> and fails loudly.
+<code>--force</code> does <strong>not</strong> defeat either check; I tested it specifically because the Dockerfile
+uses it. So the silent-wrong-install hazard applies to developer machines and to any CI
+runner with a warm npm cache, not to the published image.</p>
+<p><strong>The rule.</strong> Do not touch <code>package-lock.json</code> until the tag is pushed. Then regenerate it
+with npm (<code>npm install --package-lock-only nightscout-connect</code>), never by hand, and commit
+it in the same PR as the <code>package.json</code> change.</p>
+<blockquote>
+<p><strong>VERIFIER CORRECTION — struck, not deleted.</strong> The original text ended: <em>"Gate rule R3 is
+the mechanical check that this happened."</em> ~~R3 is the mechanical check that this
+happened.~~ <strong>It is not.</strong> R3 compares three <em>spec strings</em> — <code>package.json</code>'s spec, the
+lockfile root's spec, and the lockfile entry's <code>resolved</code>. In the row-2 trap all three
+agree; only <code>integrity</code> is stale. <code>connector-pin-agreement-gate.js</code> reads <code>integrity</code>
+into <code>lockIntegrity</code> in <code>observe()</code> and <strong>no rule ever uses it</strong> (verified:
+<code>grep -n integrity tools/qc/connector-pin-agreement-gate.js</code> returns only the three
+observation lines). Reproduced on a synthetic fixture whose lockfiles carry the literal
+integrity string <code>"sha512-x"</code>: the gate returns <strong>PASS, exit 0</strong>. So the single most
+dangerous state this section identifies — a lockfile whose URL and version are current
+and whose hash still addresses the old tarball — is caught by <strong>no gate rule at all</strong>.
+What catches it is <code>npm ci</code> on a <strong>cold</strong> cache (rows 2b/2c), which is the published
+Docker build but not a developer laptop or a warm CI runner.</p>
+<p>R3 <em>does</em> catch the deliberately-stale state of row 1, which is what §F.2's "R3 flips to
+FAIL" refers to. That claim stands; only the sentence above it was too broad.
+A proposed register entry for the gate gap is in the verifier's return value.</p>
+</blockquote>
+<hr />
+<h2 id="5-d-what-each-branchs-operators-actually-receive-and-when">5. D. What each branch's operators actually receive, and when<a class="headerlink" href="#5-d-what-each-branchs-operators-actually-receive-and-when" title="Permanent link">&para;</a></h2>
+<p>This is the section that answers "do the log-redaction fixes reach anyone", and the answer
+is not the one the brief expected.</p>
+<h3 id="d1-how-a-connector-fix-reaches-an-operator-at-all">D.1 How a connector fix reaches an operator at all<a class="headerlink" href="#d1-how-a-connector-fix-reaches-an-operator-at-all" title="Permanent link">&para;</a></h3>
+<p>There is exactly one path, and it has three gates in series:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>connector commit
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>  -&gt; a connector TAG is pushed                                  (human, step B.1)
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>  -&gt; a cgm-remote-monitor package.json pin moves to that tag     (human, a PR)
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>  -&gt; a cgm-remote-monitor RELEASE ships that branch              (human, a release)
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>  -&gt; the operator upgrades, or pulls a new Docker image
+</code></pre></div>
+<p>Nothing floats. Every pin is a fixed tarball URL, so no operator receives a connector
+change without a cgm-remote-monitor release. Merging in the connector repository ships to
+nobody — the brief's first consequence, confirmed. What the brief gets wrong is which
+release matters: it is not only dev's.</p>
+<h3 id="d2-the-table">D.2 The table<a class="headerlink" href="#d2-the-table" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>branch</th>
+<th>version</th>
+<th>who runs it</th>
+<th>connector today</th>
+<th>log-redaction state <strong>today</strong></th>
+<th>what moving the pin gives them</th>
+<th>when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>master</code></td>
+<td>15.0.8</td>
+<td><strong>every operator on a current release</strong></td>
+<td>v0.0.13 tag</td>
+<td><strong>Leaking. Unconditionally.</strong> The plaintext source password for whichever source is configured, printed at every boot by <code>index.js:54</code>; plus MiniMed cookies/tokens/patient lists, Dexcom auth bodies, LibreLinkUp <code>authTicket</code>, Glooko auth headers and body, and every CGM batch via <code>INTERNAL PERSISTENCE</code>. No flag disables any of it.</td>
+<td>The whole redaction, plus BF-34</td>
+<td><strong>Never, on current plans.</strong> No proposal moves master's pin. See E.2.</td>
+</tr>
+<tr>
+<td><code>dev</code></td>
+<td>15.0.9 candidate</td>
+<td>nobody yet; everyone after 15.0.9</td>
+<td><code>234d47c</code></td>
+<td><strong>Already redacted</strong>, by the independent logger rewrite. Debug output is opt-in via <code>DEBUG_LOGGING</code>/<code>CONNECT_DEBUG</code>.</td>
+<td>BF-34, the MiniMed contract fix, the listener-release fix, a nameable version — <strong>not</strong> redaction</td>
+<td>On 15.0.9 release, if step B.3 lands</td>
+</tr>
+<tr>
+<td><code>chore/nightscout-modernization</code> (cut 5)</td>
+<td>15.0.9</td>
+<td>nobody; future release train</td>
+<td><code>b77e5bb</code></td>
+<td>Already redacted (contains both lines)</td>
+<td>BF-34 and the release tag only (2 commits)</td>
+<td>Whenever cut 5 ships</td>
+</tr>
+<tr>
+<td>cuts 1–3</td>
+<td>15.0.9</td>
+<td>nobody</td>
+<td>v0.0.13 tag</td>
+<td><strong>Leaking</strong>, same as master</td>
+<td>The whole redaction</td>
+<td>Whenever those cuts ship — and the adopted train ships cut 1 and cut 2 <strong>early</strong></td>
+</tr>
+<tr>
+<td>cut 4</td>
+<td>15.0.9</td>
+<td>nobody</td>
+<td><code>c962a13f</code></td>
+<td>Partly: MiniMed and Dexcom redacted, <strong>LibreLinkUp still leaking</strong></td>
+<td>LibreLinkUp redaction, BF-34</td>
+<td>Held back longest on the adopted train</td>
+</tr>
+</tbody>
+</table>
+<h3 id="d3-the-finding-the-maintainer-needs">D.3 The finding the maintainer needs<a class="headerlink" href="#d3-the-finding-the-maintainer-needs" title="Permanent link">&para;</a></h3>
+<p><strong>The log-redaction fixes currently reach nobody who is not already covered, and the
+population most exposed is the one nobody is proposing to fix: operators on master.</strong></p>
+<p>The adopted release train makes this worse before better. Cuts 1 and 2 are scheduled as the
+first two low-blast-radius releases after 15.0.9 — and <strong>both still pin v0.0.13</strong>. If they
+ship as they stand, operators who upgrade to cut 1 or cut 2 move from a leaking connector
+to... the same leaking connector, in a release that was chosen for being safe. Cut 4, which
+carries most of the redaction, is held back the longest.</p>
+<p>That is a sequencing inversion worth surfacing on its own, independent of everything else
+in this document. It is cheap to fix: cuts 1–3 pin the v0.0.13 tag, so moving them to
+v0.0.14 is the same one-line change as dev's, with no incomparability to reason about.</p>
+<p><em>(VERIFIER QUALIFICATION. "Cheap" is true of the edit on each cut branch and false of
+landing it. GT2 measured that cuts 1–4 are each </em><em>59 commits behind <code>origin/dev</code></em><em> and
+conflict against it under <code>git merge-tree --write-tree</code> in 4–5 files — and <code>package.json</code>
+and <code>package-lock.json</code> are among the conflicting files on every one of them. So the pin
+edit is one line, but it lands inside a merge that already has to be resolved by hand in
+exactly those two files. Do not schedule it as a five-minute change.)</em></p>
+<h3 id="d4-what-leaking-concretely-means-on-master">D.4 What "leaking" concretely means on master<a class="headerlink" href="#d4-what-leaking-concretely-means-on-master" title="Permanent link">&para;</a></h3>
+<p>For an operator running Nightscout 15.0.8 with <code>CONNECT_SOURCE</code> configured, the process log
+receives, with no configuration that turns it off:</p>
+<ul>
+<li><strong>At every boot, for every source, the plaintext source credentials.</strong>
+  <code>index.js:54</code> is <code>console.log("INPUT PARAMS", spec, validated.config)</code>, and
+  <code>validated.config</code> is the object the source's own <code>validate()</code> builds — for Dexcom it
+  carries <code>sharePassword</code>, for MiniMed <code>carelinkPassword</code>, for LibreLinkUp
+  <code>linkUpPassword</code>, for Glooko the Glooko password. <code>index.js:57</code> prints the whole
+  <code>validated</code> object again when the configuration is rejected. This is the most universal
+  of the leaks: it does not depend on which source is selected, and it happens before any
+  network call. <em>(Added by the verifier; the original enumeration omitted it. Measured by
+  reading <code>index.js:20-60</code> and <code>lib/sources/dexcomshare.js:291-316</code> in the v0.0.13 tree.)</em></li>
+<li><code>INTERNAL PERSISTENCE &lt;batch&gt;</code> on <strong>every poll cycle</strong> — the full batch object: CGM
+  entries, treatments, profiles, devicestatus.</li>
+<li>On MiniMed: session cookies, bearer tokens, request and response headers, the patient
+  list, and the raw sensor payload (51 live <code>console.*</code> sites in
+  <code>lib/sources/minimedcarelink/index.js</code>). <code>:296</code> logs the login <code>payload</code>, which contains
+  <code>username</code> and <code>password</code> in plaintext.</li>
+<li>On Dexcom: the response body and error message of a failed authentication.</li>
+<li>On LibreLinkUp: the authentication response headers and body, and the session object
+  containing <code>authTicket</code>.</li>
+<li><strong>On Glooko</strong> (named to operators in D.5 but missing from the original list):
+  <code>GLOOKO AUTH</code> prints the authentication response headers and body, and <code>SESSION USER</code>
+  prints the session's user object. The password itself is not logged by the Glooko source
+  — but it is logged by <code>index.js:54</code> above, like every other source's.</li>
+<li><strong>On the <code>nightscout</code> source</strong> (Nightscout-to-Nightscout): 7 live sites including the
+  base URL, the collection queries and the full check response.</li>
+</ul>
+<p><strong>Coverage of this enumeration, measured:</strong> every file under <code>lib/</code> and <code>index.js</code> of the
+v0.0.13 tree was scanned; the per-file live/dynamic counts are <code>index.js</code> 5/3,
+<code>lib/outputs/internal.js</code> 7/5, <code>lib/outputs/nightscout.js</code> 15/14 and
+<code>lib/outputs/filesystem.js</code> 3/3 (both <strong>unreachable</strong> from Nightscout — <code>index.js</code> selects
+<code>{name:'internal'}</code>), <code>lib/outputs/index.js</code> 2/2, <code>lib/sources/minimedcarelink/index.js</code>
+51/50, <code>lib/sources/librelinkup.js</code> 9/8, <code>lib/sources/nightscout.js</code> 7/6,
+<code>lib/sources/dexcomshare.js</code> 5/4, <code>lib/sources/glooko/index.js</code> 4/3,
+<code>lib/sources/glooko/convert.js</code> 1/1, <code>lib/sources/index.js</code> 1/1, <code>lib/trace-axios.js</code> 2/1.
+Totals 112/101, matching the §0.2 table. Nothing under <code>lib/</code> is omitted.</p>
+<p>Where those logs go depends on the deployment — a container log driver, a hosting
+provider's log viewer, a systemd journal, a support forum post. That last one is the
+realistic exposure path: an operator diagnosing "my CGM data stopped" copies their log into
+a public issue.</p>
+<h3 id="d5-operator-facing-note-plain-language">D.5 Operator-facing note (plain language)<a class="headerlink" href="#d5-operator-facing-note-plain-language" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p><strong>If you run Nightscout 15.0.8 and you use the built-in CGM connector</strong>
+(a <code>CONNECT_SOURCE</code> setting for Dexcom Share, LibreLinkUp, Glooko or MiniMed CareLink):</p>
+<p>Your Nightscout log file currently contains the username, password or session token for
+your CGM account, and a copy of your glucose readings. This happens all the time, not
+only when something goes wrong, and there is no setting in 15.0.8 that turns it off.</p>
+<p>This is not a problem with your setup and nothing is wrong with your data. It does not
+affect your readings, your alarms, or anything you see on screen. It matters in one
+situation: <strong>if you share your log with someone else.</strong></p>
+<p>What to do for now:
+- Do not paste your Nightscout log into a public place — a GitHub issue, a Facebook group,
+  a Discord channel — without removing the personal parts first. If you are not sure what
+  to remove, ask for help privately rather than posting it.
+- If you have already posted a log somewhere public, consider changing the password on
+  your CGM account.
+- Check who can see your hosting provider's log viewer.</p>
+<p><strong>How to check your own log, if you want to.</strong> Your log is the text your hosting provider
+shows under "logs", "log stream" or "console output" — it is a record of what the software
+printed while it ran, not part of your Nightscout data. Look for lines that begin with any
+of these: <code>INPUT PARAMS</code>, <code>SUBMITTING LOGIN</code>, <code>LIBRE LINKUP AUTH</code>, <code>GLOOKO AUTH</code>,
+<code>LIBRE SESSION FROM AUTH</code>, <code>INTERNAL PERSISTENCE</code>. Those are the lines that contain your
+account details or your glucose readings. You do not need to change anything on your
+Nightscout site to check this, and there is nothing in the site's settings that stops
+these lines being printed.</p>
+<p><strong>What to expect when the fix reaches you.</strong> Your log will become much quieter — that is
+the fix working, not something breaking. What is <em>not</em> expected is your readings stopping:
+if your graph stops updating, or readings start appearing at the wrong times, after any
+upgrade, that is worth reporting. The quiet log means you cannot rely on the log to spot
+it, so watch the graph itself.</p>
+<p>A fixed version of the connector exists and is being prepared for release. This note will
+be updated when a release carrying it is available.</p>
+<p>This is not medical advice, and nothing here asks you to change anything about your
+insulin, your therapy or your devices. If you have questions about your diabetes care,
+talk to your care team.</p>
+</blockquote>
+<p><em>(Draft wording. A maintainer should decide whether, when and where to publish this. It
+describes a real exposure on a current release and that makes publication a judgement call
+about disclosure timing, not a documentation task. Flagged for the maintainer in §E.2.)</em></p>
+<hr />
+<h2 id="6-e-decisions-that-are-the-maintainers-not-mine">6. E. Decisions that are the maintainer's, not mine<a class="headerlink" href="#6-e-decisions-that-are-the-maintainers-not-mine" title="Permanent link">&para;</a></h2>
+<h3 id="e1-does-1509-take-the-eleven-intervening-connector-commits">E.1 Does 15.0.9 take the eleven intervening connector commits?<a class="headerlink" href="#e1-does-1509-take-the-eleven-intervening-connector-commits" title="Permanent link">&para;</a></h3>
+<p>Moving dev's pin from <code>234d47c</code> to <code>v0.0.14</code> is not a mechanical bump. Measured with
+<code>git rev-list --count 234d47c..649a7de</code>: <strong>11 commits, 7 of them non-merge.</strong> (The brief
+says 9; 9 is the count from v0.0.13 to <code>b77e5bb</code>, cut 5's pin. From dev's pin to the release
+it is 11. Corrected.)</p>
+<p>What comes with it:</p>
+<table>
+<thead>
+<tr>
+<th>commit</th>
+<th>what it changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>9fa2c3c</code></td>
+<td>Dexcom credentials and sessions out of logs — <em>dev already has equivalent redaction</em></td>
+</tr>
+<tr>
+<td><code>5349d47</code></td>
+<td>MiniMed credentials and patient data out of logs — <em>ditto</em></td>
+</tr>
+<tr>
+<td><code>77e2396</code></td>
+<td>internal output payloads out of logs — <em>ditto</em></td>
+</tr>
+<tr>
+<td><code>8406edf</code></td>
+<td><strong>MiniMed glucose and measurement-time status contracts</strong> — a behaviour change on a CGM ingestion path</td>
+</tr>
+<tr>
+<td><code>51b6e6e</code></td>
+<td>connector listeners released and output waits settled on stop</td>
+</tr>
+<tr>
+<td><code>c1cce2a</code></td>
+<td><strong>BF-34</strong>: retry interval precedence, the 30-minute ceiling, <code>jitter:'equal'</code> default</td>
+</tr>
+<tr>
+<td><code>649a7de</code></td>
+<td>version 0.0.13 → 0.0.14</td>
+</tr>
+<tr>
+<td>+4 merges</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>The three redaction commits are, for dev, largely redundant with what it already has (§0.2)
+— they will produce a merged tree, not a behaviour change, on call sites dev has already
+rewritten. The four that genuinely change dev's behaviour are <code>8406edf</code>, <code>51b6e6e</code>,
+<code>c1cce2a</code> and the version bump.</p>
+<p>The one to look at hardest is <code>8406edf</code>: it changes what the MiniMed source reports as
+glucose and measurement time. That is a data-correctness change on a CGM path, in a release
+(15.0.9) that is otherwise a bug-fix release. GT4 separately classifies the v0.0.14 API
+changes as breaking and argues the connector should be <strong>0.1.0, not 0.0.14</strong> — reversed
+option precedence, a changed default, and a new <code>throw</code>. That recommendation and this pin
+move interact: if the maintainer takes GT4's advice, the tag to push in step B.1 is
+<code>v0.1.0</code> and every URL in this document changes accordingly. <strong>That is a decision to make
+before step B.1, not after</strong>, because the tag cannot be moved once pushed.</p>
+<p><strong>This is a release-content decision.</strong> I have no basis to make it.</p>
+<h3 id="e2-does-master-get-a-connector-fix-and-is-the-exposure-disclosed">E.2 Does master get a connector fix, and is the exposure disclosed?<a class="headerlink" href="#e2-does-master-get-a-connector-fix-and-is-the-exposure-disclosed" title="Permanent link">&para;</a></h3>
+<p>This is the decision §D.3 forces and it is genuinely uncomfortable, so I will not soften it.</p>
+<p>Operators on 15.0.8 are running a connector that writes CGM credentials and patient data to
+logs unconditionally. No current plan changes that. The options, none of which I am
+recommending:</p>
+<ol>
+<li><strong>Do nothing.</strong> 15.0.9 ships, and 15.0.8 operators remain exposed until they upgrade.
+   Defensible if 15.0.9 is close and adoption is fast.</li>
+<li><strong>Move master's pin to v0.0.14 and cut 15.0.8.1.</strong> Small diff (one line plus a lockfile),
+   but it is a release, with everything that implies. Note it would also need the axios
+   override reconciled (§0.3), or master keeps forcing axios 1.16.0 into a connector that
+   wants <code>^1.18.1</code>. <em>(VERIFIER: "small diff" describes the cgm-remote-monitor change, not
+   the behaviour delta. master is on the v0.0.13 tag, so this option moves it across
+   </em><em>all 11 commits</em><em> of <code>b394411..649a7de</code> — measured — including <code>8406edf</code>'s MiniMed
+   glucose/measurement-time contract change and <code>c1cce2a</code>'s retry-timing change. That is
+   strictly more connector change than the dev bump of §E.1, on the branch every current
+   operator runs, in what would be a patch release. If the goal is only to stop the log
+   leak, <code>234d47c</code> alone achieves it with less behaviour change — at the cost of pinning
+   an unnameable commit, which is what the rest of this document argues against.)</em></li>
+<li><strong>Move cuts 1–3 to v0.0.14 before they ship</strong> (§D.3). Cheap, mechanical, and fixes the
+   sequencing inversion regardless of what happens to master.</li>
+<li><strong>Publish the operator note in §D.5 now</strong>, so people stop pasting logs into public
+   issues, and let the code fix follow.</li>
+</ol>
+<p>Options 3 and 4 are cheap and independent of 1 and 2.</p>
+<p>There is also a disclosure question underneath: this is a credential-exposure bug in
+shipping software used by people managing diabetes. Whether it warrants an advisory, a
+quiet fix, or a note in release notes is a maintainer and possibly a Foundation decision,
+not an engineering one. I am flagging it rather than deciding it.</p>
+<h3 id="e3-which-tag-shape-if-the-release-asset-option-is-taken">E.3 Which tag shape, if the release-asset option is taken<a class="headerlink" href="#e3-which-tag-shape-if-the-release-asset-option-is-taken" title="Permanent link">&para;</a></h3>
+<p>§A's weakness paragraph. Attaching an <code>npm pack</code> tarball as a GitHub release asset and
+pinning that is byte-stable where an auto-generated archive is not. It changes the release
+procedure. Maintainer's call; not required by anything measured here.</p>
+<hr />
+<h2 id="7-f-preventing-recurrence-the-whole-set-gate">7. F. Preventing recurrence: the whole-set gate<a class="headerlink" href="#7-f-preventing-recurrence-the-whole-set-gate" title="Permanent link">&para;</a></h2>
+<h3 id="f1-what-it-has-to-check-and-why-single-branch-checks-cannot">F.1 What it has to check, and why single-branch checks cannot<a class="headerlink" href="#f1-what-it-has-to-check-and-why-single-branch-checks-cannot" title="Permanent link">&para;</a></h3>
+<p>Every branch's pin is individually defensible. The defect is a property of the <strong>set</strong>:
+four pin values, two ref shapes, three <code>overrides</code> states, and four different code trees all
+reporting <code>nightscout-connect@0.0.13</code> to <code>npm ls</code>. A per-branch lint sees nothing wrong. So
+the gate takes a ref list and compares across it.</p>
+<p><code>tools/qc/connector-pin-agreement-gate.js</code> (274 lines, present in the working tree,
+untracked at the time of writing). Read-only: every fact comes from <code>git show &lt;ref&gt;:&lt;file&gt;</code>.
+It never checks out, writes to, or fetches in either repository, so it is safe to run against
+the shared checkout while other sessions are live.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>node tools/qc/connector-pin-agreement-gate.js \
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>     --repo externals/cgm-remote-monitor-official \
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>     --connect-repo externals/nightscout-connect \
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>     --ref origin/master --ref origin/dev --ref origin/chore/nightscout-modernization
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>rule</th>
+<th>what it asserts</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R1 SHAPE</td>
+<td>every ref declares the dependency in the same shape (npm-range / tag-tarball / commit-tarball / git-shorthand)</td>
+</tr>
+<tr>
+<td>R2 NAMEABLE</td>
+<td>every pin carries a name a release note can cite; a bare-commit tarball does not</td>
+</tr>
+<tr>
+<td>R3 LOCK-AGREE</td>
+<td><code>package.json</code> spec == lockfile root spec == lockfile <code>resolved</code>, per ref</td>
+</tr>
+<tr>
+<td>R4 VERSION-1-1</td>
+<td>across the set, one reported <code>version</code> maps to exactly one tree. <strong>The "and vice versa" this row originally claimed is NOT implemented</strong> — see the note below</td>
+</tr>
+<tr>
+<td>R5 OVERRIDES</td>
+<td><code>overrides[&lt;pkg&gt;]</code> is identical across refs, or absent from all</td>
+</tr>
+<tr>
+<td>R6 ORDERED</td>
+<td>the pinned commits are totally ordered by ancestry, so the set has a newest member containing all the others. <strong>Skipped, not passed, without <code>--connect-repo</code></strong></td>
+</tr>
+</tbody>
+</table>
+<p>Exit codes: <code>0</code> pass, <code>1</code> at least one rule failed, <code>2</code> usage, <strong><code>3</code> a rule did not run</strong>.
+The last one is the anti-vacuity design: a skipped rule exiting 0 is how a gate quietly
+dies, so a skip fails unless the caller passes <code>--allow-skip</code>. Verified:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>skip, no --allow-skip    -&gt; exit=3
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>skip, with --allow-skip  -&gt; exit=0
+</code></pre></div>
+<blockquote>
+<p><strong>VERIFIER CORRECTIONS to this table, two of them.</strong> Both reproduced on a synthetic
+fixture built for this review (two throwaway repos in the scratchpad; no worktree
+touched).</p>
+<ol>
+<li><strong>R4 is one-directional.</strong> The implementation buckets refs by <code>lockVersion</code> and fails
+   only when one version maps to more than one <code>resolved</code> URL. The reverse — one tree
+   reporting two different versions — is not checked. A fixture in which one ref's lock
+   claims version <code>7.7.7</code> while resolving the same tag tarball as its siblings returns
+   <strong>PASS, exit 0</strong>. The gate's own docblock carries the same overclaim. The direction
+   that <em>is</em> implemented is the one that fires on the real repository today (four trees
+   all reporting <code>0.0.13</code>), so §F.2's R4 result stands; the rule's description did not.</li>
+<li><strong>R3 does not look at <code>integrity</code></strong> — see the boxed correction at the end of §C. The
+   row-2 trap of §C passes every rule in this table.</li>
+</ol>
+<p>Independently confirmed as stated: R1, R2, R4, R5 and R6 all fire on the real seven-ref
+set with R3 passing (exit 1); substituting <code>bf/connect-pin</code> for <code>origin/dev</code> flips R6 to
+PASS and R3 to FAIL; and the skip path returns exit 3 without <code>--allow-skip</code> and exit 0
+with it (measured on a two-ref set where R1-R5 pass, since a rule failure otherwise
+masks the skip in the exit code).</p>
+<p>One more, tool-side and not fixable from this document: the gate's own header comment
+lists only exit codes 0/1/2 (omitting 3) and says "three different code trees all
+reporting <code>nightscout-connect@0.0.13</code>" where the run reports <strong>four</strong>.</p>
+</blockquote>
+<h3 id="f2-what-it-says-about-the-real-repository-today">F.2 What it says about the real repository today<a class="headerlink" href="#f2-what-it-says-about-the-real-repository-today" title="Permanent link">&para;</a></h3>
+<p>Full seven-ref run, verdict <strong>FAIL (5 of 6 rules)</strong>, exit 1:</p>
+<ul>
+<li><strong>R1</strong> fails: 4 refs tag-tarball, 3 refs commit-tarball.</li>
+<li><strong>R2</strong> fails: dev, cut 4 and cut 5 pin unnameable commits.</li>
+<li><strong>R3</strong> passes: every ref's lock currently agrees with its own manifest.</li>
+<li><strong>R4</strong> fails: version <code>"0.0.13"</code> is reported by <strong>4 different trees</strong>.</li>
+<li><strong>R5</strong> fails: three different <code>overrides</code> states (§0.3) — <em>this is how the axios defect
+  was found; no human had noticed it.</em></li>
+<li><strong>R6</strong> fails: dev's pin is incomparable with master's, with cuts 1–3's, and with cut 4's.</li>
+</ul>
+<p>With <code>bf/connect-pin</code> substituted for <code>origin/dev</code>, <strong>R6 flips to PASS</strong> — v0.0.14 contains
+every other pin — and R3 flips to FAIL, correctly reporting the deliberately stale lockfile
+of §C. That is the gate tracking the migration: R6 is what the pin move fixes, R3 is what
+step B.2 fixes.</p>
+<h3 id="f3-break-it-matrix-rule-2-a-check-that-has-never-failed-is-not-evidence">F.3 Break-it matrix (rule 2: a check that has never failed is not evidence)<a class="headerlink" href="#f3-break-it-matrix-rule-2-a-check-that-has-never-failed-is-not-evidence" title="Permanent link">&para;</a></h3>
+<p>Asserting the gate would catch a disagreement is not enough. I built a synthetic fixture —
+a throwaway cgm-remote-monitor-shaped repo with three branches and a throwaway connector
+repo with a tagged linear history plus one sibling commit, both created by me in the
+scratchpad, <strong>no real worktree touched</strong> (rule 5) — put it in the intended end state,
+confirmed the gate <strong>passes</strong>, then broke one rule at a time.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>mutation</th>
+<th>rules fired</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B0</td>
+<td>control: end state, untouched</td>
+<td><strong>none — PASS</strong></td>
+</tr>
+<tr>
+<td>B1</td>
+<td>dev declares the same tag via <code>git+…#v0.0.14</code> shorthand</td>
+<td><code>R1</code></td>
+</tr>
+<tr>
+<td>B2</td>
+<td>all three refs pin the same commit by SHA instead of by tag</td>
+<td><code>R2</code></td>
+</tr>
+<tr>
+<td>B3</td>
+<td>dev's manifest moves to v0.0.14, lock left on v0.0.13 (<strong>the <code>bf/connect-pin</code> state</strong>)</td>
+<td><code>R3</code></td>
+</tr>
+<tr>
+<td>B4</td>
+<td>master's lock claims version <code>0.0.14</code> while resolving the v0.0.13 tree</td>
+<td><code>R4</code></td>
+</tr>
+<tr>
+<td>B5</td>
+<td>modernization drops the <code>nightscout-connect</code> override</td>
+<td><code>R5</code></td>
+</tr>
+<tr>
+<td>B6</td>
+<td>dev pins a tag on a sibling line that v0.0.14 does not contain</td>
+<td><code>R6</code></td>
+</tr>
+<tr>
+<td>B7</td>
+<td>control: after restoring every mutation</td>
+<td><strong>none — PASS</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Every rule fires <strong>alone</strong> on a targeted break, and the control passes both before and
+after. The gate distinguishes the states it claims to distinguish, and it is not a gate that
+can never pass — B0 and B7 rule out the failure mode where a check is red on everything.</p>
+<p>Isolating B4 to R4 alone required the lock to <em>lie</em> about its version while both refs stayed
+tag-shaped, which is worth noting because it is also the most realistic way R4 fires in
+practice: a lockfile whose recorded version no longer matches the tree it resolves.</p>
+<p><em>(VERIFIER: B4 has a precondition the row does not state. It fires only when the ref set
+spans </em><em>two different tags</em><em>, so that the lying version collides with a sibling's. On a
+fixture where all three refs pin the same tag, the same mutation — lock version changed,
+<code>resolved</code> left alone — passes at exit 0. Reproduced both ways.)</em></p>
+<h3 id="f4-queue-entry">F.4 Queue entry<a class="headerlink" href="#f4-queue-entry" title="Permanent link">&para;</a></h3>
+<p>Proposed as a <code>static</code> gate — cheap, local, read-only, no database, no network — runnable by
+default in <code>make queue-status</code>. Returned in <code>queue_items</code> rather than written here, since
+<code>queue/work-queue.yaml</code> is being edited by other sessions.</p>
+<p>The honest limitation: the gate compares refs <strong>as they exist in the local clone</strong>. It
+cannot see a ref that has not been fetched, so in CI it needs the fetch to precede it, and
+a stale local clone makes it report on stale facts. That is a real vacuity risk and it is
+why R6 skips loudly rather than passing when the connector repo is absent.</p>
+<hr />
+<h2 id="8-open-questions">8. Open questions<a class="headerlink" href="#8-open-questions" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Was nightscout-connect 0.0.13 ever published to npm?</strong> 0.0.11 and 0.0.12 were
+   (registry <code>resolved</code> URLs with integrity in <code>97a603fb</code>'s lockfile). The move to <code>github:</code>
+   at <code>a91e8ee4</code> suggests 0.0.13 was not, but settling it needs <code>npm view nightscout-connect
+   versions</code>, a network call I did not make. Matters only if alternative 1 is reconsidered.
+   <strong>Settled by:</strong> a maintainer with network access, in one command.</li>
+<li><strong>v0.0.14 or v0.1.0?</strong> GT4 argues the connector's API changes are breaking and the release
+   should be 0.1.0. I did not re-derive that. It must be decided <strong>before</strong> step B.1 because
+   a pushed tag cannot be moved. <strong>Settled by:</strong> the maintainer, against GT4's report.</li>
+<li><strong>Does master's axios 1.16.0 actually break the connector at runtime?</strong> I established the
+   constraint violation (<code>1.16.0</code> does not satisfy <code>^1.18.1</code>) but did not hunt for an axios
+   API the connector uses that 1.16.0 lacks. <strong>Settled by:</strong> running the connector's own
+   suite against axios 1.16.0 — cheap, and nobody has done it.</li>
+<li><strong>Is GitHub's archive tarball byte-stable enough to pin integrity against?</strong> INFERENCE
+   from a past incident; not verified. Decides whether §E.3's release-asset option is worth
+   the process change. <strong>Settled by:</strong> maintainer judgement plus GitHub's current docs.</li>
+<li><strong>Do the redaction commits and the logger rewrite merge cleanly in behaviour, not just in
+   text?</strong> v0.0.14 contains both lines and its tree is clean, but nobody has run the
+   connector against a live vendor. The connector's own evidence says no real account has
+   been used. <strong>Settled by:</strong> a maintainer with a test vendor account, or accepted as a
+   known limit.</li>
+<li><strong>Where do operator logs actually go, per deployment?</strong> §D.4's exposure assessment assumes
+   the common cases. I did not survey hosting providers. <strong>Settled by:</strong> whoever writes the
+   disclosure in E.2, if one is written.</li>
+</ol>
+<hr />
+<h2 id="appendix-a--how-things-were-measured">Appendix A — how things were measured<a class="headerlink" href="#appendix-a--how-things-were-measured" title="Permanent link">&para;</a></h2>
+<p><strong>A.1 Pins, ancestry, overrides.</strong> All from <code>git show &lt;ref&gt;:package.json</code> and
+<code>git show &lt;ref&gt;:package-lock.json</code> parsed as JSON, in
+<code>externals/cgm-remote-monitor-official</code>; ancestry from <code>git merge-base --is-ancestor</code> and
+<code>git rev-list --count</code> in <code>externals/nightscout-connect</code>. Read-only; no checkout, no fetch,
+no worktree created or removed in either repository.</p>
+<p><strong>A.2 Log-site census.</strong> Each pinned tree extracted with <code>git archive &lt;sha&gt; | tar -x</code> into
+the scratchpad. A Python scanner strips comments and string literals with a small state
+machine, finds <code>console.(log|error|warn|debug|info)(</code> call sites under <code>lib/</code> and
+<code>index.js</code> (excluding <code>test/</code>), balances parentheses to capture the argument text, and
+classifies a site as "dynamic" if anything remains after removing string literals,
+whitespace, commas and <code>+</code>.</p>
+<p><em>Correction to my own first pass, recorded because it changed the numbers materially:</em> the
+initial scanner did <strong>not</strong> strip comments, and the redaction work comments code out rather
+than deleting it. That inflated every count — v0.0.14 appeared to have 52 dynamic sites when
+it has 20. The table in §0.2 is from the corrected scanner.</p>
+<p>A related distinction the scanner makes and a raw grep does not: cut 4's MiniMed block
+still has 47 live <code>console.*</code> calls, but <strong>none</strong> of them passes a dynamic argument — the
+redaction there replaced the arguments with static strings rather than removing the calls.
+v0.0.14 has 0 <code>console.*</code> in that file at all. Both count as redacted; they are not the
+same edit.</p>
+<p>Reachability of the residual sites in v0.0.14 was checked by reading <code>index.js</code>: the
+embedded cgm-remote-monitor path selects <code>{ name: 'internal', logger: log }</code>, so
+<code>lib/outputs/nightscout.js</code>, <code>lib/outputs/filesystem.js</code> and the <code>default</code> output are
+unreachable from Nightscout; and <code>lib/trace-axios.js</code> is reached only via
+<code>config.capture &amp;&amp; cfg.tracker</code> in <code>lib/builder.js:86</code>, which is off by default.</p>
+<p><strong>A.3 npm experiments.</strong> npm 11.12.1, Node v24.15.0, entirely offline (<code>--offline</code>), in a
+scratchpad directory. Two packages built with <code>npm pack</code>, identical but for one string, so
+their SHA-512s differ. A three-line <code>package.json</code>/<code>package-lock.json</code> pair was mutated per
+row of the §C table; <code>--cache ./coldcache</code> gave a cold cache. Nothing in the real tree was
+installed, and no registry or GitHub endpoint was contacted.</p>
+<p><strong>A.4 Semver.</strong> <code>externals/work/crm-bf-reads/node_modules/semver</code> v6.3.1 (npm's own
+implementation), via <code>semver.satisfies</code> and <code>new semver.Range(r).set</code>.</p>
+<p><strong>A.5 Gate fixture.</strong> Two throwaway git repositories created by me under the scratchpad.
+No existing worktree under <code>externals/work/</code> was read-modified, repointed or removed.</p>
+<hr />
+<h2 id="appendix-b--corrections-this-document-makes-to-other-documents">Appendix B — corrections this document makes to other documents<a class="headerlink" href="#appendix-b--corrections-this-document-makes-to-other-documents" title="Permanent link">&para;</a></h2>
+<p>Listed here for the reconciliation agent. <strong>I edited none of these files.</strong></p>
+<table>
+<thead>
+<tr>
+<th>document</th>
+<th>says</th>
+<th>measured</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>phase0-pr-sequencing-2026-09-15.md:388</code></td>
+<td>master pins <code>"^0.0.12"</code> from npm</td>
+<td>master pins the <code>v0.0.13</code> <strong>tag tarball</strong>; no npm range exists anywhere in the tree</td>
+</tr>
+<tr>
+<td>task brief / programme preamble</td>
+<td>"three pinning mechanisms"</td>
+<td>one mechanism (GitHub archive tarball), two ref shapes, <strong>five</strong> pins in flight incl. cut 4's, plus a fourth undocumented axis (<code>overrides</code>)</td>
+</tr>
+<tr>
+<td>task brief</td>
+<td>dev's pin ships without three log-redaction fixes; making logging opt-in "does not stop them happening"</td>
+<td>dev's pin contains an independent, <strong>more complete</strong> redaction; the leaking pin is <strong>master's</strong></td>
+</tr>
+<tr>
+<td>task brief</td>
+<td>moving dev's pin pulls in 9 commits</td>
+<td><strong>11</strong> (7 non-merge). 9 is v0.0.13 → <code>b77e5bb</code></td>
+</tr>
+<tr>
+<td>task brief / GT4</td>
+<td>cut 4 "has all the redaction"</td>
+<td>cut 4 still leaks LibreLinkUp auth headers, response bodies and the session <code>authTicket</code></td>
+</tr>
+<tr>
+<td>task brief</td>
+<td>"234d47c8 is an ancestor of b77e5bb, so the line is linear"</td>
+<td>true, but the <strong>set</strong> is not totally ordered: dev's pin and cut 4's are incomparable</td>
+</tr>
+<tr>
+<td>— (unrecorded anywhere)</td>
+<td>—</td>
+<td>master forces <code>nightscout-connect → axios 1.16.0</code>, violating the connector's <code>^1.18.1</code>; <code>overrides</code> suppresses the ERESOLVE</td>
+</tr>
+<tr>
+<td>— (unrecorded anywhere)</td>
+<td>—</td>
+<td>cuts 1, 2 and 3 pin v0.0.13 and are scheduled to ship <strong>first</strong>, so the adopted train ships the leaking connector to upgraders before the fixed one</td>
+</tr>
+<tr>
+<td>commit <code>0807eb1c</code> message</td>
+<td>states the refuted security rationale</td>
+<td>should be amended before the PR is opened (§B.3)</td>
+</tr>
+<tr>
+<td>this document, §0.1</td>
+<td><code>^0.0.12</code> was replaced "fourteen months ago"</td>
+<td>replaced <strong>2026-07-07</strong>, about two months before measurement; 2023-10-12 is when <code>^0.0.12</code> was <em>adopted</em></td>
+</tr>
+<tr>
+<td>this document, §0.2</td>
+<td>dev's pin is "the safest of the three pins in the brief"</td>
+<td>cut 5's <code>b77e5bb</code> has the identical census and <strong>contains</strong> <code>234d47c</code> plus the cut-4 redaction line; dev's is tied at best</td>
+</tr>
+<tr>
+<td>this document, §0.2</td>
+<td>cut 4's LibreLinkUp: "4 live sites"</td>
+<td>9 live <code>console.*</code> sites, 8 dynamic; four print auth headers/bodies or the <code>authTicket</code> session, one prints the glucose batch</td>
+</tr>
+<tr>
+<td>this document, §D.4</td>
+<td>enumerates MiniMed / Dexcom / LibreLinkUp / internal output</td>
+<td>omitted the <strong>boot-time <code>INPUT PARAMS</code> log of the validated source config</strong>, which prints the plaintext password for <em>every</em> source, and omitted <strong>Glooko</strong> and the <code>nightscout</code> source</td>
+</tr>
+<tr>
+<td>this document, §C</td>
+<td>"Gate rule R3 is the mechanical check that this happened"</td>
+<td>R3 compares spec strings only; <code>integrity</code> is observed and never used by any rule, so §C's row-2 trap passes the gate at exit 0</td>
+</tr>
+<tr>
+<td>this document, §F.1</td>
+<td>R4 is one-to-one "and vice versa"</td>
+<td>only the version→tree direction is implemented; one tree reporting two versions passes</td>
+</tr>
+<tr>
+<td><code>tools/qc/connector-pin-agreement-gate.js</code> header</td>
+<td>exit codes "0, 1, 2"; "three different code trees"</td>
+<td>the tool also exits <strong>3</strong> on a skip, and the real run reports <strong>four</strong> trees</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

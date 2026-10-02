@@ -1,0 +1,8641 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/60-research/continuous-physiological-state-modeling-2026-04-05.html">
+      
+      
+        <link rel="prev" href="bilateral-deconfounding-report-2026-04-19.html">
+      
+      
+        <link rel="next" href="cumulative-integral-slow-state-report-2026-04-10.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Continuous Physiological State Modeling: From Sparse Events to Functional Signals - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#continuous-physiological-state-modeling-from-sparse-events-to-functional-signals" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Continuous Physiological State Modeling: From Sparse Events to Functional Signals
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../30-design/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_27" id="__nav_5_27_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_27_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_27">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    60-research/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="exp-2844-phenotype-drilldown-report-2026-04-22.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-0001 to 2869
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="exp-2870-envelope-crossover-report-2026-04-22.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2870 to 2909
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="exp-2910-eight-dim-regrade-2026-04-23.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2910 to 2949
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="exp-2950-uniform-action-curve-2026-04-23.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2950 to 2999
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="exp-3000-3003-cf-replay-maturation-2026-04-25.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-3000 and later
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="AUTORESEARCH-SESSION-2026-04-26.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Programme, closeouts and syntheses
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="accuracy-validation-2026-04-05.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Productionization and pipelines
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="capability-report-clinical-decision-support.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Capability reports
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="circadian-therapy-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Therapy
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="aid-aware-settings-report-2026-04-09.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings and profiles
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="natural-experiment-deconfounding-2026-04-09.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Natural experiments
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27_13" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5_27_13" id="__nav_5_27_13_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EGP, supply-demand and deconfounding
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_27_13_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_27_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    EGP, supply-demand and deconfounding
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bilateral-deconfounding-report-2026-04-19.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bilateral Deconfounding: Supply + Demand Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuous Physiological State Modeling: From Sparse Events to Functional Signals
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="continuous-physiological-state-modeling-2026-04-05.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuous Physiological State Modeling: From Sparse Events to Functional Signals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-the-uvapadova-model-actually-represents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What the UVA/Padova Model Actually Represents
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. What the UVA/Padova Model Actually Represents">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-the-compartment-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 The Compartment Map
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-the-20-state-variables--what-each-represents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 The 20 State Variables — What Each Represents
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-key-physiological-processes-modeled" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Key Physiological Processes Modeled
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.3 Key Physiological Processes Modeled">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#endogenous-glucose-production-egp--the-liver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Endogenous Glucose Production (EGP) — "The Liver"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#insulin-sensitivity--resistance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Insulin Sensitivity / Resistance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#insulin-absorption-subcutaneous--plasma" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Insulin Absorption (Subcutaneous → Plasma)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#carb-absorption-stomach--gut--plasma" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Carb Absorption (Stomach → Gut → Plasma)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-how-sincos-maps-to-sensitivityresistance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 How Sin/Cos Maps to Sensitivity/Resistance
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-core-proposal-continuous-physiological-state-channels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The Core Proposal: Continuous Physiological State Channels
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. The Core Proposal: Continuous Physiological State Channels">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-the-insight" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 The Insight
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-proposed-physics-informed-continuous-state-channels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Proposed: Physics-Informed Continuous State Channels
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.2 Proposed: Physics-Informed Continuous State Channels">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tier-1-physiological-absorption-curves-computable-from-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 1: Physiological Absorption Curves (Computable from Data)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tier-2-b-spline-functional-representations-fda" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 2: B-Spline Functional Representations (FDA)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tier-3-learned-continuous-states-pre-training-hypothesis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 3: Learned Continuous States (Pre-training Hypothesis)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-scaling-bolus-pulses-vs-basal-strokes-vs-endogenous-production" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Scaling: Bolus Pulses vs Basal Strokes vs Endogenous Production
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-insulin-sensitivity-on-sincos--the-circadian-isf-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Insulin Sensitivity on Sin/Cos — The Circadian ISF Map
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-data-science-meta-methods-for-determining-correct-modeling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Data Science Meta-Methods for Determining Correct Modeling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Data Science Meta-Methods for Determining Correct Modeling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-approach-use-uvapadova-as-ground-truth-then-validate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Approach: Use UVA/Padova as Ground Truth, Then Validate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-hypothesis-testing-framework" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Hypothesis Testing Framework
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-bayesian-meta-analysis-for-model-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Bayesian Meta-Analysis for Model Selection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-the-complete-vision-physiology-informed-multi-scale-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. The Complete Vision: Physiology-Informed Multi-Scale Pipeline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. The Complete Vision: Physiology-Informed Multi-Scale Pipeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-properties-of-this-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Properties of This Design:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-proposed-experiment-sequence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Proposed Experiment Sequence
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Proposed Experiment Sequence">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-a-compute--validate-continuous-states" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase A: Compute &amp; Validate Continuous States
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-b-replace-sparse-channels-with-continuous-states" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase B: Replace Sparse Channels with Continuous States
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-c-pre-training-from-uvapadova" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase C: Pre-Training from UVA/Padova
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-d-learned-circadian-isf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase D: Learned Circadian ISF
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-source-code-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Source Code References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cumulative-integral-slow-state-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cumulative Integrals &amp; Slow State Detection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="deconfounding-pipeline-report-2026-04-19.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deconfounding Pipeline: Scientific Methodology &amp; Three-Audience Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="deconfounding-signal-extraction-report-2026-04-19.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deconfounding Signal Extraction: 9-Experiment Research Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="deconfounding-toolkit-2026-04-22.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deconfounding Toolkit for AID / CGM Research
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="demand-calibration-fix-impact-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Demand Calibration Fix: Impact Assessment and Corrected Model Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="demand-calibration-model-improvement-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Demand Calibration &amp; Model Improvement Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="demand-diagnosis-glycogen-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Demand Chain Diagnosis, Rescue Carb Inference, and the Glycogen Pool as Hidden State Variable
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="egp-calibration-report-2026-04-13.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recovery Model Comparison &amp; Attribution — Round 2 Report (Revised)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="egp-deconfounding-report-2026-04-13.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EGP Deconfounding: Supply, Demand, and AID Controller Dynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="egp-dose-isf-report-2026-04-13.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dose-Dependent ISF &amp; Controller Dynamics — Round 3 Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="egp-evidence-synthesis-report-2026-04-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EGP Research Synthesis: Evidence Review and Corrective Reframing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="egp-methodology-validation-report-2026-04-13.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EGP Deconfounding Research — Round 4: Methodology Validation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="egp-phase-separation-report-2026-04-12.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EGP Phase Separation Research — Complete Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="egp-prescriptive-paradox-report-2026-04-13.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EGP Deconfounding Research — Round 5: The Descriptive-Prescriptive Paradox
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="egp-research-synthesis-report-2026-04-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EGP Research Synthesis: Physiology, Data Science &amp; Basal Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="glycogen-deconfounding-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glycogen Proxy Deconfounding and Metabolic Context Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="hypo-supply-demand-decomposition-2026-04-09.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hypoglycemia Through the Supply-Demand Lens: A Decomposition Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="metabolic-flux-report-2026-04-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metabolic Flux &amp; Physiological Encoding Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="metabolic-flux-synthesis-2026-04-07.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metabolic Flux &amp; Physiological Data Science: Comprehensive Synthesis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="multitimescale-supply-demand-report-2026-04-22.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Timescale Supply/Demand Architecture &amp; Triage Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="state-and-egp-integration-report-2026-04-22.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metabolic State &amp; EGP Integration Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="state-aware-harness-parallels-2026-07-01.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State-Aware Agent Harnesses: Parallels and Opportunities (2026-07-01)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="state-transition-audition-report-2026-04-22.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State-Transition Audition Windows — Stream B Triage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="supply-demand-decomposition-report-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supply-Demand Decomposition: Glucose Supply-Side Investigation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="supply-demand-evolution-report-2026-04-07.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    From PK Values to Supply-Demand: The Physics of Glucose Modeling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="unexplained_variance_report_2026-04-22.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unexplained Variance Analysis Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="variability-decomposition-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Variability Source Decomposition &amp; GPU-Accelerated Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="wall-resolution-mechanism-report-2026-04-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-2669: Wall Resolution Mechanism
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="autotune-uam-characterization-report.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Meals and carbohydrates
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="causal-pk-leakage-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Insulin, ISF and pharmacokinetics
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="acceleration-clinical-utility-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clinical, safety and hypoglycaemia
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="aid-author-recommendations-report-2026-04-20.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AID controllers, cohorts and waves
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="centering-dynamics-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forecasting, prediction and classification
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="advanced-architectures-benchmark-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ML methods and architectures
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="canonical/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    canonical/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="collaboration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    collaboration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="external-inventories/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    external-inventories/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="modernization/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    modernization/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="programme/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    programme/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="remedial/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    remedial/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="tenancy/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenancy/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-the-uvapadova-model-actually-represents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What the UVA/Padova Model Actually Represents
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. What the UVA/Padova Model Actually Represents">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-the-compartment-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 The Compartment Map
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-the-20-state-variables--what-each-represents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 The 20 State Variables — What Each Represents
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-key-physiological-processes-modeled" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Key Physiological Processes Modeled
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.3 Key Physiological Processes Modeled">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#endogenous-glucose-production-egp--the-liver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Endogenous Glucose Production (EGP) — "The Liver"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#insulin-sensitivity--resistance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Insulin Sensitivity / Resistance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#insulin-absorption-subcutaneous--plasma" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Insulin Absorption (Subcutaneous → Plasma)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#carb-absorption-stomach--gut--plasma" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Carb Absorption (Stomach → Gut → Plasma)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-how-sincos-maps-to-sensitivityresistance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 How Sin/Cos Maps to Sensitivity/Resistance
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-core-proposal-continuous-physiological-state-channels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The Core Proposal: Continuous Physiological State Channels
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. The Core Proposal: Continuous Physiological State Channels">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-the-insight" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 The Insight
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-proposed-physics-informed-continuous-state-channels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Proposed: Physics-Informed Continuous State Channels
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.2 Proposed: Physics-Informed Continuous State Channels">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tier-1-physiological-absorption-curves-computable-from-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 1: Physiological Absorption Curves (Computable from Data)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tier-2-b-spline-functional-representations-fda" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 2: B-Spline Functional Representations (FDA)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tier-3-learned-continuous-states-pre-training-hypothesis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 3: Learned Continuous States (Pre-training Hypothesis)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-scaling-bolus-pulses-vs-basal-strokes-vs-endogenous-production" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Scaling: Bolus Pulses vs Basal Strokes vs Endogenous Production
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-insulin-sensitivity-on-sincos--the-circadian-isf-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Insulin Sensitivity on Sin/Cos — The Circadian ISF Map
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-data-science-meta-methods-for-determining-correct-modeling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Data Science Meta-Methods for Determining Correct Modeling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Data Science Meta-Methods for Determining Correct Modeling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-approach-use-uvapadova-as-ground-truth-then-validate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Approach: Use UVA/Padova as Ground Truth, Then Validate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-hypothesis-testing-framework" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Hypothesis Testing Framework
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-bayesian-meta-analysis-for-model-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Bayesian Meta-Analysis for Model Selection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-the-complete-vision-physiology-informed-multi-scale-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. The Complete Vision: Physiology-Informed Multi-Scale Pipeline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. The Complete Vision: Physiology-Informed Multi-Scale Pipeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-properties-of-this-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Properties of This Design:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-proposed-experiment-sequence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Proposed Experiment Sequence
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Proposed Experiment Sequence">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-a-compute--validate-continuous-states" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase A: Compute &amp; Validate Continuous States
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-b-replace-sparse-channels-with-continuous-states" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase B: Replace Sparse Channels with Continuous States
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-c-pre-training-from-uvapadova" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase C: Pre-Training from UVA/Padova
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-d-learned-circadian-isf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase D: Learned Circadian ISF
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-source-code-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Source Code References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="continuous-physiological-state-modeling-from-sparse-events-to-functional-signals">Continuous Physiological State Modeling: From Sparse Events to Functional Signals<a class="headerlink" href="#continuous-physiological-state-modeling-from-sparse-events-to-functional-signals" title="Permanent link">&para;</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Record</p>
+<p>Record as of 2026-04-05. A point-in-time document; it is not kept up to date.</p>
+</div>
+<p><strong>Date</strong>: 2026-04-05
+<strong>Context</strong>: Synthesis of UVA/Padova compartment model, oref0 insulin curves,
+cgmsim-lib implementations, and FDA functional analysis — exploring whether we can
+model <strong>continuous metabolic states</strong> (absorption, sensitivity, resistance) rather
+than sparse treatment events, using physiological compartments as a guide.</p>
+<hr />
+<h2 id="1-what-the-uvapadova-model-actually-represents">1. What the UVA/Padova Model Actually Represents<a class="headerlink" href="#1-what-the-uvapadova-model-actually-represents" title="Permanent link">&para;</a></h2>
+<p>The UVA/Padova T1DMS model (<code>externals/cgmsim-lib/src/lt1/core/models/UvaPadova_T1DMS.ts</code>)
+is a <strong>20-state ODE system</strong> that models the flow of glucose and insulin through
+physiological compartments. It does NOT model individual organ-level biochemistry
+(no glycogen store levels, no individual cell insulin receptors). Instead, it models
+<strong>compartmental transfer rates</strong> — how substances move between body compartments.</p>
+<h3 id="11-the-compartment-map">1.1 The Compartment Map<a class="headerlink" href="#11-the-compartment-map" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>                         INPUTS
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>                    ┌──────┴──────┐
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>                    │             │
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>              Carbs (mg/min)   Insulin (pmol/min)
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>                    │             │
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>                    ▼             ▼
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>          ┌─────────────┐  ┌──────────┐
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>          │  STOMACH     │  │ SUBCUT   │
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>          │  Qsto1 ──►  │  │ Isc1 ──► │
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>          │  Qsto2 ──►  │  │ Isc2 ──► │
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>          │  (gastric    │  │ (2-comp  │
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>          │   emptying)  │  │  depot)  │
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>          └──────┬──────┘  └────┬─────┘
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>                 │               │
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>          Rate of            Insulin
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>          Appearance          Appearance
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>          (Ra)                (Rai)
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>                 │               │
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>                 ▼               ▼
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>          ┌──────────┐    ┌──────────┐
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>          │   GUT    │    │  PLASMA  │
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>          │  Qgut    │    │  INSULIN │
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>          │          │    │  Ip ◄──► │
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>          └────┬─────┘    │  Il      │
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>               │          └────┬─────┘
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>               │               │
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>               ▼               ▼
+<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>          ┌──────────────────────────────────────┐
+<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>          │           GLUCOSE SYSTEM              │
+<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>          │                                      │
+<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>          │  Gp (plasma)  ◄──k1/k2──►  Gt (tissue) │
+<a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>          │                                      │
+<a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>          │  Sources:        Sinks:              │
+<a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a>          │  + EGP (liver)   - Uid (insulin-dep) │
+<a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a>          │  + Ra (gut)      - Uii (insulin-indep)│
+<a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a>          │                  - E (renal excretion)│
+<a id="__codelineno-0-37" name="__codelineno-0-37" href="#__codelineno-0-37"></a>          │                  - k1·Gp (to tissue)  │
+<a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a>          └──────────────────────────────────────┘
+<a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a>                 │               │
+<a id="__codelineno-0-40" name="__codelineno-0-40" href="#__codelineno-0-40"></a>                 ▼               ▼
+<a id="__codelineno-0-41" name="__codelineno-0-41" href="#__codelineno-0-41"></a>          ┌──────────┐    ┌──────────────┐
+<a id="__codelineno-0-42" name="__codelineno-0-42" href="#__codelineno-0-42"></a>          │  SENSOR  │    │  DELAYED     │
+<a id="__codelineno-0-43" name="__codelineno-0-43" href="#__codelineno-0-43"></a>          │  Gs      │    │  INSULIN     │
+<a id="__codelineno-0-44" name="__codelineno-0-44" href="#__codelineno-0-44"></a>          │  (CGM    │    │  ACTION      │
+<a id="__codelineno-0-45" name="__codelineno-0-45" href="#__codelineno-0-45"></a>          │  delay)  │    │  XL, I', X   │
+<a id="__codelineno-0-46" name="__codelineno-0-46" href="#__codelineno-0-46"></a>          └──────────┘    │  (3-stage    │
+<a id="__codelineno-0-47" name="__codelineno-0-47" href="#__codelineno-0-47"></a>                          │   cascade)   │
+<a id="__codelineno-0-48" name="__codelineno-0-48" href="#__codelineno-0-48"></a>                          └──────────────┘
+<a id="__codelineno-0-49" name="__codelineno-0-49" href="#__codelineno-0-49"></a>
+<a id="__codelineno-0-50" name="__codelineno-0-50" href="#__codelineno-0-50"></a>          ┌──────────────────────────────────┐
+<a id="__codelineno-0-51" name="__codelineno-0-51" href="#__codelineno-0-51"></a>          │       GLUCAGON SUBSYSTEM         │
+<a id="__codelineno-0-52" name="__codelineno-0-52" href="#__codelineno-0-52"></a>          │  H (plasma), XH (liver action)   │
+<a id="__codelineno-0-53" name="__codelineno-0-53" href="#__codelineno-0-53"></a>          │  SRHs (secretion), Hsc1/Hsc2     │
+<a id="__codelineno-0-54" name="__codelineno-0-54" href="#__codelineno-0-54"></a>          │  Counter-regulatory response to  │
+<a id="__codelineno-0-55" name="__codelineno-0-55" href="#__codelineno-0-55"></a>          │  hypoglycemia                    │
+<a id="__codelineno-0-56" name="__codelineno-0-56" href="#__codelineno-0-56"></a>          └──────────────────────────────────┘
+</code></pre></div>
+<h3 id="12-the-20-state-variables--what-each-represents">1.2 The 20 State Variables — What Each Represents<a class="headerlink" href="#12-the-20-state-variables--what-each-represents" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Unit</th>
+<th>Physiological Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Gp</strong></td>
+<td>mg/kg</td>
+<td>Glucose mass in plasma (accessible compartment)</td>
+</tr>
+<tr>
+<td><strong>Gt</strong></td>
+<td>mg/kg</td>
+<td>Glucose mass in tissue (non-accessible, peripheral)</td>
+</tr>
+<tr>
+<td><strong>Gs</strong></td>
+<td>mg/kg</td>
+<td>Glucose mass at sensor site (CGM reads this, with delay Td≈10min)</td>
+</tr>
+<tr>
+<td><strong>Ip</strong></td>
+<td>pmol/kg</td>
+<td>Insulin mass in plasma</td>
+</tr>
+<tr>
+<td><strong>Il</strong></td>
+<td>pmol/kg</td>
+<td>Insulin mass in liver</td>
+</tr>
+<tr>
+<td><strong>Qsto1</strong></td>
+<td>mg</td>
+<td>Carbs in stomach phase 1 (solid → liquid)</td>
+</tr>
+<tr>
+<td><strong>Qsto2</strong></td>
+<td>mg</td>
+<td>Carbs in stomach phase 2 (liquid → intestine)</td>
+</tr>
+<tr>
+<td><strong>Qgut</strong></td>
+<td>mg</td>
+<td>Carbs in intestine (being absorbed)</td>
+</tr>
+<tr>
+<td><strong>XL</strong></td>
+<td>pmol/l</td>
+<td>Delayed insulin signal for liver (EGP suppression)</td>
+</tr>
+<tr>
+<td><strong>I'</strong></td>
+<td>pmol/l</td>
+<td>Intermediate delayed insulin (first delay stage)</td>
+</tr>
+<tr>
+<td><strong>X</strong></td>
+<td>pmol/l</td>
+<td>Insulin action on glucose utilization (tissue uptake)</td>
+</tr>
+<tr>
+<td><strong>Isc1</strong></td>
+<td>pmol/kg</td>
+<td>Insulin in subcutaneous depot 1 (fast absorption)</td>
+</tr>
+<tr>
+<td><strong>Isc2</strong></td>
+<td>pmol/kg</td>
+<td>Insulin in subcutaneous depot 2 (slow absorption)</td>
+</tr>
+<tr>
+<td><strong>H</strong></td>
+<td>pg/ml</td>
+<td>Glucagon in plasma</td>
+</tr>
+<tr>
+<td><strong>XH</strong></td>
+<td>—</td>
+<td>Glucagon action on liver (EGP stimulation)</td>
+</tr>
+<tr>
+<td><strong>SRHs</strong></td>
+<td>—</td>
+<td>Glucagon secretion rate (static component)</td>
+</tr>
+<tr>
+<td><strong>Hsc1</strong></td>
+<td>—</td>
+<td>Glucagon in subcutaneous depot 1</td>
+</tr>
+<tr>
+<td><strong>Hsc2</strong></td>
+<td>—</td>
+<td>Glucagon in subcutaneous depot 2</td>
+</tr>
+<tr>
+<td><strong>MealMemory</strong></td>
+<td>mg</td>
+<td>Total mass of most recent meal (for emptying rate)</td>
+</tr>
+<tr>
+<td><strong>QstoMemory</strong></td>
+<td>mg</td>
+<td>Stomach content when last meal started</td>
+</tr>
+</tbody>
+</table>
+<h3 id="13-key-physiological-processes-modeled">1.3 Key Physiological Processes Modeled<a class="headerlink" href="#13-key-physiological-processes-modeled" title="Permanent link">&para;</a></h3>
+<h4 id="endogenous-glucose-production-egp--the-liver">Endogenous Glucose Production (EGP) — "The Liver"<a class="headerlink" href="#endogenous-glucose-production-egp--the-liver" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>EGP = max(0, kp1 - kp2·Gp - kp3·XL + kxi·XH)
+</code></pre></div>
+<p>This models the liver's glucose output as:
+- <strong>kp1</strong> (2.7 mg/kg/min): basal production rate (≈ glycogenolysis + gluconeogenesis)
+- <strong>−kp2·Gp</strong>: glucose self-suppression (high plasma glucose → liver reduces output)
+- <strong>−kp3·XL</strong>: insulin suppression (delayed insulin signal reduces liver output)
+- <strong>+kxi·XH</strong>: glucagon stimulation (counter-regulatory → liver increases output)</p>
+<p><strong>What it does NOT model</strong>: Glycogen store levels. The liver is treated as having
+infinite capacity — there's no "glycogen full/empty" state. This is a known limitation.
+After prolonged fasting or intense exercise, real glycogen depletion reduces EGP
+but UVA/Padova has no state variable for this.</p>
+<h4 id="insulin-sensitivity--resistance">Insulin Sensitivity / Resistance<a class="headerlink" href="#insulin-sensitivity--resistance" title="Permanent link">&para;</a></h4>
+<p><strong>Insulin-dependent glucose utilization (Uid)</strong>:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Uid = ((Vm0 + Vmx·X·(1 + γ·risk)) · Gt) / (Km0 + Gt)
+</code></pre></div></p>
+<p>This is a <strong>Michaelis-Menten</strong> (saturable) kinetic:
+- <strong>Vm0</strong> (2.5 mg/kg/min): basal glucose utilization (at zero insulin action)
+- <strong>Vmx</strong> (0.047): insulin-dependent component — THIS IS INSULIN SENSITIVITY
+- <strong>X</strong>: delayed insulin action (the actual driver of glucose uptake)
+- <strong>Km0</strong> (225.59 mg/kg): half-saturation glucose mass (glucose dependency)
+- <strong>γ·risk</strong>: hypoglycemia risk amplifier (increases utilization when BG drops fast)</p>
+<p><strong>Insulin resistance is the INVERSE</strong>: A patient with low Vmx has high insulin
+resistance — their tissues respond poorly to insulin. Vmx is a fixed parameter
+in UVA/Padova, NOT a time-varying state. This is the key limitation for our work.</p>
+<h4 id="insulin-absorption-subcutaneous--plasma">Insulin Absorption (Subcutaneous → Plasma)<a class="headerlink" href="#insulin-absorption-subcutaneous--plasma" title="Permanent link">&para;</a></h4>
+<p>Two-compartment subcutaneous depot:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>dIsc1/dt = -(kd + ka1)·Isc1 + IIR/BW     (injection site → fast depot)
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>dIsc2/dt = kd·Isc1 - ka2·Isc2             (fast depot → slow depot)
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>Rai = ka1·Isc1 + ka2·Isc2                 (appearance rate in plasma)
+</code></pre></div></p>
+<p>This produces the characteristic <strong>rapid-acting insulin curve</strong>: rise to peak
+at ~55-75 min, then exponential tail to ~5-6h. The two-compartment structure
+creates approximate symmetry around the peak (rising phase ≈ falling phase,
+but with slightly heavier tail).</p>
+<h4 id="carb-absorption-stomach--gut--plasma">Carb Absorption (Stomach → Gut → Plasma)<a class="headerlink" href="#carb-absorption-stomach--gut--plasma" title="Permanent link">&para;</a></h4>
+<p>Three-compartment GI tract with <strong>nonlinear gastric emptying</strong>:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>dQsto1/dt = -kgri·Qsto1 + Meal           (solid → liquid stomach)
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>dQsto2/dt = -kempt·Qsto2 + kgri·Qsto1    (liquid stomach → intestine)
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>dQgut/dt  = -kabs·Qgut + kempt·Qsto2     (intestine → plasma)
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>Ra = f·kabs·Qgut/BW                      (rate of appearance in plasma)
+</code></pre></div></p>
+<p>Where <strong>kempt</strong> (gastric emptying rate) varies nonlinearly:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>kempt = kmin + (kmax-kmin)/2 · (tanh(α(Qsto-b·D)) - tanh(β(Qsto-c·D)) + 2)
+</code></pre></div></p>
+<p>This creates a <strong>bell-shaped absorption curve</strong> that is NOT symmetric:
+- Rising phase: ~30-60 min (stomach emptying accelerates)
+- Peak absorption: ~60-90 min
+- Falling phase: ~90-360 min (long intestinal absorption tail)
+- Parameters b=0.69, c=0.17 control the asymmetry</p>
+<h3 id="14-how-sincos-maps-to-sensitivityresistance">1.4 How Sin/Cos Maps to Sensitivity/Resistance<a class="headerlink" href="#14-how-sincos-maps-to-sensitivityresistance" title="Permanent link">&para;</a></h3>
+<p>cgmsim-lib already uses sin/cos for circadian modulation (<code>src/sinus.ts</code>):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>sin_factor = sin(360° × hour/24) × 0.2 + 1.0    (oscillates 0.8 → 1.2)
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>cos_factor = cos(360° × hour/24) × 0.2 + 1.0    (oscillates 0.8 → 1.2)
+</code></pre></div>
+<p>The <strong>liver production</strong> is multiplied by <code>sin_factor</code>, creating:
+- <strong>6 AM peak</strong> (sin=1.2): dawn phenomenon — 20% more hepatic output
+- <strong>6 PM trough</strong> (sin=0.8): evening — 20% less hepatic output</p>
+<p><strong>For insulin sensitivity/resistance mapping</strong>, you could define:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>ISF_effective(t) = ISF_base × sensitivity_modulator(t)
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>sensitivity_modulator(t) = 1 + A·sin(2π(t - t_peak)/24) + B·cos(2π(t - t_peak)/24)
+</code></pre></div>
+<p>Where:
+- <strong>A, B</strong> are patient-specific circadian amplitude parameters
+- <strong>t_peak</strong> is the hour of peak sensitivity (typically early afternoon)
+- The modulator oscillates between (1-√(A²+B²)) and (1+√(A²+B²))</p>
+<p>This maps insulin sensitivity as a CONTINUOUS FUNCTION on sin/cos, exactly as
+you're proposing. The question is whether we can LEARN A and B from data
+rather than assuming fixed values.</p>
+<hr />
+<h2 id="2-the-core-proposal-continuous-physiological-state-channels">2. The Core Proposal: Continuous Physiological State Channels<a class="headerlink" href="#2-the-core-proposal-continuous-physiological-state-channels" title="Permanent link">&para;</a></h2>
+<h3 id="21-the-insight">2.1 The Insight<a class="headerlink" href="#21-the-insight" title="Permanent link">&para;</a></h3>
+<p>Instead of modeling sparse events (boluses, carbs), model the <strong>continuous
+physiological states</strong> that those events create. The UVA/Padova model tells us
+which states matter:</p>
+<table>
+<thead>
+<tr>
+<th>Sparse Event</th>
+<th>Continuous State(s) It Creates</th>
+<th>UVA/Padova Variable</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bolus dose</td>
+<td>Subcutaneous insulin depot</td>
+<td>Isc1, Isc2</td>
+</tr>
+<tr>
+<td>Bolus dose</td>
+<td>Plasma insulin concentration</td>
+<td>Ip</td>
+</tr>
+<tr>
+<td>Bolus dose</td>
+<td>Insulin action on tissue</td>
+<td>X (delayed signal)</td>
+</tr>
+<tr>
+<td>Bolus dose</td>
+<td>Liver suppression</td>
+<td>XL (delayed signal)</td>
+</tr>
+<tr>
+<td>Carb entry</td>
+<td>Stomach contents</td>
+<td>Qsto1, Qsto2</td>
+</tr>
+<tr>
+<td>Carb entry</td>
+<td>Gut absorption</td>
+<td>Qgut</td>
+</tr>
+<tr>
+<td>Carb entry</td>
+<td>Glucose appearance rate (Ra)</td>
+<td>f·kabs·Qgut/BW</td>
+</tr>
+<tr>
+<td>Basal rate</td>
+<td>Continuous insulin infusion</td>
+<td>Part of Isc1</td>
+</tr>
+</tbody>
+</table>
+<p><strong>We already have IOB and COB as continuous signals</strong> — but these are crude
+approximations. IOB uses a simple exponential decay; COB uses linear decay.
+The UVA/Padova model shows reality has 3 insulin compartments (Isc1 → Isc2 → Ip)
+and 3 carb compartments (Qsto1 → Qsto2 → Qgut), each with different time constants.</p>
+<h3 id="22-proposed-physics-informed-continuous-state-channels">2.2 Proposed: Physics-Informed Continuous State Channels<a class="headerlink" href="#22-proposed-physics-informed-continuous-state-channels" title="Permanent link">&para;</a></h3>
+<p>Replace our current sparse (bolus, carbs) and crude continuous (IOB, COB)
+channels with <strong>richer continuous state signals</strong>:</p>
+<h4 id="tier-1-physiological-absorption-curves-computable-from-data">Tier 1: Physiological Absorption Curves (Computable from Data)<a class="headerlink" href="#tier-1-physiological-absorption-curves-computable-from-data" title="Permanent link">&para;</a></h4>
+<p>These can be computed from treatment logs + known pharmacokinetics:</p>
+<table>
+<thead>
+<tr>
+<th>Channel</th>
+<th>Formula</th>
+<th>What It Captures</th>
+<th>Density</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>insulin_activity(t)</strong></td>
+<td>Σᵢ dose_i · a(t-t_i, DIA, peak)</td>
+<td>Rate of insulin action NOW</td>
+<td>Dense (continuous curve)</td>
+</tr>
+<tr>
+<td><strong>insulin_action_integral(t)</strong></td>
+<td>∫₀ᵗ insulin_activity(τ) dτ</td>
+<td>Cumulative insulin effect</td>
+<td>Dense</td>
+</tr>
+<tr>
+<td><strong>carb_absorption_rate(t)</strong></td>
+<td>Σᵢ carbs_i · Ra(t-t_i, abs_time)</td>
+<td>Rate of carb appearance NOW</td>
+<td>Dense (continuous curve)</td>
+</tr>
+<tr>
+<td><strong>carb_absorption_integral(t)</strong></td>
+<td>∫₀ᵗ carb_rate(τ) dτ</td>
+<td>Cumulative carb effect</td>
+<td>Dense</td>
+</tr>
+<tr>
+<td><strong>net_metabolic_balance(t)</strong></td>
+<td>carb_rate(t)/CR - insulin_activity(t)·ISF</td>
+<td>Instantaneous net glucose drive</td>
+<td>Dense</td>
+</tr>
+<tr>
+<td><strong>hepatic_production(t)</strong></td>
+<td>f(IOB(t), hour(t))</td>
+<td>Liver glucose output estimate</td>
+<td>Dense</td>
+</tr>
+</tbody>
+</table>
+<p>Where <code>a(t, DIA, peak)</code> is the oref0/cgmsim-lib exponential insulin activity curve:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">tau</span> <span class="o">=</span> <span class="n">peak</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">peak</span><span class="o">/</span><span class="n">DIA</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">peak</span><span class="o">/</span><span class="n">DIA</span><span class="p">)</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="n">a</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">tau</span><span class="err">²</span><span class="p">)</span> <span class="o">*</span> <span class="n">t</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">t</span><span class="o">/</span><span class="n">DIA</span><span class="p">)</span> <span class="o">*</span> <span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">t</span><span class="o">/</span><span class="n">tau</span><span class="p">)</span>    <span class="c1"># normalized to integrate to 1</span>
+</code></pre></div></p>
+<h4 id="tier-2-b-spline-functional-representations-fda">Tier 2: B-Spline Functional Representations (FDA)<a class="headerlink" href="#tier-2-b-spline-functional-representations-fda" title="Permanent link">&para;</a></h4>
+<p>Apply FDA B-spline smoothing to the Tier 1 curves to create noise-robust
+continuous functional representations:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">continuous_absorption_features</span><span class="p">(</span><span class="n">boluses</span><span class="p">,</span> <span class="n">carbs</span><span class="p">,</span> <span class="n">timestamps</span><span class="p">,</span> <span class="n">n_knots</span><span class="o">=</span><span class="mi">12</span><span class="p">):</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">    </span><span class="sd">"""Convert sparse events to continuous B-spline functional channels."""</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>    <span class="c1"># 1. Compute pharmacokinetic curves from sparse events</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>    <span class="n">insulin_activity</span> <span class="o">=</span> <span class="n">compute_insulin_activity_curve</span><span class="p">(</span><span class="n">boluses</span><span class="p">,</span> <span class="n">timestamps</span><span class="p">,</span> <span class="n">DIA</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">peak</span><span class="o">=</span><span class="mi">55</span><span class="p">)</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>    <span class="n">carb_rate</span> <span class="o">=</span> <span class="n">compute_carb_absorption_curve</span><span class="p">(</span><span class="n">carbs</span><span class="p">,</span> <span class="n">timestamps</span><span class="p">,</span> <span class="n">abs_time</span><span class="o">=</span><span class="mf">3.0</span><span class="p">)</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>    <span class="c1"># 2. Fit B-splines for noise-robust continuous representation</span>
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>    <span class="n">insulin_fd</span> <span class="o">=</span> <span class="n">bspline_smooth</span><span class="p">(</span><span class="n">insulin_activity</span><span class="p">,</span> <span class="n">n_knots</span><span class="o">=</span><span class="n">n_knots</span><span class="p">)</span>
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>    <span class="n">carb_fd</span> <span class="o">=</span> <span class="n">bspline_smooth</span><span class="p">(</span><span class="n">carb_rate</span><span class="p">,</span> <span class="n">n_knots</span><span class="o">=</span><span class="n">n_knots</span><span class="p">)</span>
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>
+<a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>    <span class="c1"># 3. Compute functional derivatives (rate of change of absorption)</span>
+<a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a>    <span class="n">insulin_accel</span> <span class="o">=</span> <span class="n">functional_derivative</span><span class="p">(</span><span class="n">insulin_fd</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># d/dt of activity</span>
+<a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a>    <span class="n">carb_accel</span> <span class="o">=</span> <span class="n">functional_derivative</span><span class="p">(</span><span class="n">carb_fd</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a>
+<a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a>    <span class="c1"># 4. Compute net metabolic balance</span>
+<a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a>    <span class="n">net_balance</span> <span class="o">=</span> <span class="n">carb_fd</span> <span class="o">/</span> <span class="n">CR</span> <span class="o">-</span> <span class="n">insulin_fd</span> <span class="o">*</span> <span class="n">ISF</span>
+<a id="__codelineno-9-18" name="__codelineno-9-18" href="#__codelineno-9-18"></a>
+<a id="__codelineno-9-19" name="__codelineno-9-19" href="#__codelineno-9-19"></a>    <span class="k">return</span> <span class="p">{</span>
+<a id="__codelineno-9-20" name="__codelineno-9-20" href="#__codelineno-9-20"></a>        <span class="s1">'insulin_activity'</span><span class="p">:</span> <span class="n">insulin_fd</span><span class="p">,</span>      <span class="c1"># continuous insulin effect</span>
+<a id="__codelineno-9-21" name="__codelineno-9-21" href="#__codelineno-9-21"></a>        <span class="s1">'insulin_accel'</span><span class="p">:</span> <span class="n">insulin_accel</span><span class="p">,</span>       <span class="c1"># is insulin ramping up or down?</span>
+<a id="__codelineno-9-22" name="__codelineno-9-22" href="#__codelineno-9-22"></a>        <span class="s1">'carb_rate'</span><span class="p">:</span> <span class="n">carb_fd</span><span class="p">,</span>                 <span class="c1"># continuous carb appearance</span>
+<a id="__codelineno-9-23" name="__codelineno-9-23" href="#__codelineno-9-23"></a>        <span class="s1">'carb_accel'</span><span class="p">:</span> <span class="n">carb_accel</span><span class="p">,</span>             <span class="c1"># is absorption ramping up or down?</span>
+<a id="__codelineno-9-24" name="__codelineno-9-24" href="#__codelineno-9-24"></a>        <span class="s1">'net_balance'</span><span class="p">:</span> <span class="n">net_balance</span><span class="p">,</span>           <span class="c1"># who's winning: insulin or carbs?</span>
+<a id="__codelineno-9-25" name="__codelineno-9-25" href="#__codelineno-9-25"></a>    <span class="p">}</span>
+</code></pre></div>
+<h4 id="tier-3-learned-continuous-states-pre-training-hypothesis">Tier 3: Learned Continuous States (Pre-training Hypothesis)<a class="headerlink" href="#tier-3-learned-continuous-states-pre-training-hypothesis" title="Permanent link">&para;</a></h4>
+<p><strong>The key hypothesis</strong>: We can use UVA/Padova compartment states as <strong>pre-training
+targets</strong> to learn continuous physiological state representations from CGM data alone.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>Pre-training Phase:
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>  Input:  CGM glucose trace + sparse treatment events
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>  Target: UVA/Padova internal states [Gp, Gt, Ip, X, XL, Qgut, Ra, EGP]
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>  Model:  Encoder that learns to infer hidden compartment states from
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>          observable glucose + treatment history
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>Downstream Phase:
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>  Input:  CGM glucose + learned continuous states
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>  Target: Event detection, override prediction, ISF drift, etc.
+<a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>  Model:  Multi-scale pipeline with continuous state channels
+</code></pre></div>
+<p>The pre-training step teaches the model what the physiological states SHOULD
+look like, and then the downstream model uses those inferred states as dense
+input channels.</p>
+<h3 id="23-scaling-bolus-pulses-vs-basal-strokes-vs-endogenous-production">2.3 Scaling: Bolus Pulses vs Basal Strokes vs Endogenous Production<a class="headerlink" href="#23-scaling-bolus-pulses-vs-basal-strokes-vs-endogenous-production" title="Permanent link">&para;</a></h3>
+<p>The scaling question is critical because three sources of insulin operate at
+very different magnitudes and time constants:</p>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Magnitude</th>
+<th>Duration</th>
+<th>Character</th>
+<th>UVA/Padova Treatment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Bolus</strong></td>
+<td>2-15 U pulse</td>
+<td>5-6h tail</td>
+<td>Sparse impulse</td>
+<td>Added to Isc1 as IIR pulse</td>
+</tr>
+<tr>
+<td><strong>Basal</strong></td>
+<td>0.5-2.0 U/hr continuous</td>
+<td>Hours-days</td>
+<td>Step function</td>
+<td>Continuous IIR</td>
+</tr>
+<tr>
+<td><strong>Endogenous (EGP)</strong></td>
+<td>~1-2 mg/dL/5min</td>
+<td>Continuous</td>
+<td>Modulated by insulin + circadian</td>
+<td>kp1 - kp2·Gp - kp3·XL</td>
+</tr>
+</tbody>
+</table>
+<p>In UVA/Padova, <strong>all three funnel through the same Isc1/Isc2 → Ip pathway</strong>:
+- Bolus: instantaneous addition to Isc1 (IIR spike for 1 minute)
+- Basal: continuous addition to Isc1 (IIR = basal rate, steady)
+- Endogenous: NOT modeled through Isc (it's modeled as EGP, a separate glucose source)</p>
+<p><strong>For our continuous feature representation</strong>, this suggests:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># Separate insulin into components by source and time constant</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="n">channels</span> <span class="o">=</span> <span class="p">{</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>    <span class="s1">'insulin_bolus_activity'</span><span class="p">:</span> <span class="nb">sum</span> <span class="n">of</span> <span class="n">bolus</span><span class="o">-</span><span class="n">origin</span> <span class="n">activity</span> <span class="n">curves</span><span class="p">,</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>    <span class="s1">'insulin_basal_activity'</span><span class="p">:</span> <span class="n">steady</span><span class="o">-</span><span class="n">state</span> <span class="n">basal</span> <span class="n">contribution</span><span class="p">,</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>    <span class="s1">'insulin_total_plasma'</span><span class="p">:</span>   <span class="n">IOB</span><span class="o">-</span><span class="n">like</span> <span class="n">total</span> <span class="p">(</span><span class="n">bolus</span> <span class="o">+</span> <span class="n">basal</span><span class="p">),</span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>    <span class="s1">'egp_estimate'</span><span class="p">:</span>           <span class="n">liver</span> <span class="n">production</span> <span class="n">estimate</span> <span class="p">(</span><span class="n">circadian</span> <span class="o">+</span> <span class="n">insulin</span> <span class="n">suppression</span><span class="p">),</span>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>    <span class="s1">'net_glucose_flux'</span><span class="p">:</span>       <span class="n">Ra</span> <span class="o">+</span> <span class="n">EGP</span> <span class="o">-</span> <span class="n">Uid</span> <span class="o">-</span> <span class="n">Uii</span> <span class="o">-</span> <span class="n">E</span>  <span class="p">(</span><span class="n">the</span> <span class="n">complete</span> <span class="n">glucose</span> <span class="n">equation</span><span class="p">)</span>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="p">}</span>
+</code></pre></div>
+<p>The key insight from UVA/Padova is that <strong>basal insulin and bolus insulin have the
+same pharmacokinetic curve</strong> once injected — the difference is purely in the
+TIMING pattern (continuous vs pulse). So the continuous IOB channel already captures
+both. What we're MISSING is the endogenous production (EGP), which has its own
+dynamics driven by insulin suppression and circadian rhythm.</p>
+<h3 id="24-insulin-sensitivity-on-sincos--the-circadian-isf-map">2.4 Insulin Sensitivity on Sin/Cos — The Circadian ISF Map<a class="headerlink" href="#24-insulin-sensitivity-on-sincos--the-circadian-isf-map" title="Permanent link">&para;</a></h3>
+<p>cgmsim-lib's circadian model (<code>sinus.ts</code>) already maps time → metabolic modulation
+using sin/cos. We can extend this to create a <strong>learned circadian ISF surface</strong>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">CircadianISF</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">    </span><span class="sd">"""Model insulin sensitivity as a continuous function of circadian phase."""</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_harmonics</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>        <span class="c1"># Fourier series: ISF(t) = a₀ + Σ(aₙcos(nωt) + bₙsin(nωt))</span>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">a0</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">1.0</span><span class="p">))</span>  <span class="c1"># baseline ISF multiplier</span>
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">a_coeffs</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_harmonics</span><span class="p">))</span>  <span class="c1"># cosine amplitudes</span>
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">b_coeffs</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_harmonics</span><span class="p">))</span>  <span class="c1"># sine amplitudes</span>
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>
+<a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hour_of_day</span><span class="p">):</span>
+<a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a><span class="w">        </span><span class="sd">"""Returns ISF modulation factor at given hour(s)."""</span>
+<a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a>        <span class="n">omega</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">24.0</span>
+<a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a>        <span class="n">modulator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">a0</span>
+<a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a>        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a_coeffs</span><span class="p">)):</span>
+<a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a>            <span class="n">modulator</span> <span class="o">=</span> <span class="n">modulator</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">a_coeffs</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">cos</span><span class="p">((</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">omega</span> <span class="o">*</span> <span class="n">hour_of_day</span><span class="p">)</span>
+<a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a>            <span class="n">modulator</span> <span class="o">=</span> <span class="n">modulator</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">b_coeffs</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">sin</span><span class="p">((</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">omega</span> <span class="o">*</span> <span class="n">hour_of_day</span><span class="p">)</span>
+<a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a>        <span class="k">return</span> <span class="n">modulator</span>  <span class="c1"># multiply by base ISF to get effective ISF</span>
+<a id="__codelineno-12-19" name="__codelineno-12-19" href="#__codelineno-12-19"></a>
+<a id="__codelineno-12-20" name="__codelineno-12-20" href="#__codelineno-12-20"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">sensitivity_curve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<a id="__codelineno-12-21" name="__codelineno-12-21" href="#__codelineno-12-21"></a><span class="w">        </span><span class="sd">"""Return 24h sensitivity profile."""</span>
+<a id="__codelineno-12-22" name="__codelineno-12-22" href="#__codelineno-12-22"></a>        <span class="n">hours</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">288</span><span class="p">)</span>  <span class="c1"># 5-min resolution</span>
+<a id="__codelineno-12-23" name="__codelineno-12-23" href="#__codelineno-12-23"></a>        <span class="k">return</span> <span class="n">hours</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">hours</span><span class="p">)</span>
+</code></pre></div>
+<p>This creates a <strong>learnable circadian sensitivity function</strong> that could be:
+1. Pre-trained from UVA/Padova's effective Vmx × circadian modulation
+2. Fine-tuned per patient from observed insulin response patterns
+3. Used as a continuous feature channel (ISF_effective(t) at each timestep)</p>
+<p>The sin/cos mapping naturally handles the periodicity — ISF at 23:55 smoothly
+connects to ISF at 00:05. Higher harmonics (n=2,3) capture non-sinusoidal
+patterns like "dawn phenomenon spike" or "post-exercise sensitivity window".</p>
+<p><strong>Resistance vs Sensitivity mapping</strong>:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>ISF_effective(t) = ISF_base × circadian_modulator(t)
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>  where modulator &gt; 1.0 → increased sensitivity (exercise, post-meal)
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>  where modulator &lt; 1.0 → increased resistance (dawn phenomenon, stress, illness)
+</code></pre></div></p>
+<hr />
+<h2 id="3-data-science-meta-methods-for-determining-correct-modeling">3. Data Science Meta-Methods for Determining Correct Modeling<a class="headerlink" href="#3-data-science-meta-methods-for-determining-correct-modeling" title="Permanent link">&para;</a></h2>
+<h3 id="31-approach-use-uvapadova-as-ground-truth-then-validate">3.1 Approach: Use UVA/Padova as Ground Truth, Then Validate<a class="headerlink" href="#31-approach-use-uvapadova-as-ground-truth-then-validate" title="Permanent link">&para;</a></h3>
+<p><strong>Phase 1: Generate Pseudo-Labels</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>For each patient:
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>  1. Run UVA/Padova simulation on their treatment history (uva_replay.js)
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>  2. Extract internal states at each 5-min timestep:
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>     [Gp, Gt, Ip, X, XL, Qsto1, Qsto2, Qgut, H, XH, EGP, Ra, Uid]
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>  3. These become continuous-state pseudo-labels
+</code></pre></div></p>
+<p><strong>Phase 2: Train State Inference Model</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>Input:  [glucose(t), bolus_events, carb_events, basal_rate(t)]  (observable)
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>Output: [Ip(t), X(t), Ra(t), EGP(t)]  (hidden continuous states)
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>Loss:   MSE to UVA/Padova pseudo-labels
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>Architecture: 1D-CNN or Transformer (proven best for our data)
+</code></pre></div></p>
+<p><strong>Phase 3: Evaluate What's Learnable</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>For each hidden state:
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>  - Can we predict Ip(t) from observables? (likely YES — it's IOB with better PK)
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>  - Can we predict X(t)? (harder — delayed + transformed insulin signal)
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>  - Can we predict Ra(t)? (meal detection problem + absorption model)
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>  - Can we predict EGP(t)? (hardest — requires circadian + insulin context)
+</code></pre></div></p>
+<p><strong>Phase 4: Use Learned States as Features</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>Replace:  [glucose, IOB, COB, basal, bolus, carbs, time_sin, time_cos]
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>With:     [glucose, Ip_hat, X_hat, Ra_hat, EGP_hat, net_flux_hat]
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>          All dense, all continuous, all physiologically grounded
+</code></pre></div></p>
+<h3 id="32-hypothesis-testing-framework">3.2 Hypothesis Testing Framework<a class="headerlink" href="#32-hypothesis-testing-framework" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Hypothesis</th>
+<th>Test Method</th>
+<th>Success Criterion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>H1</strong>: Continuous Ip/X/Ra channels improve episode clustering</td>
+<td>Compare 5ch base vs 5ch+continuous states at 12h</td>
+<td>Silhouette &gt; -0.339</td>
+</tr>
+<tr>
+<td><strong>H2</strong>: Learned EGP captures circadian better than sin/cos</td>
+<td>Correlate EGP_hat with actual dawn phenomenon events</td>
+<td>r &gt; 0.5</td>
+</tr>
+<tr>
+<td><strong>H3</strong>: Pre-trained state encoder generalizes across patients</td>
+<td>LOO: train state encoder on 10 patients, test on 11th</td>
+<td>State prediction MSE &lt; 2× within-patient</td>
+</tr>
+<tr>
+<td><strong>H4</strong>: Net metabolic balance predicts override need</td>
+<td>Train classifier on net_flux feature</td>
+<td>Override F1 &gt; 0.852 (current best)</td>
+</tr>
+<tr>
+<td><strong>H5</strong>: Insulin activity curve captures ISF better than IOB</td>
+<td>Compare ISF_effective = ΔBG/activity vs ΔBG/ΔIOB</td>
+<td>Lower variance in ISF_effective estimates</td>
+</tr>
+</tbody>
+</table>
+<h3 id="33-bayesian-meta-analysis-for-model-selection">3.3 Bayesian Meta-Analysis for Model Selection<a class="headerlink" href="#33-bayesian-meta-analysis-for-model-selection" title="Permanent link">&para;</a></h3>
+<p>Rather than choosing ONE absorption model a priori, use Bayesian model comparison:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="c1"># Candidate absorption models for insulin</span>
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="n">models</span> <span class="o">=</span> <span class="p">{</span>
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>    <span class="s1">'exponential'</span><span class="p">:</span>  <span class="k">lambda</span> <span class="n">t</span><span class="p">,</span> <span class="n">DIA</span><span class="p">:</span> <span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">t</span><span class="o">/</span><span class="n">tau</span><span class="p">)</span> <span class="o">*</span> <span class="n">t</span><span class="p">,</span>           <span class="c1"># oref0 style</span>
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>    <span class="s1">'bilinear'</span><span class="p">:</span>     <span class="k">lambda</span> <span class="n">t</span><span class="p">,</span> <span class="n">DIA</span><span class="p">:</span> <span class="n">piecewise_triangle</span><span class="p">(</span><span class="n">t</span><span class="p">),</span>      <span class="c1"># oref0 bilinear</span>
+<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>    <span class="s1">'two_compartment'</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Isc1</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="n">Isc2</span><span class="p">(</span><span class="n">t</span><span class="p">),</span>   <span class="c1"># UVA/Padova</span>
+<a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a>    <span class="s1">'learned_spline'</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">bspline_coeffs</span> <span class="o">@</span> <span class="n">basis</span><span class="p">(</span><span class="n">t</span><span class="p">),</span>     <span class="c1"># FDA B-spline</span>
+<a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="p">}</span>
+<a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a>
+<a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a><span class="c1"># For each patient, compute Bayesian evidence (marginal likelihood)</span>
+<a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a><span class="c1"># for each model given observed glucose responses to boluses</span>
+<a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a><span class="k">for</span> <span class="n">patient</span> <span class="ow">in</span> <span class="n">patients</span><span class="p">:</span>
+<a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a>    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+<a id="__codelineno-18-13" name="__codelineno-18-13" href="#__codelineno-18-13"></a>        <span class="n">evidence</span><span class="p">[</span><span class="n">patient</span><span class="p">][</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">marginal_likelihood</span><span class="p">(</span>
+<a id="__codelineno-18-14" name="__codelineno-18-14" href="#__codelineno-18-14"></a>            <span class="n">observed_glucose</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">prior_params</span><span class="p">)</span>
+<a id="__codelineno-18-15" name="__codelineno-18-15" href="#__codelineno-18-15"></a>
+<a id="__codelineno-18-16" name="__codelineno-18-16" href="#__codelineno-18-16"></a><span class="c1"># Select best model per patient (or mixture)</span>
+<a id="__codelineno-18-17" name="__codelineno-18-17" href="#__codelineno-18-17"></a><span class="c1"># If one model dominates → use it globally</span>
+<a id="__codelineno-18-18" name="__codelineno-18-18" href="#__codelineno-18-18"></a><span class="c1"># If patient-specific → learn patient embedding that selects model</span>
+</code></pre></div>
+<hr />
+<h2 id="4-the-complete-vision-physiology-informed-multi-scale-pipeline">4. The Complete Vision: Physiology-Informed Multi-Scale Pipeline<a class="headerlink" href="#4-the-complete-vision-physiology-informed-multi-scale-pipeline" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>┌─────────────────────────────────────────────────────────────┐
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>│  LAYER 0: Sparse Event → Continuous Physiological State     │
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>│                                                             │
+<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>│  bolus events ──► insulin_activity(t)  [PK curve, dense]    │
+<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>│  carb events  ──► carb_absorption(t)   [GI curve, dense]    │
+<a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>│  basal rate   ──► basal_contribution(t) [step → smooth]     │
+<a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a>│  (circadian)  ──► egp_estimate(t)      [liver model]        │
+<a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a>│  (all above)  ──► net_metabolic_flux(t) [Ra+EGP-Uid-E]     │
+<a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a>│                                                             │
+<a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a>│  Optional: B-spline smooth all continuous states (FDA)       │
+<a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a>│  Optional: Pre-train state encoder from UVA/Padova labels    │
+<a id="__codelineno-19-12" name="__codelineno-19-12" href="#__codelineno-19-12"></a>└──────────────────────────┬──────────────────────────────────┘
+<a id="__codelineno-19-13" name="__codelineno-19-13" href="#__codelineno-19-13"></a>                           │
+<a id="__codelineno-19-14" name="__codelineno-19-14" href="#__codelineno-19-14"></a>                           ▼ All channels now DENSE and CONTINUOUS
+<a id="__codelineno-19-15" name="__codelineno-19-15" href="#__codelineno-19-15"></a>┌─────────────────────────────────────────────────────────────┐
+<a id="__codelineno-19-16" name="__codelineno-19-16" href="#__codelineno-19-16"></a>│  LAYER 1: Multi-Scale Feature Windows                       │
+<a id="__codelineno-19-17" name="__codelineno-19-17" href="#__codelineno-19-17"></a>│                                                             │
+<a id="__codelineno-19-18" name="__codelineno-19-18" href="#__codelineno-19-18"></a>│  Fast (2h):    [glucose, insulin_act, carb_rate,            │
+<a id="__codelineno-19-19" name="__codelineno-19-19" href="#__codelineno-19-19"></a>│                 net_flux, egp_est, basal]     6 channels    │
+<a id="__codelineno-19-20" name="__codelineno-19-20" href="#__codelineno-19-20"></a>│                                                             │
+<a id="__codelineno-19-21" name="__codelineno-19-21" href="#__codelineno-19-21"></a>│  Episode (12h): [glucose, insulin_integral, carb_integral,  │
+<a id="__codelineno-19-22" name="__codelineno-19-22" href="#__codelineno-19-22"></a>│                  COB, net_flux]               5 channels    │
+<a id="__codelineno-19-23" name="__codelineno-19-23" href="#__codelineno-19-23"></a>│                  (NO time, NO sparse bolus)                  │
+<a id="__codelineno-19-24" name="__codelineno-19-24" href="#__codelineno-19-24"></a>│                                                             │
+<a id="__codelineno-19-25" name="__codelineno-19-25" href="#__codelineno-19-25"></a>│  Daily (24h):   [glucose, insulin_act, carb_rate,           │
+<a id="__codelineno-19-26" name="__codelineno-19-26" href="#__codelineno-19-26"></a>│                  egp_est, circadian_isf, net_flux]           │
+<a id="__codelineno-19-27" name="__codelineno-19-27" href="#__codelineno-19-27"></a>│                  (time RESTORED via circadian_isf)           │
+<a id="__codelineno-19-28" name="__codelineno-19-28" href="#__codelineno-19-28"></a>│                                                             │
+<a id="__codelineno-19-29" name="__codelineno-19-29" href="#__codelineno-19-29"></a>│  Weekly (7d):   [glucose, insulin_integral, carb_integral,  │
+<a id="__codelineno-19-30" name="__codelineno-19-30" href="#__codelineno-19-30"></a>│                  circadian_isf_mean, net_flux_trend]         │
+<a id="__codelineno-19-31" name="__codelineno-19-31" href="#__codelineno-19-31"></a>└──────────────────────────┬──────────────────────────────────┘
+<a id="__codelineno-19-32" name="__codelineno-19-32" href="#__codelineno-19-32"></a>                           │
+<a id="__codelineno-19-33" name="__codelineno-19-33" href="#__codelineno-19-33"></a>                           ▼
+<a id="__codelineno-19-34" name="__codelineno-19-34" href="#__codelineno-19-34"></a>┌─────────────────────────────────────────────────────────────┐
+<a id="__codelineno-19-35" name="__codelineno-19-35" href="#__codelineno-19-35"></a>│  LAYER 2: Scale-Specific Models                             │
+<a id="__codelineno-19-36" name="__codelineno-19-36" href="#__codelineno-19-36"></a>│                                                             │
+<a id="__codelineno-19-37" name="__codelineno-19-37" href="#__codelineno-19-37"></a>│  Fast:    1D-CNN (proven best) → event detection            │
+<a id="__codelineno-19-38" name="__codelineno-19-38" href="#__codelineno-19-38"></a>│  Episode: CNN/GRU + triplet loss → pattern clustering       │
+<a id="__codelineno-19-39" name="__codelineno-19-39" href="#__codelineno-19-39"></a>│  Daily:   FDA + FPCA(K=8) → drift detection                 │
+<a id="__codelineno-19-40" name="__codelineno-19-40" href="#__codelineno-19-40"></a>│  Weekly:  GRU embedding → trend retrieval                   │
+<a id="__codelineno-19-41" name="__codelineno-19-41" href="#__codelineno-19-41"></a>└─────────────────────────────────────────────────────────────┘
+</code></pre></div>
+<h3 id="key-properties-of-this-design">Key Properties of This Design:<a class="headerlink" href="#key-properties-of-this-design" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p><strong>No sparse channels at ANY scale</strong>: All inputs are continuous functions.
+   The density mismatch between CGM (288/day) and boluses (3-8/day) is eliminated
+   by converting events to their continuous pharmacokinetic effects.</p>
+</li>
+<li>
+<p><strong>Symmetry respected by construction</strong>: Absorption curves are intrinsically
+   symmetric-ish around their peak. The model sees the SHAPE of the absorption
+   (rising, peak, falling) rather than the discrete event that caused it.</p>
+</li>
+<li>
+<p><strong>Time-translation invariance where appropriate</strong>: Episode and weekly scales
+   use no clock-time features. Circadian effects enter ONLY through physiological
+   mechanisms (EGP modulation, ISF modulation) at daily scale.</p>
+</li>
+<li>
+<p><strong>Physics-grounded</strong>: Every channel has a physiological interpretation rooted
+   in the UVA/Padova compartment model, not arbitrary feature engineering.</p>
+</li>
+<li>
+<p><strong>Learnable and testable</strong>: The pharmacokinetic curves can be computed from
+   known models (oref0 exponential, UVA/Padova two-compartment), or learned from
+   data via B-spline fitting, or pre-trained via UVA/Padova pseudo-labels.</p>
+</li>
+</ol>
+<hr />
+<h2 id="5-proposed-experiment-sequence">5. Proposed Experiment Sequence<a class="headerlink" href="#5-proposed-experiment-sequence" title="Permanent link">&para;</a></h2>
+<h3 id="phase-a-compute--validate-continuous-states">Phase A: Compute &amp; Validate Continuous States<a class="headerlink" href="#phase-a-compute--validate-continuous-states" title="Permanent link">&para;</a></h3>
+<p><strong>EXP-348</strong>: Compute insulin_activity(t) and carb_absorption_rate(t) from treatment
+logs using oref0 exponential model. Validate by checking that net_metabolic_balance
+correlates with glucose rate of change (should have r &gt; 0.4).</p>
+<p><strong>EXP-349</strong>: Run UVA/Padova simulation for all 11 patients. Extract internal states.
+Compare UVA/Padova Ra(t) vs our computed carb_absorption_rate(t) — quantify the
+gap between simple model and full physiological model.</p>
+<h3 id="phase-b-replace-sparse-channels-with-continuous-states">Phase B: Replace Sparse Channels with Continuous States<a class="headerlink" href="#phase-b-replace-sparse-channels-with-continuous-states" title="Permanent link">&para;</a></h3>
+<p><strong>EXP-350</strong>: Episode-scale (12h) pattern clustering with continuous state channels
+[glucose, insulin_activity, carb_rate, net_flux, COB] vs baseline 5ch.
+Success: Silhouette &gt; -0.339.</p>
+<p><strong>EXP-351</strong>: Fast-scale (2h) override classification with continuous state channels.
+Success: F1 &gt; 0.852 (current best at 15min lead).</p>
+<h3 id="phase-c-pre-training-from-uvapadova">Phase C: Pre-Training from UVA/Padova<a class="headerlink" href="#phase-c-pre-training-from-uvapadova" title="Permanent link">&para;</a></h3>
+<p><strong>EXP-352</strong>: Train state inference encoder: Input=[glucose, treatments] →
+Output=[Ip, X, Ra, EGP]. Evaluate which hidden states are predictable from
+observable data alone.</p>
+<p><strong>EXP-353</strong>: Use pre-trained encoder's representations as input features for
+downstream objectives. Compare against hand-computed PK curves (EXP-350/351).</p>
+<h3 id="phase-d-learned-circadian-isf">Phase D: Learned Circadian ISF<a class="headerlink" href="#phase-d-learned-circadian-isf" title="Permanent link">&para;</a></h3>
+<p><strong>EXP-354</strong>: Train CircadianISF model (Fourier series on sin/cos) per patient.
+Evaluate whether learned ISF modulation captures dawn phenomenon and exercise
+windows better than fixed sin/cos encoding.</p>
+<hr />
+<h2 id="6-source-code-references">6. Source Code References<a class="headerlink" href="#6-source-code-references" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>File</th>
+<th>Key Lines</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UVA/Padova 20-state ODE</td>
+<td><code>externals/cgmsim-lib/src/lt1/core/models/UvaPadova_T1DMS.ts</code></td>
+<td>172-326 (computeDerivatives)</td>
+</tr>
+<tr>
+<td>UVA/Padova parameters</td>
+<td>same</td>
+<td>341-461 (parameterDescription)</td>
+</tr>
+<tr>
+<td>Liver production (simple)</td>
+<td><code>externals/cgmsim-lib/src/liver.ts</code></td>
+<td>47-100 (Hill equation)</td>
+</tr>
+<tr>
+<td>Liver production (physics)</td>
+<td><code>tools/cgmencode/physics_model.py</code></td>
+<td>54-64 (_liver_production)</td>
+</tr>
+<tr>
+<td>Circadian rhythm</td>
+<td><code>externals/cgmsim-lib/src/sinus.ts</code></td>
+<td>50-98 (sin/cos calculation)</td>
+</tr>
+<tr>
+<td>Insulin activity curve</td>
+<td><code>externals/cgmsim-lib/src/utils.ts</code></td>
+<td>73-100 (getExpTreatmentActivity)</td>
+</tr>
+<tr>
+<td>oref0 IOB calculation</td>
+<td><code>externals/oref0/lib/iob/calculate.js</code></td>
+<td>1-80 (bilinear + exponential)</td>
+</tr>
+<tr>
+<td>Carb absorption (cgmsim)</td>
+<td><code>externals/cgmsim-lib/src/carbs.ts</code></td>
+<td>1-80 (fast + slow carb split)</td>
+</tr>
+<tr>
+<td>Current IOB computation</td>
+<td><code>tools/cgmencode/real_data_adapter.py</code></td>
+<td>83-103 (exponential decay)</td>
+</tr>
+<tr>
+<td>Current COB computation</td>
+<td><code>tools/cgmencode/real_data_adapter.py</code></td>
+<td>106-124 (linear decay)</td>
+</tr>
+<tr>
+<td>Feature schema</td>
+<td><code>tools/cgmencode/schema.py</code></td>
+<td>16-170 (8/21/39 feature definitions)</td>
+</tr>
+<tr>
+<td>UVA replay driver</td>
+<td><code>tools/cgmencode/uva_replay.js</code></td>
+<td>154-208 (ODE integration loop)</td>
+</tr>
+<tr>
+<td>FDA B-spline smoothing</td>
+<td><code>tools/cgmencode/fda_features.py</code></td>
+<td>61-96 (bspline_smooth)</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

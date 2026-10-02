@@ -1,0 +1,4698 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/phase0-pr-bodies/pr-8758-body.html">
+      
+      
+        <link rel="prev" href="pebble-delta-units.html">
+      
+      
+        <link rel="next" href="production-error-handler.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Pr 8758 body - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#part-1-a-records-own-_id-finds-edits-and-deletes-it" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Pr 8758 body
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../docs/00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../docs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    reports/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../c-analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    c-analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../connector-pr-bodies/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    connector-pr-bodies/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../consumer-impact-15.0.9/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    consumer-impact-15.0.9/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-3022b/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    exp-3022b/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../patient-c-analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    patient-c-analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_7" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    phase0-pr-bodies/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7_7" id="__nav_7_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    phase0-pr-bodies/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="activity-date-coercion.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Activity date coercion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="alarm-anonymous-no-delay.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Alarm anonymous no delay
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api3-app-field-v1-records.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Api3 app field v1 records
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api3-cache-derived-fields.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Api3 cache derived fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api3-delete-nonstring-identifier.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Api3 delete nonstring identifier
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf-alarms.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bf/alarms — an urgent insulin-age alarm that could never fire, and two delivery defects
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf-cache.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bf/cache — a plain read of ten entries was copying 48 hours of CGM data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf-coercion.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bf/coercion — API filters returned the wrong records, and $exists=false returned the opposite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf-food.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    G — bf/food: the bolus calculator's quick-pick chooser loaded a different meal from the one it named
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf-merge.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    H — bf/merge: deleting one treatment and editing another could freeze the page
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf-object-id-crud.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bf/object-id-crud: create, read, update and delete by _id work the same way through API v1, API v3 and the websocket, with a matrix test over every collection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf-operators.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bf operators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf-parms.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    I — bf/parms: a bare flag in the URL stopped the page loading at all
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf-reads.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bf/reads — six read-path fixes, including a request for zero records answered with everything
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf-split-drag-time.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bf/split-drag-time: moving a treatment's time in the web UI no longer leaves IOB and COB at the old time (BF-103)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf2-auth-hardening.withheld.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bf2/auth-hardening: withheld-style PR body
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf2-backports.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bf2/backports: two security fixes from the modernization branch, onto dev
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf2-ops.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bf2/ops: the bundled database could abort, an Alexa request could hang, and two guards
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf3-alarm-no-reading.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bf3/alarm-no-reading — an alarm that reaches a page with no reading no longer crashes its handler
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf3-mmconnect-deprecation-warning.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bf3/mmconnect-deprecation-warning — the MiniMed CareLink warning says what to set instead
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf3-quickpick-rebuild.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bf3/quickpick-rebuild — the Bolus Wizard's Quickpick list shows your saved quick picks again
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="braces-expansion-cap.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Braces expansion cap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="connect-pin-0.1.0.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bf/connect-pin-0.1.0: install nightscout-connect from npm as an exact version
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="count-client-compat.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bf/count-client-compat: reads accept the count shapes OpenAPS and GluPredKit send
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="count-zero-empty.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bf/count-zero-empty: a request for zero records gets an empty answer, and saves and updates ignore count
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="date-filter-list.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Date filter list
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="dependency-refresh-2026-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dependency refresh 2026 10
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="entries-unknown-id.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Entries unknown id
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="fallback-key-empty-identifier.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fallback key empty identifier
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="fix-connect-timer-jitter.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    F — fix/connect-timer-jitter (nightscout-connect repository): every retry interval was 256 ms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="maker-level-names.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Maker level names
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="pebble-delta-units.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pebble delta units
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pr 8758 body
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="pr-8758-body.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pr 8758 body
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-a-records-own-_id-finds-edits-and-deletes-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1: a record's own _id finds, edits and deletes it
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1: a record&#39;s own _id finds, edits and deletes it">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-changes-for-you" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What changes for you
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What changes for you">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-was-wrong" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What was wrong
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-this-change-does" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What this change does
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#technical-detail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Technical detail
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Technical detail">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-defect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The defect
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-the-commits-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the commits do
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#left-to-part-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Left to part 2
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-the-same-rules-through-api-v1-api-v3-and-the-websocket" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2: the same rules through API v1, API v3 and the websocket
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2: the same rules through API v1, API v3 and the websocket">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-changes-for-you_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What changes for you
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What changes for you">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-was-wrong_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What was wrong
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-this-change-does_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What this change does
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#technical-detail_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Technical detail
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Technical detail">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-the-matrix-found" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the matrix found
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-the-commits-do_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the commits do
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tests_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-four-fixes-from-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3: four fixes from review
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3: four fixes from review">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-changes-for-you_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What changes for you
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#technical-detail_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Technical detail
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-fixes-from-the-freeze-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4: fixes from the freeze review
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4: fixes from the freeze review">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-changes-for-you_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What changes for you
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#technical-detail_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Technical detail
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#merges" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Merges
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tests-re-run-for-this-description" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tests, re-run for this description
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decisions-taken-maintainer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decisions taken (maintainer)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="production-error-handler.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production error handler
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="profile-switch-percentage.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Profile switch percentage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="qs-6.16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bf/qs-6.16: web addresses and form posts are read by qs 6.16.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="rt-loop-remote-address.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    rt/loop-remote-address: Loop remote commands carry the sender's address as TRUST_PROXY resolves it
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="rt-trust-one-source-into-8754.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    rt/trust-one-source → bf2/auth-hardening: bring #8764 into #8754
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="rt-trust-one-source.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    rt/trust-one-source: every client-address consumer reads one TRUST_PROXY policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="same-time-treatments.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Same time treatments
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="v1-writes-v3-history.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    V1 writes v3 history
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../reviewer-packets/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reviewer-packets/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-a-records-own-_id-finds-edits-and-deletes-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1: a record's own _id finds, edits and deletes it
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1: a record&#39;s own _id finds, edits and deletes it">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-changes-for-you" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What changes for you
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What changes for you">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-was-wrong" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What was wrong
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-this-change-does" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What this change does
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#technical-detail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Technical detail
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Technical detail">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-defect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The defect
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-the-commits-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the commits do
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#left-to-part-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Left to part 2
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-the-same-rules-through-api-v1-api-v3-and-the-websocket" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2: the same rules through API v1, API v3 and the websocket
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2: the same rules through API v1, API v3 and the websocket">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-changes-for-you_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What changes for you
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What changes for you">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-was-wrong_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What was wrong
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-this-change-does_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What this change does
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#technical-detail_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Technical detail
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Technical detail">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-the-matrix-found" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the matrix found
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-the-commits-do_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the commits do
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tests_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-four-fixes-from-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3: four fixes from review
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3: four fixes from review">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-changes-for-you_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What changes for you
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#technical-detail_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Technical detail
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-fixes-from-the-freeze-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4: fixes from the freeze review
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4: fixes from the freeze review">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-changes-for-you_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What changes for you
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#technical-detail_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Technical detail
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#merges" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Merges
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tests-re-run-for-this-description" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tests, re-run for this description
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decisions-taken-maintainer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decisions taken (maintainer)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+  <h1>Pr 8758 body</h1>
+
+<p><em>Living document, last changed 2026-09-25 at <code>f7729548</code>.</em></p>
+<!-- Body for nightscout/cgm-remote-monitor#8758 at head f1e8398b (2026-09-25: e9dbb1fb merged with 25f5ea21, the dev ecb63223 merge). This comment is hidden on GitHub. -->
+<p>Records keep their own <code>_id</code>, and create, read, update and delete by that <code>_id</code> work the same way in every collection, through API v1, API v3 and the websocket. Seventeen commits on <code>dev</code> <code>1f9a9d10</code>: the first five fix the defects, the next eight close the gaps a new create/read/update/delete matrix test found, and the last four fix what a review of this PR found (part 3). Then <code>dev</code> is merged in (<code>572bfc32</code>), with one follow-up for a change <code>dev</code> made to access entries (<code>ab7b22d6</code>), then six fix commits from the 15.0.9 freeze review and soak (part 4), and <code>dev</code> <code>ecb63223</code> merged in again (<code>25f5ea21</code>, <code>f1e8398b</code>).</p>
+<h2 id="part-1-a-records-own-_id-finds-edits-and-deletes-it">Part 1: a record's own <code>_id</code> finds, edits and deletes it<a class="headerlink" href="#part-1-a-records-own-_id-finds-edits-and-deletes-it" title="Permanent link">&para;</a></h2>
+<h3 id="what-changes-for-you">What changes for you<a class="headerlink" href="#what-changes-for-you" title="Permanent link">&para;</a></h3>
+<p><em>Plain-language summary for people running their own Nightscout site. Nightscout is not a medical
+device and none of this is medical advice. If your settings or history look wrong, check them
+with your care team before relying on them.</em></p>
+<p>A few words used below:</p>
+<ul>
+<li><strong>Record</strong>: one saved item, such as a treatment, a glucose reading (an "entry"), a device status
+  report from a phone or pump, a food, or a profile.</li>
+<li><strong>Profile</strong>: the saved settings Nightscout shows and uses for its reports and calculations,
+  such as basal rates, insulin sensitivity and carb ratios.</li>
+<li><strong>Connector</strong>: the part of Nightscout that copies data in from another service, including from
+  another Nightscout site.</li>
+<li><strong>ID</strong>: the label Nightscout gives each saved record so it can find it again.</li>
+<li><strong>API v3</strong>: a newer way for apps to read and write Nightscout data.</li>
+</ul>
+<h4 id="what-was-wrong">What was wrong<a class="headerlink" href="#what-was-wrong" title="Permanent link">&para;</a></h4>
+<p>Some records were saved with their ID written in a different form from the one Nightscout uses
+to look records up. This happened to:</p>
+<ul>
+<li>profiles, device status reports, foods and activity records that arrived with their own ID,
+  for example <strong>copied from another Nightscout site by the connector</strong> or <strong>restored from an
+  export</strong>;</li>
+<li>treatments and glucose readings that arrived with their own ID on <strong>Nightscout 15.0.6 or
+  earlier</strong>, if your site has been running since then.</li>
+</ul>
+<p>Nightscout could show those records, but could not find them again by their ID. So <strong>editing</strong>
+one saved a <strong>second copy</strong> with your changes and <strong>kept the old one</strong>, and <strong>deleting</strong> it by its
+ID did not remove it. Apps that use API v3 could not see those records by their ID either, and
+sending one again through API v3 stored a second copy.</p>
+<h4 id="what-this-change-does">What this change does<a class="headerlink" href="#what-this-change-does" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Records that arrive with their own ID are saved in the normal form from now on.</li>
+<li>Records <strong>already saved</strong> the old way are found, and are fixed the first time they are edited:
+  the edit replaces the old copy and you are left with <strong>one</strong> record. Nothing in your database
+  changes until a record is edited or deleted.</li>
+<li>Deleting such a record now removes it, including a copy left by an earlier edit.</li>
+</ul>
+<p><strong>What you should do:</strong> nothing, for most sites. If your site receives data from another
+Nightscout site through the connector, or you have restored data from an export, or your site
+has been running since 15.0.6 or earlier, and you have edited a profile or treatment there, look
+at it after upgrading. If you see an old copy beside the one you edited, open it in the profile
+editor, or in the treatment list on the Reports page, and save it: the two become one record with
+that edit. An edit made by dragging a treatment on the main chart, or from an app that uses API v3,
+changes the record but leaves both copies. Deleting either copy deletes both, on a Nightscout page
+or through API v3 (part 4).
+If you are unsure which settings or entries are correct, check with your care team.</p>
+<hr />
+<h3 id="technical-detail">Technical detail<a class="headerlink" href="#technical-detail" title="Permanent link">&para;</a></h3>
+<h4 id="the-defect">The defect<a class="headerlink" href="#the-defect" title="Permanent link">&para;</a></h4>
+<p>A 24-hex string <code>_id</code> sent by a client was stored as the string itself by profile, devicestatus,
+food and activity on every release to dev, and by treatments and entries up to 15.0.6 (measured
+on 15.0.6; the REQ-SYNC-072 conversion first appears in 15.0.7). Every lookup by <code>_id</code> asks for
+the ObjectId: <code>lib/server/query.js</code> converts <code>find[_id]</code>, and <code>save()</code>/<code>remove()</code>/<code>getEntry()</code>
+build <code>new ObjectId(id)</code>. API v3's <code>filterForOne</code> and <code>identifyingFilter</code> match a v1 record's
+<code>_id</code> as ObjectId only. So, measured on <code>origin/dev</code> <code>1f9a9d10</code> against records stored with a
+string <code>_id</code>:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>find[_id]</th>
+<th>GET by id</th>
+<th>edit</th>
+<th>DELETE by id</th>
+<th>re-send</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>devicestatus</td>
+<td>[]</td>
+<td>—</td>
+<td>—</td>
+<td>nothing</td>
+<td>500</td>
+</tr>
+<tr>
+<td>food</td>
+<td>—</td>
+<td>—</td>
+<td>ObjectId copy added</td>
+<td>nothing</td>
+<td>replaced</td>
+</tr>
+<tr>
+<td>activity</td>
+<td>[]</td>
+<td>—</td>
+<td>ObjectId copy added</td>
+<td>nothing</td>
+<td>replaced</td>
+</tr>
+<tr>
+<td>treatments</td>
+<td>[]</td>
+<td>—</td>
+<td>ObjectId copy added</td>
+<td>nothing</td>
+<td>ObjectId copy added</td>
+</tr>
+<tr>
+<td>entries</td>
+<td>[]</td>
+<td>500 "No such id"</td>
+<td>—</td>
+<td>nothing</td>
+<td>500 (unchanged, see below)</td>
+</tr>
+<tr>
+<td>API v3</td>
+<td>—</td>
+<td>404</td>
+<td>201, second record</td>
+<td>404</td>
+<td>201, second record</td>
+</tr>
+</tbody>
+</table>
+<p>Profiles behave the same way.</p>
+<h4 id="what-the-commits-do">What the commits do<a class="headerlink" href="#what-the-commits-do" title="Permanent link">&para;</a></h4>
+<ol>
+<li><strong><code>1f9db1fe</code> helper.</strong> <code>lib/server/object-id-forms.js</code>: <code>isHexId</code>, <code>toStoredId</code> (24-hex string
+   → ObjectId), <code>idForms</code> (<code>[ObjectId, lower-case hex, as given]</code>), <code>matchEitherForm</code> (widens
+   <code>query.js</code>'s ObjectId equality to <code>$in</code> of those), <code>staleStringForms</code> /
+   <code>withStaleStringsRemoved</code> (after an upsert by the ObjectId, delete the string form of the same
+   id). The header documents that the non-hex rule differs by collection and is not unified.
+   Unit tests without a database.</li>
+<li><strong><code>09566345</code> profile.</strong> The profile fix, on the shared helper: conversion on create, with the create guard
+   that keeps a re-sent id already stored as a string colliding as before; PUT deletes the string
+   form after the upsert; DELETE and <code>find[_id]</code> match both. <code>tests/api.profiles.object-id.test.js</code>
+   is unchanged from the earlier profile-only fix.</li>
+<li><strong><code>80993afc</code> devicestatus, food, activity.</strong> Conversion on create. <code>find[_id]</code> (devicestatus,
+   activity; devicestatus DELETE uses the same query) matches both forms; food and activity
+   DELETE match both; food and activity PUT, <strong>and POST</strong> (their create is an upsert by <code>_id</code>),
+   delete the string form after the upsert in the same <code>bulkWrite</code>, so a re-POST still ends with
+   one record, as on dev. devicestatus has <strong>no create guard</strong>: it would add a read to every
+   connector batch. A devicestatus re-sent with the <code>_id</code> of a string copy is stored beside it
+   (dev: 500); the connector's in-process output does not re-send (measured: it drops rows whose
+   <code>created_at</code> is not strictly after the newest stored).</li>
+<li><strong><code>5581c5e4</code> treatments, entries.</strong> <code>find[_id]</code> (and the DELETEs) and <code>GET /entries/&lt;hex&gt;</code>
+   match both forms; a treatment write that matches by <code>_id</code> (PUT; POST of a record without
+   <code>identifier</code>, on the batch path and on the one-at-a-time path a <code>preBolus</code> takes) deletes the
+   string form after the upsert. The two REQ-SYNC-072 hex branches and <code>query.js</code>'s pattern use
+   the helper; the UUID path is untouched and its tests pass unmodified.</li>
+<li><strong><code>597e2899</code> API v3.</strong> <code>filterForOne</code> and <code>identifyingFilter</code> add one literal-<code>$eq</code> <code>$or</code>
+   branch per form of the <code>_id</code>, keeping the existing selector-hardening tests' <code>$eq</code> shape.
+   <code>explain()</code> on <code>mongo:7</code> over 5,001 documents: OR of IXSCAN on <code>_id_</code> and <code>identifier_1</code> for
+   profile, food, treatments, entries and devicestatus; one or two documents examined; no
+   COLLSCAN.</li>
+</ol>
+<p>No migration and no bulk write at boot.</p>
+<h4 id="tests">Tests<a class="headerlink" href="#tests" title="Permanent link">&para;</a></h4>
+<p>New: <code>tests/object-id-forms.test.js</code> (15), <code>tests/api.profiles.object-id.test.js</code> (13, from
+this defect), <code>tests/api.object-id.other-collections.test.js</code> (31),
+<code>tests/api.object-id.treatments-entries.test.js</code> (15), <code>tests/api3.string-id.test.js</code> (10).
+Red on dev: 11/13, 27/31, 13/15, 9/10; the passing ones are controls (POST without <code>_id</code>, a
+re-POST that dev already replaces in place, a record with an ObjectId <code>_id</code>).</p>
+<p>Full suite, <code>mongo:7</code>, passing / failing / pending, each commit on its own:</p>
+<table>
+<thead>
+<tr>
+<th>tree</th>
+<th>Node 20.20.0</th>
+<th>Node 22.23.2</th>
+<th style="text-align: right;">new tests</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>origin/dev</code> <code>1f9a9d10</code></td>
+<td>2386 / 0 / 3</td>
+<td>2386 / 0 / 3</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td>a <code>1f9db1fe</code> helper</td>
+<td>2401 / 0 / 3</td>
+<td>2401 / 0 / 3</td>
+<td style="text-align: right;">+15</td>
+</tr>
+<tr>
+<td>b <code>09566345</code> profile</td>
+<td>2414 / 0 / 3</td>
+<td>2414 / 0 / 3</td>
+<td style="text-align: right;">+13</td>
+</tr>
+<tr>
+<td>c <code>80993afc</code> devicestatus, food, activity</td>
+<td>2445 / 0 / 3</td>
+<td>2445 / 0 / 3</td>
+<td style="text-align: right;">+31</td>
+</tr>
+<tr>
+<td>d <code>5581c5e4</code> treatments, entries</td>
+<td>2460 / 0 / 3</td>
+<td>2460 / 0 / 3</td>
+<td style="text-align: right;">+15</td>
+</tr>
+<tr>
+<td>e <code>597e2899</code> API v3 (tip)</td>
+<td>2470 / 0 / 3</td>
+<td>2470 / 0 / 3</td>
+<td style="text-align: right;">+10</td>
+</tr>
+<tr>
+<td><code>bf/object-id-other-collections</code> <code>2fac53f5</code></td>
+<td>2432 / 0 / 3</td>
+<td>2432 / 0 / 3</td>
+<td style="text-align: right;">+46</td>
+</tr>
+<tr>
+<td><code>bf/api3-string-id</code> <code>7295bc8c</code></td>
+<td>2411 / 0 / 3</td>
+<td>2411 / 0 / 3</td>
+<td style="text-align: right;">+25</td>
+</tr>
+</tbody>
+</table>
+<p>Every step is exactly the new test file(s); no existing test changed. (d and e were also run
+before d gained its <code>preBolus</code> test, as <code>e10f9e48</code> 2459 and <code>30b130da</code> 2469, both green.)</p>
+<p>No existing test expectation changed.</p>
+<p>Breaking the fix (each part removed singly, the commit's own test file): every part turned at
+least one test red; the table is in the evidence file §7. One break went green on the first
+try (the one-at-a-time treatment POST path had no test); a <code>preBolus</code> test was added and it now
+goes red.</p>
+<h4 id="left-to-part-2">Left to part 2<a class="headerlink" href="#left-to-part-2" title="Permanent link">&para;</a></h4>
+<p>The first three items here are fixed by part 2 (commits <code>4b41bcf8</code>, <code>12c01268</code> and <code>a612a26f</code>); the last is
+about a different branch.</p>
+<ul>
+<li>An entry POSTed with the hex <code>_id</code> of an entry stored as a string at the same time and type
+  still answers 500, as on dev; the same POST without <code>_id</code> updates the entry.</li>
+<li>Websocket <code>dbAdd</code> still inserts <code>_id</code> as given (read).</li>
+<li>Route-level copies of the hex pattern (<code>lib/api/shared/objectid-validation.js</code>,
+  <code>lib/server/websocket.js</code>, and the lower-case-only <code>ID_PATTERN</code> in <code>lib/api/entries/index.js</code>).</li>
+<li><code>chore/nightscout-modernization</code> has this defect (reproduced, 11 of 13 red on Node 22.23.2 and
+  24.20.0).</li>
+</ul>
+<h2 id="part-2-the-same-rules-through-api-v1-api-v3-and-the-websocket">Part 2: the same rules through API v1, API v3 and the websocket<a class="headerlink" href="#part-2-the-same-rules-through-api-v1-api-v3-and-the-websocket" title="Permanent link">&para;</a></h2>
+<h3 id="what-changes-for-you_1">What changes for you<a class="headerlink" href="#what-changes-for-you_1" title="Permanent link">&para;</a></h3>
+<p><em>Plain-language summary for people running their own Nightscout site. Nightscout is not a medical
+device and none of this is medical advice. If your readings, treatments or settings look wrong,
+check them with your care team before relying on them.</em></p>
+<p>A few words used below:</p>
+<ul>
+<li><strong>Record</strong>: one saved item, such as a glucose reading (an "entry"), a treatment, a device status
+  report from a phone or pump, a food, or a profile (your saved settings).</li>
+<li><strong>ID</strong>: the label Nightscout gives each saved record so it can find it again.</li>
+<li><strong>Websocket</strong>: a live connection some apps keep open to Nightscout to send and change records.</li>
+<li><strong>API v3</strong>: a newer way for apps to read and write Nightscout data.</li>
+<li><strong>Uploader</strong>: the app or device that sends your readings to Nightscout.</li>
+</ul>
+<h4 id="what-was-wrong_1">What was wrong<a class="headerlink" href="#what-was-wrong_1" title="Permanent link">&para;</a></h4>
+<ul>
+<li>If your site holds glucose readings saved by <strong>Nightscout 15.0.6 or earlier</strong>, and an uploader
+  sent a reading again <strong>with its own ID</strong>, Nightscout answered with an error instead of updating
+  the reading. When a reading did update an earlier one, Nightscout told the app the wrong ID, or
+  none, for it.</li>
+<li>An app asking for, or deleting, a glucose reading by an ID written in <strong>capital letters</strong> got
+  nothing back, and nothing was deleted.</li>
+<li>A record an app added over the <strong>websocket</strong> with its own ID was saved in a form the websocket
+  could not find again. Editing or deleting it over the websocket did nothing, although
+  Nightscout reported success, and sending it again could save a second copy.</li>
+<li>Apps using <strong>API v3</strong> could not open, change or delete some older records whose ID is not in
+  Nightscout's usual form, though they could see them in lists; changing one saved a second copy.</li>
+<li>A <strong>device status report</strong> sent again could be saved twice.</li>
+</ul>
+<h4 id="what-this-change-does_1">What this change does<a class="headerlink" href="#what-this-change-does_1" title="Permanent link">&para;</a></h4>
+<ul>
+<li>A reading sent again with its own ID updates the reading already saved at that time, and the app
+  is told that reading's ID.</li>
+<li>An ID in capital letters finds and deletes the same reading as the same ID in small letters.</li>
+<li>Records added over the websocket with their own ID are saved in the normal form, and websocket
+  edits and deletes find records whichever way their ID was saved.</li>
+<li>API v3 finds, changes and deletes those older records by the ID it lists them under.</li>
+<li>A device status report sent again is not saved twice. (Part 2 refused it with an error, which also lost the other reports sent with it; part 4 answers it as already saved and saves the rest.)</li>
+</ul>
+<p>Nothing in your database changes until a record is written, edited or deleted.</p>
+<p><strong>What you should do:</strong> nothing, for most sites. If an app told you it had edited or deleted a
+record but the record did not change, try the change again after upgrading. If you see two copies
+of one record, see part 1: deleting either copy deletes both. If you are unsure which readings, treatments or
+settings are correct, check with your care team.</p>
+<hr />
+<h3 id="technical-detail_1">Technical detail<a class="headerlink" href="#technical-detail_1" title="Permanent link">&para;</a></h3>
+<h4 id="what-the-matrix-found">What the matrix found<a class="headerlink" href="#what-the-matrix-found" title="Permanent link">&para;</a></h4>
+<p><code>tests/api.crud-by-id.matrix.test.js</code> (commit 4) seeds one record per cell with its <code>_id</code> stored as
+an ObjectId (asked in lower or upper case), a lower- or upper-case hex string, or a UUID string,
+and runs one operation through v1, API v3 or the websocket. The expected outcome of every cell is
+in the test with its reason, including the deliberate differences (UUID → <code>identifier</code> for
+treatments and entries; 400 for a non-hex <code>_id</code> elsewhere on v1; a custom <code>_id</code> kept as given by
+the websocket; v3 identifiers immutable, so a PUT naming an ObjectId record by its upper-case hex is
+refused).</p>
+<table>
+<thead>
+<tr>
+<th>tree</th>
+<th><code>mongo:7</code> passing / failing</th>
+<th>MongoDB 4.4</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>origin/dev</code> <code>1f9a9d10</code></td>
+<td>176 / 160</td>
+<td>176 / 160</td>
+</tr>
+<tr>
+<td><code>bf/object-id-consistency</code> <code>597e2899</code></td>
+<td>266 / 70</td>
+<td>266 / 70</td>
+</tr>
+<tr>
+<td><code>bf/object-id-crud</code> <code>6d120fa2</code></td>
+<td>336 / 0</td>
+<td>336 / 0</td>
+</tr>
+</tbody>
+</table>
+<p>On <code>597e2899</code> the 70 are:
+- entries re-POST of a string-stored hex <code>_id</code> answers 500 (2 cells);
+- <code>GET</code> / <code>DELETE /entries/&lt;UPPER&gt;</code> find nothing (4);
+- a devicestatus re-sent with the <code>_id</code> of a string copy is stored twice (2);
+- API v3 on a record with a UUID <code>_id</code>: 404, second records, 500 (20);
+- the websocket (42): <code>dbAdd</code> stores a hex <code>_id</code> as the string; <code>dbUpdate</code> and <code>dbRemove</code> miss a
+  string-stored hex <code>_id</code> while replying success; a re-sent ObjectId record gets a string copy in
+  the generic collections.</p>
+<h4 id="what-the-commits-do_1">What the commits do<a class="headerlink" href="#what-the-commits-do_1" title="Permanent link">&para;</a></h4>
+<ol>
+<li><strong><code>4b41bcf8</code> entries re-POST.</strong> <code>lib/server/entries.js</code> <code>create()</code>: the sent <code>_id</code> goes in
+   <code>$setOnInsert</code>, not <code>$set</code>, so it is written only when the upsert inserts. A reading matched by
+   <code>sysTime</code> + <code>type</code> keeps its own <code>_id</code>, as a POST without <code>_id</code> does; before, MongoDB refused the
+   change of <code>_id</code> and the POST answered 500 (also for a hex <code>_id</code> that differs from the stored
+   ObjectId, which is how the existing dedup treats a different UUID, <code>TEST-ENTRY-UUID-003</code>).</li>
+<li><strong><code>a612a26f</code> upper-case ids.</strong> <code>lib/api/entries/index.js</code> <code>isId</code> is the helper's <code>isHexId</code>
+   (either case) instead of a lower-case-only pattern. <code>lib/api/shared/objectid-validation.js</code>
+   uses the same helper instead of its own copy (it already accepted either case). Why accept upper
+   case: an ObjectId's hex names the same id in either case, and <code>find[_id]</code>, the other v1 routes,
+   the websocket and API v3 all accepted it; the entries route was the one path that did not.</li>
+<li><strong><code>12c01268</code> websocket.</strong> Through <code>lib/server/object-id-forms.js</code>: <code>dbAdd</code> stores a 24-hex
+   <code>_id</code> as the ObjectId it names unless the same id is already stored as a string (one indexed
+   read, only for a record carrying a 24-hex <code>_id</code>), in which case the insert collides with it as
+   before. <code>dbUpdate</code>, <code>dbUpdateUnset</code> and <code>dbRemove</code> match a 24-hex <code>_id</code> in either form and reach
+   an ObjectId copy and a string copy alike; a custom string <code>_id</code> keeps the exact match and
+   <code>updateOne</code>/<code>deleteOne</code>. The similar-treatment dedup updates by the stored <code>_id</code> as it is.</li>
+<li><strong><code>c721e202</code> matrix test.</strong></li>
+<li><strong><code>44ac9047</code> API v3 and a non-hex <code>_id</code>.</strong> <code>filterForOne</code> and <code>identifyingFilter</code> also
+   match a non-hex <strong>string</strong> identifier against <code>_id</code>, with the same literal <code>$eq</code>; a non-string
+   (operator-shaped) identifier gets no <code>_id</code> branch and is still compared literally.
+   <code>lib/api3/swagger.yaml</code> line 1112 documents this addressing. <code>tests/api3.storage.modify.test.js</code>
+   asserted the old exact filter for a non-hex identifier; its three assertions are updated to the
+   new shape. <code>explain()</code> on <code>mongo:7</code>, all five v3 collections: OR of IXSCAN on <code>_id_</code> and
+   <code>identifier_1</code> (plus the dedup-field index where used), one to three documents examined, no
+   COLLSCAN.</li>
+<li><strong><code>18b09df7</code> stored <code>_id</code> in the entries POST response.</strong> After the write, the stored <code>_id</code>
+   of every reading that matched a stored one is read back in one <code>find</code> for the whole batch (an
+   <code>$or</code> of the same <code>sysTime</code> + <code>type</code> filters), only when some reading matched, and set on the
+   response, for a POST that carried another <code>_id</code> and for one that carried none (which answered
+   <code>null</code>). Every item in a v1 POST response is expected to carry an <code>_id</code>
+   (<code>docs/proposals/TEST-IMPLEMENTATION-SUMMARY.md</code> §6.1.2), and no existing test expected <code>null</code>.
+   If the read-back fails, the POST still answers 200 with the readings stored.</li>
+<li><strong><code>ad973110</code> devicestatus re-send guard.</strong> For a batch that carries 24-hex <code>_id</code>s, one
+   <code>find({_id: {$in: &lt;string forms&gt;}}, {_id: 1})</code>; ids found keep their stored value, so a re-send
+   collides and is refused as on dev and as a profile re-send is (part 4, <code>c3a34bac</code>, answers the
+   re-send instead of refusing it). No read for a batch
+   without 24-hex <code>_id</code>s. Measured cost (100-row batch, in-process create, <code>mongo:7</code>, 20,000 stored
+   rows, 40 runs, two repeats): median 5.29 / 5.09 ms with hex <code>_id</code>s against 4.18 / 4.17 ms before
+   the guard; without <code>_id</code>s 4.14 / 3.93 ms against 4.06 / 4.09 ms. About 1 ms per hex batch; the
+   <code>find</code> alone is 0.67 ms median, a covered IXSCAN on <code>_id_</code>.</li>
+<li><strong><code>6d120fa2</code> helper header.</strong> Comment only: a string <code>_id</code> stored in upper case is found
+   when asked for in that spelling, not in lower case; the header's non-hex rules now include the
+   websocket and API v3.</li>
+</ol>
+<h4 id="tests_1">Tests<a class="headerlink" href="#tests_1" title="Permanent link">&para;</a></h4>
+<p>New: <code>tests/api.entries.repost-with-id.test.js</code> (18), <code>tests/api.entries.upper-case-id.test.js</code>
+(5), <code>tests/websocket.object-id.test.js</code> (13), <code>tests/api.crud-by-id.matrix.test.js</code> (336),
+<code>tests/api3.non-hex-id.test.js</code> (16), <code>tests/api.devicestatus.resend-guard.test.js</code> (8). Changed:
+<code>tests/api3.storage.modify.test.js</code> (three filter-shape assertions, for the API v3 fix).</p>
+<p>Red on <code>597e2899</code>: 11/18, 3/5, 10/13, 70/336, 11/16, 5/8. Each commit's own tests were red on its
+parent (4/8, 3/5, 10/13, —, 11/16, 7/18, 5/8). The passing ones are controls: the stored <code>_id</code>
+re-sent, a new record, a POST without <code>_id</code>, <code>/entries/sgv</code>, an ObjectId-stored record, an
+operator-shaped identifier, a batch without <code>_id</code>s, a failed read-back.</p>
+<p>Full suite (<code>npm test</code>, <code>mongo:7</code>), passing / failing / pending:</p>
+<table>
+<thead>
+<tr>
+<th>tree</th>
+<th>Node 20.20.0</th>
+<th>Node 22.23.2</th>
+<th style="text-align: right;">new tests</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>bf/object-id-consistency</code> <code>597e2899</code></td>
+<td>2470 / 0 / 3</td>
+<td>2470 / 0 / 3</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td>1 <code>4b41bcf8</code></td>
+<td>2478 / 0 / 3</td>
+<td>2478 / 0 / 3</td>
+<td style="text-align: right;">+8</td>
+</tr>
+<tr>
+<td>2 <code>a612a26f</code></td>
+<td>2483 / 0 / 3</td>
+<td>2483 / 0 / 3</td>
+<td style="text-align: right;">+5</td>
+</tr>
+<tr>
+<td>3 <code>12c01268</code></td>
+<td>2496 / 0 / 3</td>
+<td>2496 / 0 / 3</td>
+<td style="text-align: right;">+13</td>
+</tr>
+<tr>
+<td>4 <code>c721e202</code></td>
+<td>2832 / 0 / 3</td>
+<td>2832 / 0 / 3</td>
+<td style="text-align: right;">+336</td>
+</tr>
+<tr>
+<td>5 <code>44ac9047</code></td>
+<td>2848 / 0 / 3</td>
+<td>2848 / 0 / 3</td>
+<td style="text-align: right;">+16</td>
+</tr>
+<tr>
+<td>6 <code>18b09df7</code></td>
+<td>2858 / 0 / 3</td>
+<td>2858 / 0 / 3</td>
+<td style="text-align: right;">+10</td>
+</tr>
+<tr>
+<td>7 <code>ad973110</code></td>
+<td>2866 / 0 / 3</td>
+<td>2866 / 0 / 3</td>
+<td style="text-align: right;">+8</td>
+</tr>
+<tr>
+<td>8 <code>6d120fa2</code></td>
+<td>2866 / 0 / 3</td>
+<td>2866 / 0 / 3</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>Breaking the fix, each part removed singly, the commit's own test file: every part turned at least
+one test red (table in the evidence file §4). Commit 8 is comment only.</p>
+<h2 id="part-3-four-fixes-from-review">Part 3: four fixes from review<a class="headerlink" href="#part-3-four-fixes-from-review" title="Permanent link">&para;</a></h2>
+<h3 id="what-changes-for-you_2">What changes for you<a class="headerlink" href="#what-changes-for-you_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>An app that uses API v3, such as AndroidAPS, could delete or change a record that it had once saved a second copy of, and the delete would report success while the record stayed. It now deletes or changes the copy it shows.</li>
+<li>On the admin page, deleting an access entry (a "subject") that was restored from a backup, or created by a tool that set its own ID, reported success and left the entry, with its access, in place. It is now removed. This was also true on 15.0.8.</li>
+</ul>
+<h3 id="technical-detail_2">Technical detail<a class="headerlink" href="#technical-detail_2" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>commit</th>
+<th>what was wrong</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>a2c7eb39</code></td>
+<td>Where a v1 record and the API v3 copy an earlier v3 PUT left beside it both exist, a v3 DELETE or PUT by that id wrote the v1 record while GET kept returning the v3 copy: the DELETE answered 200 and the record stayed, and a PUT left two records with the same <code>identifier</code>. v3 writes now find their target the way reads do (the document with <code>identifier</code> first, <code>findOne</code> sorted <code>{identifier: -1}</code>) and write that document by its <code>_id</code>. The v3 filter in <code>utils.js</code> is unchanged, so v3 still reaches string-<code>_id</code> records.</td>
+</tr>
+<tr>
+<td><code>1c2d1afd</code></td>
+<td><code>find[_id][$in]</code> and <code>find[_id][$nin]</code> missed a record whose 24-hex <code>_id</code> is stored as a string, for reads and bulk deletes. Each hex in the list now names both forms. Also on 15.0.8.</td>
+</tr>
+<tr>
+<td><code>d2fd9ff6</code>, <code>ab7b22d6</code></td>
+<td>An auth subject or role created with its own 24-hex <code>_id</code> was stored with it as a string, and DELETE by that id answered 200 and removed nothing. Also on 15.0.8; admin only. Remove now matches either form, so entries already stored that way can be deleted. <code>d2fd9ff6</code> also made create store the ObjectId; since #8754 merged into <code>dev</code>, create keeps only a subject's owned fields and a client <code>_id</code> is not stored at all, so <code>ab7b22d6</code> drops that half and its test now checks that no string <code>_id</code> is stored. Tokens are unaffected: they are derived from <code>_id.toString()</code>, the same for either form.</td>
+</tr>
+<tr>
+<td><code>dd2cf8f1</code></td>
+<td><code>idForms</code> read a 12-character string as an id, because the driver takes any 12 characters as raw bytes. It now throws for anything that is not an ObjectId or 24-hex; food, activity and profile remove match any other id exactly; <code>profile.save</code> gives such an id a new ObjectId.</td>
+</tr>
+</tbody>
+</table>
+<p>A delete by hex still removes both copies of a record an earlier edit left twice. That is intended (decided 2026-09-24), and the advice in part 1 now says so.</p>
+<p>Each commit carries its own tests. At <code>dd2cf8f1</code>, with <code>lib/</code> reverted to <code>6d120fa2</code> and the new tests kept, 10 of them fail. At <code>ab7b22d6</code>, reverting remove to match the ObjectId form only fails the string-<code>_id</code> remove test.</p>
+<h2 id="part-4-fixes-from-the-freeze-review">Part 4: fixes from the freeze review<a class="headerlink" href="#part-4-fixes-from-the-freeze-review" title="Permanent link">&para;</a></h2>
+<h3 id="what-changes-for-you_3">What changes for you<a class="headerlink" href="#what-changes-for-you_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>A treatment or glucose reading sent without a usable ID is given one. One kind of badly formed
+  record could stop a Nightscout site from running, and again after every restart; that can no
+  longer happen, and a site that already holds such a record keeps running. This was also true on
+  15.0.8.</li>
+<li>A device status report sent again is recognised as already saved, and the other reports sent
+  with it are saved. Before this part, the whole upload answered with an error and the reports
+  after the repeated one were lost.</li>
+<li>A record deleted by its ID stops showing straight away. Before this part, a record deleted through
+  the API stayed on newly opened pages, and could count in insulin and carbs on board there, until
+  the server restarted.</li>
+<li>Deleting a record that is saved twice through an app that uses API v3, such as AndroidAPS,
+  deletes both copies, so it no longer keeps showing. Where API v3 shows one copy, it is the one
+  with the latest edit. The first half was also true on 15.0.8.</li>
+</ul>
+<h3 id="technical-detail_3">Technical detail<a class="headerlink" href="#technical-detail_3" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>commit</th>
+<th>what was wrong</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>17add44b</code></td>
+<td>entries and treatments are written with upserts, which keep the <code>_id</code> they are given, so an <code>_id</code> that is empty or neither a string nor an ObjectId was stored as the record's <code>_id</code>; for one such value the next load of the in-memory data threw and the process ended, again after each restart. <code>object-id-forms.dropEmptyId</code> drops such an <code>_id</code> (an ObjectId from another copy of <code>bson</code> is kept, by <code>_bsontype</code>), called from <code>normalizeEntryId</code> and <code>normalizeTreatmentId</code>. <code>ddata</code>, <code>dataloader</code>, <code>calcdelta</code> and API v3 <code>normalizeDoc</code> accept a stored record without an id. Test: <code>tests/api.empty-id.test.js</code>.</td>
+</tr>
+<tr>
+<td><code>c3a34bac</code></td>
+<td>Part 2's re-send guard read the string forms only, so a re-send of a devicestatus stored with an ObjectId (every one this PR creates) collided, answered 500, and the ordered insert dropped every status after it in the POST. The read now asks for every form; a re-sent status is answered with the <code>_id</code> it is stored under and not written; the same new <code>_id</code> twice in a batch is stored once; the insert is unordered and accepts a duplicate key only for a status sent with its own <code>_id</code> (a retry that raced its first POST). <strong>Changed expectations</strong>: the resend-guard tests and the devicestatus re-send row of the matrix go from 500 to 200, marked in the files. This changes the 2026-09-23 decision below from "refused" to "acknowledged"; the guard still stores no second copy. Profile create still refuses a re-send (BF-99).</td>
+</tr>
+<tr>
+<td><code>63dd716c</code></td>
+<td>API v3 DELETE wrote one of the documents <code>filterForOne</code> matches, so of a record stored with a string <code>_id</code> and again with the ObjectId, one stayed valid; and reads and writes sorted by <code>identifier</code> only, which the two copies tie on, so which one they took depended on storage order (the string copy, in the review's trials; 15.0.8 took the ObjectId copy). DELETE now marks or removes every form (<code>updateMany</code>/<code>deleteMany</code>), and <code>findOne</code>, <code>findOneFilter</code> and <code>writeFilter</code> sort <code>{identifier: -1, _id: -1}</code>, which takes the ObjectId copy. <strong>Changed expectations</strong>: part 3's v1/v3 pair DELETE test now expects the v1 record marked deleted too, and two helper tests pin the new sort. Test: <code>tests/api3.delete-every-form.test.js</code>, which runs GET and PATCH with each copy stored first.</td>
+</tr>
+</tbody>
+</table>
+<p>| <code>cb7d4110</code> | From review of the three above. The every-form DELETE matched any document whose <code>_id</code> is the identifier, so it could also mark or remove a different record that has an identifier of its own; it now matches by <code>_id</code> only records without an identifier, as <code>identifyingFilter</code> does. And <code>dropEmptyId</code> dropped an Extended JSON <code>{"$oid": "&lt;hex&gt;"}</code> <code>_id</code>, as <code>mongoexport</code> writes it, so a restored record got a new id and a re-send stored a copy; it now becomes the ObjectId it names. Tests: two in <code>tests/api3.delete-every-form.test.js</code> (soft and permanent), and one unit and one HTTP test in <code>tests/api.empty-id.test.js</code>. |
+| <code>6c3ccce6</code> | A treatments POST batch deleted the string forms of the ids it matched by <code>_id</code> once, after all its writes. An item without <code>_id</code> matched by <code>created_at</code> and <code>eventType</code> could land on such a string copy and was deleted with it, behind a 200. Each write matched by <code>_id</code> now removes its string forms right after it, so a later item finds the one record and replaces it, as it does when no string copy exists; upserted ids are mapped back to their items past the added deletes. Tests: three in <code>tests/api.object-id.treatments-entries.test.js</code>. |
+| <code>e9dbb1fb</code> | Found by an A/B soak of this branch against 15.0.8, not by the suite: a v1 DELETE by <code>_id</code> removed the record from MongoDB but not from the in-memory cache, so unfiltered reads and newly opened pages kept showing it until a restart. <code>remove()</code> in entries, treatments and devicestatus reported <code>opts.find._id</code> to the cache, and this PR's <code>matchEitherForm</code> had rewritten that value in place into an either-form filter. Each now reports the id as asked, and <code>object-id-forms.cacheRemoval</code> makes the cache reload instead when both copies of a twin were removed (the cache drops only the first match), for an upper-case hex, or for a non-string id; websocket <code>dbRemove</code> uses the same rule. Tests: <code>tests/cache.remove-by-id.test.js</code> and one websocket case, red on <code>6c3ccce6</code>. |</p>
+<p>Not changed here: API v3 PUT/PATCH edit one copy and websocket <code>dbUpdate</code> edits both, and each
+leaves two records; websocket <code>dbAdd</code> and API v3 POST still store some unusable <code>_id</code> values
+without a crash.</p>
+<p>Each fix reverted singly fails a named test: either normalizer's call, the <code>ddata</code> or <code>calcdelta</code>
+guard, the unordered insert, soft and permanent DELETE, the read sort (only with the ObjectId copy
+stored first), the write sort, the Extended JSON read, the narrowed DELETE filter, and the
+treatments batch's per-write delete and its index map.</p>
+<h2 id="merges">Merges<a class="headerlink" href="#merges" title="Permanent link">&para;</a></h2>
+<p><code>dev</code> <code>ecb63223</code> (#8530, #8766, #8767) is merged in as <code>25f5ea21</code>, and part 4 on top of it as <code>f1e8398b</code>, with no conflicts and no file changed by both. The eight 15.0.9 PRs this was first checked against (#8748, #8749, #8751, #8753, #8754, #8755, #8756, #8757) have all merged into <code>dev</code>, and <code>dev</code> <code>4f705217</code> is merged into this branch (<code>572bfc32</code>, no conflicts). CI on <code>572bfc32</code> failed one test, the part 3 subject-create test, which <code>dev</code>'s change to create made wrong; <code>ab7b22d6</code> fixes it.</p>
+<p>The narrower profile-only fix that this replaces is not being opened.</p>
+<h2 id="tests-re-run-for-this-description">Tests, re-run for this description<a class="headerlink" href="#tests-re-run-for-this-description" title="Permanent link">&para;</a></h2>
+<p>At <code>63dd716c</code> the full suite (CI's <code>test-ci</code>, then <code>test:core</code>), Node 20.20.0, 22.23.2 and 24.20.0 × MongoDB 4.4.24 and 7.0.43, each version read from the server: 3090 passing, 0 failing, 3 pending, and 286 core, in all six. At <code>cb7d4110</code>, the same six cells: 3094 passing, 0 failing, 3 pending, and 286 core, in all six (four more than <code>63dd716c</code>, all from that commit). At <code>6c3ccce6</code>, the same six cells: 3097 passing, 0 failing, 3 pending, and 286 core, in all six (three more than <code>cb7d4110</code>, all from that commit). At <code>e9dbb1fb</code>, the same six cells: 3106 passing, 0 failing, 3 pending, and 286 core, in all six (nine more than <code>6c3ccce6</code>); the soak's deleted-reading probe exits 0 on <code>e9dbb1fb</code> and 1 on <code>6c3ccce6</code>.
+At <code>ab7b22d6</code> (this branch with <code>dev</code> <code>4f705217</code> merged), Node 22.23.2, MongoDB 7: 3066 passing, 0 failing, 3 pending. At <code>dd2cf8f1</code>, before the merge: 2875 passing, 0 failing, 3 pending.
+At <code>6d120fa2</code> (parts 1 and 2), Node 20.20.0: 2866 passing (<code>dev</code> <code>1f9a9d10</code> was 2386); of the 480 tests in the eleven new files, 259 fail with <code>dev</code>'s <code>lib/</code>, and the other 221 are invariants that pass on both.
+MongoDB needs a raised open-file limit for this suite (peak 1130 open files in <code>mongod</code> at <code>6d120fa2</code>); a container at Docker's default 1024 stops partway through.</p>
+<h2 id="decisions-taken-maintainer">Decisions taken (maintainer)<a class="headerlink" href="#decisions-taken-maintainer" title="Permanent link">&para;</a></h2>
+<p>2026-09-25: fix the three freeze-review findings in this PR (part 4), including answering a device
+status re-send instead of refusing it.</p>
+<p>2026-09-23: add the device status re-send guard (commit 7 of part 2); take the API v3 fix (commit 5); answer with the stored
+<code>_id</code> (commit 6); leave the upper-case string <code>_id</code> limit as it is, and state it in the helper (commit 8).</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

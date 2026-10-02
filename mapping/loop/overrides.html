@@ -1,0 +1,4921 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/mapping/loop/overrides.html">
+      
+      
+        <link rel="prev" href="nightscout-sync.html">
+      
+      
+        <link rel="next" href="quirks.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Loop Override Behavior - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#loop-override-behavior" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Loop Override Behavior
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../docs/00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../docs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    mapping/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../_template.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mapping: [Project] - [Scenario/Concept]
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../aaps/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    aaps/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../cgm-remote-monitor/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../cross-project/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cross-project/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../diable/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    diable/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_7" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    loop/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_7" id="__nav_6_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    loop/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="algorithm.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loop Prediction Algorithm
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="carb-math.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loop Carb Math
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="data-models.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loop Data Models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="dose-math.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loop Dose Math
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="insulin-math.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loop Insulin Math
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-sync.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loop Nightscout Sync
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loop Override Behavior
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="overrides.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loop Override Behavior
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#override-data-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Override Data Model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Override Data Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#source-temporaryscheduleoverrideswift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source: TemporaryScheduleOverride.swift
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#context-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Context Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#duration-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Duration Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enact-trigger" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enact Trigger
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#end-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        End Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#override-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Override Settings
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Override Settings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#source-temporaryscheduleoverridesettingsswift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source: TemporaryScheduleOverrideSettings.swift
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#target-range-override" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Target Range Override
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#insulin-needs-scale-factor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Insulin Needs Scale Factor
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#override-history-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Override History Management
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Override History Management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#source-temporaryscheduleoverridehistoryswift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source: TemporaryScheduleOverrideHistory.swift
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recording-an-override" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recording an Override
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supersession-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supersession Logic
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Supersession Logic">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-supersession-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Supersession Rule
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#supersession-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supersession Cases
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete-vs-cancel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delete vs Cancel
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#schedule-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Schedule Application
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Schedule Application">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basal-rate-override" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basal Rate Override
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#isf-override" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ISF Override
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#carb-ratio-override" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Carb Ratio Override
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validation-and-safety" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validation and Safety
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Validation and Safety">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overlap-prevention" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overlap Prevention
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#presets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Presets
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Presets">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#source-temporaryscheduleoverridepresetswift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source: TemporaryScheduleOverridePreset.swift
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#remote-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Remote Control
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Remote Control">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#activating-override-remotely" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Activating Override Remotely
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nightscout-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nightscout Integration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Nightscout Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#override-upload" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Override Upload
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#field-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field Mapping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#status-upload" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Status Upload
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alignment-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alignment Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Alignment Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-001-supersession-tracking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-001: Supersession Tracking
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#missing-override-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Missing Override History
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#duration-encoding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Duration Encoding
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="quirks.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loop Quirks and Edge Cases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="safety.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loop Safety Guardrails
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sync-identity-fields.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loop Sync Identity Fields Extraction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../loopcaregiver/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    loopcaregiver/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../loopfollow/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    loopfollow/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightguard/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightguard/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-connect/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-connect/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-librelink-up/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-librelink-up/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-reporter/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-reporter/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-roles-gateway/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-roles-gateway/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nocturne/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nocturne/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../openaps/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    openaps/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../oref0/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    oref0/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../share2nightscout-bridge/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    share2nightscout-bridge/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tconnectsync/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tconnectsync/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../trio/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    trio/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../xdrip/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../xdrip-android/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip-android/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../xdrip-js/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip-js/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../xdrip4ios/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip4ios/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#override-data-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Override Data Model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Override Data Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#source-temporaryscheduleoverrideswift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source: TemporaryScheduleOverride.swift
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#context-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Context Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#duration-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Duration Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enact-trigger" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enact Trigger
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#end-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        End Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#override-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Override Settings
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Override Settings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#source-temporaryscheduleoverridesettingsswift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source: TemporaryScheduleOverrideSettings.swift
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#target-range-override" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Target Range Override
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#insulin-needs-scale-factor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Insulin Needs Scale Factor
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#override-history-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Override History Management
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Override History Management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#source-temporaryscheduleoverridehistoryswift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source: TemporaryScheduleOverrideHistory.swift
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recording-an-override" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recording an Override
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supersession-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supersession Logic
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Supersession Logic">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-supersession-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Supersession Rule
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#supersession-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supersession Cases
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete-vs-cancel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delete vs Cancel
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#schedule-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Schedule Application
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Schedule Application">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basal-rate-override" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basal Rate Override
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#isf-override" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ISF Override
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#carb-ratio-override" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Carb Ratio Override
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validation-and-safety" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validation and Safety
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Validation and Safety">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overlap-prevention" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overlap Prevention
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#presets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Presets
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Presets">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#source-temporaryscheduleoverridepresetswift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source: TemporaryScheduleOverridePreset.swift
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#remote-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Remote Control
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Remote Control">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#activating-override-remotely" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Activating Override Remotely
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nightscout-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nightscout Integration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Nightscout Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#override-upload" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Override Upload
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#field-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field Mapping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#status-upload" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Status Upload
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alignment-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alignment Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Alignment Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-001-supersession-tracking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-001: Supersession Tracking
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#missing-override-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Missing Override History
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#duration-encoding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Duration Encoding
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="loop-override-behavior">Loop Override Behavior<a class="headerlink" href="#loop-override-behavior" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-01-16 at <code>eeb98a12</code>.</em></p>
+<p>This document details Loop's override system as implemented in <code>TemporaryScheduleOverride.swift</code> and <code>TemporaryScheduleOverrideHistory.swift</code>.</p>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>Loop's override system provides:
+1. <strong>Temporary adjustments</strong> to basal, ISF, CR, and target range
+2. <strong>Preset management</strong> for commonly-used overrides
+3. <strong>Supersession handling</strong> for overlapping overrides
+4. <strong>Remote control support</strong> via Nightscout</p>
+<hr />
+<h2 id="override-data-model">Override Data Model<a class="headerlink" href="#override-data-model" title="Permanent link">&para;</a></h2>
+<h3 id="source-temporaryscheduleoverrideswift">Source: <code>TemporaryScheduleOverride.swift</code><a class="headerlink" href="#source-temporaryscheduleoverrideswift" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>loop:LoopKit/LoopKit/TemporaryScheduleOverride.swift</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="nc">TemporaryScheduleOverride</span><span class="p">:</span><span class="w"> </span><span class="nb">Hashable</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="nv">context</span><span class="p">:</span><span class="w"> </span><span class="n">Context</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="nv">settings</span><span class="p">:</span><span class="w"> </span><span class="n">TemporaryScheduleOverrideSettings</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="nv">startDate</span><span class="p">:</span><span class="w"> </span><span class="n">Date</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nv">enactTrigger</span><span class="p">:</span><span class="w"> </span><span class="n">EnactTrigger</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nv">syncIdentifier</span><span class="p">:</span><span class="w"> </span><span class="n">UUID</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="nv">actualEnd</span><span class="p">:</span><span class="w"> </span><span class="n">End</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">.</span><span class="n">natural</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="nv">duration</span><span class="p">:</span><span class="w"> </span><span class="n">Duration</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="context-types">Context Types<a class="headerlink" href="#context-types" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">enum</span><span class="w"> </span><span class="nc">Context</span><span class="p">:</span><span class="w"> </span><span class="nb">Hashable</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">preMeal</span><span class="w">        </span><span class="c1">// Built-in pre-meal override</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">legacyWorkout</span><span class="w">  </span><span class="c1">// Built-in workout override</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">preset</span><span class="p">(</span><span class="n">TemporaryScheduleOverridePreset</span><span class="p">)</span><span class="w">  </span><span class="c1">// User-defined preset</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">custom</span><span class="w">         </span><span class="c1">// One-off custom override</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="duration-types">Duration Types<a class="headerlink" href="#duration-types" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">enum</span><span class="w"> </span><span class="nc">Duration</span><span class="p">:</span><span class="w"> </span><span class="nb">Hashable</span><span class="p">,</span><span class="w"> </span><span class="nb">Comparable</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">finite</span><span class="p">(</span><span class="n">TimeInterval</span><span class="p">)</span><span class="w">  </span><span class="c1">// Specific duration</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">indefinite</span><span class="w">            </span><span class="c1">// Until cancelled</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="p">}</span>
+</code></pre></div>
+<p><strong>Key behavior</strong>: Indefinite overrides use <code>.infinity</code> for timeInterval but encode as <code>0</code> when uploading to Nightscout.</p>
+<h3 id="enact-trigger">Enact Trigger<a class="headerlink" href="#enact-trigger" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">enum</span><span class="w"> </span><span class="nc">EnactTrigger</span><span class="p">:</span><span class="w"> </span><span class="nb">Hashable</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">local</span><span class="w">                </span><span class="c1">// User activated on device</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">remote</span><span class="p">(</span><span class="nb">String</span><span class="p">)</span><span class="w">       </span><span class="c1">// Remote command with address</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="p">}</span>
+</code></pre></div>
+<p>Tracks whether override was started locally or via remote command.</p>
+<h3 id="end-types">End Types<a class="headerlink" href="#end-types" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">enum</span><span class="w"> </span><span class="nc">End</span><span class="p">:</span><span class="w"> </span><span class="nb">Equatable</span><span class="p">,</span><span class="w"> </span><span class="nb">Hashable</span><span class="p">,</span><span class="w"> </span><span class="n">Codable</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">natural</span><span class="w">     </span><span class="c1">// Ended at scheduled time</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">early</span><span class="p">(</span><span class="n">Date</span><span class="p">)</span><span class="w"> </span><span class="c1">// Cancelled before scheduled end</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">deleted</span><span class="w">     </span><span class="c1">// Override was superseded before starting</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="p">}</span>
+</code></pre></div>
+<hr />
+<h2 id="override-settings">Override Settings<a class="headerlink" href="#override-settings" title="Permanent link">&para;</a></h2>
+<h3 id="source-temporaryscheduleoverridesettingsswift">Source: <code>TemporaryScheduleOverrideSettings.swift</code><a class="headerlink" href="#source-temporaryscheduleoverridesettingsswift" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>loop:LoopKit/LoopKit/TemporaryScheduleOverrideSettings.swift</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="nc">TemporaryScheduleOverrideSettings</span><span class="p">:</span><span class="w"> </span><span class="nb">Hashable</span><span class="p">,</span><span class="w"> </span><span class="nb">Equatable</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="nv">targetRange</span><span class="p">:</span><span class="w"> </span><span class="n">ClosedRange</span><span class="p">&lt;</span><span class="bp">HKQuantity</span><span class="p">&gt;?</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="nv">insulinNeedsScaleFactor</span><span class="p">:</span><span class="w"> </span><span class="nb">Double</span><span class="p">?</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="target-range-override">Target Range Override<a class="headerlink" href="#target-range-override" title="Permanent link">&para;</a></h3>
+<p>When set, replaces the user's normal target range:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">settings</span><span class="p">.</span><span class="n">targetRange</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">ClosedRange</span><span class="p">(</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">    </span><span class="n">uncheckedBounds</span><span class="p">:</span><span class="w"> </span><span class="p">(</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">        </span><span class="n">lower</span><span class="p">:</span><span class="w"> </span><span class="bp">HKQuantity</span><span class="p">(</span><span class="n">unit</span><span class="p">:</span><span class="w"> </span><span class="p">.</span><span class="n">milligramsPerDeciliter</span><span class="p">,</span><span class="w"> </span><span class="n">doubleValue</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">),</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">        </span><span class="n">upper</span><span class="p">:</span><span class="w"> </span><span class="bp">HKQuantity</span><span class="p">(</span><span class="n">unit</span><span class="p">:</span><span class="w"> </span><span class="p">.</span><span class="n">milligramsPerDeciliter</span><span class="p">,</span><span class="w"> </span><span class="n">doubleValue</span><span class="p">:</span><span class="w"> </span><span class="mi">110</span><span class="p">)</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">    </span><span class="p">)</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="p">)</span>
+</code></pre></div></p>
+<h3 id="insulin-needs-scale-factor">Insulin Needs Scale Factor<a class="headerlink" href="#insulin-needs-scale-factor" title="Permanent link">&para;</a></h3>
+<p>Multiplier applied to insulin delivery:
+- <code>0.5</code> = 50% of normal (exercise mode)
+- <code>1.0</code> = normal (default)
+- <code>1.5</code> = 150% of normal (sick day)</p>
+<p><strong>Applied to</strong>:
+- Basal rates
+- ISF (inverse - higher scale factor means lower sensitivity)
+- CR (inverse - higher scale factor means lower carb ratio)</p>
+<hr />
+<h2 id="override-history-management">Override History Management<a class="headerlink" href="#override-history-management" title="Permanent link">&para;</a></h2>
+<h3 id="source-temporaryscheduleoverridehistoryswift">Source: <code>TemporaryScheduleOverrideHistory.swift</code><a class="headerlink" href="#source-temporaryscheduleoverridehistoryswift" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>loop:LoopKit/LoopKit/TemporaryScheduleOverrideHistory.swift</code></p>
+<p>This class manages the lifecycle of all overrides:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kd">public</span><span class="w"> </span><span class="kr">final</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">TemporaryScheduleOverrideHistory</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="nv">recentEvents</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="n">OverrideEvent</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[]</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="nv">relevantTimeWindow</span><span class="p">:</span><span class="w"> </span><span class="n">TimeInterval</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">TimeInterval</span><span class="p">.</span><span class="n">hours</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="nv">modificationCounter</span><span class="p">:</span><span class="w"> </span><span class="nb">Int64</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="recording-an-override">Recording an Override<a class="headerlink" href="#recording-an-override" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">func</span><span class="w"> </span><span class="nf">recordOverride</span><span class="p">(</span><span class="kc">_</span><span class="w"> </span><span class="kr">override</span><span class="p">:</span><span class="w"> </span><span class="n">TemporaryScheduleOverride</span><span class="p">?,</span><span class="w"> </span><span class="n">at</span><span class="w"> </span><span class="n">enableDate</span><span class="p">:</span><span class="w"> </span><span class="n">Date</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Date</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">    </span><span class="k">guard</span><span class="w"> </span><span class="kr">override</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">lastUndeletedEvent</span><span class="p">?.</span><span class="kr">override</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nv">override</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="kr">override</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">        </span><span class="n">record</span><span class="p">(</span><span class="kr">override</span><span class="p">,</span><span class="w"> </span><span class="n">at</span><span class="p">:</span><span class="w"> </span><span class="n">enableDate</span><span class="p">)</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">        </span><span class="n">cancelActiveOverride</span><span class="p">(</span><span class="n">at</span><span class="p">:</span><span class="w"> </span><span class="n">enableDate</span><span class="p">)</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">    </span><span class="n">delegate</span><span class="p">?.</span><span class="n">temporaryScheduleOverrideHistoryDidUpdate</span><span class="p">(</span><span class="kc">self</span><span class="p">)</span>
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="p">}</span>
+</code></pre></div>
+<p><strong>Key behavior</strong>:
+- Ignores duplicate recordings
+- <code>nil</code> override means cancel current
+- Notifies delegate on any change</p>
+<hr />
+<h2 id="supersession-logic">Supersession Logic<a class="headerlink" href="#supersession-logic" title="Permanent link">&para;</a></h2>
+<h3 id="core-supersession-rule">Core Supersession Rule<a class="headerlink" href="#core-supersession-rule" title="Permanent link">&para;</a></h3>
+<p>When a new override is recorded, any overlapping overrides are handled:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kd">private</span><span class="w"> </span><span class="kd">func</span><span class="w"> </span><span class="nf">record</span><span class="p">(</span><span class="kc">_</span><span class="w"> </span><span class="kr">override</span><span class="p">:</span><span class="w"> </span><span class="n">TemporaryScheduleOverride</span><span class="p">,</span><span class="w"> </span><span class="n">at</span><span class="w"> </span><span class="n">enableDate</span><span class="p">:</span><span class="w"> </span><span class="n">Date</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">    </span><span class="c1">// Check for modification of existing entry by syncIdentifier</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">    </span><span class="c1">// ...</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">    </span><span class="c1">// Delete any overrides starting on or after new override</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">    </span><span class="n">deleteEventsStartingOnOrAfter</span><span class="p">(</span><span class="kr">override</span><span class="p">.</span><span class="n">startDate</span><span class="p">)</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="w">    </span><span class="c1">// Cancel active override at moment before new one starts</span>
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">overrideEnd</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="bp">min</span><span class="p">(</span><span class="kr">override</span><span class="p">.</span><span class="n">startDate</span><span class="p">.</span><span class="n">nearestPrevious</span><span class="p">,</span><span class="w"> </span><span class="n">enableDate</span><span class="p">)</span>
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="w">    </span><span class="n">cancelActiveOverride</span><span class="p">(</span><span class="n">at</span><span class="p">:</span><span class="w"> </span><span class="n">overrideEnd</span><span class="p">)</span>
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>
+<a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a><span class="w">    </span><span class="c1">// Record the new override</span>
+<a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">enabledEvent</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">OverrideEvent</span><span class="p">(</span><span class="kr">override</span><span class="p">:</span><span class="w"> </span><span class="kr">override</span><span class="p">,</span><span class="w"> </span><span class="n">modificationCounter</span><span class="p">:</span><span class="w"> </span><span class="n">modificationCounter</span><span class="p">)</span>
+<a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a><span class="w">    </span><span class="n">recentEvents</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">enabledEvent</span><span class="p">)</span>
+<a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="supersession-cases">Supersession Cases<a class="headerlink" href="#supersession-cases" title="Permanent link">&para;</a></h3>
+<p><strong>Case 1: New override starts now</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>Before: Override A: 10:00-11:00 (active)
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>Action: Start Override B at 10:30
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>After:
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>  Override A: 10:00-10:30 (ended early)
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>  Override B: 10:30-11:30 (active)
+</code></pre></div></p>
+<p><strong>Case 2: New override scheduled for future</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>Before: Override A: 10:00-11:00 (active)
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>Action: Schedule Override B for 10:45-11:45
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>After:
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>  Override A: 10:00-10:45 (will end early when B starts)
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>  Override B: 10:45-11:45 (scheduled)
+</code></pre></div></p>
+<p><strong>Case 3: Cancel active override</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>Before: Override A: 10:00-11:00 (active)
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>Action: Cancel at 10:30
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>After:
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>  Override A: 10:00-10:30 (ended early)
+</code></pre></div></p>
+<h3 id="delete-vs-cancel">Delete vs Cancel<a class="headerlink" href="#delete-vs-cancel" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="kd">private</span><span class="w"> </span><span class="kd">func</span><span class="w"> </span><span class="nf">deleteEventsStartingOnOrAfter</span><span class="p">(</span><span class="kc">_</span><span class="w"> </span><span class="n">date</span><span class="p">:</span><span class="w"> </span><span class="n">Date</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">    </span><span class="n">recentEvents</span><span class="p">.</span><span class="n">mutateEach</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">(</span><span class="n">event</span><span class="p">)</span><span class="w"> </span><span class="k">in</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">event</span><span class="p">.</span><span class="kr">override</span><span class="p">.</span><span class="n">startDate</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">date</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="w">            </span><span class="n">event</span><span class="p">.</span><span class="kr">override</span><span class="p">.</span><span class="n">actualEnd</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">.</span><span class="n">deleted</span><span class="w">  </span><span class="c1">// Never executed</span>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="w">        </span><span class="p">}</span>
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="p">}</span>
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>
+<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="kd">private</span><span class="w"> </span><span class="kd">func</span><span class="w"> </span><span class="nf">cancelActiveOverride</span><span class="p">(</span><span class="n">at</span><span class="w"> </span><span class="n">date</span><span class="p">:</span><span class="w"> </span><span class="n">Date</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="w">    </span><span class="c1">// ... find active override</span>
+<a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">recentEvents</span><span class="p">[</span><span class="n">index</span><span class="p">].</span><span class="kr">override</span><span class="p">.</span><span class="n">startDate</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">date</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a><span class="w">        </span><span class="n">recentEvents</span><span class="p">[</span><span class="n">index</span><span class="p">].</span><span class="kr">override</span><span class="p">.</span><span class="n">actualEnd</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">.</span><span class="n">deleted</span>
+<a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a><span class="w">        </span><span class="n">recentEvents</span><span class="p">[</span><span class="n">index</span><span class="p">].</span><span class="kr">override</span><span class="p">.</span><span class="n">actualEnd</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">.</span><span class="n">early</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
+<a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a><span class="p">}</span>
+</code></pre></div>
+<ul>
+<li><strong>Deleted</strong> (<code>.deleted</code>): Override never actually executed (superseded before start)</li>
+<li><strong>Ended Early</strong> (<code>.early(Date)</code>): Override executed but cancelled before scheduled end</li>
+</ul>
+<hr />
+<h2 id="schedule-application">Schedule Application<a class="headerlink" href="#schedule-application" title="Permanent link">&para;</a></h2>
+<h3 id="basal-rate-override">Basal Rate Override<a class="headerlink" href="#basal-rate-override" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">func</span><span class="w"> </span><span class="nf">resolvingRecentBasalSchedule</span><span class="p">(</span><span class="kc">_</span><span class="w"> </span><span class="n">base</span><span class="p">:</span><span class="w"> </span><span class="n">BasalRateSchedule</span><span class="p">,</span><span class="w"> </span><span class="n">relativeTo</span><span class="w"> </span><span class="n">referenceDate</span><span class="p">:</span><span class="w"> </span><span class="n">Date</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Date</span><span class="p">())</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="n">BasalRateSchedule</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">    </span><span class="n">filterRecentEvents</span><span class="p">(</span><span class="n">relativeTo</span><span class="p">:</span><span class="w"> </span><span class="n">referenceDate</span><span class="p">)</span>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">overridesReflectingEnabledDuration</span><span class="p">(</span><span class="n">relativeTo</span><span class="p">:</span><span class="w"> </span><span class="n">referenceDate</span><span class="p">).</span><span class="bp">reduce</span><span class="p">(</span><span class="n">base</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">base</span><span class="p">,</span><span class="w"> </span><span class="kr">override</span><span class="w"> </span><span class="k">in</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">        </span><span class="n">base</span><span class="p">.</span><span class="n">applyingBasalRateMultiplier</span><span class="p">(</span><span class="n">from</span><span class="p">:</span><span class="w"> </span><span class="kr">override</span><span class="p">,</span><span class="w"> </span><span class="n">relativeTo</span><span class="p">:</span><span class="w"> </span><span class="n">referenceDate</span><span class="p">)</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="p">}</span>
+</code></pre></div>
+<p>Applies <code>insulinNeedsScaleFactor</code> to basal rates during override windows.</p>
+<h3 id="isf-override">ISF Override<a class="headerlink" href="#isf-override" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">func</span><span class="w"> </span><span class="nf">resolvingRecentInsulinSensitivitySchedule</span><span class="p">(</span><span class="kc">_</span><span class="w"> </span><span class="n">base</span><span class="p">:</span><span class="w"> </span><span class="n">InsulinSensitivitySchedule</span><span class="p">,</span><span class="w"> </span><span class="n">relativeTo</span><span class="w"> </span><span class="n">referenceDate</span><span class="p">:</span><span class="w"> </span><span class="n">Date</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Date</span><span class="p">())</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="n">InsulinSensitivitySchedule</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="w">    </span><span class="c1">// ... similar pattern, applies inverse of scale factor</span>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="p">}</span>
+</code></pre></div>
+<p><strong>Important</strong>: ISF is divided by <code>insulinNeedsScaleFactor</code>:
+- Scale factor 0.5 → ISF × 2 (more sensitive, less insulin)
+- Scale factor 2.0 → ISF × 0.5 (less sensitive, more insulin)</p>
+<h3 id="carb-ratio-override">Carb Ratio Override<a class="headerlink" href="#carb-ratio-override" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">func</span><span class="w"> </span><span class="nf">resolvingRecentCarbRatioSchedule</span><span class="p">(</span><span class="kc">_</span><span class="w"> </span><span class="n">base</span><span class="p">:</span><span class="w"> </span><span class="n">CarbRatioSchedule</span><span class="p">,</span><span class="w"> </span><span class="n">relativeTo</span><span class="w"> </span><span class="n">referenceDate</span><span class="p">:</span><span class="w"> </span><span class="n">Date</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Date</span><span class="p">())</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="n">CarbRatioSchedule</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="w">    </span><span class="c1">// ... similar pattern, applies inverse of scale factor</span>
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="p">}</span>
+</code></pre></div>
+<hr />
+<h2 id="validation-and-safety">Validation and Safety<a class="headerlink" href="#validation-and-safety" title="Permanent link">&para;</a></h2>
+<h3 id="overlap-prevention">Overlap Prevention<a class="headerlink" href="#overlap-prevention" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="kd">private</span><span class="w"> </span><span class="kd">func</span><span class="w"> </span><span class="nf">validateOverridesReflectingEnabledDuration</span><span class="p">(</span><span class="kc">_</span><span class="w"> </span><span class="n">overrides</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="n">TemporaryScheduleOverride</span><span class="p">])</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">overlappingOverridePairIndices</span><span class="p">:</span><span class="w"> </span><span class="p">[(</span><span class="nb">Int</span><span class="p">,</span><span class="w"> </span><span class="nb">Int</span><span class="p">)]</span><span class="w"> </span><span class="p">=</span>
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="w">        </span><span class="nb">Array</span><span class="p">(</span><span class="n">overrides</span><span class="p">.</span><span class="n">enumerated</span><span class="p">())</span>
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="w">            </span><span class="p">.</span><span class="n">allPairs</span><span class="p">()</span>
+<a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="w">            </span><span class="p">.</span><span class="n">compactMap</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="n">override1</span><span class="p">.</span><span class="n">activeInterval</span><span class="p">.</span><span class="n">intersects</span><span class="p">(</span><span class="n">override2</span><span class="p">.</span><span class="n">activeInterval</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a><span class="w">                    </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">index1</span><span class="p">,</span><span class="w"> </span><span class="n">index2</span><span class="p">)</span>
+<a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a><span class="w">                </span><span class="p">}</span>
+<a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a><span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="kc">nil</span>
+<a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a><span class="w">            </span><span class="p">}</span>
+<a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a>
+<a id="__codelineno-17-12" name="__codelineno-17-12" href="#__codelineno-17-12"></a><span class="w">    </span><span class="k">guard</span><span class="w"> </span><span class="n">invalidOverrideIndices</span><span class="p">.</span><span class="bp">isEmpty</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-17-13" name="__codelineno-17-13" href="#__codelineno-17-13"></a><span class="w">        </span><span class="c1">// Save tainted history for debugging</span>
+<a id="__codelineno-17-14" name="__codelineno-17-14" href="#__codelineno-17-14"></a><span class="w">        </span><span class="n">taintedEventLog</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">recentEvents</span>
+<a id="__codelineno-17-15" name="__codelineno-17-15" href="#__codelineno-17-15"></a><span class="w">        </span><span class="c1">// Remove conflicting overrides</span>
+<a id="__codelineno-17-16" name="__codelineno-17-16" href="#__codelineno-17-16"></a><span class="w">        </span><span class="n">recentEvents</span><span class="p">.</span><span class="bp">removeAll</span><span class="p">(</span><span class="n">at</span><span class="p">:</span><span class="w"> </span><span class="n">invalidOverrideIndices</span><span class="p">)</span>
+<a id="__codelineno-17-17" name="__codelineno-17-17" href="#__codelineno-17-17"></a><span class="w">        </span><span class="c1">// CRASH - this should never happen</span>
+<a id="__codelineno-17-18" name="__codelineno-17-18" href="#__codelineno-17-18"></a><span class="w">        </span><span class="bp">preconditionFailure</span><span class="p">(</span><span class="s">"No overrides should overlap."</span><span class="p">)</span>
+<a id="__codelineno-17-19" name="__codelineno-17-19" href="#__codelineno-17-19"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-17-20" name="__codelineno-17-20" href="#__codelineno-17-20"></a><span class="p">}</span>
+</code></pre></div>
+<p><strong>Critical</strong>: Loop crashes if overlapping overrides are detected. This ensures algorithm never sees conflicting state.</p>
+<hr />
+<h2 id="presets">Presets<a class="headerlink" href="#presets" title="Permanent link">&para;</a></h2>
+<h3 id="source-temporaryscheduleoverridepresetswift">Source: <code>TemporaryScheduleOverridePreset.swift</code><a class="headerlink" href="#source-temporaryscheduleoverridepresetswift" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>loop:LoopKit/LoopKit/TemporaryScheduleOverridePreset.swift</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="nc">TemporaryScheduleOverridePreset</span><span class="p">:</span><span class="w"> </span><span class="nb">Hashable</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nv">id</span><span class="p">:</span><span class="w"> </span><span class="n">UUID</span>
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="nv">symbol</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span>
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="nv">name</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span>
+<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="nv">settings</span><span class="p">:</span><span class="w"> </span><span class="n">TemporaryScheduleOverrideSettings</span>
+<a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="nv">duration</span><span class="p">:</span><span class="w"> </span><span class="n">TemporaryScheduleOverride</span><span class="p">.</span><span class="n">Duration</span>
+<a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="p">}</span>
+</code></pre></div>
+<p>Users can define presets with:
+- Custom emoji symbol
+- Descriptive name
+- Pre-configured settings
+- Default duration</p>
+<hr />
+<h2 id="remote-control">Remote Control<a class="headerlink" href="#remote-control" title="Permanent link">&para;</a></h2>
+<h3 id="activating-override-remotely">Activating Override Remotely<a class="headerlink" href="#activating-override-remotely" title="Permanent link">&para;</a></h3>
+<p>Via Nightscout, remote users can:
+1. Start a preset override by name
+2. Start a custom override with parameters
+3. Cancel the active override</p>
+<p><strong>Source</strong>: <code>loop:NightscoutService/NightscoutServiceKit/RemoteCommands/Actions/OverrideAction.swift</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="nc">OverrideAction</span><span class="p">:</span><span class="w"> </span><span class="n">Codable</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nv">name</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span>
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nv">durationTime</span><span class="p">:</span><span class="w"> </span><span class="n">TimeInterval</span><span class="p">?</span>
+<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nv">remoteAddress</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span>
+<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="p">}</span>
+</code></pre></div>
+<p><strong>Source</strong>: <code>loop:NightscoutService/NightscoutServiceKit/RemoteCommands/Actions/OverrideCancelAction.swift</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="nc">OverrideCancelAction</span><span class="p">:</span><span class="w"> </span><span class="n">Codable</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nv">remoteAddress</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span>
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="p">}</span>
+</code></pre></div>
+<p>When activated remotely, <code>enactTrigger</code> is set to <code>.remote(address)</code> where address identifies the sender.</p>
+<hr />
+<h2 id="nightscout-integration">Nightscout Integration<a class="headerlink" href="#nightscout-integration" title="Permanent link">&para;</a></h2>
+<h3 id="override-upload">Override Upload<a class="headerlink" href="#override-upload" title="Permanent link">&para;</a></h3>
+<p><strong>Source</strong>: <code>loop:NightscoutService/NightscoutServiceKit/Extensions/OverrideTreament.swift</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="kd">extension</span><span class="w"> </span><span class="nc">OverrideTreatment</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="w">    </span><span class="kr">convenience</span><span class="w"> </span><span class="kd">init</span><span class="p">(</span><span class="kr">override</span><span class="p">:</span><span class="w"> </span><span class="n">LoopKit</span><span class="p">.</span><span class="n">TemporaryScheduleOverride</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="w">        </span><span class="c1">// Maps Loop override to Nightscout treatment</span>
+<a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>
+<a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="nv">reason</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">switch</span><span class="w"> </span><span class="kr">override</span><span class="p">.</span><span class="n">context</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="p">.</span><span class="n">custom</span><span class="p">:</span><span class="w"> </span><span class="s">"Custom Override"</span>
+<a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="p">.</span><span class="n">legacyWorkout</span><span class="p">:</span><span class="w"> </span><span class="s">"Workout"</span>
+<a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="p">.</span><span class="n">preMeal</span><span class="p">:</span><span class="w"> </span><span class="s">"Pre-Meal"</span>
+<a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="p">.</span><span class="n">preset</span><span class="p">(</span><span class="kd">let</span><span class="w"> </span><span class="nv">preset</span><span class="p">):</span><span class="w"> </span><span class="n">preset</span><span class="p">.</span><span class="n">symbol</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">" "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">preset</span><span class="p">.</span><span class="n">name</span>
+<a id="__codelineno-21-10" name="__codelineno-21-10" href="#__codelineno-21-10"></a><span class="w">        </span><span class="p">}</span>
+<a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a>
+<a id="__codelineno-21-12" name="__codelineno-21-12" href="#__codelineno-21-12"></a><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="nv">enteredBy</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">switch</span><span class="w"> </span><span class="kr">override</span><span class="p">.</span><span class="n">enactTrigger</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-21-13" name="__codelineno-21-13" href="#__codelineno-21-13"></a><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="p">.</span><span class="n">remote</span><span class="p">:</span><span class="w"> </span><span class="s">"Loop (via remote command)"</span>
+<a id="__codelineno-21-14" name="__codelineno-21-14" href="#__codelineno-21-14"></a><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="p">.</span><span class="n">local</span><span class="p">:</span><span class="w"> </span><span class="s">"Loop"</span>
+<a id="__codelineno-21-15" name="__codelineno-21-15" href="#__codelineno-21-15"></a><span class="w">        </span><span class="p">}</span>
+<a id="__codelineno-21-16" name="__codelineno-21-16" href="#__codelineno-21-16"></a>
+<a id="__codelineno-21-17" name="__codelineno-21-17" href="#__codelineno-21-17"></a><span class="w">        </span><span class="kc">self</span><span class="p">.</span><span class="kd">init</span><span class="p">(</span>
+<a id="__codelineno-21-18" name="__codelineno-21-18" href="#__codelineno-21-18"></a><span class="w">            </span><span class="n">startDate</span><span class="p">:</span><span class="w"> </span><span class="kr">override</span><span class="p">.</span><span class="n">startDate</span><span class="p">,</span>
+<a id="__codelineno-21-19" name="__codelineno-21-19" href="#__codelineno-21-19"></a><span class="w">            </span><span class="n">enteredBy</span><span class="p">:</span><span class="w"> </span><span class="n">enteredBy</span><span class="p">,</span>
+<a id="__codelineno-21-20" name="__codelineno-21-20" href="#__codelineno-21-20"></a><span class="w">            </span><span class="n">reason</span><span class="p">:</span><span class="w"> </span><span class="n">reason</span><span class="p">,</span>
+<a id="__codelineno-21-21" name="__codelineno-21-21" href="#__codelineno-21-21"></a><span class="w">            </span><span class="n">duration</span><span class="p">:</span><span class="w"> </span><span class="n">duration</span><span class="p">,</span>
+<a id="__codelineno-21-22" name="__codelineno-21-22" href="#__codelineno-21-22"></a><span class="w">            </span><span class="n">correctionRange</span><span class="p">:</span><span class="w"> </span><span class="n">nsTargetRange</span><span class="p">,</span>
+<a id="__codelineno-21-23" name="__codelineno-21-23" href="#__codelineno-21-23"></a><span class="w">            </span><span class="n">insulinNeedsScaleFactor</span><span class="p">:</span><span class="w"> </span><span class="kr">override</span><span class="p">.</span><span class="n">settings</span><span class="p">.</span><span class="n">insulinNeedsScaleFactor</span><span class="p">,</span>
+<a id="__codelineno-21-24" name="__codelineno-21-24" href="#__codelineno-21-24"></a><span class="w">            </span><span class="n">remoteAddress</span><span class="p">:</span><span class="w"> </span><span class="n">remoteAddress</span><span class="p">,</span>
+<a id="__codelineno-21-25" name="__codelineno-21-25" href="#__codelineno-21-25"></a><span class="w">            </span><span class="n">id</span><span class="p">:</span><span class="w"> </span><span class="kr">override</span><span class="p">.</span><span class="n">syncIdentifier</span><span class="p">.</span><span class="n">uuidString</span>
+<a id="__codelineno-21-26" name="__codelineno-21-26" href="#__codelineno-21-26"></a><span class="w">        </span><span class="p">)</span>
+<a id="__codelineno-21-27" name="__codelineno-21-27" href="#__codelineno-21-27"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-21-28" name="__codelineno-21-28" href="#__codelineno-21-28"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="field-mapping">Field Mapping<a class="headerlink" href="#field-mapping" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Loop Field</th>
+<th>Nightscout Field</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>startDate</code></td>
+<td><code>timestamp</code></td>
+</tr>
+<tr>
+<td><code>context</code> (name)</td>
+<td><code>reason</code></td>
+</tr>
+<tr>
+<td><code>settings.targetRange</code></td>
+<td><code>correctionRange</code></td>
+</tr>
+<tr>
+<td><code>settings.insulinNeedsScaleFactor</code></td>
+<td><code>insulinNeedsScaleFactor</code></td>
+</tr>
+<tr>
+<td><code>duration</code></td>
+<td><code>duration</code> (0 = indefinite)</td>
+</tr>
+<tr>
+<td><code>enactTrigger</code></td>
+<td><code>enteredBy</code></td>
+</tr>
+<tr>
+<td><code>syncIdentifier</code></td>
+<td><code>_id</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="status-upload">Status Upload<a class="headerlink" href="#status-upload" title="Permanent link">&para;</a></h3>
+<p>Loop also uploads current override status to <code>devicestatus.loop.override</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="kd">var</span><span class="w"> </span><span class="nv">overrideStatus</span><span class="p">:</span><span class="w"> </span><span class="n">NightscoutKit</span><span class="p">.</span><span class="n">OverrideStatus</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="w">    </span><span class="k">guard</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nv">scheduleOverride</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">scheduleOverride</span><span class="p">,</span><span class="w"> </span><span class="n">scheduleOverride</span><span class="p">.</span><span class="n">isActive</span><span class="p">()</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">NightscoutKit</span><span class="p">.</span><span class="n">OverrideStatus</span><span class="p">(</span><span class="n">timestamp</span><span class="p">:</span><span class="w"> </span><span class="n">date</span><span class="p">,</span><span class="w"> </span><span class="n">active</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
+<a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>
+<a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">NightscoutKit</span><span class="p">.</span><span class="n">OverrideStatus</span><span class="p">(</span>
+<a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a><span class="w">        </span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="n">scheduleOverride</span><span class="p">.</span><span class="n">context</span><span class="p">.</span><span class="n">name</span><span class="p">,</span>
+<a id="__codelineno-22-8" name="__codelineno-22-8" href="#__codelineno-22-8"></a><span class="w">        </span><span class="n">timestamp</span><span class="p">:</span><span class="w"> </span><span class="n">date</span><span class="p">,</span>
+<a id="__codelineno-22-9" name="__codelineno-22-9" href="#__codelineno-22-9"></a><span class="w">        </span><span class="n">active</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<a id="__codelineno-22-10" name="__codelineno-22-10" href="#__codelineno-22-10"></a><span class="w">        </span><span class="n">currentCorrectionRange</span><span class="p">:</span><span class="w"> </span><span class="n">currentCorrectionRange</span><span class="p">,</span>
+<a id="__codelineno-22-11" name="__codelineno-22-11" href="#__codelineno-22-11"></a><span class="w">        </span><span class="n">duration</span><span class="p">:</span><span class="w"> </span><span class="n">remainingDuration</span><span class="p">,</span>
+<a id="__codelineno-22-12" name="__codelineno-22-12" href="#__codelineno-22-12"></a><span class="w">        </span><span class="n">multiplier</span><span class="p">:</span><span class="w"> </span><span class="n">scheduleOverride</span><span class="p">.</span><span class="n">settings</span><span class="p">.</span><span class="n">insulinNeedsScaleFactor</span>
+<a id="__codelineno-22-13" name="__codelineno-22-13" href="#__codelineno-22-13"></a><span class="w">    </span><span class="p">)</span>
+<a id="__codelineno-22-14" name="__codelineno-22-14" href="#__codelineno-22-14"></a><span class="p">}</span>
+</code></pre></div>
+<hr />
+<h2 id="alignment-gaps">Alignment Gaps<a class="headerlink" href="#alignment-gaps" title="Permanent link">&para;</a></h2>
+<h3 id="gap-001-supersession-tracking">GAP-001: Supersession Tracking<a class="headerlink" href="#gap-001-supersession-tracking" title="Permanent link">&para;</a></h3>
+<p><strong>Issue</strong>: Nightscout does not track supersession relationships.</p>
+<p><strong>Loop's behavior</strong>: When Override B supersedes Override A:
+- Override A has <code>actualEnd = .early(date)</code>
+- The relationship is implicit (temporal ordering)</p>
+<p><strong>Proposal</strong>: Add <code>supersedes</code> field to Nightscout treatments:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="p">{</span>
+<a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="w">  </span><span class="nt">"eventType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Temporary Override"</span><span class="p">,</span>
+<a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="w">  </span><span class="nt">"supersedes"</span><span class="p">:</span><span class="w"> </span><span class="s2">"previous-override-id"</span><span class="p">,</span>
+<a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="w">  </span><span class="nt">"supersededAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-01-16T10:30:00Z"</span>
+<a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a><span class="p">}</span>
+</code></pre></div></p>
+<h3 id="missing-override-history">Missing Override History<a class="headerlink" href="#missing-override-history" title="Permanent link">&para;</a></h3>
+<p>Nightscout receives individual override treatments but loses:
+- <code>actualEnd</code> type (natural vs early vs deleted)
+- Full event history with modification counters
+- Validation/tainted event logs</p>
+<h3 id="duration-encoding">Duration Encoding<a class="headerlink" href="#duration-encoding" title="Permanent link">&para;</a></h3>
+<p>Loop uses <code>TimeInterval.infinity</code> for indefinite overrides.
+Nightscout uses <code>0</code> for indefinite.
+<strong>This is correctly mapped</strong> in the upload code.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

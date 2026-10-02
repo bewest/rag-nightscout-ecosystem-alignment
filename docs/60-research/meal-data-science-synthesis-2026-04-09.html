@@ -1,0 +1,8316 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/60-research/meal-data-science-synthesis-2026-04-09.html">
+      
+      
+        <link rel="prev" href="meal-characterization-report-2026-04-10.html">
+      
+      
+        <link rel="next" href="meal-detection-throughput-report-2026-04-07.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Comprehensive Meal Data Science Synthesis - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#comprehensive-meal-data-science-synthesis" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Comprehensive Meal Data Science Synthesis
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../30-design/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_27" id="__nav_5_27_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_27_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_27">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    60-research/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="exp-2844-phenotype-drilldown-report-2026-04-22.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-0001 to 2869
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="exp-2870-envelope-crossover-report-2026-04-22.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2870 to 2909
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="exp-2910-eight-dim-regrade-2026-04-23.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2910 to 2949
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="exp-2950-uniform-action-curve-2026-04-23.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2950 to 2999
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="exp-3000-3003-cf-replay-maturation-2026-04-25.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-3000 and later
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="AUTORESEARCH-SESSION-2026-04-26.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Programme, closeouts and syntheses
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="accuracy-validation-2026-04-05.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Productionization and pipelines
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="capability-report-clinical-decision-support.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Capability reports
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="circadian-therapy-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Therapy
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="aid-aware-settings-report-2026-04-09.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings and profiles
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="natural-experiment-deconfounding-2026-04-09.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Natural experiments
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="bilateral-deconfounding-report-2026-04-19.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EGP, supply-demand and deconfounding
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27_14" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5_27_14" id="__nav_5_27_14_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Meals and carbohydrates
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_27_14_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_27_14">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Meals and carbohydrates
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="autotune-uam-characterization-report.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autotune &amp; UAM Characterization Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="carb-absorption-model-investigation-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Carb Absorption Model Investigation Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="carb-estimation-survey-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-1341: Multi-Algorithm Meal Carb Estimation Survey
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="context-adaptive-uam-model-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Context-Adaptive Modeling &amp; UAM-Aware Prediction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="context-cr-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Context-Aware Carb Ratio Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cr-improvement-meal-analysis-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Carb Ratio Improvement &amp; Meal Analysis Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="excursion-taxonomy-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glycemic Excursion Taxonomy &amp; Variability Decomposition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="exp-meal-source-comparison-2026-04-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inferred-Meal Mask vs Logged-Carbs Mask in EGP/ISF Experiments (2026-04-24)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="meal-characterization-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-1361: Meal Peak Detection, Characterization &amp; Template Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Comprehensive Meal Data Science Synthesis
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="meal-data-science-synthesis-2026-04-09.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Comprehensive Meal Data Science Synthesis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executive Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-the-meal-counting-problem-2619-or-12060" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The Meal Counting Problem: 2,619 or 12,060?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-isf-normalization-fundamentally-re-ranks-patients" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. ISF Normalization Fundamentally Re-Ranks Patients
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-supply--demand-spectral-power-is-orthogonal-to-excursion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Supply × Demand Spectral Power Is Orthogonal to Excursion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-carb-estimation-four-algorithms-four-different-realities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Carb Estimation: Four Algorithms, Four Different Realities
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-765-of-meals-are-unannounced--and-they-look-different" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. 76.5% of Meals Are Unannounced — And They Look Different
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-the-meal-clock-45-of-patients-are-robust-36-need-personalization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. The Meal Clock: 45% of Patients Are Robust, 36% Need Personalization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. The Meal Clock: 45% of Patients Are Robust, 36% Need Personalization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#robustness-tiers-exp-1571" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Robustness Tiers (EXP-1571)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-key-predictor-number-of-meal-peaks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Key Predictor: Number of Meal Peaks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#per-patient-meal-clock-signatures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-Patient Meal Clock Signatures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#periodicity-findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Periodicity Findings
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-the-aid-loop-is-the-dominant-confound--and-the-dominant-signal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. The AID Loop Is the Dominant Confound — And the Dominant Signal
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. The AID Loop Is the Dominant Confound — And the Dominant Signal">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-aid-distorts-meal-signals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How AID Distorts Meal Signals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-aid-confounding-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key AID Confounding Results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-supply--demand-conservation-law" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Supply × Demand Conservation Law
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cross-cutting-themes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross-Cutting Themes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cross-Cutting Themes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#theme-a-the-personalization-gradient" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Theme A: The Personalization Gradient
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#theme-b-what-entered-carbs-dont-tell-you" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Theme B: What Entered Carbs Don't Tell You
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#theme-c-the-detection-sensitivity-insight-trade-off" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Theme C: The Detection-Sensitivity-Insight Trade-Off
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gaps-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gaps Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#experiment-inventory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Experiment Inventory
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#visualization-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Visualization Index
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conclusion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#source-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source Files
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="meal-detection-throughput-report-2026-04-07.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Meal Detection via Supply × Demand Throughput Power
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="meal-personalization-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Meal Response Personalization &amp; Carb Absorption Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="meal-pharmacodynamics-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Meal Pharmacodynamics &amp; Pre-Bolus Optimization Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="meal-response-clustering-report.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-1591–1598: Meal-Response Clustering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="meal-response-insulin-model-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Meal Response Analysis &amp; Insulin Model Improvement Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="meal-response-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Meal Response Characterization Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="multi-scale-meal-physics-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Scale Physics &amp; Meal Modeling Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="rescue-carb-inference-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rescue Carb Inference from Glucose Signal Alone
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="uam-morning-optimization-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UAM Detection Feasibility, Morning Optimization &amp; Patient Phenotypes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="causal-pk-leakage-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Insulin, ISF and pharmacokinetics
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="acceleration-clinical-utility-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clinical, safety and hypoglycaemia
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="aid-author-recommendations-report-2026-04-20.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AID controllers, cohorts and waves
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="centering-dynamics-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forecasting, prediction and classification
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="advanced-architectures-benchmark-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ML methods and architectures
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="canonical/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    canonical/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="collaboration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    collaboration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="external-inventories/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    external-inventories/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="modernization/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    modernization/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="programme/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    programme/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="remedial/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    remedial/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="tenancy/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenancy/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executive Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-the-meal-counting-problem-2619-or-12060" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The Meal Counting Problem: 2,619 or 12,060?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-isf-normalization-fundamentally-re-ranks-patients" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. ISF Normalization Fundamentally Re-Ranks Patients
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-supply--demand-spectral-power-is-orthogonal-to-excursion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Supply × Demand Spectral Power Is Orthogonal to Excursion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-carb-estimation-four-algorithms-four-different-realities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Carb Estimation: Four Algorithms, Four Different Realities
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-765-of-meals-are-unannounced--and-they-look-different" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. 76.5% of Meals Are Unannounced — And They Look Different
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-the-meal-clock-45-of-patients-are-robust-36-need-personalization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. The Meal Clock: 45% of Patients Are Robust, 36% Need Personalization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. The Meal Clock: 45% of Patients Are Robust, 36% Need Personalization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#robustness-tiers-exp-1571" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Robustness Tiers (EXP-1571)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-key-predictor-number-of-meal-peaks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Key Predictor: Number of Meal Peaks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#per-patient-meal-clock-signatures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-Patient Meal Clock Signatures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#periodicity-findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Periodicity Findings
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-the-aid-loop-is-the-dominant-confound--and-the-dominant-signal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. The AID Loop Is the Dominant Confound — And the Dominant Signal
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. The AID Loop Is the Dominant Confound — And the Dominant Signal">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-aid-distorts-meal-signals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How AID Distorts Meal Signals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-aid-confounding-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key AID Confounding Results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-supply--demand-conservation-law" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Supply × Demand Conservation Law
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cross-cutting-themes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross-Cutting Themes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cross-Cutting Themes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#theme-a-the-personalization-gradient" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Theme A: The Personalization Gradient
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#theme-b-what-entered-carbs-dont-tell-you" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Theme B: What Entered Carbs Don't Tell You
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#theme-c-the-detection-sensitivity-insight-trade-off" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Theme C: The Detection-Sensitivity-Insight Trade-Off
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gaps-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gaps Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#experiment-inventory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Experiment Inventory
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#visualization-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Visualization Index
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conclusion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#source-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source Files
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="comprehensive-meal-data-science-synthesis">Comprehensive Meal Data Science Synthesis<a class="headerlink" href="#comprehensive-meal-data-science-synthesis" title="Permanent link">&para;</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Record</p>
+<p>Record as of 2026-04-09. A point-in-time document; it is not kept up to date.</p>
+</div>
+<p><strong>Date</strong>: 2026-04-09<br />
+<strong>Experiments</strong>: EXP-1291–1301, EXP-1309, EXP-1341, EXP-1551–1571, EXP-1591–1598<br />
+<strong>Dataset</strong>: 11 patients, 1,838 patient-days, 529,288 CGM steps, 50,810 natural experiments<br />
+<strong>Scope</strong>: Detection → Characterization → Normalization → Periodicity → Sensitivity → Archetypes</p>
+<hr />
+<h2 id="executive-summary">Executive Summary<a class="headerlink" href="#executive-summary" title="Permanent link">&para;</a></h2>
+<p>Across 8 research phases and 30+ experiments, we have built a complete data-science picture of meals in AID (Automated Insulin Delivery) patients. This report synthesizes all findings into seven major takeaways — the big conclusions that emerge only when the full body of evidence is considered together.</p>
+<p><strong>The core insight</strong>: Meals in AID patients are simultaneously simpler and more complex than assumed. Simpler because 45% of patients have robust, clock-like meal patterns that survive any reasonable detection method. More complex because the AID loop itself fundamentally alters what "a meal" looks like in the data — masking true metabolic cost, dampening corrections, and creating a measurement problem where entered carbs, algorithm estimates, and glucose responses all tell different stories.</p>
+<hr />
+<h2 id="1-the-meal-counting-problem-2619-or-12060">1. The Meal Counting Problem: 2,619 or 12,060?<a class="headerlink" href="#1-the-meal-counting-problem-2619-or-12060" title="Permanent link">&para;</a></h2>
+<p><img alt="Meal Counting Problem" src="../../visualizations/natural-experiments/fig37_synthesis_meal_counting.png" />
+<em>Figure 37: (A) Total meals detected varies 3× across detection methods. (B) Quality and quantity trade inversely. (C) The 72-config parameter space with the optimal knee marked.</em></p>
+<p>The single most important methodological finding is that <strong>meal count depends enormously on how you look</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Detection Method</th>
+<th>Meals</th>
+<th>Per Patient/Day</th>
+<th>What It Captures</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Census (≥5g, 30-min merge)</td>
+<td>4,072</td>
+<td>2.2</td>
+<td>All carb events including snacks</td>
+</tr>
+<tr>
+<td>Medium (≥5g, 90-min merge)</td>
+<td>3,272</td>
+<td>1.8</td>
+<td>Merged close events</td>
+</tr>
+<tr>
+<td>Therapy (≥18g, 90-min merge)</td>
+<td>2,619</td>
+<td>1.4</td>
+<td>Major meals only</td>
+</tr>
+<tr>
+<td>UAM-inclusive detection</td>
+<td>12,060</td>
+<td>6.6</td>
+<td>All glucose excursions (76.5% unannounced)</td>
+</tr>
+</tbody>
+</table>
+<p>The 72-configuration benchmark (EXP-1569) showed this isn't just academic: <strong>the choice of min_carb_g and hysteresis_min changes every downstream metric</strong> — regularity, size distribution, announced fraction, and metabolic quality scores. The optimal "knee" at <strong>5g/150min</strong> (1.51 meals/day, efficiency ratio 26.0) represents the best universal trade-off between sensitivity and signal quality.</p>
+<p><strong>Takeaway</strong>: There is no single "true" meal count. The appropriate definition depends on the clinical question. For meal timing analysis, therapy config (≥18g) is best. For carb estimation, UAM-inclusive detection captures the full metabolic picture. For AID tuning, the knee config balances both.</p>
+<hr />
+<h2 id="2-isf-normalization-fundamentally-re-ranks-patients">2. ISF Normalization Fundamentally Re-Ranks Patients<a class="headerlink" href="#2-isf-normalization-fundamentally-re-ranks-patients" title="Permanent link">&para;</a></h2>
+<p><img alt="ISF Normalization" src="../../visualizations/natural-experiments/fig38_synthesis_isf_normalization.png" />
+<em>Figure 38: (A) Bump chart showing how patient rankings shift when normalizing by ISF — patient f jumps from 3rd to 1st. (B) The 4.5× ISF variation across patients. (C) ISF-normalized thresholds classify metabolic burden.</em></p>
+<p>Raw glucose excursion (mg/dL) is the standard way to assess meal impact, but it ignores a 4.5× variation in insulin sensitivity across patients. ISF-normalized excursion (correction-equivalents) reveals who is actually metabolically struggling.</p>
+<table>
+<thead>
+<tr>
+<th>Patient</th>
+<th>Profile ISF</th>
+<th>Raw Excursion</th>
+<th>ISF-Normalized</th>
+<th>Rank Change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>f</td>
+<td>21 mg/dL/U</td>
+<td>104.9 mg/dL</td>
+<td><strong>4.99</strong></td>
+<td>3rd → <strong>1st</strong></td>
+</tr>
+<tr>
+<td>i</td>
+<td>50 mg/dL/U</td>
+<td>131.0 mg/dL</td>
+<td><strong>2.62</strong></td>
+<td>1st → 2nd</td>
+</tr>
+<tr>
+<td>b</td>
+<td>95 mg/dL/U</td>
+<td>73.1 mg/dL</td>
+<td><strong>0.77</strong></td>
+<td>Mid → <strong>Best</strong></td>
+</tr>
+<tr>
+<td>c</td>
+<td>75 mg/dL/U</td>
+<td>109.8 mg/dL</td>
+<td>1.46</td>
+<td>2nd → Mid</td>
+</tr>
+</tbody>
+</table>
+<p>Patient f's 105 mg/dL excursion looks moderate, but at ISF=21 mg/dL/U, each excursion costs <strong>5 units of correction insulin</strong> — the most metabolically expensive meals in the cohort. Patient b's 73 mg/dL excursion at ISF=95 is trivially corrected with &lt;1 unit.</p>
+<p>The ISF-normalized framework creates clinically meaningful thresholds:
+- <strong>&lt; 1.0 correction-equivalent</strong>: Well-managed (typical for high-ISF patients)
+- <strong>1.0–2.0</strong>: Normal range
+- <strong>&gt; 2.0</strong>: Metabolically expensive (settings review recommended)</p>
+<p><strong>Takeaway</strong>: Raw mg/dL excursion is misleading for cross-patient comparison. ISF normalization reveals the true metabolic burden of meals and identifies patients whose AID settings may be masking poor control.</p>
+<hr />
+<h2 id="3-supply--demand-spectral-power-is-orthogonal-to-excursion">3. Supply × Demand Spectral Power Is Orthogonal to Excursion<a class="headerlink" href="#3-supply--demand-spectral-power-is-orthogonal-to-excursion" title="Permanent link">&para;</a></h2>
+<p><img alt="2D Quality Framework" src="../../visualizations/natural-experiments/fig39_synthesis_2d_quality.png" />
+<em>Figure 39: (A) Per-patient scatter in the 2D quality space — ISF-normalized excursion and spectral power are orthogonal (r = −0.039), creating 4 clinically meaningful quadrants. (B) Spectral power scales super-linearly (~11×) with carb size.</em></p>
+<p>The supply×demand spectral power (FFT-based energy of insulin-glucose interaction) captures something entirely different from excursion: <strong>how hard the AID loop is working during a meal</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Metric Pair</th>
+<th>Correlation</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Raw excursion vs ISF-norm</td>
+<td>r = 0.732</td>
+<td>Strong (related but not identical)</td>
+</tr>
+<tr>
+<td><strong>ISF-norm vs Spectral Power</strong></td>
+<td><strong>r = −0.039</strong></td>
+<td><strong>Orthogonal (completely independent)</strong></td>
+</tr>
+<tr>
+<td>Carbs vs Spectral Power</td>
+<td>r = 0.433</td>
+<td>Moderate (larger meals → more AID activity)</td>
+</tr>
+</tbody>
+</table>
+<p>This orthogonality creates a powerful 2D meal quality framework:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>                    High Spectral Power
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>                         │
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    "AID Working Hard    │    "Well-Managed"
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>     but Still High"     │     ✓ Best outcome
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>                         │
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    ─────────────────────┼─────────────────────
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>                         │
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    "Undertreated"       │    "Low Excursion,
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>     ✗ Worst outcome     │     Low AID Activity"
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>                         │
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>                    Low Spectral Power
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>       High Excursion ←──────→ Low Excursion
+</code></pre></div>
+<p><strong>Spectral power scales super-linearly with carb size</strong> (~21× from small to large meals), meaning the AID loop's response is disproportionately stronger for large meals. This matches the clinical expectation that AID algorithms use SMB/temp-basal more aggressively for larger glucose rises.</p>
+<p><strong>Per-patient spectral extremes</strong>:
+- Patient h: 25.6M (highest) — very active AID despite moderate excursion → well-tuned
+- Patients d, k: near-zero — minimal supply×demand dynamics → possible AID disengagement</p>
+<p><strong>Takeaway</strong>: Excursion alone misses half the story. The 2D excursion × spectral-power framework identifies undertreated meals (high glucose, low AID response) that single-metric approaches miss.</p>
+<hr />
+<h2 id="4-carb-estimation-four-algorithms-four-different-realities">4. Carb Estimation: Four Algorithms, Four Different Realities<a class="headerlink" href="#4-carb-estimation-four-algorithms-four-different-realities" title="Permanent link">&para;</a></h2>
+<p><img alt="Carb Algorithm Disagreement" src="../../visualizations/natural-experiments/fig40_synthesis_carb_algorithms.png" />
+<em>Figure 40: (A) Four algorithms produce median estimates from 5.6g to 22.6g — oref0 has the best correlation with entered carbs (r=0.368). (B) The ~4× gap between oref0 and Loop IRC for unannounced meals explains clinical behavior differences between AID systems.</em></p>
+<p>Comparing four carb estimation algorithms on 12,060 meals (EXP-1341) reveals fundamental disagreements about meal size:</p>
+<table>
+<thead>
+<tr>
+<th>Algorithm</th>
+<th>Median Estimate</th>
+<th>Correlation with Entered</th>
+<th>What It Actually Measures</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Physics residual</td>
+<td>22.6g</td>
+<td>r = 0.093 (worst)</td>
+<td>Total unexplained glucose rise (incl. dawn, stress)</td>
+</tr>
+<tr>
+<td>oref0 deviation</td>
+<td>21.8g</td>
+<td><strong>r = 0.368 (best)</strong></td>
+<td>COB-predicted vs actual deviation</td>
+</tr>
+<tr>
+<td>Glucose excursion</td>
+<td>7.8g</td>
+<td>r = 0.263</td>
+<td>Simple peak-to-trough amplitude</td>
+</tr>
+<tr>
+<td>Loop IRC</td>
+<td>5.6g</td>
+<td>r = 0.334</td>
+<td>Insulin-attributed carb absorption</td>
+</tr>
+</tbody>
+</table>
+<p>The <strong>4× gap between oref0 (22g) and Loop IRC (6g)</strong> for unannounced meals has direct clinical consequences: oref0/AAPS treats UAM as a substantial meal requiring ~22g of coverage, while Loop's conservative IRC estimates ~6g. This explains why AAPS users report more aggressive UAM correction and why Loop is perceived as "slower to respond" to unannounced meals.</p>
+<p><strong>The entered-carbs problem</strong>: User-entered carbs (median 30g) correlate only modestly with any algorithm (max r=0.368). Entered carbs suffer from rounding artifacts (clusters at 10g, 15g, 20g, 30g), selection bias (patients announce larger meals), and AID blunting (the loop reduces the glucose response, making the entry appear "too high"). Entered carbs are <strong>not reliable ground truth</strong> for carb estimation validation.</p>
+<p><strong>Takeaway</strong>: No single algorithm captures "true" carbs. oref0 deviation is closest to entered carbs; physics captures the broadest set of metabolic events; Loop IRC is most conservative. An ensemble approach (physics for detection, oref0 for magnitude) would combine strengths.</p>
+<hr />
+<h2 id="5-765-of-meals-are-unannounced--and-they-look-different">5. 76.5% of Meals Are Unannounced — And They Look Different<a class="headerlink" href="#5-765-of-meals-are-unannounced--and-they-look-different" title="Permanent link">&para;</a></h2>
+<p><img alt="UAM Dominance and Timing" src="../../visualizations/natural-experiments/fig41_synthesis_uam_timing.png" />
+<em>Figure 41: (A) Over three-quarters of meals lack carb entries. (B) The paradox: announced meals have higher raw excursion but lower ISF-normalized cost (selection bias). (C) Bolus timing explains 11× more excursion variance than dose.</em></p>
+<p>Across 12,060 detected meals, only 23.5% have matching carb entries. The unannounced majority (76.5%) has distinct characteristics:</p>
+<table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>Announced (n=2,837)</th>
+<th>Unannounced/UAM (n=9,223)</th>
+<th>Δ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Raw excursion</td>
+<td>80.5 mg/dL</td>
+<td>105.0 mg/dL</td>
+<td>+30%</td>
+</tr>
+<tr>
+<td>ISF-normalized</td>
+<td>1.70</td>
+<td>1.44</td>
+<td>−15%</td>
+</tr>
+<tr>
+<td>Spectral power</td>
+<td>Higher</td>
+<td>Lower</td>
+<td>AID less active</td>
+</tr>
+<tr>
+<td>Mean carbs (oref0)</td>
+<td>27.9g</td>
+<td>19.9g</td>
+<td>−29%</td>
+</tr>
+</tbody>
+</table>
+<p>The paradox: announced meals have <strong>higher raw excursion</strong> but <strong>lower ISF-normalized excursion</strong>. This is selection bias — patients tend to announce larger meals (median 30g entered), and those patients tend to have lower ISF (more insulin-sensitive). When corrected for ISF, unannounced meals are actually more metabolically expensive per-gram.</p>
+<p>From meal clustering (EXP-1591–1598), all meals partition into exactly <strong>2 response phenotypes</strong>:
+- <strong>Controlled rise</strong> (53%): excursion = 35 mg/dL, peak at 28 min — AID catches it early
+- <strong>High excursion</strong> (47%): excursion = 102 mg/dL, peak at 102 min — AID response lags</p>
+<p><strong>Bolus timing explains 11× more excursion variance than dose</strong> (R² = 8.9% vs 0.8%). Pre-bolusing is the single highest-leverage behavior change for meal management. This holds regardless of carb amount — even "wrong" carb estimates with good timing produce better outcomes than accurate estimates with late boluses.</p>
+<p><strong>Takeaway</strong>: The majority of metabolic events are invisible to carb-based analysis. UAM detection is not optional — it's the primary meal signal. And for the meals that are announced, <strong>timing beats accuracy</strong> for bolus optimization.</p>
+<hr />
+<h2 id="6-the-meal-clock-45-of-patients-are-robust-36-need-personalization">6. The Meal Clock: 45% of Patients Are Robust, 36% Need Personalization<a class="headerlink" href="#6-the-meal-clock-45-of-patients-are-robust-36-need-personalization" title="Permanent link">&para;</a></h2>
+<p><img alt="Robustness Archetypes" src="../../visualizations/natural-experiments/fig42_synthesis_robustness.png" />
+<em>Figure 42: (A) Patient robustness distribution with tier boundaries. (B) n_peaks is THE predictor of robustness (ρ = −0.851, p = 0.0009) — 3+ peaks means parameter-resilient. (C) Clinical triage decision tree: count peaks to determine personalization needs.</em></p>
+<p>The most surprising finding of the entire research program is how <strong>binary</strong> patients are in their meal-clock behavior. There is no smooth continuum — patients cluster sharply into archetypes.</p>
+<h3 id="robustness-tiers-exp-1571">Robustness Tiers (EXP-1571)<a class="headerlink" href="#robustness-tiers-exp-1571" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>n (%)</th>
+<th>σσ Range</th>
+<th>Peaks</th>
+<th>Defining Feature</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Robust</strong></td>
+<td>5 (45%)</td>
+<td>0.28–0.59</td>
+<td>2–4</td>
+<td>Any detection config works</td>
+</tr>
+<tr>
+<td><strong>Moderate</strong></td>
+<td>2 (18%)</td>
+<td>0.82–0.99</td>
+<td>2</td>
+<td>Config matters somewhat</td>
+</tr>
+<tr>
+<td><strong>Sensitive</strong></td>
+<td>4 (36%)</td>
+<td>1.12–2.24</td>
+<td>0–1</td>
+<td>Config choice is critical</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-key-predictor-number-of-meal-peaks">The Key Predictor: Number of Meal Peaks<a class="headerlink" href="#the-key-predictor-number-of-meal-peaks" title="Permanent link">&para;</a></h3>
+<p>The single strongest predictor of robustness is <strong>n_peaks</strong> (ρ = −0.851, p = 0.0009). This is the meal-clock equivalent of a structural engineering principle: redundancy creates resilience.</p>
+<table>
+<thead>
+<tr>
+<th>Peaks</th>
+<th>Patients</th>
+<th>σσ</th>
+<th>Why Robust?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3–4</td>
+<td>c, f, g, j</td>
+<td>0.28–0.59</td>
+<td>Each peak independently anchors the clock</td>
+</tr>
+<tr>
+<td>2</td>
+<td>b, h, i</td>
+<td>0.56–0.99</td>
+<td>Marginal — losing one peak destabilizes</td>
+</tr>
+<tr>
+<td>0–1</td>
+<td>a, d, e, k</td>
+<td>1.12–2.24</td>
+<td>All structure in one feature; easily disrupted</td>
+</tr>
+</tbody>
+</table>
+<h3 id="per-patient-meal-clock-signatures">Per-Patient Meal Clock Signatures<a class="headerlink" href="#per-patient-meal-clock-signatures" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Patient</th>
+<th>Weighted Std</th>
+<th>Peaks</th>
+<th>Archetype</th>
+<th>Clinical Implication</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>g</td>
+<td>1.00h</td>
+<td>3</td>
+<td>Clock-like</td>
+<td>Time-of-day profiles viable</td>
+</tr>
+<tr>
+<td>j</td>
+<td>1.58h</td>
+<td>4</td>
+<td>Clock-like</td>
+<td>Four-meal structure</td>
+</tr>
+<tr>
+<td>b</td>
+<td>3.32h</td>
+<td>2</td>
+<td>Moderate</td>
+<td>Two-meal anchor</td>
+</tr>
+<tr>
+<td>c</td>
+<td>4.43h</td>
+<td>3</td>
+<td>"Consistently irregular"</td>
+<td>Diffuse but stable biology</td>
+</tr>
+<tr>
+<td>a</td>
+<td>7.29h</td>
+<td>1</td>
+<td>Random</td>
+<td>No exploitable pattern</td>
+</tr>
+<tr>
+<td>k</td>
+<td>4.17h</td>
+<td>0</td>
+<td>Insufficient (22 meals)</td>
+<td>Logging compliance issue?</td>
+</tr>
+</tbody>
+</table>
+<p>Patient c is the most informative outlier: <strong>high entropy (0.96) but low σσ (0.39)</strong>. This is the "consistently irregular" archetype — the patient genuinely eats diffusely across the day, and this diffusion is biologically real, not detection noise. The regularity of their irregularity makes them robust.</p>
+<h3 id="periodicity-findings">Periodicity Findings<a class="headerlink" href="#periodicity-findings" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Population</strong>: No systematic weekday vs weekend shift (meals/week: 15.7 uniform)</li>
+<li><strong>Lunch is most synchronized</strong> across patients (inter-patient std = 0.26h)</li>
+<li><strong>Dinner is most variable</strong> within patients (within-patient std = 1.01h)</li>
+<li><strong>Weekend effects</strong>: 50/50 split — some patients shift, others don't. No universal pattern.</li>
+</ul>
+<p><strong>Takeaway</strong>: For robust patients (45%), any reasonable detection config works — invest in metabolic analysis, not detection tuning. For sensitive patients (36%), per-patient parameter optimization is essential. The n_peaks metric is a cheap, reliable triage tool: count someone's meal peaks, and you immediately know how much detection tuning they need.</p>
+<hr />
+<h2 id="7-the-aid-loop-is-the-dominant-confound--and-the-dominant-signal">7. The AID Loop Is the Dominant Confound — And the Dominant Signal<a class="headerlink" href="#7-the-aid-loop-is-the-dominant-confound--and-the-dominant-signal" title="Permanent link">&para;</a></h2>
+<p><img alt="AID Loop as Signal" src="../../visualizations/natural-experiments/fig43_synthesis_aid_signal.png" />
+<em>Figure 43: (A) How AID distorts every meal signal — from 15% peak shift to 75% carb estimate gap. (B) The detection-sensitivity-insight trade-off curve with the knee. (C) The personalization gradient from universal thresholds to fully per-patient configs.</em></p>
+<p>Every meal analysis confronts the same fundamental challenge: <strong>the AID loop is always active, and it changes everything</strong>.</p>
+<h3 id="how-aid-distorts-meal-signals">How AID Distorts Meal Signals<a class="headerlink" href="#how-aid-distorts-meal-signals" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>What We Measure</th>
+<th>What AID Does</th>
+<th>Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Glucose excursion</td>
+<td>Delivers correction insulin → reduces peak</td>
+<td>Excursion 20–40% lower than uncontrolled</td>
+</tr>
+<tr>
+<td>Effective ISF</td>
+<td>Suspends basal during corrections → total insulin → 0</td>
+<td>ISF ratio degenerates (3.62× deconfounded vs 2.72× raw)</td>
+</tr>
+<tr>
+<td>Carb estimates</td>
+<td>Bolus covers part of meal → algorithm sees smaller residual</td>
+<td>Loop IRC underestimates by 4× vs oref0</td>
+</tr>
+<tr>
+<td>Basal adequacy</td>
+<td>Modulates basal continuously → scheduled rate irrelevant</td>
+<td>Loop runs at scheduled basal only 3–77% of the time</td>
+</tr>
+<tr>
+<td>Meal timing</td>
+<td>Pre-bolus creates early glucose dip → shifts apparent meal start</td>
+<td>Peak detection shifted 5–15 min vs true intake</td>
+</tr>
+</tbody>
+</table>
+<h3 id="key-aid-confounding-results">Key AID Confounding Results<a class="headerlink" href="#key-aid-confounding-results" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Effective ISF is 1.36× profile ISF</strong> (population mean, range 0.7–2.2×). AID masks inadequate settings by adjusting temp basals.</li>
+<li><strong>Physics ML UAM detection (F1=0.513) outperforms oref0 UAM (F1=0.344)</strong> by 49% — but oref0 has 31% longer lead time (38 vs 29 min).</li>
+<li><strong>Response-curve ISF</strong> (exponential fit, R²=0.805) is the correct method for AID patients. The traditional total-insulin denominator degenerates because the loop suspends basal during corrections.</li>
+<li><strong>Population effective DIA = 6.0h</strong> (vs 5h profile). 4/7 patients have DIA longer than profile, meaning the insulin tail extends further than their settings assume.</li>
+</ul>
+<h3 id="the-supply--demand-conservation-law">The Supply × Demand Conservation Law<a class="headerlink" href="#the-supply--demand-conservation-law" title="Permanent link">&para;</a></h3>
+<p>The physics model's supply×demand framework reveals a conservation principle: at steady state, insulin supply must match glucose demand. Meals break this equilibrium, and the AID loop's response creates a characteristic spectral signature.</p>
+<ul>
+<li><strong>Spectral power correlates with carb size</strong> (r=0.433) but <strong>not with excursion</strong> (r=−0.039)</li>
+<li>This means spectral power measures <strong>AID effort</strong>, not outcome — a loop working hard with low excursion is succeeding</li>
+<li><strong>Hysteresis conserves total carbs/day</strong> (CV ≤ 0.2%) while <strong>min_carb filtering destroys</strong> 50%+ of carb signal — confirming hysteresis is temporal reorganization, not information loss</li>
+</ul>
+<p><strong>Takeaway</strong>: The AID loop is not noise to be removed — it's signal to be decoded. Supply×demand spectral power, response-curve ISF, and UAM-augmented physics models all extract clinically useful information <em>because</em> they model the loop, not despite it.</p>
+<hr />
+<h2 id="cross-cutting-themes">Cross-Cutting Themes<a class="headerlink" href="#cross-cutting-themes" title="Permanent link">&para;</a></h2>
+<h3 id="theme-a-the-personalization-gradient">Theme A: The Personalization Gradient<a class="headerlink" href="#theme-a-the-personalization-gradient" title="Permanent link">&para;</a></h3>
+<p>Every analysis reveals a spectrum from universal to personal:</p>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Finding</th>
+<th>Applicable Patients</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Universal</td>
+<td>UAM threshold = 1.0 mg/dL/5min</td>
+<td>100% (110/110 cross-patient transfers)</td>
+</tr>
+<tr>
+<td>Universal</td>
+<td>Knee config: 5g/150min</td>
+<td>~80% reasonable performance</td>
+</tr>
+<tr>
+<td>Population</td>
+<td>2 meal clusters (controlled/high)</td>
+<td>100% (ARI=0.976 cross-patient)</td>
+</tr>
+<tr>
+<td>Personal</td>
+<td>n_peaks determines robustness tier</td>
+<td>Tier-specific recommendations</td>
+</tr>
+<tr>
+<td>Personal</td>
+<td>ISF normalization thresholds</td>
+<td>Per-patient ISF required</td>
+</tr>
+<tr>
+<td>Fully personal</td>
+<td>Optimal detection config</td>
+<td>Sensitive patients only (36%)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="theme-b-what-entered-carbs-dont-tell-you">Theme B: What Entered Carbs Don't Tell You<a class="headerlink" href="#theme-b-what-entered-carbs-dont-tell-you" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>What entered carbs capture</th>
+<th>What they miss</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Patient's estimate of carb intake</td>
+<td>76.5% of glucose excursions (UAM)</td>
+</tr>
+<tr>
+<td>Relative meal size within a patient</td>
+<td>Absolute meal size (bias, rounding)</td>
+</tr>
+<tr>
+<td>Timing of acknowledged meals</td>
+<td>Dawn phenomenon, stress, exercise</td>
+</tr>
+<tr>
+<td>Intent to eat</td>
+<td>Actual absorption (gastroparesis, fat/protein)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="theme-c-the-detection-sensitivity-insight-trade-off">Theme C: The Detection-Sensitivity-Insight Trade-Off<a class="headerlink" href="#theme-c-the-detection-sensitivity-insight-trade-off" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Lenient Detection ─────────────────────── Strict Detection
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>(≥3g, 15min)                              (≥40g, 180min)
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>│                                          │
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>├─ More meals (2.7/day)                    ├─ Fewer meals (0.6/day)
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>├─ Lower quality (0.92)                    ├─ Higher quality (0.98)
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>├─ Noisy periodicity                       ├─ Clean periodicity
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>├─ Small meals included                    ├─ Only major meals
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>├─ Lower ISF-norm excursion (1.3)          ├─ Higher ISF-norm (2.2)
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>└─ All carbs preserved                     └─ 50%+ carbs filtered
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>                    ↕
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>            Knee: 5g/150min
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>            (1.51 mpd, quality=0.96)
+</code></pre></div>
+<hr />
+<h2 id="gaps-summary">Gaps Summary<a class="headerlink" href="#gaps-summary" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Gap</th>
+<th>Priority</th>
+<th>Remediation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GAP-ALG-015</td>
+<td>Archetype classification not in production</td>
+<td>High</td>
+<td>Add n_peaks triage to pipeline</td>
+</tr>
+<tr>
+<td>GAP-ALG-016</td>
+<td>Spectral power not in meal quality scoring</td>
+<td>High</td>
+<td>Add 2D framework</td>
+</tr>
+<tr>
+<td>GAP-ENTRY-030</td>
+<td>No per-patient detection config</td>
+<td>Medium</td>
+<td>Adaptive selection for sensitive tier</td>
+</tr>
+<tr>
+<td>GAP-PROF-005</td>
+<td>Time-varying ISF not used</td>
+<td>Medium</td>
+<td>Use response-curve ISF</td>
+</tr>
+<tr>
+<td>GAP-CGM-025</td>
+<td>Patient k insufficient meals</td>
+<td>Low</td>
+<td>Carb logging compliance check</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="experiment-inventory">Experiment Inventory<a class="headerlink" href="#experiment-inventory" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Experiments</th>
+<th>Key Deliverable</th>
+<th>Figures</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1: Census</td>
+<td>EXP-1551–1558</td>
+<td>50,810 natural experiments catalogued</td>
+<td>fig1–7</td>
+</tr>
+<tr>
+<td>2: Sensitivity</td>
+<td>EXP-1559</td>
+<td>3 detection configs compared</td>
+<td>fig8</td>
+</tr>
+<tr>
+<td>3: Metabolic</td>
+<td>EXP-1561</td>
+<td>ISF-normalized excursion + spectral power</td>
+<td>fig9–14</td>
+</tr>
+<tr>
+<td>4: Multi-Config</td>
+<td>EXP-1563</td>
+<td>Config effects on metabolic metrics</td>
+<td>fig15–16</td>
+</tr>
+<tr>
+<td>5: Periodicity</td>
+<td>EXP-1565</td>
+<td>Weekday/weekend: no systematic shift</td>
+<td>fig17–24</td>
+</tr>
+<tr>
+<td>6: Meal Clocks</td>
+<td>EXP-1567</td>
+<td>Personal regularity: 1.00–7.29h std</td>
+<td>fig25–27</td>
+</tr>
+<tr>
+<td>7: Benchmark</td>
+<td>EXP-1569</td>
+<td>72-config sweep, knee at 5g/150min</td>
+<td>fig28–33</td>
+</tr>
+<tr>
+<td>8: Archetypes</td>
+<td>EXP-1571</td>
+<td>Robust/Moderate/Sensitive classification</td>
+<td>fig34–36</td>
+</tr>
+<tr>
+<td>—</td>
+<td>EXP-1341</td>
+<td>4-algorithm carb estimation on 12,060 meals</td>
+<td>(separate)</td>
+</tr>
+<tr>
+<td>—</td>
+<td>EXP-1301</td>
+<td>Response-curve ISF extraction</td>
+<td>(separate)</td>
+</tr>
+<tr>
+<td>—</td>
+<td>EXP-1309</td>
+<td>UAM event rates and classification</td>
+<td>(separate)</td>
+</tr>
+<tr>
+<td>—</td>
+<td>EXP-1591–1598</td>
+<td>Meal response clustering (2 phenotypes)</td>
+<td>(separate)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="visualization-index">Visualization Index<a class="headerlink" href="#visualization-index" title="Permanent link">&para;</a></h2>
+<p>All 36 figures in <code>visualizations/natural-experiments/</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Figure</th>
+<th>Content</th>
+<th>Key Insight</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>fig1</td>
+<td>Census heatmap</td>
+<td>50,810 experiments by type × patient</td>
+</tr>
+<tr>
+<td>fig2</td>
+<td>Time of day</td>
+<td>Detector activation by hour</td>
+</tr>
+<tr>
+<td>fig3</td>
+<td>Duration distributions</td>
+<td>Window length by type</td>
+</tr>
+<tr>
+<td>fig4</td>
+<td>Quality distributions</td>
+<td>Score by detector type</td>
+</tr>
+<tr>
+<td>fig5</td>
+<td>Cross-correlations</td>
+<td>Dawn↔ISF (r=0.41), UAM↔Exercise (r=−0.54)</td>
+</tr>
+<tr>
+<td>fig6</td>
+<td>Response templates</td>
+<td>Population meal glucose curves</td>
+</tr>
+<tr>
+<td>fig7</td>
+<td>Patient profiles</td>
+<td>Per-patient experiment signatures</td>
+</tr>
+<tr>
+<td>fig8</td>
+<td>Meal sensitivity</td>
+<td>Config A/B/C comparison</td>
+</tr>
+<tr>
+<td>fig9</td>
+<td>Carb range metabolic</td>
+<td>ISF-norm excursion by carb size</td>
+</tr>
+<tr>
+<td>fig10</td>
+<td>ISF normalization</td>
+<td>Raw → normalized ranking shift</td>
+</tr>
+<tr>
+<td>fig11</td>
+<td>Metabolic correlations</td>
+<td>Excursion × spectral power (orthogonal)</td>
+</tr>
+<tr>
+<td>fig12</td>
+<td>Carb range distributions</td>
+<td>Size histograms by config</td>
+</tr>
+<tr>
+<td>fig13</td>
+<td>Patient carb heatmap</td>
+<td>Per-patient × carb range</td>
+</tr>
+<tr>
+<td>fig14</td>
+<td>Announced vs unannounced</td>
+<td>Selection bias visualization</td>
+</tr>
+<tr>
+<td>fig15</td>
+<td>Multi-config metrics</td>
+<td>ISF-norm + spectral by config</td>
+</tr>
+<tr>
+<td>fig16</td>
+<td>Multi-config boxplots</td>
+<td>Distribution comparison</td>
+</tr>
+<tr>
+<td>fig17</td>
+<td>Meal periodicity</td>
+<td>Shannon entropy by patient</td>
+</tr>
+<tr>
+<td>fig18</td>
+<td>Mealtime regularity</td>
+<td>Weighted std ranking</td>
+</tr>
+<tr>
+<td>fig19</td>
+<td>Small vs large meals</td>
+<td>Metabolic profiles by size</td>
+</tr>
+<tr>
+<td>fig20</td>
+<td>Periodicity summary</td>
+<td>Population-level metrics</td>
+</tr>
+<tr>
+<td>fig21</td>
+<td>Weekday/weekend timing</td>
+<td>Hour distributions by day type</td>
+</tr>
+<tr>
+<td>fig22</td>
+<td>Per-patient WD/WE</td>
+<td>Individual day-type comparison</td>
+</tr>
+<tr>
+<td>fig23</td>
+<td>Zone shift detail</td>
+<td>Breakfast/lunch/dinner timing</td>
+</tr>
+<tr>
+<td>fig24</td>
+<td>Weekday/weekend metabolic</td>
+<td>Metabolic differences by day type</td>
+</tr>
+<tr>
+<td>fig25</td>
+<td>Personal meal clocks</td>
+<td>Per-patient hourly histograms</td>
+</tr>
+<tr>
+<td>fig26</td>
+<td>Inter-patient variation</td>
+<td>Between-patient variability map</td>
+</tr>
+<tr>
+<td>fig27</td>
+<td>WD/WE regularity</td>
+<td>Day-type regularity comparison</td>
+</tr>
+<tr>
+<td>fig28</td>
+<td>Benchmark count structure</td>
+<td>Meals/day across 72 configs</td>
+</tr>
+<tr>
+<td>fig29</td>
+<td>Benchmark regularity</td>
+<td>Weighted std landscape</td>
+</tr>
+<tr>
+<td>fig30</td>
+<td>Benchmark knee</td>
+<td>Efficiency ratio curve</td>
+</tr>
+<tr>
+<td>fig31</td>
+<td>Benchmark per-patient</td>
+<td>Individual robustness trajectories</td>
+</tr>
+<tr>
+<td>fig32</td>
+<td>Benchmark size</td>
+<td>Size distributions by config</td>
+</tr>
+<tr>
+<td>fig33</td>
+<td>Benchmark robustness</td>
+<td>CV ranking by patient</td>
+</tr>
+<tr>
+<td>fig34</td>
+<td>Archetype distribution</td>
+<td>Tier classification + σσ vs n_peaks</td>
+</tr>
+<tr>
+<td>fig35</td>
+<td>Stability curves</td>
+<td>Per-patient regularity vs strictness</td>
+</tr>
+<tr>
+<td>fig36</td>
+<td>Tier profiles</td>
+<td>Tier metric comparison + correlation waterfall</td>
+</tr>
+<tr>
+<td><strong>fig37</strong></td>
+<td><strong>Synthesis: Meal counting</strong></td>
+<td><strong>Detection method comparison, quality/quantity trade-off, 72-config landscape</strong></td>
+</tr>
+<tr>
+<td><strong>fig38</strong></td>
+<td><strong>Synthesis: ISF normalization</strong></td>
+<td><strong>Rank-change bump chart, ISF variation, metabolic burden thresholds</strong></td>
+</tr>
+<tr>
+<td><strong>fig39</strong></td>
+<td><strong>Synthesis: 2D quality</strong></td>
+<td><strong>Excursion × spectral power quadrants, super-linear carb scaling</strong></td>
+</tr>
+<tr>
+<td><strong>fig40</strong></td>
+<td><strong>Synthesis: Carb algorithms</strong></td>
+<td><strong>4-algorithm comparison, announced vs UAM gap</strong></td>
+</tr>
+<tr>
+<td><strong>fig41</strong></td>
+<td><strong>Synthesis: UAM + timing</strong></td>
+<td><strong>76.5% unannounced, metabolic paradox, 11× timing vs dose</strong></td>
+</tr>
+<tr>
+<td><strong>fig42</strong></td>
+<td><strong>Synthesis: Robustness</strong></td>
+<td><strong>Tier distribution, n_peaks scatter, clinical triage tree</strong></td>
+</tr>
+<tr>
+<td><strong>fig43</strong></td>
+<td><strong>Synthesis: AID signal</strong></td>
+<td><strong>AID distortion magnitudes, trade-off curve, personalization gradient</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="conclusion">Conclusion<a class="headerlink" href="#conclusion" title="Permanent link">&para;</a></h2>
+<p>The seven takeaways form a coherent picture:</p>
+<ol>
+<li><strong>Meal count is a definition</strong> — there's no ground truth, only appropriate trade-offs</li>
+<li><strong>ISF normalization reveals hidden metabolic burden</strong> — raw mg/dL misleads</li>
+<li><strong>Spectral power captures AID effort</strong> — orthogonal to excursion, together they create a 2D quality framework</li>
+<li><strong>Carb algorithms disagree by 4×</strong> — entered carbs aren't reliable ground truth either</li>
+<li><strong>76.5% of meals are unannounced</strong> — UAM detection is the primary signal, not a fallback</li>
+<li><strong>Robustness is binary</strong> — 45% of patients need no tuning, 36% need personalization, n_peaks is the triage tool</li>
+<li><strong>The AID loop is signal, not noise</strong> — supply×demand physics, response-curve ISF, and spectral analysis decode it</li>
+</ol>
+<p>Together, these findings define a complete framework for meal analysis in AID patients: detect with sensitivity-appropriate thresholds, normalize with ISF, characterize with spectral power, assess periodicity with personal clocks, and triage personalization needs with n_peaks robustness scoring.</p>
+<hr />
+<h2 id="source-files">Source Files<a class="headerlink" href="#source-files" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>tools/cgmencode/exp_clinical_1551.py</code> — Natural experiment census and characterization (EXP-1551–1571)</li>
+<li><code>tools/cgmencode/viz_synthesis.py</code> — Synthesis visualization generator (fig37–43)</li>
+<li><code>tools/cgmencode/exp_clinical_1341.py</code> — Carb estimation survey</li>
+<li><code>tools/cgmencode/exp_clinical_1301.py</code> — ISF and therapy assessment</li>
+<li><code>tools/cgmencode/exp_clinical_1291.py</code> — AID-deconfounded therapy analysis</li>
+<li><code>tools/cgmencode/exp_clinical_1311.py</code> — UAM and advanced therapy</li>
+<li><code>externals/experiments/exp-{1551..1571}_natural_experiments.json</code> — All result files</li>
+<li><code>visualizations/natural-experiments/fig1–36</code> — All figures</li>
+<li><code>docs/60-research/natural-experiments-*</code> — Phase reports 1–8</li>
+<li><code>docs/60-research/carb-estimation-survey-report-2026-04-10.md</code></li>
+<li><code>docs/60-research/autotune-uam-characterization-report.md</code></li>
+<li><code>docs/60-research/meal-response-clustering-report.md</code></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

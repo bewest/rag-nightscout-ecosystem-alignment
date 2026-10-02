@@ -1,0 +1,9486 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/60-research/hypoglycemia-from-data-perspective-draft-2026-04-09.html">
+      
+      
+        <link rel="prev" href="hypo-safety-report-2026-04-10.html">
+      
+      
+        <link rel="next" href="intervention-simulation-report-2026-04-10.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>What Are Hypoglycemic Events? A Data-First Perspective - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#what-are-hypoglycemic-events-a-data-first-perspective" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              What Are Hypoglycemic Events? A Data-First Perspective
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../30-design/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_27" id="__nav_5_27_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_27_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_27">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    60-research/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="exp-2844-phenotype-drilldown-report-2026-04-22.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-0001 to 2869
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="exp-2870-envelope-crossover-report-2026-04-22.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2870 to 2909
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="exp-2910-eight-dim-regrade-2026-04-23.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2910 to 2949
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="exp-2950-uniform-action-curve-2026-04-23.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2950 to 2999
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="exp-3000-3003-cf-replay-maturation-2026-04-25.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-3000 and later
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="AUTORESEARCH-SESSION-2026-04-26.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Programme, closeouts and syntheses
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="accuracy-validation-2026-04-05.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Productionization and pipelines
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="capability-report-clinical-decision-support.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Capability reports
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="circadian-therapy-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Therapy
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="aid-aware-settings-report-2026-04-09.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings and profiles
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="natural-experiment-deconfounding-2026-04-09.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Natural experiments
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="bilateral-deconfounding-report-2026-04-19.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EGP, supply-demand and deconfounding
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="autotune-uam-characterization-report.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Meals and carbohydrates
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="causal-pk-leakage-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Insulin, ISF and pharmacokinetics
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27_16" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5_27_16" id="__nav_5_27_16_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clinical, safety and hypoglycaemia
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_27_16_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_27_16">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Clinical, safety and hypoglycaemia
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="acceleration-clinical-utility-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GPU Acceleration, Clinical Utility &amp; Advanced Architectures Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="alert-filtering-report.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Stage Alert Filtering — Research Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="clinical-inference-vignettes-2026-04-09.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clinical Inference Validation Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="clinical-inference-vignettes-2026-07-13.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clinical Inference Vignettes: Demonstrating Strategic Planning on Real Patient Data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="clinical-intelligence-report-2026-04-08.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clinical Intelligence &amp; Multi-Scale Analysis Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="clinical-metrics-diagnostics-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clinical Metrics &amp; Diagnostics Report (EXP-1041–1050)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="clinical-zone-loss-findings.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clinical Zone Loss: Experiment Findings Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="confidence-intervals-report.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recommendation Confidence Intervals — Research Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="control-theory-safety-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glucose Control Theory &amp; Safety Validation Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="exercise-drift-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exercise Detection &amp; Longitudinal Drift Report (EXP-2121–2128)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="glycemic-pattern-analysis-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glycemic Pattern Analysis &amp; Actionable Insights Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="glycemic-variability-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glycemic Variability &amp; Temporal Patterns Report (EXP-2111–2118)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="hypo-prevention-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hypoglycemia Prevention &amp; Production Monitoring Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="hypo-safety-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hypoglycemia Prevention &amp; Safety Profiling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What Are Hypoglycemic Events? A Data-First Perspective
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="hypoglycemia-from-data-perspective-draft-2026-04-09.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What Are Hypoglycemic Events? A Data-First Perspective
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-we-think-a-hypoglycemic-event-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What We Think a Hypoglycemic Event Is
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. What We Think a Hypoglycemic Event Is">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#our-working-definition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Our Working Definition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-this-definition-captures-and-misses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What This Definition Captures (and Misses)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-we-operationalize-event-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How We Operationalize "Event" Boundaries
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-anatomy-of-a-hypo-event-in-our-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The Anatomy of a Hypo Event in Our Data
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. The Anatomy of a Hypo Event in Our Data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-pre-event-decline-120-to-30-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 1: Pre-Event Decline (−120 to −30 minutes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-approaching-threshold-30-to-0-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 2: Approaching Threshold (−30 to 0 minutes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-entry-and-descent-0-to-30-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 3: Entry and Descent (0 to +30 minutes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-nadir-30-to-50-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 4: Nadir (+30 to +50 minutes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-5-counter-regulatory-recovery-50-to-100-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5: Counter-Regulatory Recovery (+50 to +100 minutes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-6-potential-rebound-overshoot-100-to-300-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 6: Potential Rebound Overshoot (+100 to +300 minutes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-complete-event-window" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Complete Event Window
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-why-hypoglycemia-is-fundamentally-harder-than-hyperglycemia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Why Hypoglycemia Is Fundamentally Harder Than Hyperglycemia
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Why Hypoglycemia Is Fundamentally Harder Than Hyperglycemia">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-numbers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Numbers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#important-distinction-two-different-hard-problems" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Important Distinction: Two Different "Hard" Problems
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#problem-1-predicting-whether-hypo-will-happen-classification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Problem 1: Predicting Whether Hypo Will Happen (Classification)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#problem-2-forecasting-glucose-values-during-hypo-regression" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Problem 2: Forecasting Glucose Values During Hypo (Regression)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-the-gap-widens-with-horizon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why The Gap Widens With Horizon
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-what-weve-tried-detection-classification-and-prediction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. What We've Tried: Detection, Classification, and Prediction
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. What We&#39;ve Tried: Detection, Classification, and Prediction">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-detection-is-the-patient-hypoglycemic-right-now" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Detection: "Is the patient hypoglycemic right now?"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-classification-what-type-of-event-is-this" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Classification: "What type of event is this?"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-prediction-will-the-patient-go-low-in-the-next-n-hours" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Prediction: "Will the patient go low in the next N hours?"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-personalized-alert-thresholds-exp-695" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Personalized Alert Thresholds (EXP-695)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-the-counter-regulatory-response-what-we-see-but-cannot-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. The Counter-Regulatory Response: What We See But Cannot Model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. The Counter-Regulatory Response: What We See But Cannot Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-we-observe-in-the-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What We Observe in the Data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-we-believe-is-happening-hypothesis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What We Believe Is Happening (Hypothesis)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-this-means-in-practice-the-trajectory-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What This Means in Practice: The Trajectory Problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-rebound-as-a-downstream-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Rebound as a Downstream Problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-the-aid-system-confound" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. The AID System Confound
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. The AID System Confound">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-aid-actively-prevents-the-events-were-trying-to-predict" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The AID Actively Prevents the Events We're Trying to Predict
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aid-induced-hypoglycemia-exp-1494" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AID-Induced Hypoglycemia (EXP-1494)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-tir-tbr-paradox" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The TIR-TBR Paradox
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-patient-heterogeneity-not-one-problem-but-eleven" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Patient Heterogeneity: Not One Problem But Eleven
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Patient Heterogeneity: Not One Problem But Eleven">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#risk-tiers-exp-1493" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Risk Tiers (EXP-1493)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#two-recovery-phenotypes-exp-1498" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two Recovery Phenotypes (EXP-1498)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nocturnal-hypoglycemia-the-most-dangerous-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nocturnal Hypoglycemia: The Most Dangerous Pattern
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-what-we-still-dont-know" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. What We Still Don't Know
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. What We Still Don&#39;t Know">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#questions-for-clinical-experts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions for Clinical Experts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-limitations-we-cannot-overcome" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Limitations We Cannot Overcome
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-prediction-ceiling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Prediction Ceiling
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-summary-of-assumptions-for-expert-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Summary of Assumptions for Expert Review
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-evidence-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix: Evidence Index
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Appendix: Evidence Index">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-reports" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Reports
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-experiments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Experiments
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-code-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Code Components
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#figures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Figures
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="intervention-simulation-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Intervention Design &amp; Simulation Report (EXP-2011–2018)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="personalized-hypo-recovery-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Personalized Hypo-Recovery and Therapy Diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="safety_analysis_report_2026-04-22.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety Analysis Synthesis Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="aid-author-recommendations-report-2026-04-20.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AID controllers, cohorts and waves
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="centering-dynamics-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forecasting, prediction and classification
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="advanced-architectures-benchmark-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ML methods and architectures
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="canonical/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    canonical/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="collaboration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    collaboration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="external-inventories/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    external-inventories/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="modernization/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    modernization/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="programme/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    programme/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="remedial/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    remedial/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="tenancy/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenancy/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-we-think-a-hypoglycemic-event-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What We Think a Hypoglycemic Event Is
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. What We Think a Hypoglycemic Event Is">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#our-working-definition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Our Working Definition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-this-definition-captures-and-misses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What This Definition Captures (and Misses)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-we-operationalize-event-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How We Operationalize "Event" Boundaries
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-anatomy-of-a-hypo-event-in-our-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The Anatomy of a Hypo Event in Our Data
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. The Anatomy of a Hypo Event in Our Data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-pre-event-decline-120-to-30-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 1: Pre-Event Decline (−120 to −30 minutes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-approaching-threshold-30-to-0-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 2: Approaching Threshold (−30 to 0 minutes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-entry-and-descent-0-to-30-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 3: Entry and Descent (0 to +30 minutes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-nadir-30-to-50-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 4: Nadir (+30 to +50 minutes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-5-counter-regulatory-recovery-50-to-100-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5: Counter-Regulatory Recovery (+50 to +100 minutes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-6-potential-rebound-overshoot-100-to-300-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 6: Potential Rebound Overshoot (+100 to +300 minutes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-complete-event-window" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Complete Event Window
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-why-hypoglycemia-is-fundamentally-harder-than-hyperglycemia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Why Hypoglycemia Is Fundamentally Harder Than Hyperglycemia
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Why Hypoglycemia Is Fundamentally Harder Than Hyperglycemia">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-numbers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Numbers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#important-distinction-two-different-hard-problems" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Important Distinction: Two Different "Hard" Problems
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#problem-1-predicting-whether-hypo-will-happen-classification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Problem 1: Predicting Whether Hypo Will Happen (Classification)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#problem-2-forecasting-glucose-values-during-hypo-regression" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Problem 2: Forecasting Glucose Values During Hypo (Regression)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-the-gap-widens-with-horizon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why The Gap Widens With Horizon
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-what-weve-tried-detection-classification-and-prediction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. What We've Tried: Detection, Classification, and Prediction
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. What We&#39;ve Tried: Detection, Classification, and Prediction">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-detection-is-the-patient-hypoglycemic-right-now" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Detection: "Is the patient hypoglycemic right now?"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-classification-what-type-of-event-is-this" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Classification: "What type of event is this?"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-prediction-will-the-patient-go-low-in-the-next-n-hours" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Prediction: "Will the patient go low in the next N hours?"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-personalized-alert-thresholds-exp-695" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Personalized Alert Thresholds (EXP-695)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-the-counter-regulatory-response-what-we-see-but-cannot-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. The Counter-Regulatory Response: What We See But Cannot Model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. The Counter-Regulatory Response: What We See But Cannot Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-we-observe-in-the-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What We Observe in the Data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-we-believe-is-happening-hypothesis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What We Believe Is Happening (Hypothesis)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-this-means-in-practice-the-trajectory-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What This Means in Practice: The Trajectory Problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-rebound-as-a-downstream-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Rebound as a Downstream Problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-the-aid-system-confound" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. The AID System Confound
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. The AID System Confound">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-aid-actively-prevents-the-events-were-trying-to-predict" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The AID Actively Prevents the Events We're Trying to Predict
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aid-induced-hypoglycemia-exp-1494" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AID-Induced Hypoglycemia (EXP-1494)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-tir-tbr-paradox" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The TIR-TBR Paradox
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-patient-heterogeneity-not-one-problem-but-eleven" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Patient Heterogeneity: Not One Problem But Eleven
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Patient Heterogeneity: Not One Problem But Eleven">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#risk-tiers-exp-1493" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Risk Tiers (EXP-1493)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#two-recovery-phenotypes-exp-1498" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two Recovery Phenotypes (EXP-1498)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nocturnal-hypoglycemia-the-most-dangerous-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nocturnal Hypoglycemia: The Most Dangerous Pattern
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-what-we-still-dont-know" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. What We Still Don't Know
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. What We Still Don&#39;t Know">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#questions-for-clinical-experts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions for Clinical Experts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-limitations-we-cannot-overcome" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Limitations We Cannot Overcome
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-prediction-ceiling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Prediction Ceiling
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-summary-of-assumptions-for-expert-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Summary of Assumptions for Expert Review
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-evidence-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix: Evidence Index
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Appendix: Evidence Index">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-reports" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Reports
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-experiments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Experiments
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-code-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Code Components
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#figures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Figures
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="what-are-hypoglycemic-events-a-data-first-perspective">What Are Hypoglycemic Events? A Data-First Perspective<a class="headerlink" href="#what-are-hypoglycemic-events-a-data-first-perspective" title="Permanent link">&para;</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Record</p>
+<p>Record as of 2026-04-09. A point-in-time document; it is not kept up to date.</p>
+</div>
+<p><strong>Status</strong>: DRAFT v2 — Written by AI, pending expert review<br />
+<strong>Date</strong>: 2026-04-09 (revised)<br />
+<strong>Evidence base</strong>: ~1,500 experiments on 11 AID patients (~180 days each, 5-min CGM intervals)<br />
+<strong>Data sources</strong>: CGM glucose, insulin delivery (basal + bolus), carbohydrate entries, AID system state<br />
+<strong>Authors</strong>: AI analysis (GitHub Copilot) — views are naive, data-derived, and may contain errors  </p>
+<hr />
+<blockquote>
+<p><strong>Note for reviewers</strong>: This report was written by an AI system analyzing CGM/AID
+data without formal clinical training. Every definition and assumption is stated
+explicitly so that diabetes clinicians, endocrinologists, and people with lived
+experience can identify where our data-derived understanding diverges from clinical
+reality. We welcome corrections at every level — from threshold definitions to
+physiological mechanisms.</p>
+</blockquote>
+<hr />
+<h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
+<ol>
+<li><a href="#1-what-we-think-a-hypoglycemic-event-is">What We Think a Hypoglycemic Event Is</a></li>
+<li><a href="#2-the-anatomy-of-a-hypo-event-in-our-data">The Anatomy of a Hypo Event in Our Data</a></li>
+<li><a href="#3-why-hypoglycemia-is-fundamentally-harder-than-hyperglycemia">Why Hypoglycemia Is Fundamentally Harder Than Hyperglycemia</a></li>
+<li><a href="#4-what-weve-tried-detection-classification-and-prediction">What We've Tried: Detection, Classification, and Prediction</a></li>
+<li><a href="#5-the-counter-regulatory-response-what-we-see-but-cannot-model">The Counter-Regulatory Response: What We See But Cannot Model</a></li>
+<li><a href="#6-the-aid-system-confound">The AID System Confound</a></li>
+<li><a href="#7-patient-heterogeneity-not-one-problem-but-eleven">Patient Heterogeneity: Not One Problem But Eleven</a></li>
+<li><a href="#8-what-we-still-dont-know">What We Still Don't Know</a></li>
+<li><a href="#9-summary-of-assumptions-for-expert-review">Summary of Assumptions for Expert Review</a></li>
+<li><a href="#appendix-evidence-index">Appendix: Evidence Index</a></li>
+</ol>
+<hr />
+<h2 id="1-what-we-think-a-hypoglycemic-event-is">1. What We Think a Hypoglycemic Event Is<a class="headerlink" href="#1-what-we-think-a-hypoglycemic-event-is" title="Permanent link">&para;</a></h2>
+<h3 id="our-working-definition">Our Working Definition<a class="headerlink" href="#our-working-definition" title="Permanent link">&para;</a></h3>
+<p>We define a <strong>hypoglycemic event</strong> as a contiguous period during which CGM-reported
+glucose falls below a clinical threshold. We use two severity levels, adopted from
+international consensus guidelines (we assume these are correct):</p>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Threshold</th>
+<th>Our Label</th>
+<th>Prevalence in Our Data</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Level 1</strong></td>
+<td>&lt; 70 mg/dL (3.9 mmol/L)</td>
+<td><code>HYPO</code> / <code>hypo_risk</code></td>
+<td>0.8–10.7% of readings</td>
+</tr>
+<tr>
+<td><strong>Level 2</strong></td>
+<td>&lt; 54 mg/dL (3.0 mmol/L)</td>
+<td>Severe hypo</td>
+<td>0.0–4.1% of readings</td>
+</tr>
+</tbody>
+</table>
+<h3 id="what-this-definition-captures-and-misses">What This Definition Captures (and Misses)<a class="headerlink" href="#what-this-definition-captures-and-misses" title="Permanent link">&para;</a></h3>
+<p><strong>What it captures</strong>: Any period where the CGM sensor reports glucose below threshold.
+This is a purely <strong>observational</strong> definition — we detect what the sensor tells us.</p>
+<p><strong>What it likely misses</strong>:</p>
+<ol>
+<li>
+<p><strong>Symptom-defined hypoglycemia</strong>: People may feel hypoglycemic symptoms (shaking,
+   sweating, confusion) at glucose levels above 70 mg/dL, especially if they have been
+   running high and glucose drops rapidly. Our definition cannot capture symptomatic
+   hypoglycemia without symptom data.</p>
+</li>
+<li>
+<p><strong>Hypoglycemia unawareness</strong>: Conversely, some people with diabetes may not feel
+   symptoms even at dangerously low glucose. Our definition catches these events
+   instrumentally, but we cannot assess their clinical severity from CGM alone.</p>
+</li>
+<li>
+<p><strong>CGM lag and accuracy</strong>: CGM sensors measure interstitial glucose, not blood
+   glucose, with a physiological lag of approximately 5–15 minutes. At rapidly changing
+   glucose levels, the CGM reading may be significantly behind actual blood glucose.
+   Our "70 mg/dL" threshold on CGM may correspond to a blood glucose that already
+   passed through 70 some minutes earlier. Additionally, CGM accuracy degrades in the
+   hypoglycemic range — the very range where accuracy matters most.</p>
+</li>
+<li>
+<p><strong>Sensor artifacts</strong>: Approximately 4% of CGM readings are noise artifacts
+   (identified at σ=2.0 threshold). A brief dip below 70 due to sensor compression
+   (e.g., lying on the sensor) could be misclassified as a true hypo event.</p>
+</li>
+</ol>
+<h3 id="how-we-operationalize-event-boundaries">How We Operationalize "Event" Boundaries<a class="headerlink" href="#how-we-operationalize-event-boundaries" title="Permanent link">&para;</a></h3>
+<p>In our analysis pipeline, we define a discrete hypoglycemic <strong>episode</strong> as:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Episode start:  First CGM reading &lt; 70 mg/dL
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>Episode end:    First CGM reading ≥ 70 mg/dL sustained for ≥15 minutes
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>Nadir:          Minimum glucose value within the episode
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>Recovery time:  Minutes from nadir to sustained ≥70 mg/dL
+</code></pre></div>
+<p><strong>Assumption we are making</strong>: We treat the 70 mg/dL threshold as a hard boundary.
+We do not apply hysteresis (e.g., requiring glucose to rise to 80 before declaring
+recovery). A clinician might reasonably argue that a patient hovering at 68–72 mg/dL
+for an hour is in one continuous event, not alternating between hypo and non-hypo.</p>
+<p><strong>Episode counts in our data</strong> (EXP-1493):</p>
+<table>
+<thead>
+<tr>
+<th>Patient</th>
+<th>Total Episodes</th>
+<th>Severe (&lt;54)</th>
+<th>Nocturnal (%)</th>
+<th>Rate (per day)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>j</td>
+<td>34</td>
+<td>0</td>
+<td>5.9%</td>
+<td>0.2</td>
+</tr>
+<tr>
+<td>d</td>
+<td>51</td>
+<td>12</td>
+<td>19.6%</td>
+<td>0.3</td>
+</tr>
+<tr>
+<td>b</td>
+<td>64</td>
+<td>17</td>
+<td>25.0%</td>
+<td>0.4</td>
+</tr>
+<tr>
+<td>e</td>
+<td>97</td>
+<td>21</td>
+<td>27.8%</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>h</td>
+<td>127</td>
+<td>26</td>
+<td>33.9%</td>
+<td>0.7</td>
+</tr>
+<tr>
+<td>a</td>
+<td>137</td>
+<td>46</td>
+<td>27.7%</td>
+<td>0.8</td>
+</tr>
+<tr>
+<td>f</td>
+<td>145</td>
+<td>37</td>
+<td>20.0%</td>
+<td>0.8</td>
+</tr>
+<tr>
+<td>g</td>
+<td>199</td>
+<td>50</td>
+<td>33.2%</td>
+<td>1.1</td>
+</tr>
+<tr>
+<td>k</td>
+<td>224</td>
+<td>53</td>
+<td>17.9%</td>
+<td>1.2</td>
+</tr>
+<tr>
+<td>c</td>
+<td>229</td>
+<td>77</td>
+<td>27.9%</td>
+<td>1.3</td>
+</tr>
+<tr>
+<td><strong>i</strong></td>
+<td><strong>341</strong></td>
+<td><strong>177</strong></td>
+<td><strong>27.9%</strong></td>
+<td><strong>1.9</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Patient i averages nearly 2 hypoglycemic episodes per day, with 177 severe events
+in ~180 days. Patient j averages one every 5 days with zero severe events.</p>
+<hr />
+<h2 id="2-the-anatomy-of-a-hypo-event-in-our-data">2. The Anatomy of a Hypo Event in Our Data<a class="headerlink" href="#2-the-anatomy-of-a-hypo-event-in-our-data" title="Permanent link">&para;</a></h2>
+<p>From analyzing thousands of hypoglycemic episodes across 11 patients, we observe a
+consistent multi-phase structure:</p>
+<p><img alt="Anatomy of a Hypoglycemic Event" src="figures/hypo-fig2-anatomy-of-event.png" /></p>
+<h3 id="phase-1-pre-event-decline-120-to-30-minutes">Phase 1: Pre-Event Decline (−120 to −30 minutes)<a class="headerlink" href="#phase-1-pre-event-decline-120-to-30-minutes" title="Permanent link">&para;</a></h3>
+<p>Glucose drifts downward gradually. In our data, this phase is often characterized by:
+- Insulin on Board (IOB) exceeding what the current glucose trajectory requires
+- Net metabolic flux (insulin demand minus carb/hepatic supply) is negative
+- The AID system may already be reducing basal delivery</p>
+<p><strong>Our assumption</strong>: We treat any sustained downward glucose trend with negative net
+flux as a potential pre-hypo signal. We weight this by IOB magnitude — more active
+insulin means greater hypo risk.</p>
+<h3 id="phase-2-approaching-threshold-30-to-0-minutes">Phase 2: Approaching Threshold (−30 to 0 minutes)<a class="headerlink" href="#phase-2-approaching-threshold-30-to-0-minutes" title="Permanent link">&para;</a></h3>
+<p>Glucose enters the 70–90 mg/dL zone and continues falling. Our pattern labeler
+(<code>pattern_retrieval.py</code>) flags this as <code>hypo_risk</code> when:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Hypo risk: glucose near or below threshold</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="k">if</span> <span class="n">glucose</span> <span class="o">&lt;</span> <span class="mi">80</span> <span class="ow">or</span> <span class="p">(</span><span class="n">glucose</span> <span class="o">&lt;</span> <span class="mi">90</span> <span class="ow">and</span> <span class="n">rate_of_change</span> <span class="o">&lt;</span> <span class="n">FALLING_RATE</span><span class="p">):</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="n">label</span> <span class="o">=</span> <span class="s1">'hypo_risk'</span>
+</code></pre></div>
+<p><strong>Our assumption</strong>: We use 80 mg/dL as the "risk zone" entry point, not 70. This is
+because by the time CGM reads 70, actual blood glucose may already be significantly
+lower due to sensor lag. We do not know if 80 is the right threshold — it is a
+conservative choice.</p>
+<h3 id="phase-3-entry-and-descent-0-to-30-minutes">Phase 3: Entry and Descent (0 to +30 minutes)<a class="headerlink" href="#phase-3-entry-and-descent-0-to-30-minutes" title="Permanent link">&para;</a></h3>
+<p>Glucose crosses below 70 mg/dL and continues falling. The AID system has typically
+already suspended insulin delivery by this point (in our data, AID suspension occurs
+at predicted glucose of 80–100 mg/dL, depending on the system).</p>
+<h3 id="phase-4-nadir-30-to-50-minutes">Phase 4: Nadir (+30 to +50 minutes)<a class="headerlink" href="#phase-4-nadir-30-to-50-minutes" title="Permanent link">&para;</a></h3>
+<p>The lowest glucose point in the episode. In our data:
+- <strong>Median nadir</strong>: Varies from ~48 mg/dL (patient i) to ~62 mg/dL (patient j)
+- <strong>Mean time to nadir from entry</strong>: ~20 minutes
+- <strong>Nadir-recovery correlation</strong>: r = −0.483 (patient i) — deeper nadir
+  correlates with longer recovery time</p>
+<h3 id="phase-5-counter-regulatory-recovery-50-to-100-minutes">Phase 5: Counter-Regulatory Recovery (+50 to +100 minutes)<a class="headerlink" href="#phase-5-counter-regulatory-recovery-50-to-100-minutes" title="Permanent link">&para;</a></h3>
+<p>Glucose begins rising — often faster than can be explained by carbohydrate treatment
+or insulin wearing off. This is where we believe <strong>counter-regulatory hormones</strong> are
+active (see <a href="#5-the-counter-regulatory-response-what-we-see-but-cannot-model">Section 5</a>).</p>
+<p><strong>Median recovery time</strong> (nadir to sustained ≥70): 15–25 minutes across patients.</p>
+<h3 id="phase-6-potential-rebound-overshoot-100-to-300-minutes">Phase 6: Potential Rebound Overshoot (+100 to +300 minutes)<a class="headerlink" href="#phase-6-potential-rebound-overshoot-100-to-300-minutes" title="Permanent link">&para;</a></h3>
+<p>In many episodes, glucose doesn't just recover — it overshoots, sometimes dramatically.</p>
+<p><strong>Clinical vignette from our data</strong> (Patient c, Day 167, 3:00 AM):</p>
+<blockquote>
+<p>Glucose drops to 65 mg/dL, then rebounds with a +36 mg/dL/30-min trend.
+It rises from 65 to <strong>324 mg/dL</strong> — a rebound into severe hyperglycemia.</p>
+</blockquote>
+<p>This rebound pattern is one of the strongest signals in our data that counter-regulatory
+hormones are involved. Simple insulin cessation would produce a gradual rise; the
+explosive rebound suggests active hepatic glucose dumping driven by glucagon and
+epinephrine (see Section 5).</p>
+<h3 id="the-complete-event-window">The Complete Event Window<a class="headerlink" href="#the-complete-event-window" title="Permanent link">&para;</a></h3>
+<p>When we analyze "hypoglycemic events" in our models, we need to define <strong>how much
+data</strong> to include. Our choices and their trade-offs:</p>
+<table>
+<thead>
+<tr>
+<th>Window Choice</th>
+<th>What It Captures</th>
+<th>What It Misses</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>±30 min around nadir</td>
+<td>Just the acute low</td>
+<td>Causal context, rebound</td>
+</tr>
+<tr>
+<td>2h before → 2h after</td>
+<td>Pre-event + recovery</td>
+<td>Rebound overshoot</td>
+</tr>
+<tr>
+<td>2h before → 4h after</td>
+<td>Full episode arc</td>
+<td>May overlap with next event</td>
+</tr>
+<tr>
+<td>6h total context</td>
+<td>Long-range patterns</td>
+<td>Dilutes acute signal</td>
+</tr>
+</tbody>
+</table>
+<p><strong>What we actually use</strong>: For prediction, we use a <strong>2-hour forward-looking window</strong>
+(will glucose go below 70 in the next 2 hours?). For classification, we use <strong>2 hours
+of history</strong> as input features. For episode analysis (TBR safety report), we track the
+full lifecycle including rebound.</p>
+<hr />
+<h2 id="3-why-hypoglycemia-is-fundamentally-harder-than-hyperglycemia">3. Why Hypoglycemia Is Fundamentally Harder Than Hyperglycemia<a class="headerlink" href="#3-why-hypoglycemia-is-fundamentally-harder-than-hyperglycemia" title="Permanent link">&para;</a></h2>
+<p>This is the single most robust finding across ~1,500 experiments: <strong>predicting low
+glucose is structurally harder than predicting high glucose</strong>, and the gap widens
+with prediction horizon.</p>
+<p><img alt="The Fundamental Asymmetry" src="figures/hypo-fig1-fundamental-asymmetry.png" /></p>
+<h3 id="the-numbers">The Numbers<a class="headerlink" href="#the-numbers" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Prediction Task</th>
+<th>HIGH (&gt;180) AUC</th>
+<th>HYPO (&lt;70) AUC</th>
+<th>Gap</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2-hour</td>
+<td><strong>0.907</strong></td>
+<td>0.860</td>
+<td>0.047</td>
+</tr>
+<tr>
+<td>6-hour</td>
+<td>0.796</td>
+<td>0.668</td>
+<td><strong>0.128</strong></td>
+</tr>
+<tr>
+<td>Overnight</td>
+<td><strong>0.805</strong></td>
+<td>0.690</td>
+<td><strong>0.115</strong></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Glucose Range</th>
+<th>Forecast MAE</th>
+<th>Forecast R²</th>
+<th>Reliability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>In-range (80–120)</td>
+<td>21.5 mg/dL</td>
+<td>0.281</td>
+<td>Baseline</td>
+</tr>
+<tr>
+<td>Below 80 mg/dL</td>
+<td>26.6 mg/dL</td>
+<td>0.153</td>
+<td><strong>−45%</strong></td>
+</tr>
+<tr>
+<td>Below 70 mg/dL</td>
+<td>39.8 mg/dL</td>
+<td>~0.15</td>
+<td><strong>−47%</strong></td>
+</tr>
+</tbody>
+</table>
+<p>At the hypo range, prediction error increases <strong>1.9×</strong> compared to in-range, and
+R² nearly halves. This is not a model problem — three independent architectures
+(XGBoost, CNN, Transformer) all converge at the same ceiling.</p>
+<h3 id="important-distinction-two-different-hard-problems">Important Distinction: Two Different "Hard" Problems<a class="headerlink" href="#important-distinction-two-different-hard-problems" title="Permanent link">&para;</a></h3>
+<p>Our earlier analysis conflated two problems that have <strong>different root causes</strong>. We
+now believe it is important to separate them:</p>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Question</th>
+<th>What Makes It Hard</th>
+<th>Where It Bites</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Predicting hypo onset</strong></td>
+<td>"Will BG go below 70 in the next N hours?"</td>
+<td>Future actions are unknown</td>
+<td>Long-horizon prediction (6h+, overnight)</td>
+</tr>
+<tr>
+<td><strong>Forecasting glucose through hypo</strong></td>
+<td>"What will BG be at time T while in the hypo range?"</td>
+<td>Counter-regulatory hormones change the physics</td>
+<td>Trajectory modeling, recovery prediction</td>
+</tr>
+</tbody>
+</table>
+<p>These problems share the same data and the same "hypo" label, but they fail for
+entirely different reasons.</p>
+<h3 id="problem-1-predicting-whether-hypo-will-happen-classification">Problem 1: Predicting Whether Hypo Will Happen (Classification)<a class="headerlink" href="#problem-1-predicting-whether-hypo-will-happen-classification" title="Permanent link">&para;</a></h3>
+<p>At <strong>2-hour horizons</strong>, this is actually a solved problem (AUC 0.860). When glucose
+is already falling or IOB is already excessive, the signal is in the data — the
+descent has momentum and the model can see it.</p>
+<p>At <strong>overnight horizons</strong> (AUC 0.69), the problem becomes much harder, but <strong>not
+because of counter-regulatory hormones</strong>. The descent hasn't started yet at
+prediction time. What makes it hard:</p>
+<ol>
+<li>
+<p><strong>Future actions are unknown.</strong> The single worst false negative in our clinical
+   vignettes (Patient a, Day 167) shows glucose at 239 mg/dL — clearly not
+   approaching hypo. Then a large correction bolus is delivered <em>after</em> the
+   prediction, crashing glucose to 59 mg/dL. No model can foresee a treatment
+   decision that hasn't been made yet. At long horizons, the descent trigger is
+   often a future bolus, a future meal that doesn't arrive, or future exercise —
+   none of which exist in the data at prediction time.</p>
+</li>
+<li>
+<p><strong>The AID is actively preventing the events we're trying to predict.</strong> Successful
+   prevention is invisible in the data — glucose never reaches 70, so no event is
+   recorded. The events we <em>do</em> see are a censored, biased sample: only the cases
+   where prevention failed. This is a classic censored-outcome problem in
+   observational data (see <a href="#6-the-aid-system-confound">Section 6</a>).</p>
+</li>
+<li>
+<p><strong>Class imbalance is structural.</strong> Hypo readings represent 1.2–13.9% of windows
+   depending on the patient. At the safety-sensitive operating point (threshold 0.30),
+   catching 84% of hypos requires accepting a PPV of only 28% — roughly 3 out of 4
+   alerts are false alarms. The model has to find a needle in a haystack, and the
+   haystack is enormous.</p>
+</li>
+<li>
+<p><strong>Hyperglycemia doesn't have these problems.</strong> HIGH events are driven by
+   carbohydrate absorption (measurable via COB), insulin insufficiency (measurable
+   via IOB), and dawn phenomenon (follows a clock). These inputs are all in our data
+   at prediction time and don't require knowing future actions. Meals that are
+   <em>already eaten</em> cause highs; insulin that is <em>already delivered</em> causes lows.
+   The temporal asymmetry matters: the cause of HIGH is in the past; the cause of
+   HYPO may be in the future.</p>
+</li>
+</ol>
+<h3 id="problem-2-forecasting-glucose-values-during-hypo-regression">Problem 2: Forecasting Glucose Values During Hypo (Regression)<a class="headerlink" href="#problem-2-forecasting-glucose-values-during-hypo-regression" title="Permanent link">&para;</a></h3>
+<p>Once glucose is already below 70, a different problem emerges: <strong>what will the
+glucose trajectory look like?</strong> This is where counter-regulatory hormones matter.</p>
+<p>The forecast MAE in the hypo range is 39.8 mg/dL — <strong>2.54× worse</strong> than in-range
+(EXP-817). The physics model shows a systematic +5.1 mg/dL bias below 70 (EXP-601):
+the model consistently under-predicts actual glucose in the hypo range, as if an
+unmeasured glucose source is active. This is the counter-regulatory response at work
+(see <a href="#5-the-counter-regulatory-response-what-we-see-but-cannot-model">Section 5</a>).</p>
+<p>But this problem affects <strong>trajectory forecasting</strong>, not onset prediction. By the
+time counter-regulatory hormones are relevant, the patient is already hypoglycemic —
+the prediction question ("will they go low?") has already been answered.</p>
+<h3 id="why-the-gap-widens-with-horizon">Why The Gap Widens With Horizon<a class="headerlink" href="#why-the-gap-widens-with-horizon" title="Permanent link">&para;</a></h3>
+<p>The 2h-vs-overnight gap (0.860 → 0.690) is best explained by <strong>how much of the
+causal chain is visible at prediction time</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Horizon</th>
+<th>What the model can see</th>
+<th>What it can't see</th>
+<th>AUC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2-hour</td>
+<td>Glucose momentum, current IOB excess, active descent</td>
+<td>Nothing critical — descent already underway</td>
+<td>0.860</td>
+</tr>
+<tr>
+<td>6-hour</td>
+<td>Current glucose, basal rate, recent history</td>
+<td>Future boluses, future meals, future exercise</td>
+<td>0.668</td>
+</tr>
+<tr>
+<td>Overnight</td>
+<td>Evening glucose, bedtime IOB</td>
+<td>Whether patient will snack, AID behavior overnight, dawn effect timing</td>
+<td>0.690</td>
+</tr>
+</tbody>
+</table>
+<p>The pattern is clear: <strong>the further ahead we predict, the more of the causal chain
+is hidden in future decisions</strong>. Counter-regulatory hormones are not the primary
+cause of this degradation — they're relevant only after the event is already underway.</p>
+<p><img alt="Observable vs Unobservable Factors" src="figures/hypo-fig4-observable-vs-unobservable.png" /></p>
+<hr />
+<h2 id="4-what-weve-tried-detection-classification-and-prediction">4. What We've Tried: Detection, Classification, and Prediction<a class="headerlink" href="#4-what-weve-tried-detection-classification-and-prediction" title="Permanent link">&para;</a></h2>
+<h3 id="41-detection-is-the-patient-hypoglycemic-right-now">4.1 Detection: "Is the patient hypoglycemic right now?"<a class="headerlink" href="#41-detection-is-the-patient-hypoglycemic-right-now" title="Permanent link">&para;</a></h3>
+<p>This is the easiest task — look at the CGM reading. But CGM lag makes even this
+non-trivial:</p>
+<ul>
+<li><strong>Reactive detection</strong> (glucose already below 70): Trivial from CGM, F1 = 0.939</li>
+<li><strong>Near-real-time detection</strong> (glucose approaching 70): We use rate-of-change
+  features and supply-demand flux balance</li>
+</ul>
+<h3 id="42-classification-what-type-of-event-is-this">4.2 Classification: "What type of event is this?"<a class="headerlink" href="#42-classification-what-type-of-event-is-this" title="Permanent link">&para;</a></h3>
+<p>We classify hypoglycemic episodes by their <strong>cause</strong> and <strong>pattern</strong>:</p>
+<p><strong>By mechanism</strong> (EXP-1494):</p>
+<table>
+<thead>
+<tr>
+<th>Mechanism</th>
+<th>Description</th>
+<th>Prevalence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>AID-induced</strong></td>
+<td>AID algorithm over-delivered insulin</td>
+<td>0–66.9% by patient</td>
+</tr>
+<tr>
+<td><strong>Manual-induced</strong></td>
+<td>Patient bolused too much (correction or meal)</td>
+<td>1–69 events</td>
+</tr>
+<tr>
+<td><strong>Overcorrection</strong></td>
+<td>Correction bolus for a high caused a subsequent low</td>
+<td>Tracked per patient</td>
+</tr>
+<tr>
+<td><strong>Insulin stacking</strong></td>
+<td>Multiple boluses overlapping before DIA elapsed</td>
+<td>38–69% of nocturnal</td>
+</tr>
+<tr>
+<td><strong>Basal excess</strong></td>
+<td>Scheduled basal rate too high for current needs</td>
+<td>10/11 patients</td>
+</tr>
+<tr>
+<td><strong>Unclear</strong></td>
+<td>Cannot determine cause from available data</td>
+<td>18–203 events</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Our assumption about mechanism classification</strong>: We infer "AID-induced" by
+checking whether the AID system was actively delivering above scheduled basal in
+the 2 hours before hypo onset. "Manual-induced" means a manual bolus was given.
+"Unclear" means neither signal is present, which could mean the cause is basal
+excess, delayed insulin action, exercise, or something else entirely. The
+"unclear" category is large (up to 60% of events for some patients), which
+honestly reflects the limits of retrospective causal attribution from pump data.</p>
+<p><strong>By temporal pattern</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>Definition</th>
+<th>Clinical Significance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Fasting hypo</strong></td>
+<td>No carbs within ±2h</td>
+<td>Suggests basal is too high</td>
+</tr>
+<tr>
+<td><strong>Post-meal hypo</strong></td>
+<td>Occurs 2–4h after meal bolus</td>
+<td>Suggests CR is too aggressive</td>
+</tr>
+<tr>
+<td><strong>Nocturnal hypo</strong></td>
+<td>Occurs between 22:00–06:00</td>
+<td>Most dangerous (patient is asleep)</td>
+</tr>
+<tr>
+<td><strong>Rebound hypo</strong></td>
+<td>Follows a counter-regulatory rebound high</td>
+<td>Suggests cycle of overcorrection</td>
+</tr>
+<tr>
+<td><strong>Stacking hypo</strong></td>
+<td>IOB from multiple boluses exceeds need</td>
+<td>Timing/education issue</td>
+</tr>
+</tbody>
+</table>
+<p><strong>By episode labels</strong> (from <code>pattern_retrieval.py</code>):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="s1">'hypo_risk'</span>  <span class="c1"># glucose &lt; 80 or rapidly approaching 70</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="s1">'rebound'</span>    <span class="c1"># rapid rise immediately following a hypo_risk label</span>
+</code></pre></div>
+<h3 id="43-prediction-will-the-patient-go-low-in-the-next-n-hours">4.3 Prediction: "Will the patient go low in the next N hours?"<a class="headerlink" href="#43-prediction-will-the-patient-go-low-in-the-next-n-hours" title="Permanent link">&para;</a></h3>
+<p>This is where we have invested the most effort. Summary of approaches:</p>
+<table>
+<thead>
+<tr>
+<th>Approach</th>
+<th>Overnight HYPO AUC</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Baseline (CGM features only)</td>
+<td>0.520</td>
+<td>❌ Little better than random</td>
+</tr>
+<tr>
+<td>+ Physics features (supply/demand)</td>
+<td><strong>0.696</strong></td>
+<td>✅ <strong>Largest single gain (+34%)</strong></td>
+</tr>
+<tr>
+<td>+ Focal loss</td>
+<td>0.698</td>
+<td>❌ Negligible further gain</td>
+</tr>
+<tr>
+<td>+ Near-hypo threshold (75 vs 70)</td>
+<td>0.702</td>
+<td>❌ Marginal</td>
+</tr>
+<tr>
+<td>+ Glucose derivatives (dBG/dt, d²BG/dt²)</td>
+<td>0.699</td>
+<td>❌ Neutral</td>
+</tr>
+<tr>
+<td>CNN architecture</td>
+<td>0.690</td>
+<td>❌ Same ceiling</td>
+</tr>
+<tr>
+<td>Transformer architecture</td>
+<td>0.692</td>
+<td>❌ Same ceiling</td>
+</tr>
+<tr>
+<td>Extended context (6h, 12h)</td>
+<td>0.688</td>
+<td>❌ No improvement</td>
+</tr>
+<tr>
+<td>PK channel features</td>
+<td>0.683</td>
+<td>❌ Harmful</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="The Prediction Ceiling" src="figures/hypo-fig6-prediction-ceiling.png" /></p>
+<p><strong>The ceiling is robust</strong>: Three architectures, five feature sets, three loss
+functions — all converge to ~0.69 at overnight horizons. Only the 2-hour horizon
+(AUC 0.860) crosses the clinical deployment threshold of 0.80.</p>
+<p><strong>Our best prediction model</strong> uses these features (the "combined_43" feature set):</p>
+<table>
+<thead>
+<tr>
+<th>Feature Category</th>
+<th>Count</th>
+<th>Examples</th>
+<th>Contribution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Current glucose state</td>
+<td>4</td>
+<td>BG, Δ5min, Δ15min, Δ30min</td>
+<td>~50%</td>
+</tr>
+<tr>
+<td>Statistical summaries</td>
+<td>8</td>
+<td>Mean/std at 30/60/120min windows</td>
+<td>~15%</td>
+</tr>
+<tr>
+<td>Metabolic flux</td>
+<td>6</td>
+<td>Supply, demand, net, ratio, hepatic</td>
+<td>~15%</td>
+</tr>
+<tr>
+<td>Insulin features</td>
+<td>4</td>
+<td>IOB, recent bolus, basal deviation</td>
+<td>~10%</td>
+</tr>
+<tr>
+<td>Carb features</td>
+<td>4</td>
+<td>COB, recent carbs, time since meal</td>
+<td>~5%</td>
+</tr>
+<tr>
+<td>Multi-day context</td>
+<td>9</td>
+<td>24h TIR, 3d TIR, recurrence flags</td>
+<td>~5%</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Specialized hypo prediction</strong> (<code>hypo_predictor.py</code>) combines:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>1. Linear trend extrapolation (project forward using recent slope)
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>2. Sigmoid proximity function (closer to 70 → higher probability)
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>3. Supply-demand flux imbalance boost (+34% AUC gain)
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>4. Acceleration detection (is descent speeding up?)
+</code></pre></div>
+<p>The production predictor penalizes missed hypos <strong>5× more</strong> than false alarms
+(<code>AsymmetricHypoLoss</code>), reflecting the clinical asymmetry: a missed hypo can be
+dangerous; a false alarm is merely annoying.</p>
+<h3 id="44-personalized-alert-thresholds-exp-695">4.4 Personalized Alert Thresholds (EXP-695)<a class="headerlink" href="#44-personalized-alert-thresholds-exp-695" title="Permanent link">&para;</a></h3>
+<p>Fixed alert thresholds cause alarm fatigue for variable patients and miss events for
+stable patients. Per-patient thresholds based on prediction error distributions:</p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Fixed Threshold</th>
+<th>Personalized</th>
+<th>Change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mean alert rate</td>
+<td>2.6/day</td>
+<td>2.2/day</td>
+<td>−15%</td>
+</tr>
+<tr>
+<td>Patient j (worst case)</td>
+<td>6.0/day</td>
+<td>2.5/day</td>
+<td>−58%</td>
+</tr>
+<tr>
+<td>Patient k (tight control)</td>
+<td>0.4/day</td>
+<td>3.4/day</td>
+<td>+750% (appropriate increase)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Our assumption</strong>: We assume that reducing alert frequency without missing real
+events is clinically beneficial. We call alerts at P(HYPO) ≥ threshold. We do not
+know if patients would actually benefit from fewer alerts or if any alert frequency
+is acceptable in practice.</p>
+<hr />
+<h2 id="5-the-counter-regulatory-response-what-we-see-but-cannot-model">5. The Counter-Regulatory Response: What We See But Cannot Model<a class="headerlink" href="#5-the-counter-regulatory-response-what-we-see-but-cannot-model" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p><strong>Scope clarification</strong>: As discussed in <a href="#3-why-hypoglycemia-is-fundamentally-harder-than-hyperglycemia">Section 3</a>,
+counter-regulatory hormones are <strong>not</strong> the primary reason hypo <em>onset prediction</em>
+is hard at long horizons — that's caused by future actions being unknown. This
+section addresses a different problem: why <strong>forecasting glucose values and
+trajectories through and after a hypo event</strong> is unreliable. These are the dynamics
+that make hypo events <em>clinically unpredictable</em> once they begin.</p>
+</blockquote>
+<h3 id="what-we-observe-in-the-data">What We Observe in the Data<a class="headerlink" href="#what-we-observe-in-the-data" title="Permanent link">&para;</a></h3>
+<p>When glucose drops below approximately 70 mg/dL, we consistently observe dynamics
+that <strong>cannot be explained</strong> by the measured variables (insulin, carbs, basal rate):</p>
+<ol>
+<li>
+<p><strong>Glucose rebounds faster than insulin decay would predict</strong>. If insulin were
+   simply wearing off, glucose would rise gradually at ~2–5 mg/dL per 5-minute step.
+   Instead, we often see 10–15 mg/dL per step — an acceleration that implies an
+   active glucose-raising force.</p>
+</li>
+<li>
+<p><strong>Rebounds overshoot into hyperglycemia</strong>. In the example from Patient c (Day 167),
+   glucose went from 65 → 324 mg/dL. Even accounting for any carbohydrate treatment,
+   this magnitude of rebound strongly suggests hepatic glucose dumping triggered by
+   hormonal signals.</p>
+</li>
+<li>
+<p><strong>Our physics model has a +5.1 mg/dL systematic bias in the hypo range</strong>
+   (EXP-601). When glucose is below 70, our supply-demand model consistently
+   under-predicts the actual glucose — the actual glucose is higher than predicted
+   by an average of 5.1 mg/dL per 5-minute step. This bias disappears above 70.
+   We interpret this as evidence of an unmeasured glucose source (counter-regulatory
+   hormone-driven hepatic output) that activates below the threshold.</p>
+</li>
+<li>
+<p><strong>Model uncertainty spikes at the hypo-recovery boundary</strong>. Our best model
+   outputs P(HYPO) = 0.500 (maximum uncertainty) for a patient at 86 mg/dL with
+   +36 mg/dL/30min trend rising from a recent low. The model literally cannot
+   decide whether to trust the recovery or worry about another dip. This pattern
+   (Clinical Vignette B4) is diagnostic of an unmeasured force.</p>
+</li>
+</ol>
+<h3 id="what-we-believe-is-happening-hypothesis">What We Believe Is Happening (Hypothesis)<a class="headerlink" href="#what-we-believe-is-happening-hypothesis" title="Permanent link">&para;</a></h3>
+<p>Based on medical literature references in our codebase and patterns in the data,
+we believe the following counter-regulatory cascade occurs below ~70 mg/dL:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>Glucose drops below ~70 mg/dL
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>  → Pancreatic alpha cells release GLUCAGON (rapid, primary defense)
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>    → Liver converts glycogen to glucose (hepatic glucose output)
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>  → Adrenal medulla releases EPINEPHRINE (adrenaline)
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    → Amplifies hepatic glucose output
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    → Mobilizes alternative fuel sources
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>    → Produces symptoms (tremor, sweating, tachycardia)
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>  → Adrenal cortex releases CORTISOL (slower, sustained)
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>    → Reduces peripheral glucose uptake
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>    → Extends the recovery/rebound period
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>  → Pituitary releases GROWTH HORMONE
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>    → Reduces insulin sensitivity (hours later)
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>Net effect: Glucose REBOUNDS, often overshooting → hyperglycemia
+</code></pre></div>
+<p><strong>Crucial caveat</strong>: We have not measured any of these hormones. This mechanism is
+inferred from (a) the pattern of model failures, (b) the systematic bias below 70,
+and (c) references in diabetes literature. A clinician would know whether this
+description is accurate and whether the activation threshold really is ~70 mg/dL
+or varies by individual.</p>
+<h3 id="what-this-means-in-practice-the-trajectory-problem">What This Means in Practice: The Trajectory Problem<a class="headerlink" href="#what-this-means-in-practice-the-trajectory-problem" title="Permanent link">&para;</a></h3>
+<p>The counter-regulatory response creates a <strong>regime change</strong> in glucose dynamics.
+This doesn't prevent us from <em>predicting that hypo will happen</em> (at short horizons
+we can see it coming from momentum), but it does prevent us from answering useful
+follow-up questions:</p>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Why Counter-Regulation Makes It Hard</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"How deep will the nadir be?"</td>
+<td>Glucagon response varies by glycogen stores, individual physiology</td>
+</tr>
+<tr>
+<td>"How fast will they recover?"</td>
+<td>Depends on epinephrine magnitude — unmeasured</td>
+</tr>
+<tr>
+<td>"Will they rebound into hyperglycemia?"</td>
+<td>Cortisol/GH effects are delayed and variable (65 → 324 in one case)</td>
+</tr>
+<tr>
+<td>"Is another hypo likely within 6h?"</td>
+<td>Counter-regulatory exhaustion (glycogen depletion) is unmeasured</td>
+</tr>
+<tr>
+<td>"Was this event dangerous?"</td>
+<td>Symptom severity depends on hormone levels we can't see</td>
+</tr>
+</tbody>
+</table>
+<p>This matters for AID system design: an AID that suspends insulin when glucose
+hits 80 is making the right call, but it cannot predict <em>how much</em> extra glucose
+the counter-regulatory response will produce, making post-hypo insulin dosing a
+guessing game.</p>
+<table>
+<thead>
+<tr>
+<th>Above 70 mg/dL</th>
+<th>Below 70 mg/dL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Driven by measurable inputs (insulin, carbs)</td>
+<td>Driven by unmeasured hormones</td>
+</tr>
+<tr>
+<td>Approximately linear dynamics</td>
+<td>Non-linear floor effect</td>
+</tr>
+<tr>
+<td>Single model works well</td>
+<td>Would need a specialized sub-model</td>
+</tr>
+<tr>
+<td>R² ≈ 0.28</td>
+<td>R² ≈ 0.15</td>
+</tr>
+</tbody>
+</table>
+<p>Our attempt at a <strong>two-stage model</strong> (EXP-136: first classify hypo risk, then
+apply specialized forecaster) reduced hypo-range MAE by 32%. This is consistent
+with the "different physics" hypothesis — a model trained on in-range data and
+applied to hypo range performs poorly because the governing equations change.</p>
+<h3 id="the-rebound-as-a-downstream-problem">The Rebound as a Downstream Problem<a class="headerlink" href="#the-rebound-as-a-downstream-problem" title="Permanent link">&para;</a></h3>
+<p>The hypo → rebound → hyperglycemia cycle creates a <strong>cascade of downstream harm</strong>
+that our simple episode counting may understate:</p>
+<ol>
+<li><strong>The hypo itself</strong> — immediate danger (confusion, seizure risk)</li>
+<li><strong>The rebound high</strong> — extended time above range (65 → 324 in our data)</li>
+<li><strong>The correction of the rebound</strong> — risk of another overcorrection → second hypo</li>
+<li><strong>Glycemic variability</strong> — the oscillation itself may cause more harm than
+   sustained mild hyperglycemia (this is debated in clinical literature)</li>
+</ol>
+<p>When we count "224 hypo episodes" for patient k, we are counting problem #1.
+Problems #2–#4 are downstream consequences that multiply the clinical burden but
+are not captured in our hypo metrics. A domain expert might argue that the <em>total
+cost</em> of a hypo event includes the rebound — which would make hypo even more
+clinically significant than our episode counts suggest.</p>
+<hr />
+<h2 id="6-the-aid-system-confound">6. The AID System Confound<a class="headerlink" href="#6-the-aid-system-confound" title="Permanent link">&para;</a></h2>
+<p>All 11 patients in our dataset use <strong>Automated Insulin Delivery</strong> (AID) systems
+(Loop, AAPS, or Trio). This creates a fundamental observational problem for
+studying hypoglycemia:</p>
+<h3 id="the-aid-actively-prevents-the-events-were-trying-to-predict">The AID Actively Prevents the Events We're Trying to Predict<a class="headerlink" href="#the-aid-actively-prevents-the-events-were-trying-to-predict" title="Permanent link">&para;</a></h3>
+<p>When an AID system predicts glucose will drop below its safety threshold
+(typically 80–100 mg/dL), it <strong>reduces or suspends</strong> insulin delivery. This means:</p>
+<ol>
+<li>
+<p><strong>Observed hypo events are already the failures</strong> — the AID tried to prevent
+   them and couldn't. The events we see are a biased sample: they represent cases
+   where the AID's prevention was insufficient.</p>
+</li>
+<li>
+<p><strong>Successful prevention is invisible</strong> — we cannot count how many hypo events
+   the AID prevented because glucose never reached 70. The "true" hypo risk is
+   higher than what we observe.</p>
+</li>
+<li>
+<p><strong>The AID creates a feedback loop</strong> — our prediction model is trying to predict
+   events in a system that is simultaneously trying to prevent those events. If our
+   model gets better, and the AID uses it, the events become even rarer and harder
+   to study.</p>
+</li>
+</ol>
+<h3 id="aid-induced-hypoglycemia-exp-1494">AID-Induced Hypoglycemia (EXP-1494)<a class="headerlink" href="#aid-induced-hypoglycemia-exp-1494" title="Permanent link">&para;</a></h3>
+<p>Perhaps our most counterintuitive finding: <strong>in some patients, the AID system itself
+causes the majority of hypoglycemic episodes</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Patient</th>
+<th>Total Hypo Episodes</th>
+<th>AID-Induced (%)</th>
+<th>Manual-Induced</th>
+<th>Unclear</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>f</td>
+<td>145</td>
+<td><strong>66.9%</strong></td>
+<td>15</td>
+<td>33</td>
+</tr>
+<tr>
+<td>i</td>
+<td>341</td>
+<td><strong>48.7%</strong></td>
+<td>69</td>
+<td>106</td>
+</tr>
+<tr>
+<td>a</td>
+<td>137</td>
+<td>39.4%</td>
+<td>24</td>
+<td>59</td>
+</tr>
+<tr>
+<td>e</td>
+<td>97</td>
+<td>25.8%</td>
+<td>21</td>
+<td>51</td>
+</tr>
+<tr>
+<td>d</td>
+<td>51</td>
+<td>0.0%</td>
+<td>1</td>
+<td>50</td>
+</tr>
+<tr>
+<td>k</td>
+<td>224</td>
+<td>0.0%</td>
+<td>21</td>
+<td>203</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Our assumption about "AID-induced"</strong>: We label an episode as AID-induced when
+the AID system was delivering insulin above scheduled basal rate in the 2 hours
+before hypo onset. This is a crude heuristic — it's possible the higher delivery
+was appropriate (e.g., for a meal) and the hypo was caused by something else
+(e.g., exercise). The large "unclear" category reflects this uncertainty.</p>
+<p><strong>Why this happens</strong> (our hypothesis): The AID's basal rate settings may be too
+high, so it oscillates between aggressive delivery and emergency suspension. In
+10/11 patients, the AID runs at a rate below scheduled basal for extended periods,
+suggesting the programmed basal rate is consistently higher than needed. The AID
+compensates by suspending frequently, but sometimes the correction comes too late
+and glucose drops below 70.</p>
+<h3 id="the-tir-tbr-paradox">The TIR-TBR Paradox<a class="headerlink" href="#the-tir-tbr-paradox" title="Permanent link">&para;</a></h3>
+<p>The AID confound produces a clinically dangerous paradox: patients can have
+<strong>excellent Time in Range (TIR) and dangerous Time Below Range (TBR) simultaneously</strong>.</p>
+<p><img alt="The TIR-TBR Paradox and Recovery Phenotypes" src="figures/hypo-fig3-patient-risk-landscape.png" /></p>
+<p><strong>Patient k</strong> is the clearest example:
+- <strong>TIR: 95.1%</strong> — the best in the cohort, would earn an "A" grade
+- <strong>TBR: 4.87%</strong> — exceeds the ADA safety limit of 4%
+- <strong>224 hypo episodes</strong> in 180 days
+- <strong>Safety score: 0 out of 100</strong> when TBR is factored in</p>
+<p>The AID achieves exceptional TIR by being aggressive, but that aggressiveness
+causes frequent lows. A clinician looking only at TIR would consider this patient
+well-controlled. Adding TBR reveals a hidden safety problem.</p>
+<hr />
+<h2 id="7-patient-heterogeneity-not-one-problem-but-eleven">7. Patient Heterogeneity: Not One Problem But Eleven<a class="headerlink" href="#7-patient-heterogeneity-not-one-problem-but-eleven" title="Permanent link">&para;</a></h2>
+<p>Hypoglycemia is not a single phenomenon. Our 11 patients exhibit dramatically
+different hypo profiles:</p>
+<h3 id="risk-tiers-exp-1493">Risk Tiers (EXP-1493)<a class="headerlink" href="#risk-tiers-exp-1493" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>Patients</th>
+<th>TBR (%)</th>
+<th>Episodes</th>
+<th>Characteristics</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Low</strong></td>
+<td>j</td>
+<td>1.1%</td>
+<td>34</td>
+<td>Rare, no severe, low nocturnal</td>
+</tr>
+<tr>
+<td><strong>Moderate</strong></td>
+<td>b, d</td>
+<td>0.75–1.04%</td>
+<td>51–64</td>
+<td>Some severe, moderate stacking</td>
+</tr>
+<tr>
+<td><strong>High</strong></td>
+<td>a, c, e, f, g, h, k</td>
+<td>1.8–5.9%</td>
+<td>97–229</td>
+<td>Frequent, nocturnal, stacking</td>
+</tr>
+<tr>
+<td><strong>Critical</strong></td>
+<td>i</td>
+<td><strong>10.7%</strong></td>
+<td><strong>341</strong></td>
+<td>1.9/day, 177 severe, crisis-level</td>
+</tr>
+</tbody>
+</table>
+<h3 id="two-recovery-phenotypes-exp-1498">Two Recovery Phenotypes (EXP-1498)<a class="headerlink" href="#two-recovery-phenotypes-exp-1498" title="Permanent link">&para;</a></h3>
+<p>Patients divide into two distinct behavioral groups during hypo recovery:</p>
+<p><strong>Active treaters</strong> (patients b, j):
+- Treat &gt;58% of episodes with carbohydrates
+- Median recovery: 15 minutes
+- Shallower nadirs
+- Lower nadir-recovery correlation</p>
+<p><strong>Passive reliers</strong> (patients a, f, i, k, and most others):
+- Treat &lt;5% of episodes with carbohydrates
+- Median recovery: 15–25 minutes
+- Deeper nadirs
+- Rely on AID insulin suspension + counter-regulatory response
+- Stronger nadir-recovery correlation (r = −0.483 for patient i)</p>
+<p><strong>Our assumption</strong>: We classify "carb-treated" based on a carbohydrate entry
+appearing in the data within 30 minutes of the nadir. If a patient eats fast-acting
+glucose but doesn't log it, we would misclassify them as "passive." Given that 46.5%
+of glucose rises have no carb entry (EXP-748), this misclassification is likely
+significant. The "passive" group may include many patients who treat but don't log.</p>
+<h3 id="nocturnal-hypoglycemia-the-most-dangerous-pattern">Nocturnal Hypoglycemia: The Most Dangerous Pattern<a class="headerlink" href="#nocturnal-hypoglycemia-the-most-dangerous-pattern" title="Permanent link">&para;</a></h3>
+<p><img alt="Nocturnal Hypo Timing" src="figures/hypo-fig5-nocturnal-timing.png" /></p>
+<p>Nocturnal hypos (22:00–06:00) cluster between <strong>midnight and 3:00 AM</strong>, driven by
+the insulin tail from dinner boluses — a phenomenon called "insulin stacking":</p>
+<table>
+<thead>
+<tr>
+<th>Patient</th>
+<th>Nocturnal TBR%</th>
+<th>Peak Onset</th>
+<th>Bedtime IOB (U)</th>
+<th>Stacking (%)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>i</td>
+<td>11.82%</td>
+<td>1:00 AM</td>
+<td>2.72</td>
+<td>69.5%</td>
+</tr>
+<tr>
+<td>h</td>
+<td>6.46%</td>
+<td>1:00 AM</td>
+<td>1.77</td>
+<td>44.2%</td>
+</tr>
+<tr>
+<td>e</td>
+<td>1.96%</td>
+<td>3:00 AM</td>
+<td>5.42</td>
+<td><strong>88.9%</strong></td>
+</tr>
+<tr>
+<td>b</td>
+<td>0.88%</td>
+<td>3:00 AM</td>
+<td>0.07</td>
+<td>0.0%</td>
+</tr>
+</tbody>
+</table>
+<p><strong>What we mean by "stacking"</strong>: Insulin on Board (IOB) from dinner bolus is still
+active at bedtime. If the bolus was large or dinner was early, residual insulin
+continues lowering glucose while the patient sleeps — unable to intervene.</p>
+<p>Patient e is the extreme stacking case: 88.9% of nocturnal hypos follow insulin
+stacking, with bedtime IOB of 5.42 units. Despite moderate overall TBR (1.96%),
+nearly all nocturnal hypos have a clear mechanical cause.</p>
+<hr />
+<h2 id="8-what-we-still-dont-know">8. What We Still Don't Know<a class="headerlink" href="#8-what-we-still-dont-know" title="Permanent link">&para;</a></h2>
+<h3 id="questions-for-clinical-experts">Questions for Clinical Experts<a class="headerlink" href="#questions-for-clinical-experts" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p><strong>Is our 70 mg/dL threshold correct for CGM data?</strong> Given the 5–15 minute
+   interstitial lag, should we use 75 or 80 mg/dL on CGM to approximate 70 mg/dL
+   in blood? Our near-hypo threshold experiments show only +0.006 AUC gain at
+   75 — but this may be a model limitation rather than evidence that the threshold
+   doesn't matter.</p>
+</li>
+<li>
+<p><strong>Does the counter-regulatory response threshold vary by patient?</strong> We assume
+   ~70 mg/dL universally, but some patients may activate counter-regulatory
+   responses earlier (e.g., if they have hypoglycemia unawareness, activation
+   may occur later; if they normally run high, it may occur earlier).</p>
+</li>
+<li>
+<p><strong>Is "rate of descent" as clinically important as "absolute level"?</strong> A glucose
+   of 80 mg/dL falling at −3 mg/dL/min feels different from 80 mg/dL that is
+   stable. Our models use both features, but we weight absolute level more heavily
+   (~50% feature importance). Should rate of change matter more?</p>
+</li>
+<li>
+<p><strong>How should we handle the rebound?</strong> When glucose rebounds from 55 to 200,
+   is the rebound hyperglycemia a "consequence of hypo" (and thus part of the same
+   event)? Or is it a new, separate hyperglycemic event? Our current system treats
+   them as separate, which may undercount the true clinical burden of each hypo
+   episode.</p>
+</li>
+<li>
+<p><strong>What is "insulin stacking" in clinical terms?</strong> We define it as IOB &gt; 0 at
+   bedtime from a bolus delivered &gt;3h ago. Is there a more precise clinical
+   definition? Is residual IOB of 0.5 U clinically different from 5.0 U?</p>
+</li>
+<li>
+<p><strong>Are AID-induced hypos "real" hypos?</strong> When the AID algorithm causes a low by
+   over-delivering insulin, is this the same clinical event as a hypo from manual
+   overdosing? The physiological experience may be identical, but the root cause
+   analysis and intervention are different.</p>
+</li>
+</ol>
+<h3 id="data-limitations-we-cannot-overcome">Data Limitations We Cannot Overcome<a class="headerlink" href="#data-limitations-we-cannot-overcome" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Missing Data</th>
+<th>Impact on Hypo Analysis</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Counter-regulatory hormones</td>
+<td>Cannot model recovery dynamics</td>
+</tr>
+<tr>
+<td>Exercise/activity</td>
+<td>Cannot explain non-insulin glucose drops</td>
+</tr>
+<tr>
+<td>Stress/illness</td>
+<td>Cannot explain unexplained hypo events</td>
+</tr>
+<tr>
+<td>Meal composition</td>
+<td>Cannot predict absorption timing</td>
+</tr>
+<tr>
+<td>Sleep state</td>
+<td>Cannot assess awareness during nocturnal events</td>
+</tr>
+<tr>
+<td>Symptoms</td>
+<td>Cannot grade clinical severity</td>
+</tr>
+<tr>
+<td>Blood glucose (only CGM)</td>
+<td>~5–15 min lag, reduced accuracy below 70</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-prediction-ceiling">The Prediction Ceiling<a class="headerlink" href="#the-prediction-ceiling" title="Permanent link">&para;</a></h3>
+<p>Our most sobering finding: the overnight HYPO prediction ceiling of AUC ≈ 0.69
+appears <strong>structural</strong>. Three architectures, five feature sets, three loss functions
+all converge to the same result.</p>
+<p>However, we now believe the <strong>explanation</strong> for this ceiling is more nuanced than
+"counter-regulatory hormones." The ceiling likely reflects two distinct information
+gaps:</p>
+<ol>
+<li>
+<p><strong>Future actions are unknowable</strong> (the dominant factor): At 6+ hour horizons,
+   the descent trigger (a future bolus, a skipped meal, exercise) often hasn't
+   happened yet. This is an information gap that no sensor can close — it requires
+   knowing the patient's future decisions. Even continuous glucagon monitoring would
+   not help here, because glucagon doesn't activate until <em>after</em> the hypo begins.</p>
+</li>
+<li>
+<p><strong>Counter-regulatory dynamics are unmeasured</strong> (secondary factor): Once hypo
+   begins, the trajectory through and out of hypo is governed by hormones we can't
+   see. This affects trajectory forecasting and recovery prediction, but not the
+   binary "will hypo occur?" question at prediction time.</p>
+</li>
+</ol>
+<p>Breaking the onset-prediction ceiling likely requires <strong>intent signals</strong> — pending
+boluses, meal announcements, exercise plans — more than new biosensors. Breaking the
+trajectory-forecasting ceiling likely requires <strong>hormone measurements</strong> — glucagon,
+cortisol, epinephrine.</p>
+<p>The 2-hour prediction window (AUC 0.860) succeeds because at short horizons,
+the glucose trace already encodes enough momentum information to predict most
+events — the descent is underway and visible in the data.</p>
+<hr />
+<h2 id="9-summary-of-assumptions-for-expert-review">9. Summary of Assumptions for Expert Review<a class="headerlink" href="#9-summary-of-assumptions-for-expert-review" title="Permanent link">&para;</a></h2>
+<p>We list every major assumption below. Each is a point where clinical expertise
+could correct our data-derived understanding:</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Assumption</th>
+<th>Confidence</th>
+<th>Basis</th>
+<th>Risk if Wrong</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>70 mg/dL is the correct CGM threshold for hypoglycemia</td>
+<td>Medium</td>
+<td>International consensus guidelines</td>
+<td>May over- or under-count events</td>
+</tr>
+<tr>
+<td>2</td>
+<td>54 mg/dL defines "severe" hypoglycemia</td>
+<td>Medium</td>
+<td>Same guidelines</td>
+<td>May misclassify severity</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Counter-regulatory hormones activate non-linearly below ~70</td>
+<td>Medium</td>
+<td>Inferred from model bias pattern</td>
+<td>Core hypothesis may be wrong</td>
+</tr>
+<tr>
+<td>4</td>
+<td>The +5.1 mg/dL bias below 70 reflects hepatic glucose output</td>
+<td>Low</td>
+<td>Correlation, not causation</td>
+<td>Could be CGM artifact</td>
+</tr>
+<tr>
+<td>5</td>
+<td>CGM interstitial lag is 5–15 minutes</td>
+<td>High</td>
+<td>Published CGM literature</td>
+<td>Low risk</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Rebound hyperglycemia is caused by counter-regulatory hormones</td>
+<td>Medium</td>
+<td>Pattern-based inference</td>
+<td>Could be overtreatment with carbs</td>
+</tr>
+<tr>
+<td>7</td>
+<td>"Episode" boundaries at 70 mg/dL crossing are clinically meaningful</td>
+<td>Low</td>
+<td>Operational convenience</td>
+<td>May fragment continuous events</td>
+</tr>
+<tr>
+<td>8</td>
+<td>15-minute sustained ≥70 defines recovery</td>
+<td>Low</td>
+<td>Arbitrary choice</td>
+<td>May not match patient experience</td>
+</tr>
+<tr>
+<td>9</td>
+<td>AID suspension timing can be inferred from basal delivery data</td>
+<td>Medium</td>
+<td>We see delivery drops in pump data</td>
+<td>Timing may be inexact</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Nocturnal hypos are the "most dangerous" pattern</td>
+<td>Medium</td>
+<td>Patient cannot self-treat while asleep</td>
+<td>May overweight vs. driving/working</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Insulin stacking is defined by IOB &gt; 0 from bolus &gt; 3h ago</td>
+<td>Low</td>
+<td>Operational definition</td>
+<td>May need clinical refinement</td>
+</tr>
+<tr>
+<td>12</td>
+<td>"AID-induced" attribution based on 2h pre-hypo delivery</td>
+<td>Low</td>
+<td>Heuristic</td>
+<td>Likely over-attributes to AID</td>
+</tr>
+<tr>
+<td>13</td>
+<td>4% of CGM readings are noise artifacts</td>
+<td>Medium</td>
+<td>Statistical outlier detection</td>
+<td>Could discard real extreme readings</td>
+</tr>
+<tr>
+<td>14</td>
+<td>Passive recovery phenotype = patient doesn't treat lows</td>
+<td>Low</td>
+<td>Based on carb entries</td>
+<td>Unlogged treatments would cause misclassification</td>
+</tr>
+<tr>
+<td>15</td>
+<td>Overnight ceiling of 0.69 AUC is a data limitation, not a model limitation</td>
+<td>High</td>
+<td>3 architectures converge</td>
+<td>Could be wrong featurization</td>
+</tr>
+<tr>
+<td><strong>16</strong></td>
+<td><strong>Long-horizon prediction is hard because of future unknowns, not counter-regulatory biology</strong></td>
+<td><strong>High</strong></td>
+<td><strong>Vignette analysis: worst misses involve future boluses</strong></td>
+<td><strong>If wrong, hormone sensing might help onset prediction</strong></td>
+</tr>
+<tr>
+<td><strong>17</strong></td>
+<td><strong>Counter-regulatory response affects trajectory forecasting, not onset prediction</strong></td>
+<td><strong>Medium</strong></td>
+<td><strong>+5.1 bias only appears below 70 (after onset)</strong></td>
+<td><strong>May understate role of hormones in pre-hypo dynamics</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="appendix-evidence-index">Appendix: Evidence Index<a class="headerlink" href="#appendix-evidence-index" title="Permanent link">&para;</a></h2>
+<h3 id="key-reports">Key Reports<a class="headerlink" href="#key-reports" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Report</th>
+<th>Key Hypo Finding</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>capability-report-hypoglycemia-prediction.md</code></td>
+<td>AUC 0.860 at 2h; ceiling 0.69 overnight</td>
+</tr>
+<tr>
+<td><code>therapy-tbr-safety-report-2026-04-10.md</code></td>
+<td>TIR-TBR paradox; AID-induced hypos; recovery phenotypes</td>
+</tr>
+<tr>
+<td><code>diabetes-domain-learnings-2026-04-06.md</code></td>
+<td>2.54× worse MAE below 70; counter-regulatory physics</td>
+</tr>
+<tr>
+<td><code>diabetes-insights-from-data-science.md</code></td>
+<td>The fundamental asymmetry; hypo follows different physics</td>
+</tr>
+<tr>
+<td><code>clinical-inference-vignettes-2026-07-13.md</code></td>
+<td>Clinical case studies; false negative patterns</td>
+</tr>
+<tr>
+<td><code>therapy-detection-report-2026-04-10.md</code></td>
+<td>Basal over-delivery as root cause; ISF 2.66× miscalibration</td>
+</tr>
+<tr>
+<td><code>capability-report-event-detection.md</code></td>
+<td>Detection ceiling wF1=0.710; UAM blind spot</td>
+</tr>
+</tbody>
+</table>
+<h3 id="key-experiments">Key Experiments<a class="headerlink" href="#key-experiments" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Experiment</th>
+<th>Focus</th>
+<th>Key Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EXP-080</td>
+<td>Hypo detection baseline</td>
+<td>79.7% recall with 10× cost-sensitive weighting</td>
+</tr>
+<tr>
+<td>EXP-081</td>
+<td>Asymmetric loss</td>
+<td>Hypo detection 16% → 38.6% (+126%)</td>
+</tr>
+<tr>
+<td>EXP-082</td>
+<td>Direct time-to-event</td>
+<td>Hypo MAE 40.2 → 20.6 min</td>
+</tr>
+<tr>
+<td>EXP-136</td>
+<td>2-stage classifier+forecaster</td>
+<td>−32% hypo MAE</td>
+</tr>
+<tr>
+<td>EXP-453</td>
+<td>CNN overnight risk</td>
+<td>AUC 0.885 for risk classification</td>
+</tr>
+<tr>
+<td>EXP-591</td>
+<td>Counter-regulatory analysis</td>
+<td>+5.1 mg/dL bias correction in hypo range</td>
+</tr>
+<tr>
+<td>EXP-692/695/749</td>
+<td>Hypo prediction campaign</td>
+<td>AUC 0.860 at 2h; personalized thresholds</td>
+</tr>
+<tr>
+<td>EXP-817</td>
+<td>Range-stratified accuracy</td>
+<td>R² drops 0.281 → 0.153 below 80</td>
+</tr>
+<tr>
+<td>EXP-1130</td>
+<td>Definitive benchmark</td>
+<td>Mean hypo_detect: 3.2% (very low)</td>
+</tr>
+<tr>
+<td>EXP-1491–1500</td>
+<td>TBR safety integration</td>
+<td>Pipeline v10 with safety-first protocol</td>
+</tr>
+<tr>
+<td>EXP-1494</td>
+<td>AID-induced hypo detection</td>
+<td>Patient f: 66.9% AID-induced</td>
+</tr>
+<tr>
+<td>EXP-1498</td>
+<td>Recovery phenotype analysis</td>
+<td>Two distinct behavioral groups</td>
+</tr>
+</tbody>
+</table>
+<h3 id="key-code-components">Key Code Components<a class="headerlink" href="#key-code-components" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>production/hypo_predictor.py</code></td>
+<td>Sigmoid + flux + acceleration prediction</td>
+</tr>
+<tr>
+<td><code>hypo_safety.py</code></td>
+<td>2-stage ensemble with asymmetric loss</td>
+</tr>
+<tr>
+<td><code>pattern_retrieval.py</code></td>
+<td>Episode labeling (<code>hypo_risk</code>, <code>rebound</code>)</td>
+</tr>
+<tr>
+<td><code>production/event_detector.py</code></td>
+<td>XGBoost combined_43 classification</td>
+</tr>
+<tr>
+<td><code>production/clinical_rules.py</code></td>
+<td>TBR-aware grading (A–D)</td>
+</tr>
+<tr>
+<td><code>production/metabolic_engine.py</code></td>
+<td>Supply-demand decomposition (physics basis)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="figures">Figures<a class="headerlink" href="#figures" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Figure</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="figures/hypo-fig1-fundamental-asymmetry.png">Figure 1</a></td>
+<td>HIGH vs HYPO prediction asymmetry; accuracy by glucose range</td>
+</tr>
+<tr>
+<td><a href="figures/hypo-fig2-anatomy-of-event.png">Figure 2</a></td>
+<td>Six phases of a hypoglycemic event with counter-regulatory response</td>
+</tr>
+<tr>
+<td><a href="figures/hypo-fig3-patient-risk-landscape.png">Figure 3</a></td>
+<td>TIR-TBR paradox scatter; recovery phenotype clustering</td>
+</tr>
+<tr>
+<td><a href="figures/hypo-fig4-observable-vs-unobservable.png">Figure 4</a></td>
+<td>Observable vs unobservable factors for hypo prediction</td>
+</tr>
+<tr>
+<td><a href="figures/hypo-fig5-nocturnal-timing.png">Figure 5</a></td>
+<td>Nocturnal clustering of hypoglycemic events</td>
+</tr>
+<tr>
+<td><a href="figures/hypo-fig6-prediction-ceiling.png">Figure 6</a></td>
+<td>Nine approaches converging at the same AUC ceiling</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>This document was generated by AI analysis of CGM/AID research data. All findings
+are empirical observations from the data, not clinical recommendations. The
+assumptions listed in Section 9 represent our best understanding and are explicitly
+offered for correction by domain experts.</em></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

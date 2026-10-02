@@ -1,0 +1,6315 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/nightscout-storage-seam-interface-2026-09-14.html">
+      
+      
+        <link rel="prev" href="nightscout-seam-ordering-translation.html">
+      
+      
+        <link rel="next" href="tenant-owner-config-surface-2026-09-15.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>T1.1 — the storage seam: interface definition and call-site classification - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#t11--the-storage-seam-interface-definition-and-call-site-classification" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              T1.1 — the storage seam: interface definition and call-site classification
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_24" id="__nav_5_24_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_24_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    30-design/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cgm-remote-monitor-telemetry-emitter-map-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor Telemetry Emitter Integration Map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-adoption-roadmap-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adoption roadmap: who builds what, in what order
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-integration-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Integration Guide for App Developers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-backend-service-design-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Backend Service Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-deployment-lifecycle-examples-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Deployment Lifecycle Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-implementation-breakdown-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Implementation Breakdown
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-lifecycle-policy-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Lifecycle Policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-local-integration-plan-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Local Integration Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-scheduling-dedupe-model-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Scheduling and Dedupe Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ns2parquet-keyed-pseudonyms.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ns2parquet keyed pseudonyms: design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../modernization/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    modernization/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../platform/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    platform/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../remedial/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    remedial/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24_15" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenancy/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_24_15" id="__nav_5_24_15_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_24_15_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24_15">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    tenancy/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-configuration-and-delegation-2026-09-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings, extensibility, new data, and delegated access: four open questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-control-plane-reconciliation-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reconciling the agentic control plane RFC with what the corpus measured
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-deployable-components-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployable components: entrypoints, program structure, and what an operator actually runs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-multitenancy-discussion-2026-09-09.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout multitenancy: evidence and options
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-multitenancy-execution-plan-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenancy execution plan: decisions, tasks, and the context each one needs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-seam-ordering-translation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design — how ordering crosses the storage seam
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    T1.1 — the storage seam: interface definition and call-site classification
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="nightscout-storage-seam-interface-2026-09-14.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    T1.1 — the storage seam: interface definition and call-site classification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-the-count-85-call-sites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The count: 85 call sites
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-finding-that-changes-the-task-a-third-of-it-is-already-done" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The finding that changes the task: a third of it is already done
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-classification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Classification
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Classification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-the-19-must-change-sites-are-four-root-causes-not-nineteen-problems" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 The 19 must-change sites are four root causes, not nineteen problems
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-the-27-escape-hatches-grouped" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 The 27 escape hatches, grouped
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-the-proposed-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. The proposed interface
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. The proposed interface">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-shape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Shape
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-the-filter-representation--the-one-decision-that-matters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 The filter representation — the one decision that matters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-aggregation--investigated-and-it-is-one-operation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Aggregation — investigated, and it is one operation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.3 Aggregation — investigated, and it is one operation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#431-the-count-paths-date-bound-bf-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3.1 The count path's date bound (BF-01)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-dedup-across-the-three-write-paths--investigated-and-they-are-not-equivalent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Dedup across the three write paths — investigated, and they are not equivalent
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-a-third-write-path-not-previously-named" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. A third write path, not previously named
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-what-this-does-not-cover" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. What this does not cover
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-the-filter-ast--built-and-validated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. The filter AST — built and validated
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. The filter AST — built and validated">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-it-is-not-a-new-design--v3-already-had-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 It is not a new design — v3 already had it
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-what-it-deliberately-cannot-express-is-the-feature" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 What it deliberately cannot express is the feature
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-differential-validation-3000-randomised-filters-both-backends" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 Differential validation: 3,000 randomised filters, both backends
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#84-coverage-against-real-v1-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.4 Coverage against real v1 output
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#85-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.5 Limits
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#86-the-cross-type-break-is-also-inside-the-adapter--found-by-t21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.6 The cross-type break is also inside the adapter — found by T2.1
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#861-non-vacuity-of-the-cross-type-differential" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.6.1 Non-vacuity of the cross-type differential
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#862-the-seam-now-matches-real-mongodb-and-the-oracle-is-what-is-wrong" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.6.2 The seam now matches real MongoDB, and the oracle is what is wrong
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#87-two-capability-gaps-t21-surfaced" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.7 Two capability gaps T2.1 surfaced
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#88-date-like-columns-are-text-and-cannot-be-anything-else" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.8 Date-like columns are text, and cannot be anything else
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-the-transaction-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. The transaction scope
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. The transaction scope">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91-as-built--2026-09-14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 As built — 2026-09-14
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-sequencing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Sequencing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-as-built--what-t12-actually-delivered-and-where-it-diverged-from-41" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. As built — what T1.2 actually delivered, and where it diverged from §4.1
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. As built — what T1.2 actually delivered, and where it diverged from §4.1">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#101-the-delivered-surface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.1 The delivered surface
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#102-deviation-1--bulkupsertops-mode-not-bulkupsertdocs-matchon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.2 Deviation 1 — bulkUpsert(ops, {mode}), not bulkUpsert(docs, {matchOn})
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#103-deviation-2--updatemanyast-set-unset-not-a-null-sentinel-patch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.3 Deviation 2 — updateMany(ast, {set, unset}), not a null-sentinel patch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#104-deviation-3--deletemany-returns-three-fields-and-the-wire-is-shaped-elsewhere" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.4 Deviation 3 — deleteMany returns three fields, and the wire is shaped elsewhere
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#105-one-change-to-the-ast-itself-re-carries-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.5 One change to the AST itself: re carries options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#106-what-is-still-on-the-raw-collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.6 What is still on the raw collection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#107-deviation-4--replacefiltered-found-by-converting-the-socket-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.7 Deviation 4 — replaceFiltered, found by converting the socket path
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tenant-owner-config-surface-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The tenant-owner configuration surface — T3.0's missing schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../60-research/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-the-count-85-call-sites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The count: 85 call sites
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-finding-that-changes-the-task-a-third-of-it-is-already-done" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The finding that changes the task: a third of it is already done
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-classification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Classification
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Classification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-the-19-must-change-sites-are-four-root-causes-not-nineteen-problems" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 The 19 must-change sites are four root causes, not nineteen problems
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-the-27-escape-hatches-grouped" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 The 27 escape hatches, grouped
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-the-proposed-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. The proposed interface
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. The proposed interface">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-shape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Shape
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-the-filter-representation--the-one-decision-that-matters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 The filter representation — the one decision that matters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-aggregation--investigated-and-it-is-one-operation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Aggregation — investigated, and it is one operation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.3 Aggregation — investigated, and it is one operation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#431-the-count-paths-date-bound-bf-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3.1 The count path's date bound (BF-01)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-dedup-across-the-three-write-paths--investigated-and-they-are-not-equivalent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Dedup across the three write paths — investigated, and they are not equivalent
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-a-third-write-path-not-previously-named" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. A third write path, not previously named
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-what-this-does-not-cover" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. What this does not cover
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-the-filter-ast--built-and-validated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. The filter AST — built and validated
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. The filter AST — built and validated">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-it-is-not-a-new-design--v3-already-had-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 It is not a new design — v3 already had it
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-what-it-deliberately-cannot-express-is-the-feature" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 What it deliberately cannot express is the feature
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-differential-validation-3000-randomised-filters-both-backends" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 Differential validation: 3,000 randomised filters, both backends
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#84-coverage-against-real-v1-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.4 Coverage against real v1 output
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#85-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.5 Limits
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#86-the-cross-type-break-is-also-inside-the-adapter--found-by-t21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.6 The cross-type break is also inside the adapter — found by T2.1
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#861-non-vacuity-of-the-cross-type-differential" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.6.1 Non-vacuity of the cross-type differential
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#862-the-seam-now-matches-real-mongodb-and-the-oracle-is-what-is-wrong" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.6.2 The seam now matches real MongoDB, and the oracle is what is wrong
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#87-two-capability-gaps-t21-surfaced" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.7 Two capability gaps T2.1 surfaced
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#88-date-like-columns-are-text-and-cannot-be-anything-else" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.8 Date-like columns are text, and cannot be anything else
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-the-transaction-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. The transaction scope
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. The transaction scope">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91-as-built--2026-09-14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 As built — 2026-09-14
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-sequencing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Sequencing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-as-built--what-t12-actually-delivered-and-where-it-diverged-from-41" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. As built — what T1.2 actually delivered, and where it diverged from §4.1
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. As built — what T1.2 actually delivered, and where it diverged from §4.1">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#101-the-delivered-surface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.1 The delivered surface
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#102-deviation-1--bulkupsertops-mode-not-bulkupsertdocs-matchon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.2 Deviation 1 — bulkUpsert(ops, {mode}), not bulkUpsert(docs, {matchOn})
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#103-deviation-2--updatemanyast-set-unset-not-a-null-sentinel-patch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.3 Deviation 2 — updateMany(ast, {set, unset}), not a null-sentinel patch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#104-deviation-3--deletemany-returns-three-fields-and-the-wire-is-shaped-elsewhere" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.4 Deviation 3 — deleteMany returns three fields, and the wire is shaped elsewhere
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#105-one-change-to-the-ast-itself-re-carries-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.5 One change to the AST itself: re carries options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#106-what-is-still-on-the-raw-collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.6 What is still on the raw collection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#107-deviation-4--replacefiltered-found-by-converting-the-socket-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.7 Deviation 4 — replaceFiltered, found by converting the socket path
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="t11--the-storage-seam-interface-definition-and-call-site-classification">T1.1 — the storage seam: interface definition and call-site classification<a class="headerlink" href="#t11--the-storage-seam-interface-definition-and-call-site-classification" title="Permanent link">&para;</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Record</p>
+<p>Record as of 2026-09-14. A point-in-time document; it is not kept up to date.</p>
+</div>
+<p><em>Contributor-facing.</em> <strong>Snapshot, 2026-09-14 (§8–§10 later). Current: the only statement of the storage seam's interface.</strong>
+Task T1.1 of the <a href="nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan</a>; decisions it rests on: D3, D4, D8, D9 — <a href="nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">plan §1</a>.
+§1–§7 were measured 2026-09-14 against <code>origin/chore/nightscout-modernization</code> @ <code>0a4109f6</code>;
+§8–§10 describe what was built on the <code>seam/*</code> branch chain (tip <code>seam/t1-2-storage-interface</code>
+@ <code>81a1f6ce</code>, <code>externals/work/crm-seam</code>), which is <strong>unpublished</strong>. That base has since moved
+(to <code>b1bdaca0</code> on 2026-09-21, a merge of <code>dev</code>); the seam is 68 behind it and trial-merges with 19
+conflicting paths — queue item <code>SEAM-REFRESH</code>. Nothing here is in <code>dev</code> or any release.</p>
+<p><strong>Deliverables</strong>: this document, plus
+<code>reports/storage-seam/t1-1-call-site-classification.tsv</code> (every site, classified) and the two
+scripts that produce it, so the count can be re-derived rather than trusted.</p>
+<hr />
+<h2 id="1-the-count-85-call-sites">1. The count: 85 call sites<a class="headerlink" href="#1-the-count-85-call-sites" title="Permanent link">&para;</a></h2>
+<p>Method matters because two plausible greps undercount:</p>
+<table>
+<thead>
+<tr>
+<th>count</th>
+<th style="text-align: right;">method</th>
+<th>why it is wrong</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"~30 call sites"</td>
+<td style="text-align: right;">{M} §2.5, by inspection</td>
+<td>an estimate, never enumerated</td>
+</tr>
+<tr>
+<td>68</td>
+<td style="text-align: right;">grep excluding <code>.find(</code></td>
+<td>dodging <code>Array.find</code> also dropped every <code>col.find(filter)</code> — the most common read in the codebase</td>
+</tr>
+<tr>
+<td>82</td>
+<td style="text-align: right;">grep excluding <code>.find(&lt;identifier&gt;)</code></td>
+<td>the same exclusion still swallowed <code>col.find(filter)</code></td>
+</tr>
+<tr>
+<td><strong>85</strong></td>
+<td style="text-align: right;">exclude only jQuery selectors and <code>Array.find</code> callbacks, then remove one verified DOM false positive</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>85 storage call sites across 20 files.</strong> <code>lib/plugins/pluginbase.js:45</code>
+(<code>container.find(pillName)</code>, jQuery over <code>majorPills</code>) is the removed false positive.</p>
+<h2 id="2-the-finding-that-changes-the-task-a-third-of-it-is-already-done">2. The finding that changes the task: a third of it is already done<a class="headerlink" href="#2-the-finding-that-changes-the-task-a-third-of-it-is-already-done" title="Permanent link">&para;</a></h2>
+<p>The sites are not 85 pieces of equivalent work. They stratify:</p>
+<table>
+<thead>
+<tr>
+<th>tier</th>
+<th style="text-align: right;">sites</th>
+<th>what it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>T0 · interface consumers</strong></td>
+<td style="text-align: right;"><strong>15</strong></td>
+<td><code>lib/api3/generic/*</code> and <code>mongoCachedCollection</code> already call <code>col.storage.*</code> / <code>baseStorage.*</code>. <strong>They never touch the driver.</strong></td>
+</tr>
+<tr>
+<td><strong>T1 · the interface + its Mongo adapter</strong></td>
+<td style="text-align: right;"><strong>14</strong></td>
+<td><code>mongoCollection/{index,find,modify}.js</code> — this <em>is</em> a storage interface plus its MongoDB implementation, already written</td>
+</tr>
+<tr>
+<td><strong>T2 · v1 domain modules</strong></td>
+<td style="text-align: right;"><strong>40</strong></td>
+<td><code>lib/server/{entries,treatments,devicestatus,profile,food,activity,aggregate}.js</code>, <code>lib/authorization/storage.js</code>, <code>lib/api/entries</code> — raw driver</td>
+</tr>
+<tr>
+<td><strong>T3 · socket write path</strong></td>
+<td style="text-align: right;"><strong>15</strong></td>
+<td><code>lib/server/websocket.js</code> — raw driver (§5)</td>
+</tr>
+<tr>
+<td><strong>T3 · factory</strong></td>
+<td style="text-align: right;"><strong>1</strong></td>
+<td><code>lib/storage/mongo-storage.js:216</code>, <code>createIndex</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>API v3 is roughly three-quarters of a seam that already exists.</strong> <code>MongoCollection</code>
+(<code>lib/api3/storage/mongoCollection/index.js</code>) exposes <code>findOne</code>, <code>findOneFilter</code>, <code>findMany</code>,
+<code>insertOne</code>, <code>replaceOne</code>, <code>updateOne</code>, <code>deleteOne</code>, <code>deleteManyOr</code>, <code>version</code>,
+<code>getLastModified</code> and <code>identifyingFilter</code> — a real interface, with a real decorator
+(<code>mongoCachedCollection</code>) already layered over it.</p>
+<p><strong>So T1.2 is not "design an abstraction and apply it to 85 sites". It is "finish the
+abstraction that api3 already has, then bring v1 to it".</strong> That is a materially smaller and
+lower-risk task, and it sets the sequencing in §7.</p>
+<h2 id="3-classification">3. Classification<a class="headerlink" href="#3-classification" title="Permanent link">&para;</a></h2>
+<p>Full table in <code>reports/storage-seam/t1-1-call-site-classification.tsv</code>.</p>
+<table>
+<thead>
+<tr>
+<th>class</th>
+<th style="text-align: right;">sites</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>fits</strong></td>
+<td style="text-align: right;"><strong>39</strong></td>
+<td>maps onto the existing interface with no semantic loss</td>
+</tr>
+<tr>
+<td><strong>needs-escape-hatch</strong></td>
+<td style="text-align: right;"><strong>27</strong></td>
+<td>works, but needs a capability the interface must name explicitly</td>
+</tr>
+<tr>
+<td><strong>must-change</strong></td>
+<td style="text-align: right;"><strong>19</strong></td>
+<td>leaks driver semantics the caller must stop depending on</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;">fits</th>
+<th style="text-align: right;">escape-hatch</th>
+<th style="text-align: right;">must-change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T0 consumer</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td>T1 interface</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>T1 adapter</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>T2 v1 domain</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">13</td>
+</tr>
+<tr>
+<td>T3 socket</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr>
+<td>T3 factory</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="31-the-19-must-change-sites-are-four-root-causes-not-nineteen-problems">3.1 The 19 must-change sites are four root causes, not nineteen problems<a class="headerlink" href="#31-the-19-must-change-sites-are-four-root-causes-not-nineteen-problems" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>root cause</th>
+<th style="text-align: right;">sites</th>
+<th>fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>query_for(opts)</code> returns a Mongo filter document</strong></td>
+<td style="text-align: right;"><strong>9</strong></td>
+<td>entries 44/52, treatments 251/276, devicestatus 129/138, profile 110, activity 120, authorization 88</td>
+</tr>
+<tr>
+<td><strong><code>$set</code> / <code>$unset</code> partial updates</strong></td>
+<td style="text-align: right;"><strong>4</strong></td>
+<td>modify.js 49, websocket 358/411/578</td>
+</tr>
+<tr>
+<td><strong>Literal Mongo filters in domain code</strong></td>
+<td style="text-align: right;"><strong>2</strong></td>
+<td>food 146 (<code>$and</code>), treatments 114 (<code>$in</code>)</td>
+</tr>
+<tr>
+<td><strong><code>ObjectId</code> construction by the caller</strong></td>
+<td style="text-align: right;"><strong>2</strong></td>
+<td>entries 179, authorization 100</td>
+</tr>
+<tr>
+<td><strong>Raw collection/cursor handles</strong></td>
+<td style="text-align: right;"><strong>2</strong></td>
+<td>websocket 749 (<code>ctx.store.collection()</code>), mongoCollection/index 65 (<code>self.col.find()</code>)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Nearly half of the must-change work is one root cause</strong>, and it is a root cause three other
+planned tasks already converge on — see §4.2.</p>
+<h3 id="32-the-27-escape-hatches-grouped">3.2 The 27 escape hatches, grouped<a class="headerlink" href="#32-the-27-escape-hatches-grouped" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>capability</th>
+<th style="text-align: right;">sites</th>
+<th>Postgres equivalent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>explicit <code>upsert</code></td>
+<td style="text-align: right;">7</td>
+<td><code>INSERT … ON CONFLICT DO UPDATE</code></td>
+</tr>
+<tr>
+<td>batch upsert (<code>bulkWrite</code>)</td>
+<td style="text-align: right;">5</td>
+<td><code>INSERT … ON CONFLICT</code>, multi-row</td>
+</tr>
+<tr>
+<td>bare <code>find</code> → <code>findMany</code></td>
+<td style="text-align: right;">5</td>
+<td>— (caller shape only)</td>
+</tr>
+<tr>
+<td>delete by filter</td>
+<td style="text-align: right;">2</td>
+<td><code>DELETE … WHERE</code></td>
+</tr>
+<tr>
+<td>cursor chaining <code>.sort().limit()</code></td>
+<td style="text-align: right;">2</td>
+<td><code>findMany</code> args</td>
+</tr>
+<tr>
+<td>batch insert (<code>insertMany</code>)</td>
+<td style="text-align: right;">2</td>
+<td>multi-row <code>INSERT</code></td>
+</tr>
+<tr>
+<td><strong>aggregation pipeline</strong></td>
+<td style="text-align: right;"><strong>2</strong></td>
+<td><strong><code>GROUP BY</code> — but see §4.3</strong></td>
+</tr>
+<tr>
+<td>projection</td>
+<td style="text-align: right;">1</td>
+<td>column list</td>
+</tr>
+<tr>
+<td><code>createIndex</code></td>
+<td style="text-align: right;">1</td>
+<td>migrations</td>
+</tr>
+</tbody>
+</table>
+<h2 id="4-the-proposed-interface">4. The proposed interface<a class="headerlink" href="#4-the-proposed-interface" title="Permanent link">&para;</a></h2>
+<h3 id="41-shape">4.1 Shape<a class="headerlink" href="#41-shape" title="Permanent link">&para;</a></h3>
+<p>Extends <code>MongoCollection</code>'s existing surface; <strong>additions marked NEW</strong>, and each exists because
+§3.2 counted sites that need it.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1">// ---- reads</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nx">findOne</span><span class="p">(</span><span class="nx">identifier</span><span class="p">,</span><span class="w"> </span><span class="nx">projection</span><span class="o">?</span><span class="p">,</span><span class="w"> </span><span class="nx">options</span><span class="o">?</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nx">findOneFilter</span><span class="p">(</span><span class="nx">filter</span><span class="p">,</span><span class="w"> </span><span class="nx">projection</span><span class="o">?</span><span class="p">,</span><span class="w"> </span><span class="nx">options</span><span class="o">?</span><span class="p">)</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="nx">findMany</span><span class="p">({</span><span class="w"> </span><span class="nx">filter</span><span class="p">,</span><span class="w"> </span><span class="nx">sort</span><span class="p">,</span><span class="w"> </span><span class="nx">limit</span><span class="p">,</span><span class="w"> </span><span class="nx">skip</span><span class="p">,</span><span class="w"> </span><span class="nx">projection</span><span class="p">,</span><span class="w"> </span><span class="nx">options</span><span class="w"> </span><span class="p">})</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="nx">count</span><span class="p">(</span><span class="nx">filter</span><span class="p">)</span><span class="w">                                   </span><span class="c1">// NEW — and §4.3 shows it is the ONLY one</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="nx">getLastModified</span><span class="p">(</span><span class="nx">fieldName</span><span class="p">)</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="c1">// ---- writes</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="nx">insertOne</span><span class="p">(</span><span class="nx">doc</span><span class="p">,</span><span class="w"> </span><span class="nx">options</span><span class="o">?</span><span class="p">)</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="nx">insertMany</span><span class="p">(</span><span class="nx">docs</span><span class="p">,</span><span class="w"> </span><span class="nx">options</span><span class="o">?</span><span class="p">)</span><span class="w">                      </span><span class="c1">// NEW — 2 sites</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="nx">replaceOne</span><span class="p">(</span><span class="nx">identifier</span><span class="p">,</span><span class="w"> </span><span class="nx">doc</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">upsert</span><span class="w"> </span><span class="p">})</span><span class="w">         </span><span class="c1">// upsert becomes explicit — 7 sites</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="nx">updateOne</span><span class="p">(</span><span class="nx">identifier</span><span class="p">,</span><span class="w"> </span><span class="nx">patch</span><span class="p">)</span><span class="w">                    </span><span class="c1">// patch is a plain object, NOT {$set: …}</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="nx">deleteOne</span><span class="p">(</span><span class="nx">identifier</span><span class="p">)</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="nx">deleteMany</span><span class="p">(</span><span class="nx">filter</span><span class="p">)</span><span class="w">                              </span><span class="c1">// NEW — supersedes deleteManyOr</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="nx">bulkUpsert</span><span class="p">(</span><span class="nx">docs</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">matchOn</span><span class="w"> </span><span class="p">})</span><span class="w">                   </span><span class="c1">// NEW — 5 sites</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="c1">// ---- the only aggregation that actually occurs (§4.3)</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="c1">//      `aggregate(pipeline)` is deliberately absent</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="c1">// ---- lifecycle</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="nx">ensureSchema</span><span class="p">(</span><span class="nx">collectionSpec</span><span class="p">)</span><span class="w">                    </span><span class="c1">// replaces createIndex</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="nx">version</span><span class="p">()</span>
+</code></pre></div>
+<p><strong>Three rules that make it a seam rather than a façade</strong>, each aimed at a specific leak the
+classification found:</p>
+<ol>
+<li><strong>No member returns or accepts a driver object.</strong> <code>self.col</code> becomes private;
+   <code>getLastModified</code> goes through <code>findMany</code>. (T1 must-change ×2.)</li>
+<li><strong><code>identifier</code> is opaque.</strong> The caller never constructs an <code>ObjectId</code>; <code>identifyingFilter</code>
+   moves inside the adapter, where it may keep its current Mongo-specific fallback logic.
+   (T2 must-change ×2.)</li>
+<li><strong><code>updateOne</code> takes a plain patch object.</strong> The adapter decides <code>$set</code> versus <code>jsonb_set</code>.
+   <code>$unset</code> becomes an explicit null-or-sentinel convention in the patch — the socket path's
+   <code>dbUpdateUnset</code> is the only caller and it needs a deliberate decision, not a translation.</li>
+</ol>
+<h3 id="42-the-filter-representation--the-one-decision-that-matters">4.2 The filter representation — the one decision that matters<a class="headerlink" href="#42-the-filter-representation--the-one-decision-that-matters" title="Permanent link">&para;</a></h3>
+<p>Nine of nineteen must-change sites are <code>query_for(opts)</code> handing a Mongo query document to the
+driver. So the filter language <em>is</em> the seam, and there is a convergence worth taking:</p>
+<blockquote>
+<p><strong>D8 already chose the vocabulary.</strong> API v3 declares exactly nine operators —
+<code>eq ne gt gte lt lte in nin re</code> (<code>lib/api3/generic/search/input.js:111</code>). <strong>Make that the
+seam's filter AST.</strong> <code>query_for</code> becomes <code>filterFor</code>, emitting
+<code>{op, field, value}</code> nodes with <code>and</code>/<code>or</code> grouping, in v3's vocabulary.</p>
+</blockquote>
+<p>That single change resolves four planned work items at once:</p>
+<table>
+<thead>
+<tr>
+<th>item</th>
+<th>how it lands</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>T1.1/T1.2</strong></td>
+<td>9 of 19 must-change sites</td>
+</tr>
+<tr>
+<td><strong>T0.5</strong> (type coercion)</td>
+<td>the AST is where the schema-driven coercion table applies</td>
+</tr>
+<tr>
+<td><strong>T2.3</strong> (v3's nine operators in SQL)</td>
+<td>the AST <em>is</em> v3's nine operators</td>
+</tr>
+<tr>
+<td><strong>T2.4</strong> (v1 allowlist)</td>
+<td>an AST that cannot express an unlisted operator <strong>is</strong> the allowlist — {M} §6.5's security fix falls out structurally rather than being bolted on</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Recommendation: do the filter AST first, as its own change, before converting any call
+site.</strong> It is the highest-leverage piece and everything else gets easier behind it.</p>
+<h3 id="43-aggregation--investigated-and-it-is-one-operation">4.3 Aggregation — investigated, and it is one operation<a class="headerlink" href="#43-aggregation--investigated-and-it-is-one-operation" title="Permanent link">&para;</a></h3>
+<p><code>lib/server/aggregate.js</code> builds <code>[{$match: query}].concat(conf.pipeline).concat(opts.pipeline).concat(template())</code>,
+and <strong>every extension point is empty in production</strong>:</p>
+<ul>
+<li><code>conf.pipeline</code> has <strong>no supplier</strong> — the factory is constructed in exactly three places
+  (<code>entries.js:223</code>, <code>devicestatus.js:162</code>, <code>treatments.js:439</code>), all with <code>{}</code>.</li>
+<li><code>opts.pipeline</code> is <strong>rejected with HTTP 400</strong> before reaching storage
+  (<code>lib/api/entries/index.js:452-457</code>), closed deliberately in commit <code>479a6a4d</code>.</li>
+<li><code>template()</code> is a literal: <code>[{$group: {_id: null, count: {$sum: 1}}}]</code>, with <code>_id</code> hardcoded
+  to <code>null</code> — <strong>there is no code path that sets a grouping key.</strong></li>
+</ul>
+<p><strong>So there is exactly one shape: <code>count(collection, filter)</code> → integer</strong>, over
+<code>{entries, treatments, devicestatus}</code>. No <code>groupBy</code>, no <code>distinct</code>. The
+<code>[{_id: null, count: N}]</code> envelope is a MongoDB artifact the API leaks and the route layer can
+reconstruct.</p>
+<p><strong><code>aggregate(spec)</code> therefore comes out of the proposed interface in §4.1</strong> — <code>count(filter)</code>
+is sufficient and complete. If a general <code>aggregate</code> is kept in the Mongo adapter for future
+use, it must stay <em>off</em> the neutral interface or the seam leaks.</p>
+<p>Two constraints on doing it: <code>tests/count-pipeline-boundary.test.js</code> pins the response shape
+and the exact 400 message; <code>tests/mongo-query-javascript.test.js:75-94</code> constructs the helper
+directly and passes <code>opts.pipeline</code>, so it depends on that parameter existing even though no
+production caller supplies it.</p>
+<h4 id="431-the-count-paths-date-bound-bf-01">4.3.1 The count path's date bound (BF-01)<a class="headerlink" href="#431-the-count-paths-date-bound-bf-01" title="Permanent link">&para;</a></h4>
+<p><code>aggregate.js:21</code> calls <code>find_options(opts)</code> with <strong>one argument</strong>, so the collection's
+<code>queryOpts</code> never reach it and <code>lib/server/query.js</code> falls back to its defaults — <code>dateField:
+'date'</code>, no <code>useEpoch</code>. The consequence, run directly:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>list  path (useEpoch:true):  {"date":{"$gte":1789099222823}}       &lt;- number
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>count path (defaults)     :  {"date":{"$gte":"2026-09-11T04:00:22.824Z"}}   &lt;- ISO string
+</code></pre></div>
+<p><code>entries.date</code> is declared <code>number</code> in <code>specs/nsschema/entries.model.json</code>, and MongoDB orders
+BSON types before comparing values, so a numeric field never matches a string bound.
+<strong><code>GET /api/v1/count/entries/where</code> with no explicit date filter silently matches nothing</strong> —
+the injected two-day window excludes every document rather than bounding it.</p>
+<p>This is the same class as T0.5's under-coercion finding: a string where a number belongs,
+returning 200 and an empty result. Filed as <strong>BF-01</strong> (reproduced); the fix routes count and list
+through the same <code>query_for</code> and is <strong>merged</strong> to <code>dev</code> via PR #8738 (2026-09-18), not released.</p>
+<h3 id="44-dedup-across-the-three-write-paths--investigated-and-they-are-not-equivalent">4.4 Dedup across the three write paths — investigated, and they are not equivalent<a class="headerlink" href="#44-dedup-across-the-three-write-paths--investigated-and-they-are-not-equivalent" title="Permanent link">&para;</a></h3>
+<p>The §5 recommendation — convert the socket path last, file unification separately — holds. The three paths disagree on <strong>match key, match scope, post-match
+write semantics, and which collections dedup at all</strong>:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>socket <code>dbAdd</code></th>
+<th>API v3</th>
+<th>API v1</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>treatments</td>
+<td><code>NSCLIENT_ID</code>, else <code>created_at</code>+<code>eventType</code>, <strong>plus a ±2 s fuzzy window</strong> on amount fields</td>
+<td>UUIDv5 of <code>device_date_eventType</code>; fallback <code>created_at</code>+<code>eventType</code></td>
+<td><code>identifier</code> → <code>_id</code> → <code>created_at</code>+<code>eventType</code></td>
+</tr>
+<tr>
+<td>entries</td>
+<td><strong>no dedup</strong></td>
+<td>identifier; fallback <code>date</code>+<code>type</code></td>
+<td><code>sysTime</code>+<code>type</code>, device-blind</td>
+</tr>
+<tr>
+<td>devicestatus</td>
+<td><code>NSCLIENT_ID</code>, else <code>created_at</code> (device-blind)</td>
+<td><code>created_at</code>+<strong><code>device</code></strong></td>
+<td><strong>no dedup</strong></td>
+</tr>
+<tr>
+<td>profile</td>
+<td><code>startDate</code> → full replace</td>
+<td><code>created_at</code></td>
+<td><strong>no dedup</strong></td>
+</tr>
+<tr>
+<td>on a match, writes</td>
+<td>treatments: only <code>$set</code>s <code>created_at</code>, keeps the stored body; devicestatus: <strong>nothing</strong></td>
+<td><strong>full replace</strong></td>
+<td>treatments: replace; entries: <strong><code>$set</code> merge</strong></td>
+</tr>
+<tr>
+<td>permission on a match</td>
+<td>create rights</td>
+<td><strong><code>api:&lt;col&gt;:update</code></strong></td>
+<td>create rights</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Divergences that would change behaviour if unified</strong> — the load-bearing ones:</p>
+<ol>
+<li><strong>Only the socket path matches fuzzily</strong> (±2 s plus amount fields, <code>websocket.js:535-568</code>).
+   Removing it duplicates AAPS/NSClient treatments; adding it elsewhere silently swallows
+   legitimate rapid boluses.</li>
+<li><strong><code>NSCLIENT_ID</code> is a socket-only key</strong>; v1 and v3 treat it as opaque payload.</li>
+<li><strong>v3's fallback clause carries <code>identifier: {$exists: false}</code></strong> (<code>utils.js:159</code>), which the
+   others lack. A unified rule would make v3 start matching identifier-bearing documents by
+   <code>created_at</code>+<code>eventType</code> — a real loosening.</li>
+<li><strong><code>created_at</code> normalisation differs</strong>: v1 normalises through moment to ISO-UTC and lets
+   <code>eventTime</code> override it (<code>treatments.js:449-450, 473-479</code>); the socket path uses the raw
+   client string. Identical payloads produce different keys.</li>
+<li><strong>Entries get three different answers</strong> for the same SGV, and <code>devicestatus</code>/<code>profile</code> each
+   dedup in some paths and not others.</li>
+</ol>
+<p><strong>Also worth recording: the socket write API is not browser-only.</strong> It is attached to the same
+HTTP server and uses the same credential model as REST (<code>websocket.js:81-84</code>, <code>:115-131</code>), so
+<code>dbAdd</code>/<code>dbUpdate</code>/<code>dbRemove</code> are reachable by any client that can reach the site. Anonymous
+writes are denied by default, but a deployment adding <code>careportal</code> to <code>AUTH_DEFAULT_ROLES</code>
+opens them — exactly as it would for REST.</p>
+<p><strong>Unsettled:</strong> whether the socket similarity branch's use of truthiness
+(<code>if (data.data.insulin)</code>) rather than presence is intentional. A falsy value is skipped as a
+match key, and no test covers it. Register <strong>BF-09</strong> (queue <code>BFQ-09</code>, unsettled) carries the
+corpus measurement of which fields this actually affects.</p>
+<h2 id="5-a-third-write-path-not-previously-named">5. A third write path, not previously named<a class="headerlink" href="#5-a-third-write-path-not-previously-named" title="Permanent link">&para;</a></h2>
+<p><code>lib/server/websocket.js</code> is 15 sites — the largest single concentration — because it
+implements <strong>a complete CRUD API over Socket.IO</strong>: <code>dbAdd</code> (<code>:449</code>), <code>dbUpdate</code> (<code>:332</code>),
+<code>dbUpdateUnset</code> (<code>:395</code>), <code>dbRemove</code> (<code>:734</code>). It carries <strong>its own deduplication logic</strong>
+(exact-match then similar-match, <code>:528</code>/<code>:572</code>) parallel to — not shared with — v1's and v3's.</p>
+<p>Consequences:</p>
+<ul>
+<li><strong>The seam covers three API surfaces, not two</strong> — v1, v3 and the socket path.</li>
+<li><strong>Dedup semantics exist in three places</strong> and are not obviously identical. Unifying them is a
+  behaviour change and must not ride along inside a "no behaviour change" refactor.</li>
+<li><strong>11 of its 15 sites classify as <code>fits</code></strong> — it is mostly <code>findOne</code>/<code>insertOne</code>/<code>replaceOne</code>,
+  so the conversion itself is routine. It is the <em>dedup</em> question that needs a decision.</li>
+</ul>
+<p><strong>Recommendation: convert websocket.js last</strong>, and file the dedup unification as its own task
+with its own tests.</p>
+<h2 id="6-what-this-does-not-cover">6. What this does not cover<a class="headerlink" href="#6-what-this-does-not-cover" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong><code>lib/server/query.js</code> itself</strong> is not in the inventory — it builds filters, it does not
+  execute them. It is nonetheless the largest single item of work implied here (§4.2).</li>
+<li><strong>Read paths that bypass storage entirely</strong> — <code>ctx.cache</code> (<code>lib/server/cache.js</code>) serves
+  <code>/api/v1/entries</code> from memory with no driver call ({R} §12.2), so it does not appear as a
+  call site while very much being part of the read path.</li>
+<li><strong><code>lib/storage/mongo-storage.js</code>'s connection/pool/index management</strong> — one <code>createIndex</code>
+  site is listed, but connection lifecycle, pool configuration and <code>ensureIndexes</code> are a
+  separate concern from the per-collection interface and need their own design.</li>
+<li><strong>Transactions.</strong> Nothing in the shipping code uses them; RLS binding under D3 is
+  per-transaction ({DB} §8.2), so the interface needs a transaction scope. That scope is §9.</li>
+</ul>
+<h2 id="8-the-filter-ast--built-and-validated">8. The filter AST — built and validated<a class="headerlink" href="#8-the-filter-ast--built-and-validated" title="Permanent link">&para;</a></h2>
+<p><code>tools/seam/filter-ast.js</code>, validated by <code>tools/seam/{validate,coverage}.js</code>.</p>
+<h3 id="81-it-is-not-a-new-design--v3-already-had-it">8.1 It is not a new design — v3 already had it<a class="headerlink" href="#81-it-is-not-a-new-design--v3-already-had-it" title="Permanent link">&para;</a></h3>
+<p><code>lib/api3/generic/search/input.js</code> produces <code>[{field, operator, value}]</code> with a top-level
+<code>logicalOperator</code>, and <code>parseFilter()</code> in <code>mongoCollection/utils.js</code> is <strong>already its MongoDB
+adapter</strong>. So the work is v3's existing model plus the smallest extensions that let v1's real
+output be expressed, plus a second adapter.</p>
+<p><strong>Two extensions, each because a measured v1 shape needs it:</strong></p>
+<ol>
+<li><strong>Nested groups.</strong> v3's AST is flat — one <code>logicalOperator</code> joins every clause — and v1
+   emits top-level <code>$or</code> with clause objects. This is the only structural change.</li>
+<li><strong><code>exists</code>.</strong> v1 passes <code>$exists</code> through and it is not among v3's nine. Added deliberately,
+   because the alternative is that v1 queries using it silently stop working.</li>
+</ol>
+<p>Everything else maps unchanged: implicit equality → <code>eq</code>; <code>{$gte, $lte}</code> on one field → two
+clauses under <code>and</code>; dotted paths → field names containing dots.</p>
+<p><strong><code>parseFilter</code>'s non-array pass-through (<code>if (!Array.isArray(filterDef)) return filterDef</code>)
+closes for free.</strong> Its only callers are <code>create</code>/<code>patch</code>/<code>update</code>, all passing
+<code>identifyingFilter</code> — a raw Mongo <code>{$or:[…]}</code>. §4.1 rule 2 already moves identifier handling
+inside the adapter, so the escape hatch that stops the AST being total disappears with it.</p>
+<h3 id="82-what-it-deliberately-cannot-express-is-the-feature">8.2 What it deliberately cannot express <em>is</em> the feature<a class="headerlink" href="#82-what-it-deliberately-cannot-express-is-the-feature" title="Permanent link">&para;</a></h3>
+<p>There is no <code>$where</code>, no <code>$expr</code>, no pipeline, no operator escape hatch. Structural validation
+runs before either adapter. <strong>An AST that cannot represent an unlisted operator is the
+allowlist {M} §6.5 says does not exist today</strong> — so T2.4's security fix is structural rather
+than a check somebody has to remember to write. Regex patterns are length-bounded
+(<code>RE_MAX_LEN</code>), which is the ReDoS mitigation, also structural.</p>
+<h3 id="83-differential-validation-3000-randomised-filters-both-backends">8.3 Differential validation: 3,000 randomised filters, both backends<a class="headerlink" href="#83-differential-validation-3000-randomised-filters-both-backends" title="Permanent link">&para;</a></h3>
+<p>Same AST → <code>toMongo</code> → <strong>mingo</strong>, and → <code>toSql</code> → <strong>real PostgreSQL 16</strong>, over 300 fixture
+documents built to be hostile: every field independently present-or-absent, explicit JSON
+nulls distinct from missing keys, empty strings, mixed types.</p>
+<table>
+<thead>
+<tr>
+<th>run</th>
+<th>agreement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>all operators except <code>re</code></td>
+<td><strong>3000/3000 (100 %)</strong></td>
+</tr>
+<tr>
+<td>with <code>re</code> on plain patterns</td>
+<td>1500/1500 (100 %)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Non-vacuity:</strong> the differential caught two adapter defects during construction — reverting
+either fix reproduces the disagreement (332 for <code>nin</code>, all one direction):</p>
+<ol>
+<li><strong><code>nin</code> and missing fields.</strong> MongoDB's <code>$nin</code> matches a document where the field is absent;
+   <code>NULL NOT IN (…)</code> is NULL in SQL and matches nothing. Fixed as <code>(x IS NULL OR x NOT IN (…))</code>, the same three-valued-logic gap <code>ne</code> needed.</li>
+<li><strong><code>exists</code> cannot read a generated column.</strong> MongoDB's <code>$exists</code> is <em>key presence</em>, and a
+   generated column is built with <code>-&gt;&gt;</code>, which returns SQL NULL for <strong>both</strong> an absent key and
+   an explicit JSON null — it cannot tell them apart. <code>doc #&gt; '{path}'</code> can: jsonb <code>null</code> for
+   the first, SQL NULL for the second. Verified directly, then fixed so <code>exists</code> <strong>always</strong>
+   reads the document even when a column exists for that field.</li>
+</ol>
+<blockquote>
+<p>The second is a trap in the §6.3 storage shape rather than in this AST: <strong>generated columns
+are not a faithful projection of the document.</strong> Anything that needs to distinguish absent
+from null must read the jsonb.</p>
+</blockquote>
+<h3 id="84-coverage-against-real-v1-output">8.4 Coverage against real v1 output<a class="headerlink" href="#84-coverage-against-real-v1-output" title="Permanent link">&para;</a></h3>
+<p><code>coverage.js</code> takes the shapes <code>lib/server/query.js</code> actually emits (captured by running it)
+and checks each is expressible <em>and</em> semantically identical, compared through mingo rather than
+by string equality:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>10/10 v1 filter shapes expressible AND semantically identical
+</code></pre></div>
+<p>implicit equality · injected date bound · range on one field · two fields · top-level <code>$or</code> ·
+dotted path · <code>$ne null</code> · <code>$in</code> · <code>$exists</code> · <code>$regex</code>.</p>
+<p>The two <code>_id</code> shapes are <strong>not filters</strong> — they are identifier lookups, resolved by §4.1
+rule 2's identifier opacity rather than by the AST.</p>
+<h3 id="85-limits">8.5 Limits<a class="headerlink" href="#85-limits" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>mingo is a reimplementation of MongoDB's query language, not MongoDB.</strong> A three-arm
+  comparison (mingo / live <code>mongod</code> / live PostgreSQL) in
+  <a href="../../60-research/tenancy/seam-filter-ast-three-arm-validation-2026-09-14.html">{3A}</a> agrees
+  3000/3000 on same-type values. Cross-type values gave mongod-vs-postgres 96.15 % in four
+  nameable classes before the type guard of §8.6; with it, 100 % (§8.6.2).</li>
+<li><strong>The regex result covers a deliberately plain subset</strong> — literals, anchors, character
+  classes. Mongo's <code>$regex</code> is PCRE-flavoured and Postgres <code>~</code> is POSIX; they diverge on lazy
+  quantifiers, lookaround and <code>\d</code>-style shorthands. <strong>The measured 100 % describes the subset
+  we would allow, not the whole language</strong>, and the allowed subset needs to be written down.
+  <code>RE_MAX_LEN</code> is a length bound, not a work bound (T2.3, plan Phase 2).</li>
+<li><strong>300 documents, one collection shape.</strong> Sort, limit, skip and projection are not covered —
+  only the filter.</li>
+<li><strong>No tenant predicate is in these filters.</strong> Under D3 the tenant bound comes from RLS, not
+  from the AST, which is the point — but it means this validation says nothing about isolation.</li>
+</ul>
+<h3 id="86-the-cross-type-break-is-also-inside-the-adapter--found-by-t21">8.6 The cross-type break is also <em>inside</em> the adapter — found by T2.1<a class="headerlink" href="#86-the-cross-type-break-is-also-inside-the-adapter--found-by-t21" title="Permanent link">&para;</a></h3>
+<p>The cross-type disagreement is not only a coercion problem above the seam. Building the T2.1 DDL
+forced a decision about generated columns, and measuring it produced this on live PostgreSQL 16
+over four rows (<code>sgv: 120</code>, <code>sgv: "120"</code>,
+<code>sgv: null</code>, key absent):</p>
+<table>
+<thead>
+<tr>
+<th>predicate</th>
+<th style="text-align: right;">rows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>WHERE "sgv" &gt;= 100</code> — the guarded generated column</td>
+<td style="text-align: right;"><strong>1</strong></td>
+</tr>
+<tr>
+<td><code>WHERE (doc #&gt;&gt; '{sgv}')::numeric &gt;= 100</code> — <code>toSql</code>'s fallback</td>
+<td style="text-align: right;"><strong>2</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Both are <code>toSql</code> emitting <code>gte sgv 100</code>. Which one it emits depends only on whether that field
+happens to appear in the column manifest. So <strong>whether a field has an index accelerator can
+change a query's answer</strong> — and the accelerator is supposed to be exactly the thing that
+cannot. The emitted DDL says so in every file header ("dropping every generated column must not
+change an answer"); today, dropping one would.</p>
+<p>The guarded column is the <em>correct</em> arm: MongoDB orders BSON types before values, so
+<code>sgv: "120"</code> does not match <code>{sgv: {$gte: 100}}</code>, and the column agrees while the fallback does
+not. Two further consequences of the same mismatch: a dirty value makes the fallback <strong>raise</strong>
+<code>22P02</code> at query time where the column is merely NULL, and a numeric field given an ISO-string
+bound raises where MongoDB silently matches nothing — BF-01's live defect arriving as an error
+instead of an empty page. Louder, still a behaviour difference.</p>
+<p><strong>Fixed on the seam branch 2026-09-15</strong> (<code>d75c1154</code>, unpublished): the jsonb path carries the same
+<code>CASE WHEN jsonb_typeof(…) = '&lt;type&gt;' THEN … END</code> the emitted DDL builds its columns with, so
+the two agree by construction rather than by review. <code>CASE</code> and not
+<code>AND jsonb_typeof(…) = t</code>, because SQL does not promise to evaluate conjuncts in order — a
+planner free to try the cast first turns one dirty value into a <code>22P02</code> for the whole query.</p>
+<p>Three things came with it, each a defect in its own right:</p>
+<ul>
+<li><strong>A generated column is <em>typed</em>, so <code>columns</code> is now a map of name → JSON type.</strong> Comparing a
+  string against a numeric column emitted <code>numeric = text</code> and raised <code>22P02</code> <em>at query time</em> —
+  a 500 where MongoDB simply matches nothing. With names alone the type is unknown, so every
+  comparison takes the (correct, unaccelerated) jsonb path; <code>specs/generated/postgres/index.json</code>
+  now carries <code>columnTypes</code>, and passing it is what turns the accelerator on.</li>
+<li><strong>Mixed-type <code>in</code>/<code>nin</code> lists get one arm per type.</strong> <code>{$in: [1, 'a']}</code> is two questions; a
+  single cast has to pick one and silently loses every value of the other.</li>
+<li><strong>A null operand is its own type bracket.</strong> Measured against mongod 7.0.43 over
+  <code>{null, missing, 0, 'a', false}</code>: <code>$eq</code>, <code>$lte</code> and <code>$gte</code> against null all match null <strong>and</strong>
+  missing, while <code>$lt</code> and <code>$gt</code> match <strong>nothing</strong> — there is no value above or below null inside
+  its own bracket. Without this handling the ordering operators emit the literal string
+  <code>undefined</code> into the SQL (114 of 3000 three-arm fixtures fail).</li>
+</ul>
+<h3 id="861-non-vacuity-of-the-cross-type-differential">8.6.1 Non-vacuity of the cross-type differential<a class="headerlink" href="#861-non-vacuity-of-the-cross-type-differential" title="Permanent link">&para;</a></h3>
+<p>Without cross-type fixtures the differential cannot see the guard: every fixture <code>mkDocs</code> builds
+stores each field's own type, so removing the guard changes no result. With <code>--cross-type</code> (both halves: a document of the wrong type, and a <em>query</em> of the wrong type,
+which are opposite sides of the bracket):</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;">mismatches over 5000</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>guard removed</td>
+<td style="text-align: right;"><strong>398 unclassified, plus hard cast errors</strong> — readings like <code>mongo 0 / sql 140</code></td>
+</tr>
+<tr>
+<td>guard in place</td>
+<td style="text-align: right;"><strong>0</strong></td>
+</tr>
+</tbody>
+</table>
+<p>A generated column declared with a bare cast fails at <em>insert</em>: one document holding <code>sgv</code> as the
+string <code>"120"</code> kills the <code>INSERT</code> with <code>22P02</code>. That is exactly the argument <code>postgres_emit.py</code> makes
+for emitting a <code>CASE</code> guard — on a real deployment it is an ingest outage caused by a
+data-quality problem.</p>
+<h3 id="862-the-seam-now-matches-real-mongodb-and-the-oracle-is-what-is-wrong">8.6.2 The seam now matches real MongoDB, and the oracle is what is wrong<a class="headerlink" href="#862-the-seam-now-matches-real-mongodb-and-the-oracle-is-what-is-wrong" title="Permanent link">&para;</a></h3>
+<p><code>tools/qc/three-arm.js</code> against a live <strong>mongod 7.0.43</strong>, 3000 fixtures, cross-type injection on,
+regex arm on:</p>
+<table>
+<thead>
+<tr>
+<th>comparison</th>
+<th>result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>mongod vs postgres</strong></td>
+<td><strong>3000/3000 — 100 %</strong></td>
+</tr>
+<tr>
+<td>mingo vs mongod</td>
+<td>2977/3000 — <strong>23 disagreements</strong></td>
+</tr>
+<tr>
+<td>mingo vs postgres</td>
+<td>2977/3000 — 23 disagreements</td>
+</tr>
+</tbody>
+</table>
+<p>(Without the §8.6 guard, {3A} measured mongod-vs-postgres at 96.15 % on cross-type values.) The
+seam's claim holds exactly against the database self-hosters actually run.</p>
+<p><strong>Every remaining disagreement is the oracle's</strong>, and the defect is pinned to one construct:
+<strong>mingo's <code>$lte</code>/<code>$gte</code> against a null operand does not match a missing field; mongod's does.</strong>
+mingo agrees with mongod on <code>$eq</code>, <code>$ne</code>, <code>$lt</code> and <code>$gt</code> null. With T2.3's <code>re</code> finding (where
+the oracle <em>masked</em> a real divergence; here it <em>manufactures</em> one) the conclusion is the same: <strong><code>mingo ≡ postgres</code> is a claim about the AST,
+never about MongoDB.</strong> <code>validate.js</code> now declares these fixtures oracle-declined at the point of
+use, the way it already declares the <code>x</code> flag, rather than counting them against the adapter.</p>
+<h3 id="87-two-capability-gaps-t21-surfaced">8.7 Two capability gaps T2.1 surfaced<a class="headerlink" href="#87-two-capability-gaps-t21-surfaced" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Multikey is not expressible as a generated column.</strong> <code>treatments.boluscalc.foods</code> is an
+  array and the live query is <code>?find[boluscalc.foods._id]=…</code> (<code>lib/report/reportclient.js:294</code>).
+  <code>doc #&gt;&gt; '{boluscalc,foods,_id}'</code> is NULL on an array, so no column can reproduce MongoDB's
+  multikey semantics. T2.1 emitted <strong>nothing</strong> rather than an approximation that would have
+  looked right and answered wrong. This is why the emitted index count is 30 secondary + 4
+  primary = <strong>34</strong>, not {M} §6.7's 41: 6 of the difference is food and activity, which have no
+  model yet (T2.2), and the remaining 1 is this. §6.7 counts six collections; T2.1 had four
+  models.</li>
+<li><strong>Seven indexed field paths no model declares</strong>: <code>NSCLIENT_ID</code> (treatments, devicestatus,
+  profile), <code>date</code> (treatments, devicestatus), <code>created_at</code> (entries), plus the multikey one.
+  They get no column and appear in the index as a jsonb expression carrying an inline
+  <code>UNDECLARED</code> note, so the index stays faithful to the Mongo declaration and the gap stays
+  visible. <code>NSCLIENT_ID</code> is a real field the websocket write path uses
+  (<code>lib/server/websocket.js:538</code>) — a T2.2 input, not a T2.1 defect.</li>
+</ul>
+<h3 id="88-date-like-columns-are-text-and-cannot-be-anything-else">8.8 Date-like columns are <code>text</code>, and cannot be anything else<a class="headerlink" href="#88-date-like-columns-are-text-and-cannot-be-anything-else" title="Permanent link">&para;</a></h3>
+<p><code>created_at</code>, <code>startDate</code>, <code>sysTime</code> and <code>dateString</code> are declared <code>string</code> + <code>date-time</code>.
+Range predicates on them are therefore <strong>lexicographic</strong>, which is chronological only while
+every writer emits a UTC-normalised ISO string of constant width. <code>timestamptz</code> would fix the
+ordering and break <code>eq</code> — <strong>and its cast is not immutable, so it cannot be a generated column at
+all.</strong> Left as text and flagged rather than quietly made wrong.</p>
+<h2 id="9-the-transaction-scope">9. The transaction scope<a class="headerlink" href="#9-the-transaction-scope" title="Permanent link">&para;</a></h2>
+<p>{S} §6 flagged that the interface had none and that D3's RLS binding is per-transaction.
+Confirmed: <code>set_config('app.current_tenant_id', …, is_local =&gt; true)</code> is transaction-scoped, so
+<strong>every tenant-bound operation must run inside a transaction that has been bound.</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nx">store</span><span class="p">.</span><span class="nx">withTenant</span><span class="p">(</span><span class="nx">tenantId</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">(</span><span class="nx">tx</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">…</span><span class="w"> </span><span class="p">})</span><span class="w">   </span><span class="c1">// NEW</span>
+</code></pre></div>
+<p><strong>Three findings that make this more than a signature change:</strong></p>
+<ol>
+<li><strong>The safety property differs by backend, and only one of them fails closed.</strong> On Postgres an
+   unbound transaction returns <strong>0 rows</strong> ({DB} §8.2) — forgetting the scope is visible and
+   harmless. On MongoDB there is no equivalent: an unbound context queries without a tenant
+   predicate and <strong>returns everything</strong> ({DB} §7.1). <strong>The MongoDB adapter must therefore assert
+   an explicit binding and throw</strong>, to reproduce by hand what RLS gives Postgres for free.</li>
+<li><strong>MongoDB transactions require a replica set.</strong> A standalone <code>mongod</code> — which many
+   self-hosters run — does not support them, and <code>grep</code> confirms the codebase uses none today.
+   Under D4 the Mongo adapter must therefore degrade to "no transaction, assert the binding",
+   and the interface cannot promise atomicity across operations on both backends.</li>
+<li><strong>Single-tenant has no tenant.</strong> Under D4 <code>withTenant</code> must have a legitimate
+   single-tenant mode rather than a fake tenant id, or {M} §11's "never a degraded mode" is
+   violated on the first line of the adapter.</li>
+</ol>
+<h3 id="91-as-built--2026-09-14">9.1 As built — 2026-09-14<a class="headerlink" href="#91-as-built--2026-09-14" title="Permanent link">&para;</a></h3>
+<p>Built after T1.2, which had left <strong>one choke point</strong> — the <code>MongoCollection</code> delegations — so
+the change touched three files.</p>
+<p><code>lib/storage/tenant-scope.js</code>, with <code>withTenant</code> exposed on the store (<code>lib/storage/mongo-storage.js</code>)
+and <code>requireTenant</code> asserted in <code>lib/api3/storage/mongoCollection/index.js</code>. All three findings
+are implemented rather than deferred:</p>
+<ol>
+<li><strong>The assertion.</strong> Every document-touching delegation calls <code>requireTenant(&lt;collection&gt;.&lt;op&gt;)</code>
+   first. <strong>Non-vacuity checked</strong>: removing the call makes the unbound-multitenant test fail
+   with the query reaching the driver — which is the whole exposure, one tenant's query
+   returning another's documents.</li>
+<li><strong>No transaction on MongoDB.</strong> <code>withTenant</code> binds and does not open one. The interface
+   therefore <strong>does not promise atomicity across operations</strong>, and that is stated at the method,
+   not left to be discovered from a partial write.</li>
+<li><strong><code>SINGLE_TENANT</code> is a <code>Symbol</code></strong>, not a reserved string. A Symbol cannot compare equal to a
+   tenant id, be serialised into a log line, or be concatenated into a query — so the
+   single-tenant binding cannot leak into a multitenant code path by accident. Binding a tenant
+   id under <code>'single'</code> is refused, and <code>SINGLE_TENANT</code> under <code>'multi'</code> is refused.</li>
+</ol>
+<p><strong>AsyncLocalStorage, not a threaded handle</strong>, and the <em>failure mode</em> is the argument rather than
+the diff size. If the async chain breaks and the scope is lost, the caller has <strong>no</strong> binding —
+which throws here and returns zero rows under RLS. A lost scope cannot silently become a
+<em>different</em> tenant's binding, because there is nothing to fall back to. It fails closed in both
+directions. Rebinding a different tenant inside an existing scope is refused outright: crossing
+a tenant boundary is an admin-plane operation and belongs on its own request.</p>
+<p><strong>What this is not.</strong> The only caller of <code>setTenancyMode('multi')</code> is T3.1's <code>fromEnv</code> under
+<code>TENANCY_MODE=multi</code>, on the same unpublished branch chain, so the assertion is <strong>inert in every
+deployment that exists</strong>. It is the scope T2.5 needed; it is not tenancy.</p>
+<p>14 tests; the suite is <strong>2229 passing, 1 pending, 0 failing</strong>, lint clean.</p>
+<h2 id="7-sequencing">7. Sequencing<a class="headerlink" href="#7-sequencing" title="Permanent link">&para;</a></h2>
+<p>The tiering in §2 sets the order. Status as of the seam tip <code>81a1f6ce</code>; the queue is
+authoritative for item state.</p>
+<ol>
+<li><strong>The filter AST</strong> — built and validated (§8). Owed: write down the allowed regex subset.</li>
+<li><strong>The transaction scope</strong> — built (§9.1).</li>
+<li><strong>Close T1's two leaks</strong> — <code>getLastModified</code> now routes through <code>findMany</code> (§10.1); whether
+   <code>self.col</code> is private on the seam tip is not recorded here and should be checked there.</li>
+<li><strong>Convert T2's 40 v1 sites</strong> behind the finished interface — done in T1.2 except
+   <code>profile.list_query</code> (§10.6).</li>
+<li><strong>Aggregation</strong> (§4.3) — resolved as <code>count(ast)</code>.</li>
+<li><strong>Convert T3's socket path</strong> — converted; dedup unification filed separately (§4.4).</li>
+</ol>
+<p><strong>T0's 15 sites need no work at all</strong>, and T1's 14 are mostly already correct — which is the
+practical headline: <strong>the conversion is ~55 sites, not 85.</strong></p>
+<h2 id="10-as-built--what-t12-actually-delivered-and-where-it-diverged-from-41">10. As built — what T1.2 actually delivered, and where it diverged from §4.1<a class="headerlink" href="#10-as-built--what-t12-actually-delivered-and-where-it-diverged-from-41" title="Permanent link">&para;</a></h2>
+<p>The delivered interface differs from §4.1 in four places. §4.1 is kept as proposed so the reason
+for each deviation stays readable.</p>
+<h3 id="101-the-delivered-surface">10.1 The delivered surface<a class="headerlink" href="#101-the-delivered-surface" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1">// ---- reads</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nx">findOne</span><span class="p">(</span><span class="nx">identifier</span><span class="p">,</span><span class="w"> </span><span class="nx">projection</span><span class="o">?</span><span class="p">,</span><span class="w"> </span><span class="nx">options</span><span class="o">?</span><span class="p">)</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="nx">findOneFilter</span><span class="p">(</span><span class="nx">filter</span><span class="p">,</span><span class="w"> </span><span class="nx">projection</span><span class="o">?</span><span class="p">,</span><span class="w"> </span><span class="nx">options</span><span class="o">?</span><span class="p">)</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="nx">findMany</span><span class="p">({</span><span class="w"> </span><span class="nx">filter</span><span class="p">,</span><span class="w"> </span><span class="nx">sort</span><span class="p">,</span><span class="w"> </span><span class="nx">limit</span><span class="p">,</span><span class="w"> </span><span class="nx">skip</span><span class="p">,</span><span class="w"> </span><span class="nx">projection</span><span class="p">,</span><span class="w"> </span><span class="nx">options</span><span class="w"> </span><span class="p">})</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="nx">findFiltered</span><span class="p">(</span><span class="nx">ast</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">sort</span><span class="p">,</span><span class="w"> </span><span class="nx">limit</span><span class="p">,</span><span class="w"> </span><span class="nx">skip</span><span class="p">,</span><span class="w"> </span><span class="nx">projection</span><span class="p">,</span><span class="w"> </span><span class="nx">readOptions</span><span class="p">,</span><span class="w"> </span><span class="nx">options</span><span class="w"> </span><span class="p">})</span><span class="w">   </span><span class="c1">// NEW</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="nx">count</span><span class="p">(</span><span class="nx">ast</span><span class="p">)</span><span class="w">                                                                   </span><span class="c1">// NEW</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="nx">getLastModified</span><span class="p">(</span><span class="nx">fieldName</span><span class="p">)</span><span class="w">                    </span><span class="c1">// now routed through findMany</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="c1">// ---- writes</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="nx">insertOne</span><span class="p">(</span><span class="nx">doc</span><span class="p">,</span><span class="w"> </span><span class="nx">options</span><span class="o">?</span><span class="p">)</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="nx">insertMany</span><span class="p">(</span><span class="nx">docs</span><span class="p">,</span><span class="w"> </span><span class="nx">options</span><span class="o">?</span><span class="p">)</span><span class="w">                                                   </span><span class="c1">// NEW</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="nx">replaceOne</span><span class="p">(</span><span class="nx">identifier</span><span class="p">,</span><span class="w"> </span><span class="nx">doc</span><span class="p">)</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="nx">updateOne</span><span class="p">(</span><span class="nx">identifier</span><span class="p">,</span><span class="w"> </span><span class="nx">setFields</span><span class="p">)</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="nx">updateMany</span><span class="p">(</span><span class="nx">ast</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">set</span><span class="p">,</span><span class="w"> </span><span class="nx">unset</span><span class="w"> </span><span class="p">})</span><span class="w">                                              </span><span class="c1">// NEW</span>
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="nx">replaceFiltered</span><span class="p">(</span><span class="nx">ast</span><span class="p">,</span><span class="w"> </span><span class="nx">doc</span><span class="p">)</span><span class="w">                     </span><span class="c1">// NEW — replace in place, NO upsert</span>
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="nx">deleteOne</span><span class="p">(</span><span class="nx">identifier</span><span class="p">)</span>
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="nx">deleteMany</span><span class="p">(</span><span class="nx">ast</span><span class="p">)</span><span class="w">                                                              </span><span class="c1">// NEW</span>
+<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a><span class="nx">deleteManyOr</span><span class="p">(</span><span class="nx">filterDef</span><span class="p">)</span><span class="w">                       </span><span class="c1">// v3's existing OR-of-clauses form, kept</span>
+<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a><span class="nx">bulkUpsert</span><span class="p">(</span><span class="nx">ops</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">mode</span><span class="p">,</span><span class="w"> </span><span class="nx">ordered</span><span class="w"> </span><span class="p">})</span><span class="w">                                           </span><span class="c1">// NEW</span>
+</code></pre></div>
+<p><code>aggregate()</code> is absent, as §4.3 argued it should be.</p>
+<h3 id="102-deviation-1--bulkupsertops-mode-not-bulkupsertdocs-matchon">10.2 Deviation 1 — <code>bulkUpsert(ops, {mode})</code>, not <code>bulkUpsert(docs, {matchOn})</code><a class="headerlink" href="#102-deviation-1--bulkupsertops-mode-not-bulkupsertdocs-matchon" title="Permanent link">&para;</a></h3>
+<p>§4.1 assumed one match rule for a batch. The call sites do not share one: each operation
+carries <strong>its own filter</strong>, and more importantly <code>entries</code> upserts with <code>$set</code> (stored fields
+absent from the incoming document survive) while <code>treatments</code>, <code>food</code> and <code>activity</code> replace
+wholesale. That is a real semantic difference on a write path, so <code>mode: 'merge' | 'replace'</code>
+is explicit and has no safe default — defaulting it away would silently change behaviour for
+whichever group lost.</p>
+<h3 id="103-deviation-2--updatemanyast-set-unset-not-a-null-sentinel-patch">10.3 Deviation 2 — <code>updateMany(ast, {set, unset})</code>, not a null-sentinel patch<a class="headerlink" href="#103-deviation-2--updatemanyast-set-unset-not-a-null-sentinel-patch" title="Permanent link">&para;</a></h3>
+<p>§4.1 rule 3 proposed that <code>$unset</code> become "an explicit null-or-sentinel convention in the
+patch". Rejected once the caller was read: a sentinel makes "set this field to null" and
+"remove this field" the same wire shape, and <code>websocket.js</code> genuinely does both. Two named maps
+cost nothing and cannot be confused.</p>
+<p>The method also <strong>validates field names</strong>, refusing any that begins with <code>$</code>. On the socket
+path those names arrive straight off the wire and go into <code>$set</code>/<code>$unset</code>, which is precisely
+where a field name becomes an update <em>operator</em>. MongoDB rejects most of these itself; making
+it structural is the same argument as the AST's operator allowlist.</p>
+<h3 id="104-deviation-3--deletemany-returns-three-fields-and-the-wire-is-shaped-elsewhere">10.4 Deviation 3 — <code>deleteMany</code> returns three fields, and the wire is shaped elsewhere<a class="headerlink" href="#104-deviation-3--deletemany-returns-three-fields-and-the-wire-is-shaped-elsewhere" title="Permanent link">&para;</a></h3>
+<p>It returns <code>{ deleted, deletedCount, acknowledged }</code>. <code>deleted</code> matches <code>deleteManyOr</code>'s
+existing contract; <code>deletedCount</code> and <code>acknowledged</code> are what the v1 delete endpoints put on
+the wire, because <code>normalizeDeleteStatus</code> copies the whole object into the response body.</p>
+<p>Three modules independently re-synthesised <code>acknowledged: true</code> before this was centralised —
+which would misreport an unacknowledged write. The driver's value is passed through instead,
+and the internal <code>deleted</code> alias is stripped in <code>normalizeDeleteStatus</code>, the single choke point
+for all four v1 delete endpoints.</p>
+<h3 id="105-one-change-to-the-ast-itself-re-carries-options">10.5 One change to the AST itself: <code>re</code> carries <code>options</code><a class="headerlink" href="#105-one-change-to-the-ast-itself-re-carries-options" title="Permanent link">&para;</a></h3>
+<p>A <code>fromMongo</code> that reads clauses with <code>Object.keys</code> loses a native <code>RegExp</code> <strong>silently</strong> —
+<code>Object.keys(/x/i)</code> is <code>[]</code>, so the clause produces no nodes and vanishes. <code>lib/server/query.js</code>'s
+<code>parseRegEx</code> returns a native RegExp for the treatments <code>notes</code>/<code>eventType</code>/<code>enteredBy</code> filters,
+so on the seam branch before this change a request for boluses returned every treatment.</p>
+<p>Flags now live on the node (<code>{op: 're', field, value, options: 'i'}</code>) rather than inline in the
+pattern. Two reasons, and the second is the one that matters for Phase 2:</p>
+<ol>
+<li>flags must not consume the <code>RE_MAX_LEN</code> budget, which is the ReDoS bound;</li>
+<li>the adapters spell them differently — MongoDB has <code>$options</code>, while PostgreSQL has a
+   case-insensitive <strong>operator</strong> (<code>~*</code>) and no inline <code>i</code> at all. A flag smuggled into the
+   pattern string would have made the SQL adapter's job incorrect rather than merely awkward.</li>
+</ol>
+<p>Only the flags MongoDB honours (<code>imsx</code>) are kept; <code>g</code>/<code>y</code>/<code>u</code> say nothing about whether a single
+document matches, and the driver drops them too. Verified against live MongoDB 7 that
+<code>/Bolus/i</code>, <code>/Bolus/gi</code> and <code>/change/ims</code> select the same documents through the seam as they do
+natively.</p>
+<h3 id="106-what-is-still-on-the-raw-collection">10.6 What is still on the raw collection<a class="headerlink" href="#106-what-is-still-on-the-raw-collection" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>site</th>
+<th>reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>profile.list_query</code></td>
+<td>accepts <code>$expr</code> today, with a test asserting it. A query-surface decision (D8/T2.4), not a conversion detail. The T2.4 census found <strong>no client in the corpus sends <code>$expr</code></strong>, so rejecting it is a security fix rather than a compatibility break — but it is still a deliberate behaviour change and belongs with the allowlist.</td>
+</tr>
+<tr>
+<td>each module's <code>api()</code> / collection accessor</td>
+<td>bootevent still needs raw collections for <code>ensureIndexes</code>. Removing these is the <em>last</em> step, once index creation moves behind <code>ensureSchema</code>.</td>
+</tr>
+<tr>
+<td><code>lib/server/bootevent.js:145-146</code></td>
+<td>a hardcoded <code>require('../storage/mongo-storage')</code> under a <code>//TODO assume mongo for now</code> comment — no way to choose a backend. Replaced on the seam branch by T2.0 (<code>lib/server/storage-backends.js</code>, selection by URI scheme); see the plan's Phase 1.</td>
+</tr>
+</tbody>
+</table>
+<p><code>websocket.js</code> <strong>is</strong> converted. Its dedup logic remains knowingly inconsistent with
+<code>lib/server/treatments.js</code> (§4.4) — the storage calls moved, the logic did not, and unifying it
+is filed separately as a behaviour change.</p>
+<h3 id="107-deviation-4--replacefiltered-found-by-converting-the-socket-path">10.7 Deviation 4 — <code>replaceFiltered</code>, found by converting the socket path<a class="headerlink" href="#107-deviation-4--replacefiltered-found-by-converting-the-socket-path" title="Permanent link">&para;</a></h3>
+<p>Not in the proposal at all. The socket path's profile dedup is a <strong>replace-in-place that must
+not insert</strong>, and every route §4.1 offered was an upsert: <code>replaceOne</code> matches on a v3
+identifier <em>and</em> upserts, and <code>bulkUpsert</code> is upsert by definition. Either would resurrect a
+profile deleted between the lookup and the write — a user removes a profile, a queued socket
+message recreates it.</p>
+<p>It returns <code>matchedCount</code> so a caller can distinguish "replaced" from "was already gone". That
+distinction is the reason the method exists, so it is tested directly rather than inferred.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

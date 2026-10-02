@@ -1,0 +1,5789 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/traceability/connectors-gaps.html">
+      
+      
+        <link rel="prev" href="cgm-sources-requirements.html">
+      
+      
+        <link rel="next" href="connectors-requirements.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Connectors Gaps - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#connectors-gaps" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Connectors Gaps
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../docs/00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../docs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    traceability/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="aid-algorithms-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Aid Algorithms Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="aid-algorithms-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Aid Algorithms Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-remote-monitor-docs-inventory.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Documentation Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-sources-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cgm Sources Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-sources-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cgm Sources Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Connectors Gaps
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="connectors-gaps.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Connectors Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#gap-connect-001-v1-api-only-for-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CONNECT-001: v1 API Only for Output
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gap-connect-002-inconsistent-source-data-coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CONNECT-002: Inconsistent Source Data Coverage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gap-connect-003-no-client-side-deduplication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CONNECT-003: No Client-Side Deduplication
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#carb-absorption-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Carb Absorption Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Carb Absorption Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-nocturne-001-v4-endpoints-are-nocturne-specific" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-NOCTURNE-001: V4 endpoints are Nocturne-specific
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-nocturne-002-rust-oref-implementation-may-diverge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-NOCTURNE-002: Rust oref implementation may diverge
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-nocturne-003-signalr-to-socketio-bridge-adds-latency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-NOCTURNE-003: SignalR to Socket.IO bridge adds latency
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-bridge-001-missing-clients-event-in-bridge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-BRIDGE-001: Missing clients Event in Bridge
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-bridge-002-no-compression-in-bridge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-BRIDGE-002: No Compression in Bridge
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-tconnect-001-no-api-v3-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TCONNECT-001: No API v3 Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-tconnect-002-limited-control-iq-algorithm-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TCONNECT-002: Limited Control-IQ Algorithm Data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-tconnect-003-no-real-time-sync" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TCONNECT-003: No Real-Time Sync
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#librelink-up-bridge-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LibreLink Up Bridge Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="LibreLink Up Bridge Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-test-001-no-cross-project-test-harness-for-swift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TEST-001: No cross-project test harness for Swift
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-test-002-loopkit-packageswift-incomplete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TEST-002: LoopKit Package.swift incomplete
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-test-003-loop-uses-outdated-travis-ci" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TEST-003: Loop uses outdated Travis CI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-test-004-no-shared-test-vectors-for-algorithm-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TEST-004: No shared test vectors for algorithm validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-test-005-no-blecgm-mock-infrastructure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TEST-005: No BLE/CGM mock infrastructure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nightscout-connect-design-review-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        nightscout-connect Design Review Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="nightscout-connect Design Review Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-connect-004-no-test-suite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CONNECT-004: No Test Suite
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-connect-005-no-typescript-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CONNECT-005: No TypeScript Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-connect-006-brittle-adapter-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CONNECT-006: Brittle Adapter Pattern
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-tconnect-004-no-trend-direction-from-tconnect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TCONNECT-004: No Trend Direction from t:connect
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#share2nightscout-bridge-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        share2nightscout-bridge Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="share2nightscout-bridge Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-share-001-no-nightscout-api-v3-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-SHARE-001: No Nightscout API v3 Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-share-002-no-backfillgap-detection-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-SHARE-002: No Backfill/Gap Detection Logic
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-share-003-hardcoded-application-id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-SHARE-003: Hardcoded Application ID
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nightscout-librelink-up-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        nightscout-librelink-up Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="nightscout-librelink-up Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-librelink-001-no-nightscout-api-v3-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-LIBRELINK-001: No Nightscout API v3 Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-librelink-002-no-historical-backfill" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-LIBRELINK-002: No Historical Backfill
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-librelink-003-trend-arrow-limited-to-5-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-LIBRELINK-003: Trend Arrow Limited to 5 Values
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loopfollow-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LoopFollow Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="LoopFollow Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-loopfollow-001-api-v1-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-LOOPFOLLOW-001: API v1 Only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-loopfollow-002-no-websocketserver-sent-events" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-LOOPFOLLOW-002: No WebSocket/Server-Sent Events
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-loopfollow-003-treatment-eventtype-hardcoding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-LOOPFOLLOW-003: Treatment eventType Hardcoding
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loopcaregiver-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LoopCaregiver Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="LoopCaregiver Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-loopcaregiver-001-loop-only-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-LOOPCAREGIVER-001: Loop-Only Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-loopcaregiver-002-experimental-v2-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-LOOPCAREGIVER-002: Experimental V2 Commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-loopcaregiver-003-no-standard-command-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-LOOPCAREGIVER-003: No Standard Command API
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nocturne-algorithm-conformance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nocturne Algorithm Conformance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Nocturne Algorithm Conformance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-oref-conformance-001-rust-oref-peak-time-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-OREF-CONFORMANCE-001: Rust oref Peak Time Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-oref-conformance-002-rust-oref-small-dose-classification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-OREF-CONFORMANCE-002: Rust oref Small Dose Classification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-oref-conformance-003-verified-equivalent-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-OREF-CONFORMANCE-003: VERIFIED EQUIVALENT ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nocturne-connector-coordination-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nocturne Connector Coordination Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Nocturne Connector Coordination Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-connect-010-no-connector-poll-staggering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CONNECT-010: No Connector Poll Staggering
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-connect-011-no-explicit-loop-back-prevention" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CONNECT-011: No Explicit Loop-Back Prevention
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-connect-012-cross-connector-deduplication-delegated-to-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CONNECT-012: Cross-Connector Deduplication Delegated to Server
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-connect-013-dexcom-share-authentication-errors-are-treated-as-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CONNECT-013: Dexcom Share Authentication Errors Are Treated as Data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-connect-014-glooko-eu-authentication-and-data-endpoints-have-drifted" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CONNECT-014: Glooko EU Authentication and Data Endpoints Have Drifted
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-connect-015-nightscout-source-v3-support-is-not-release-ready" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CONNECT-015: Nightscout Source V3 Support Is Not Release-Ready
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nodejs--dependency-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Node.js &amp; Dependency Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Node.js &amp; Dependency Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-node-001-eol-nodejs-versions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-NODE-001: EOL Node.js Versions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-node-002-deprecated-request-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-NODE-002: Deprecated request Package
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-node-003-missing-engines-field" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-NODE-003: Missing engines Field
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification-tooling-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification Tooling Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Verification Tooling Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-verify-001-no-ios-framework-resolution-on-linux" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-VERIFY-001: No iOS Framework Resolution on Linux
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-verify-002-no-cross-language-algorithm-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-VERIFY-002: No Cross-Language Algorithm Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-verify-003-stale-conformance-test-vectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-VERIFY-003: Stale Conformance Test Vectors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-verify-004-no-unified-accuracy-dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-VERIFY-004: No Unified Accuracy Dashboard
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#apple-watch-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Apple Watch Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Apple Watch Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-watch-001-loop-uses-deprecated-clockkit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-WATCH-001: Loop Uses Deprecated ClockKit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-watch-002-trio-complication-is-icon-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-WATCH-002: Trio Complication is Icon-Only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-watch-003-loopcaregiver-has-no-complications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-WATCH-003: LoopCaregiver Has No Complications
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-watch-004-no-shared-watch-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-WATCH-004: No Shared Watch Components
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#healthkit-integration-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HealthKit Integration Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="HealthKit Integration Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-hk-001-no-cross-app-deduplication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-HK-001: No Cross-App Deduplication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-hk-002-no-user-guidance-on-multi-app-conflicts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-HK-002: No User Guidance on Multi-App Conflicts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-hk-003-inconsistent-metadata-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-HK-003: Inconsistent Metadata Keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#widgetkit-standardization-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WidgetKit Standardization Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="WidgetKit Standardization Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-widget-001-no-shared-widget-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-WIDGET-001: No Shared Widget Components
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-widget-002-loop-has-no-home-screen-widgets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-WIDGET-002: Loop Has No Home Screen Widgets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-widget-003-trio-has-no-home-screen-widgets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-WIDGET-003: Trio Has No Home Screen Widgets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-widget-004-inconsistent-color-schemes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-WIDGET-004: Inconsistent Color Schemes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#distribution-infrastructure-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Distribution Infrastructure Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Distribution Infrastructure Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-dist-001-no-standardized-build-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-DIST-001: No Standardized Build Template
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-dist-002-diablenightguard-no-browser-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-DIST-002: DiaBLE/Nightguard No Browser Build
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-dist-003-no-unified-build-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-DIST-003: No Unified Build Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ble-cgm-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BLE CGM Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BLE CGM Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-ble-001-no-shared-ble-constants-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-BLE-001: No Shared BLE Constants Package
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-ble-002-no-standard-glucose-data-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-BLE-002: No Standard Glucose Data Model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-ble-003-loopcgmblekit-missing-g7-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-BLE-003: Loop/CGMBLEKit Missing G7 Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-ble-004-libre-3-support-incomplete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-BLE-004: Libre 3 Support Incomplete
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-ble-005-bridge-support-not-in-loopkit-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-BLE-005: Bridge Support Not in LoopKit Pattern
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-tidepool-001-no-ios-only-tidepool-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TIDEPOOL-001: No iOS-Only Tidepool Path
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-tidepool-002-legacy-auth-in-android-apps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TIDEPOOL-002: Legacy Auth in Android Apps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-tidepool-003-no-nightscout--tidepool-bidirectional-sync" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TIDEPOOL-003: No Nightscout ↔ Tidepool Bidirectional Sync
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-tidepool-004-dosing-decision-upload-inconsistency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TIDEPOOL-004: Dosing Decision Upload Inconsistency
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="connectors-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Connectors Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cross-validation-log.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-Validation Assessment Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="gap-discovery.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gap discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ml-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ML Pipeline Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-api-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Api Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-api-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Api Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="orphan-artifact-priorities.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Orphan Artifact Priority Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="pumps-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pumps Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="pumps-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pumps Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sync-identity-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sync Identity Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sync-identity-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sync Identity Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="telemetry-observability-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry and Observability Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="telemetry-observability-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry and Observability Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tool-validation-2026-01-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tool validation 2026 01 23
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="traceability-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requirements Traceability Matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="treatments-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Treatments Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="treatments-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Treatments Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="domain-matrices/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    domain-matrices/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="stpa/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    stpa/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#gap-connect-001-v1-api-only-for-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CONNECT-001: v1 API Only for Output
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gap-connect-002-inconsistent-source-data-coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CONNECT-002: Inconsistent Source Data Coverage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gap-connect-003-no-client-side-deduplication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CONNECT-003: No Client-Side Deduplication
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#carb-absorption-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Carb Absorption Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Carb Absorption Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-nocturne-001-v4-endpoints-are-nocturne-specific" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-NOCTURNE-001: V4 endpoints are Nocturne-specific
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-nocturne-002-rust-oref-implementation-may-diverge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-NOCTURNE-002: Rust oref implementation may diverge
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-nocturne-003-signalr-to-socketio-bridge-adds-latency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-NOCTURNE-003: SignalR to Socket.IO bridge adds latency
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-bridge-001-missing-clients-event-in-bridge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-BRIDGE-001: Missing clients Event in Bridge
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-bridge-002-no-compression-in-bridge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-BRIDGE-002: No Compression in Bridge
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-tconnect-001-no-api-v3-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TCONNECT-001: No API v3 Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-tconnect-002-limited-control-iq-algorithm-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TCONNECT-002: Limited Control-IQ Algorithm Data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-tconnect-003-no-real-time-sync" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TCONNECT-003: No Real-Time Sync
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#librelink-up-bridge-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LibreLink Up Bridge Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="LibreLink Up Bridge Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-test-001-no-cross-project-test-harness-for-swift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TEST-001: No cross-project test harness for Swift
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-test-002-loopkit-packageswift-incomplete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TEST-002: LoopKit Package.swift incomplete
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-test-003-loop-uses-outdated-travis-ci" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TEST-003: Loop uses outdated Travis CI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-test-004-no-shared-test-vectors-for-algorithm-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TEST-004: No shared test vectors for algorithm validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-test-005-no-blecgm-mock-infrastructure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TEST-005: No BLE/CGM mock infrastructure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nightscout-connect-design-review-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        nightscout-connect Design Review Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="nightscout-connect Design Review Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-connect-004-no-test-suite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CONNECT-004: No Test Suite
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-connect-005-no-typescript-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CONNECT-005: No TypeScript Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-connect-006-brittle-adapter-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CONNECT-006: Brittle Adapter Pattern
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-tconnect-004-no-trend-direction-from-tconnect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TCONNECT-004: No Trend Direction from t:connect
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#share2nightscout-bridge-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        share2nightscout-bridge Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="share2nightscout-bridge Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-share-001-no-nightscout-api-v3-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-SHARE-001: No Nightscout API v3 Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-share-002-no-backfillgap-detection-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-SHARE-002: No Backfill/Gap Detection Logic
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-share-003-hardcoded-application-id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-SHARE-003: Hardcoded Application ID
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nightscout-librelink-up-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        nightscout-librelink-up Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="nightscout-librelink-up Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-librelink-001-no-nightscout-api-v3-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-LIBRELINK-001: No Nightscout API v3 Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-librelink-002-no-historical-backfill" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-LIBRELINK-002: No Historical Backfill
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-librelink-003-trend-arrow-limited-to-5-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-LIBRELINK-003: Trend Arrow Limited to 5 Values
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loopfollow-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LoopFollow Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="LoopFollow Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-loopfollow-001-api-v1-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-LOOPFOLLOW-001: API v1 Only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-loopfollow-002-no-websocketserver-sent-events" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-LOOPFOLLOW-002: No WebSocket/Server-Sent Events
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-loopfollow-003-treatment-eventtype-hardcoding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-LOOPFOLLOW-003: Treatment eventType Hardcoding
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loopcaregiver-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LoopCaregiver Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="LoopCaregiver Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-loopcaregiver-001-loop-only-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-LOOPCAREGIVER-001: Loop-Only Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-loopcaregiver-002-experimental-v2-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-LOOPCAREGIVER-002: Experimental V2 Commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-loopcaregiver-003-no-standard-command-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-LOOPCAREGIVER-003: No Standard Command API
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nocturne-algorithm-conformance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nocturne Algorithm Conformance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Nocturne Algorithm Conformance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-oref-conformance-001-rust-oref-peak-time-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-OREF-CONFORMANCE-001: Rust oref Peak Time Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-oref-conformance-002-rust-oref-small-dose-classification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-OREF-CONFORMANCE-002: Rust oref Small Dose Classification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-oref-conformance-003-verified-equivalent-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-OREF-CONFORMANCE-003: VERIFIED EQUIVALENT ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nocturne-connector-coordination-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nocturne Connector Coordination Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Nocturne Connector Coordination Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-connect-010-no-connector-poll-staggering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CONNECT-010: No Connector Poll Staggering
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-connect-011-no-explicit-loop-back-prevention" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CONNECT-011: No Explicit Loop-Back Prevention
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-connect-012-cross-connector-deduplication-delegated-to-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CONNECT-012: Cross-Connector Deduplication Delegated to Server
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-connect-013-dexcom-share-authentication-errors-are-treated-as-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CONNECT-013: Dexcom Share Authentication Errors Are Treated as Data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-connect-014-glooko-eu-authentication-and-data-endpoints-have-drifted" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CONNECT-014: Glooko EU Authentication and Data Endpoints Have Drifted
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-connect-015-nightscout-source-v3-support-is-not-release-ready" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CONNECT-015: Nightscout Source V3 Support Is Not Release-Ready
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nodejs--dependency-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Node.js &amp; Dependency Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Node.js &amp; Dependency Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-node-001-eol-nodejs-versions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-NODE-001: EOL Node.js Versions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-node-002-deprecated-request-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-NODE-002: Deprecated request Package
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-node-003-missing-engines-field" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-NODE-003: Missing engines Field
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification-tooling-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification Tooling Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Verification Tooling Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-verify-001-no-ios-framework-resolution-on-linux" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-VERIFY-001: No iOS Framework Resolution on Linux
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-verify-002-no-cross-language-algorithm-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-VERIFY-002: No Cross-Language Algorithm Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-verify-003-stale-conformance-test-vectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-VERIFY-003: Stale Conformance Test Vectors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-verify-004-no-unified-accuracy-dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-VERIFY-004: No Unified Accuracy Dashboard
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#apple-watch-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Apple Watch Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Apple Watch Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-watch-001-loop-uses-deprecated-clockkit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-WATCH-001: Loop Uses Deprecated ClockKit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-watch-002-trio-complication-is-icon-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-WATCH-002: Trio Complication is Icon-Only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-watch-003-loopcaregiver-has-no-complications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-WATCH-003: LoopCaregiver Has No Complications
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-watch-004-no-shared-watch-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-WATCH-004: No Shared Watch Components
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#healthkit-integration-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HealthKit Integration Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="HealthKit Integration Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-hk-001-no-cross-app-deduplication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-HK-001: No Cross-App Deduplication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-hk-002-no-user-guidance-on-multi-app-conflicts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-HK-002: No User Guidance on Multi-App Conflicts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-hk-003-inconsistent-metadata-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-HK-003: Inconsistent Metadata Keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#widgetkit-standardization-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WidgetKit Standardization Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="WidgetKit Standardization Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-widget-001-no-shared-widget-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-WIDGET-001: No Shared Widget Components
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-widget-002-loop-has-no-home-screen-widgets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-WIDGET-002: Loop Has No Home Screen Widgets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-widget-003-trio-has-no-home-screen-widgets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-WIDGET-003: Trio Has No Home Screen Widgets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-widget-004-inconsistent-color-schemes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-WIDGET-004: Inconsistent Color Schemes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#distribution-infrastructure-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Distribution Infrastructure Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Distribution Infrastructure Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-dist-001-no-standardized-build-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-DIST-001: No Standardized Build Template
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-dist-002-diablenightguard-no-browser-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-DIST-002: DiaBLE/Nightguard No Browser Build
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-dist-003-no-unified-build-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-DIST-003: No Unified Build Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ble-cgm-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BLE CGM Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BLE CGM Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-ble-001-no-shared-ble-constants-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-BLE-001: No Shared BLE Constants Package
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-ble-002-no-standard-glucose-data-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-BLE-002: No Standard Glucose Data Model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-ble-003-loopcgmblekit-missing-g7-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-BLE-003: Loop/CGMBLEKit Missing G7 Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-ble-004-libre-3-support-incomplete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-BLE-004: Libre 3 Support Incomplete
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-ble-005-bridge-support-not-in-loopkit-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-BLE-005: Bridge Support Not in LoopKit Pattern
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-tidepool-001-no-ios-only-tidepool-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TIDEPOOL-001: No iOS-Only Tidepool Path
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-tidepool-002-legacy-auth-in-android-apps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TIDEPOOL-002: Legacy Auth in Android Apps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-tidepool-003-no-nightscout--tidepool-bidirectional-sync" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TIDEPOOL-003: No Nightscout ↔ Tidepool Bidirectional Sync
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-tidepool-004-dosing-decision-upload-inconsistency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TIDEPOOL-004: Dosing Decision Upload Inconsistency
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="connectors-gaps">Connectors Gaps<a class="headerlink" href="#connectors-gaps" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-07-07 at <code>cf51d5d0</code>.</em></p>
+<p>Domain-specific gaps extracted from gaps.md.
+See <a href="gaps.html">gaps.md</a> for the index.</p>
+<hr />
+<h3 id="gap-connect-001-v1-api-only-for-output">GAP-CONNECT-001: v1 API Only for Output<a class="headerlink" href="#gap-connect-001-v1-api-only-for-output" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: The REST output driver only supports Nightscout API v1, missing v3 UPSERT and validation benefits.</p>
+<p><strong>Affected Systems</strong>: nightscout-connect</p>
+<p><strong>Impact</strong>: 
+- Duplicate records on re-runs (no UPSERT)
+- No identifier-based sync identity
+- No server-side validation</p>
+<p><strong>Source Code</strong>: <code>lib/outputs/nightscout.js:35,48</code></p>
+<p><strong>Assertions</strong>: <code>conformance/assertions/bridge-connector.yaml</code> (bridge-uses-v3-endpoint, bridge-includes-identifier, bridge-rerun-no-duplicates)</p>
+<p><strong>Remediation</strong>: Add v3 output driver using <code>/api/v3/entries</code> with identifier field.</p>
+<hr />
+<hr />
+<h3 id="gap-connect-002-inconsistent-source-data-coverage">GAP-CONNECT-002: Inconsistent Source Data Coverage<a class="headerlink" href="#gap-connect-002-inconsistent-source-data-coverage" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Only Minimed CareLink source uploads all 3 collections (entries, treatments, devicestatus). Other sources only upload 1 collection type.</p>
+<p><strong>Affected Systems</strong>: nightscout-connect</p>
+<p><strong>Coverage Matrix</strong>:
+| Source | entries | treatments | devicestatus |
+|--------|---------|------------|--------------|
+| Dexcom Share | ✅ | ❌ | ❌ |
+| LibreLinkUp | ✅ | ❌ | ❌ |
+| Nightscout | ✅ | ✅ | ✅ |
+| Glooko | ✅ | ✅ | ❌ |
+| Minimed | ✅ | ✅ | ✅ |</p>
+<p><strong>Impact</strong>: Incomplete data for most cloud platform sources.</p>
+<p><strong>Assertions</strong>: <code>conformance/assertions/bridge-connector.yaml</code> (transform-outputs-all-collections, transform-returns-standard-batch)</p>
+<p><strong>Remediation</strong>: Extend sources to fetch all available collection types from vendor APIs.</p>
+<p><strong>Status</strong>: Partially remediated for Nightscout source in <code>nightscout-connect</code> dev (<code>6dfc4f0</code>): entries, treatments, devicestatus, and profiles are fetched and output. Glooko now emits entries and treatments; remaining gaps apply to sources without devicestatus/profile coverage.</p>
+<hr />
+<hr />
+<h3 id="gap-connect-003-no-client-side-deduplication">GAP-CONNECT-003: No Client-Side Deduplication<a class="headerlink" href="#gap-connect-003-no-client-side-deduplication" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Output drivers have no sync identity generation or deduplication logic, relying entirely on server-side behavior.</p>
+<p><strong>Affected Systems</strong>: nightscout-connect</p>
+<p><strong>Impact</strong>:
+- Re-runs create duplicate records
+- No idempotent uploads
+- Server-side dedup varies by API version</p>
+<p><strong>Source Code</strong>: <code>lib/outputs/nightscout.js:77-79</code></p>
+<p><strong>Assertions</strong>: <code>conformance/assertions/bridge-connector.yaml</code> (uuid-deterministic-generation, uuid-matches-nightscout-format)</p>
+<p><strong>Remediation</strong>: Generate UUID v5 identifiers client-side matching Nightscout sync identity spec, use v3 UPSERT.</p>
+<hr />
+<h2 id="carb-absorption-gaps">Carb Absorption Gaps<a class="headerlink" href="#carb-absorption-gaps" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="gap-nocturne-001-v4-endpoints-are-nocturne-specific">GAP-NOCTURNE-001: V4 endpoints are Nocturne-specific<a class="headerlink" href="#gap-nocturne-001-v4-endpoints-are-nocturne-specific" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Cross-project API compatibility</p>
+<p><strong>Description</strong>: Nocturne introduces V4 API endpoints (<code>/api/v4/...</code>) that provide enhanced functionality not present in cgm-remote-monitor. These endpoints have no cross-project standard.</p>
+<p><strong>Affected Systems</strong>: Nocturne, any clients adopting V4</p>
+<p><strong>Source</strong>: <code>externals/nocturne/src/API/Nocturne.API/Controllers/V4/</code></p>
+<p><strong>Impact</strong>:
+- Clients using V4 endpoints won't work with cgm-remote-monitor
+- No interoperability guarantee for V4 features
+- Potential ecosystem fragmentation</p>
+<p><strong>Possible Solutions</strong>:
+1. Document V4 endpoints as optional extensions
+2. Propose V4 endpoints as Nightscout RFC
+3. Mark V4 as Nocturne-only, maintain V3 parity</p>
+<p><strong>Status</strong>: Partially remediated for Nightscout source in <code>nightscout-connect</code> dev (<code>6dfc4f0</code>): entries, treatments, devicestatus, and profiles are fetched and output. Glooko now emits entries and treatments; remaining gaps apply to sources without devicestatus/profile coverage.</p>
+<hr />
+<hr />
+<h3 id="gap-nocturne-002-rust-oref-implementation-may-diverge">GAP-NOCTURNE-002: Rust oref implementation may diverge<a class="headerlink" href="#gap-nocturne-002-rust-oref-implementation-may-diverge" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Algorithm consistency across implementations</p>
+<p><strong>Description</strong>: Nocturne contains a native Rust implementation of oref algorithms (<code>src/Core/oref/</code>). This independent implementation may produce different results than the JavaScript oref0/oref1.</p>
+<p><strong>Affected Systems</strong>: Nocturne, any system comparing algorithm outputs</p>
+<p><strong>Source</strong>: <code>externals/nocturne/src/Core/oref/Cargo.toml</code></p>
+<p><strong>Impact</strong>:
+- Potential calculation differences (IOB, COB, dosing)
+- Difficult to debug cross-implementation issues
+- No conformance test suite between implementations</p>
+<p><strong>Possible Solutions</strong>:
+1. Create cross-implementation test vectors
+2. Document any intentional algorithm differences
+3. Generate reference outputs for comparison</p>
+<p><strong>Status</strong>: Under discussion</p>
+<p><strong>Related Requirements</strong>: REQ-NOCTURNE-002</p>
+<hr />
+<hr />
+<h3 id="gap-nocturne-003-signalr-to-socketio-bridge-adds-latency">GAP-NOCTURNE-003: SignalR to Socket.IO bridge adds latency<a class="headerlink" href="#gap-nocturne-003-signalr-to-socketio-bridge-adds-latency" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Real-time data streaming</p>
+<p><strong>Description</strong>: Nocturne uses SignalR for real-time updates, with a bridge to Socket.IO for legacy client compatibility. This adds latency and complexity.</p>
+<p><strong>Affected Systems</strong>: Nocturne, Socket.IO clients (xDrip+, etc.)</p>
+<p><strong>Source</strong>: <code>externals/nocturne/src/Web/packages/bridge/</code></p>
+<p><strong>Impact</strong>:
+- Additional latency for real-time glucose updates
+- Extra failure point in data pipeline
+- Clients must support either SignalR or use bridge</p>
+<p><strong>Possible Solutions</strong>:
+1. Maintain parallel Socket.IO and SignalR endpoints
+2. Measure and document latency impact
+3. Provide native SignalR clients for major platforms</p>
+<p><strong>Status</strong>: Documented - <a href="../docs/10-domain/nocturne-signalr-bridge-analysis.html">Detailed analysis</a></p>
+<p><strong>Measured Impact</strong> (2026-01-30): 5-10ms additional latency per message - acceptable for CGM data.</p>
+<hr />
+<h3 id="gap-bridge-001-missing-clients-event-in-bridge">GAP-BRIDGE-001: Missing <code>clients</code> Event in Bridge<a class="headerlink" href="#gap-bridge-001-missing-clients-event-in-bridge" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Displaying connected client count</p>
+<p><strong>Description</strong>: Nocturne SignalR→Socket.IO bridge does not forward client count updates. cgm-remote-monitor emits <code>clients</code> event when watchers join/leave.</p>
+<p><strong>Affected Systems</strong>: Nocturne bridge, legacy web UIs</p>
+<p><strong>Source</strong>: <code>externals/nocturne/src/Web/packages/bridge/src/lib/socketio-server.ts</code></p>
+<p><strong>Impact</strong>:
+- Legacy web UI may show incorrect watcher count
+- No visibility into connected clients</p>
+<p><strong>Possible Solutions</strong>:
+1. Add <code>clients</code> event emission to bridge
+2. Use SignalR-native client count mechanism</p>
+<p><strong>Status</strong>: Documented</p>
+<hr />
+<h3 id="gap-bridge-002-no-compression-in-bridge">GAP-BRIDGE-002: No Compression in Bridge<a class="headerlink" href="#gap-bridge-002-no-compression-in-bridge" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: High-bandwidth real-time streaming</p>
+<p><strong>Description</strong>: Nocturne bridge does not enable Socket.IO compression. cgm-remote-monitor uses <code>.compress(true)</code> on broadcasts.</p>
+<p><strong>Affected Systems</strong>: Nocturne bridge, mobile clients on metered connections</p>
+<p><strong>Source</strong>: <code>externals/cgm-remote-monitor/lib/server/websocket.js:136</code> vs <code>externals/nocturne/src/Web/packages/bridge/</code></p>
+<p><strong>Impact</strong>:
+- Higher bandwidth usage
+- May affect mobile data consumption</p>
+<p><strong>Possible Solutions</strong>:
+1. Enable compression in Socket.IO server config
+2. Add <code>.compress(true)</code> to broadcast calls</p>
+<p><strong>Status</strong>: Documented</p>
+<hr />
+<h3 id="gap-tconnect-001-no-api-v3-support">GAP-TCONNECT-001: No API v3 Support<a class="headerlink" href="#gap-tconnect-001-no-api-v3-support" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Syncing Tandem pump data to Nightscout with deduplication</p>
+<p><strong>Description</strong>: tconnectsync uses Nightscout API v1 only. Does not leverage v3 deduplication or identifier fields.</p>
+<p><strong>Source</strong>: <code>externals/tconnectsync/tconnectsync/nightscout.py</code></p>
+<p><strong>Impact</strong>:
+- No automatic deduplication on Nightscout side
+- Re-syncs may create duplicate treatments
+- Missing <code>identifier</code> field for sync tracking</p>
+<p><strong>Remediation</strong>: Add v3 API support with proper identifiers.</p>
+<p><strong>Status</strong>: Enhancement candidate</p>
+<hr />
+<hr />
+<h3 id="gap-tconnect-002-limited-control-iq-algorithm-data">GAP-TCONNECT-002: Limited Control-IQ Algorithm Data<a class="headerlink" href="#gap-tconnect-002-limited-control-iq-algorithm-data" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Debugging Control-IQ decisions in Nightscout</p>
+<p><strong>Description</strong>: While pump events are synced, detailed Control-IQ algorithm decisions (predicted glucose, auto-basal adjustments) are not extracted or uploaded to devicestatus.</p>
+<p><strong>Source</strong>: <code>externals/tconnectsync/tconnectsync/api/controliq.py</code></p>
+<p><strong>Impact</strong>:
+- Cannot visualize Control-IQ decision-making in Nightscout
+- Limited debugging of algorithm behavior
+- No prediction curves like AAPS/Loop provide</p>
+<p><strong>Remediation</strong>: Extract and upload to devicestatus if available from API.</p>
+<p><strong>Status</strong>: Enhancement candidate</p>
+<hr />
+<hr />
+<h3 id="gap-tconnect-003-no-real-time-sync">GAP-TCONNECT-003: No Real-Time Sync<a class="headerlink" href="#gap-tconnect-003-no-real-time-sync" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Real-time monitoring of Tandem pump via Nightscout</p>
+<p><strong>Description</strong>: tconnectsync is batch-based; requires manual or cron execution. No push/webhook capability from t:connect cloud.</p>
+<p><strong>Source</strong>: tconnectsync architecture (pull-based)</p>
+<p><strong>Impact</strong>:
+- Delay between pump events and Nightscout visibility
+- Not suitable for real-time caregiver monitoring
+- Must run periodically via cron</p>
+<p><strong>Remediation</strong>: Document as platform limitation; t:connect API doesn't support push.</p>
+<p><strong>Status</strong>: Platform limitation</p>
+<hr />
+<h2 id="librelink-up-bridge-gaps">LibreLink Up Bridge Gaps<a class="headerlink" href="#librelink-up-bridge-gaps" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="gap-test-001-no-cross-project-test-harness-for-swift">GAP-TEST-001: No cross-project test harness for Swift<a class="headerlink" href="#gap-test-001-no-cross-project-test-harness-for-swift" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Algorithm validation across implementations</p>
+<p><strong>Description</strong>: No mechanism to run Loop/Trio algorithm tests against Nightscout data or compare with AAPS/oref results.</p>
+<p><strong>Evidence</strong>:
+- Loop and Trio both have 200+ test files but isolated to their projects
+- No shared test fixtures between Swift and JavaScript implementations
+- Cannot validate algorithm consistency across implementations</p>
+<p><strong>Impact</strong>:
+- Algorithm divergence may go undetected
+- No regression testing for cross-system data compatibility
+- Cannot verify prediction accuracy across implementations</p>
+<p><strong>Possible Solutions</strong>:
+1. Extract algorithm packages with shared test fixtures
+2. Create JSON test vectors that all implementations consume
+3. Build cross-language comparison harness</p>
+<p><strong>Status</strong>: Documented</p>
+<p><strong>Related</strong>:
+- <a href="../docs/sdqctl-proposals/cross-project-testing-plan.html">Cross-project Testing Plan</a></p>
+<hr />
+<hr />
+<h3 id="gap-test-002-loopkit-packageswift-incomplete">GAP-TEST-002: LoopKit Package.swift incomplete<a class="headerlink" href="#gap-test-002-loopkit-packageswift-incomplete" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: SPM-based cross-platform testing</p>
+<p><strong>Description</strong>: LoopKit Package.swift exists but is explicitly marked as non-functional due to bundle resource issues.</p>
+<p><strong>Evidence</strong>:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1">// LoopKit/Package.swift:4-8</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1">// *************** Not complete yet, do not expect this to work! ***********************</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1">// There are issues with how test fixtures are copied into the bundle...</span>
+</code></pre></div></p>
+<p><strong>Impact</strong>:
+- Cannot use SPM for cross-platform testing
+- No Linux/macOS test execution via <code>swift test</code>
+- Blocks algorithm extraction strategy</p>
+<p><strong>Possible Solutions</strong>:
+1. Fix resource copying in Package.swift
+2. Extract algorithm-only package without resources
+3. Use Xcode-only testing (current state)</p>
+<p><strong>Status</strong>: Documented</p>
+<p><strong>Related</strong>:
+- <a href="../docs/sdqctl-proposals/cross-project-testing-plan.html">Cross-project Testing Plan</a></p>
+<hr />
+<hr />
+<h3 id="gap-test-003-loop-uses-outdated-travis-ci">GAP-TEST-003: Loop uses outdated Travis CI<a class="headerlink" href="#gap-test-003-loop-uses-outdated-travis-ci" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Modern CI for Loop tests</p>
+<p><strong>Description</strong>: Loop uses Travis CI with Xcode 12.4 (2021). No GitHub Actions workflow for tests. Trio has modern GitHub Actions.</p>
+<p><strong>Evidence</strong>:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Loop/.travis.yml</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nt">osx_image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">xcode12.4</span>
+</code></pre></div></p>
+<p><strong>Impact</strong>:
+- Test infrastructure may be broken or outdated
+- Missing modern Xcode/iOS features
+- No parity with Trio's CI approach</p>
+<p><strong>Possible Solutions</strong>:
+1. Migrate to GitHub Actions with modern Xcode
+2. Add unit_tests.yml similar to Trio's workflow
+3. Update to current macOS/Xcode versions</p>
+<p><strong>Status</strong>: Documented</p>
+<p><strong>Related</strong>:
+- <a href="../docs/sdqctl-proposals/cross-project-testing-plan.html">Cross-project Testing Plan</a></p>
+<hr />
+<h3 id="gap-test-004-no-shared-test-vectors-for-algorithm-validation">GAP-TEST-004: No shared test vectors for algorithm validation<a class="headerlink" href="#gap-test-004-no-shared-test-vectors-for-algorithm-validation" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Cross-project algorithm parity verification</p>
+<p><strong>Description</strong>: No standardized test vector format for validating IOB/COB/determineBasal calculations across oref0, Loop, AAPS, and Trio.</p>
+<p><strong>Current State</strong>:
+- oref0 has 85 test vectors in <code>conformance/runners/oref0-runner.js</code>
+- No equivalent for Swift (Loop, Trio) or Kotlin (AAPS)
+- Each project tests in isolation</p>
+<p><strong>Impact</strong>:
+- Cannot verify algorithm parity across projects
+- No regression detection when forking code
+- Algorithm drift goes undetected</p>
+<p><strong>Possible Solutions</strong>:
+1. Create YAML-based shared vector format
+2. Implement language-specific runners (Swift, Kotlin)
+3. Add algorithm parity reports to CI</p>
+<p><strong>Status</strong>: Design complete</p>
+<p><strong>Related</strong>:
+- <a href="../docs/10-domain/cross-platform-testing-infrastructure-design.html">Cross-Platform Testing Infrastructure Design</a></p>
+<hr />
+<h3 id="gap-test-005-no-blecgm-mock-infrastructure">GAP-TEST-005: No BLE/CGM mock infrastructure<a class="headerlink" href="#gap-test-005-no-blecgm-mock-infrastructure" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Hardware-independent testing</p>
+<p><strong>Description</strong>: iOS apps (Loop, Trio, xDrip4iOS) have no protocol-based abstractions for BLE and CGM managers, making unit testing impossible without hardware.</p>
+<p><strong>Current State</strong>:
+- All BLE code directly imports CoreBluetooth
+- No dependency injection for CGM/pump managers
+- Tests require iOS simulator at minimum</p>
+<p><strong>Impact</strong>:
+- Cannot run CGM packet parsing tests on Linux
+- CI requires expensive macOS runners
+- BLE protocol bugs discovered late</p>
+<p><strong>Possible Solutions</strong>:
+1. Define <code>BluetoothManagerProtocol</code> abstraction
+2. Create <code>MockBluetoothManager</code> for tests
+3. Extract packet parsing to pure Swift modules</p>
+<p><strong>Status</strong>: Design complete</p>
+<p><strong>Related</strong>:
+- <a href="../docs/10-domain/cross-platform-testing-infrastructure-design.html">Cross-Platform Testing Infrastructure Design</a></p>
+<hr />
+<h2 id="nightscout-connect-design-review-gaps">nightscout-connect Design Review Gaps<a class="headerlink" href="#nightscout-connect-design-review-gaps" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="gap-connect-004-no-test-suite">GAP-CONNECT-004: No Test Suite<a class="headerlink" href="#gap-connect-004-no-test-suite" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Package has <code>"test": "echo \"Error: no test specified\" &amp;&amp; exit 1"</code> - no automated tests despite complex XState state machine logic.</p>
+<p><strong>Affected Systems</strong>: nightscout-connect</p>
+<p><strong>Impact</strong>:
+- Regressions possible when adding vendors or upgrading XState
+- No confidence in refactoring
+- Cannot verify behavior across state transitions</p>
+<p><strong>Remediation</strong>: Add <code>@xstate/test</code> model-based tests + integration tests for vendor drivers.</p>
+<p><strong>Source</strong>: <code>package.json:13-14</code></p>
+<hr />
+<h3 id="gap-connect-005-no-typescript-types">GAP-CONNECT-005: No TypeScript Types<a class="headerlink" href="#gap-connect-005-no-typescript-types" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Pure JavaScript with no type definitions for machine contexts, events, or vendor interfaces.</p>
+<p><strong>Affected Systems</strong>: nightscout-connect</p>
+<p><strong>Impact</strong>:
+- Harder to maintain and refactor safely
+- No IDE autocomplete for complex machine contexts
+- Error-prone vendor implementation</p>
+<p><strong>Remediation</strong>: Add TypeScript or <code>.d.ts</code> type definitions for FetchContext, SessionContext, and VendorDriver interfaces.</p>
+<p><strong>Source</strong>: <code>lib/machines/*.js</code> (all files)</p>
+<hr />
+<h3 id="gap-connect-006-brittle-adapter-pattern">GAP-CONNECT-006: Brittle Adapter Pattern<a class="headerlink" href="#gap-connect-006-brittle-adapter-pattern" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Per machines.md, "the builder and the adapter preludes at the beginning of the machine sources are brittle."</p>
+<p><strong>Affected Systems</strong>: nightscout-connect</p>
+<p><strong>Impact</strong>:
+- Coupling between vendor code and machine configuration
+- Inconsistent naming across adapters
+- Promises mixed with utilities in impl objects</p>
+<p><strong>Remediation</strong>: Define formal VendorDriver interface contract with validation.</p>
+<p><strong>Related Requirements</strong>: REQ-CONNECT-006</p>
+<p><strong>Source</strong>: <code>machines.md:163-169</code></p>
+<hr />
+<h3 id="gap-tconnect-004-no-trend-direction-from-tconnect">GAP-TCONNECT-004: No Trend Direction from t:connect<a class="headerlink" href="#gap-tconnect-004-no-trend-direction-from-tconnect" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: The t:connect API does not provide glucose trend direction. CGM entries uploaded to Nightscout via tconnectsync will lack the <code>direction</code> field.</p>
+<p><strong>Affected Systems</strong>: tconnectsync, Nightscout</p>
+<p><strong>Impact</strong>:
+- No trend arrows for t:connect-sourced CGM data in Nightscout UI
+- Reduced situational awareness for users viewing data
+- Loop/AAPS algorithms may not receive trend data if sourced from t:connect</p>
+<p><strong>Remediation</strong>: Calculate direction from consecutive readings if needed, or document as limitation.</p>
+<p><strong>Source</strong>: <code>mapping/tconnectsync/treatments.md</code></p>
+<hr />
+<h2 id="share2nightscout-bridge-gaps">share2nightscout-bridge Gaps<a class="headerlink" href="#share2nightscout-bridge-gaps" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="gap-share-001-no-nightscout-api-v3-support">GAP-SHARE-001: No Nightscout API v3 Support<a class="headerlink" href="#gap-share-001-no-nightscout-api-v3-support" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: share2nightscout-bridge uses Nightscout API v1 only. Does not set <code>identifier</code>, <code>srvModified</code>, or other v3 fields.</p>
+<p><strong>Affected Systems</strong>: share2nightscout-bridge, Nightscout</p>
+<p><strong>Impact</strong>:
+- No server-side deduplication
+- Duplicates possible on bridge restart or overlap
+- Cannot track sync state across restarts</p>
+<p><strong>Remediation</strong>: Add v3 API support with proper identifiers.</p>
+<p><strong>Source</strong>: <code>mapping/share2nightscout-bridge/entries.md</code></p>
+<hr />
+<h3 id="gap-share-002-no-backfillgap-detection-logic">GAP-SHARE-002: No Backfill/Gap Detection Logic<a class="headerlink" href="#gap-share-002-no-backfillgap-detection-logic" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: share2nightscout-bridge does not detect gaps in CGM data. If the bridge is offline, missed readings are not backfilled when it comes back online.</p>
+<p><strong>Affected Systems</strong>: share2nightscout-bridge, Nightscout</p>
+<p><strong>Impact</strong>:
+- Data gaps during bridge downtime
+- No automatic recovery of missed readings
+- Users must manually backfill or accept gaps</p>
+<p><strong>Remediation</strong>: Add gap detection and backfill logic using <code>minutes</code> parameter.</p>
+<p><strong>Source</strong>: <code>mapping/share2nightscout-bridge/entries.md</code></p>
+<hr />
+<h3 id="gap-share-003-hardcoded-application-id">GAP-SHARE-003: Hardcoded Application ID<a class="headerlink" href="#gap-share-003-hardcoded-application-id" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: share2nightscout-bridge uses a hardcoded Dexcom application ID (<code>d89443d2-327c-4a6f-89e5-496bbb0317db</code>). If Dexcom revokes or changes this ID, the bridge will break.</p>
+<p><strong>Affected Systems</strong>: share2nightscout-bridge</p>
+<p><strong>Impact</strong>:
+- Single point of failure
+- No user-configurable alternative
+- Dependent on Dexcom not revoking the ID</p>
+<p><strong>Remediation</strong>: Make application ID configurable, or use official Dexcom developer credentials.</p>
+<p><strong>Source</strong>: <code>mapping/share2nightscout-bridge/api.md</code></p>
+<hr />
+<h2 id="nightscout-librelink-up-gaps">nightscout-librelink-up Gaps<a class="headerlink" href="#nightscout-librelink-up-gaps" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="gap-librelink-001-no-nightscout-api-v3-support">GAP-LIBRELINK-001: No Nightscout API v3 Support<a class="headerlink" href="#gap-librelink-001-no-nightscout-api-v3-support" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: nightscout-librelink-up has a v3 client stub that throws "Not implemented". Only v1 API is functional.</p>
+<p><strong>Affected Systems</strong>: nightscout-librelink-up, Nightscout</p>
+<p><strong>Impact</strong>:
+- No server-side deduplication
+- No <code>identifier</code> field for sync tracking
+- Duplicates possible on bridge restart</p>
+<p><strong>Remediation</strong>: Implement v3 client with proper identifiers.</p>
+<p><strong>Source</strong>: <code>mapping/nightscout-librelink-up/entries.md</code></p>
+<hr />
+<h3 id="gap-librelink-002-no-historical-backfill">GAP-LIBRELINK-002: No Historical Backfill<a class="headerlink" href="#gap-librelink-002-no-historical-backfill" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: While GraphResponse interface exists for historical data, only current readings are uploaded. No catch-up mechanism for missed readings.</p>
+<p><strong>Affected Systems</strong>: nightscout-librelink-up, Nightscout</p>
+<p><strong>Impact</strong>:
+- Data gaps if bridge is offline
+- No automatic recovery of missed readings
+- Users must manually backfill</p>
+<p><strong>Remediation</strong>: Add optional historical fetch using graph endpoint.</p>
+<p><strong>Source</strong>: <code>mapping/nightscout-librelink-up/entries.md</code></p>
+<hr />
+<h3 id="gap-librelink-003-trend-arrow-limited-to-5-values">GAP-LIBRELINK-003: Trend Arrow Limited to 5 Values<a class="headerlink" href="#gap-librelink-003-trend-arrow-limited-to-5-values" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: LibreLink Up provides only 5 trend values (1-5) vs Nightscout's 9. No DoubleUp/DoubleDown available.</p>
+<p><strong>Affected Systems</strong>: nightscout-librelink-up, Nightscout</p>
+<p><strong>Impact</strong>:
+- Loss of precision for rapid glucose changes
+- Libre sensors may not report extreme trends
+- Data consumers may expect full range</p>
+<p><strong>Remediation</strong>: Document as sensor/API limitation; map to closest available direction.</p>
+<p><strong>Source</strong>: <code>mapping/nightscout-librelink-up/entries.md</code></p>
+<hr />
+<h2 id="loopfollow-gaps">LoopFollow Gaps<a class="headerlink" href="#loopfollow-gaps" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="gap-loopfollow-001-api-v1-only">GAP-LOOPFOLLOW-001: API v1 Only<a class="headerlink" href="#gap-loopfollow-001-api-v1-only" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: LoopFollow uses Nightscout API v1 exclusively. No v3 API support implemented.</p>
+<p><strong>Affected Systems</strong>: LoopFollow, Nightscout</p>
+<p><strong>Impact</strong>:
+- Cannot leverage v3 features (identifiers, server-side filtering)
+- No sync identity awareness
+- May miss real-time updates available in v3</p>
+<p><strong>Remediation</strong>: Add v3 API support for improved filtering and real-time features.</p>
+<p><strong>Source</strong>: <code>docs/10-domain/loopfollow-deep-dive.md</code></p>
+<hr />
+<h3 id="gap-loopfollow-002-no-websocketserver-sent-events">GAP-LOOPFOLLOW-002: No WebSocket/Server-Sent Events<a class="headerlink" href="#gap-loopfollow-002-no-websocketserver-sent-events" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: LoopFollow uses polling for data updates. No real-time push support via WebSocket or SSE.</p>
+<p><strong>Affected Systems</strong>: LoopFollow</p>
+<p><strong>Impact</strong>:
+- Delays between data availability and display
+- Higher battery/network usage from polling
+- Not truly real-time monitoring</p>
+<p><strong>Remediation</strong>: Implement WebSocket or SSE listener for real-time updates.</p>
+<p><strong>Source</strong>: <code>docs/10-domain/loopfollow-deep-dive.md</code></p>
+<hr />
+<h3 id="gap-loopfollow-003-treatment-eventtype-hardcoding">GAP-LOOPFOLLOW-003: Treatment eventType Hardcoding<a class="headerlink" href="#gap-loopfollow-003-treatment-eventtype-hardcoding" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Treatment categorization relies on exact string matching of eventTypes. Unknown types logged but not displayed.</p>
+<p><strong>Affected Systems</strong>: LoopFollow</p>
+<p><strong>Impact</strong>:
+- New eventTypes from Loop/Trio/AAPS may be missed
+- Requires code update for new treatment types
+- Silent failures for unrecognized treatments</p>
+<p><strong>Remediation</strong>: Add extensible eventType handling or periodic sync with Nightscout eventType registry.</p>
+<p><strong>Source</strong>: <code>docs/10-domain/loopfollow-deep-dive.md</code></p>
+<hr />
+<h2 id="loopcaregiver-gaps">LoopCaregiver Gaps<a class="headerlink" href="#loopcaregiver-gaps" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="gap-loopcaregiver-001-loop-only-support">GAP-LOOPCAREGIVER-001: Loop-Only Support<a class="headerlink" href="#gap-loopcaregiver-001-loop-only-support" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: LoopCaregiver only works with Loop. No support for Trio, OpenAPS, or AAPS.</p>
+<p><strong>Affected Systems</strong>: LoopCaregiver, Trio, OpenAPS, AAPS</p>
+<p><strong>Impact</strong>:
+- Trio users must use different apps (LoopFollow + TRC)
+- No unified caregiver experience across AID systems
+- Parallel development of similar features</p>
+<p><strong>Remediation</strong>: Abstract command layer to support multiple AID targets.</p>
+<p><strong>Source</strong>: <code>docs/10-domain/loopcaregiver-deep-dive.md</code></p>
+<hr />
+<h3 id="gap-loopcaregiver-002-experimental-v2-commands">GAP-LOOPCAREGIVER-002: Experimental V2 Commands<a class="headerlink" href="#gap-loopcaregiver-002-experimental-v2-commands" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Remote Commands 2.0 (with status tracking) requires non-mainline branches of both Nightscout and Loop.</p>
+<p><strong>Affected Systems</strong>: LoopCaregiver, Nightscout, Loop</p>
+<p><strong>Impact</strong>:
+- Most users don't have command status tracking
+- Special deployment complexity
+- Branch maintenance burden</p>
+<p><strong>Remediation</strong>: Merge V2 features to mainline branches.</p>
+<p><strong>Source</strong>: <code>docs/10-domain/loopcaregiver-deep-dive.md</code></p>
+<hr />
+<h3 id="gap-loopcaregiver-003-no-standard-command-api">GAP-LOOPCAREGIVER-003: No Standard Command API<a class="headerlink" href="#gap-loopcaregiver-003-no-standard-command-api" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Commands use proprietary push notification format, not a standard Nightscout API endpoint.</p>
+<p><strong>Affected Systems</strong>: LoopCaregiver, Nightscout</p>
+<p><strong>Impact</strong>:
+- Not interoperable with other systems
+- Tightly coupled to Loop implementation
+- No command history in standard Nightscout</p>
+<p><strong>Remediation</strong>: Define standard remote command API in Nightscout.</p>
+<p><strong>Source</strong>: <code>docs/10-domain/loopcaregiver-deep-dive.md</code></p>
+<hr />
+<h2 id="nocturne-algorithm-conformance">Nocturne Algorithm Conformance<a class="headerlink" href="#nocturne-algorithm-conformance" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="gap-oref-conformance-001-rust-oref-peak-time-validation">GAP-OREF-CONFORMANCE-001: Rust oref Peak Time Validation<a class="headerlink" href="#gap-oref-conformance-001-rust-oref-peak-time-validation" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Rust oref implementation accepts peak time as parameter without validation, unlike JS oref0 which validates and clamps per curve type.</p>
+<p><strong>Affected Systems</strong>: Nocturne, oref0</p>
+<p><strong>JS oref0 behavior</strong>:
+- Rapid-acting: clamps peak to 50-120 minutes
+- Ultra-rapid: clamps peak to 35-100 minutes</p>
+<p><strong>Rust behavior</strong>: Accepts any value passed by caller.</p>
+<p><strong>Impact</strong>:
+- Invalid peak times could produce unexpected results
+- Caller must validate before passing to Rust</p>
+<p><strong>Remediation</strong>: Add peak time validation to Rust implementation or document caller responsibility.</p>
+<p><strong>Source</strong>: 
+- JS: <code>externals/oref0/lib/iob/calculate.js:86-116</code>
+- Rust: <code>externals/nocturne/src/Core/oref/src/insulin/calculate.rs:112</code></p>
+<p><strong>Status</strong>: Minor divergence (defensive)</p>
+<hr />
+<h3 id="gap-oref-conformance-002-rust-oref-small-dose-classification">GAP-OREF-CONFORMANCE-002: Rust oref Small Dose Classification<a class="headerlink" href="#gap-oref-conformance-002-rust-oref-small-dose-classification" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Rust oref classifies insulin doses &lt; 0.1 U as basal adjustments, providing basal_iob/bolus_iob breakdown. JS oref0 doesn't distinguish.</p>
+<p><strong>Affected Systems</strong>: Nocturne, oref0</p>
+<p><strong>Impact</strong>:
+- Additional data available in Rust output
+- Not a conformance issue (additive feature)</p>
+<p><strong>Source</strong>: <code>externals/nocturne/src/Core/oref/src/iob/total.rs:88-94</code></p>
+<p><strong>Status</strong>: Enhancement (no conformance issue)</p>
+<hr />
+<h3 id="gap-oref-conformance-003-verified-equivalent-">GAP-OREF-CONFORMANCE-003: VERIFIED EQUIVALENT ✅<a class="headerlink" href="#gap-oref-conformance-003-verified-equivalent-" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Nocturne Rust oref is algorithmically equivalent to JS oref0.</p>
+<p><strong>Verification</strong>:
+| Component | Status |
+|-----------|--------|
+| Bilinear IOB | ✅ Same formula, coefficients |
+| Exponential IOB | ✅ Same LoopKit formula |
+| COB deviation | ✅ Same algorithm |
+| Precision | ✅ Both IEEE 754 f64 |</p>
+<p><strong>Conformance Tests</strong>: <code>conformance/scenarios/nocturne-oref/iob-tests.yaml</code></p>
+<p><strong>Source</strong>:
+- JS: <code>externals/oref0/lib/iob/calculate.js</code>
+- Rust: <code>externals/nocturne/src/Core/oref/src/insulin/calculate.rs</code></p>
+<p><strong>Status</strong>: ✅ Verified equivalent</p>
+<hr />
+<h2 id="nocturne-connector-coordination-gaps">Nocturne Connector Coordination Gaps<a class="headerlink" href="#nocturne-connector-coordination-gaps" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="gap-connect-010-no-connector-poll-staggering">GAP-CONNECT-010: No Connector Poll Staggering<a class="headerlink" href="#gap-connect-010-no-connector-poll-staggering" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Nocturne connectors poll independently with no startup jitter or coordination. Multiple connectors may poll simultaneously, causing API load spikes.</p>
+<p><strong>Affected Systems</strong>: Nocturne</p>
+<p><strong>Impact</strong>: 
+- Burst of outbound requests at startup
+- Potential rate-limiting if all connectors hit APIs simultaneously</p>
+<p><strong>Source</strong>: <code>src/Connectors/Nocturne.Connectors.Core/Services/ResilientPollingHostedService.cs:62</code></p>
+<p><strong>Remediation</strong>: Add startup jitter or stagger connector initialization.</p>
+<p><strong>Status</strong>: Open (minor impact for typical 2-3 connectors)</p>
+<hr />
+<h3 id="gap-connect-011-no-explicit-loop-back-prevention">GAP-CONNECT-011: No Explicit Loop-Back Prevention<a class="headerlink" href="#gap-connect-011-no-explicit-loop-back-prevention" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Nightscout connector does not filter out data that originated from Nocturne. Circular sync possible with misconfigured topology.</p>
+<p><strong>Affected Systems</strong>: Nocturne Nightscout connector</p>
+<p><strong>Impact</strong>: 
+- Circular sync possible with bidirectional Nocturne↔Nightscout configuration
+- Data may accumulate duplicate sources</p>
+<p><strong>Source</strong>: <code>src/Connectors/Nocturne.Connectors.Nightscout/Services/NightscoutConnectorService.cs</code></p>
+<p><strong>Remediation</strong>: 
+1. Filter by <code>device</code> or <code>app</code> field on fetch
+2. Add <code>enteredBy</code> exclusion (similar to AAPS <code>enteredBy[$ne]</code>)
+3. Document recommended topology</p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h3 id="gap-connect-012-cross-connector-deduplication-delegated-to-server">GAP-CONNECT-012: Cross-Connector Deduplication Delegated to Server<a class="headerlink" href="#gap-connect-012-cross-connector-deduplication-delegated-to-server" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Same CGM reading from multiple sources (e.g., Dexcom direct + via upstream Nightscout) handled by server-side deduplication, not connectors.</p>
+<p><strong>Affected Systems</strong>: Nocturne</p>
+<p><strong>Impact</strong>: Relies on server-side dedup which may use different matching criteria than expected.</p>
+<p><strong>Source</strong>: By design - connectors use incremental sync via timestamps</p>
+<p><strong>Remediation</strong>: Document expected behavior; consider connector-side pre-dedup for known overlap scenarios.</p>
+<p><strong>Status</strong>: Documented (by design)</p>
+<hr />
+<h3 id="gap-connect-013-dexcom-share-authentication-errors-are-treated-as-data">GAP-CONNECT-013: Dexcom Share Authentication Errors Are Treated as Data<a class="headerlink" href="#gap-connect-013-dexcom-share-authentication-errors-are-treated-as-data" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: The <code>nightscout-connect</code> Dexcom Share driver resolves authentication failures as successful values, then forwards those error objects into the session request path. Its catch blocks also dereference <code>err.response</code> without guards and reference <code>error.response.data</code> where only <code>err</code> is in scope.</p>
+<p><strong>Affected Systems</strong>: nightscout-connect, cgm-remote-monitor connect plugin users, Dexcom Share and G7 accounts.</p>
+<p><strong>Impact</strong>:
+- Real Dexcom authentication failures can appear as <code>RUNNING 0 failures 0</code> with no new entries.
+- Modern Dexcom responses that wrap <code>accountId</code> can be serialized incorrectly into the session request.
+- Non-HTTP failures can crash error handling instead of surfacing actionable diagnostics.</p>
+<p><strong>Source</strong>:
+- <code>../worktrees/nightscout-connect/lib/sources/dexcomshare.js:153</code>
+- <code>../worktrees/nightscout-connect/lib/sources/dexcomshare.js:169</code>
+- <code>../worktrees/nightscout-connect/lib/sources/dexcomshare.js:190</code>
+- <code>../worktrees/nightscout-connect/lib/sources/dexcomshare.js:199</code>
+- nightscout-connect PR #55</p>
+<p><strong>Remediation</strong>: Merge the narrow Dexcom Share PR after review, add fixture tests for bare UUID vs <code>{accountId}</code> responses, and verify auth failures reject into the state machine's error path.</p>
+<p><strong>Status</strong>: Triage complete, safe merge candidate.</p>
+<hr />
+<h3 id="gap-connect-014-glooko-eu-authentication-and-data-endpoints-have-drifted">GAP-CONNECT-014: Glooko EU Authentication and Data Endpoints Have Drifted<a class="headerlink" href="#gap-connect-014-glooko-eu-authentication-and-data-endpoints-have-drifted" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Glooko EU accounts now report CSRF failures on JSON API login in field reports, while existing code still posts to <code>/api/v2/users/sign_in</code> and then reads v2 pump and CGM endpoints. Open PRs propose device metadata, refactors, or Puppeteer, but none provide a narrow, tested web-login plus timestamp-safe sync path.</p>
+<p><strong>Affected Systems</strong>: nightscout-connect, Glooko EU users, Omnipod 5 and CamAPS users using Glooko as an intermediary.</p>
+<p><strong>Impact</strong>:
+- EU users can receive 422 authentication failures even with valid credentials.
+- <code>/api/v2/cgm/readings</code> can return empty readings, leaving Glooko as treatments-only or requiring delayed <code>/api/v3/graph/data</code> use.
+- Fixed timezone offsets do not handle DST, risking shifted treatments.</p>
+<p><strong>Source</strong>:
+- <code>../worktrees/nightscout-connect/lib/sources/glooko/index.js:26</code>
+- <code>../worktrees/nightscout-connect/lib/sources/glooko/index.js:53</code>
+- <code>../worktrees/nightscout-connect/lib/sources/glooko/index.js:135</code>
+- <code>../worktrees/nightscout-connect/lib/sources/glooko/index.js:139</code>
+- <code>../worktrees/nightscout-connect/lib/sources/glooko/index.js:171</code>
+- nightscout-connect issues #14, #38, #10
+- nightscout-connect PRs #31, #46, #51</p>
+<p><strong>Remediation</strong>: Build a new focused Glooko PR around web-form CSRF login, region-specific server selection, v3 graph fallback for CGM, named time zone handling, and fixture-backed timestamp tests.</p>
+<p><strong>Status</strong>: Partially remediated in <code>nightscout-connect</code> dev (<code>c06c037</code>) with feature-flagged web login and v3 graph fallback. Still needs live/sanitized fixtures, named-timezone/DST handling, and unit validation before defaults change.</p>
+<hr />
+<h3 id="gap-connect-015-nightscout-source-v3-support-is-not-release-ready">GAP-CONNECT-015: Nightscout Source V3 Support Is Not Release-Ready<a class="headerlink" href="#gap-connect-015-nightscout-source-v3-support-is-not-release-ready" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: <code>nightscout-connect</code> can read from and write to Nightscout through v1 endpoints, with token acquisition through v2 authorization. The open v3 source PR is broad, adds Docker and compatibility material, and has a maintainer comment reporting a <code>register_loop</code> crash.</p>
+<p><strong>Affected Systems</strong>: nightscout-connect, cgm-remote-monitor instances using Nightscout as a source or output, local mirror workflows.</p>
+<p><strong>Impact</strong>:
+- Nightscout mirroring does not get v3 validation, history, or identifier-based sync identity.
+- Existing output remains v1-only for entries and treatments.
+- Broad v3 PRs are hard to review and can destabilize connector loop registration.</p>
+<p><strong>Source</strong>:
+- <code>../worktrees/nightscout-connect/lib/sources/nightscout.js:40</code>
+- <code>../worktrees/nightscout-connect/lib/sources/nightscout.js:55</code>
+- <code>../worktrees/nightscout-connect/lib/sources/nightscout.js:92</code>
+- <code>../worktrees/nightscout-connect/lib/sources/nightscout.js:132</code>
+- <code>../worktrees/nightscout-connect/lib/sources/nightscout.js:133</code>
+- <code>../worktrees/nightscout-connect/lib/outputs/nightscout.js:35</code>
+- <code>../worktrees/nightscout-connect/lib/outputs/nightscout.js:48</code>
+- nightscout-connect PR #52</p>
+<p><strong>Remediation</strong>: Split v3 work into small PRs: v3 read client, v3 output client, loop registration tests, and migration documentation.</p>
+<p><strong>Status</strong>: Open, defer from candidate release.</p>
+<hr />
+<h2 id="nodejs--dependency-gaps">Node.js &amp; Dependency Gaps<a class="headerlink" href="#nodejs--dependency-gaps" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="gap-node-001-eol-nodejs-versions">GAP-NODE-001: EOL Node.js Versions<a class="headerlink" href="#gap-node-001-eol-nodejs-versions" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: All JavaScript Nightscout projects specify EOL Node.js versions in <code>engines</code> field. cgm-remote-monitor targets Node 16/14 (EOL 2023), share2nightscout-bridge supports Node 8-16.</p>
+<p><strong>Affected Systems</strong>: cgm-remote-monitor, share2nightscout-bridge</p>
+<p><strong>Impact</strong>: 
+- Security vulnerabilities unpatched
+- No upstream bug fixes
+- Hosting provider deprecation warnings
+- Incompatibility with modern npm packages</p>
+<p><strong>Remediation</strong>: Upgrade to Node 22 LTS (EOL 2027-04-30).</p>
+<p><strong>Source</strong>: <code>package.json</code> engines fields</p>
+<p><strong>Status</strong>: Open</p>
+<p><strong>Analysis</strong>: <a href="../docs/10-domain/node-lts-upgrade-analysis.html">node-lts-upgrade-analysis.md</a></p>
+<hr />
+<h3 id="gap-node-002-deprecated-request-package">GAP-NODE-002: Deprecated <code>request</code> Package<a class="headerlink" href="#gap-node-002-deprecated-request-package" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Both cgm-remote-monitor and share2nightscout-bridge depend on the deprecated <code>request</code> package (deprecated 2020-02-11).</p>
+<p><strong>Affected Systems</strong>: cgm-remote-monitor, share2nightscout-bridge</p>
+<p><strong>Impact</strong>:
+- No security updates since 2020
+- Blocks Node.js upgrades
+- Known vulnerabilities</p>
+<p><strong>Remediation</strong>: 
+- cgm-remote-monitor: Migrate to axios (already in dependencies)
+- share2nightscout-bridge: Deprecate in favor of nightscout-connect</p>
+<p><strong>Source</strong>: 
+- <code>externals/cgm-remote-monitor/package.json</code>: <code>"request": "^2.88.2"</code>
+- <code>externals/share2nightscout-bridge/package.json</code>: <code>"request": "^2.88.0"</code></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h3 id="gap-node-003-missing-engines-field">GAP-NODE-003: Missing engines Field<a class="headerlink" href="#gap-node-003-missing-engines-field" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: nightscout-connect lacks <code>engines</code> field in package.json, making Node.js compatibility unclear to users and npm.</p>
+<p><strong>Affected Systems</strong>: nightscout-connect, nightscout-librelink-up</p>
+<p><strong>Impact</strong>: Users may inadvertently run on incompatible Node versions.</p>
+<p><strong>Remediation</strong>: Add <code>"engines": { "node": "&gt;=18" }</code> to package.json.</p>
+<p><strong>Source</strong>: <code>externals/nightscout-connect/package.json</code></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h2 id="verification-tooling-gaps">Verification Tooling Gaps<a class="headerlink" href="#verification-tooling-gaps" title="Permanent link">&para;</a></h2>
+<h3 id="gap-verify-001-no-ios-framework-resolution-on-linux">GAP-VERIFY-001: No iOS Framework Resolution on Linux<a class="headerlink" href="#gap-verify-001-no-ios-framework-resolution-on-linux" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Swift LSP (sourcekit-lsp) on Linux cannot resolve iOS-specific frameworks (UIKit, HealthKit, LoopKit).</p>
+<p><strong>Affected Systems</strong>: Trio, Loop, xDrip4iOS, DiaBLE verification</p>
+<p><strong>Evidence</strong>:
+- <code>docs/10-domain/lsp-environment-check.md</code> - Swift 6.2.3 installed but iOS SDK unavailable
+- Xcode projects (<code>.xcodeproj</code>) not compatible with SPM-based sourcekit-lsp</p>
+<p><strong>Impact</strong>:
+- Cannot verify Swift code references to iOS framework symbols on Linux
+- Line-number validation works; semantic analysis does not</p>
+<p><strong>Remediation</strong>:
+1. ✅ <strong>PARTIAL</strong>: tree-sitter installed (v0.26.3) for syntax-level queries
+2. Defer semantic verification to macOS CI runners
+3. Accept line-only validation for Swift on Linux</p>
+<p><strong>Status</strong>: ⚠️ Partially mitigated (tree-sitter provides syntax parsing)</p>
+<p><strong>Related Requirements</strong>: REQ-VERIFY-001, REQ-TEST-002</p>
+<hr />
+<h3 id="gap-verify-002-no-cross-language-algorithm-validation">GAP-VERIFY-002: No Cross-Language Algorithm Validation<a class="headerlink" href="#gap-verify-002-no-cross-language-algorithm-validation" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Only JavaScript oref0 has a conformance runner. Kotlin AAPS and Swift Trio/Loop implementations lack automated parity testing.</p>
+<p><strong>Affected Systems</strong>: AAPS (Kotlin), Trio (Swift), Loop (Swift)</p>
+<p><strong>Evidence</strong>:
+- <code>conformance/runners/oref0-runner.js</code> exists (85 vectors, 31% pass)
+- <code>conformance/runners/aaps-runner.kt</code> build ready (517 lines, <code>make aaps-runner</code>)
+- AAPS internal tests compare JS vs Kotlin but aren't integrated with workspace</p>
+<p><strong>Impact</strong>:
+- Algorithm divergence between implementations goes undetected
+- Dosing differences between apps may affect patient safety
+- Documentation claims about "equivalent behavior" are unverified</p>
+<p><strong>Remediation</strong>:
+1. ~~Implement <code>aaps-runner.kt</code> scaffolding~~ ✅ Done (2026-01-31)
+2. ~~Build integration (<code>make aaps-runner</code>)~~ ✅ Done (2026-01-31)
+3. ~~Document setup requirements~~ ✅ Done (2026-02-01, <code>conformance/README.md</code>)
+4. Integrate AAPS core algorithm dependencies for execution
+5. Add Swift runners for macOS CI (Trio, Loop)
+6. Cross-compare outputs for same test vectors</p>
+<p><strong>Source</strong>: <code>docs/10-domain/cross-platform-testing-research.md</code></p>
+<p><strong>Status</strong>: In Progress - Kotlin build ready, algorithm execution pending (requires AAPS deps)</p>
+<hr />
+<h3 id="gap-verify-003-stale-conformance-test-vectors">GAP-VERIFY-003: Stale Conformance Test Vectors<a class="headerlink" href="#gap-verify-003-stale-conformance-test-vectors" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Current 85 test vectors extracted from AAPS may not cover recent algorithm changes (Dynamic ISF, SMB scheduling, TDD weighting).</p>
+<p><strong>Affected Systems</strong>: All algorithm implementations</p>
+<p><strong>Evidence</strong>:
+- Vectors extracted 2026-01-29 from AAPS 3.x branch
+- oref0 shows 31% pass rate (69% divergent behavior)
+- No vectors for sigmoid ISF, SMB scheduling, or Trio-specific features</p>
+<p><strong>Impact</strong>:
+- Tests pass but don't validate current algorithm behavior
+- New features untested
+- False confidence in conformance</p>
+<p><strong>Remediation</strong>:
+1. Periodic vector refresh from live AAPS/Trio replay tests
+2. Add vectors specifically targeting Dynamic ISF, SMB, autotune
+3. Document expected divergence (intentional differences) vs bugs</p>
+<p><strong>Source</strong>: <code>docs/10-domain/cross-platform-testing-research.md</code></p>
+<p><strong>Status</strong>: Open</p>
+<p><strong>Related Requirements</strong>: REQ-VERIFY-003, REQ-ALG-002</p>
+<hr />
+<h3 id="gap-verify-004-no-unified-accuracy-dashboard">GAP-VERIFY-004: No Unified Accuracy Dashboard<a class="headerlink" href="#gap-verify-004-no-unified-accuracy-dashboard" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: No single-command way to see verification accuracy across all claim types (code refs, algorithm behavior, cross-language parity).</p>
+<p><strong>Affected Systems</strong>: Verification tooling</p>
+<p><strong>Evidence</strong>:
+- <code>make verify</code> runs multiple tools but doesn't aggregate accuracy
+- No tracking of accuracy trends over time
+- Different tools report in different formats</p>
+<p><strong>Impact</strong>:
+- Cannot quickly assess documentation quality
+- Hard to prioritize verification improvements
+- No regression detection for claim accuracy</p>
+<p><strong>Remediation</strong>:
+1. Create <code>tools/accuracy_dashboard.py</code> aggregating all verification outputs
+2. Add <code>make verify-accuracy</code> target
+3. Generate accuracy badge for README</p>
+<p><strong>Source</strong>: <code>docs/10-domain/cross-platform-testing-research.md</code></p>
+<p><strong>Status</strong>: ✅ Addressed (2026-01-31) - <code>tools/accuracy_dashboard.py</code> implemented</p>
+<p><strong>Related Requirements</strong>: REQ-VERIFY-004, REQ-VERIFY-005</p>
+<hr />
+<h2 id="apple-watch-gaps">Apple Watch Gaps<a class="headerlink" href="#apple-watch-gaps" title="Permanent link">&para;</a></h2>
+<h3 id="gap-watch-001-loop-uses-deprecated-clockkit">GAP-WATCH-001: Loop Uses Deprecated ClockKit<a class="headerlink" href="#gap-watch-001-loop-uses-deprecated-clockkit" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Loop's <code>ComplicationController.swift</code> uses ClockKit which is deprecated in watchOS 9+.</p>
+<p><strong>Affected Systems</strong>: Loop</p>
+<p><strong>Evidence</strong>:
+- <code>WatchApp Extension/ComplicationController.swift</code> implements <code>CLKComplicationDataSource</code>
+- ClockKit deprecated in watchOS 9, replacement is WidgetKit
+- All other apps have migrated to WidgetKit</p>
+<p><strong>Impact</strong>: 
+- Future watchOS versions may remove ClockKit support
+- New complication families only available in WidgetKit
+- Maintenance burden for deprecated API</p>
+<p><strong>Remediation</strong>: 
+1. Migrate to WidgetKit <code>TimelineProvider</code> pattern
+2. Use <code>accessoryCircular</code>, <code>accessoryRectangular</code> families
+3. Match existing glucose chart functionality</p>
+<p><strong>Source</strong>: <code>docs/10-domain/apple-watch-complications-survey.md</code></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h3 id="gap-watch-002-trio-complication-is-icon-only">GAP-WATCH-002: Trio Complication is Icon-Only<a class="headerlink" href="#gap-watch-002-trio-complication-is-icon-only" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Trio's watch complication only shows the app icon, not glucose data.</p>
+<p><strong>Affected Systems</strong>: Trio</p>
+<p><strong>Evidence</strong>:
+- <code>Trio Watch Complication/TrioWatchComplication.swift</code> (106 lines)
+- Uses <code>StaticConfiguration</code> with <code>policy: .never</code>
+- Only displays "Trio" label and icon asset</p>
+<p><strong>Impact</strong>: 
+- Users cannot see glucose on watch face
+- Must open watch app to see glucose
+- Inconsistent with Loop experience</p>
+<p><strong>Remediation</strong>: 
+1. Add <code>GlucoseComplicationEntry</code> with real-time data
+2. Implement <code>TimelineProvider</code> with glucose refresh
+3. Use WCSession data already available</p>
+<p><strong>Source</strong>: <code>docs/10-domain/apple-watch-complications-survey.md</code></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h3 id="gap-watch-003-loopcaregiver-has-no-complications">GAP-WATCH-003: LoopCaregiver Has No Complications<a class="headerlink" href="#gap-watch-003-loopcaregiver-has-no-complications" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: LoopCaregiver has watch app but no complications.</p>
+<p><strong>Affected Systems</strong>: LoopCaregiver</p>
+<p><strong>Evidence</strong>:
+- <code>LoopCaregiverWatchApp/</code> contains only watch app views
+- No WidgetKit target in project
+- <code>WatchConnectivityService.swift</code> already syncs glucose data</p>
+<p><strong>Impact</strong>: 
+- Caregivers cannot see glucose on watch face
+- Must open watch app for glucose
+- Missing feature vs Nightguard</p>
+<p><strong>Remediation</strong>: 
+1. Add WidgetKit target to LoopCaregiver
+2. Create <code>GlucoseComplicationProvider</code> using existing sync
+3. Support <code>accessoryRectangular</code> for multi-looper display</p>
+<p><strong>Source</strong>: <code>docs/10-domain/apple-watch-complications-survey.md</code></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h3 id="gap-watch-004-no-shared-watch-components">GAP-WATCH-004: No Shared Watch Components<a class="headerlink" href="#gap-watch-004-no-shared-watch-components" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Each app implements watch sync and complications independently.</p>
+<p><strong>Affected Systems</strong>: Loop, Trio, LoopCaregiver, Nightguard, xDrip4iOS</p>
+<p><strong>Evidence</strong>:
+- Loop: <code>WatchDataManager.swift</code> + <code>WatchContext.swift</code>
+- Trio: <code>WatchManager/</code> + <code>TrioWatchComplication.swift</code>
+- xDrip4iOS: <code>ComplicationSharedUserDefaultsModel.swift</code>
+- Different data models, sync patterns, view implementations</p>
+<p><strong>Impact</strong>: 
+- Code duplication across 5+ apps
+- Inconsistent UX (different complication families)
+- Higher maintenance burden</p>
+<p><strong>Remediation</strong>: 
+1. Create <code>GlucoseComplicationKit</code> SPM package
+2. Create <code>WatchSyncKit</code> SPM package
+3. Adopt in all apps for consistent experience</p>
+<p><strong>Source</strong>: <code>docs/10-domain/apple-watch-complications-survey.md</code></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h2 id="healthkit-integration-gaps">HealthKit Integration Gaps<a class="headerlink" href="#healthkit-integration-gaps" title="Permanent link">&para;</a></h2>
+<h3 id="gap-hk-001-no-cross-app-deduplication">GAP-HK-001: No Cross-App Deduplication<a class="headerlink" href="#gap-hk-001-no-cross-app-deduplication" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Each app writes glucose to HealthKit independently without checking for existing samples from other apps.</p>
+<p><strong>Affected Systems</strong>: Loop, Trio, xDrip4iOS, DiaBLE, Nightguard</p>
+<p><strong>Evidence</strong>:
+- Loop <code>GlucoseStore.swift</code> uses syncIdentifier but only checks own samples
+- xDrip4iOS <code>HealthKitManager.swift</code> writes without cross-app query
+- Nightguard <code>AppleHealthService.swift</code> tracks lastSyncDate per-app only</p>
+<p><strong>Impact</strong>: 
+- Duplicate glucose readings when multiple apps enabled
+- Incorrect daily averages in Apple Health
+- Potential algorithm issues if AID reads duplicates</p>
+<p><strong>Remediation</strong>: 
+1. Before writing, query existing samples at same timestamp
+2. Check sample source/metadata before writing
+3. Standardize syncIdentifier format across apps</p>
+<p><strong>Source</strong>: <code>docs/10-domain/healthkit-integration-audit.md</code></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h3 id="gap-hk-002-no-user-guidance-on-multi-app-conflicts">GAP-HK-002: No User Guidance on Multi-App Conflicts<a class="headerlink" href="#gap-hk-002-no-user-guidance-on-multi-app-conflicts" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: None of the apps warn users about HealthKit conflicts when other apps are detected.</p>
+<p><strong>Affected Systems</strong>: All iOS apps with HealthKit write capability</p>
+<p><strong>Evidence</strong>:
+- No HKSource queries at app startup
+- Settings views dont check for competing apps
+- No documentation on recommended configuration</p>
+<p><strong>Impact</strong>: 
+- Users unknowingly create duplicate data
+- Confusion when glucose appears twice in Health app
+- No guidance on which app should write</p>
+<p><strong>Remediation</strong>: 
+1. Query HKSource at startup to detect other CGM/AID apps
+2. Show warning in settings if multiple apps write glucose
+3. Add wiki documentation on recommended setup</p>
+<p><strong>Source</strong>: <code>docs/10-domain/healthkit-integration-audit.md</code></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h3 id="gap-hk-003-inconsistent-metadata-keys">GAP-HK-003: Inconsistent Metadata Keys<a class="headerlink" href="#gap-hk-003-inconsistent-metadata-keys" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Each app uses different metadata schemes for HealthKit samples, preventing cross-app coordination.</p>
+<p><strong>Affected Systems</strong>: Loop, Trio, DiaBLE</p>
+<p><strong>Evidence</strong>:
+- Trio uses <code>"Trio Insulin Type"</code> key
+- Loop uses different syncIdentifier format via LoopKit
+- DiaBLE has no standardized metadata keys
+- xDrip4iOS writes no custom metadata</p>
+<p><strong>Impact</strong>: 
+- Cannot identify sample source programmatically
+- No way to correlate samples with Nightscout entries
+- Cross-app dedup not possible</p>
+<p><strong>Remediation</strong>: 
+1. Standardize metadata key format (e.g., <code>"app.nightscout.syncId"</code>)
+2. Include Nightscout identifier in HK samples
+3. Document standard in ecosystem docs</p>
+<p><strong>Source</strong>: <code>docs/10-domain/healthkit-integration-audit.md</code></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h2 id="widgetkit-standardization-gaps">WidgetKit Standardization Gaps<a class="headerlink" href="#widgetkit-standardization-gaps" title="Permanent link">&para;</a></h2>
+<h3 id="gap-widget-001-no-shared-widget-components">GAP-WIDGET-001: No Shared Widget Components<a class="headerlink" href="#gap-widget-001-no-shared-widget-components" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Each app implements widgets independently with different data models and views.</p>
+<p><strong>Affected Systems</strong>: xDrip4iOS, Nightguard, LoopCaregiver, Trio, DiaBLE</p>
+<p><strong>Evidence</strong>:
+- xDrip4iOS: <code>WidgetState</code> struct with 15+ fields
+- Nightguard: <code>NightscoutDataEntry</code> with different structure
+- LoopCaregiver: Uses LoopKit <code>NewGlucoseSample</code>
+- Trio: <code>LiveActivityAttributes.ContentState</code></p>
+<p><strong>Impact</strong>: 
+- Code duplication across 5+ apps
+- Inconsistent UX (different layouts, colors)
+- Higher maintenance burden per app</p>
+<p><strong>Remediation</strong>: 
+1. Create <code>GlucoseWidgetKit</code> SPM package
+2. Define shared <code>GlucoseWidgetEntry</code> model
+3. Provide reusable views for all families</p>
+<p><strong>Source</strong>: <code>docs/10-domain/widgetkit-standardization-survey.md</code></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h3 id="gap-widget-002-loop-has-no-home-screen-widgets">GAP-WIDGET-002: Loop Has No Home Screen Widgets<a class="headerlink" href="#gap-widget-002-loop-has-no-home-screen-widgets" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Loop app has no WidgetKit implementation for home screen or lock screen display.</p>
+<p><strong>Affected Systems</strong>: Loop</p>
+<p><strong>Evidence</strong>:
+- No Widget Extension target in Loop.xcodeproj
+- Watch app exists but no iOS widgets
+- Users must open app for quick glucose check</p>
+<p><strong>Impact</strong>: 
+- Poor user experience for quick glucose checks
+- Users switch to other apps for widget support
+- Missing parity with xDrip4iOS/Nightguard</p>
+<p><strong>Remediation</strong>: 
+1. Add WidgetKit extension target
+2. Create timeline provider using existing GlucoseStore
+3. Support systemSmall and accessory families minimum</p>
+<p><strong>Source</strong>: <code>docs/10-domain/widgetkit-standardization-survey.md</code></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h3 id="gap-widget-003-trio-has-no-home-screen-widgets">GAP-WIDGET-003: Trio Has No Home Screen Widgets<a class="headerlink" href="#gap-widget-003-trio-has-no-home-screen-widgets" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Trio only has Live Activity/Dynamic Island, no static home screen widgets.</p>
+<p><strong>Affected Systems</strong>: Trio</p>
+<p><strong>Evidence</strong>:
+- <code>LiveActivity/</code> only contains ActivityConfiguration
+- No <code>.systemSmall</code>, <code>.systemMedium</code> support
+- Requires iPhone 14+ for Dynamic Island</p>
+<p><strong>Impact</strong>: 
+- Users with older iPhones have no widget options
+- Live Activity requires active session
+- Missing feature vs xDrip4iOS</p>
+<p><strong>Remediation</strong>: 
+1. Add standard WidgetKit extension
+2. Support systemSmall/Medium/Large
+3. Reuse data from Live Activity</p>
+<p><strong>Source</strong>: <code>docs/10-domain/widgetkit-standardization-survey.md</code></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h3 id="gap-widget-004-inconsistent-color-schemes">GAP-WIDGET-004: Inconsistent Color Schemes<a class="headerlink" href="#gap-widget-004-inconsistent-color-schemes" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Each app uses different glucose range coloring logic for widgets.</p>
+<p><strong>Affected Systems</strong>: All apps with widgets</p>
+<p><strong>Evidence</strong>:
+- xDrip4iOS: 4 thresholds (urgentLow, low, high, urgentHigh)
+- Trio: Dynamic gradient colors
+- Nightguard: UIColor-based scheme
+- No standard color definitions</p>
+<p><strong>Impact</strong>: 
+- Same glucose shows different colors in different apps
+- Confusing for users with multiple apps
+- No ecosystem consistency</p>
+<p><strong>Remediation</strong>: 
+1. Define standard color scheme in shared package
+2. Agree on threshold defaults (55/70/180/250 mg/dL)
+3. Provide overridable color scheme protocol</p>
+<p><strong>Source</strong>: <code>docs/10-domain/widgetkit-standardization-survey.md</code></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h2 id="distribution-infrastructure-gaps">Distribution Infrastructure Gaps<a class="headerlink" href="#distribution-infrastructure-gaps" title="Permanent link">&para;</a></h2>
+<h3 id="gap-dist-001-no-standardized-build-template">GAP-DIST-001: No Standardized Build Template<a class="headerlink" href="#gap-dist-001-no-standardized-build-template" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Each app has slightly different GitHub Actions workflow configuration for browser builds.</p>
+<p><strong>Affected Systems</strong>: Loop, Trio, xDrip4iOS, LoopFollow, LoopCaregiver</p>
+<p><strong>Evidence</strong>:
+- Different cron schedules across apps
+- Different secret naming conventions
+- Different Fastfile structures and lanes</p>
+<p><strong>Impact</strong>: 
+- Harder to maintain multiple apps for developers
+- Inconsistent user experience across apps
+- Duplicate documentation effort</p>
+<p><strong>Remediation</strong>: 
+1. Create shared <code>nightscout/ios-build-action</code> workflow
+2. Standardize secret names (TEAMID, GH_PAT, etc.)
+3. Provide reusable Fastfile template</p>
+<p><strong>Source</strong>: <code>docs/10-domain/testflight-distribution-infrastructure.md</code></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h3 id="gap-dist-002-diablenightguard-no-browser-build">GAP-DIST-002: DiaBLE/Nightguard No Browser Build<a class="headerlink" href="#gap-dist-002-diablenightguard-no-browser-build" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: DiaBLE and Nightguard lack GitHub Actions build automation for browser builds.</p>
+<p><strong>Affected Systems</strong>: DiaBLE, Nightguard</p>
+<p><strong>Evidence</strong>:
+- No <code>.github/workflows/</code> build files in either repo
+- No Matchfile for certificate management
+- Relies on App Store or manual Xcode build</p>
+<p><strong>Impact</strong>: 
+- Users must use App Store version (may lag behind)
+- Or self-build with Xcode (high barrier to entry)
+- Missing parity with other ecosystem apps</p>
+<p><strong>Remediation</strong>: 
+1. Add browser build workflow to Nightguard (Fastlane already exists)
+2. Add Fastlane and workflow to DiaBLE
+3. Document browser build process</p>
+<p><strong>Source</strong>: <code>docs/10-domain/testflight-distribution-infrastructure.md</code></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h3 id="gap-dist-003-no-unified-build-documentation">GAP-DIST-003: No Unified Build Documentation<a class="headerlink" href="#gap-dist-003-no-unified-build-documentation" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Build documentation scattered across different app repos, wikis, and sites.</p>
+<p><strong>Affected Systems</strong>: All iOS apps</p>
+<p><strong>Evidence</strong>:
+- Loop: LoopDocs separate site
+- Trio: README + docs folder
+- xDrip4iOS: GitHub Wiki
+- Different terminology and step ordering</p>
+<p><strong>Impact</strong>: 
+- Confusing for new users trying multiple apps
+- Hard to maintain across apps
+- Duplicate effort for documenters</p>
+<p><strong>Remediation</strong>: 
+1. Create unified iOS build guide at docs.nightscout.org
+2. Link from all app READMEs
+3. Standardize terminology</p>
+<p><strong>Source</strong>: <code>docs/10-domain/testflight-distribution-infrastructure.md</code></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h2 id="ble-cgm-gaps">BLE CGM Gaps<a class="headerlink" href="#ble-cgm-gaps" title="Permanent link">&para;</a></h2>
+<h3 id="gap-ble-001-no-shared-ble-constants-package">GAP-BLE-001: No Shared BLE Constants Package<a class="headerlink" href="#gap-ble-001-no-shared-ble-constants-package" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: BLE service/characteristic UUIDs and opcodes are duplicated across CGMBLEKit, DiaBLE, xDrip4iOS, and LibreTransmitter.</p>
+<p><strong>Affected Systems</strong>: Loop (CGMBLEKit), DiaBLE, xDrip4iOS, LibreTransmitter</p>
+<p><strong>Evidence</strong>:
+- CGMBLEKit: <code>BluetoothServices.swift</code> defines Dexcom UUIDs
+- DiaBLE: <code>Dexcom.swift</code> defines same UUIDs as enums
+- xDrip4iOS: <code>CGMG5Transmitter.swift</code> defines same UUIDs inline
+- Each implementation slightly different format</p>
+<p><strong>Impact</strong>: 
+- Code duplication across 4 codebases
+- Risk of inconsistency when protocols evolve
+- Harder to compare implementations</p>
+<p><strong>Remediation</strong>: 
+Create <code>CGMBLEConstants</code> Swift Package with MIT license containing only UUIDs, opcodes, and enums.</p>
+<p><strong>Source</strong>: <code>docs/10-domain/ble-cgm-library-consolidation.md</code></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h3 id="gap-ble-002-no-standard-glucose-data-model">GAP-BLE-002: No Standard Glucose Data Model<a class="headerlink" href="#gap-ble-002-no-standard-glucose-data-model" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Each app uses different glucose data structures, preventing data exchange.</p>
+<p><strong>Affected Systems</strong>: Loop, DiaBLE, xDrip4iOS, Trio</p>
+<p><strong>Evidence</strong>:
+- CGMBLEKit: <code>struct Glucose</code> with HKQuantity
+- DiaBLE: <code>struct Glucose: Identifiable, Codable</code> with Int value
+- xDrip4iOS: <code>struct GlucoseData</code> with Double glucoseLevelRaw
+- Different fields, units, and naming conventions</p>
+<p><strong>Impact</strong>: 
+- Cannot share glucose readings between apps
+- HealthKit used as intermediary (creates duplicates)
+- No direct inter-app communication possible</p>
+<p><strong>Remediation</strong>: 
+Define <code>GlucoseReading</code> protocol with common fields (timestamp, value, trend, trendRate).</p>
+<p><strong>Source</strong>: <code>docs/10-domain/ble-cgm-library-consolidation.md</code></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h3 id="gap-ble-003-loopcgmblekit-missing-g7-support">GAP-BLE-003: Loop/CGMBLEKit Missing G7 Support<a class="headerlink" href="#gap-ble-003-loopcgmblekit-missing-g7-support" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: CGMBLEKit does not implement Dexcom G7 J-PAKE authentication.</p>
+<p><strong>Affected Systems</strong>: Loop</p>
+<p><strong>Evidence</strong>:
+- CGMBLEKit has G5/G6 only (standard auth)
+- G7 requires J-PAKE pairing (crypto)
+- DiaBLE documents G7 J-PAKE in <code>DexcomG7.swift</code>
+- xDrip4iOS implements G7 in <code>CGMG7Transmitter</code></p>
+<p><strong>Impact</strong>: 
+- Loop users cannot use Dexcom G7 natively
+- Must use Dexcom app + HealthKit (indirect)
+- Major feature gap as G7 adoption grows</p>
+<p><strong>Remediation</strong>: 
+Port J-PAKE implementation from DiaBLE or xDrip4iOS to CGMBLEKit.</p>
+<p><strong>Source</strong>: <code>docs/10-domain/ble-cgm-library-consolidation.md</code></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h3 id="gap-ble-004-libre-3-support-incomplete">GAP-BLE-004: Libre 3 Support Incomplete<a class="headerlink" href="#gap-ble-004-libre-3-support-incomplete" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: No iOS app has fully working native Libre 3 BLE support.</p>
+<p><strong>Affected Systems</strong>: DiaBLE, xDrip4iOS, LibreTransmitter</p>
+<p><strong>Evidence</strong>:
+- DiaBLE: <code>Libre3.swift</code> documents protocol but marked incomplete
+- xDrip4iOS: Limited Libre 3 support
+- LibreTransmitter: No Libre 3 support
+- Libre 3 uses proprietary encryption</p>
+<p><strong>Impact</strong>: 
+- Libre 3 users must use LibreLink app + HealthKit
+- Cannot build DIY CGM with Libre 3
+- Growing sensor market not accessible</p>
+<p><strong>Remediation</strong>: 
+Community research project to complete Libre 3 protocol implementation.</p>
+<p><strong>Source</strong>: <code>docs/10-domain/ble-cgm-library-consolidation.md</code></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h3 id="gap-ble-005-bridge-support-not-in-loopkit-pattern">GAP-BLE-005: Bridge Support Not in LoopKit Pattern<a class="headerlink" href="#gap-ble-005-bridge-support-not-in-loopkit-pattern" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: MiaoMiao, Bubble, and other Libre bridges are not standard LoopKit plugins.</p>
+<p><strong>Affected Systems</strong>: Loop, Trio</p>
+<p><strong>Evidence</strong>:
+- CGMBLEKit pattern: G5Plugin, G6Plugin as CGMManagerUIPlugin
+- LibreTransmitter integrates bridges but differently structured
+- xDrip4iOS has cleanest bridge abstraction</p>
+<p><strong>Impact</strong>: 
+- Libre bridge users have inconsistent Loop experience
+- Bridge support harder to maintain
+- No standard way to add new bridges</p>
+<p><strong>Remediation</strong>: 
+Refactor LibreTransmitter to match CGMBLEKit plugin pattern.</p>
+<p><strong>Source</strong>: <code>docs/10-domain/ble-cgm-library-consolidation.md</code></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<hr />
+<h3 id="gap-tidepool-001-no-ios-only-tidepool-path">GAP-TIDEPOOL-001: No iOS-Only Tidepool Path<a class="headerlink" href="#gap-tidepool-001-no-ios-only-tidepool-path" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: xDrip4iOS and DiaBLE users have no direct Tidepool integration.</p>
+<p><strong>Affected Systems</strong>: xDrip4iOS, DiaBLE</p>
+<p><strong>Evidence</strong>:
+- No Tidepool code in xDrip4iOS or DiaBLE codebases
+- Users must run Loop/Trio in parallel for Tidepool sync</p>
+<p><strong>Impact</strong>: 
+- iOS CGM-only users cannot upload to Tidepool
+- Requires running AID app just for data sync
+- Fragmented user experience</p>
+<p><strong>Remediation</strong>: 
+Consider shared TidepoolKit integration package for iOS CGM apps.</p>
+<p><strong>Source</strong>: <code>docs/10-domain/tidepool-integration-inventory.md</code></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h3 id="gap-tidepool-002-legacy-auth-in-android-apps">GAP-TIDEPOOL-002: Legacy Auth in Android Apps<a class="headerlink" href="#gap-tidepool-002-legacy-auth-in-android-apps" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: AAPS and xDrip+ use deprecated email/password auth instead of OAuth2.</p>
+<p><strong>Affected Systems</strong>: AAPS, xDrip+</p>
+<p><strong>Evidence</strong>:
+- AAPS: <code>TidepoolUploader.kt</code> uses email/password
+- xDrip+: <code>TidepoolUploader.java</code> uses email/password
+- Loop/Trio use OAuth2 via TidepoolKit</p>
+<p><strong>Impact</strong>: 
+- Less secure credential storage
+- May break if Tidepool deprecates legacy auth
+- Inconsistent user experience across platforms</p>
+<p><strong>Remediation</strong>: 
+Migrate Android apps to OAuth2 flow (requires Android auth library).</p>
+<p><strong>Source</strong>: <code>docs/10-domain/tidepool-integration-inventory.md</code></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h3 id="gap-tidepool-003-no-nightscout--tidepool-bidirectional-sync">GAP-TIDEPOOL-003: No Nightscout ↔ Tidepool Bidirectional Sync<a class="headerlink" href="#gap-tidepool-003-no-nightscout--tidepool-bidirectional-sync" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: cgm-remote-monitor has no Tidepool connector. Only Nocturne reads from Tidepool.</p>
+<p><strong>Affected Systems</strong>: cgm-remote-monitor, nightscout-connect</p>
+<p><strong>Evidence</strong>:
+- No Tidepool code in cgm-remote-monitor
+- Nocturne.Connectors.Tidepool is read-only connector
+- No path to import Tidepool data into Nightscout</p>
+<p><strong>Impact</strong>: 
+- Nightscout users can't import historical Tidepool data
+- Data silos between platforms
+- Users must choose one or the other</p>
+<p><strong>Remediation</strong>: 
+Port Nocturne Tidepool connector to nightscout-connect or create plugin.</p>
+<p><strong>Source</strong>: <code>docs/10-domain/tidepool-integration-inventory.md</code></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h3 id="gap-tidepool-004-dosing-decision-upload-inconsistency">GAP-TIDEPOOL-004: Dosing Decision Upload Inconsistency<a class="headerlink" href="#gap-tidepool-004-dosing-decision-upload-inconsistency" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Only Loop/Trio upload <code>dosingDecision</code> data type. AAPS/xDrip+ don't.</p>
+<p><strong>Affected Systems</strong>: AAPS, xDrip+</p>
+<p><strong>Evidence</strong>:
+- Loop: <code>StoredDosingDecision</code> extension uploads algorithm decisions
+- AAPS: No equivalent element class
+- xDrip+: No dosing decision upload (CGM-only app)</p>
+<p><strong>Impact</strong>: 
+- Incomplete algorithm analysis for AAPS users in Tidepool
+- Different data completeness across platforms
+- Harder to compare AID performance</p>
+<p><strong>Remediation</strong>: 
+Add dosingDecision element to AAPS TidepoolPlugin.</p>
+<p><strong>Source</strong>: <code>docs/10-domain/tidepool-integration-inventory.md</code></p>
+<p><strong>Status</strong>: Open</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

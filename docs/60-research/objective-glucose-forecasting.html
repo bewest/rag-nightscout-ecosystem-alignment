@@ -1,0 +1,9466 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/60-research/objective-glucose-forecasting.html">
+      
+      
+        <link rel="prev" href="objective-event-detection.html">
+      
+      
+        <link rel="next" href="objective-pattern-drift-override.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Objective: Glucose Forecasting - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#objective-glucose-forecasting" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Objective: Glucose Forecasting
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../30-design/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_27" id="__nav_5_27_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_27_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_27">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    60-research/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="exp-2844-phenotype-drilldown-report-2026-04-22.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-0001 to 2869
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="exp-2870-envelope-crossover-report-2026-04-22.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2870 to 2909
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="exp-2910-eight-dim-regrade-2026-04-23.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2910 to 2949
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="exp-2950-uniform-action-curve-2026-04-23.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2950 to 2999
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="exp-3000-3003-cf-replay-maturation-2026-04-25.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-3000 and later
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27_7" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5_27_7" id="__nav_5_27_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Programme, closeouts and syntheses
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_27_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_27_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Programme, closeouts and syntheses
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="AUTORESEARCH-SESSION-2026-04-26.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autoresearch session 2026-04-26 — lessons-learned integration + holdout campaign
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="CAPSTONE-iob-age-smb-mechanism-2026-04-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IOB-Age and SMB-Emission Mechanism: A Comparative Study of AID Controllers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="CLOSEOUT-autoresearch-2026-04-25.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autoresearch Program Closeout — 2026-04-25
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="CLOSEOUT-autoresearch-phase2-2026-04-26.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLOSEOUT ADDENDUM — Autoresearch Phase 2 (2026-04-26)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="CLOSEOUT-autoresearch-phase4-5-2026-04-26.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLOSEOUT — Autoresearch Phase 4 + 5 (cf-replay productionisation)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="CLOSEOUT-autoresearch-phase6-2026-04-26.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLOSEOUT — cf-replay autoresearch, post-holdout wave (EXP-3025..3028)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="INDEX.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-29xx Series Index — Design-Comparison Campaign (2026-04-23)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="VERIFICATION-expanded-cohort-2026-04-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Verification Report: Expanded Cohort Validation Report (2026-04-18)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="autoresearch-readiness-2026-04-05.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Auto-Research Readiness Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="autoresearch_wave2_report_2026-04-22.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AutoResearch Wave 2: Controller Integration Validation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="beyond-forecasting-capabilities-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beyond Forecasting: Capabilities Assessment for Event Detection, Override Recommendation, and Drift Tracking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="copilot-cli-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tool Assessment &amp; Engineering Workflow Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cross-report-consistency-analysis-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-Report Consistency Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="e-series-autoresearch-report-2026-07-12.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    E-Series Autoresearch Report: Strategic Clinical Classification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="evidence-synthesis-normalization-long-horizon-2026-04-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evidence Synthesis: Normalization, Regularization, and Long-Horizon Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="experiment-progress-2026-04-04.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiment Progress Report — 2026-04-04
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="experiment-report-2026-04-02.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiment Report: Overnight Agentic Experiment Campaign
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="experimentation-process-narrative.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Forecasting: Experimentation Process &amp; Discovery Narrative
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="fda-experiment-proposals-2026-04-05.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Functional Data Analysis (FDA) Experiment Proposals for CGM/AID Intelligence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="fda-experiment-results-2026-04-05.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FDA Experiment Results: CGM Data Analysis 2.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="gap-closing-report-2026-04-07.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gap-Closing Report: EXP-409/410 Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="gap-closing-transfer-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ensemble Fix, Calibration &amp; Gap-Closing Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="mlflow-experience-report-2026-06-27.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MLflow Experience Report (2026-06-27)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="objective-event-detection.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Objective: Event Detection and Classification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Objective: Glucose Forecasting
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="objective-glucose-forecasting.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Objective: Glucose Forecasting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-objective-statement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Objective Statement
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#model-cgmgroupedencoder" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Model: CGMGroupedEncoder
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#input-specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Input Specification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#output-specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output Specification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#selective-masking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Selective Masking
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-baselines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Baselines
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-trajectory-of-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Trajectory of Results
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Trajectory of Results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-phase-1-foundation-exp-001-to-exp-100" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Phase 1: Foundation (EXP-001 to EXP-100)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-phase-2-architecture-search-exp-100-to-exp-150" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Phase 2: Architecture Search (EXP-100 to EXP-150)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-phase-3-selective-masking-fix-exp-229-to-exp-238" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Phase 3: Selective Masking Fix (EXP-229 to EXP-238)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-phase-4-per-patient-revolution-exp-241-to-exp-258" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Phase 4: Per-Patient Revolution (EXP-241 to EXP-258)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-what-worked" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. What Worked
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. What Worked">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-physics-residual-composition-82-on-synthetic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Physics-Residual Composition (8.2× on synthetic)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-selective-masking-28-improvement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Selective Masking (28% improvement)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-per-patient-fine-tuning-05-to-15-mae" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Per-Patient Fine-Tuning (−0.5 to −1.5 MAE)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-5-seed-ensemble-averaging-05-to-10-mae" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 5-Seed Ensemble Averaging (−0.5 to −1.0 MAE)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#55-deeper-architecture-l4-05-mae" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.5 Deeper Architecture, L=4 (−0.5 MAE)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#56-extended-training-200-epochs-01-mae" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.6 Extended Training, 200 Epochs (−0.1 MAE)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-what-failed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. What Failed
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. What Failed">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-test-time-augmentation--tta-exp-258-405-mae" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Test-Time Augmentation — TTA (EXP-258): −4.05 MAE
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-snapshot-ensemble-exp-246-073-mae-worse-than-5-seed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Snapshot Ensemble (EXP-246): +0.73 MAE worse than 5-seed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-mc-dropout-exp-244-08-mae-worse-than-5-seed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 MC-Dropout (EXP-244): +0.8 MAE worse than 5-seed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-hypo-weighting-in-global-ensemble-exp-239-04-mae" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 Hypo Weighting in Global Ensemble (EXP-239): +0.4 MAE
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#65-curriculum-learning-exp-240-029-mae" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.5 Curriculum Learning (EXP-240): −0.29 MAE
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#66-temporal-augmentation-exp-256-021-mae--larger-gap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.6 Temporal Augmentation (EXP-256): −0.21 MAE + larger gap
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#67-weight-decay-regularization-exp-255-zero-effect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.7 Weight Decay Regularization (EXP-255): Zero effect
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#68-wider-model-d128-exp-245-011-mae" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.8 Wider Model, d=128 (EXP-245): +0.11 MAE
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#69-uvapadova-pretraining-exp-141-0-improvement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.9 UVA/Padova Pretraining (EXP-141): 0% improvement
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-verification-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Verification Results
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Verification Results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-global-verification-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Global Verification Summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-per-patient-verification-exp-254-l4-fine-tuned" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Per-Patient Verification (EXP-254, L=4 Fine-Tuned)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-time-of-day-performance-exp-137-production-v7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 Time-of-Day Performance (EXP-137, Production v7)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#74-clinical-safety-metrics-exp-135-exp-137" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.4 Clinical Safety Metrics (EXP-135, EXP-137)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-saturation-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Saturation Analysis
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Saturation Analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-mae-trajectory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 MAE Trajectory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-improvement-rate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 Improvement Rate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-estimated-performance-floor-105-mgdl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 Estimated Performance Floor: ~10.5 mg/dL
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-recommendations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Recommendations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Recommendations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91-production-model-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 Production Model Selection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#92-shift-focus-to-higher-impact-objectives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2 Shift Focus to Higher-Impact Objectives
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#93-addressing-the-verification-gap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.3 Addressing the Verification Gap
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#94-patient-specific-interventions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4 Patient-Specific Interventions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-key-lessons-learned" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Key Lessons Learned
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-a-experiment-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix A: Experiment Index
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-b-cross-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix B: Cross-References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="objective-pattern-drift-override.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Objective Assessment: Pattern Recognition, Drift Tracking &amp; Override Recommendations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="overall-progress-summary.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgmencode ML Pipeline — Overall Progress Summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="overall-research-progress-2026-04-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overall CGM/AID Machine Learning Research Progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="research-program-overview.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research Program Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="research-proposals-synthesis-2026-04-05.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research Proposals Synthesis: CGM/AID Multi-Objective Intelligence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="research-synthesis-2026-04-05.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research Synthesis: Multi-Objective CGM/AID Intelligence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="research-to-deployment-strategy-2026-04-08.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    From Research to Deployment: What the Ceiling Analysis Tells Us
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="strategic-exploration-map-2026-04-07.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategic Exploration Map: Frontiers in Glucose Forecasting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="structural-redesign-assessment-2026-04-05.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural Redesign Assessment: Incremental Progress vs Architectural Change
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="synthesis-design-comparison-2026-04-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Synthesis: AID Controller Design Comparison (Apr 2026)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="top-5-campaign-insights-2026-04-08.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Top 5 Campaign Insights: 1,000+ Experiments in Glucose Forecasting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="use-case-alignment-guide-2026-04-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Use-Case Alignment Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="visualization-toolkit-2026-04-22.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metabolic System Visualization Toolkit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="accuracy-validation-2026-04-05.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Productionization and pipelines
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="capability-report-clinical-decision-support.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Capability reports
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="circadian-therapy-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Therapy
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="aid-aware-settings-report-2026-04-09.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings and profiles
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="natural-experiment-deconfounding-2026-04-09.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Natural experiments
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="bilateral-deconfounding-report-2026-04-19.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EGP, supply-demand and deconfounding
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="autotune-uam-characterization-report.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Meals and carbohydrates
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="causal-pk-leakage-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Insulin, ISF and pharmacokinetics
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="acceleration-clinical-utility-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clinical, safety and hypoglycaemia
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="aid-author-recommendations-report-2026-04-20.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AID controllers, cohorts and waves
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="centering-dynamics-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forecasting, prediction and classification
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="advanced-architectures-benchmark-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ML methods and architectures
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="canonical/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    canonical/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="collaboration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    collaboration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="external-inventories/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    external-inventories/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="modernization/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    modernization/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="programme/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    programme/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="remedial/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    remedial/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="tenancy/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenancy/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-objective-statement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Objective Statement
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#model-cgmgroupedencoder" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Model: CGMGroupedEncoder
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#input-specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Input Specification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#output-specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output Specification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#selective-masking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Selective Masking
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-baselines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Baselines
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-trajectory-of-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Trajectory of Results
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Trajectory of Results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-phase-1-foundation-exp-001-to-exp-100" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Phase 1: Foundation (EXP-001 to EXP-100)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-phase-2-architecture-search-exp-100-to-exp-150" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Phase 2: Architecture Search (EXP-100 to EXP-150)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-phase-3-selective-masking-fix-exp-229-to-exp-238" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Phase 3: Selective Masking Fix (EXP-229 to EXP-238)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-phase-4-per-patient-revolution-exp-241-to-exp-258" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Phase 4: Per-Patient Revolution (EXP-241 to EXP-258)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-what-worked" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. What Worked
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. What Worked">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-physics-residual-composition-82-on-synthetic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Physics-Residual Composition (8.2× on synthetic)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-selective-masking-28-improvement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Selective Masking (28% improvement)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-per-patient-fine-tuning-05-to-15-mae" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Per-Patient Fine-Tuning (−0.5 to −1.5 MAE)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-5-seed-ensemble-averaging-05-to-10-mae" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 5-Seed Ensemble Averaging (−0.5 to −1.0 MAE)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#55-deeper-architecture-l4-05-mae" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.5 Deeper Architecture, L=4 (−0.5 MAE)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#56-extended-training-200-epochs-01-mae" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.6 Extended Training, 200 Epochs (−0.1 MAE)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-what-failed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. What Failed
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. What Failed">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-test-time-augmentation--tta-exp-258-405-mae" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Test-Time Augmentation — TTA (EXP-258): −4.05 MAE
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-snapshot-ensemble-exp-246-073-mae-worse-than-5-seed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Snapshot Ensemble (EXP-246): +0.73 MAE worse than 5-seed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-mc-dropout-exp-244-08-mae-worse-than-5-seed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 MC-Dropout (EXP-244): +0.8 MAE worse than 5-seed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-hypo-weighting-in-global-ensemble-exp-239-04-mae" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 Hypo Weighting in Global Ensemble (EXP-239): +0.4 MAE
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#65-curriculum-learning-exp-240-029-mae" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.5 Curriculum Learning (EXP-240): −0.29 MAE
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#66-temporal-augmentation-exp-256-021-mae--larger-gap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.6 Temporal Augmentation (EXP-256): −0.21 MAE + larger gap
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#67-weight-decay-regularization-exp-255-zero-effect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.7 Weight Decay Regularization (EXP-255): Zero effect
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#68-wider-model-d128-exp-245-011-mae" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.8 Wider Model, d=128 (EXP-245): +0.11 MAE
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#69-uvapadova-pretraining-exp-141-0-improvement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.9 UVA/Padova Pretraining (EXP-141): 0% improvement
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-verification-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Verification Results
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Verification Results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-global-verification-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Global Verification Summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-per-patient-verification-exp-254-l4-fine-tuned" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Per-Patient Verification (EXP-254, L=4 Fine-Tuned)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-time-of-day-performance-exp-137-production-v7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 Time-of-Day Performance (EXP-137, Production v7)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#74-clinical-safety-metrics-exp-135-exp-137" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.4 Clinical Safety Metrics (EXP-135, EXP-137)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-saturation-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Saturation Analysis
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Saturation Analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-mae-trajectory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 MAE Trajectory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-improvement-rate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 Improvement Rate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-estimated-performance-floor-105-mgdl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 Estimated Performance Floor: ~10.5 mg/dL
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-recommendations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Recommendations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Recommendations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91-production-model-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 Production Model Selection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#92-shift-focus-to-higher-impact-objectives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2 Shift Focus to Higher-Impact Objectives
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#93-addressing-the-verification-gap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.3 Addressing the Verification Gap
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#94-patient-specific-interventions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4 Patient-Specific Interventions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-key-lessons-learned" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Key Lessons Learned
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-a-experiment-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix A: Experiment Index
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-b-cross-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix B: Cross-References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="objective-glucose-forecasting">Objective: Glucose Forecasting<a class="headerlink" href="#objective-glucose-forecasting" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-04-04 at <code>0236100c</code>.</em></p>
+<blockquote>
+<p><strong>Assessment of the primary ML capability of the cgmencode pipeline</strong></p>
+<p>Status: Active Research · Last Updated: 2025-07-17
+Experiments: EXP-001 through EXP-258 (258 total)
+Current Best: <strong>10.59 mg/dL MAE</strong> (EXP-251, per-patient L=4 extended training)</p>
+</blockquote>
+<hr />
+<h2 id="1-objective-statement">1. Objective Statement<a class="headerlink" href="#1-objective-statement" title="Permanent link">&para;</a></h2>
+<p>From <a href="../architecture/ml-composition-architecture.html">ML Composition Architecture</a> Layer 3:</p>
+<blockquote>
+<p><em>"What will glucose do if we take action A?" — predict glucose trajectory
+1-hour ahead (12 five-minute steps) with sufficient accuracy for
+anticipatory diabetes management.</em></p>
+</blockquote>
+<p>The glucose forecasting objective is the foundational prediction task upon
+which all downstream clinical capabilities (event detection, override
+recommendations, safety alerting) depend. This report summarizes 258
+experiments spanning architecture search, masking corrections, per-patient
+specialization, and verification — documenting what works, what fails, and
+where the performance ceiling lies.</p>
+<hr />
+<h2 id="2-architecture">2. Architecture<a class="headerlink" href="#2-architecture" title="Permanent link">&para;</a></h2>
+<h3 id="model-cgmgroupedencoder">Model: CGMGroupedEncoder<a class="headerlink" href="#model-cgmgroupedencoder" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Architecture</td>
+<td>TransformerEncoder</td>
+</tr>
+<tr>
+<td><code>d_model</code></td>
+<td>64</td>
+</tr>
+<tr>
+<td><code>nhead</code></td>
+<td>4</td>
+</tr>
+<tr>
+<td><code>num_layers</code></td>
+<td>2–4</td>
+</tr>
+<tr>
+<td><code>dropout</code></td>
+<td>0.1</td>
+</tr>
+<tr>
+<td>Parameters</td>
+<td>107K–134K (depending on <code>num_layers</code>)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input-specification">Input Specification<a class="headerlink" href="#input-specification" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Window</strong>: 24 steps (2 hours) of history at 5-minute resolution</li>
+<li><strong>Features</strong> (8 channels):</li>
+<li>Glucose (SGV)</li>
+<li>IOB (Insulin on Board)</li>
+<li>COB (Carbs on Board)</li>
+<li>Net basal rate
+  5–8. Derived features (deltas, rates of change)</li>
+</ul>
+<h3 id="output-specification">Output Specification<a class="headerlink" href="#output-specification" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Prediction</strong>: 24 steps (2 hours) of future glucose</li>
+<li><strong>Evaluation horizon</strong>: 12 steps (1 hour) — the clinically relevant window</li>
+<li><strong>Normalization</strong>: <code>SCALE = 400.0</code> for glucose values</li>
+</ul>
+<h3 id="selective-masking">Selective Masking<a class="headerlink" href="#selective-masking" title="Permanent link">&para;</a></h3>
+<p>Seven of the eight input channels represent future-unknown quantities (IOB,
+COB, net basal, and the four derived features). During the prediction window,
+these channels are <strong>zeroed out</strong> to prevent future action leakage. Only the
+glucose channel carries forward signal through the autoregressive prediction.</p>
+<p>This masking strategy was a critical discovery (see §4.3) — its absence
+inflated early results by approximately 60%.</p>
+<hr />
+<h2 id="3-baselines">3. Baselines<a class="headerlink" href="#3-baselines" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Baseline</th>
+<th>MAE (mg/dL)</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Persistence (last value)</td>
+<td>22.7–25.9</td>
+<td>Predicts glucose stays flat</td>
+</tr>
+<tr>
+<td>Raw ML (no composition)</td>
+<td>~67</td>
+<td>Untrained transformer on real data</td>
+</tr>
+<tr>
+<td>Physics-residual (EXP-005)</td>
+<td>~8.2</td>
+<td>Synthetic-only, 8.2× improvement over raw ML</td>
+</tr>
+</tbody>
+</table>
+<p>Persistence MAE varies by data split (22.7 on favorable splits, 25.9 on
+harder temporal splits). All model results below should be compared against
+the <strong>persistence baseline</strong> to gauge genuine predictive skill.</p>
+<hr />
+<h2 id="4-trajectory-of-results">4. Trajectory of Results<a class="headerlink" href="#4-trajectory-of-results" title="Permanent link">&para;</a></h2>
+<h3 id="41-phase-1-foundation-exp-001-to-exp-100">4.1 Phase 1: Foundation (EXP-001 to EXP-100)<a class="headerlink" href="#41-phase-1-foundation-exp-001-to-exp-100" title="Permanent link">&para;</a></h3>
+<p><strong>Key milestone</strong>: Establishing that ML forecasting works on real CGM data.</p>
+<ul>
+<li><strong>Physics-residual composition (EXP-005)</strong>: 8.2× improvement over raw ML on
+  synthetic data — validated the composition architecture concept</li>
+<li><strong>First real-data models</strong>: ~17 mg/dL MAE, a meaningful improvement over the
+  22.7–25.9 mg/dL persistence baseline</li>
+<li><strong>Causal masking discovery</strong>: Without causal masking, models achieved
+  MAE ≈ 0.0 — a deceptive result caused by copying future glucose values
+  directly from the input. This early discovery prevented months of wasted
+  work on models that appeared perfect but had zero predictive skill.</li>
+</ul>
+<h3 id="42-phase-2-architecture-search-exp-100-to-exp-150">4.2 Phase 2: Architecture Search (EXP-100 to EXP-150)<a class="headerlink" href="#42-phase-2-architecture-search-exp-100-to-exp-150" title="Permanent link">&para;</a></h3>
+<p><strong>Key milestone</strong>: Systematic exploration of model architectures and training
+strategies.</p>
+<table>
+<thead>
+<tr>
+<th>Experiment</th>
+<th>Technique</th>
+<th>Result</th>
+<th>Improvement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EXP-139</td>
+<td>Diverse ensemble (5 arch, d32–d128, L2–L6)</td>
+<td><strong>12.1 MAE</strong></td>
+<td>Phase 2 ceiling</td>
+</tr>
+<tr>
+<td>EXP-116</td>
+<td>Hypo-weighted loss</td>
+<td>Hypo MAE 15.2→12.4</td>
+<td>−18.4% on hypo</td>
+</tr>
+<tr>
+<td>EXP-136</td>
+<td>Hypo 2-stage training</td>
+<td>Hypo MAE <strong>10.4</strong>, F1=0.640</td>
+<td>Best hypo detection</td>
+</tr>
+<tr>
+<td>EXP-134</td>
+<td>Night specialist model</td>
+<td>Night MAE 16.8→16.0</td>
+<td>−4.8% overnight</td>
+</tr>
+<tr>
+<td>EXP-137</td>
+<td>Production v7 (conformal)</td>
+<td>MAE=12.9, Hypo F1=0.700</td>
+<td>Calibrated uncertainty</td>
+</tr>
+<tr>
+<td>EXP-141</td>
+<td>UVA/Padova simulator pretrain</td>
+<td>0% improvement</td>
+<td>Negative result (see §6)</td>
+</tr>
+</tbody>
+</table>
+<p>EXP-137 ("Production v7") was the first model to meet clinical deployment
+criteria: conformal prediction intervals with 90.0% coverage and Clarke Error
+Grid Zone A+B at 97.1%.</p>
+<h3 id="43-phase-3-selective-masking-fix-exp-229-to-exp-238">4.3 Phase 3: Selective Masking Fix (EXP-229 to EXP-238)<a class="headerlink" href="#43-phase-3-selective-masking-fix-exp-229-to-exp-238" title="Permanent link">&para;</a></h3>
+<p><strong>Key milestone</strong>: Discovering and correcting future action leakage.</p>
+<blockquote>
+<p><strong>Critical finding</strong>: Approximately 60% of Gen-2 improvement was
+attributable to future action leakage. Ten input channels were visible in
+the prediction window, allowing the model to "see" future insulin and carb
+actions rather than predicting their effects.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Experiment</th>
+<th>Masking Strategy</th>
+<th>MAE (mg/dL)</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gen-2 models</td>
+<td>No masking (leaked)</td>
+<td>~12.0</td>
+<td>Dishonest — inflated results</td>
+</tr>
+<tr>
+<td>EXP-229</td>
+<td>Full masking (all channels)</td>
+<td>25.1</td>
+<td>Overly conservative</td>
+</tr>
+<tr>
+<td>EXP-230</td>
+<td>Selective masking (7 of 8)</td>
+<td><strong>18.17</strong></td>
+<td>28% better than full masking</td>
+</tr>
+<tr>
+<td>EXP-232</td>
+<td>5-seed ensemble + selective</td>
+<td><strong>12.46</strong></td>
+<td>Rebuilt honest baseline</td>
+</tr>
+</tbody>
+</table>
+<p>After the fix, honest single-model MAE landed at ~17 mg/dL — matching the
+Phase 1 real-data results. The 5-seed ensemble (EXP-232) recovered most of
+the apparent loss, reaching 12.46 MAE through legitimate aggregation rather
+than leakage.</p>
+<h3 id="44-phase-4-per-patient-revolution-exp-241-to-exp-258">4.4 Phase 4: Per-Patient Revolution (EXP-241 to EXP-258)<a class="headerlink" href="#44-phase-4-per-patient-revolution-exp-241-to-exp-258" title="Permanent link">&para;</a></h3>
+<p><strong>Key milestone</strong>: Per-patient fine-tuning as the dominant improvement lever.</p>
+<table>
+<thead>
+<tr>
+<th>Experiment</th>
+<th>Technique</th>
+<th>MAE (mg/dL)</th>
+<th>Δ vs Base</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EXP-241</td>
+<td>Per-patient FT (L=2)</td>
+<td>11.80</td>
+<td>−0.48</td>
+<td>First per-patient result</td>
+</tr>
+<tr>
+<td>EXP-242</td>
+<td>Per-patient ensemble (L=2)</td>
+<td><strong>11.25</strong></td>
+<td>−1.21</td>
+<td>Ensemble + FT synergy</td>
+</tr>
+<tr>
+<td>EXP-247</td>
+<td>Deeper base (L=4)</td>
+<td>12.20</td>
+<td>—</td>
+<td>New base model</td>
+</tr>
+<tr>
+<td>EXP-250</td>
+<td>Per-patient FT (L=4)</td>
+<td><strong>10.71</strong></td>
+<td>−1.49</td>
+<td>Depth + FT compound</td>
+</tr>
+<tr>
+<td>EXP-251</td>
+<td>Extended training (200 ep)</td>
+<td><strong>10.59</strong></td>
+<td>−1.61</td>
+<td><strong>Current best</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Per-patient fine-tuning consistently delivers −0.5 to −1.5 MAE improvement
+by adapting the global model's weights to individual patient physiology
+(insulin sensitivity, meal patterns, activity levels).</p>
+<hr />
+<h2 id="5-what-worked">5. What Worked<a class="headerlink" href="#5-what-worked" title="Permanent link">&para;</a></h2>
+<p>Ranked by impact on forecast MAE:</p>
+<h3 id="51-physics-residual-composition-82-on-synthetic">5.1 Physics-Residual Composition (8.2× on synthetic)<a class="headerlink" href="#51-physics-residual-composition-82-on-synthetic" title="Permanent link">&para;</a></h3>
+<p>The composition architecture from Layer 3 of the ML pipeline combines
+physics-based glucose models with learned residuals. On synthetic
+(UVA/Padova) data, this yielded an 8.2× improvement over raw ML — the single
+largest gain in the experiment history. On real data, the composition
+framework provides the structural foundation, though the gap narrows.</p>
+<h3 id="52-selective-masking-28-improvement">5.2 Selective Masking (28% improvement)<a class="headerlink" href="#52-selective-masking-28-improvement" title="Permanent link">&para;</a></h3>
+<p>Masking 7 of 8 future-unknown channels while preserving the glucose channel
+yielded a 28% MAE reduction versus full masking (18.17 vs 25.1 mg/dL). This
+is the correct information-theoretic approach: the model can use its own
+glucose predictions autoregressively, but cannot peek at future actions.</p>
+<h3 id="53-per-patient-fine-tuning-05-to-15-mae">5.3 Per-Patient Fine-Tuning (−0.5 to −1.5 MAE)<a class="headerlink" href="#53-per-patient-fine-tuning-05-to-15-mae" title="Permanent link">&para;</a></h3>
+<p>The most reliable improvement lever on real data. Every patient benefits from
+fine-tuning, though the magnitude varies:</p>
+<ul>
+<li>Patients with consistent patterns (d, e, f, g): −0.3 to −0.7 MAE</li>
+<li>Patients with high variability (a, b, c): −0.8 to −1.5 MAE</li>
+<li>Patients with limited data (h, j): −0.2 to −0.5 MAE</li>
+</ul>
+<h3 id="54-5-seed-ensemble-averaging-05-to-10-mae">5.4 5-Seed Ensemble Averaging (−0.5 to −1.0 MAE)<a class="headerlink" href="#54-5-seed-ensemble-averaging-05-to-10-mae" title="Permanent link">&para;</a></h3>
+<p>Training 5 models with different random seeds and averaging predictions
+reduces variance without introducing bias. This is a "free" improvement
+requiring only 5× training compute (inference is parallelizable).</p>
+<h3 id="55-deeper-architecture-l4-05-mae">5.5 Deeper Architecture, L=4 (−0.5 MAE)<a class="headerlink" href="#55-deeper-architecture-l4-05-mae" title="Permanent link">&para;</a></h3>
+<p>Moving from 2 to 4 transformer layers yields a consistent −0.5 MAE
+improvement at a modest parameter cost (107K → 134K). The deeper model
+captures longer-range temporal dependencies in glucose dynamics.</p>
+<h3 id="56-extended-training-200-epochs-01-mae">5.6 Extended Training, 200 Epochs (−0.1 MAE)<a class="headerlink" href="#56-extended-training-200-epochs-01-mae" title="Permanent link">&para;</a></h3>
+<p>Marginal but real. Doubling training duration from 100 to 200 epochs
+squeezes out a final ~1% improvement. Subject to diminishing returns.</p>
+<hr />
+<h2 id="6-what-failed">6. What Failed<a class="headerlink" href="#6-what-failed" title="Permanent link">&para;</a></h2>
+<p>Techniques that produced zero or negative improvement, ranked by severity:</p>
+<h3 id="61-test-time-augmentation--tta-exp-258-405-mae">6.1 Test-Time Augmentation — TTA (EXP-258): −4.05 MAE<a class="headerlink" href="#61-test-time-augmentation--tta-exp-258-405-mae" title="Permanent link">&para;</a></h3>
+<p>The worst-performing technique tested. Adding noise at inference time
+destroyed the signal the model had learned, producing predictions worse than
+the persistence baseline in some cases. <strong>Verdict: destructive, never use.</strong></p>
+<h3 id="62-snapshot-ensemble-exp-246-073-mae-worse-than-5-seed">6.2 Snapshot Ensemble (EXP-246): +0.73 MAE worse than 5-seed<a class="headerlink" href="#62-snapshot-ensemble-exp-246-073-mae-worse-than-5-seed" title="Permanent link">&para;</a></h3>
+<p>Saving checkpoints along the training trajectory and averaging them produced
+worse results than independently trained seeds. The checkpoints are too
+correlated — they explore the same loss basin rather than diverse solutions.</p>
+<h3 id="63-mc-dropout-exp-244-08-mae-worse-than-5-seed">6.3 MC-Dropout (EXP-244): +0.8 MAE worse than 5-seed<a class="headerlink" href="#63-mc-dropout-exp-244-08-mae-worse-than-5-seed" title="Permanent link">&para;</a></h3>
+<p>Monte Carlo dropout at inference time adds noise without the diversity
+benefit of true ensemble members. The dropout masks are random but not
+complementary, yielding worse calibration than seed-based ensembles.</p>
+<h3 id="64-hypo-weighting-in-global-ensemble-exp-239-04-mae">6.4 Hypo Weighting in Global Ensemble (EXP-239): +0.4 MAE<a class="headerlink" href="#64-hypo-weighting-in-global-ensemble-exp-239-04-mae" title="Permanent link">&para;</a></h3>
+<p>While hypo-weighted loss improves hypoglycemia-specific metrics in isolation
+(EXP-116, EXP-136), applying it within the ensemble framework degrades
+overall MAE. The ensemble already captures hypo patterns through diversity.</p>
+<h3 id="65-curriculum-learning-exp-240-029-mae">6.5 Curriculum Learning (EXP-240): −0.29 MAE<a class="headerlink" href="#65-curriculum-learning-exp-240-029-mae" title="Permanent link">&para;</a></h3>
+<p>Training on progressively harder examples (sorted by glucose variability)
+hurt generalization. The model overfit to the curriculum ordering rather than
+learning robust features.</p>
+<h3 id="66-temporal-augmentation-exp-256-021-mae--larger-gap">6.6 Temporal Augmentation (EXP-256): −0.21 MAE + larger gap<a class="headerlink" href="#66-temporal-augmentation-exp-256-021-mae--larger-gap" title="Permanent link">&para;</a></h3>
+<p>Adding temporal jitter and warping to training data increased the
+train-verification gap from 7.4% to 9.8%, indicating the augmentations
+introduced distribution shift rather than improving robustness.</p>
+<h3 id="67-weight-decay-regularization-exp-255-zero-effect">6.7 Weight Decay Regularization (EXP-255): Zero effect<a class="headerlink" href="#67-weight-decay-regularization-exp-255-zero-effect" title="Permanent link">&para;</a></h3>
+<p>Standard L2 weight decay had no measurable effect on the verification gap
+(7.4% with and without). The model is not overfitting in the traditional
+sense — the gap is driven by temporal non-stationarity, not parameter
+memorization.</p>
+<h3 id="68-wider-model-d128-exp-245-011-mae">6.8 Wider Model, d=128 (EXP-245): +0.11 MAE<a class="headerlink" href="#68-wider-model-d128-exp-245-011-mae" title="Permanent link">&para;</a></h3>
+<p>Doubling the model width from d=64 to d=128 slightly worsened results. The
+107K–134K parameter range appears well-matched to the available training
+data; additional capacity leads to overfitting without enough data to
+regularize.</p>
+<h3 id="69-uvapadova-pretraining-exp-141-0-improvement">6.9 UVA/Padova Pretraining (EXP-141): 0% improvement<a class="headerlink" href="#69-uvapadova-pretraining-exp-141-0-improvement" title="Permanent link">&para;</a></h3>
+<p>Pretraining on 32K synthetic windows from the UVA/Padova simulator provided
+zero benefit when fine-tuning on real data. The domain gap between simulated
+and real glucose dynamics is too large for transfer learning to bridge.</p>
+<hr />
+<h2 id="7-verification-results">7. Verification Results<a class="headerlink" href="#7-verification-results" title="Permanent link">&para;</a></h2>
+<p>All verification uses <strong>held-out temporal data</strong> — later time periods from
+the same patients, never seen during training. This tests the model's ability
+to generalize across time, the most clinically relevant evaluation.</p>
+<h3 id="71-global-verification-summary">7.1 Global Verification Summary<a class="headerlink" href="#71-global-verification-summary" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Train MAE</th>
+<th>Verification MAE</th>
+<th>Gap %</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EXP-249 (L=2 FT)</td>
+<td>11.25</td>
+<td><strong>11.56</strong></td>
+<td>+2.8%</td>
+<td>Best generalization ratio</td>
+</tr>
+<tr>
+<td>EXP-254 (L=4 FT)</td>
+<td>10.71</td>
+<td><strong>11.49</strong></td>
+<td>+7.4%</td>
+<td>Best absolute verification</td>
+</tr>
+<tr>
+<td>EXP-255 (L=4 +wd)</td>
+<td>10.71</td>
+<td><strong>11.50</strong></td>
+<td>+7.4%</td>
+<td>Weight decay: no effect</td>
+</tr>
+<tr>
+<td>EXP-256 (L=4 +aug)</td>
+<td>10.80</td>
+<td><strong>11.86</strong></td>
+<td>+9.8%</td>
+<td>Augmentation: harmful</td>
+</tr>
+<tr>
+<td>EXP-238 (global)</td>
+<td>12.46</td>
+<td><strong>11.68</strong></td>
+<td>−6.3%</td>
+<td>Global model generalizes!</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Notable finding</strong>: The global model (EXP-238) achieves <em>better</em>
+verification MAE than training MAE (−6.3% gap), suggesting that global
+models are more robust to temporal shift than per-patient models. However,
+per-patient models still achieve lower absolute verification MAE (11.49 vs
+11.68).</p>
+<h3 id="72-per-patient-verification-exp-254-l4-fine-tuned">7.2 Per-Patient Verification (EXP-254, L=4 Fine-Tuned)<a class="headerlink" href="#72-per-patient-verification-exp-254-l4-fine-tuned" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Patient</th>
+<th>Train MAE</th>
+<th>Ver MAE</th>
+<th>Gap %</th>
+<th>Windows</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a</td>
+<td>11.09</td>
+<td>10.97</td>
+<td>−1.1%</td>
+<td>414</td>
+<td>✅ Excellent</td>
+</tr>
+<tr>
+<td>b</td>
+<td>17.60</td>
+<td>15.55</td>
+<td>−11.6%</td>
+<td>412</td>
+<td>✅ Hardest patient, improves on verification</td>
+</tr>
+<tr>
+<td>c</td>
+<td>9.72</td>
+<td>13.21</td>
+<td>+36.0%</td>
+<td>361</td>
+<td>⚠️ Severe gap — temporal shift</td>
+</tr>
+<tr>
+<td>d</td>
+<td>8.00</td>
+<td>7.93</td>
+<td>−0.9%</td>
+<td>384</td>
+<td>✅ Best patient overall</td>
+</tr>
+<tr>
+<td>e</td>
+<td>8.24</td>
+<td>8.85</td>
+<td>+7.4%</td>
+<td>346</td>
+<td>✅ Good</td>
+</tr>
+<tr>
+<td>f</td>
+<td>8.95</td>
+<td>8.37</td>
+<td>−6.5%</td>
+<td>401</td>
+<td>✅ Good</td>
+</tr>
+<tr>
+<td>g</td>
+<td>9.08</td>
+<td>8.03</td>
+<td>−11.6%</td>
+<td>400</td>
+<td>✅ Excellent</td>
+</tr>
+<tr>
+<td>h</td>
+<td>10.04</td>
+<td>10.34</td>
+<td>+3.0%</td>
+<td>142</td>
+<td>⚠️ Limited data</td>
+</tr>
+<tr>
+<td>i</td>
+<td>8.70</td>
+<td>10.64</td>
+<td>+22.3%</td>
+<td>409</td>
+<td>⚠️ Significant gap</td>
+</tr>
+<tr>
+<td>j</td>
+<td>15.65</td>
+<td>21.04</td>
+<td>+34.5%</td>
+<td>138</td>
+<td>❌ Worst — 0% IOB data, 138 windows</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Patient stratification</strong>:</p>
+<ul>
+<li><strong>Tier 1</strong> (&lt; 5% gap): Patients a, d, e, f, g — 5 of 10 patients
+  generalize well. These patients likely have consistent physiology and
+  treatment patterns over the evaluation period.</li>
+<li><strong>Tier 2</strong> (5–25% gap): Patients b, h, i — moderate gap, addressable with
+  more data or temporal adaptation.</li>
+<li><strong>Tier 3</strong> (&gt; 25% gap): Patients c, j — large gap driven by temporal shift
+  (patient c) or data quality (patient j: 0% IOB data, only 138 windows).</li>
+</ul>
+<h3 id="73-time-of-day-performance-exp-137-production-v7">7.3 Time-of-Day Performance (EXP-137, Production v7)<a class="headerlink" href="#73-time-of-day-performance-exp-137-production-v7" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Period</th>
+<th>MAE (mg/dL)</th>
+<th>Relative</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Morning (06:00–12:00)</td>
+<td>9.9</td>
+<td>Best</td>
+<td>Post-fasting, stable basal</td>
+</tr>
+<tr>
+<td>Afternoon (12:00–18:00)</td>
+<td>12.0</td>
+<td>+21%</td>
+<td>Active eating period</td>
+</tr>
+<tr>
+<td>Evening (18:00–00:00)</td>
+<td>15.0</td>
+<td>+52%</td>
+<td>Post-dinner insulin stacking</td>
+</tr>
+<tr>
+<td>Night-A (00:00–03:00)</td>
+<td>15.2</td>
+<td>+54%</td>
+<td>Dawn phenomenon period</td>
+</tr>
+<tr>
+<td>Night-B (03:00–06:00)</td>
+<td>14.7</td>
+<td>+48%</td>
+<td>Pre-dawn, hormonal shifts</td>
+</tr>
+</tbody>
+</table>
+<p>Morning forecasts are substantially more accurate than evening/night. This
+reflects the inherent predictability of fasting glucose versus the complex
+meal-insulin dynamics of active periods. A production system should
+communicate time-dependent confidence to users.</p>
+<h3 id="74-clinical-safety-metrics-exp-135-exp-137">7.4 Clinical Safety Metrics (EXP-135, EXP-137)<a class="headerlink" href="#74-clinical-safety-metrics-exp-135-exp-137" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Value</th>
+<th>Clinical Threshold</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Clarke Error Grid Zone A+B</td>
+<td><strong>97.1%</strong></td>
+<td>&gt; 95%</td>
+<td>✅ Clinically excellent</td>
+</tr>
+<tr>
+<td>Conformal 90% coverage</td>
+<td><strong>90.0%</strong></td>
+<td>88–92%</td>
+<td>✅ Perfectly calibrated</td>
+</tr>
+<tr>
+<td>Conformal interval width</td>
+<td>57.1 mg/dL</td>
+<td>—</td>
+<td>Informational</td>
+</tr>
+<tr>
+<td>Hypo detection F1</td>
+<td>0.700</td>
+<td>&gt; 0.60</td>
+<td>✅ Acceptable</td>
+</tr>
+<tr>
+<td>Hypo detection (2-stage)</td>
+<td>F1=0.640, MAE=10.4</td>
+<td>—</td>
+<td>Specialized model</td>
+</tr>
+</tbody>
+</table>
+<p>The 97.1% Zone A+B result means that 97.1% of predictions fall in clinically
+acceptable or benign-error regions of the Clarke Error Grid. The conformal
+prediction intervals achieve exactly the target coverage, indicating
+well-calibrated uncertainty estimates.</p>
+<hr />
+<h2 id="8-saturation-analysis">8. Saturation Analysis<a class="headerlink" href="#8-saturation-analysis" title="Permanent link">&para;</a></h2>
+<h3 id="81-mae-trajectory">8.1 MAE Trajectory<a class="headerlink" href="#81-mae-trajectory" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>MAE (mg/dL)
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>25 ┤ ● Persistence baseline (22.7-25.9)
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>   │
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>20 ┤
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>   │
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>17 ┤ ● Phase 1 real-data models (~17.0)
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>   │
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>   │
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>12 ┤ ● EXP-139 diverse ensemble (12.1)
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>   │ ● EXP-232 honest masking rebuild (12.46)
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>11 ┤ ● EXP-242 per-patient L=2 (11.25)
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>   │ ● EXP-250 per-patient L=4 (10.71)
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>10 ┤ ● EXP-251 extended 200ep (10.59)  ← CURRENT BEST
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>   │
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>   ╰──────────────────────────────────────→ Experiments
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>     001        100        150   232  242 251
+</code></pre></div>
+<h3 id="82-improvement-rate">8.2 Improvement Rate<a class="headerlink" href="#82-improvement-rate" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Transition</th>
+<th>MAE Change</th>
+<th>Improvement</th>
+<th>Experiments Spent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Persistence → Phase 1</td>
+<td>22.7 → 17.0</td>
+<td>−25.1%</td>
+<td>~100</td>
+</tr>
+<tr>
+<td>Phase 1 → Phase 2</td>
+<td>17.0 → 12.1</td>
+<td>−28.8%</td>
+<td>~50</td>
+</tr>
+<tr>
+<td>Phase 2 → Masking fix</td>
+<td>12.1 → 12.46</td>
+<td>+3.0% (honest)</td>
+<td>~10</td>
+</tr>
+<tr>
+<td>Masking → Per-patient L=2</td>
+<td>12.46 → 11.25</td>
+<td>−9.7%</td>
+<td>~10</td>
+</tr>
+<tr>
+<td>L=2 → L=4</td>
+<td>11.25 → 10.71</td>
+<td>−4.8%</td>
+<td>~8</td>
+</tr>
+<tr>
+<td>L=4 → Extended</td>
+<td>10.71 → 10.59</td>
+<td>−1.1%</td>
+<td>~1</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Improvement per experiment has slowed from ~5% to ~1%.</strong> The curve exhibits
+classic diminishing returns, suggesting proximity to a performance floor.</p>
+<h3 id="83-estimated-performance-floor-105-mgdl">8.3 Estimated Performance Floor: ~10.5 mg/dL<a class="headerlink" href="#83-estimated-performance-floor-105-mgdl" title="Permanent link">&para;</a></h3>
+<p>The ~10.5 mg/dL floor likely reflects four irreducible factors:</p>
+<ol>
+<li>
+<p><strong>Biological noise</strong>: Glucose dynamics are inherently stochastic. Even
+   with perfect models, inter-day variability in insulin sensitivity, gut
+   absorption, and hepatic glucose production create irreducible prediction
+   error.</p>
+</li>
+<li>
+<p><strong>Missing features</strong>: Activity level, stress hormones (cortisol,
+   adrenaline), menstrual cycle phase, sleep quality, and illness state all
+   affect glucose but are absent from CGM-only input. These account for an
+   estimated 3–5 mg/dL of irreducible error.</p>
+</li>
+<li>
+<p><strong>Temporal non-stationarity</strong>: Patient physiology changes over weeks to
+   months (seasonal insulin sensitivity, progressive beta-cell decline,
+   medication changes). Models trained on historical data cannot fully
+   anticipate these shifts.</p>
+</li>
+<li>
+<p><strong>Limited data</strong>: Verification sets range from 138 to 414 windows per
+   patient (11.5 to 34.5 hours of glucose data). Larger datasets would
+   enable both better training and more precise evaluation.</p>
+</li>
+</ol>
+<hr />
+<h2 id="9-recommendations">9. Recommendations<a class="headerlink" href="#9-recommendations" title="Permanent link">&para;</a></h2>
+<h3 id="91-production-model-selection">9.1 Production Model Selection<a class="headerlink" href="#91-production-model-selection" title="Permanent link">&para;</a></h3>
+<p><strong>Primary</strong>: EXP-251 (10.59 MAE) — current best training performance with
+per-patient L=4 fine-tuning and extended training.</p>
+<p><strong>Verification confidence</strong>: Anchored by EXP-254 verification results (11.49
+MAE, +7.4% gap). The 7.4% gap is acceptable for clinical use when combined
+with conformal prediction intervals.</p>
+<p><strong>Fallback</strong>: EXP-238 (global model, 11.68 verification MAE) — for new
+patients without sufficient data for fine-tuning. The global model's negative
+gap (−6.3%) makes it the most robust option for cold-start scenarios.</p>
+<h3 id="92-shift-focus-to-higher-impact-objectives">9.2 Shift Focus to Higher-Impact Objectives<a class="headerlink" href="#92-shift-focus-to-higher-impact-objectives" title="Permanent link">&para;</a></h3>
+<p>The forecasting objective is approaching saturation. Future work should
+prioritize downstream capabilities that leverage the existing forecast
+quality:</p>
+<ul>
+<li><strong>Event detection</strong> (hypo/hyper alerts): Higher marginal clinical impact
+  than incremental MAE improvements. The Hypo F1=0.700 baseline has clear
+  room for improvement.</li>
+<li><strong>Override recommendations</strong>: Using forecasts to suggest therapy adjustments
+  — the Layer 4 objective in the composition architecture.</li>
+<li><strong>Uncertainty communication</strong>: Making the conformal intervals actionable
+  for clinical decision-making.</li>
+</ul>
+<h3 id="93-addressing-the-verification-gap">9.3 Addressing the Verification Gap<a class="headerlink" href="#93-addressing-the-verification-gap" title="Permanent link">&para;</a></h3>
+<p>The +7.4% verification gap in per-patient models indicates temporal
+non-stationarity. Potential mitigations:</p>
+<ul>
+<li><strong>Time-aware features</strong>: Encoding day-of-week, time-since-last-site-change,
+  or insulin-age as input features to capture temporal patterns.</li>
+<li><strong>Temporal adaptation</strong>: Continuously fine-tuning on recent data (sliding
+  window training) to track physiological drift.</li>
+<li><strong>Ensemble of global + per-patient</strong>: Blending the robust global model
+  (negative gap) with the precise per-patient model (lower absolute MAE).</li>
+</ul>
+<h3 id="94-patient-specific-interventions">9.4 Patient-Specific Interventions<a class="headerlink" href="#94-patient-specific-interventions" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Patient j</strong>: Requires special handling — 0% IOB data makes accurate
+  forecasting impossible. Either obtain insulin data or exclude from
+  per-patient evaluation. Use the global model as fallback.</li>
+<li><strong>Patient c</strong>: The +36.0% gap suggests a regime change (new medication,
+  lifestyle shift) between training and verification periods. Temporal
+  adaptation (§9.3) is the likely fix.</li>
+<li><strong>Patient b</strong>: Despite being the "hardest" patient (17.60 train MAE),
+  verification actually <em>improves</em> (−11.6%), suggesting the model captures
+  this patient's patterns well — the training data simply contains harder
+  episodes.</li>
+</ul>
+<hr />
+<h2 id="10-key-lessons-learned">10. Key Lessons Learned<a class="headerlink" href="#10-key-lessons-learned" title="Permanent link">&para;</a></h2>
+<ol>
+<li>
+<p><strong>Honest evaluation is non-negotiable.</strong> The selective masking fix
+   (Phase 3) erased 60% of apparent progress — but the resulting models are
+   genuinely predictive rather than leaking future data. Always verify that
+   the model cannot access future information.</p>
+</li>
+<li>
+<p><strong>Per-patient adaptation beats architecture search.</strong> Hundreds of
+   experiments exploring architectures, loss functions, and training schemes
+   yielded less improvement than simple per-patient fine-tuning. The
+   patient-specific signal dominates the architectural signal.</p>
+</li>
+<li>
+<p><strong>Simple ensembles beat complex ones.</strong> Five independently-trained seeds
+   outperform snapshot ensembles, MC-dropout, and curriculum-based diversity.
+   Independent training explores more of the loss landscape.</p>
+</li>
+<li>
+<p><strong>Regularization techniques assume the wrong failure mode.</strong> Weight decay,
+   augmentation, and dropout address parameter overfitting, but the actual
+   gap driver is temporal non-stationarity. The solution is temporal
+   adaptation, not regularization.</p>
+</li>
+<li>
+<p><strong>Synthetic-to-real transfer is ineffective.</strong> UVA/Padova pretraining
+   (32K windows) provided zero benefit. The domain gap between simulated and
+   real glucose dynamics is fundamental — simulators model idealized
+   physiology while real data includes sensor noise, missed boluses,
+   unreported meals, and behavioral variability.</p>
+</li>
+</ol>
+<hr />
+<h2 id="appendix-a-experiment-index">Appendix A: Experiment Index<a class="headerlink" href="#appendix-a-experiment-index" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Phase</th>
+<th>Technique</th>
+<th>MAE</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EXP-005</td>
+<td>1</td>
+<td>Physics-residual composition</td>
+<td>8.2× gain</td>
+<td>✅ Foundation</td>
+</tr>
+<tr>
+<td>EXP-116</td>
+<td>2</td>
+<td>Hypo-weighted loss</td>
+<td>Hypo 12.4</td>
+<td>✅ Specialized</td>
+</tr>
+<tr>
+<td>EXP-134</td>
+<td>2</td>
+<td>Night specialist</td>
+<td>Night 16.0</td>
+<td>✅ Marginal</td>
+</tr>
+<tr>
+<td>EXP-135</td>
+<td>2</td>
+<td>Clarke Error Grid eval</td>
+<td>97.1% A+B</td>
+<td>✅ Clinical</td>
+</tr>
+<tr>
+<td>EXP-136</td>
+<td>2</td>
+<td>Hypo 2-stage</td>
+<td>Hypo 10.4</td>
+<td>✅ Best hypo</td>
+</tr>
+<tr>
+<td>EXP-137</td>
+<td>2</td>
+<td>Production v7</td>
+<td>12.9</td>
+<td>✅ First production</td>
+</tr>
+<tr>
+<td>EXP-139</td>
+<td>2</td>
+<td>Diverse ensemble</td>
+<td>12.1</td>
+<td>✅ Phase 2 best</td>
+</tr>
+<tr>
+<td>EXP-141</td>
+<td>2</td>
+<td>UVA/Padova pretrain</td>
+<td>0% gain</td>
+<td>❌ No transfer</td>
+</tr>
+<tr>
+<td>EXP-230</td>
+<td>3</td>
+<td>Selective masking</td>
+<td>18.17</td>
+<td>✅ Honest baseline</td>
+</tr>
+<tr>
+<td>EXP-232</td>
+<td>3</td>
+<td>5-seed + selective</td>
+<td>12.46</td>
+<td>✅ Rebuilt baseline</td>
+</tr>
+<tr>
+<td>EXP-238</td>
+<td>3</td>
+<td>Global model</td>
+<td>12.46</td>
+<td>✅ Best generalization</td>
+</tr>
+<tr>
+<td>EXP-239</td>
+<td>4</td>
+<td>Hypo-weighted ensemble</td>
+<td>+0.4 worse</td>
+<td>❌ Harmful</td>
+</tr>
+<tr>
+<td>EXP-240</td>
+<td>4</td>
+<td>Curriculum learning</td>
+<td>−0.29 worse</td>
+<td>❌ Harmful</td>
+</tr>
+<tr>
+<td>EXP-241</td>
+<td>4</td>
+<td>Per-patient FT (L=2)</td>
+<td>11.80</td>
+<td>✅ First per-patient</td>
+</tr>
+<tr>
+<td>EXP-242</td>
+<td>4</td>
+<td>Per-patient ensemble (L=2)</td>
+<td>11.25</td>
+<td>✅ Breakthrough</td>
+</tr>
+<tr>
+<td>EXP-244</td>
+<td>4</td>
+<td>MC-Dropout</td>
+<td>+0.8 worse</td>
+<td>❌ Worse than ensemble</td>
+</tr>
+<tr>
+<td>EXP-245</td>
+<td>4</td>
+<td>Wider d=128</td>
+<td>+0.11 worse</td>
+<td>❌ Overfitting</td>
+</tr>
+<tr>
+<td>EXP-246</td>
+<td>4</td>
+<td>Snapshot ensemble</td>
+<td>+0.73 worse</td>
+<td>❌ Correlated</td>
+</tr>
+<tr>
+<td>EXP-247</td>
+<td>4</td>
+<td>Deeper base (L=4)</td>
+<td>12.20</td>
+<td>✅ New base</td>
+</tr>
+<tr>
+<td>EXP-249</td>
+<td>4</td>
+<td>L=2 FT (verified)</td>
+<td>11.56 ver</td>
+<td>✅ Best gap ratio</td>
+</tr>
+<tr>
+<td>EXP-250</td>
+<td>4</td>
+<td>Per-patient FT (L=4)</td>
+<td>10.71</td>
+<td>✅ Depth + FT</td>
+</tr>
+<tr>
+<td>EXP-251</td>
+<td>4</td>
+<td>Extended 200ep</td>
+<td><strong>10.59</strong></td>
+<td>✅ <strong>Current best</strong></td>
+</tr>
+<tr>
+<td>EXP-254</td>
+<td>4</td>
+<td>L=4 FT (verified)</td>
+<td>11.49 ver</td>
+<td>✅ Best absolute ver</td>
+</tr>
+<tr>
+<td>EXP-255</td>
+<td>4</td>
+<td>L=4 + weight decay</td>
+<td>11.50 ver</td>
+<td>❌ No effect</td>
+</tr>
+<tr>
+<td>EXP-256</td>
+<td>4</td>
+<td>L=4 + augmentation</td>
+<td>11.86 ver</td>
+<td>❌ Harmful</td>
+</tr>
+<tr>
+<td>EXP-258</td>
+<td>4</td>
+<td>TTA</td>
+<td>−4.05 worse</td>
+<td>❌ Destructive</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="appendix-b-cross-references">Appendix B: Cross-References<a class="headerlink" href="#appendix-b-cross-references" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Architecture</strong>: <a href="../architecture/ml-composition-architecture.html">ML Composition Architecture</a></li>
+<li><strong>Experiment Log</strong>: <a href="ml-experiment-log.html">ML Experiment Log</a></li>
+<li><strong>Progress Reports</strong>: <a href="ml-experiment-progress-report.html">ML Experiment Progress Report</a></li>
+<li><strong>Training Techniques</strong>: <a href="training-techniques-what-works.html">Training Techniques — What Works</a></li>
+<li><strong>Beyond Forecasting</strong>: <a href="beyond-forecasting-capabilities-assessment.html">Beyond Forecasting Capabilities Assessment</a></li>
+<li><strong>Gen-2 Baseline</strong>: <a href="gen2-baseline-report.html">Gen-2 Baseline Report</a></li>
+<li><strong>Gen-3 Transition</strong>: <a href="gen3-transition-report.html">Gen-3 Transition Report</a></li>
+<li><strong>Validation Report</strong>: <a href="multi-objective-validation-report.html">Multi-Objective Validation Report</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,7706 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/60-research/modernization/e1-dexcom-path-comparison-2026-09-15.html">
+      
+      
+        <link rel="prev" href="cut1-legacy-bridge-lift-2026-09-23.html">
+      
+      
+        <link rel="next" href="e2-medtronic-path-comparison-2026-09-15.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>E1 — The Dexcom path: legacy Share bridge vs. nightscout-connect - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#e1--the-dexcom-path-legacy-share-bridge-vs-nightscout-connect" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              E1 — The Dexcom path: legacy Share bridge vs. nightscout-connect
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../30-design/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_27" id="__nav_5_27_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_27_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_27">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    60-research/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-2844-phenotype-drilldown-report-2026-04-22.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-0001 to 2869
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-2870-envelope-crossover-report-2026-04-22.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2870 to 2909
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-2910-eight-dim-regrade-2026-04-23.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2910 to 2949
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-2950-uniform-action-curve-2026-04-23.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2950 to 2999
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-3000-3003-cf-replay-maturation-2026-04-25.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-3000 and later
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../AUTORESEARCH-SESSION-2026-04-26.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Programme, closeouts and syntheses
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../accuracy-validation-2026-04-05.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Productionization and pipelines
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../capability-report-clinical-decision-support.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Capability reports
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../circadian-therapy-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Therapy
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../aid-aware-settings-report-2026-04-09.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings and profiles
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../natural-experiment-deconfounding-2026-04-09.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Natural experiments
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../bilateral-deconfounding-report-2026-04-19.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EGP, supply-demand and deconfounding
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../autotune-uam-characterization-report.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Meals and carbohydrates
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../causal-pk-leakage-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Insulin, ISF and pharmacokinetics
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../acceleration-clinical-utility-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clinical, safety and hypoglycaemia
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../aid-author-recommendations-report-2026-04-20.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AID controllers, cohorts and waves
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../centering-dynamics-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forecasting, prediction and classification
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../advanced-architectures-benchmark-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ML methods and architectures
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../canonical/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    canonical/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../collaboration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    collaboration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../external-inventories/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    external-inventories/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27_23" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    modernization/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_27_23" id="__nav_5_27_23_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_27_23_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_27_23">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    modernization/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cut1-legacy-bridge-lift-2026-09-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lifting the legacy CGM bridge removal onto cut 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    E1 — The Dexcom path: legacy Share bridge vs. nightscout-connect
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="e1-dexcom-path-comparison-2026-09-15.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    E1 — The Dexcom path: legacy Share bridge vs. nightscout-connect
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-three-facts-that-frame-the-rest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. Three facts that frame the rest
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0. Three facts that frame the rest">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#01-the-auto-adoption-path-is-already-on-dev-it-is-not-a-parcel-4-change" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.1 The auto-adoption path is already on dev. It is not a parcel-4 change.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#02-dev-does-not-pin-nightscout-connect-v0013-it-pins-a-commit-that-is-not-on-the-v0013-line" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.2 dev does not pin nightscout-connect v0.0.13. It pins a commit that is not on the v0.0.13 line.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#03-the-three-way-comparison-is-legacy-vs-connect-as-pinned-vs-v0014" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.3 The three-way comparison is legacy vs. connect-as-pinned vs. v0.0.14.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-behaviour-by-behaviour-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Behaviour-by-behaviour table
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-regional-endpoints--the-part-that-most-deserves-the-my-data-stopped-label" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Regional endpoints — the part that most deserves the "my data stopped" label
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Regional endpoints — the part that most deserves the &#34;my data stopped&#34; label">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#non-vacuity-of-the-existing-test-rule-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Non-vacuity of the existing test (rule 2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-authentication-and-session-handling-in-detail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Authentication and session handling, in detail
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Authentication and session handling, in detail">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#legacy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Legacy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connect
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-retry-and-backoff--the-three-way-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Retry and backoff — the three-way comparison
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-the-auto-adoption-path-exercised" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. The auto-adoption path, exercised
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. The auto-adoption path, exercised">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#breaking-it-rule-2--14-synthetic-states-r" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Breaking it (rule 2) — 14 synthetic states [R]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adjacent-observation-outside-the-dexcom-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adjacent observation, outside the Dexcom path
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-the-migration-silently-drops-s" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the migration silently drops [S]
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-what-gets-better-what-gets-worse-what-is-unknowable-here" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. What gets better, what gets worse, what is unknowable here
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. What gets better, what gets worse, what is unknowable here">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#better-measured-on-this-machine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Better (measured on this machine)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#worse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Worse
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unknowable-here--this-list-sizes-the-deprecation-notice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unknowable here — this list sizes the deprecation notice
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-verdict-on-the-maintainers-sentence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Verdict on the maintainer's sentence
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="e2-medtronic-path-comparison-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    E2 — the MiniMed / CareLink path: does the old one really not work?
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="gt2-cut-remeasure-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GT2: re-measuring the five modernization cuts against today's dev
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="gt4-semver-classification-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GT4: semver classification of every changeset in flight
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-modernization-next-steps-2026-09-09.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout modernization next steps 2026 09 09
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="release-assets-critique-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release-assets critique — what is missing, and what is still vacuous
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="rt-d3-and-alarm-browser-evidence-2026-09-22.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RT-D3 treatment drag and alarm delivery under denied: browser evidence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../programme/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    programme/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../remedial/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    remedial/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tenancy/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenancy/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-three-facts-that-frame-the-rest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. Three facts that frame the rest
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0. Three facts that frame the rest">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#01-the-auto-adoption-path-is-already-on-dev-it-is-not-a-parcel-4-change" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.1 The auto-adoption path is already on dev. It is not a parcel-4 change.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#02-dev-does-not-pin-nightscout-connect-v0013-it-pins-a-commit-that-is-not-on-the-v0013-line" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.2 dev does not pin nightscout-connect v0.0.13. It pins a commit that is not on the v0.0.13 line.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#03-the-three-way-comparison-is-legacy-vs-connect-as-pinned-vs-v0014" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.3 The three-way comparison is legacy vs. connect-as-pinned vs. v0.0.14.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-behaviour-by-behaviour-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Behaviour-by-behaviour table
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-regional-endpoints--the-part-that-most-deserves-the-my-data-stopped-label" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Regional endpoints — the part that most deserves the "my data stopped" label
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Regional endpoints — the part that most deserves the &#34;my data stopped&#34; label">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#non-vacuity-of-the-existing-test-rule-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Non-vacuity of the existing test (rule 2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-authentication-and-session-handling-in-detail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Authentication and session handling, in detail
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Authentication and session handling, in detail">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#legacy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Legacy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connect
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-retry-and-backoff--the-three-way-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Retry and backoff — the three-way comparison
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-the-auto-adoption-path-exercised" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. The auto-adoption path, exercised
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. The auto-adoption path, exercised">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#breaking-it-rule-2--14-synthetic-states-r" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Breaking it (rule 2) — 14 synthetic states [R]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adjacent-observation-outside-the-dexcom-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adjacent observation, outside the Dexcom path
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-the-migration-silently-drops-s" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the migration silently drops [S]
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-what-gets-better-what-gets-worse-what-is-unknowable-here" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. What gets better, what gets worse, what is unknowable here
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. What gets better, what gets worse, what is unknowable here">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#better-measured-on-this-machine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Better (measured on this machine)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#worse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Worse
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unknowable-here--this-list-sizes-the-deprecation-notice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unknowable here — this list sizes the deprecation notice
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-verdict-on-the-maintainers-sentence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Verdict on the maintainer's sentence
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="e1--the-dexcom-path-legacy-share-bridge-vs-nightscout-connect">E1 — The Dexcom path: legacy Share bridge vs. nightscout-connect<a class="headerlink" href="#e1--the-dexcom-path-legacy-share-bridge-vs-nightscout-connect" title="Permanent link">&para;</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Record</p>
+<p>Record as of 2026-09-15. A point-in-time document; it is not kept up to date.</p>
+</div>
+<blockquote>
+<p><strong>Snapshot, 2026-09-15, against <code>origin/dev</code> <code>a8888f0d</code>. Historical: the measurements stand, but the connector and retirement facts have moved.</strong> BF-34's fix (<code>fix/connect-timer-jitter</code>, connector #68) is in nightscout-connect <code>0.1.0</code>, which <code>dev</code> pins exactly (#8762); nothing past 15.0.8 is released. The maintainer decided on 2026-09-23 to move the legacy Dexcom and MiniMed bridge removal onto cut 1 (<a href="cut1-legacy-bridge-lift-2026-09-23.html">cut 1 legacy bridge lift</a>); the maintainer reports (2026-09-21, operational knowledge, not measured here) that mmconnect has not worked for some time; legacy Dexcom <code>BRIDGE_*</code> settings are served by nightscout-connect by default since 15.0.8; BF-44 and BF-45 are graded low in the register. Current facts: <a href="../../30-design/remedial/nightscout-backfix-register.html">backfix register</a> (BF-34, BF-44, BF-45, BF-61).**</p>
+</blockquote>
+<p><strong>DRAFT. Contributor-facing.</strong> Prepared for maintainer review. Nothing in this document has been
+run against a real Dexcom account, real credentials, or any vendor endpoint. Every measurement
+below comes from the shipping source files driven against synthetic fixtures on this machine.
+A qualified reviewer must confirm the vendor-behaviour assumptions marked <strong>UNSETTLEABLE HERE</strong>
+before any of this is used to size a deprecation notice.</p>
+<ul>
+<li>Date: 2026-09-15</li>
+<li>Shipping checkout: <code>externals/cgm-remote-monitor-official</code>, <code>origin/dev</code> = <code>a8888f0d</code></li>
+<li>Connector checkout: <code>externals/nightscout-connect</code>, tags <code>v0.0.12</code> … <code>v0.0.14</code></li>
+<li>Harnesses: <code>/tmp/claude-1000/-home-bewest-src-rag-nightscout-ecosystem-alignment/c0ce5365-48f5-4392-a1ae-c72d32aabe91/scratchpad/r1..r9</code></li>
+</ul>
+<p>Every claim is labelled <strong>[R]</strong> reproduced (a harness was run and produced the number quoted) or
+<strong>[S]</strong> read-derived (established by reading source only).</p>
+<hr />
+<h2 id="0-three-facts-that-frame-the-rest">0. Three facts that frame the rest<a class="headerlink" href="#0-three-facts-that-frame-the-rest" title="Permanent link">&para;</a></h2>
+<h3 id="01-the-auto-adoption-path-is-already-on-dev-it-is-not-a-parcel-4-change">0.1 The auto-adoption path is already on <code>dev</code>. It is not a parcel-4 change.<a class="headerlink" href="#01-the-auto-adoption-path-is-already-on-dev-it-is-not-a-parcel-4-change" title="Permanent link">&para;</a></h3>
+<p><code>migrateBridgeToConnect()</code> and <code>lib/server/bridge-connect-compat.js</code> are not parcel-4
+(<code>chore/mime-exposure-review</code>) changes. They are on <code>origin/dev</code>,
+introduced by <code>a91e8ee4 feat(connect): use nightscout-connect 0.0.13 for bridge compat</code>. <strong>[R]</strong>
+<code>git ls-tree -r origin/dev</code> lists both the module and <code>tests/bridge-connect-compat.test.js</code>, and
+<code>lib/server/bootevent.js</code> on <code>dev</code> calls it at line 79 and gates the legacy bridge on it at
+line 368.</p>
+<p><strong>This changes what the parcel-4 decision is about.</strong> The Dexcom migration is not a thing parcels 4
+and 5 would introduce. It is already the default behaviour of current <code>dev</code>: any site with
+<code>BRIDGE_USER_NAME</code>/<code>BRIDGE_PASSWORD</code> set is <em>already</em> served by nightscout-connect unless it sets
+<code>DEXCOM_BRIDGE_USE_LEGACY=true</code>. Parcels 4/5 remove the <em>fallback</em>, not the default. The
+deprecation window that matters therefore began at <code>a91e8ee4</code>, not at the parcel-4 merge.</p>
+<h3 id="02-dev-does-not-pin-nightscout-connect-v0013-it-pins-a-commit-that-is-not-on-the-v0013-line">0.2 <code>dev</code> does not pin nightscout-connect v0.0.13. It pins a commit that is not on the v0.0.13 line.<a class="headerlink" href="#02-dev-does-not-pin-nightscout-connect-v0013-it-pins-a-commit-that-is-not-on-the-v0013-line" title="Permanent link">&para;</a></h3>
+<p><code>package.json</code> on <code>dev</code> pins the tarball for <code>234d47c85510a77f07b3be0d2c026dd0272715d6</code>. <strong>[R]</strong></p>
+<table>
+<thead>
+<tr>
+<th>relation</th>
+<th>result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>merge-base --is-ancestor 234d47c8 v0.0.13</code></td>
+<td><strong>no</strong></td>
+</tr>
+<tr>
+<td><code>merge-base --is-ancestor v0.0.13 234d47c8</code></td>
+<td><strong>no</strong></td>
+</tr>
+<tr>
+<td><code>merge-base --is-ancestor v0.0.12 234d47c8</code></td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>git describe 234d47c8</code></td>
+<td><code>v0.0.12-28-g234d47c</code></td>
+</tr>
+</tbody>
+</table>
+<p>The two have diverged: <code>v0.0.13</code> is a merge commit (<code>b394411</code>) whose parents are all contained in
+<code>234d47c8</code>'s history, and <code>234d47c8</code> carries one commit <code>v0.0.13</code> does not. The installed package
+reports <code>"version": "0.0.13"</code> in its own <code>package.json</code>, which makes the pin look like v0.0.13.</p>
+<p>For the Dexcom path specifically this matters in a useful direction: <strong><code>lib/sources/dexcomshare.js</code>
+at the pin is byte-identical to <code>v0.0.14</code></strong> (<code>git diff 234d47c8 v0.0.14 -- lib/sources/dexcomshare.js</code>
+is empty) <strong>[R]</strong>, and differs from the <code>v0.0.13</code> tag by 20 lines. So the G7-era <code>accountId</code>
+normalisation, the <code>Array.isArray</code> guard on the glucose response, and the safe logger <strong>are already
+shipping on <code>dev</code> today</strong>. The tag <code>v0.0.13</code> does not contain them.</p>
+<h3 id="03-the-three-way-comparison-is-legacy-vs-connect-as-pinned-vs-v0014">0.3 The three-way comparison is legacy vs. connect-as-pinned vs. v0.0.14.<a class="headerlink" href="#03-the-three-way-comparison-is-legacy-vs-connect-as-pinned-vs-v0014" title="Permanent link">&para;</a></h3>
+<p><code>v0.0.14</code> (<code>649a7de</code>) sits directly on top of <code>c1cce2a</code>, the BF-34 backoff/jitter fix. So
+<code>bf/connect-pin</code> — a one-line move of the pin to the <code>v0.0.14</code> tarball — <em>is</em> the BF-34 fix ship
+vehicle. The three things actually worth comparing are:</p>
+<ol>
+<li>the legacy <code>share2nightscout-bridge@0.2.12</code> engine driven by <code>lib/plugins/bridge.js</code>;</li>
+<li><strong>connect as pinned on <code>dev</code> today</strong> (<code>234d47c8</code>) — correct Dexcom driver, <strong>broken backoff</strong>;</li>
+<li><strong>connect at <code>v0.0.14</code></strong> — same Dexcom driver, fixed backoff.</li>
+</ol>
+<hr />
+<h2 id="1-behaviour-by-behaviour-table">1. Behaviour-by-behaviour table<a class="headerlink" href="#1-behaviour-by-behaviour-table" title="Permanent link">&para;</a></h2>
+<p><code>interval_ms</code> values are what <code>lib/sources/dexcomshare.js</code> asks for (2.5 min in both the frame and
+cycle blocks). "pinned" = <code>234d47c8</code> as <code>dev</code> installs it now.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Behaviour</th>
+<th>Legacy bridge (0.2.12)</th>
+<th>Connect, pinned on <code>dev</code></th>
+<th>Connect v0.0.14</th>
+<th>Who wins</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Session reuse</td>
+<td><strong>None.</strong> <code>bridge.js</code> calls <code>engine(opts)</code> fresh on every poll, so <code>my.sessionID</code> is always undefined and a full Authenticate+Login pair runs every time. <strong>24 auth + 24 login + 24 glucose per hour</strong> measured <strong>[R]</strong></td>
+<td>1 auth + 1 login, then session reused for 24 h: <strong>1 + 1 + 14 per hour</strong> <strong>[R]</strong></td>
+<td>same <strong>[R]</strong></td>
+<td>connect, by ~4.5x fewer vendor requests and ~24x fewer authentications</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Session rejected mid-poll (HTTP 401 on the glucose read)</td>
+<td>Immediately clears <code>sessionID</code> and re-authenticates — <strong>but <code>refresh_token()</code> resets <code>failures = 0</code> on every successful login, so a permanently-rejected session becomes an unbounded auth→login→fetch→401 loop with no delay and no exit.</strong> 2.8 M requests in 3 s against a zero-latency fake; in production it is one triple per network round-trip, forever <strong>[R]</strong></td>
+<td><strong>Never re-authenticates.</strong> Over 25 simulated hours of permanent 401: <code>auth=1 login=1 glucose=23</code>. The frame retries twice, the cycle backs off, the session machine stays <code>Active</code> <strong>[R]</strong></td>
+<td>Retries at ≤30 min indefinitely and re-authenticates at the 24 h session expiry (<code>t=1449 m: auth, login, glucose</code>) <strong>[R]</strong></td>
+<td><strong>legacy, on recovery latency; connect, on politeness.</strong> Neither is correct</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Time dark after that failure</td>
+<td>0 (but at the cost of item 2's storm)</td>
+<td><strong>up to ~74.6 h.</strong> Pinned <code>backoff()</code> merges <code>{...config, ...defaults}</code>, so <code>I = 256 ms</code>, and <code>exponent_ceiling</code> caps the <em>exponent</em>: attempt ≥20 → <code>256 × (2²⁰−1)</code> = 74.6 h <strong>[R]</strong></td>
+<td>≤30 min cycle, ≤5 min frame (builder applies <code>max_interval_ms</code> of <code>6 × interval</code> and <code>1 × interval</code>) <strong>[R]</strong></td>
+<td>v0.0.14, decisively</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Wrong credentials</td>
+<td>24 auth attempts/hour forever; <code>maxFailures</code> is unreachable (see §3); no operator notification beyond stdout <strong>[R]</strong></td>
+<td>15 auth attempts/hour, then backs off; never gives up; never crashes <strong>[R]</strong></td>
+<td>8 auth attempts/hour, then backs off <strong>[R]</strong></td>
+<td>connect</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Vendor returns a non-array body with status &lt; 400</td>
+<td><strong>Uncaught <code>TypeError: glucose.map is not a function</code>.</strong> <code>cgm-remote-monitor</code> registers no <code>uncaughtException</code> handler, so this terminates the Nightscout process <strong>[R]</strong></td>
+<td><code>transformGlucose</code> returns <code>{entries: []}</code>, the loop continues, 0 entries persisted <strong>[R]</strong></td>
+<td>same <strong>[R]</strong></td>
+<td><strong>connect, and this is the single strongest point in the maintainer's favour</strong></td>
+</tr>
+<tr>
+<td>6</td>
+<td>Vendor returns <code>{accountId: "..."}</code> from Authenticate (G7-era)</td>
+<td><code>opts.accountId</code> becomes the whole object, <code>login_payload</code> sends <code>accountId: {…}</code> — no normalisation <strong>[S]</strong></td>
+<td>Normalised in <code>authFromCredentials</code> and again defensively in <code>sessionFromAuth</code>; 7 entries persisted in 30 min <strong>[R]</strong></td>
+<td>same <strong>[R]</strong></td>
+<td>connect</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Region: how an operator selects one</td>
+<td><code>BRIDGE_SERVER</code>. Read from <code>process.env</code> <strong>at module load</strong>, frozen into <code>Defaults.auth/login/LatestGlucose</code>. <code>'EU'</code> (exact case) → <code>shareous1</code>; any value containing a <code>.</code> → used as the host; <strong>everything else silently falls back to <code>share2.dexcom.com</code></strong> <strong>[R]</strong></td>
+<td><code>CONNECT_SHARE_REGION</code> (<code>us</code>|<code>ous</code>) or <code>CONNECT_SHARE_SERVER</code>. <code>_known_servers</code> has only those two keys <strong>[S]</strong></td>
+<td>same <strong>[S]</strong></td>
+<td>tie on capability, <strong>connect loses on failure mode</strong> — see §2</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Region: what <code>validate()</code> rejects</td>
+<td>n/a</td>
+<td><strong>Nothing.</strong> <code>CONNECT_SHARE_REGION=eu</code> gives <code>baseURL = "https:"</code> and <code>validate()</code> still returns <code>ok: true</code> <strong>[R]</strong></td>
+<td>same <strong>[R]</strong></td>
+<td>legacy, by accident</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Entry shape written</td>
+<td><code>{sgv, date, dateString, trend, direction, device, type}</code></td>
+<td>identical keys, identical values</td>
+<td>identical</td>
+<td>—</td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>device</code> string</td>
+<td><code>share2</code></td>
+<td><code>nightscout-connect</code></td>
+<td><code>nightscout-connect</code></td>
+<td><strong>the only field that differs</strong> <strong>[R]</strong></td>
+</tr>
+<tr>
+<td>11</td>
+<td>Trend/direction mapping</td>
+<td><code>DIRECTIONS</code>/<code>matchTrend</code>/<code>trendToDirection</code></td>
+<td>character-for-character the same functions, copied</td>
+<td>same</td>
+<td>identical <strong>[R]</strong></td>
+</tr>
+<tr>
+<td>12</td>
+<td>Units</td>
+<td>Neither converts. <code>sgv</code> is whatever <code>d.Value</code> was (mg/dL from Share)</td>
+<td>same</td>
+<td>same</td>
+<td>identical <strong>[S]</strong></td>
+</tr>
+<tr>
+<td>13</td>
+<td>Timestamps</td>
+<td><code>date</code> = <code>WT</code> epoch ms; <code>dateString</code> = <code>new Date(wall).toISOString()</code></td>
+<td>identical</td>
+<td>identical</td>
+<td>identical <strong>[R]</strong></td>
+</tr>
+<tr>
+<td>14</td>
+<td>Duplicate suppression</td>
+<td>Both write through <code>ctx.entries.create()</code>, which upserts on <code>{sysTime, type}</code> — <strong><code>device</code> is not part of the key</strong> <strong>[S]</strong></td>
+<td>same</td>
+<td>same</td>
+<td>identical <strong>[S]</strong></td>
+</tr>
+<tr>
+<td>15</td>
+<td>Backfill window after a gap</td>
+<td><code>minutes = gap</code>, <code>maxCount = gap/5 + 1</code>, <strong>unbounded</strong>: a 30-day gap asks for <code>maxCount=8641</code> <strong>[R]</strong></td>
+<td>clamped to 2 days (<code>maxCount=576</code>) <strong>[R]</strong></td>
+<td>same <strong>[R]</strong></td>
+<td>connect</td>
+</tr>
+<tr>
+<td>16</td>
+<td>Backfill after a restart</td>
+<td>Re-fetches <code>BRIDGE_MINUTES</code> (default 1440 → <code>maxCount=289</code>) regardless of what the database holds, because <code>mostRecentRecord</code> is process state <strong>[R]</strong></td>
+<td>Asks the database via the internal output's <code>gap_for()</code> <strong>[S]</strong></td>
+<td>same</td>
+<td>connect</td>
+</tr>
+<tr>
+<td>17</td>
+<td>TLS verification</td>
+<td><strong><code>rejectUnauthorized: false</code> on every request</strong> — Authenticate, Login, LatestGlucose and the Nightscout upload <strong>[R]</strong></td>
+<td>axios defaults; verification on <strong>[S]</strong></td>
+<td>same</td>
+<td>connect</td>
+</tr>
+<tr>
+<td>18</td>
+<td>Logging of sensitive material</td>
+<td><code>console.log("accountId: " + …)</code> and <code>console.log('Entries', entries)</code> — <strong>every CGM reading is printed to the server log on every poll</strong> <strong>[R]</strong></td>
+<td><code>lib/logging.js</code> prints only a message plus an HTTP status; never the error object, the request body or the payload <strong>[R]</strong></td>
+<td>same (pinned <code>logging.js</code> is byte-identical to v0.0.14's) <strong>[R]</strong></td>
+<td>connect</td>
+</tr>
+<tr>
+<td>19</td>
+<td>Poll cadence</td>
+<td><code>BRIDGE_INTERVAL</code>, default 156 000 ms in code (README says 150 000 — mismatch), plus an "on-demand" path when data is overdue <strong>[S]</strong></td>
+<td>Fixed 5 min, re-aligned to the last reading + 18 s + up to 18 s of jitter <strong>[S]</strong></td>
+<td>same, plus optional <code>CONNECT_START_JITTER_MS</code> / <code>CONNECT_INTERVAL_JITTER_MS</code> <strong>[S]</strong></td>
+<td>connect for a hosted pool; no practical difference for one site</td>
+</tr>
+<tr>
+<td>20</td>
+<td>Interval sanity check</td>
+<td>Accepts 1 000 ms (<strong>1 poll/s = 3 vendor requests/s</strong>), and a non-numeric string defeats the range check entirely — measured 600 polls / 1 800 requests in 10 min for <code>BRIDGE_INTERVAL=abc</code> <strong>[R]</strong></td>
+<td>not operator-settable</td>
+<td>not operator-settable</td>
+<td>connect</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-regional-endpoints--the-part-that-most-deserves-the-my-data-stopped-label">2. Regional endpoints — the part that most deserves the "my data stopped" label<a class="headerlink" href="#2-regional-endpoints--the-part-that-most-deserves-the-my-data-stopped-label" title="Permanent link">&para;</a></h2>
+<p><code>applyBridgeToConnectCompatibility</code> translates <code>BRIDGE_SERVER</code> into connect's settings:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">String</span><span class="p">(</span><span class="nx">bridgeSettings</span><span class="p">.</span><span class="nx">server</span><span class="p">).</span><span class="nx">toUpperCase</span><span class="p">()</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s1">'EU'</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nx">env</span><span class="p">.</span><span class="nx">extendedSettings</span><span class="p">.</span><span class="nx">connect</span><span class="p">.</span><span class="nx">shareRegion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'ous'</span><span class="p">;</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span><span class="nx">env</span><span class="p">.</span><span class="nx">extendedSettings</span><span class="p">.</span><span class="nx">connect</span><span class="p">.</span><span class="nx">shareServer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">bridgeSettings</span><span class="p">.</span><span class="nx">server</span><span class="p">;</span><span class="w">   </span><span class="c1">// verbatim</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="p">}</span>
+</code></pre></div>
+<p>Driving the real shim against the real legacy module, host by host <strong>[R]</strong>:</p>
+<table>
+<thead>
+<tr>
+<th><code>BRIDGE_SERVER</code></th>
+<th>Legacy reaches</th>
+<th>After auto-migration, connect reaches</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>(unset)</em></td>
+<td><code>share2.dexcom.com</code></td>
+<td><code>share2.dexcom.com</code></td>
+<td>ok</td>
+</tr>
+<tr>
+<td><code>EU</code></td>
+<td><code>shareous1.dexcom.com</code></td>
+<td><code>shareous1.dexcom.com</code></td>
+<td>ok</td>
+</tr>
+<tr>
+<td><code>eu</code> / <code>Eu</code></td>
+<td><code>share2.dexcom.com</code></td>
+<td><code>shareous1.dexcom.com</code></td>
+<td><strong>changes</strong> (arguably a fix)</td>
+</tr>
+<tr>
+<td><code>US</code></td>
+<td><code>share2.dexcom.com</code></td>
+<td><strong><code>https://US</code></strong></td>
+<td><strong>breaks</strong></td>
+</tr>
+<tr>
+<td><code>us</code></td>
+<td><code>share2.dexcom.com</code></td>
+<td><strong><code>https://us</code></strong></td>
+<td><strong>breaks</strong></td>
+</tr>
+<tr>
+<td><code>EU1</code></td>
+<td><code>share2.dexcom.com</code></td>
+<td><strong><code>https://EU1</code></strong></td>
+<td><strong>breaks</strong></td>
+</tr>
+<tr>
+<td><code>shareous1.dexcom.com</code></td>
+<td><code>shareous1.dexcom.com</code></td>
+<td><code>shareous1.dexcom.com</code></td>
+<td>ok</td>
+</tr>
+</tbody>
+</table>
+<p>Legacy tolerates any junk in <code>BRIDGE_SERVER</code> by falling back to the US host. The shim forwards junk
+verbatim as a hostname. <code>BRIDGE_SERVER=US</code> and <code>BRIDGE_SERVER=us</code> are exactly what an operator
+writes when they mean "I am in the US" — and the README's wording ("The default blank value is used
+to fetch data from Dexcom servers in the US. Set to <code>EU</code> …") invites it. Those sites work today and
+stop on upgrade, with no error an operator can act on: connect's <code>validate()</code> returns <code>ok: true</code>.</p>
+<p>The same trap exists on the native path: <code>CONNECT_SHARE_REGION=eu</code> (lowercase — the obvious
+spelling, and the one the shim itself produces for <code>BRIDGE_SERVER=eu</code> … as <code>ous</code>, not <code>eu</code>) yields
+<code>baseURL = "https:"</code> and <code>ok: true</code> <strong>[R]</strong>.</p>
+<p>Neither implementation knows about any host beyond <code>share2.dexcom.com</code> and <code>shareous1.dexcom.com</code>;
+both can reach others only by being handed a literal hostname <strong>[S]</strong>.</p>
+<h3 id="non-vacuity-of-the-existing-test-rule-2">Non-vacuity of the existing test (rule 2)<a class="headerlink" href="#non-vacuity-of-the-existing-test-rule-2" title="Permanent link">&para;</a></h3>
+<p><code>tests/bridge-connect-compat.test.js</code> (4 tests) passes on <code>dev</code>. Five ablations of the shim <strong>[R]</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>ablation</th>
+<th>suite</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>overwrite <code>shareAccountName</code> instead of preserving an explicit one</td>
+<td><strong>1 failing</strong> — caught</td>
+</tr>
+<tr>
+<td><code>bridgeUseLegacy()</code> always returns <code>false</code> (opt-out removed)</td>
+<td><strong>1 failing</strong> — caught</td>
+</tr>
+<tr>
+<td>always return <code>migrated:false</code> (legacy bridge never skipped)</td>
+<td><strong>1 failing</strong> — caught</td>
+</tr>
+<tr>
+<td>drop the case-fold: <code>bridgeSettings.server === 'EU'</code></td>
+<td><strong>4 passing — NOT caught</strong></td>
+</tr>
+<tr>
+<td>delete the <code>shareServer = bridgeSettings.server</code> pass-through entirely</td>
+<td><strong>4 passing — NOT caught</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The two green ablations are not mis-scoped: each changes which host a migrated operator's data is
+fetched from, which is the failure this whole review is about. <strong>The region branch of the migration
+is untested.</strong></p>
+<hr />
+<h2 id="3-authentication-and-session-handling-in-detail">3. Authentication and session handling, in detail<a class="headerlink" href="#3-authentication-and-session-handling-in-detail" title="Permanent link">&para;</a></h2>
+<h3 id="legacy">Legacy<a class="headerlink" href="#legacy" title="Permanent link">&para;</a></h3>
+<p><code>lib/plugins/bridge.js</code> runs a 1-second <code>setInterval</code>; when <code>should_run()</code> allows, it calls
+<code>engine(opts)</code> from <code>share2nightscout-bridge</code>. <code>engine()</code> builds a <strong>fresh closure each time</strong>
+(<code>runs = 0</code>, <code>failures = 0</code>, no <code>sessionID</code>), so the first thing every poll does is
+<code>failures++; refresh_token()</code> → Authenticate → Login → fetch <strong>[R]</strong>.</p>
+<p>Consequences, all measured <strong>[R]</strong>:</p>
+<ul>
+<li>~23–24 full authentications per hour per site, ~550/day. Nothing reuses a session.</li>
+<li><code>maxFailures</code> (default 3) is unreachable on the credentials path: one poll produces at most two
+  increments before the closure is discarded. The documented "how many failures before giving up"
+  knob does nothing at its default. A wrong password produces an indefinite 24-attempts-per-hour
+  retry with no notification.</li>
+<li>On a rejected <em>session</em> (401 from LatestGlucose while <code>sessionID</code> is set), <code>my()</code> →
+  <code>refresh_token()</code> → on success <code>failures = 0; my()</code> → 401 → … . There is no delay term anywhere
+  in that cycle. The loop is bounded only by network latency.</li>
+<li><code>throw "Too many login failures…"</code> is a bare string thrown from inside a <code>request</code> callback. If
+  <code>BRIDGE_MAX_FAILURES</code> is set to 1 or 2 it becomes reachable, and there is no <code>uncaughtException</code>
+  handler in the server <strong>[S]</strong>.</li>
+</ul>
+<h3 id="connect">Connect<a class="headerlink" href="#connect" title="Permanent link">&para;</a></h3>
+<p><code>lib/machines/session.js</code> is an xstate machine: <code>Inactive → Fresh.Authenticating → Fresh.Authorizing
+→ Fresh.Established → Active</code>. <code>Active</code> has <code>after</code> transitions at <code>REFRESH_AFTER_SESSSION_DELAY</code>
+(24 h − 10 min) and <code>EXPIRE_SESSION_DELAY</code> (24 h). <code>dexcomshare.js</code> leaves <code>refresh:</code> commented
+out, so the refresh tick resolves to <code>NO_REFRESH</code> and only the 24 h expiry actually moves the
+machine <strong>[S]</strong>.</p>
+<p>The fetch machine (<code>lib/machines/fetch.js</code>) sends <code>SESSION_REQUIRED</code> on every cycle; in <code>Active</code> the
+session machine answers <code>SESSION_RESOLVED</code> with the cached session, and in <code>Expired</code> the root
+handler targets <code>Fresh</code>, which re-authenticates.</p>
+<p><strong>The defect:</strong> when <code>dataFromSesssion</code> rejects — including a 401 that means "this session is
+dead" — the fetch machine goes to <code>Error</code>, emits <code>FRAME_ERROR</code>, retries twice, and gives up. It
+never emits anything the session machine listens to. The session stays <code>Active</code> with a dead token
+until the 24 h expiry. Reproduced: 25 simulated hours of permanent 401 on the pinned connect →
+<code>auth=1 login=1 glucose=23</code>; on v0.0.14 the first re-authentication lands at t=1449 min <strong>[R]</strong>.</p>
+<p><strong>On the specific failure "Dexcom invalidated my session", the legacy bridge recovers in one poll
+and connect recovers in up to 24 hours (pinned: effectively not at all, because the 74-hour cycle
+ceiling arrives first).</strong> This is the one axis on which the maintainer's understanding is
+straightforwardly wrong, and it is not a small one: sessions being invalidated server-side is the
+ordinary way Dexcom Share ends a session.</p>
+<hr />
+<h2 id="4-retry-and-backoff--the-three-way-comparison">4. Retry and backoff — the three-way comparison<a class="headerlink" href="#4-retry-and-backoff--the-three-way-comparison" title="Permanent link">&para;</a></h2>
+<p>Consecutive-failure ladder for the Dexcom source (which asks for <code>interval_ms = 150 000</code>), jitter
+suppressed for legibility <strong>[R]</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>attempt</th>
+<th>pinned <code>234d47c8</code> (cycle &amp; frame)</th>
+<th>v0.0.14 cycle (cap 30 min)</th>
+<th>v0.0.14 frame (cap 5 min)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>256 ms</strong></td>
+<td>2.5 min</td>
+<td>2.5 min</td>
+</tr>
+<tr>
+<td>2</td>
+<td>768 ms</td>
+<td>7.5 min</td>
+<td>5.0 min</td>
+</tr>
+<tr>
+<td>4</td>
+<td>3.8 s</td>
+<td>30.0 min</td>
+<td>5.0 min</td>
+</tr>
+<tr>
+<td>8</td>
+<td>1.1 min</td>
+<td>30.0 min</td>
+<td>5.0 min</td>
+</tr>
+<tr>
+<td>12</td>
+<td>17.5 min</td>
+<td>30.0 min</td>
+<td>5.0 min</td>
+</tr>
+<tr>
+<td>≥20</td>
+<td><strong>74.6 h</strong></td>
+<td>30.0 min</td>
+<td>5.0 min</td>
+</tr>
+</tbody>
+</table>
+<p>BF-34 reproduced: pinned <code>backoff()</code> does <code>{...config, ...defaults}</code>, so the
+caller's 150 000 ms becomes 256 ms — 586x faster at attempt 1 <strong>[R]</strong>. The <em>same</em> merge order also makes the ceiling 74.6 h
+(<code>256 × (2²⁰−1)</code>), so during a sustained vendor problem the pinned connector first hammers, then
+goes dark for three days. Both halves ship on <code>dev</code> today.</p>
+<p>Legacy has no backoff term at all: the retry interval is the constant poll interval, forever <strong>[R]</strong>.</p>
+<hr />
+<h2 id="5-the-auto-adoption-path-exercised">5. The auto-adoption path, exercised<a class="headerlink" href="#5-the-auto-adoption-path-exercised" title="Permanent link">&para;</a></h2>
+<p><code>lib/server/bootevent.js</code> → <code>migrateBridgeToConnect()</code> → <code>applyBridgeToConnectCompatibility(env)</code>,
+in the <code>setupConnect</code> boot step, immediately before <code>setupBridge</code>.</p>
+<ul>
+<li><strong>Trigger:</strong> boot, unconditionally. It acts if <code>env.extendedSettings.bridge.userName</code> <em>and</em>
+  <code>.password</code> are both set. <code>extendedSettings.bridge</code> only exists when <code>bridge</code> is in <code>ENABLE</code> <strong>[S]</strong>.</li>
+<li><strong>Reads:</strong> <code>extendedSettings.bridge.{userName,password,server,useLegacy,dexcomBridgeUseLegacy}</code>,
+  and <code>process.env.{DEXCOM_BRIDGE_USE_LEGACY, CUSTOMCONNSTR_DEXCOM_BRIDGE_USE_LEGACY}</code>.</li>
+<li><strong>Writes:</strong> only <code>env.extendedSettings.connect</code> <strong>in memory</strong>. Nothing is written to disk or to
+  the database; it is re-derived on every boot <strong>[S]</strong>.</li>
+<li><strong>Existing settings:</strong> every field is guarded with <code>||</code>, so an explicitly-set connect value wins.</li>
+<li><strong>Idempotent on the settings object:</strong> running it twice leaves <code>connect</code> byte-identical <strong>[R]</strong>.
+  It is <em>not</em> idempotent on the operator-facing side: the second run still returns <code>migrated: true</code>,
+  so the deprecation line prints again.</li>
+<li><strong>Told to the operator:</strong> one <code>console.log("DEPRECATION WARNING", "BRIDGE_* Dexcom settings are
+  being served by nightscout-connect. Set DEXCOM_BRIDGE_USE_LEGACY=true to use
+  share2nightscout-bridge.")</code>, plus a second line from <code>setupBridge</code> explaining the skip. Nothing in
+  the web UI, nothing persisted, nothing an operator who does not read boot logs will ever see <strong>[S]</strong>.</li>
+</ul>
+<h3 id="breaking-it-rule-2--14-synthetic-states-r">Breaking it (rule 2) — 14 synthetic states <strong>[R]</strong><a class="headerlink" href="#breaking-it-rule-2--14-synthetic-states-r" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>state</th>
+<th>result</th>
+<th>verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>bridge only</td>
+<td><code>migrated:true</code>, connect gets both credentials, legacy skipped</td>
+<td>intended</td>
+</tr>
+<tr>
+<td>run twice</td>
+<td>settings identical; still reports <code>migrated:true</code></td>
+<td>ok / cosmetic</td>
+</tr>
+<tr>
+<td><strong>connect has <code>shareAccountName: acct-B</code>, no password; bridge has <code>acct-A</code>/<code>pw-A</code></strong></td>
+<td>connect ends up <strong><code>acct-B</code> + <code>pw-A</code></strong> — a credential pair assembled from two different accounts — and the legacy bridge is skipped</td>
+<td><strong>defect</strong></td>
+</tr>
+<tr>
+<td>connect fully configured for <code>acct-B</code>; bridge configured for <code>acct-A</code></td>
+<td>connect keeps <code>acct-B</code>; legacy bridge <strong>skipped</strong>, so <code>acct-A</code>'s feed silently stops</td>
+<td><strong>defect</strong></td>
+</tr>
+<tr>
+<td>connect source is <code>librelinkup</code> + bridge set</td>
+<td><code>migrated:false</code>, legacy bridge still runs</td>
+<td>correct</td>
+</tr>
+<tr>
+<td>bridge username set, password missing</td>
+<td><code>migrated:false</code>, no connect created, legacy bridge runs (and <code>lib/plugins/bridge.js</code> also declines)</td>
+<td>correct</td>
+</tr>
+<tr>
+<td><code>BRIDGE_USE_LEGACY=true</code> / <code>on</code> (env.js coerces to boolean <code>true</code>)</td>
+<td>opt-out honoured</td>
+<td>correct</td>
+</tr>
+<tr>
+<td><code>DEXCOM_BRIDGE_USE_LEGACY=true</code> / <code>TRUE</code></td>
+<td>opt-out honoured</td>
+<td>correct</td>
+</tr>
+<tr>
+<td><strong><code>DEXCOM_BRIDGE_USE_LEGACY=1</code></strong></td>
+<td><strong>opt-out ignored</strong>, migration proceeds</td>
+<td><strong>defect (papercut)</strong></td>
+</tr>
+<tr>
+<td><strong><code>useLegacy</code> is the string <code>"true"</code></strong> — the shim tests <code>=== true</code> <strong>[R]</strong>. <code>env.js</code> coerces <code>BRIDGE_USE_LEGACY=true</code> to a boolean, but <code>IMPORT_CONFIG</code> <code>deepMerge</code>s <code>body.extendedSettings</code> into <code>env.extendedSettings</code> with no coercion at all <strong>[S]</strong>, so that delivery route yields the string</td>
+<td><strong>opt-out ignored</strong></td>
+<td><strong>defect (papercut)</strong></td>
+</tr>
+<tr>
+<td><code>bridge.server</code> numeric (env.js coerces numeric strings)</td>
+<td><code>shareServer: 1</code> → <code>https://1</code></td>
+<td>defect, same class as §2</td>
+</tr>
+<tr>
+<td><code>bridge.server</code> null</td>
+<td>ignored, US default</td>
+<td>correct</td>
+</tr>
+</tbody>
+</table>
+<h3 id="adjacent-observation-outside-the-dexcom-path">Adjacent observation, outside the Dexcom path<a class="headerlink" href="#adjacent-observation-outside-the-dexcom-path" title="Permanent link">&para;</a></h3>
+<p><code>augmentSettings</code> logs <code>console.log('extending extendedSettings with', body.extendedSettings)</code>
+before anything redacts it <strong>[S]</strong>. On a site using <code>IMPORT_CONFIG</code>, that prints
+<code>BRIDGE_PASSWORD</code>/<code>CONNECT_SHARE_PASSWORD</code> to the server log in clear text at every boot. Not part
+of the retirement decision, but it is in the same file as the migration and should be fixed
+alongside it.</p>
+<h3 id="what-the-migration-silently-drops-s">What the migration silently drops <strong>[S]</strong><a class="headerlink" href="#what-the-migration-silently-drops-s" title="Permanent link">&para;</a></h3>
+<p><code>BRIDGE_INTERVAL</code>, <code>BRIDGE_MINUTES</code>, <code>BRIDGE_MAX_COUNT</code>, <code>BRIDGE_FIRST_FETCH_COUNT</code> and
+<code>BRIDGE_MAX_FAILURES</code> are not translated and connect has no equivalent. Connect's cadence is fixed
+at 5 minutes, aligned to the last reading. For most sites this is better than what they configured;
+for a site that deliberately set a long interval it is a change they did not ask for and are not
+told about. "Nothing is lost" is true of <em>data</em> and not true of <em>settings</em>.</p>
+<hr />
+<h2 id="6-what-gets-better-what-gets-worse-what-is-unknowable-here">6. What gets better, what gets worse, what is unknowable here<a class="headerlink" href="#6-what-gets-better-what-gets-worse-what-is-unknowable-here" title="Permanent link">&para;</a></h2>
+<h3 id="better-measured-on-this-machine">Better (measured on this machine)<a class="headerlink" href="#better-measured-on-this-machine" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Process survival on a malformed vendor response.</strong> Legacy dies with an uncaught
+   <code>TypeError: glucose.map is not a function</code>; connect returns an empty batch and keeps polling. This
+   is the strongest single item and it is a <em>whole-server</em> outage, not just a dark CGM feed. <strong>[R]</strong></li>
+<li><strong>Vendor load.</strong> 72 requests/hour → 16, and 24 authentications/hour → ~1 per day. <strong>[R]</strong></li>
+<li><strong>No unbounded request storm.</strong> Legacy's session-rejection loop has no delay term at all. <strong>[R]</strong></li>
+<li><strong>TLS verification is on.</strong> Legacy sets <code>rejectUnauthorized: false</code> on all four of its request
+   types, including the Nightscout upload. <strong>[R]</strong></li>
+<li><strong>CGM readings stop being printed to the server log</strong> on every poll. <strong>[R]</strong></li>
+<li><strong>G7-era <code>{accountId: …}</code> Authenticate responses are handled</strong>, on <code>dev</code> today. <strong>[R]</strong></li>
+<li><strong>Backfill is bounded</strong> (2 days, from the database) rather than unbounded and derived from
+   process-local state. <strong>[R]</strong></li>
+<li><strong>Entry records are identical except <code>device</code>,</strong> and the <code>{sysTime, type}</code> upsert key means the
+   cutover does not duplicate history. <strong>[R]</strong></li>
+</ol>
+<h3 id="worse">Worse<a class="headerlink" href="#worse" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>A server-invalidated session is not recovered for up to 24 hours</strong> (pinned: effectively never,
+   because the 74.6 h cycle ceiling arrives first). Legacy recovers on the next poll. <strong>[R]</strong></li>
+<li><strong>The pinned connector's backoff is broken in both directions</strong> — 256 ms first retry, 74.6 h
+   ceiling. Shipping on <code>dev</code> now. Fixed by <code>bf/connect-pin</code> (→ v0.0.14). <strong>[R]</strong></li>
+<li><strong><code>BRIDGE_SERVER</code> values that legacy tolerated become unresolvable hosts</strong> (<code>US</code>, <code>us</code>, <code>EU1</code>, any
+   non-dotted non-<code>EU</code> string), with <code>validate()</code> reporting success. <strong>[R]</strong></li>
+<li><strong><code>CONNECT_SHARE_REGION</code> accepts any string</strong> and silently produces <code>baseURL = "https:"</code>. <strong>[R]</strong></li>
+<li><strong>A half-configured connect block gets completed from the bridge block</strong>, producing a
+   cross-account username/password pair, and the legacy bridge is skipped anyway. <strong>[R]</strong></li>
+<li><strong>An operator running both</strong> (bridge on account A, connect on account B) loses account A at
+   upgrade, silently. <strong>[R]</strong></li>
+<li><strong><code>DEXCOM_BRIDGE_USE_LEGACY=1</code> and <code>useLegacy: "true"</code> do not opt out.</strong> <strong>[R]</strong></li>
+<li><code>BRIDGE_*</code> tuning settings are dropped without notice. <strong>[S]</strong></li>
+<li><strong>The <code>device</code> string changes from <code>share2</code> to <code>nightscout-connect</code></strong> at the cutover, and any
+   re-fetched overlap window rewrites the label on records already stored. Anything filtering or
+   grouping history by device sees a discontinuity. <strong>[R]</strong></li>
+</ol>
+<h3 id="unknowable-here--this-list-sizes-the-deprecation-notice">Unknowable here — this list sizes the deprecation notice<a class="headerlink" href="#unknowable-here--this-list-sizes-the-deprecation-notice" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Whether Dexcom Share throttles, rate-limits or locks accounts under legacy's ~550
+   authentications/day, and whether connect's one-per-day is what makes access "more consistent".</strong>
+   This is the most likely mechanism behind the maintainer's belief and it cannot be confirmed
+   without a real account. If it is right, the case for retirement is stronger than anything in §6.</li>
+<li><strong>The real 401 semantics of <code>ReadPublisherLatestGlucoseValues</code>.</strong> §3's conclusion — that connect
+   cannot recover a rejected session for 24 hours — is only as important as the frequency with which
+   Dexcom invalidates sessions server-side. Unmeasurable here; decisive for the deprecation window.</li>
+<li><strong>Whether Dexcom's actual session lifetime is longer or shorter than the hard-coded 24 hours.</strong></li>
+<li><strong>Whether Share still returns 200 with a JSON error object</strong> (the shape that kills the legacy
+   process) and how often.</li>
+<li><strong>Whether <code>maxCount</code> above 288 is rejected, clamped or errors.</strong> Neither implementation clamps;
+   legacy can ask for 8 641.</li>
+<li><strong>Whether any operator is actually on a non-<code>EU</code>, non-dotted <code>BRIDGE_SERVER</code>.</strong> §2's breakage is
+   certain in mechanism and unknown in population. A one-line census of the deployed config values
+   would settle it and is the single highest-value thing that could be done before deciding.</li>
+<li><strong>Whether the G7 <code>accountId</code> object is the only new response shape</strong>, or whether Login and
+   LatestGlucose have also changed.</li>
+<li><strong>The current state of the legacy path against live Dexcom.</strong> The maintainer's "the old medtronic
+   does not work" is a statement about MiniMed. No equivalent statement about Dexcom is on the
+   record, and nothing here can produce one.
+   [2026-09-22: the maintainer states (2026-09-21, not measured here) that legacy Dexcom Share is
+   intended to map to nightscout-connect; the live legacy path is still unmeasured.]</li>
+</ol>
+<hr />
+<h2 id="7-verdict-on-the-maintainers-sentence">7. Verdict on the maintainer's sentence<a class="headerlink" href="#7-verdict-on-the-maintainers-sentence" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p>"even for Dexcom, nightscout-connect has some adjustments that allow more consistent access, from
+what I understand."</p>
+</blockquote>
+<p><strong>Confirmed, and the hedge was warranted.</strong> The adjustments are real, they are already the default
+on <code>dev</code>, and they are larger than "some": a crash-on-bad-response becomes a no-op, a 550/day
+authentication rate becomes 1/day, an unbounded retry loop becomes a bounded one, TLS verification
+comes back on, and CGM values stop appearing in logs.</p>
+<p><strong>But it is partly right for the wrong reason,</strong> and the correction matters:</p>
+<ul>
+<li>The <em>code</em> improvement is not what the retirement decision turns on, because the code is already
+  in use. What parcels 4/5 remove is the <strong>fallback</strong>, and the fallback is the only thing standing
+  between the seven "worse" items above and an operator whose data stops.
+  [2026-09-22: per the maintainer (2026-09-21), removing the fallback is the intended direction; the
+  "worse" items are what a notice or fix must cover.]</li>
+<li>Connect is <strong>not</strong> uniformly more consistent. On a server-invalidated session it is
+  categorically worse than the thing it replaces, and on the currently pinned commit it can go dark
+  for three days on any sustained vendor problem.</li>
+<li>"Nothing is lost" is true of stored glucose history (identical records, same upsert key) and false
+  of settings and of several legacy-tolerated configurations.</li>
+</ul>
+<p><strong>Recommended sequencing, for maintainer decision:</strong></p>
+<ol>
+<li>Land <code>bf/connect-pin</code> (pin → <code>v0.0.14</code>) <strong>before</strong> anything about parcel 4 is decided. It is one
+   line, it carries BF-34, and without it the connector that is already the default has a 74-hour
+   dark ceiling.</li>
+<li>Fix the region pass-through and add the two missing tests before the fallback is removed; that is
+   the only item here with a plausible silent-data-loss population.</li>
+<li>Give the session machine a path from a rejected fetch back to re-authentication. Until that
+   exists, removing the legacy fallback removes the only implementation that recovers from the
+   ordinary case.</li>
+<li>A deprecation notice is needed for the residues in §6, not for the code quality of the driver.
+   Its length should be set by item 6 of "unknowable" — a config census — not by a waiting period.</li>
+</ol>
+<hr />
+<p><em>Not medical advice. This document is contributor-facing engineering analysis of data-ingestion
+software; it does not describe therapy and contains no dosing guidance. Anyone whose glucose data
+stops arriving should contact their care team about how to monitor in the meantime.</em></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

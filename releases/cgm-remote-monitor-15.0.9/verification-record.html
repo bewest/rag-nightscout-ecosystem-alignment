@@ -1,0 +1,5416 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/releases/cgm-remote-monitor-15.0.9/verification-record.html">
+      
+      
+        <link rel="prev" href="testing-notes.html">
+      
+      
+        <link rel="next" href="../nightscout-connect-v0.0.14/index.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Verification record - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#verification-record--cgm-remote-monitor-1509" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Verification record
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../docs/00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Releases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VERIFICATION-RECORDS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Verification records
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../_template/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _template/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor-15.0.9/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    cgm-remote-monitor-15.0.9/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="contents.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor 15.0.9 — contents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="decisions.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor 15.0.9 — decisions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="release-notes.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout 15.0.9 — release notes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="testing-notes.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout 15.0.9 — testing notes for the release candidate
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Verification record
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="verification-record.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Verification record
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#headline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Headline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-this-record-was-taken" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How this record was taken
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-in-the-release-and-what-each-item-resolved-to" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is in the release, and what each item resolved to
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What is in the release, and what each item resolved to">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#p0-a--bfalarms---bf-28-bf-29-bf-31" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P0-A &mdash; bf/alarms - BF-28, BF-29, BF-31
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p0-b--bfcache---t02-and-t03-read-path-cost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P0-B &mdash; bf/cache - T0.2 and T0.3 read-path cost
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p0-c--bfauth---bf-17-plaintext-token-bf-30-throttle-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P0-C &mdash; bf/auth - BF-17 plaintext token, BF-30 throttle key
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p0-c-remediate--operator-remediation-for-tokens-already-stored-in-plaintext" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P0-C-REMEDIATE &mdash; Operator remediation for tokens already stored in plaintext
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p0-d--bfcoercion---schema-driven-query-type-coercion-t05" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P0-D &mdash; bf/coercion - schema-driven query type coercion (T0.5)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p0-e--bfreads---six-read-path-fixes-independent-of-bfcoercion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P0-E &mdash; bf/reads - six read-path fixes, independent of bf/coercion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p0-f--fixconnect-timer-jitter---bf-34-backoff-precedence-and-start-jitter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P0-F &mdash; fix/connect-timer-jitter - BF-34 backoff precedence and start jitter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p0-g--bffood---bf-16-quick-pick-filter-bf-35-bolus-calculator-chooser" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P0-G &mdash; bf/food - BF-16 quick-pick filter, BF-35 bolus calculator chooser
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p0-h--bfmerge---bf-36-client-delta-merge-reads-past-the-end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P0-H &mdash; bf/merge - BF-36 client delta merge reads past the end
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p0-i--bfparms---bf-37-bf-38-bf-39" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P0-I &mdash; bf/parms - BF-37, BF-38, BF-39
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p0-tag--nightscout-connect-releasev0014-and-tag---prepared-needs-a-human-push" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P0-TAG &mdash; nightscout-connect release/v0.0.14 and tag - prepared, needs a human push
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p0-pin--bfconnect-pin---move-devs-connector-pin-to-the-v0014-tarball" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P0-PIN &mdash; bf/connect-pin - move dev's connector pin to the v0.0.14 tarball
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p0-lock--regenerate-package-lockjson-after-the-v0014-tag-is-pushed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P0-LOCK &mdash; Regenerate package-lock.json after the v0.0.14 tag is pushed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p0-t01--t01---pr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P0-T01 &mdash; T0.1 - PR
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fu-limit--follow-up-2---the-limit-rule-is-written-twice-and-that-is-the-root-cause" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FU-LIMIT &mdash; Follow-up 2 - the limit rule is written twice, and that is the root cause
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fu-residuals--follow-ups-3-4-7---three-named-residuals-beside-branches-already-prepared" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FU-RESIDUALS &mdash; Follow-ups 3, 4, 7 - three named residuals beside branches already prepared
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fu-hygiene--follow-ups-9-10---the-two-audits-that-have-no-instrument" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FU-HYGIENE &mdash; Follow-ups 9, 10 - the two audits that have no instrument
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#register-entries-this-release-touches-and-each-entrys-basis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Register entries this release touches, and each entry's basis
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test evidence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-was-not-verified" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What was NOT verified
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What was NOT verified">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#branch-unresolved" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        branch-unresolved
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capture-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        capture-environment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#claim-diverges-from-measurement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        claim-diverges-from-measurement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gate-not-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        gate-not-run
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#item-unmeasured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        item-unmeasured
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-instrument-declared" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        no-instrument-declared
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#out-of-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        out-of-scope
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#publication-unverified" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        publication-unverified
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#record-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        record-method
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#register-basis-unstated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        register-basis-unstated
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#register-entry-not-demonstrated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        register-entry-not-demonstrated
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#register-untouched" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        register-untouched
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-connect-v0.0.14/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-connect-v0.0.14/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../docs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#headline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Headline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-this-record-was-taken" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How this record was taken
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-in-the-release-and-what-each-item-resolved-to" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is in the release, and what each item resolved to
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What is in the release, and what each item resolved to">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#p0-a--bfalarms---bf-28-bf-29-bf-31" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P0-A &mdash; bf/alarms - BF-28, BF-29, BF-31
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p0-b--bfcache---t02-and-t03-read-path-cost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P0-B &mdash; bf/cache - T0.2 and T0.3 read-path cost
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p0-c--bfauth---bf-17-plaintext-token-bf-30-throttle-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P0-C &mdash; bf/auth - BF-17 plaintext token, BF-30 throttle key
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p0-c-remediate--operator-remediation-for-tokens-already-stored-in-plaintext" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P0-C-REMEDIATE &mdash; Operator remediation for tokens already stored in plaintext
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p0-d--bfcoercion---schema-driven-query-type-coercion-t05" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P0-D &mdash; bf/coercion - schema-driven query type coercion (T0.5)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p0-e--bfreads---six-read-path-fixes-independent-of-bfcoercion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P0-E &mdash; bf/reads - six read-path fixes, independent of bf/coercion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p0-f--fixconnect-timer-jitter---bf-34-backoff-precedence-and-start-jitter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P0-F &mdash; fix/connect-timer-jitter - BF-34 backoff precedence and start jitter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p0-g--bffood---bf-16-quick-pick-filter-bf-35-bolus-calculator-chooser" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P0-G &mdash; bf/food - BF-16 quick-pick filter, BF-35 bolus calculator chooser
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p0-h--bfmerge---bf-36-client-delta-merge-reads-past-the-end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P0-H &mdash; bf/merge - BF-36 client delta merge reads past the end
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p0-i--bfparms---bf-37-bf-38-bf-39" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P0-I &mdash; bf/parms - BF-37, BF-38, BF-39
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p0-tag--nightscout-connect-releasev0014-and-tag---prepared-needs-a-human-push" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P0-TAG &mdash; nightscout-connect release/v0.0.14 and tag - prepared, needs a human push
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p0-pin--bfconnect-pin---move-devs-connector-pin-to-the-v0014-tarball" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P0-PIN &mdash; bf/connect-pin - move dev's connector pin to the v0.0.14 tarball
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p0-lock--regenerate-package-lockjson-after-the-v0014-tag-is-pushed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P0-LOCK &mdash; Regenerate package-lock.json after the v0.0.14 tag is pushed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p0-t01--t01---pr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P0-T01 &mdash; T0.1 - PR
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fu-limit--follow-up-2---the-limit-rule-is-written-twice-and-that-is-the-root-cause" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FU-LIMIT &mdash; Follow-up 2 - the limit rule is written twice, and that is the root cause
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fu-residuals--follow-ups-3-4-7---three-named-residuals-beside-branches-already-prepared" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FU-RESIDUALS &mdash; Follow-ups 3, 4, 7 - three named residuals beside branches already prepared
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fu-hygiene--follow-ups-9-10---the-two-audits-that-have-no-instrument" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FU-HYGIENE &mdash; Follow-ups 9, 10 - the two audits that have no instrument
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#register-entries-this-release-touches-and-each-entrys-basis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Register entries this release touches, and each entry's basis
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test evidence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-was-not-verified" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What was NOT verified
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What was NOT verified">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#branch-unresolved" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        branch-unresolved
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capture-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        capture-environment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#claim-diverges-from-measurement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        claim-diverges-from-measurement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gate-not-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        gate-not-run
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#item-unmeasured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        item-unmeasured
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-instrument-declared" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        no-instrument-declared
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#out-of-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        out-of-scope
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#publication-unverified" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        publication-unverified
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#record-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        record-method
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#register-basis-unstated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        register-basis-unstated
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#register-entry-not-demonstrated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        register-entry-not-demonstrated
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#register-untouched" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        register-untouched
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<p><em>Living document, last changed 2026-10-02 at <code>30b384fe</code>.</em></p>
+<p><strong>Superseded.</strong> This record describes the 2026-09-16 Phase 0 branch candidate (<code>origin/dev</code> <code>a8888f0d</code> plus unmerged <code>bf/*</code> branches), not 15.0.9 as it will ship. The candidate is <code>official/dev</code> <code>25fc41d9</code> (2026-10-02; 92 first-parent merges over 15.0.8), see <a href="contents.html">contents.md</a>. No new verification record has been captured. The current evidence for the candidate is in the <a href="../../docs/30-design/remedial/rc-15.0.9-integration-record.html">15.0.9 integration record</a>: the current full run is run 020 on <code>dev</code> <code>ce30a94d</code> (2026-09-27), 3473/0/3 on Node 20/22/24 × MongoDB 4.4/7, with a compressed A/B soak against 15.0.8; each merge after it (#8785 to #8795) has its own checks, and the full suite gave 3532/0/4 in one cell (Node 22, MongoDB 7.0) on the candidate's tree <code>e5c8ea6b</code>; the next run is the full six-cell run on <code>25fc41d9</code>. The record below and its JSON are the 2026-09-16 capture.</p>
+<!--
+  ============================================================================
+  GENERATED FILE - MUST NOT BE HAND-EDITED, AND MUST NOT BE EDITED AT ALL.
+
+  Source of truth:  verification-record.json (beside this file)
+  Generator:        tools/queue/verification-record.py
+
+  A verification record is captured ONCE, at release time, and is never
+  revised. If something changes -- a gate starts passing, a branch moves, a
+  register entry is reproduced -- that is a NEW record with a new
+  captured_at, not an edit to this one. A record that is edited after the fact
+  is not a record; it is a claim about the past that nothing can check.
+  ============================================================================
+-->
+
+<h1 id="verification-record--cgm-remote-monitor-1509">Verification record &mdash; cgm-remote-monitor-15.0.9<a class="headerlink" href="#verification-record--cgm-remote-monitor-1509" title="Permanent link">&para;</a></h1>
+<p><strong>Captured at 2026-09-16T00:05:00-07:00.</strong> Generated from <code>verification-record.json</code> by <code>tools/queue/verification-record.py</code>. Do not edit this file or its JSON; capture a new record instead.</p>
+<p>This is the quality-system record of what was actually checked when this release was cut. It is not a plan and not a changelog. It contains failures and gaps on purpose: a record that shows only passes has been edited, selected or fabricated.</p>
+<h2 id="headline">Headline<a class="headerlink" href="#headline" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>items in this release</td>
+<td>17</td>
+</tr>
+<tr>
+<td>item verdicts</td>
+<td>FAIL=5, PASS=9, UNMEASURED=3</td>
+</tr>
+<tr>
+<td>gate outcomes</td>
+<td>FAIL=7, NO-GATE=19, PASS=35, SKIP=13</td>
+</tr>
+<tr>
+<td>register entries carried</td>
+<td>25</td>
+</tr>
+<tr>
+<td>register basis (rule 3)</td>
+<td>reproduced=13, unstated=12</td>
+</tr>
+<tr>
+<td>test commands captured</td>
+<td>19</td>
+</tr>
+<tr>
+<td><strong>things NOT verified</strong></td>
+<td><strong>76</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Nothing in this record is closed for an operator. Every branch below is local and unpushed unless the publication line says otherwise; a defect stops reaching operators when a human pushes and a maintainer merges, which is outside this record.</p>
+<h2 id="how-this-record-was-taken">How this record was taken<a class="headerlink" href="#how-this-record-was-taken" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>captured_at</td>
+<td><code>2026-09-16T00:05:00-07:00</code></td>
+</tr>
+<tr>
+<td>timestamp source</td>
+<td>--captured-at argument (this tool never reads a clock)</td>
+</tr>
+<tr>
+<td>generator</td>
+<td><code>tools/queue/verification-record.py</code></td>
+</tr>
+<tr>
+<td>generator sha256</td>
+<td><code>32a3de8f925db126ac967a9a1213d7ca319f3e76d54f696f383436defe33ae23</code></td>
+</tr>
+<tr>
+<td>selection</td>
+<td>ids=<code>-</code> parcels=<code>phase0</code> states=<code>-</code></td>
+</tr>
+<tr>
+<td>gate kinds RUN</td>
+<td><code>static,unit</code></td>
+</tr>
+<tr>
+<td>gate kinds NOT run</td>
+<td><code>integration,network</code></td>
+</tr>
+<tr>
+<td>manifest</td>
+<td><code>queue/work-queue.yaml</code> sha256 <code>e562fd529c2c5968</code></td>
+</tr>
+<tr>
+<td>register</td>
+<td><code>docs/30-design/remedial/nightscout-backfix-register.md</code> sha256 <code>614b3dee9c211dfe</code> (69 entries parsed)</td>
+</tr>
+<tr>
+<td>control surface HEAD</td>
+<td><code>08753474c23c</code> (working tree NOT clean: 21 uncommitted path(s))</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>cgm-remote-monitor</strong> &mdash; <code>externals/cgm-remote-monitor-official</code> at <code>a8888f0d9fac</code> (<code>HEAD</code>), origin <code>https://github.com/nightscout/cgm-remote-monitor.git</code></li>
+<li><strong>nightscout-connect</strong> &mdash; <code>externals/nightscout-connect</code> at <code>649a7de27b9e</code> (<code>release/v0.0.14</code>), origin <code>https://github.com/nightscout/nightscout-connect.git</code></li>
+</ul>
+<hr />
+<h2 id="what-is-in-the-release-and-what-each-item-resolved-to">What is in the release, and what each item resolved to<a class="headerlink" href="#what-is-in-the-release-and-what-each-item-resolved-to" title="Permanent link">&para;</a></h2>
+<p><code>state (claimed)</code> is what the manifest asserts. <code>verdict (measured)</code> is what the gates said when this record was taken. Where they disagree, both are printed and the disagreement is in the gaps section.</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>repo</th>
+<th>branch</th>
+<th>commit</th>
+<th>ahead of base</th>
+<th>state (claimed)</th>
+<th>verdict (measured)</th>
+<th>gates</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>P0-A</code></td>
+<td>cgm-remote-monitor</td>
+<td><code>bf/alarms</code></td>
+<td><code>5dcf783fdbb2</code></td>
+<td>3</td>
+<td><code>gate-not-met</code></td>
+<td><strong>FAIL</strong></td>
+<td>4/5 (2 skip, 2 no-gate)</td>
+</tr>
+<tr>
+<td><code>P0-B</code></td>
+<td>cgm-remote-monitor</td>
+<td><code>bf/cache</code></td>
+<td><code>4f86bab1637e</code></td>
+<td>2</td>
+<td><code>gate-not-met</code></td>
+<td><strong>PASS</strong></td>
+<td>2/2 (2 no-gate)</td>
+</tr>
+<tr>
+<td><code>P0-C</code></td>
+<td>cgm-remote-monitor</td>
+<td><code>bf/auth</code></td>
+<td><code>64db1f35ca31</code></td>
+<td>2</td>
+<td><code>gate-not-met</code></td>
+<td><strong>FAIL</strong></td>
+<td>2/3 (2 skip, 2 no-gate)</td>
+</tr>
+<tr>
+<td><code>P0-C-REMEDIATE</code></td>
+<td>cgm-remote-monitor</td>
+<td><code>-</code></td>
+<td><code>unresolved</code></td>
+<td>-</td>
+<td><code>not-started</code></td>
+<td><strong>UNMEASURED</strong></td>
+<td>0/0 (1 no-gate)</td>
+</tr>
+<tr>
+<td><code>P0-D</code></td>
+<td>cgm-remote-monitor</td>
+<td><code>bf/coercion</code></td>
+<td><code>b7234753</code> †</td>
+<td><strong>2</strong></td>
+<td><code>ready-to-push</code></td>
+<td><strong>PASS</strong></td>
+<td>5/5</td>
+</tr>
+<tr>
+<td><code>P0-E</code></td>
+<td>cgm-remote-monitor</td>
+<td><code>bf/reads</code></td>
+<td><code>2ecfeb53ff1e</code></td>
+<td>6</td>
+<td><code>ready-to-push</code></td>
+<td><strong>PASS</strong></td>
+<td>3/3 (5 skip, 3 no-gate)</td>
+</tr>
+<tr>
+<td><code>P0-F</code></td>
+<td>nightscout-connect</td>
+<td><code>fix/connect-timer-jitter</code></td>
+<td><code>c1cce2a2f962</code></td>
+<td>1</td>
+<td><code>ready-to-push</code></td>
+<td><strong>PASS</strong></td>
+<td>2/2 (1 no-gate)</td>
+</tr>
+<tr>
+<td><code>P0-G</code></td>
+<td>cgm-remote-monitor</td>
+<td><code>bf/food</code></td>
+<td><code>73495331e68c</code></td>
+<td>1</td>
+<td><code>ready-to-push</code></td>
+<td><strong>PASS</strong></td>
+<td>3/3 (1 skip)</td>
+</tr>
+<tr>
+<td><code>P0-H</code></td>
+<td>cgm-remote-monitor</td>
+<td><code>bf/merge</code></td>
+<td><code>b06c6faf882e</code></td>
+<td>1</td>
+<td><code>ready-to-push</code></td>
+<td><strong>PASS</strong></td>
+<td>3/3 (1 no-gate)</td>
+</tr>
+<tr>
+<td><code>P0-I</code></td>
+<td>cgm-remote-monitor</td>
+<td><code>bf/parms</code></td>
+<td><code>eb0bc918036a</code></td>
+<td>3</td>
+<td><code>ready-to-push</code></td>
+<td><strong>PASS</strong></td>
+<td>4/4</td>
+</tr>
+<tr>
+<td><code>P0-TAG</code></td>
+<td>nightscout-connect</td>
+<td><code>release/v0.0.14</code></td>
+<td><code>649a7de27b9e</code></td>
+<td>11</td>
+<td><code>ready-to-push</code></td>
+<td><strong>PASS</strong></td>
+<td>4/4 (1 skip, 1 no-gate)</td>
+</tr>
+<tr>
+<td><code>P0-PIN</code></td>
+<td>cgm-remote-monitor</td>
+<td><code>bf/connect-pin</code></td>
+<td><code>0807eb1c1843</code></td>
+<td>1</td>
+<td><code>blocked</code></td>
+<td><strong>PASS</strong></td>
+<td>3/3 (1 no-gate)</td>
+</tr>
+<tr>
+<td><code>P0-LOCK</code></td>
+<td>cgm-remote-monitor</td>
+<td><code>bf/connect-pin</code></td>
+<td><code>0807eb1c1843</code></td>
+<td>0</td>
+<td><code>blocked</code></td>
+<td><strong>FAIL</strong></td>
+<td>0/1 (1 skip)</td>
+</tr>
+<tr>
+<td><code>P0-T01</code></td>
+<td>cgm-remote-monitor</td>
+<td><code>fix/quadratic-treatment-processing</code></td>
+<td><code>dfe2753dcc1c</code></td>
+<td>1</td>
+<td><code>in-flight-upstream</code></td>
+<td><strong>UNMEASURED</strong></td>
+<td>0/0 (1 skip, 1 no-gate)</td>
+</tr>
+<tr>
+<td><code>FU-LIMIT</code></td>
+<td>cgm-remote-monitor</td>
+<td><code>-</code></td>
+<td><code>unresolved</code></td>
+<td>-</td>
+<td><code>blocked</code></td>
+<td><strong>FAIL</strong></td>
+<td>1/2 (1 no-gate)</td>
+</tr>
+<tr>
+<td><code>FU-RESIDUALS</code></td>
+<td>cgm-remote-monitor</td>
+<td><code>-</code></td>
+<td><code>unresolved</code></td>
+<td>-</td>
+<td><code>gate-not-met</code></td>
+<td><strong>FAIL</strong></td>
+<td>0/3 (1 no-gate)</td>
+</tr>
+<tr>
+<td><code>FU-HYGIENE</code></td>
+<td>cgm-remote-monitor</td>
+<td><code>-</code></td>
+<td><code>unresolved</code></td>
+<td>-</td>
+<td><code>not-started</code></td>
+<td><strong>UNMEASURED</strong></td>
+<td>0/0 (2 no-gate)</td>
+</tr>
+</tbody>
+</table>
+<p>† <code>bf/coercion</code> was <code>ab197bf86892</code> and one commit when this table was first measured. It is now
+<code>b7234753</code> and <strong>two</strong> commits, after two amends and one fold-in on 2026-09-16, all before any
+push.</p>
+<p>The first was comment-only: two code comments and one paragraph of the commit message asserted
+BF-32's refuted mechanism as fact. The second carries code — <strong>BF-68</strong>, a regression the branch
+itself introduced. Excluding every non-value operator from conversion is right for <code>$regex</code> and
+wrong for <code>$type</code>, whose operand is a BSON type code: <code>find[sgv][$type]=2</code> worked on <code>origin/dev</code>
+and became an HTTP 500. <code>operandReaderFor</code> reads a digits-only <code>$type</code> operand as a number and
+passes aliases through. One further test change stops that commit pinning the <code>$exists</code> operand as
+a literal string, which the next commit turns into a boolean.</p>
+<p>The fold-in is BF-40, written first as a branch of its own and combined because it does not stand
+alone: with only that commit, <code>$exists=false</code> stays inverted on the nine fields a <code>walker</code> names,
+which are the fields anyone filters on. See the register's BF-40 for the measured split.</p>
+<p>The gates were re-run at each SHA; <code>TEST=query</code> goes from 28 to 29 passing with the <code>$type</code> case,
+and a fifth gate now runs <code>TEST=query.operands</code> at 12 passing. The row above records 5/5.</p>
+<h3 id="p0-a--bfalarms---bf-28-bf-29-bf-31"><code>P0-A</code> &mdash; bf/alarms - BF-28, BF-29, BF-31<a class="headerlink" href="#p0-a--bfalarms---bf-28-bf-29-bf-31" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code> (<code>externals/cgm-remote-monitor-official</code>)</td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>bf/alarms</code></td>
+</tr>
+<tr>
+<td>commit</td>
+<td><code>5dcf783fdbb20188c378d79121dcbe860425eede</code></td>
+</tr>
+<tr>
+<td>base declared</td>
+<td><code>origin/dev@a8888f0d</code></td>
+</tr>
+<tr>
+<td>base resolved</td>
+<td><code>a8888f0d9facb8a9bb54c2ab15333f3f241b45bf</code></td>
+</tr>
+<tr>
+<td>branch contains base</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>commits ahead of base</td>
+<td>3</td>
+</tr>
+<tr>
+<td>package version at branch</td>
+<td><code>15.0.9</code></td>
+</tr>
+<tr>
+<td>published</td>
+<td>local remote-tracking refs (no network) &mdash; remote-tracking ref <code>refs/remotes/origin/bf/alarms</code> does not exist. <strong>The remote itself was not contacted.</strong></td>
+</tr>
+<tr>
+<td>state (claimed)</td>
+<td><code>gate-not-met</code></td>
+</tr>
+<tr>
+<td>verdict (measured)</td>
+<td><strong>FAIL</strong></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>major</code></td>
+</tr>
+<tr>
+<td>register</td>
+<td><code>BF-28</code>, <code>BF-29</code>, <code>BF-31</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>What an operator sees.</strong> Three alarm fixes. The "insulin reservoir change overdue" reminder could never appear at all and now can. If you list a plugin by its file name in ENABLE - for example "cannulaage" instead of "cage" - Nightscout used to switch it off without telling you, and now says so and names the plugin it thinks you meant. These do not change when any alarm fires, only whether it can. This is not medical advice; if an alarm you rely on has been silent, talk it through with your care team as well as checking your settings.</p>
+<p><strong>Gates, and what each one actually said.</strong></p>
+<ul>
+<li><strong>PASS</strong> <code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/alarms</code></li>
+<li>exit 0</li>
+<li>intent: bf/alarms has not fallen behind origin/dev</li>
+<li><strong>PASS</strong> <code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/alarms &gt;/dev/null</code></li>
+<li>exit 0</li>
+<li>intent: trial-merge into origin/dev is conflict-free</li>
+<li><strong>PASS</strong> <code>[unit]</code> <em>(cwd: <code>externals/work/crm-bf-alarms</code>)</em> <code>TEST=insulinage npm run test-single</code></li>
+<li>exit 0</li>
+<li>intent: BF-28, measured. 5 passing, and E3 ABLATED it - with lib/plugins/insulinage.js put back to origin/dev the same file gives 3 passing / 2 failing. Database-free: re-run with the mongo URL pointed at a dead port, still 5 passing.</li>
+<li>measured: 5 passing, 0 failing, 0 pending</li>
+<li><strong>PASS</strong> <code>[unit]</code> <em>(cwd: <code>externals/work/crm-bf-alarms</code>)</em> <code>TEST=plugins npm run test-single</code></li>
+<li>exit 0</li>
+<li>intent: BF-29, measured. 13 passing, and E3 ABLATED it - with lib/plugins/index.js put back to origin/dev the same file gives 5 passing / 8 failing. Database-free.</li>
+<li>measured: 13 passing, 0 failing, 0 pending</li>
+<li><strong>SKIP</strong> <code>[integration]</code> <em>(cwd: <code>externals/work/crm-bf-alarms</code>)</em> <code>TEST=api.alexa npm run test-single</code></li>
+<li>kind <code>integration</code> not enabled (use --integration)</li>
+<li>intent: BF-31, the branch's own test for the locale removal. CANNOT BE RUN IN THIS ENVIRONMENT TODAY and that is a fact about the machine, not the branch: crm-bf-alarms/my.test.env names mongod on port 27034 and nothing is listening there (E3 measured every worktree's port; crm-bf-coercion's 27030 is also dead, and crm-bf-food, crm-bf-merge and crm-bf-parms SHARE 27033). It times out in the before-all hook.</li>
+<li><strong>SKIP</strong> <code>[integration]</code> <em>(cwd: <code>externals/work/crm-bf-alarms</code>)</em> <code>TEST=api.googlehome npm run test-single</code></li>
+<li>kind <code>integration</code> not enabled (use --integration)</li>
+<li>intent: BF-31's sibling. Same environmental blocker as api.alexa - port 27034 has no mongod.</li>
+<li><strong>NO-GATE</strong> &mdash; THE GATE THAT WAS HERE - <code>npm run test:unit</code> - ASSERTED LESS THAN IT LOOKED LIKE. It resolves to a 44-file brace list, it needs MongoDB (verifyauth x4 and API_SECRET x2 fail without it even on pristine dev), and tests/api.alexa.test.js and tests/api.googlehome.test.js - two of the four files this branch adds - are in NEITHER local script, so it never ran half the branch's own evidence. CI's <code>test-ci</code> runs all 159 files and does cover them; a gate that mirrors the local script is weaker than CI, not equal to it.</li>
+<li><strong>FAIL</strong> <code>[static]</code> <code>test -f externals/work/crm-bf-alarms/node_modules/.cache/_ns_cache/public/js/bundle.app.js</code></li>
+<li>exit 1</li>
+<li>intent: GT1 found this worktree is the only one missing the client bundle, and that absence produced a seventh test failure that looked like a defect. <code>npm run bundle</code> in that worktree fixes it.</li>
+<li><strong>NO-GATE</strong> &mdash; Nothing exercises the ENABLE warning through a booted plugin registry. GT4 had to hand-reconstruct the plugin-name list to test it, and a reconstructed registry is not the registry. Needs a boot-level test.</li>
+</ul>
+<h3 id="p0-b--bfcache---t02-and-t03-read-path-cost"><code>P0-B</code> &mdash; bf/cache - T0.2 and T0.3 read-path cost<a class="headerlink" href="#p0-b--bfcache---t02-and-t03-read-path-cost" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code> (<code>externals/cgm-remote-monitor-official</code>)</td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>bf/cache</code></td>
+</tr>
+<tr>
+<td>commit</td>
+<td><code>4f86bab1637e926502c9b02af008cbba4f424c28</code></td>
+</tr>
+<tr>
+<td>base declared</td>
+<td><code>origin/dev@a8888f0d</code></td>
+</tr>
+<tr>
+<td>base resolved</td>
+<td><code>a8888f0d9facb8a9bb54c2ab15333f3f241b45bf</code></td>
+</tr>
+<tr>
+<td>branch contains base</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>commits ahead of base</td>
+<td>2</td>
+</tr>
+<tr>
+<td>package version at branch</td>
+<td><code>15.0.9</code></td>
+</tr>
+<tr>
+<td>published</td>
+<td>local remote-tracking refs (no network) &mdash; remote-tracking ref <code>refs/remotes/origin/bf/cache</code> does not exist. <strong>The remote itself was not contacted.</strong></td>
+</tr>
+<tr>
+<td>state (claimed)</td>
+<td><code>gate-not-met</code></td>
+</tr>
+<tr>
+<td>verdict (measured)</td>
+<td><strong>PASS</strong></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>patch</code></td>
+</tr>
+<tr>
+<td>register</td>
+<td><code>BF-06</code>, <code>BF-07</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>CLAIM DIVERGES FROM MEASUREMENT.</strong> state says gate-not-met, but every RUNNABLE gate passed and the failing property sits behind 2 no-gate marker(s): the claim rests on a recorded measurement this run could not reproduce</p>
+</blockquote>
+<p><strong>What an operator sees.</strong> Pages that read recent glucose values get faster. Nothing you see changes value or meaning.</p>
+<p><strong>Gates, and what each one actually said.</strong></p>
+<ul>
+<li><strong>PASS</strong> <code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/cache</code></li>
+<li>exit 0</li>
+<li>intent: bf/cache has not fallen behind origin/dev</li>
+<li><strong>PASS</strong> <code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/cache &gt;/dev/null</code></li>
+<li>exit 0</li>
+<li>intent: trial-merge into origin/dev is conflict-free</li>
+<li><strong>NO-GATE</strong> &mdash; T0.3's stated gate is "the three cache calls under 1 ms per cycle", and it was MEASURED at 3.747 -&gt; 2.657 ms, so the gate is not met. But that measurement is not currently RE-RUNNABLE: the workload that produced those two figures is not recorded anywhere in this repository, and a benchmark written from scratch here would emit a number that looks like the gate's number without being comparable to it. Rule 9 - quote the ordering, and say how it was measured and on what - forbids that, and a fabricated-workload benchmark is the exact laundering this queue exists to prevent. So <code>gate-not-met</code> here rests on a RECORDED measurement by a prior agent, not on a live one. Making it live means first writing down the workload; the house pattern to follow is tools/mt-bench/cycle-fix.js, which states its iteration count, its document counts and its comparison arms in the file.</li>
+<li><strong>NO-GATE</strong> &mdash; The 98% of the remaining cost is devicestatus, whose caller rewrites fields in place. Taking it needs proof that nothing in the plugin tier writes to a device-status document. A grep is not that proof when the failure mode is a field silently vanishing from every API read served out of the cache. There is no test that would catch it.</li>
+</ul>
+<h3 id="p0-c--bfauth---bf-17-plaintext-token-bf-30-throttle-key"><code>P0-C</code> &mdash; bf/auth - BF-17 plaintext token, BF-30 throttle key<a class="headerlink" href="#p0-c--bfauth---bf-17-plaintext-token-bf-30-throttle-key" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code> (<code>externals/cgm-remote-monitor-official</code>)</td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>bf/auth</code></td>
+</tr>
+<tr>
+<td>commit</td>
+<td><code>64db1f35ca3183fe34afe25d256794ab7701df48</code></td>
+</tr>
+<tr>
+<td>base declared</td>
+<td><code>origin/dev@a8888f0d</code></td>
+</tr>
+<tr>
+<td>base resolved</td>
+<td><code>a8888f0d9facb8a9bb54c2ab15333f3f241b45bf</code></td>
+</tr>
+<tr>
+<td>branch contains base</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>commits ahead of base</td>
+<td>2</td>
+</tr>
+<tr>
+<td>package version at branch</td>
+<td><code>15.0.9</code></td>
+</tr>
+<tr>
+<td>published</td>
+<td>local remote-tracking refs (no network) &mdash; remote-tracking ref <code>refs/remotes/origin/bf/auth</code> does not exist. <strong>The remote itself was not contacted.</strong></td>
+</tr>
+<tr>
+<td>state (claimed)</td>
+<td><code>gate-not-met</code></td>
+</tr>
+<tr>
+<td>verdict (measured)</td>
+<td><strong>FAIL</strong></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>major</code></td>
+</tr>
+<tr>
+<td>register</td>
+<td><code>BF-17</code>, <code>BF-30</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>What an operator sees.</strong> Two security fixes. Editing a subject through the admin page used to write that subject's API access token into the database in readable form, which turned read access to your database into API access; it no longer does. IMPORTANT: tokens already written that way are still in your database - fixing the code does not remove them. Brute-force slowdown on failed logins was keyed on a value the caller could choose, so it never engaged; it now is. Existing access tokens keep working - they are re-derived on every load and are not invalidated by this change.</p>
+<p><strong>Gates, and what each one actually said.</strong></p>
+<ul>
+<li><strong>PASS</strong> <code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/auth</code></li>
+<li>exit 0</li>
+<li>intent: bf/auth has not fallen behind origin/dev</li>
+<li><strong>PASS</strong> <code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/auth &gt;/dev/null</code></li>
+<li>exit 0</li>
+<li>intent: trial-merge into origin/dev is conflict-free</li>
+<li><strong>FAIL</strong> <code>[static]</code> <em>(cwd: <code>externals/work/crm-bf-auth</code>)</em> <code>grep -nE "console\\.log\\('Loading',[[:space:]]*opts\\)" lib/authorization/storage.js &amp;&amp; exit 1 \|\| exit 0</code></li>
+<li>exit 1</li>
+<li>intent: BF-05's unfixed sibling, a TRACKING gate: it is meant to FAIL while the residual is present, and the describe it replaces said so in as many words. IT DID NOT FAIL. The pattern was <code>console.log('Loading', opts)</code> with a space after the comma; the code at storage.js:113 has NO space, so the grep never matched, the <code>|| exit 0</code> arm fired, and P0-C reported 3/3 PASS on a property that is false. The pattern is now whitespace-tolerant and this gate is red, which is the honest reading - hence state gate-not-met, not ready-to-push. TWO WAYS TO GREEN, both a human's call: take the one-line removal onto bf/auth, or move the residual to its own queue item and drop the gate from here. DO NOT loosen the pattern again.</li>
+</ul>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>113:      console.log('Loading',opts);
+</code></pre></div>
+- <strong>SKIP</strong> <code>[integration]</code> <em>(cwd: <code>externals/work/crm-bf-auth</code>)</em> <code>TEST=authdelay npm run test-single</code>
+  - kind <code>integration</code> not enabled (use --integration)
+  - intent: BF-30, the branch's OWN test, which <code>npm run test:unit</code> never ran - tests/authdelay.test.js matches neither local brace list and is one of the 52 files only CI's <code>test-ci</code> reaches. 11 passing with MongoDB up on 27031. E3 ABLATED it: with the seven changed lib files put back to origin/dev and lib/server/peer-address.js removed, 2 passing / 9 failing. Needs the database (6 passing / 1 failing against a dead port), so it is integration and honestly so.
+- <strong>SKIP</strong> <code>[integration]</code> <em>(cwd: <code>externals/work/crm-bf-auth</code>)</em> <code>TEST=authsubjects npm run test-single</code>
+  - kind <code>integration</code> not enabled (use --integration)
+  - intent: BF-17, same story: not in either local script, 8 passing with MongoDB, and 1 passing / 7 failing under the same ablation.
+- <strong>NO-GATE</strong> &mdash; <code>npm run test:unit</code> was here and was recorded as "361 passing / 0 failing at GT1's measurement". That number is not evidence for this branch: the 44-file brace list contains NEITHER of the two test files bf/auth adds, so the suite could pass in full with every one of these fixes reverted.
+- <strong>NO-GATE</strong> &mdash; Nothing checks that the plaintext tokens ALREADY written into existing databases get cleaned up. The code fix does not remove them and there is no migration. This needs an operator-facing remediation note and a script, both of which are P0-C-REMEDIATE.</p>
+<h3 id="p0-c-remediate--operator-remediation-for-tokens-already-stored-in-plaintext"><code>P0-C-REMEDIATE</code> &mdash; Operator remediation for tokens already stored in plaintext<a class="headerlink" href="#p0-c-remediate--operator-remediation-for-tokens-already-stored-in-plaintext" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code> (<code>externals/cgm-remote-monitor-official</code>)</td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>commit</td>
+<td><code>UNRESOLVED</code></td>
+</tr>
+<tr>
+<td>base declared</td>
+<td><code>origin/dev@a8888f0d</code></td>
+</tr>
+<tr>
+<td>base resolved</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>branch contains base</td>
+<td>-</td>
+</tr>
+<tr>
+<td>commits ahead of base</td>
+<td>-</td>
+</tr>
+<tr>
+<td>package version at branch</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>published</td>
+<td>-</td>
+</tr>
+<tr>
+<td>state (claimed)</td>
+<td><code>not-started</code></td>
+</tr>
+<tr>
+<td>verdict (measured)</td>
+<td><strong>UNMEASURED</strong></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>n/a</code></td>
+</tr>
+<tr>
+<td>register</td>
+<td><code>BF-17</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>What an operator sees.</strong> If you have ever edited a subject through the admin page, a readable copy of that subject's API access token is sitting in your database. Upgrading does not remove it. You will be told how to check, and how to rotate the token if it is there. Anyone who has had read access to your database since then could have used that token.</p>
+<p><strong>Gates, and what each one actually said.</strong></p>
+<ul>
+<li><strong>NO-GATE</strong> &mdash; Nothing written yet. The gate this item needs is a script that reports how many subject rows carry a non-derived accessToken, run against a database with one planted, and a control row that has none - so the script is shown to distinguish the two before anyone trusts a zero.</li>
+</ul>
+<blockquote>
+<p><strong>UNRESOLVED.</strong> item declares no branch; there is no commit to record. This is a real state (not-started work), not a tool failure.</p>
+</blockquote>
+<h3 id="p0-d--bfcoercion---schema-driven-query-type-coercion-t05"><code>P0-D</code> &mdash; bf/coercion - schema-driven query type coercion (T0.5)<a class="headerlink" href="#p0-d--bfcoercion---schema-driven-query-type-coercion-t05" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code> (<code>externals/cgm-remote-monitor-official</code>)</td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>bf/coercion</code></td>
+</tr>
+<tr>
+<td>commit</td>
+<td><code>b7234753</code> (tip); <code>f829ea1156612daa819e803e416a18c17b462ccd</code> is commit 1 †</td>
+</tr>
+<tr>
+<td>base declared</td>
+<td><code>origin/dev@a8888f0d</code></td>
+</tr>
+<tr>
+<td>base resolved</td>
+<td><code>a8888f0d9facb8a9bb54c2ab15333f3f241b45bf</code></td>
+</tr>
+<tr>
+<td>branch contains base</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>commits ahead of base</td>
+<td>1</td>
+</tr>
+<tr>
+<td>package version at branch</td>
+<td><code>15.0.9</code></td>
+</tr>
+<tr>
+<td>published</td>
+<td>local remote-tracking refs (no network) &mdash; remote-tracking ref <code>refs/remotes/origin/bf/coercion</code> does not exist. <strong>The remote itself was not contacted.</strong></td>
+</tr>
+<tr>
+<td>state (claimed)</td>
+<td><code>ready-to-push</code></td>
+</tr>
+<tr>
+<td>verdict (measured)</td>
+<td><strong>PASS</strong></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>minor</code></td>
+</tr>
+<tr>
+<td>register</td>
+<td><code>BF-02</code>, <code>BF-03</code>, <code>BF-11</code>, <code>BF-32</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>What an operator sees.</strong> Searches through the API that filter on a number used to compare that number against text, so many of them quietly matched nothing and still answered "OK". They now compare correctly. If you have a saved search, a script or a third-party app that was returning nothing, it may start returning results - that is the fix working, not a new problem.</p>
+<p><strong>Gates, and what each one actually said.</strong></p>
+<ul>
+<li><strong>PASS</strong> <code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/coercion</code></li>
+<li>exit 0</li>
+<li>intent: bf/coercion has not fallen behind origin/dev</li>
+<li><strong>PASS</strong> <code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/coercion &gt;/dev/null</code></li>
+<li>exit 0</li>
+<li>intent: trial-merge into origin/dev is conflict-free</li>
+<li><strong>PASS</strong> <code>[unit]</code> <em>(cwd: <code>externals/work/crm-bf-coercion</code>)</em> <code>TEST=query npm run test-single</code></li>
+<li>exit 0</li>
+<li>intent: 28 passing, database-free (measured against a dead mongo port). E3 RE-ABLATED it properly: GT1's control was "the file cannot even LOAD against pristine dev", which is a module-resolution failure, not a behavioural one. Reverting ONLY lib/server/query.js and keeping the new table gives 24 passing / 4 failing on assertions ("expected '1.5' to be 1.5"), which is the control that means something.</li>
+<li>measured: 28 passing, 0 failing, 0 pending</li>
+<li><strong>PASS</strong> <code>[static]</code> <code>T=$(mktemp -d) &amp;&amp; trap 'rm -rf "$T"' EXIT &amp;&amp; python3 -m tools.nsschema.emit.coercion_emit --bundle "$T/emitted.json" &gt;/dev/null &amp;&amp; diff -q "$T/emitted.json" externals/work/crm-bf-coercion/lib/server/query-coercion.json</code></li>
+<li>exit 0</li>
+<li>intent: House style is "emit, then check the emission", and THE GATE THAT WAS HERE DID NOT CHECK IT. <code>coercion_emit --drift</code> ends in <code>return 0</code> unconditionally: E3 ran it and it exited 0 while printing "DRIFT vs the shipping walkers: 157 disagreements". It also compares against a HARDCODED transcription of origin/dev's walkers, so it says nothing about bf/coercion at all and would have exited 0 with the branch deleted. What is gateable is the emission itself: the table vendored into the branch must be byte-identical to what the emitter produces today, or the branch is shipping a stale generated file.</li>
+</ul>
+<h3 id="p0-e--bfreads---six-read-path-fixes-independent-of-bfcoercion"><code>P0-E</code> &mdash; bf/reads - six read-path fixes, independent of bf/coercion<a class="headerlink" href="#p0-e--bfreads---six-read-path-fixes-independent-of-bfcoercion" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code> (<code>externals/cgm-remote-monitor-official</code>)</td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>bf/reads</code></td>
+</tr>
+<tr>
+<td>commit</td>
+<td><code>2ecfeb53ff1e6121ef5f76e1f08e97af1ca6c2fa</code></td>
+</tr>
+<tr>
+<td>base declared</td>
+<td><code>origin/dev@a8888f0d</code></td>
+</tr>
+<tr>
+<td>base resolved</td>
+<td><code>a8888f0d9facb8a9bb54c2ab15333f3f241b45bf</code></td>
+</tr>
+<tr>
+<td>branch contains base</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>commits ahead of base</td>
+<td>6</td>
+</tr>
+<tr>
+<td>package version at branch</td>
+<td><code>15.0.9</code></td>
+</tr>
+<tr>
+<td>published</td>
+<td>local remote-tracking refs (no network) &mdash; remote-tracking ref <code>refs/remotes/origin/bf/reads</code> does not exist. <strong>The remote itself was not contacted.</strong></td>
+</tr>
+<tr>
+<td>state (claimed)</td>
+<td><code>ready-to-push</code></td>
+</tr>
+<tr>
+<td>verdict (measured)</td>
+<td><strong>PASS</strong></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>major</code></td>
+</tr>
+<tr>
+<td>register</td>
+<td><code>BF-01</code>, <code>BF-05</code>, <code>BF-13</code>, <code>BF-14</code>, <code>BF-15</code>, <code>BF-33</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>What an operator sees.</strong> Six fixes to how the API answers read requests. Counting entries that matched a filter returned nothing at all; paging through results could skip or repeat records; asking for a nested field returned an empty answer; and three different ways of asking for "no limit" returned the entire collection instead. CHANGE YOU MAY NOTICE: six spellings of ?count= that used to be accepted now return an error instead of a surprising answer - count=0, count=0x10, count=2.5, count=-3, count=1e2 and count=abc. If a script of yours uses one of those, it will now fail loudly instead of quietly returning the wrong number of records.</p>
+<p><strong>Gates, and what each one actually said.</strong></p>
+<ul>
+<li><strong>PASS</strong> <code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/reads</code></li>
+<li>exit 0</li>
+<li>intent: bf/reads has not fallen behind origin/dev. THIS REPLACES an is-ancestor check on bf/coercion. The two-deep stack existed only to resolve a CHANGELOG collision; the CHANGELOG edits were stripped by the maintainer's instruction and bf/reads was re-cut directly onto dev, so the old gate now measures a fact that is deliberately false.</li>
+<li><strong>PASS</strong> <code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/reads &gt;/dev/null</code></li>
+<li>exit 0</li>
+<li>intent: trial-merge into origin/dev is conflict-free</li>
+<li><strong>PASS</strong> <code>[static]</code> <code>node tools/queue/gates/bf-reads-read-contract.js</code></li>
+<li>exit 0</li>
+<li>intent: THE GATE THAT WAS HERE was <code>git log --format=%H bf/reads | grep -q .</code>, which asserts the branch has at least one commit. The E3 audit ran it against origin/dev, origin/master and bf/alarms and it passed for all three. This replaces it with the database-free half of the branch's behaviour, driven through the four pure modules the six fixes live in: parseCount/hasCount/applyCount, the dotted-?fields= projector, the _id tiebreak in the v3 sort chain, and the count path's use of query_for with nothing printed. 8 assertions. Its own negative control is built in - <code>--rev origin/dev</code> runs the identical assertions against dev materialised from the object database and gives 4 failing.</li>
+<li><strong>SKIP</strong> <code>[integration]</code> <em>(cwd: <code>externals/work/crm-bf-reads</code>)</em> <code>TEST=api.count-parameter npm run test-single</code></li>
+<li>kind <code>integration</code> not enabled (use --integration)</li>
+<li>intent: BF-13/BF-33, 13 passing. CORRECTION TO THE E3 BRIEF, which said this runs "in 2 seconds with no database": it needs MongoDB. Pointed at a dead port it goes to 0 passing / 1 failing, timing out in the before-all hook. It is fast only because a mongod happens to be listening on crm-bf-reads' port 27032.</li>
+<li><strong>SKIP</strong> <code>[integration]</code> <em>(cwd: <code>externals/work/crm-bf-reads</code>)</em> <code>TEST=api.count-where npm run test-single</code></li>
+<li>kind <code>integration</code> not enabled (use --integration)</li>
+<li>intent: BF-01, 5 passing. Needs MongoDB.</li>
+<li><strong>SKIP</strong> <code>[integration]</code> <em>(cwd: <code>externals/work/crm-bf-reads</code>)</em> <code>TEST=api3.fields npm run test-single</code></li>
+<li>kind <code>integration</code> not enabled (use --integration)</li>
+<li>intent: BF-15, 6 passing. Needs MongoDB (5 of 6 survive without it).</li>
+<li><strong>SKIP</strong> <code>[integration]</code> <em>(cwd: <code>externals/work/crm-bf-reads</code>)</em> <code>TEST=api3.limit npm run test-single</code></li>
+<li>kind <code>integration</code> not enabled (use --integration)</li>
+<li>intent: BF-33, 8 passing. Needs MongoDB.</li>
+<li><strong>SKIP</strong> <code>[integration]</code> <em>(cwd: <code>externals/work/crm-bf-reads</code>)</em> <code>TEST=api3.paging npm run test-single</code></li>
+<li>kind <code>integration</code> not enabled (use --integration)</li>
+<li>intent: BF-14, 3 passing. Needs MongoDB.</li>
+<li><strong>NO-GATE</strong> &mdash; THE <code>npm run test:unit</code> GATE WAS REMOVED, not downgraded. It was recorded as "361 passing / 0 failing at GT1's measurement", but not one of the five test files this branch adds is in the 44-file brace list - all five are api<em>/api3</em> and match test:integration's glob - so the suite could have passed in full with every fix reverted.</li>
+<li><strong>NO-GATE</strong> &mdash; The ordering constraint inside the branch (BF-05's commit must follow BF-01's) is not machine-checked. After the CHANGELOG strip and the re-cut onto dev the two commits are 3b588098 and 4772b983, so any gate quoting an earlier SHA is stale by construction. A real gate would assert the relative order of the two by subject line, and nobody has written it.</li>
+<li><strong>NO-GATE</strong> &mdash; The CHANGELOG on this branch lists read routes only, while the ?count= validator covers writes too. Nothing checks a release note against the code it describes.</li>
+</ul>
+<h3 id="p0-f--fixconnect-timer-jitter---bf-34-backoff-precedence-and-start-jitter"><code>P0-F</code> &mdash; fix/connect-timer-jitter - BF-34 backoff precedence and start jitter<a class="headerlink" href="#p0-f--fixconnect-timer-jitter---bf-34-backoff-precedence-and-start-jitter" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>nightscout-connect</code> (<code>externals/nightscout-connect</code>)</td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>fix/connect-timer-jitter</code></td>
+</tr>
+<tr>
+<td>commit</td>
+<td><code>c1cce2a2f9623e1164d85b1625a65d27e3116b51</code></td>
+</tr>
+<tr>
+<td>base declared</td>
+<td><code>b77e5bb</code></td>
+</tr>
+<tr>
+<td>base resolved</td>
+<td><code>b77e5bb7a08a677f008af93335c04aa726436245</code></td>
+</tr>
+<tr>
+<td>branch contains base</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>commits ahead of base</td>
+<td>1</td>
+</tr>
+<tr>
+<td>package version at branch</td>
+<td><code>0.0.13</code></td>
+</tr>
+<tr>
+<td>published</td>
+<td>local remote-tracking refs (no network) &mdash; remote-tracking ref <code>refs/remotes/origin/fix/connect-timer-jitter</code> does not exist. <strong>The remote itself was not contacted.</strong></td>
+</tr>
+<tr>
+<td>state (claimed)</td>
+<td><code>ready-to-push</code></td>
+</tr>
+<tr>
+<td>verdict (measured)</td>
+<td><strong>PASS</strong></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>minor</code></td>
+</tr>
+<tr>
+<td>register</td>
+<td><code>BF-08</code>, <code>BF-34</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>What an operator sees.</strong> When a CGM vendor's service is refusing requests, Nightscout's connector used to retry roughly 586 times faster than it was configured to, and every account retried at the same instant. It now waits the interval it was told to wait and spreads the retries out. COUNTER-INTUITIVE: after this fix a vendor outage will look like it recovers MORE SLOWLY, because the connector has stopped retrying in a burst that could not have worked. Your data is not arriving any later than it would have; the burst was never getting through. Also, on restart the connector no longer reaches the vendor all at once - both jitter windows default to 0, so nothing changes for anyone who does not set them.</p>
+<p><strong>Gates, and what each one actually said.</strong></p>
+<ul>
+<li><strong>PASS</strong> <code>[unit]</code> <em>(cwd: <code>externals/work/nc-jitter</code>)</em> <code>npm test</code></li>
+<li>exit 0</li>
+<li>intent: 135 passing / 0 failing; the connector suite needs no database</li>
+<li><strong>PASS</strong> <code>[unit]</code> <em>(cwd: <code>externals/work/nc-jitter</code>)</em> <code>node -e "const b=require('./lib/backoff.js'); try { b({jitter:'wild'}); process.exit(1); } catch(e) { process.exit(/unknown jitter mode/.test(e.message)?0:1); }"</code></li>
+<li>exit 0</li>
+<li>intent: the new throw on an unknown jitter mode is the observable half of the precedence fix - if options were still being discarded, the bad mode would never be read and this would not throw</li>
+<li><strong>NO-GATE</strong> &mdash; Vendor rate limits are unmeasured (EXP-MT-051) and need real credentials, which rule 0 forbids here. T0.4 shipped CONNECT_START_JITTER_MS so the pool CAN be spread - but the window to set it is exactly the number that is unmeasured.</li>
+</ul>
+<h3 id="p0-g--bffood---bf-16-quick-pick-filter-bf-35-bolus-calculator-chooser"><code>P0-G</code> &mdash; bf/food - BF-16 quick-pick filter, BF-35 bolus calculator chooser<a class="headerlink" href="#p0-g--bffood---bf-16-quick-pick-filter-bf-35-bolus-calculator-chooser" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code> (<code>externals/cgm-remote-monitor-official</code>)</td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>bf/food</code></td>
+</tr>
+<tr>
+<td>commit</td>
+<td><code>73495331e68c4cda3a63e8c047387bdf404b89b0</code></td>
+</tr>
+<tr>
+<td>base declared</td>
+<td><code>origin/dev@a8888f0d</code></td>
+</tr>
+<tr>
+<td>base resolved</td>
+<td><code>a8888f0d9facb8a9bb54c2ab15333f3f241b45bf</code></td>
+</tr>
+<tr>
+<td>branch contains base</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>commits ahead of base</td>
+<td>1</td>
+</tr>
+<tr>
+<td>package version at branch</td>
+<td><code>15.0.9</code></td>
+</tr>
+<tr>
+<td>published</td>
+<td>local remote-tracking refs (no network) &mdash; remote-tracking ref <code>refs/remotes/origin/bf/food</code> does not exist. <strong>The remote itself was not contacted.</strong></td>
+</tr>
+<tr>
+<td>state (claimed)</td>
+<td><code>ready-to-push</code></td>
+</tr>
+<tr>
+<td>verdict (measured)</td>
+<td><strong>PASS</strong></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>minor</code></td>
+</tr>
+<tr>
+<td>register</td>
+<td><code>BF-16</code>, <code>BF-35</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>What an operator sees.</strong> IMPORTANT. In the bolus calculator, choosing a quick pick could load a DIFFERENT record's food, so the carbohydrate number that went into the insulin calculation came from a record you did not choose, and nothing on screen said so. Picking the last entry in the list could throw an error, and plain foods that are not quick picks appeared in the chooser. This is fixed. Separately, quick picks saved by a JSON client, or saved before the "hidden" setting existed, were missing from the quick-pick list and now appear. If you have used the bolus calculator's quick picks, the amount it suggested may not have matched the food you selected. The calculator is a suggestion tool, not a dosing instruction - please raise this with your care team if you think a past suggestion was wrong. This is not medical advice.</p>
+<p><strong>Gates, and what each one actually said.</strong></p>
+<ul>
+<li><strong>PASS</strong> <code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/food</code></li>
+<li>exit 0</li>
+<li>intent: bf/food has not fallen behind origin/dev</li>
+<li><strong>PASS</strong> <code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/food &gt;/dev/null</code></li>
+<li>exit 0</li>
+<li>intent: trial-merge into origin/dev is conflict-free</li>
+<li><strong>PASS</strong> <code>[unit]</code> <em>(cwd: <code>externals/work/crm-bf-food</code>)</em> <code>TEST=boluscalc.quickpick npm run test-single</code></li>
+<li>exit 0</li>
+<li>intent: BF-35's own test, 11 cases. THIS IS THE GATE GT1 WARNED ABOUT: the file is in NEITHER the test:unit nor the test:integration brace list, so a green <code>npm run test:unit</code> on this branch is not evidence that BF-35's fix works. Named explicitly here for that reason.</li>
+<li>measured: 11 passing, 0 failing, 0 pending</li>
+<li><strong>SKIP</strong> <code>[integration]</code> <em>(cwd: <code>externals/work/crm-bf-food</code>)</em> <code>TEST=api.food.quickpicks npm run test-single</code></li>
+<li>kind <code>integration</code> not enabled (use --integration)</li>
+<li>intent: BF-16 over the real HTTP path; needs MongoDB</li>
+</ul>
+<h3 id="p0-h--bfmerge---bf-36-client-delta-merge-reads-past-the-end"><code>P0-H</code> &mdash; bf/merge - BF-36 client delta merge reads past the end<a class="headerlink" href="#p0-h--bfmerge---bf-36-client-delta-merge-reads-past-the-end" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code> (<code>externals/cgm-remote-monitor-official</code>)</td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>bf/merge</code></td>
+</tr>
+<tr>
+<td>commit</td>
+<td><code>b06c6faf882ebd84d627468c75dade0fe1fd01a1</code></td>
+</tr>
+<tr>
+<td>base declared</td>
+<td><code>origin/dev@a8888f0d</code></td>
+</tr>
+<tr>
+<td>base resolved</td>
+<td><code>a8888f0d9facb8a9bb54c2ab15333f3f241b45bf</code></td>
+</tr>
+<tr>
+<td>branch contains base</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>commits ahead of base</td>
+<td>1</td>
+</tr>
+<tr>
+<td>package version at branch</td>
+<td><code>15.0.9</code></td>
+</tr>
+<tr>
+<td>published</td>
+<td>local remote-tracking refs (no network) &mdash; remote-tracking ref <code>refs/remotes/origin/bf/merge</code> does not exist. <strong>The remote itself was not contacted.</strong></td>
+</tr>
+<tr>
+<td>state (claimed)</td>
+<td><code>ready-to-push</code></td>
+</tr>
+<tr>
+<td>verdict (measured)</td>
+<td><strong>PASS</strong></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>patch</code></td>
+</tr>
+<tr>
+<td>register</td>
+<td><code>BF-36</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>What an operator sees.</strong> A treatment being removed at the same time as another update arrived could make the page stop updating until you reloaded it. The clock that tells you how old the reading is runs on its own timer, so it would still have gone stale and warned you - the reading shown was never wrong, it just stopped advancing.</p>
+<p><strong>Gates, and what each one actually said.</strong></p>
+<ul>
+<li><strong>PASS</strong> <code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/merge</code></li>
+<li>exit 0</li>
+<li>intent: bf/merge has not fallen behind origin/dev</li>
+<li><strong>PASS</strong> <code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/merge &gt;/dev/null</code></li>
+<li>exit 0</li>
+<li>intent: trial-merge into origin/dev is conflict-free</li>
+<li><strong>PASS</strong> <code>[unit]</code> <em>(cwd: <code>externals/work/crm-bf-merge</code>)</em> <code>TEST=receiveddata.merge npm run test-single</code></li>
+<li>exit 0</li>
+<li>intent: in NEITHER local brace list - GT1's finding. Named here so the gate actually runs the file that proves the fix.</li>
+<li>measured: 12 passing, 0 failing, 0 pending</li>
+<li><strong>NO-GATE</strong> &mdash; <code>dataUpdate</code> still has no try/catch, so the NEXT throw from anywhere in the merge path has the same effect. This branch fixes one throw, not the missing boundary. No test asserts the boundary exists because it does not.</li>
+</ul>
+<h3 id="p0-i--bfparms---bf-37-bf-38-bf-39"><code>P0-I</code> &mdash; bf/parms - BF-37, BF-38, BF-39<a class="headerlink" href="#p0-i--bfparms---bf-37-bf-38-bf-39" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code> (<code>externals/cgm-remote-monitor-official</code>)</td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>bf/parms</code></td>
+</tr>
+<tr>
+<td>commit</td>
+<td><code>eb0bc918036a7802a0b88156e9722f45fd9107f3</code></td>
+</tr>
+<tr>
+<td>base declared</td>
+<td><code>origin/dev@a8888f0d</code></td>
+</tr>
+<tr>
+<td>base resolved</td>
+<td><code>a8888f0d9facb8a9bb54c2ab15333f3f241b45bf</code></td>
+</tr>
+<tr>
+<td>branch contains base</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>commits ahead of base</td>
+<td>3</td>
+</tr>
+<tr>
+<td>package version at branch</td>
+<td><code>15.0.9</code></td>
+</tr>
+<tr>
+<td>published</td>
+<td>local remote-tracking refs (no network) &mdash; remote-tracking ref <code>refs/remotes/origin/bf/parms</code> does not exist. <strong>The remote itself was not contacted.</strong></td>
+</tr>
+<tr>
+<td>state (claimed)</td>
+<td><code>ready-to-push</code></td>
+</tr>
+<tr>
+<td>verdict (measured)</td>
+<td><strong>PASS</strong></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>patch</code></td>
+</tr>
+<tr>
+<td>register</td>
+<td><code>BF-37</code>, <code>BF-38</code>, <code>BF-39</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>What an operator sees.</strong> A web address with a bare option in it - anything ending in "?", or containing "&amp;&amp;", or a setting with no value such as "?debug" - stopped the page loading entirely, leaving only the loading message. That is fixed. Two smaller fixes go with it: a translation containing ten or more substitutions came out with a stray digit, and an access token belonging to a subject whose name contains an underscore was being corrupted in the address bar (the server was accepting it anyway, so nothing was broken for you).</p>
+<p><strong>Gates, and what each one actually said.</strong></p>
+<ul>
+<li><strong>PASS</strong> <code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/parms</code></li>
+<li>exit 0</li>
+<li>intent: bf/parms has not fallen behind origin/dev</li>
+<li><strong>PASS</strong> <code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/parms &gt;/dev/null</code></li>
+<li>exit 0</li>
+<li>intent: trial-merge into origin/dev is conflict-free</li>
+<li><strong>PASS</strong> <code>[unit]</code> <em>(cwd: <code>externals/work/crm-bf-parms</code>)</em> <code>TEST=browser-utils.queryparms npm run test-single</code></li>
+<li>exit 0</li>
+<li>intent: BF-37 and BF-39; in NEITHER local brace list (GT1)</li>
+<li>measured: 6 passing, 0 failing, 0 pending</li>
+<li><strong>PASS</strong> <code>[unit]</code> <em>(cwd: <code>externals/work/crm-bf-parms</code>)</em> <code>TEST=language npm run test-single</code></li>
+<li>exit 0</li>
+<li>intent: BF-38. Non-vacuous by GT1's control - 1 failing when the fix is removed from pristine dev code.</li>
+<li>measured: 17 passing, 0 failing, 0 pending</li>
+</ul>
+<h3 id="p0-tag--nightscout-connect-releasev0014-and-tag---prepared-needs-a-human-push"><code>P0-TAG</code> &mdash; nightscout-connect release/v0.0.14 and tag - prepared, needs a human push<a class="headerlink" href="#p0-tag--nightscout-connect-releasev0014-and-tag---prepared-needs-a-human-push" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>nightscout-connect</code> (<code>externals/nightscout-connect</code>)</td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>release/v0.0.14</code></td>
+</tr>
+<tr>
+<td>commit</td>
+<td><code>649a7de27b9e869154e718b0ec1d1bfa0388d0d8</code></td>
+</tr>
+<tr>
+<td>base declared</td>
+<td><code>v0.0.13@b394411</code></td>
+</tr>
+<tr>
+<td>base resolved</td>
+<td><code>b394411a39236b614beebffabf23ccc04f730a68</code></td>
+</tr>
+<tr>
+<td>branch contains base</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>commits ahead of base</td>
+<td>11</td>
+</tr>
+<tr>
+<td>package version at branch</td>
+<td><code>0.0.14</code></td>
+</tr>
+<tr>
+<td>published</td>
+<td>local remote-tracking refs (no network) &mdash; remote-tracking ref <code>refs/remotes/origin/release/v0.0.14</code> does not exist. <strong>The remote itself was not contacted.</strong></td>
+</tr>
+<tr>
+<td>state (claimed)</td>
+<td><code>ready-to-push</code></td>
+</tr>
+<tr>
+<td>verdict (measured)</td>
+<td><strong>PASS</strong></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>minor</code></td>
+</tr>
+<tr>
+<td>register</td>
+<td><code>BF-08</code>, <code>BF-34</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>What an operator sees.</strong> A new version of the CGM connector. See P0-F for what changes in behaviour.</p>
+<p><strong>Gates, and what each one actually said.</strong></p>
+<ul>
+<li><strong>PASS</strong> <code>[static]</code> <code>git -C externals/nightscout-connect merge-base --is-ancestor v0.0.13 release/v0.0.14</code></li>
+<li>exit 0</li>
+<li>intent: v0.0.13 fast-forwards to the release - no divergence to reconcile</li>
+<li><strong>PASS</strong> <code>[static]</code> <code>test "$(git -C externals/nightscout-connect cat-file -t v0.0.14)" = tag</code></li>
+<li>exit 0</li>
+<li>intent: v0.0.14 is an ANNOTATED tag, not a lightweight one</li>
+<li><strong>PASS</strong> <code>[static]</code> <code>test "$(git -C externals/nightscout-connect rev-parse v0.0.14^{commit})" = "$(git -C externals/nightscout-connect rev-parse release/v0.0.14)"</code></li>
+<li>exit 0</li>
+<li>intent: the tag points at the release branch tip</li>
+<li><strong>PASS</strong> <code>[static]</code> <code>test "$(git -C externals/nightscout-connect show release/v0.0.14:package.json \| python3 -c 'import json,sys; print(json.load(sys.stdin)["version"])')" = 0.0.14</code></li>
+<li>exit 0</li>
+<li>intent: package.json version matches the tag</li>
+<li><strong>SKIP</strong> <code>[network]</code> <code>git -C externals/nightscout-connect ls-remote --tags origin v0.0.14 \| grep -q . &amp;&amp; exit 1 \|\| exit 0</code></li>
+<li>kind <code>network</code> not enabled (use --network)</li>
+<li>intent: RULE 0. This gate PASSES only while the tag is NOT on origin. It is the machine-checkable form of "nothing has been pushed". Read-only.</li>
+<li><strong>NO-GATE</strong> &mdash; Whether all seven connector commits are the RIGHT content for a release is a release-content decision, not a mechanical bump, and it is the maintainer's. Nothing can gate it.</li>
+</ul>
+<h3 id="p0-pin--bfconnect-pin---move-devs-connector-pin-to-the-v0014-tarball"><code>P0-PIN</code> &mdash; bf/connect-pin - move dev's connector pin to the v0.0.14 tarball<a class="headerlink" href="#p0-pin--bfconnect-pin---move-devs-connector-pin-to-the-v0014-tarball" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code> (<code>externals/cgm-remote-monitor-official</code>)</td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>bf/connect-pin</code></td>
+</tr>
+<tr>
+<td>commit</td>
+<td><code>0807eb1c184353792e95e56b0869e42a774732ff</code></td>
+</tr>
+<tr>
+<td>base declared</td>
+<td><code>origin/dev@a8888f0d</code></td>
+</tr>
+<tr>
+<td>base resolved</td>
+<td><code>a8888f0d9facb8a9bb54c2ab15333f3f241b45bf</code></td>
+</tr>
+<tr>
+<td>branch contains base</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>commits ahead of base</td>
+<td>1</td>
+</tr>
+<tr>
+<td>package version at branch</td>
+<td><code>15.0.9</code></td>
+</tr>
+<tr>
+<td>published</td>
+<td>local remote-tracking refs (no network) &mdash; remote-tracking ref <code>refs/remotes/origin/bf/connect-pin</code> does not exist. <strong>The remote itself was not contacted.</strong></td>
+</tr>
+<tr>
+<td>state (claimed)</td>
+<td><code>blocked</code></td>
+</tr>
+<tr>
+<td>verdict (measured)</td>
+<td><strong>PASS</strong></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>patch</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>What an operator sees.</strong> Nightscout picks up the new connector. Three fixes that keep CGM vendor credentials and patient data out of the log file come with it. Those fixes matter most exactly when you turn debug logging on to diagnose a problem - today's release narrows WHEN the leak happens but does not stop it happening then.</p>
+<p><strong>Gates, and what each one actually said.</strong></p>
+<ul>
+<li><strong>PASS</strong> <code>[static]</code> <em>(cwd: <code>externals/work/crm-bf-connect-pin</code>)</em> <code>grep -q 'archive/refs/tags/v0.0.14.tar.gz' package.json</code></li>
+<li>exit 0</li>
+<li>intent: package.json points at the v0.0.14 tag tarball</li>
+<li><strong>PASS</strong> <code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/connect-pin</code></li>
+<li>exit 0</li>
+<li>intent: bf/connect-pin has not fallen behind origin/dev</li>
+<li><strong>PASS</strong> <code>[static]</code> <em>(cwd: <code>externals/work/crm-bf-connect-pin</code>)</em> <code>grep -q '234d47c85510a77f07b3be0d2c026dd0272715d6' package-lock.json</code></li>
+<li>exit 0</li>
+<li>intent: DELIBERATELY INVERTED. This gate passes while the lockfile is STILL on the old SHA. The lock's integrity is a hash over a tarball GitHub does not generate until the tag is pushed; a hash invented locally would break <code>npm ci</code> for everyone. Leaving it stale makes <code>npm ci</code> fail LOUDLY as out-of-sync, which is the correct failure. When P0-LOCK is done this gate SHOULD go red - that is the handoff signal.</li>
+<li><strong>NO-GATE</strong> &mdash; Nothing can verify the tarball's integrity hash before the tag exists on GitHub. That is the whole reason P0-LOCK is a separate item.</li>
+</ul>
+<h3 id="p0-lock--regenerate-package-lockjson-after-the-v0014-tag-is-pushed"><code>P0-LOCK</code> &mdash; Regenerate package-lock.json after the v0.0.14 tag is pushed<a class="headerlink" href="#p0-lock--regenerate-package-lockjson-after-the-v0014-tag-is-pushed" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code> (<code>externals/cgm-remote-monitor-official</code>)</td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>bf/connect-pin</code></td>
+</tr>
+<tr>
+<td>commit</td>
+<td><code>0807eb1c184353792e95e56b0869e42a774732ff</code></td>
+</tr>
+<tr>
+<td>base declared</td>
+<td><code>bf/connect-pin@0807eb1c</code></td>
+</tr>
+<tr>
+<td>base resolved</td>
+<td><code>0807eb1c184353792e95e56b0869e42a774732ff</code></td>
+</tr>
+<tr>
+<td>branch contains base</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>commits ahead of base</td>
+<td>0</td>
+</tr>
+<tr>
+<td>package version at branch</td>
+<td><code>15.0.9</code></td>
+</tr>
+<tr>
+<td>published</td>
+<td>local remote-tracking refs (no network) &mdash; remote-tracking ref <code>refs/remotes/origin/bf/connect-pin</code> does not exist. <strong>The remote itself was not contacted.</strong></td>
+</tr>
+<tr>
+<td>state (claimed)</td>
+<td><code>blocked</code></td>
+</tr>
+<tr>
+<td>verdict (measured)</td>
+<td><strong>FAIL</strong></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>n/a</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>What an operator sees.</strong> Nothing you see. Until this is done, <code>npm ci</code> fails with an out-of-sync error - which is intentional and correct, not a bug.</p>
+<p><strong>Gates, and what each one actually said.</strong></p>
+<ul>
+<li><strong>FAIL</strong> <code>[static]</code> <em>(cwd: <code>externals/work/crm-bf-connect-pin</code>)</em> <code>grep -q 'archive/refs/tags/v0.0.14.tar.gz' package-lock.json</code></li>
+<li>exit 1</li>
+<li>intent: the lockfile agrees with package.json. FAILS today, on purpose, and must not be made to pass locally - see P0-PIN's inverted gate.</li>
+<li><strong>SKIP</strong> <code>[network]</code> <em>(cwd: <code>externals/work/crm-bf-connect-pin</code>)</em> <code>npm ci --dry-run</code></li>
+<li>kind <code>network</code> not enabled (use --network)</li>
+<li>intent: npm ci resolves; requires the pushed tag to exist on GitHub</li>
+</ul>
+<h3 id="p0-t01--t01---pr"><code>P0-T01</code> &mdash; T0.1 - PR<a class="headerlink" href="#p0-t01--t01---pr" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code> (<code>externals/cgm-remote-monitor-official</code>)</td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>fix/quadratic-treatment-processing</code></td>
+</tr>
+<tr>
+<td>commit</td>
+<td><code>dfe2753dcc1cf39c3e3abfc7bf5c844131480acb</code></td>
+</tr>
+<tr>
+<td>base declared</td>
+<td><code>origin/dev</code></td>
+</tr>
+<tr>
+<td>base resolved</td>
+<td><code>a8888f0d9facb8a9bb54c2ab15333f3f241b45bf</code></td>
+</tr>
+<tr>
+<td>branch contains base</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>commits ahead of base</td>
+<td>1</td>
+</tr>
+<tr>
+<td>package version at branch</td>
+<td><code>15.0.9</code></td>
+</tr>
+<tr>
+<td>published</td>
+<td>local remote-tracking refs (no network) &mdash; remote-tracking ref <code>refs/remotes/origin/fix/quadratic-treatment-processing</code> does not exist. <strong>The remote itself was not contacted.</strong></td>
+</tr>
+<tr>
+<td>state (claimed)</td>
+<td><code>in-flight-upstream</code></td>
+</tr>
+<tr>
+<td>verdict (measured)</td>
+<td><strong>UNMEASURED</strong></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>patch</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>What an operator sees.</strong> Sites with a lot of treatment records load faster. Nothing you see changes value or meaning.</p>
+<p><strong>Gates, and what each one actually said.</strong></p>
+<ul>
+<li><strong>SKIP</strong> <code>[network]</code> <code>git -C externals/cgm-remote-monitor-official ls-remote --heads origin bewest/wip/optimize-treatment-processing \| grep -q dfe2753d</code></li>
+<li>kind <code>network</code> not enabled (use --network)</li>
+<li>intent: the one Phase 0 branch that IS legitimately pushed. GT1 verified this live. Read-only.</li>
+<li><strong>NO-GATE</strong> &mdash; PR merge state is upstream's and cannot be gated from here without a GitHub API call. This item is tracked, not driven.</li>
+</ul>
+<h3 id="fu-limit--follow-up-2---the-limit-rule-is-written-twice-and-that-is-the-root-cause"><code>FU-LIMIT</code> &mdash; Follow-up 2 - the limit rule is written twice, and that is the root cause<a class="headerlink" href="#fu-limit--follow-up-2---the-limit-rule-is-written-twice-and-that-is-the-root-cause" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code> (<code>externals/cgm-remote-monitor-official</code>)</td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>commit</td>
+<td><code>UNRESOLVED</code></td>
+</tr>
+<tr>
+<td>base declared</td>
+<td><code>origin/dev@a8888f0d</code></td>
+</tr>
+<tr>
+<td>base resolved</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>branch contains base</td>
+<td>-</td>
+</tr>
+<tr>
+<td>commits ahead of base</td>
+<td>-</td>
+</tr>
+<tr>
+<td>package version at branch</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>published</td>
+<td>-</td>
+</tr>
+<tr>
+<td>state (claimed)</td>
+<td><code>blocked</code></td>
+</tr>
+<tr>
+<td>verdict (measured)</td>
+<td><strong>FAIL</strong></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>patch</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Gates, and what each one actually said.</strong></p>
+<ul>
+<li><strong>PASS</strong> <code>[static]</code> <code>git -C externals/cgm-remote-monitor-official cat-file -e origin/dev:lib/server/count.js 2&gt;/dev/null &amp;&amp; git -C externals/cgm-remote-monitor-official show origin/dev:lib/api3/generic/collection.js \| grep -q "self.parseLimit" &amp;&amp; exit 1 \|\| exit 0</code></li>
+<li>exit 0</li>
+<li>intent: CONTROL, and it PASSES - and it carries a correction. The sequencing document says the rule is written twice, in lib/server/count.js and v3's parseLimit. THAT FILE DOES NOT EXIST ON origin/dev; bf/reads creates it. So the duplication does not exist yet and this follow-up is created by P0-E landing.</li>
+<li><strong>FAIL</strong> <code>[static]</code> <code>git -C externals/cgm-remote-monitor-official cat-file -e bf/reads:lib/server/count.js 2&gt;/dev/null &amp;&amp; git -C externals/cgm-remote-monitor-official show bf/reads:lib/api3/generic/collection.js \| grep -q "self.parseLimit" &amp;&amp; exit 1 \|\| exit 0</code></li>
+<li>exit 1</li>
+<li>intent: FAILS on bf/reads, where both readings of the rule are present. Paired with the control above, a red here is the duplication and not the command - the identical command run against origin/dev exits 0.</li>
+<li><strong>NO-GATE</strong> &mdash; Nothing asserts that the two implementations AGREE while they both exist. A differential test - the same limit value through both paths, including 0, a negative, a non-numeric and a value above the maximum - is what would make the duplication safe until it is removed, and it does not exist. Two readings of one rule is the root cause of this whole family, so leaving it duplicated is a debt with a name.</li>
+</ul>
+<blockquote>
+<p><strong>UNRESOLVED.</strong> item declares no branch; there is no commit to record. This is a real state (not-started work), not a tool failure.</p>
+</blockquote>
+<h3 id="fu-residuals--follow-ups-3-4-7---three-named-residuals-beside-branches-already-prepared"><code>FU-RESIDUALS</code> &mdash; Follow-ups 3, 4, 7 - three named residuals beside branches already prepared<a class="headerlink" href="#fu-residuals--follow-ups-3-4-7---three-named-residuals-beside-branches-already-prepared" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code> (<code>externals/cgm-remote-monitor-official</code>)</td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>commit</td>
+<td><code>UNRESOLVED</code></td>
+</tr>
+<tr>
+<td>base declared</td>
+<td><code>origin/dev@a8888f0d</code></td>
+</tr>
+<tr>
+<td>base resolved</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>branch contains base</td>
+<td>-</td>
+</tr>
+<tr>
+<td>commits ahead of base</td>
+<td>-</td>
+</tr>
+<tr>
+<td>package version at branch</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>published</td>
+<td>-</td>
+</tr>
+<tr>
+<td>state (claimed)</td>
+<td><code>gate-not-met</code></td>
+</tr>
+<tr>
+<td>verdict (measured)</td>
+<td><strong>FAIL</strong></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>patch</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>What an operator sees.</strong> One of these three is visible to you. If an Amazon Alexa request arrives that Nightscout does not recognise, Nightscout answers nothing at all and the request hangs until Alexa gives up, rather than saying it did not understand. The other two are internal - a check that always answers "yes" but that nothing currently asks, and a leftover log line that prints request details to the server log.</p>
+<p><strong>Gates, and what each one actually said.</strong></p>
+<ul>
+<li><strong>FAIL</strong> <code>[static]</code> <code>git -C externals/cgm-remote-monitor-official show origin/dev:lib/plugins/index.js \| grep -q "return (p !== null)" &amp;&amp; exit 1 \|\| exit 0</code></li>
+<li>exit 1</li>
+<li>intent: Follow-up 3. FAILS today - plugins.isPluginEnabled compares find()'s result with !== null, and find() returns UNDEFINED when it misses, so the function always returns true. No caller today, which is why it has no register id, but it is what the next instrument will reach for.</li>
+<li><strong>FAIL</strong> <code>[static]</code> <code>git -C externals/cgm-remote-monitor-official show origin/dev:lib/authorization/storage.js \| grep -qE "console\\.log\\('Loading',[[:space:]]*opts\\)" &amp;&amp; exit 1 \|\| exit 0</code></li>
+<li>exit 1</li>
+<li>intent: Follow-up 4. FAILS today. BF-05's unfixed sibling - the same shape, a different file. THE PATTERN IS THE STORY OF THIS GATE. The shipping source is console.log('Loading',opts) with NO SPACE after the comma. The register (L1005), the sequencing document and P0-C's gate all quote it WITH a space, and the first draft of this gate copied that quotation - so it searched for a string that is not in the file, matched nothing, and PASSED while the defect was present. A vacuous green, caught by running it. The same defect was found concurrently in P0-C's copy of the gate by another session and fixed there; this is the same space-tolerant pattern, so the two cannot diverge again. :84 AND :113 ARE BOTH RIGHT - storage.js:84 on origin/dev, :113 on bf/auth. The sequencing document's "measured, it is :113, not :84" is true of bf/auth and false of dev; neither number names its ref. This gate measures origin/dev, which is where the fix has to land.</li>
+<li><strong>FAIL</strong> <code>[static]</code> <code>bash -c 's=$(git -C externals/cgm-remote-monitor-official show origin/dev:lib/api/alexa/index.js); echo "$s" \| grep -q "switch (req.body.request.type)" \|\| exit 1; echo "$s" \| grep -q "default:"'</code></li>
+<li>exit 1</li>
+<li>intent: Follow-up 7. FAILS today. The switch on request.type has no default, so an unrecognised type calls neither res.json nor next() and the request hangs until the client times out. The first clause is the control - it asserts the switch is still there, so a red result cannot come from the file having been restructured. Measured: 0 occurrences of "default:" in the file. googlehome has no switch at all, so this is alexa-only.</li>
+<li><strong>NO-GATE</strong> &mdash; Reachability of follow-up 7 is not measured. It needs an Alexa request type outside SessionEndedRequest, LaunchRequest and IntentRequest, and nothing here enumerates what Amazon can send.</li>
+</ul>
+<blockquote>
+<p><strong>UNRESOLVED.</strong> item declares no branch; there is no commit to record. This is a real state (not-started work), not a tool failure.</p>
+</blockquote>
+<h3 id="fu-hygiene--follow-ups-9-10---the-two-audits-that-have-no-instrument"><code>FU-HYGIENE</code> &mdash; Follow-ups 9, 10 - the two audits that have no instrument<a class="headerlink" href="#fu-hygiene--follow-ups-9-10---the-two-audits-that-have-no-instrument" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code> (<code>externals/cgm-remote-monitor-official</code>)</td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>commit</td>
+<td><code>UNRESOLVED</code></td>
+</tr>
+<tr>
+<td>base declared</td>
+<td><code>origin/dev@a8888f0d</code></td>
+</tr>
+<tr>
+<td>base resolved</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>branch contains base</td>
+<td>-</td>
+</tr>
+<tr>
+<td>commits ahead of base</td>
+<td>-</td>
+</tr>
+<tr>
+<td>package version at branch</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>published</td>
+<td>-</td>
+</tr>
+<tr>
+<td>state (claimed)</td>
+<td><code>not-started</code></td>
+</tr>
+<tr>
+<td>verdict (measured)</td>
+<td><strong>UNMEASURED</strong></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>n/a</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Gates, and what each one actually said.</strong></p>
+<ul>
+<li><strong>NO-GATE</strong> &mdash; Follow-up 9 - audit the suppressions OUTSIDE lib/: detect-non-literal-fs-filename, detect-possible-timing-attacks, no-cond-assign. There is no instrument because the audit IS the work: object-injection's 34 suppressed lines yielded five real defects (BF-35, BF-36, BF-37, BF-38 and BF-39 - the register's own tally of four is stale), and the same reasoning applies to each remaining category. What could be gated afterwards is a rule that no NEW suppression is added without an entry, and that rule does not exist.</li>
+<li><strong>NO-GATE</strong> &mdash; Follow-up 10 - jsdom test hygiene has no enforcement. A suite that sets global.window or global.document must restore them in afterEach or it breaks browser-settings.test.js later in the same run. hashauth.modern.test.js does the restore; nothing requires it, and the failure lands in a DIFFERENT file from the one that caused it, which is the shape that costs the most review time. The instrument is a harness-level check, and cut 1 retires jsdom entirely, so it should be decided against the release train rather than built twice.</li>
+</ul>
+<blockquote>
+<p><strong>UNRESOLVED.</strong> item declares no branch; there is no commit to record. This is a real state (not-started work), not a tool failure.</p>
+</blockquote>
+<hr />
+<h2 id="register-entries-this-release-touches-and-each-entrys-basis">Register entries this release touches, and each entry's basis<a class="headerlink" href="#register-entries-this-release-touches-and-each-entrys-basis" title="Permanent link">&para;</a></h2>
+<p>Rule 3 of this programme: read-derived versus reproduced. Measured across the programme, every
+register claim that had to be retracted was derived from READING source; not one that began
+with a REPRODUCTION has been. So this table labels each entry from the words in its own
+register row, quotes the row, and names the phrase that decided it. <code>unstated</code> means the
+register does not say -- it is not a guess, and it is a finding about the register, not about
+the defect.</p>
+<table>
+<thead>
+<tr>
+<th>entry</th>
+<th>basis</th>
+<th>closure state</th>
+<th>carried by</th>
+<th>severity</th>
+<th>where</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BF-01</code></td>
+<td><strong>reproduced</strong></td>
+<td><code>claimed-fixed-gates-pass</code></td>
+<td><code>P0-E</code></td>
+<td>high — wrong answer, HTTP 200</td>
+<td>lib/server/aggregate.js:21</td>
+</tr>
+<tr>
+<td><code>BF-02</code></td>
+<td><strong>unstated</strong></td>
+<td><code>claimed-fixed-gates-pass</code></td>
+<td><code>P0-D</code></td>
+<td>high — wrong answer, HTTP 200</td>
+<td>lib/server/treatments.js:259-266</td>
+</tr>
+<tr>
+<td><code>BF-03</code></td>
+<td><strong>unstated</strong></td>
+<td><code>claimed-fixed-gates-pass</code></td>
+<td><code>P0-D</code></td>
+<td>high — wrong answer, HTTP 200</td>
+<td>lib/server/query.js walker, per-collection</td>
+</tr>
+<tr>
+<td><code>BF-05</code></td>
+<td><strong>unstated</strong></td>
+<td><code>claimed-fixed-gates-pass</code></td>
+<td><code>P0-E</code></td>
+<td>medium — log noise, filter contents to stdout</td>
+<td>lib/server/aggregate.js:30-31</td>
+</tr>
+<tr>
+<td><code>BF-06</code></td>
+<td><strong>unstated</strong></td>
+<td><code>claimed-fixed-gates-pass</code></td>
+<td><code>P0-B</code></td>
+<td>medium — CPU</td>
+<td>lib/server/cache.js:73-76</td>
+</tr>
+<tr>
+<td><code>BF-07</code></td>
+<td><strong>unstated</strong></td>
+<td><code>claimed-fixed-gates-pass</code></td>
+<td><code>P0-B</code></td>
+<td>medium — 65 % of the load cycle</td>
+<td>lib/server/cache.js:81</td>
+</tr>
+<tr>
+<td><code>BF-08</code></td>
+<td><strong>unstated</strong></td>
+<td><code>claimed-fixed-gates-pass</code></td>
+<td><code>P0-F</code>, <code>P0-TAG</code></td>
+<td>medium — thundering herd on restart</td>
+<td>nightscout-connect lib/machines/cycle.js Init, and run()</td>
+</tr>
+<tr>
+<td><code>BF-11</code></td>
+<td><strong>unstated</strong></td>
+<td><code>claimed-fixed-gates-pass</code></td>
+<td><code>P0-D</code></td>
+<td>high — wrong answer, HTTP 200</td>
+<td>lib/server/treatments.js:259-266</td>
+</tr>
+<tr>
+<td><code>BF-13</code></td>
+<td><strong>reproduced</strong></td>
+<td><code>claimed-fixed-gates-pass</code></td>
+<td><code>P0-E</code></td>
+<td>high — silent data loss on a read</td>
+<td>lib/api3/generic/search/input.js parseSort</td>
+</tr>
+<tr>
+<td><code>BF-14</code></td>
+<td><strong>reproduced</strong></td>
+<td><code>claimed-fixed-gates-pass</code></td>
+<td><code>P0-E</code></td>
+<td>high — on PostgreSQL an empty 200 on a glucose read; unbounded read on MongoDB</td>
+<td>lib/server/entries.js:56 + 4 siblings</td>
+</tr>
+<tr>
+<td><code>BF-15</code></td>
+<td><strong>reproduced</strong></td>
+<td><code>claimed-fixed-gates-pass</code></td>
+<td><code>P0-E</code></td>
+<td>medium — silently empty response to a valid request</td>
+<td>lib/api3/shared/fieldsProjector.js applyProjection</td>
+</tr>
+<tr>
+<td><code>BF-16</code></td>
+<td><strong>reproduced</strong></td>
+<td><code>claimed-fixed-gates-pass</code></td>
+<td><code>P0-G</code></td>
+<td>medium — a JSON writer's quick picks vanish from /api/v1/food/quickpicks, which has no in-tree consumer; restoreBoolValue un-hides a boolean-hidden pick in the editor</td>
+<td>lib/server/food.js listquickpicks + lib/food/food.js:69 restoreBoolValue</td>
+</tr>
+<tr>
+<td><code>BF-17</code></td>
+<td><strong>reproduced</strong></td>
+<td><code>claimed-fixed-but-a-gate-failed</code></td>
+<td><code>P0-C</code>, <code>P0-C-REMEDIATE</code></td>
+<td>high — turns read access to the database into API access; no key required</td>
+<td>lib/authorization/endpoints.js:38-42 + lib/admin_plugins/subjects.js:43 + lib/authorization/storage.js save</td>
+</tr>
+<tr>
+<td><code>BF-28</code></td>
+<td><strong>unstated</strong></td>
+<td><code>claimed-fixed-but-a-gate-failed</code></td>
+<td><code>P0-A</code></td>
+<td>medium — a site-change reminder that silently never arrives, and a severity that is wrong the whole time</td>
+<td>lib/plugins/insulinage.js:92</td>
+</tr>
+<tr>
+<td><code>BF-29</code></td>
+<td><strong>unstated</strong></td>
+<td><code>claimed-fixed-but-a-gate-failed</code></td>
+<td><code>P0-A</code></td>
+<td>medium — an operator believes an alarm plugin is on when it is off</td>
+<td>lib/plugins/index.js:140</td>
+</tr>
+<tr>
+<td><code>BF-30</code></td>
+<td><strong>reproduced</strong></td>
+<td><code>claimed-fixed-but-a-gate-failed</code></td>
+<td><code>P0-C</code></td>
+<td>high — restores unthrottled guessing against API_SECRET and tokens</td>
+<td>lib/authorization/delaylist.js + the un-whitelisted forwarded-for call in lib/authorization/index.js:9-12 (not TRUST_PROXY, which does not exist on dev)</td>
+</tr>
+<tr>
+<td><code>BF-31</code></td>
+<td><strong>unstated</strong></td>
+<td><code>claimed-fixed-but-a-gate-failed</code></td>
+<td><code>P0-A</code></td>
+<td>low–medium — gated on the assistant plugin being enabled; reaches the assistant's own answers, not alarm text</td>
+<td>lib/api/googlehome/index.js:27 and lib/api/alexa/index.js:28 + the one language instance at lib/server/server.js:34</td>
+</tr>
+<tr>
+<td><code>BF-32</code></td>
+<td><strong>unstated</strong></td>
+<td><code>claimed-fixed-gates-pass</code></td>
+<td><code>P0-D</code></td>
+<td>low — re-graded from medium: a 500 on $regex, not a wrong answer on $exists. The fix remains right; its stated reason was wrong</td>
+<td>lib/server/query.js walk_prop</td>
+</tr>
+<tr>
+<td><code>BF-33</code></td>
+<td><strong>reproduced</strong></td>
+<td><code>claimed-fixed-gates-pass</code></td>
+<td><code>P0-E</code></td>
+<td>high — unbounded read, HTTP 200, and the ceiling that exists to prevent it is bypassed</td>
+<td>lib/api3/generic/collection.js parseLimit</td>
+</tr>
+<tr>
+<td><code>BF-34</code></td>
+<td><strong>unstated</strong></td>
+<td><code>claimed-fixed-gates-pass</code></td>
+<td><code>P0-F</code>, <code>P0-TAG</code></td>
+<td>high — a vendor that is refusing requests gets hammered by every account at once, which is when it can least afford it</td>
+<td>nightscout-connect lib/backoff.js</td>
+</tr>
+<tr>
+<td><code>BF-35</code></td>
+<td><strong>reproduced</strong></td>
+<td><code>claimed-fixed-gates-pass</code></td>
+<td><code>P0-G</code></td>
+<td>high — the carbs that reach the insulin calculation come from a record the user did not choose, with no error shown. Regression from 3457de5b (2017)</td>
+<td>lib/client/boluscalc.js loadFoodQuickpicks</td>
+</tr>
+<tr>
+<td><code>BF-36</code></td>
+<td><strong>reproduced</strong></td>
+<td><code>claimed-fixed-gates-pass</code></td>
+<td><code>P0-H</code></td>
+<td>medium — availability, not a wrong reading: the time-ago watchdog is on its own timer and still marks the page stale</td>
+<td>lib/client/receiveddata.js mergeTreatmentUpdate</td>
+</tr>
+<tr>
+<td><code>BF-37</code></td>
+<td><strong>reproduced</strong></td>
+<td><code>claimed-fixed-gates-pass</code></td>
+<td><code>P0-I</code></td>
+<td>medium–high — total, silent failure to load, on a URL shape anyone can produce</td>
+<td>lib/client/browser-utils.js queryParms</td>
+</tr>
+<tr>
+<td><code>BF-38</code></td>
+<td><strong>reproduced</strong></td>
+<td><code>claimed-fixed-gates-pass</code></td>
+<td><code>P0-I</code></td>
+<td>low — latent: no shipped catalogue uses more than %3</td>
+<td>lib/language.js translate</td>
+</tr>
+<tr>
+<td><code>BF-39</code></td>
+<td><strong>reproduced</strong></td>
+<td><code>claimed-fixed-gates-pass</code></td>
+<td><code>P0-I</code></td>
+<td>low — a real corruption absorbed by a leniency nobody chose</td>
+<td>lib/client/browser-utils.js queryParms</td>
+</tr>
+</tbody>
+</table>
+<p><strong><code>BF-01</code></strong> &mdash; GET /api/v1/count/entries/where silently matches nothing</p>
+<ul>
+<li>basis: <strong>reproduced</strong> (matched 'reproduc')</li>
+<li>register status, verbatim: fixed 2026-09-15 (bf/reads 4a398d47); reproduced live; count/treatments/where was affected too</li>
+<li>carried by: <code>P0-E</code> (PASS)</li>
+<li>closure state: <code>claimed-fixed-gates-pass</code>; closed for operators: <strong>no</strong></li>
+</ul>
+<p><strong><code>BF-02</code></strong> &mdash; insulin/carbs query bounds truncated by parseInt</p>
+<ul>
+<li>basis: <strong>unstated</strong></li>
+<li>register status, verbatim: fixed 2026-09-15 (T0.5, bf/coercion 88d1f8a4)</li>
+<li>carried by: <code>P0-D</code> (PASS)</li>
+<li>closure state: <code>claimed-fixed-gates-pass</code>; closed for operators: <strong>no</strong></li>
+</ul>
+<p><strong><code>BF-03</code></strong> &mdash; Numeric filters on devicestatus, activity, food, profile match nothing</p>
+<ul>
+<li>basis: <strong>unstated</strong></li>
+<li>register status, verbatim: fixed 2026-09-15 for devicestatus + profile (T0.5, bf/coercion 88d1f8a4); food and activity misfiled, see detail</li>
+<li>carried by: <code>P0-D</code> (PASS)</li>
+<li>closure state: <code>claimed-fixed-gates-pass</code>; closed for operators: <strong>no</strong></li>
+</ul>
+<p><strong><code>BF-05</code></strong> &mdash; Unguarded console.log of every count query on the request path</p>
+<ul>
+<li>basis: <strong>unstated</strong></li>
+<li>register status, verbatim: fixed 2026-09-15 (bf/reads c8fb536b) — deleted, not gated; the module has no env handle</li>
+<li>carried by: <code>P0-E</code> (PASS)</li>
+<li>closure state: <code>claimed-fixed-gates-pass</code>; closed for operators: <strong>no</strong></li>
+</ul>
+<p><strong><code>BF-06</code></strong> &mdash; /api/v1/entries?count=10 costs 42× a typed read</p>
+<ul>
+<li>basis: <strong>unstated</strong></li>
+<li>register status, verbatim: fixed 2026-09-15 (T0.2, bf/cache ddcdb1a8); 0.837 → 0.025 ms, response asserted identical over HTTP</li>
+<li>carried by: <code>P0-B</code> (PASS)</li>
+<li>closure state: <code>claimed-fixed-gates-pass</code>; closed for operators: <strong>no</strong></li>
+</ul>
+<p><strong><code>BF-07</code></strong> &mdash; cache.insertData JSON round-trips the whole retained array</p>
+<ul>
+<li>basis: <strong>unstated</strong></li>
+<li>register status, verbatim: partly fixed 2026-09-15 (T0.3, bf/cache 4f86bab1); 3.75 → 2.66 ms per cycle — devicestatus keeps its clone on purpose, see detail</li>
+<li>carried by: <code>P0-B</code> (PASS)</li>
+<li>closure state: <code>claimed-fixed-gates-pass</code>; closed for operators: <strong>no</strong></li>
+</ul>
+<p><strong><code>BF-08</code></strong> &mdash; nightscout-connect actors have no start jitter — a pool reaches the vendor inside one second on every restart. The interval half of this entry was wrong: all four drivers already jitter the aligned path by 18 s</p>
+<ul>
+<li>basis: <strong>unstated</strong></li>
+<li>register status, verbatim: fixed 2026-09-15 (T0.4, fix/connect-timer-jitter c1cce2a); measured at 400 actors, busiest second 400 → 15</li>
+<li>carried by: <code>P0-F</code> (PASS), <code>P0-TAG</code> (PASS)</li>
+<li>closure state: <code>claimed-fixed-gates-pass</code>; closed for operators: <strong>no</strong></li>
+</ul>
+<p><strong><code>BF-11</code></strong> &mdash; treatments.duration and rate have no walker entry — temp-basal filters match nothing</p>
+<ul>
+<li>basis: <strong>unstated</strong></li>
+<li>register status, verbatim: fixed 2026-09-15 (T0.5, bf/coercion 88d1f8a4)</li>
+<li>carried by: <code>P0-D</code> (PASS)</li>
+<li>closure state: <code>claimed-fixed-gates-pass</code>; closed for operators: <strong>no</strong></li>
+</ul>
+<p><strong><code>BF-13</code></strong> &mdash; API v3 skip/limit paging silently loses and duplicates documents when the whole sort chain ties</p>
+<ul>
+<li>basis: <strong>reproduced</strong> (matched 'reproduc')</li>
+<li>register status, verbatim: fixed 2026-09-15 (bf/reads 399dc283); reproduced through the v3 HTTP path</li>
+<li>carried by: <code>P0-E</code> (PASS)</li>
+<li>closure state: <code>claimed-fixed-gates-pass</code>; closed for operators: <strong>no</strong></li>
+</ul>
+<p><strong><code>BF-14</code></strong> &mdash; API v1 ?count=0 (and -3, 1e2) reaches the driver unvalidated — .limit(0) means <em>unbounded</em></p>
+<ul>
+<li>basis: <strong>reproduced</strong> (matched 'reproduc')</li>
+<li>register status, verbatim: fixed 2026-09-15 (bf/reads 1640b64b); reproduced live; the v3 validation it says to copy is itself defective — see BF-33</li>
+<li>carried by: <code>P0-E</code> (PASS)</li>
+<li>closure state: <code>claimed-fixed-gates-pass</code>; closed for operators: <strong>no</strong></li>
+</ul>
+<p><strong><code>BF-15</code></strong> &mdash; API v3 ?fields=<dotted.path> returns an empty document with HTTP 200</p>
+<ul>
+<li>basis: <strong>reproduced</strong> (matched 'reproduc')</li>
+<li>register status, verbatim: fixed 2026-09-15 (bf/reads ba70f1fc); reproduced live</li>
+<li>carried by: <code>P0-E</code> (PASS)</li>
+<li>closure state: <code>claimed-fixed-gates-pass</code>; closed for operators: <strong>no</strong></li>
+</ul>
+<p><strong><code>BF-16</code></strong> &mdash; Food quick-pick hidden filter compares to the string 'false'; the field has no declared type and its stored type depends on the request's content type. The "wrong order in the built-in editor" half of this entry was wrong — the editor re-sorts numerically itself and does not use the endpoint</p>
+<ul>
+<li>basis: <strong>reproduced</strong> (matched 'reproduc')</li>
+<li>register status, verbatim: fixed 2026-09-15 (bf/food 73495331); reproduced live, both spellings written over HTTP</li>
+<li>carried by: <code>P0-G</code> (PASS)</li>
+<li>closure state: <code>claimed-fixed-gates-pass</code>; closed for operators: <strong>no</strong></li>
+</ul>
+<p><strong><code>BF-17</code></strong> &mdash; Editing a subject through the stock admin UI persists the API access token in plaintext, into a field the server otherwise only derives</p>
+<ul>
+<li>basis: <strong>reproduced</strong> (matched 'reproduc')</li>
+<li>register status, verbatim: fixed 2026-09-15 — bf/auth 64db1f35; reproduced live; existing rows still hold tokens, see the report</li>
+<li>carried by: <code>P0-C</code> (FAIL), <code>P0-C-REMEDIATE</code> (UNMEASURED)</li>
+<li>closure state: <code>claimed-fixed-but-a-gate-failed</code>; closed for operators: <strong>no</strong></li>
+</ul>
+<p><strong><code>BF-28</code></strong> &mdash; insulinage's URGENT branch is unreachable — it compares against insulinInfo.urgent, which is never assigned, where all three sibling plugins use prefs.urgent. "Insulin reservoir change overdue!" can never fire, and the reported level stays WARN for as long as the reservoir is overdue</p>
+<ul>
+<li>basis: <strong>unstated</strong></li>
+<li>register status, verbatim: fixed 2026-09-15 (bf/alarms 8714093b)</li>
+<li>carried by: <code>P0-A</code> (FAIL)</li>
+<li>closure state: <code>claimed-fixed-but-a-gate-failed</code>; closed for operators: <strong>no</strong></li>
+</ul>
+<p><strong><code>BF-29</code></strong> &mdash; An unknown name in ENABLE is silently ignored — matching is against plugin.name (bwp, cage, iage, sage, bage, basal — six, not five), not the file name. An operator who writes ENABLE=cannulaage gets no plugin and no warning</p>
+<ul>
+<li>basis: <strong>unstated</strong></li>
+<li>register status, verbatim: fixed 2026-09-15 (bf/alarms 99e46a52)</li>
+<li>carried by: <code>P0-A</code> (FAIL)</li>
+<li>closure state: <code>claimed-fixed-but-a-gate-failed</code>; closed for operators: <strong>no</strong></li>
+</ul>
+<p><strong><code>BF-30</code></strong> &mdash; The auth-failure delay is keyed on a client-controlled value, so brute-force throttling never engages</p>
+<ul>
+<li>basis: <strong>reproduced</strong> (matched 'reproduc')</li>
+<li>register status, verbatim: fixed 2026-09-15 — bf/auth a26ba416; reproduced live; the register's preferred fix was refuted by measurement</li>
+<li>carried by: <code>P0-C</code> (FAIL)</li>
+<li>closure state: <code>claimed-fixed-but-a-gate-failed</code>; closed for operators: <strong>no</strong></li>
+</ul>
+<p><strong><code>BF-31</code></strong> &mdash; A Google Home or Alexa request re-points the shared language instance and moment's global locale for the whole process, until something changes it back. Measured 2026-09-15: it does <em>not</em> change alarm text — the catalogue is read once at boot and never reloaded</p>
+<ul>
+<li>basis: <strong>unstated</strong></li>
+<li>register status, verbatim: fixed 2026-09-15 (bf/alarms 5dcf783f)</li>
+<li>carried by: <code>P0-A</code> (FAIL)</li>
+<li>closure state: <code>claimed-fixed-but-a-gate-failed</code>; closed for operators: <strong>no</strong></li>
+</ul>
+<p><strong><code>BF-32</code></strong> &mdash; Query coercion was applied to operands that are not field values, so find[sgv][$exists]=true became {$exists: NaN} and find[notes][$regex]=ab became {$regex: NaN}. The consequence this entry claimed is refuted — {$exists: NaN} is read by MongoDB as true, not false, so $exists=true was already answering correctly by accident. What the coercion actually did on the ten walker fields is turn a $regex into a server error. The residual $exists=false defect that survives the fix is BF-40</p>
+<ul>
+<li>basis: <strong>unstated</strong></li>
+<li>register status, verbatim: fixed 2026-09-15 (found during T0.5, bf/coercion 88d1f8a4); claim refuted 2026-09-15, see detail and BF-40</li>
+<li>carried by: <code>P0-D</code> (PASS)</li>
+<li>closure state: <code>claimed-fixed-gates-pass</code>; closed for operators: <strong>no</strong></li>
+</ul>
+<p><strong><code>BF-33</code></strong> &mdash; API v3 ?limit=0x10 passes the API3_MAX_LIMIT check as 16 and reaches the driver as .limit(0) — <em>no limit</em>; ?limit=1e2 returns one document</p>
+<ul>
+<li>basis: <strong>reproduced</strong> (matched 'reproduc')</li>
+<li>register status, verbatim: fixed 2026-09-15 (bf/reads ea50cf52); found while fixing BF-14, reproduced live</li>
+<li>carried by: <code>P0-E</code> (PASS)</li>
+<li>closure state: <code>claimed-fixed-gates-pass</code>; closed for operators: <strong>no</strong></li>
+</ul>
+<p><strong><code>BF-34</code></strong> &mdash; backoff() merges its options as { ...config, ...defaults }, so every value any caller passes is discarded. All five vendor sources configure a 2.5-minute retry interval and every one of them gets the 256 ms default — 586× faster — and use_random_slot is forced false, so a pool that fails together retries in exact lockstep</p>
+<ul>
+<li>basis: <strong>unstated</strong></li>
+<li>register status, verbatim: fixed 2026-09-15 (found during T0.4, fix/connect-timer-jitter c1cce2a); 100 actors delivered the same 800 requests across 3 s before and 67 s after</li>
+<li>carried by: <code>P0-F</code> (PASS), <code>P0-TAG</code> (PASS)</li>
+<li>closure state: <code>claimed-fixed-gates-pass</code>; closed for operators: <strong>no</strong></li>
+</ul>
+<p><strong><code>BF-35</code></strong> &mdash; The bolus calculator's quick-pick chooser builds its <option> list from the whole food collection but resolves the selection against the filtered quick-pick array. Picking one quick pick loads a different one's foods; the last entry throws; plain foods appear in the chooser</p>
+<ul>
+<li>basis: <strong>reproduced</strong> (matched 'reproduc')</li>
+<li>register status, verbatim: fixed 2026-09-15 (found during BF-16, bf/food 73495331); reproduced in jsdom, ablated six ways</li>
+<li>carried by: <code>P0-G</code> (PASS)</li>
+<li>closure state: <code>claimed-fixed-gates-pass</code>; closed for operators: <strong>no</strong></li>
+</ul>
+<p><strong><code>BF-36</code></strong> &mdash; The client's delta merge captured the cached array's length once and then spliced that array, so a remove followed by an item matching nothing read past the end and threw. The throw escapes into dataUpdate, which has no try/catch — the page stops advancing until reloaded</p>
+<ul>
+<li>basis: <strong>reproduced</strong> (matched 'reproduc')</li>
+<li>register status, verbatim: fixed 2026-09-15 (found by auditing the suppressions BF-35 turned up under, bf/merge b06c6faf); reproduced directly, ablated against the shipped shape</li>
+<li>carried by: <code>P0-H</code> (PASS)</li>
+<li>closure state: <code>claimed-fixed-gates-pass</code>; closed for operators: <strong>no</strong></li>
+</ul>
+<p><strong><code>BF-37</code></strong> &mdash; queryParms() reads [1] of each key=value split without checking one exists, so a valueless parameter — ?debug, a trailing &amp;, &amp;&amp;, a lone ? — throws. It is the first statement of client.init, so the page stops loading with nothing on screen but the loading message</p>
+<ul>
+<li>basis: <strong>reproduced</strong> (matched 'reproduc')</li>
+<li>register status, verbatim: fixed 2026-09-15 (suppression audit, bf/parms 522c6ffb); reproduced directly</li>
+<li>carried by: <code>P0-I</code> (PASS)</li>
+<li>closure state: <code>claimed-fixed-gates-pass</code>; closed for operators: <strong>no</strong></li>
+</ul>
+<p><strong><code>BF-38</code></strong> &mdash; Translation substitution loops forwards over %1…%n; %1 is a prefix of %10, so the first pass rewrites the %1 inside %10 and leaves a stray 0. Same prefix-order trap as sorting a text position</p>
+<ul>
+<li>basis: <strong>reproduced</strong> (matched 'reproduc')</li>
+<li>register status, verbatim: fixed 2026-09-15 (suppression audit, bf/parms c9a7a21c); reproduced directly</li>
+<li>carried by: <code>P0-I</code> (PASS)</li>
+<li>closure state: <code>claimed-fixed-gates-pass</code>; closed for operators: <strong>no</strong></li>
+</ul>
+<p><strong><code>BF-39</code></strong> &mdash; queryParms() replaced _ with a space, corrupting every access token whose subject name contains one. Measured to have no live effect: findSubject matches on the last --separated segment and ignores the abbreviated name the corruption lands in</p>
+<ul>
+<li>basis: <strong>reproduced</strong> (matched 'reproduc')</li>
+<li>register status, verbatim: fixed 2026-09-15 (bf/parms eb0bc918); reproduced against a live instance, both spellings authorise</li>
+<li>carried by: <code>P0-I</code> (PASS)</li>
+<li>closure state: <code>claimed-fixed-gates-pass</code>; closed for operators: <strong>no</strong></li>
+</ul>
+<hr />
+<h2 id="test-evidence">Test evidence<a class="headerlink" href="#test-evidence" title="Permanent link">&para;</a></h2>
+<p>The exact command, where it ran, and what it said. A command that was not run in this capture is listed with outcome <code>SKIP</code> and no summary &mdash; it is not a pass.</p>
+<table>
+<thead>
+<tr>
+<th>item</th>
+<th>kind</th>
+<th>command</th>
+<th>cwd</th>
+<th>outcome</th>
+<th>summary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>P0-A</code></td>
+<td>unit</td>
+<td><code>TEST=insulinage npm run test-single</code></td>
+<td><code>externals/work/crm-bf-alarms</code></td>
+<td><strong>PASS</strong></td>
+<td>5 passing, 0 failing, 0 pending</td>
+</tr>
+<tr>
+<td><code>P0-A</code></td>
+<td>unit</td>
+<td><code>TEST=plugins npm run test-single</code></td>
+<td><code>externals/work/crm-bf-alarms</code></td>
+<td><strong>PASS</strong></td>
+<td>13 passing, 0 failing, 0 pending</td>
+</tr>
+<tr>
+<td><code>P0-A</code></td>
+<td>integration</td>
+<td><code>TEST=api.alexa npm run test-single</code></td>
+<td><code>externals/work/crm-bf-alarms</code></td>
+<td><strong>SKIP</strong></td>
+<td><em>not run: kind <code>integration</code> not enabled (use --integration)</em></td>
+</tr>
+<tr>
+<td><code>P0-A</code></td>
+<td>integration</td>
+<td><code>TEST=api.googlehome npm run test-single</code></td>
+<td><code>externals/work/crm-bf-alarms</code></td>
+<td><strong>SKIP</strong></td>
+<td><em>not run: kind <code>integration</code> not enabled (use --integration)</em></td>
+</tr>
+<tr>
+<td><code>P0-C</code></td>
+<td>integration</td>
+<td><code>TEST=authdelay npm run test-single</code></td>
+<td><code>externals/work/crm-bf-auth</code></td>
+<td><strong>SKIP</strong></td>
+<td><em>not run: kind <code>integration</code> not enabled (use --integration)</em></td>
+</tr>
+<tr>
+<td><code>P0-C</code></td>
+<td>integration</td>
+<td><code>TEST=authsubjects npm run test-single</code></td>
+<td><code>externals/work/crm-bf-auth</code></td>
+<td><strong>SKIP</strong></td>
+<td><em>not run: kind <code>integration</code> not enabled (use --integration)</em></td>
+</tr>
+<tr>
+<td><code>P0-D</code></td>
+<td>unit</td>
+<td><code>TEST=query npm run test-single</code></td>
+<td><code>externals/work/crm-bf-coercion</code></td>
+<td><strong>PASS</strong></td>
+<td>28 passing, 0 failing, 0 pending</td>
+</tr>
+<tr>
+<td><code>P0-E</code></td>
+<td>integration</td>
+<td><code>TEST=api.count-parameter npm run test-single</code></td>
+<td><code>externals/work/crm-bf-reads</code></td>
+<td><strong>SKIP</strong></td>
+<td><em>not run: kind <code>integration</code> not enabled (use --integration)</em></td>
+</tr>
+<tr>
+<td><code>P0-E</code></td>
+<td>integration</td>
+<td><code>TEST=api.count-where npm run test-single</code></td>
+<td><code>externals/work/crm-bf-reads</code></td>
+<td><strong>SKIP</strong></td>
+<td><em>not run: kind <code>integration</code> not enabled (use --integration)</em></td>
+</tr>
+<tr>
+<td><code>P0-E</code></td>
+<td>integration</td>
+<td><code>TEST=api3.fields npm run test-single</code></td>
+<td><code>externals/work/crm-bf-reads</code></td>
+<td><strong>SKIP</strong></td>
+<td><em>not run: kind <code>integration</code> not enabled (use --integration)</em></td>
+</tr>
+<tr>
+<td><code>P0-E</code></td>
+<td>integration</td>
+<td><code>TEST=api3.limit npm run test-single</code></td>
+<td><code>externals/work/crm-bf-reads</code></td>
+<td><strong>SKIP</strong></td>
+<td><em>not run: kind <code>integration</code> not enabled (use --integration)</em></td>
+</tr>
+<tr>
+<td><code>P0-E</code></td>
+<td>integration</td>
+<td><code>TEST=api3.paging npm run test-single</code></td>
+<td><code>externals/work/crm-bf-reads</code></td>
+<td><strong>SKIP</strong></td>
+<td><em>not run: kind <code>integration</code> not enabled (use --integration)</em></td>
+</tr>
+<tr>
+<td><code>P0-F</code></td>
+<td>unit</td>
+<td><code>npm test</code></td>
+<td><code>externals/work/nc-jitter</code></td>
+<td><strong>PASS</strong></td>
+<td>exit 0 &mdash; last line: <code>ℹ duration_ms 277.22902</code></td>
+</tr>
+<tr>
+<td><code>P0-F</code></td>
+<td>unit</td>
+<td><code>node -e "const b=require('./lib/backoff.js'); try { b({jitter:'wild'}); process.exit(1); } catch(e) { process.exit(/unknown jitter mode/.test(e.message)?0:1); }"</code></td>
+<td><code>externals/work/nc-jitter</code></td>
+<td><strong>PASS</strong></td>
+<td>exit 0 &mdash; last line: ``</td>
+</tr>
+<tr>
+<td><code>P0-G</code></td>
+<td>unit</td>
+<td><code>TEST=boluscalc.quickpick npm run test-single</code></td>
+<td><code>externals/work/crm-bf-food</code></td>
+<td><strong>PASS</strong></td>
+<td>11 passing, 0 failing, 0 pending</td>
+</tr>
+<tr>
+<td><code>P0-G</code></td>
+<td>integration</td>
+<td><code>TEST=api.food.quickpicks npm run test-single</code></td>
+<td><code>externals/work/crm-bf-food</code></td>
+<td><strong>SKIP</strong></td>
+<td><em>not run: kind <code>integration</code> not enabled (use --integration)</em></td>
+</tr>
+<tr>
+<td><code>P0-H</code></td>
+<td>unit</td>
+<td><code>TEST=receiveddata.merge npm run test-single</code></td>
+<td><code>externals/work/crm-bf-merge</code></td>
+<td><strong>PASS</strong></td>
+<td>12 passing, 0 failing, 0 pending</td>
+</tr>
+<tr>
+<td><code>P0-I</code></td>
+<td>unit</td>
+<td><code>TEST=browser-utils.queryparms npm run test-single</code></td>
+<td><code>externals/work/crm-bf-parms</code></td>
+<td><strong>PASS</strong></td>
+<td>6 passing, 0 failing, 0 pending</td>
+</tr>
+<tr>
+<td><code>P0-I</code></td>
+<td>unit</td>
+<td><code>TEST=language npm run test-single</code></td>
+<td><code>externals/work/crm-bf-parms</code></td>
+<td><strong>PASS</strong></td>
+<td>17 passing, 0 failing, 0 pending</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="what-was-not-verified">What was NOT verified<a class="headerlink" href="#what-was-not-verified" title="Permanent link">&para;</a></h2>
+<p>This section is mandatory and the generator refuses to write a record whose gaps section is
+empty. It is assembled mechanically from the same data as everything above -- no-gate markers
+from the manifest, skips and absent instruments from the runner, bases from the register
+parse, scope from arithmetic on the selection -- because a hand-written gaps section records
+only what somebody remembered was missing.</p>
+<p><strong>76 entries.</strong></p>
+<table>
+<thead>
+<tr>
+<th>category</th>
+<th>n</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>branch-unresolved</code></td>
+<td>4</td>
+</tr>
+<tr>
+<td><code>capture-environment</code></td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>claim-diverges-from-measurement</code></td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>gate-not-run</code></td>
+<td>13</td>
+</tr>
+<tr>
+<td><code>item-unmeasured</code></td>
+<td>3</td>
+</tr>
+<tr>
+<td><code>no-instrument-declared</code></td>
+<td>19</td>
+</tr>
+<tr>
+<td><code>out-of-scope</code></td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>publication-unverified</code></td>
+<td>13</td>
+</tr>
+<tr>
+<td><code>record-method</code></td>
+<td>3</td>
+</tr>
+<tr>
+<td><code>register-basis-unstated</code></td>
+<td>12</td>
+</tr>
+<tr>
+<td><code>register-entry-not-demonstrated</code></td>
+<td>5</td>
+</tr>
+<tr>
+<td><code>register-untouched</code></td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<h3 id="branch-unresolved"><code>branch-unresolved</code><a class="headerlink" href="#branch-unresolved" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>P0-C-REMEDIATE</strong> &mdash; Could not resolve the work to a commit: item declares no branch; there is no commit to record. This is a real state (not-started work), not a tool failure.</li>
+<li>An item whose branch does not resolve has no SHA in this record, so nothing about its content was verified here.</li>
+<li><strong>FU-LIMIT</strong> &mdash; Could not resolve the work to a commit: item declares no branch; there is no commit to record. This is a real state (not-started work), not a tool failure.</li>
+<li>An item whose branch does not resolve has no SHA in this record, so nothing about its content was verified here.</li>
+<li><strong>FU-RESIDUALS</strong> &mdash; Could not resolve the work to a commit: item declares no branch; there is no commit to record. This is a real state (not-started work), not a tool failure.</li>
+<li>An item whose branch does not resolve has no SHA in this record, so nothing about its content was verified here.</li>
+<li><strong>FU-HYGIENE</strong> &mdash; Could not resolve the work to a commit: item declares no branch; there is no commit to record. This is a real state (not-started work), not a tool failure.</li>
+<li>An item whose branch does not resolve has no SHA in this record, so nothing about its content was verified here.</li>
+</ul>
+<h3 id="capture-environment"><code>capture-environment</code><a class="headerlink" href="#capture-environment" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>control surface</strong> &mdash; The control-surface working tree was NOT clean at capture (21 uncommitted path(s)).</li>
+<li>The inputs are digested by content (manifest_sha256, register_sha256) so the record is still re-derivable, but the inputs were not committed when it was taken.</li>
+</ul>
+<h3 id="claim-diverges-from-measurement"><code>claim-diverges-from-measurement</code><a class="headerlink" href="#claim-diverges-from-measurement" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>P0-B</strong> &mdash; state says gate-not-met, but every RUNNABLE gate passed and the failing property sits behind 2 no-gate marker(s): the claim rests on a recorded measurement this run could not reproduce</li>
+<li>The manifest state is a claim; the gate result is the measurement. Where they disagree the record carries both.</li>
+</ul>
+<h3 id="gate-not-run"><code>gate-not-run</code><a class="headerlink" href="#gate-not-run" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>P0-A gates[4]</strong> &mdash; TEST=api.alexa npm run test-single -- NOT RUN in this capture.</li>
+<li>kind <code>integration</code> not enabled (use --integration) This capture enabled kinds static,unit. A skipped gate is not a pass.</li>
+<li><strong>P0-A gates[5]</strong> &mdash; TEST=api.googlehome npm run test-single -- NOT RUN in this capture.</li>
+<li>kind <code>integration</code> not enabled (use --integration) This capture enabled kinds static,unit. A skipped gate is not a pass.</li>
+<li><strong>P0-C gates[3]</strong> &mdash; TEST=authdelay npm run test-single -- NOT RUN in this capture.</li>
+<li>kind <code>integration</code> not enabled (use --integration) This capture enabled kinds static,unit. A skipped gate is not a pass.</li>
+<li><strong>P0-C gates[4]</strong> &mdash; TEST=authsubjects npm run test-single -- NOT RUN in this capture.</li>
+<li>kind <code>integration</code> not enabled (use --integration) This capture enabled kinds static,unit. A skipped gate is not a pass.</li>
+<li><strong>P0-E gates[3]</strong> &mdash; TEST=api.count-parameter npm run test-single -- NOT RUN in this capture.</li>
+<li>kind <code>integration</code> not enabled (use --integration) This capture enabled kinds static,unit. A skipped gate is not a pass.</li>
+<li><strong>P0-E gates[4]</strong> &mdash; TEST=api.count-where npm run test-single -- NOT RUN in this capture.</li>
+<li>kind <code>integration</code> not enabled (use --integration) This capture enabled kinds static,unit. A skipped gate is not a pass.</li>
+<li><strong>P0-E gates[5]</strong> &mdash; TEST=api3.fields npm run test-single -- NOT RUN in this capture.</li>
+<li>kind <code>integration</code> not enabled (use --integration) This capture enabled kinds static,unit. A skipped gate is not a pass.</li>
+<li><strong>P0-E gates[6]</strong> &mdash; TEST=api3.limit npm run test-single -- NOT RUN in this capture.</li>
+<li>kind <code>integration</code> not enabled (use --integration) This capture enabled kinds static,unit. A skipped gate is not a pass.</li>
+<li><strong>P0-E gates[7]</strong> &mdash; TEST=api3.paging npm run test-single -- NOT RUN in this capture.</li>
+<li>kind <code>integration</code> not enabled (use --integration) This capture enabled kinds static,unit. A skipped gate is not a pass.</li>
+<li><strong>P0-G gates[3]</strong> &mdash; TEST=api.food.quickpicks npm run test-single -- NOT RUN in this capture.</li>
+<li>kind <code>integration</code> not enabled (use --integration) This capture enabled kinds static,unit. A skipped gate is not a pass.</li>
+<li><strong>P0-TAG gates[4]</strong> &mdash; git -C externals/nightscout-connect ls-remote --tags origin v0.0.14 | grep -q . &amp;&amp; exit 1 || exit 0 -- NOT RUN in this capture.</li>
+<li>kind <code>network</code> not enabled (use --network) This capture enabled kinds static,unit. A skipped gate is not a pass.</li>
+<li><strong>P0-LOCK gates[1]</strong> &mdash; npm ci --dry-run -- NOT RUN in this capture.</li>
+<li>kind <code>network</code> not enabled (use --network) This capture enabled kinds static,unit. A skipped gate is not a pass.</li>
+<li><strong>P0-T01 gates[0]</strong> &mdash; git -C externals/cgm-remote-monitor-official ls-remote --heads origin bewest/wip/optimize-treatment-processing | grep -q dfe2753d -- NOT RUN in this capture.</li>
+<li>kind <code>network</code> not enabled (use --network) This capture enabled kinds static,unit. A skipped gate is not a pass.</li>
+</ul>
+<h3 id="item-unmeasured"><code>item-unmeasured</code><a class="headerlink" href="#item-unmeasured" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>P0-C-REMEDIATE</strong> &mdash; Nothing ran for this item at all; it appears in the record with no measurement behind it.</li>
+<li>Every gate it carries is a no-gate marker or was skipped. Never read UNMEASURED as green.</li>
+<li><strong>P0-T01</strong> &mdash; Nothing ran for this item at all; it appears in the record with no measurement behind it.</li>
+<li>Every gate it carries is a no-gate marker or was skipped. Never read UNMEASURED as green.</li>
+<li><strong>FU-HYGIENE</strong> &mdash; Nothing ran for this item at all; it appears in the record with no measurement behind it.</li>
+<li>Every gate it carries is a no-gate marker or was skipped. Never read UNMEASURED as green.</li>
+</ul>
+<h3 id="no-instrument-declared"><code>no-instrument-declared</code><a class="headerlink" href="#no-instrument-declared" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>P0-A gates[6]</strong> &mdash; No gate exists for this property; the manifest records why.</li>
+<li>THE GATE THAT WAS HERE - <code>npm run test:unit</code> - ASSERTED LESS THAN IT LOOKED LIKE. It resolves to a 44-file brace list, it needs MongoDB (verifyauth x4 and API_SECRET x2 fail without it even on pristine dev), and tests/api.alexa.test.js and tests/api.googlehome.test.js - two of the four files this branch adds - are in NEITHER local script, so it never ran half the branch's own evidence. CI's <code>test-ci</code> runs all 159 files and does cover them; a gate that mirrors the local script is weaker than CI, not equal to it.</li>
+<li><strong>P0-A gates[8]</strong> &mdash; No gate exists for this property; the manifest records why.</li>
+<li>Nothing exercises the ENABLE warning through a booted plugin registry. GT4 had to hand-reconstruct the plugin-name list to test it, and a reconstructed registry is not the registry. Needs a boot-level test.</li>
+<li><strong>P0-B gates[2]</strong> &mdash; No gate exists for this property; the manifest records why.</li>
+<li>T0.3's stated gate is "the three cache calls under 1 ms per cycle", and it was MEASURED at 3.747 -&gt; 2.657 ms, so the gate is not met. But that measurement is not currently RE-RUNNABLE: the workload that produced those two figures is not recorded anywhere in this repository, and a benchmark written from scratch here would emit a number that looks like the gate's number without being comparable to it. Rule 9 - quote the ordering, and say how it was measured and on what - forbids that, and a fabricated-workload benchmark is the exact laundering this queue exists to prevent. So <code>gate-not-met</code> here rests on a RECORDED measurement by a prior agent, not on a live one. Making it live means first writing down the workload; the house pattern to follow is tools/mt-bench/cycle-fix.js, which states its iteration count, its document counts and its comparison arms in the file.</li>
+<li><strong>P0-B gates[3]</strong> &mdash; No gate exists for this property; the manifest records why.</li>
+<li>The 98% of the remaining cost is devicestatus, whose caller rewrites fields in place. Taking it needs proof that nothing in the plugin tier writes to a device-status document. A grep is not that proof when the failure mode is a field silently vanishing from every API read served out of the cache. There is no test that would catch it.</li>
+<li><strong>P0-C gates[5]</strong> &mdash; No gate exists for this property; the manifest records why.</li>
+<li><code>npm run test:unit</code> was here and was recorded as "361 passing / 0 failing at GT1's measurement". That number is not evidence for this branch: the 44-file brace list contains NEITHER of the two test files bf/auth adds, so the suite could pass in full with every one of these fixes reverted.</li>
+<li><strong>P0-C gates[6]</strong> &mdash; No gate exists for this property; the manifest records why.</li>
+<li>Nothing checks that the plaintext tokens ALREADY written into existing databases get cleaned up. The code fix does not remove them and there is no migration. This needs an operator-facing remediation note and a script, both of which are P0-C-REMEDIATE.</li>
+<li><strong>P0-C-REMEDIATE gates[0]</strong> &mdash; No gate exists for this property; the manifest records why.</li>
+<li>Nothing written yet. The gate this item needs is a script that reports how many subject rows carry a non-derived accessToken, run against a database with one planted, and a control row that has none - so the script is shown to distinguish the two before anyone trusts a zero.</li>
+<li><strong>P0-E gates[8]</strong> &mdash; No gate exists for this property; the manifest records why.</li>
+<li>THE <code>npm run test:unit</code> GATE WAS REMOVED, not downgraded. It was recorded as "361 passing / 0 failing at GT1's measurement", but not one of the five test files this branch adds is in the 44-file brace list - all five are api<em>/api3</em> and match test:integration's glob - so the suite could have passed in full with every fix reverted.</li>
+<li><strong>P0-E gates[9]</strong> &mdash; No gate exists for this property; the manifest records why.</li>
+<li>The ordering constraint inside the branch (BF-05's commit must follow BF-01's) is not machine-checked. After the CHANGELOG strip and the re-cut onto dev the two commits are 3b588098 and 4772b983, so any gate quoting an earlier SHA is stale by construction. A real gate would assert the relative order of the two by subject line, and nobody has written it.</li>
+<li><strong>P0-E gates[10]</strong> &mdash; No gate exists for this property; the manifest records why.</li>
+<li>The CHANGELOG on this branch lists read routes only, while the ?count= validator covers writes too. Nothing checks a release note against the code it describes.</li>
+<li><strong>P0-F gates[2]</strong> &mdash; No gate exists for this property; the manifest records why.</li>
+<li>Vendor rate limits are unmeasured (EXP-MT-051) and need real credentials, which rule 0 forbids here. T0.4 shipped CONNECT_START_JITTER_MS so the pool CAN be spread - but the window to set it is exactly the number that is unmeasured.</li>
+<li><strong>P0-H gates[3]</strong> &mdash; No gate exists for this property; the manifest records why.</li>
+<li><code>dataUpdate</code> still has no try/catch, so the NEXT throw from anywhere in the merge path has the same effect. This branch fixes one throw, not the missing boundary. No test asserts the boundary exists because it does not.</li>
+<li><strong>P0-TAG gates[5]</strong> &mdash; No gate exists for this property; the manifest records why.</li>
+<li>Whether all seven connector commits are the RIGHT content for a release is a release-content decision, not a mechanical bump, and it is the maintainer's. Nothing can gate it.</li>
+<li><strong>P0-PIN gates[3]</strong> &mdash; No gate exists for this property; the manifest records why.</li>
+<li>Nothing can verify the tarball's integrity hash before the tag exists on GitHub. That is the whole reason P0-LOCK is a separate item.</li>
+<li><strong>P0-T01 gates[1]</strong> &mdash; No gate exists for this property; the manifest records why.</li>
+<li>PR merge state is upstream's and cannot be gated from here without a GitHub API call. This item is tracked, not driven.</li>
+<li><strong>FU-LIMIT gates[2]</strong> &mdash; No gate exists for this property; the manifest records why.</li>
+<li>Nothing asserts that the two implementations AGREE while they both exist. A differential test - the same limit value through both paths, including 0, a negative, a non-numeric and a value above the maximum - is what would make the duplication safe until it is removed, and it does not exist. Two readings of one rule is the root cause of this whole family, so leaving it duplicated is a debt with a name.</li>
+<li><strong>FU-RESIDUALS gates[3]</strong> &mdash; No gate exists for this property; the manifest records why.</li>
+<li>Reachability of follow-up 7 is not measured. It needs an Alexa request type outside SessionEndedRequest, LaunchRequest and IntentRequest, and nothing here enumerates what Amazon can send.</li>
+<li><strong>FU-HYGIENE gates[0]</strong> &mdash; No gate exists for this property; the manifest records why.</li>
+<li>Follow-up 9 - audit the suppressions OUTSIDE lib/: detect-non-literal-fs-filename, detect-possible-timing-attacks, no-cond-assign. There is no instrument because the audit IS the work: object-injection's 34 suppressed lines yielded five real defects (BF-35, BF-36, BF-37, BF-38 and BF-39 - the register's own tally of four is stale), and the same reasoning applies to each remaining category. What could be gated afterwards is a rule that no NEW suppression is added without an entry, and that rule does not exist.</li>
+<li><strong>FU-HYGIENE gates[1]</strong> &mdash; No gate exists for this property; the manifest records why.</li>
+<li>Follow-up 10 - jsdom test hygiene has no enforcement. A suite that sets global.window or global.document must restore them in afterEach or it breaks browser-settings.test.js later in the same run. hashauth.modern.test.js does the restore; nothing requires it, and the failure lands in a DIFFERENT file from the one that caused it, which is the shape that costs the most review time. The instrument is a harness-level check, and cut 1 retires jsdom entirely, so it should be decided against the release train rather than built twice.</li>
+</ul>
+<h3 id="out-of-scope"><code>out-of-scope</code><a class="headerlink" href="#out-of-scope" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>queue/work-queue.yaml</strong> &mdash; 57 of the 74 items in the manifest are NOT in this record.</li>
+<li>Selection was ids=- parcels=['phase0'] states=-. Excluded: A7A-3, A7A-4, A7A-7, A7A-GATE, BFQ-04, BFQ-09, BFQ-10, BFQ-18, BFQ-19, BFQ-20, BFQ-21, BFQ-22, BFQ-23, BFQ-24, BFQ-25, BFQ-26, BFQ-27, BFQ-40, BFQ-41, BFQ-46, BFQ-47, BFQ-52, BFQ-66, BFQ-67, BFQ-CAP01, BFQ-CAP02, BFQ-CONNECTOR, BFQ-ENV, BFQ-MINIMED, DOC-EXPOSURE, DOC-LAYOUT, DOC-MEMORY, DOC-PLAN, DOC-REGISTER, DOC-SEQUENCING, DOC-TESTSCRIPTS, RT-0, RT-1, RT-2, RT-3, RT-4, RT-5, RT-BOOTERROR, RT-CONNECT-PIN-CUTS, RT-D3, RT-NODE-FLOOR-TESTED, RT-REBASE, RT-VERSION, SEAM-REFRESH, T30-RESEARCH, T30-SCHEMA, T30-WIRING, T31-REM, T32-REM, T33-REM, T43, T44</li>
+</ul>
+<h3 id="publication-unverified"><code>publication-unverified</code><a class="headerlink" href="#publication-unverified" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>P0-A</strong> &mdash; Whether bf/alarms exists on the remote was NOT checked against the remote.</li>
+<li>Determined from local remote-tracking refs (no network). That is a statement about this checkout's last fetch, not about the remote. Re-run with --network for a read-only ls-remote.</li>
+<li><strong>P0-B</strong> &mdash; Whether bf/cache exists on the remote was NOT checked against the remote.</li>
+<li>Determined from local remote-tracking refs (no network). That is a statement about this checkout's last fetch, not about the remote. Re-run with --network for a read-only ls-remote.</li>
+<li><strong>P0-C</strong> &mdash; Whether bf/auth exists on the remote was NOT checked against the remote.</li>
+<li>Determined from local remote-tracking refs (no network). That is a statement about this checkout's last fetch, not about the remote. Re-run with --network for a read-only ls-remote.</li>
+<li><strong>P0-D</strong> &mdash; Whether bf/coercion exists on the remote was NOT checked against the remote.</li>
+<li>Determined from local remote-tracking refs (no network). That is a statement about this checkout's last fetch, not about the remote. Re-run with --network for a read-only ls-remote.</li>
+<li><strong>P0-E</strong> &mdash; Whether bf/reads exists on the remote was NOT checked against the remote.</li>
+<li>Determined from local remote-tracking refs (no network). That is a statement about this checkout's last fetch, not about the remote. Re-run with --network for a read-only ls-remote.</li>
+<li><strong>P0-F</strong> &mdash; Whether fix/connect-timer-jitter exists on the remote was NOT checked against the remote.</li>
+<li>Determined from local remote-tracking refs (no network). That is a statement about this checkout's last fetch, not about the remote. Re-run with --network for a read-only ls-remote.</li>
+<li><strong>P0-G</strong> &mdash; Whether bf/food exists on the remote was NOT checked against the remote.</li>
+<li>Determined from local remote-tracking refs (no network). That is a statement about this checkout's last fetch, not about the remote. Re-run with --network for a read-only ls-remote.</li>
+<li><strong>P0-H</strong> &mdash; Whether bf/merge exists on the remote was NOT checked against the remote.</li>
+<li>Determined from local remote-tracking refs (no network). That is a statement about this checkout's last fetch, not about the remote. Re-run with --network for a read-only ls-remote.</li>
+<li><strong>P0-I</strong> &mdash; Whether bf/parms exists on the remote was NOT checked against the remote.</li>
+<li>Determined from local remote-tracking refs (no network). That is a statement about this checkout's last fetch, not about the remote. Re-run with --network for a read-only ls-remote.</li>
+<li><strong>P0-TAG</strong> &mdash; Whether release/v0.0.14 exists on the remote was NOT checked against the remote.</li>
+<li>Determined from local remote-tracking refs (no network). That is a statement about this checkout's last fetch, not about the remote. Re-run with --network for a read-only ls-remote.</li>
+<li><strong>P0-PIN</strong> &mdash; Whether bf/connect-pin exists on the remote was NOT checked against the remote.</li>
+<li>Determined from local remote-tracking refs (no network). That is a statement about this checkout's last fetch, not about the remote. Re-run with --network for a read-only ls-remote.</li>
+<li><strong>P0-LOCK</strong> &mdash; Whether bf/connect-pin exists on the remote was NOT checked against the remote.</li>
+<li>Determined from local remote-tracking refs (no network). That is a statement about this checkout's last fetch, not about the remote. Re-run with --network for a read-only ls-remote.</li>
+<li><strong>P0-T01</strong> &mdash; Whether fix/quadratic-treatment-processing exists on the remote was NOT checked against the remote.</li>
+<li>Determined from local remote-tracking refs (no network). That is a statement about this checkout's last fetch, not about the remote. Re-run with --network for a read-only ls-remote.</li>
+</ul>
+<h3 id="record-method"><code>record-method</code><a class="headerlink" href="#record-method" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>basis classification</strong> &mdash; The basis of each register entry was read ONLY from its row in the register's summary tables (sections 1, 1b, 1c), not from its detail section in section 2 / 2b.</li>
+<li>The register's own header records that provenance marking is not yet consistent between the two - three entries carry a <code>reproduced</code> block prepended above a body that still reads <code>not reproduced against a live instance</code>. Where the table and the detail disagree, this record follows the table and does not reconcile them.</li>
+<li><strong>gate output</strong> &mdash; Only the last 40 lines of each gate's output are stored, beside a sha256 of the whole of it.</li>
+<li>The digest lets a reader prove a full log they hold is the one this record was taken from; it does not let them reconstruct it. Full logs were not retained by this capture.</li>
+<li><strong>reproducibility</strong> &mdash; This record is NOT byte-reproducible end to end, and the claim that it is has been narrowed to what was measured.</li>
+<li>Two captures of this release were diffed field by field. STABLE: resolved SHAs, commits-ahead counts, every gate outcome, every item verdict, every register closure state and basis, the COUNTED test summaries (passing/failing/pending) and every entry in this section. MOVES: the gate transcripts output_tail, output_bytes and output_sha256 - 25 of 164 transcript fields moved - because the commands are not deterministic (mocha prints its own millisecond timings, node prints its pid). ONE NON-TRANSCRIPT FIELD MOVES WITH THEM and an earlier draft of this record wrongly implied it did not: output_summary.last_line, where a benchmark ends its output with a duration - P0-D's coercion benchmark gave duration_ms 282.795205 on one capture and 278.901709 on the next, and that string reaches both the gate summary and the test evidence. So two captures may be diffed on outcomes, verdicts, bases and gaps, and must NOT be diffed on digests or on a last_line that quotes a duration.</li>
+</ul>
+<h3 id="register-basis-unstated"><code>register-basis-unstated</code><a class="headerlink" href="#register-basis-unstated" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>BF-02</strong> &mdash; Register entry BF-02 does not state whether it was read or run.</li>
+<li>No phrase in its status cell says. The classifier will not infer one from measurement-shaped prose, because inferring a reproduction is exactly the laundering rule 3 exists to stop. Status cell verbatim: fixed 2026-09-15 (T0.5, bf/coercion 88d1f8a4)</li>
+<li><strong>BF-03</strong> &mdash; Register entry BF-03 does not state whether it was read or run.</li>
+<li>No phrase in its status cell says. The classifier will not infer one from measurement-shaped prose, because inferring a reproduction is exactly the laundering rule 3 exists to stop. Status cell verbatim: fixed 2026-09-15 for devicestatus + profile (T0.5, bf/coercion 88d1f8a4); food and activity misfiled, see detail</li>
+<li><strong>BF-05</strong> &mdash; Register entry BF-05 does not state whether it was read or run.</li>
+<li>No phrase in its status cell says. The classifier will not infer one from measurement-shaped prose, because inferring a reproduction is exactly the laundering rule 3 exists to stop. Status cell verbatim: fixed 2026-09-15 (bf/reads c8fb536b) — deleted, not gated; the module has no env handle</li>
+<li><strong>BF-06</strong> &mdash; Register entry BF-06 does not state whether it was read or run.</li>
+<li>No phrase in its status cell says. The classifier will not infer one from measurement-shaped prose, because inferring a reproduction is exactly the laundering rule 3 exists to stop. Status cell verbatim: fixed 2026-09-15 (T0.2, bf/cache ddcdb1a8); 0.837 → 0.025 ms, response asserted identical over HTTP</li>
+<li><strong>BF-07</strong> &mdash; Register entry BF-07 does not state whether it was read or run.</li>
+<li>No phrase in its status cell says. The classifier will not infer one from measurement-shaped prose, because inferring a reproduction is exactly the laundering rule 3 exists to stop. Status cell verbatim: partly fixed 2026-09-15 (T0.3, bf/cache 4f86bab1); 3.75 → 2.66 ms per cycle — devicestatus keeps its clone on purpose, see detail</li>
+<li><strong>BF-08</strong> &mdash; Register entry BF-08 does not state whether it was read or run.</li>
+<li>No phrase in its status cell says. The classifier will not infer one from measurement-shaped prose, because inferring a reproduction is exactly the laundering rule 3 exists to stop. Status cell verbatim: fixed 2026-09-15 (T0.4, fix/connect-timer-jitter c1cce2a); measured at 400 actors, busiest second 400 → 15</li>
+<li><strong>BF-11</strong> &mdash; Register entry BF-11 does not state whether it was read or run.</li>
+<li>No phrase in its status cell says. The classifier will not infer one from measurement-shaped prose, because inferring a reproduction is exactly the laundering rule 3 exists to stop. Status cell verbatim: fixed 2026-09-15 (T0.5, bf/coercion 88d1f8a4)</li>
+<li><strong>BF-28</strong> &mdash; Register entry BF-28 does not state whether it was read or run.</li>
+<li>No phrase in its status cell says. The classifier will not infer one from measurement-shaped prose, because inferring a reproduction is exactly the laundering rule 3 exists to stop. Status cell verbatim: fixed 2026-09-15 (bf/alarms 8714093b)</li>
+<li><strong>BF-29</strong> &mdash; Register entry BF-29 does not state whether it was read or run.</li>
+<li>No phrase in its status cell says. The classifier will not infer one from measurement-shaped prose, because inferring a reproduction is exactly the laundering rule 3 exists to stop. Status cell verbatim: fixed 2026-09-15 (bf/alarms 99e46a52)</li>
+<li><strong>BF-31</strong> &mdash; Register entry BF-31 does not state whether it was read or run.</li>
+<li>No phrase in its status cell says. The classifier will not infer one from measurement-shaped prose, because inferring a reproduction is exactly the laundering rule 3 exists to stop. Status cell verbatim: fixed 2026-09-15 (bf/alarms 5dcf783f)</li>
+<li><strong>BF-32</strong> &mdash; Register entry BF-32 does not state whether it was read or run.</li>
+<li>No phrase in its status cell says. The classifier will not infer one from measurement-shaped prose, because inferring a reproduction is exactly the laundering rule 3 exists to stop. Status cell verbatim: fixed 2026-09-15 (found during T0.5, bf/coercion 88d1f8a4); claim refuted 2026-09-15, see detail and BF-40</li>
+<li><strong>BF-34</strong> &mdash; Register entry BF-34 does not state whether it was read or run.</li>
+<li>No phrase in its status cell says. The classifier will not infer one from measurement-shaped prose, because inferring a reproduction is exactly the laundering rule 3 exists to stop. Status cell verbatim: fixed 2026-09-15 (found during T0.4, fix/connect-timer-jitter c1cce2a); 100 actors delivered the same 800 requests across 3 s before and 67 s after</li>
+</ul>
+<h3 id="register-entry-not-demonstrated"><code>register-entry-not-demonstrated</code><a class="headerlink" href="#register-entry-not-demonstrated" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>BF-17</strong> &mdash; Closure state is claimed-fixed-but-a-gate-failed.</li>
+<li>This release does not demonstrate that BF-17 is repaired.</li>
+<li><strong>BF-28</strong> &mdash; Closure state is claimed-fixed-but-a-gate-failed.</li>
+<li>This release does not demonstrate that BF-28 is repaired.</li>
+<li><strong>BF-29</strong> &mdash; Closure state is claimed-fixed-but-a-gate-failed.</li>
+<li>This release does not demonstrate that BF-29 is repaired.</li>
+<li><strong>BF-30</strong> &mdash; Closure state is claimed-fixed-but-a-gate-failed.</li>
+<li>This release does not demonstrate that BF-30 is repaired.</li>
+<li><strong>BF-31</strong> &mdash; Closure state is claimed-fixed-but-a-gate-failed.</li>
+<li>This release does not demonstrate that BF-31 is repaired.</li>
+</ul>
+<h3 id="register-untouched"><code>register-untouched</code><a class="headerlink" href="#register-untouched" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>docs/30-design/remedial/nightscout-backfix-register.md</strong> &mdash; 42 register entries are not fixed and are not carried by anything in this release.</li>
+<li>Not a defect in the release; a statement of what shipping it does not address. Ids: BF-09, BF-10, BF-18, BF-19, BF-20, BF-21, BF-22, BF-23, BF-24, BF-25, BF-26, BF-27, BF-40, BF-41, BF-42, BF-43, BF-44, BF-45, BF-46, BF-47, BF-48, BF-49, BF-50, BF-51, BF-52, BF-53, BF-54, BF-55, BF-56, BF-57, BF-58, BF-59, BF-60, BF-61, BF-62, BF-63, BF-64, BF-65, BF-66, BF-67, CAP-01, CAP-02</li>
+</ul>
+<hr />
+<p><em>End of verification record. Machine-readable source: <code>verification-record.json</code>. Captured <code>2026-09-16T00:05:00-07:00</code>. Never edited.</em></p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

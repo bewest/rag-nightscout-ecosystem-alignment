@@ -1,0 +1,4920 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/mapping/xdrip-js/ble-protocol.html">
+      
+      
+        <link rel="prev" href="index.html">
+      
+      
+        <link rel="next" href="data-models.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Dexcom BLE Protocol Documentation - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#dexcom-ble-protocol-documentation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Dexcom BLE Protocol Documentation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../docs/00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../docs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    mapping/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../_template.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mapping: [Project] - [Scenario/Concept]
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../aaps/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    aaps/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../cgm-remote-monitor/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../cross-project/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cross-project/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../diable/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    diable/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../loop/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    loop/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../loopcaregiver/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    loopcaregiver/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../loopfollow/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    loopfollow/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightguard/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightguard/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-connect/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-connect/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-librelink-up/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-librelink-up/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-reporter/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-reporter/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-roles-gateway/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-roles-gateway/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nocturne/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nocturne/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../openaps/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    openaps/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../oref0/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    oref0/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../share2nightscout-bridge/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    share2nightscout-bridge/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tconnectsync/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tconnectsync/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../trio/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    trio/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../xdrip/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../xdrip-android/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip-android/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_24" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip-js/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_24" id="__nav_6_24_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_24_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6_24">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    xdrip-js/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dexcom BLE Protocol Documentation
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="ble-protocol.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dexcom BLE Protocol Documentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ble-services-and-characteristics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BLE Services and Characteristics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BLE Services and Characteristics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#service-uuids" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Service UUIDs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cgm-service-characteristics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CGM Service Characteristics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#message-opcode-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Message Opcode Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Message Opcode Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#authentication-messages-via-authentication-characteristic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication Messages (via Authentication Characteristic)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#control-messages-via-control-characteristic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Control Messages (via Control Characteristic)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#g6-anubis-specific-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        G6 Anubis-Specific Messages
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#authentication-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication Flow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Authentication Flow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#encryption-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Encryption Details
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#message-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Message Formats
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Message Formats">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crc-16-xmodem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CRC-16 XMODEM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authrequesttxmessage-0x01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AuthRequestTxMessage (0x01)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authchallengerxmessage-0x03" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AuthChallengeRxMessage (0x03)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authstatusrxmessage-0x05" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AuthStatusRxMessage (0x05)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transmittertimerxmessage-0x25" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TransmitterTimeRxMessage (0x25)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#glucoserxmessage-0x310x4f" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GlucoseRxMessage (0x31/0x4F)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sensorrxmessage-0x2f" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SensorRxMessage (0x2F)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#calibrateglucosetxmessage-0x34" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CalibrateGlucoseTxMessage (0x34)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#calibrateglucoserxmessage-0x35" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CalibrateGlucoseRxMessage (0x35)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sessionstarttxmessage-0x26" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SessionStartTxMessage (0x26)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sessionstartrxmessage-0x27" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SessionStartRxMessage (0x27)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sessionstoptxmessage-0x28" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SessionStopTxMessage (0x28)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#batterystatusrxmessage-0x23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BatteryStatusRxMessage (0x23)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#version-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Version Messages
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backfilltxmessage-0x50" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BackfillTxMessage (0x50)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backfillrxmessage-0x51" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BackfillRxMessage (0x51)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backfill-data-packets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backfill Data Packets
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#communication-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Communication Flow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Communication Flow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#standard-reading-cycle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Standard Reading Cycle
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#g5-vs-g6-differences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        G5 vs G6 Differences
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related Documentation
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="data-models.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip-js Data Models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../xdrip4ios/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip4ios/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ble-services-and-characteristics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BLE Services and Characteristics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BLE Services and Characteristics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#service-uuids" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Service UUIDs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cgm-service-characteristics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CGM Service Characteristics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#message-opcode-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Message Opcode Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Message Opcode Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#authentication-messages-via-authentication-characteristic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication Messages (via Authentication Characteristic)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#control-messages-via-control-characteristic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Control Messages (via Control Characteristic)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#g6-anubis-specific-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        G6 Anubis-Specific Messages
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#authentication-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication Flow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Authentication Flow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#encryption-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Encryption Details
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#message-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Message Formats
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Message Formats">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crc-16-xmodem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CRC-16 XMODEM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authrequesttxmessage-0x01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AuthRequestTxMessage (0x01)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authchallengerxmessage-0x03" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AuthChallengeRxMessage (0x03)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authstatusrxmessage-0x05" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AuthStatusRxMessage (0x05)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transmittertimerxmessage-0x25" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TransmitterTimeRxMessage (0x25)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#glucoserxmessage-0x310x4f" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GlucoseRxMessage (0x31/0x4F)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sensorrxmessage-0x2f" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SensorRxMessage (0x2F)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#calibrateglucosetxmessage-0x34" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CalibrateGlucoseTxMessage (0x34)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#calibrateglucoserxmessage-0x35" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CalibrateGlucoseRxMessage (0x35)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sessionstarttxmessage-0x26" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SessionStartTxMessage (0x26)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sessionstartrxmessage-0x27" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SessionStartRxMessage (0x27)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sessionstoptxmessage-0x28" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SessionStopTxMessage (0x28)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#batterystatusrxmessage-0x23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BatteryStatusRxMessage (0x23)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#version-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Version Messages
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backfilltxmessage-0x50" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BackfillTxMessage (0x50)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backfillrxmessage-0x51" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BackfillRxMessage (0x51)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backfill-data-packets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backfill Data Packets
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#communication-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Communication Flow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Communication Flow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#standard-reading-cycle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Standard Reading Cycle
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#g5-vs-g6-differences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        G5 vs G6 Differences
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related Documentation
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="dexcom-ble-protocol-documentation">Dexcom BLE Protocol Documentation<a class="headerlink" href="#dexcom-ble-protocol-documentation" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-01-17 at <code>bbaa04fc</code>.</em></p>
+<p>This document describes the Bluetooth Low Energy (BLE) protocol used by xdrip-js to communicate with Dexcom G5 and G6 transmitters. The protocol was reverse-engineered from iOS Dexcom app communications.</p>
+<h2 id="ble-services-and-characteristics">BLE Services and Characteristics<a class="headerlink" href="#ble-services-and-characteristics" title="Permanent link">&para;</a></h2>
+<h3 id="service-uuids">Service UUIDs<a class="headerlink" href="#service-uuids" title="Permanent link">&para;</a></h3>
+<p>From <code>lib/bluetooth-services.js</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>UUID</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DeviceInfo</td>
+<td><code>180A</code></td>
+<td>Standard BLE device information</td>
+</tr>
+<tr>
+<td>Advertisement</td>
+<td><code>FEBC</code></td>
+<td>Transmitter advertisement/discovery</td>
+</tr>
+<tr>
+<td>CGMService</td>
+<td><code>F8083532-849E-531C-C594-30F1F86A4EA5</code></td>
+<td>Main CGM communication</td>
+</tr>
+<tr>
+<td>ServiceB</td>
+<td><code>F8084532-849E-531C-C594-30F1F86A4EA5</code></td>
+<td>Secondary service (unused)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="cgm-service-characteristics">CGM Service Characteristics<a class="headerlink" href="#cgm-service-characteristics" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Characteristic</th>
+<th>UUID</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Communication</td>
+<td><code>F8083533-849E-531C-C594-30F1F86A4EA5</code></td>
+<td>General communication</td>
+</tr>
+<tr>
+<td>Control</td>
+<td><code>F8083534-849E-531C-C594-30F1F86A4EA5</code></td>
+<td>Command/response messages</td>
+</tr>
+<tr>
+<td>Authentication</td>
+<td><code>F8083535-849E-531C-C594-30F1F86A4EA5</code></td>
+<td>Auth handshake</td>
+</tr>
+<tr>
+<td>Backfill</td>
+<td><code>F8083536-849E-531C-C594-30F1F86A4EA5</code></td>
+<td>Historical data retrieval</td>
+</tr>
+</tbody>
+</table>
+<h2 id="message-opcode-summary">Message Opcode Summary<a class="headerlink" href="#message-opcode-summary" title="Permanent link">&para;</a></h2>
+<h3 id="authentication-messages-via-authentication-characteristic">Authentication Messages (via Authentication Characteristic)<a class="headerlink" href="#authentication-messages-via-authentication-characteristic" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Opcode</th>
+<th>Direction</th>
+<th>Message</th>
+<th>File</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0x01</code></td>
+<td>Tx</td>
+<td>AuthRequestTxMessage</td>
+<td><code>auth-request-tx-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x03</code></td>
+<td>Rx</td>
+<td>AuthChallengeRxMessage</td>
+<td><code>auth-challenge-rx-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x04</code></td>
+<td>Tx</td>
+<td>AuthChallengeTxMessage</td>
+<td><code>auth-challenge-tx-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x05</code></td>
+<td>Rx</td>
+<td>AuthStatusRxMessage</td>
+<td><code>auth-status-rx-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x06</code></td>
+<td>Tx</td>
+<td>KeepAliveTxMessage</td>
+<td><code>keep-alive-tx-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x07</code></td>
+<td>Tx</td>
+<td>BondRequestTxMessage</td>
+<td><code>bond-request-tx-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x08</code></td>
+<td>Rx</td>
+<td>BondRequestRxMessage</td>
+<td><code>bond-request-rx-message.js</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="control-messages-via-control-characteristic">Control Messages (via Control Characteristic)<a class="headerlink" href="#control-messages-via-control-characteristic" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Opcode</th>
+<th>Direction</th>
+<th>Message</th>
+<th>File</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0x09</code></td>
+<td>Tx</td>
+<td>DisconnectTxMessage</td>
+<td><code>disconnect-tx-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x20</code></td>
+<td>Tx</td>
+<td>VersionRequestTxMessage (v0)</td>
+<td><code>version-request-tx-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x21</code></td>
+<td>Rx</td>
+<td>VersionRequestRx0Message</td>
+<td><code>version-request-rx-0-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x22</code></td>
+<td>Tx</td>
+<td>BatteryStatusTxMessage</td>
+<td><code>battery-status-tx-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x23</code></td>
+<td>Rx</td>
+<td>BatteryStatusRxMessage</td>
+<td><code>g5/</code> or <code>g6/battery-status-rx-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x24</code></td>
+<td>Tx</td>
+<td>TransmitterTimeTxMessage</td>
+<td><code>transmitter-time-tx-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x25</code></td>
+<td>Rx</td>
+<td>TransmitterTimeRxMessage</td>
+<td><code>transmitter-time-rx-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x26</code></td>
+<td>Tx</td>
+<td>SessionStartTxMessage</td>
+<td><code>g5/</code> or <code>g6/session-start-tx-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x27</code></td>
+<td>Rx</td>
+<td>SessionStartRxMessage</td>
+<td><code>session-start-rx-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x28</code></td>
+<td>Tx</td>
+<td>SessionStopTxMessage</td>
+<td><code>session-stop-tx-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x29</code></td>
+<td>Rx</td>
+<td>SessionStopRxMessage</td>
+<td><code>session-stop-rx-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x2e</code></td>
+<td>Tx</td>
+<td>SensorTxMessage</td>
+<td><code>sensor-tx-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x2f</code></td>
+<td>Rx</td>
+<td>SensorRxMessage</td>
+<td><code>sensor-rx-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x30</code></td>
+<td>Tx</td>
+<td>GlucoseTxMessage (G5)</td>
+<td><code>glucose-tx-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x31</code></td>
+<td>Rx</td>
+<td>GlucoseRxMessage (G5)</td>
+<td><code>glucose-rx-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x32</code></td>
+<td>Tx</td>
+<td>CalibrationDataTxMessage</td>
+<td><code>calibration-data-tx-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x33</code></td>
+<td>Rx</td>
+<td>CalibrationDataRxMessage</td>
+<td><code>g5/</code> or <code>g6/calibration-data-rx-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x34</code></td>
+<td>Tx</td>
+<td>CalibrateGlucoseTxMessage</td>
+<td><code>calibrate-glucose-tx-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x35</code></td>
+<td>Rx</td>
+<td>CalibrateGlucoseRxMessage</td>
+<td><code>calibrate-glucose-rx-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x42</code></td>
+<td>Tx</td>
+<td>ResetTxMessage</td>
+<td><code>transmitter-reset-tx-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x43</code></td>
+<td>Rx</td>
+<td>ResetRxMessage</td>
+<td><code>transmitter-reset-rx-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x4a</code></td>
+<td>Tx</td>
+<td>VersionRequestTxMessage (v1)</td>
+<td><code>version-request-tx-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x4b</code></td>
+<td>Rx</td>
+<td>VersionRequestRx1Message</td>
+<td><code>version-request-rx-1-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x4e</code></td>
+<td>Tx</td>
+<td>GlucoseTxMessage (G6)</td>
+<td><code>glucose-tx-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x4f</code></td>
+<td>Rx</td>
+<td>GlucoseRxMessage (G6)</td>
+<td><code>glucose-rx-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x50</code></td>
+<td>Tx</td>
+<td>BackfillTxMessage</td>
+<td><code>backfill-tx-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x51</code></td>
+<td>Rx</td>
+<td>BackfillRxMessage</td>
+<td><code>backfill-rx-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x52</code></td>
+<td>Tx</td>
+<td>VersionRequestTxMessage (v2)</td>
+<td><code>version-request-tx-message.js</code></td>
+</tr>
+<tr>
+<td><code>0x53</code></td>
+<td>Rx</td>
+<td>VersionRequestRx2Message</td>
+<td><code>version-request-rx-2-message.js</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="g6-anubis-specific-messages">G6 Anubis-Specific Messages<a class="headerlink" href="#g6-anubis-specific-messages" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Opcode</th>
+<th>Direction</th>
+<th>Message</th>
+<th>File</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0x3b</code></td>
+<td>Tx</td>
+<td>AnubisTxStatusMessage</td>
+<td><code>g6/anubis-tx-status-message.js</code></td>
+</tr>
+<tr>
+<td><code>0xf080</code></td>
+<td>Tx</td>
+<td>AnubisTxResetDefaultMessage</td>
+<td><code>g6/anubis-tx-reset-default-message.js</code></td>
+</tr>
+<tr>
+<td><code>0xf080</code></td>
+<td>Tx</td>
+<td>AnubisTxResetExtendedMessage</td>
+<td><code>g6/anubis-tx-reset-extended-message.js</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="authentication-flow">Authentication Flow<a class="headerlink" href="#authentication-flow" title="Permanent link">&para;</a></h2>
+<p>The authentication handshake uses AES-128-ECB encryption with the transmitter ID.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>┌──────────────────┐                           ┌──────────────────┐
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>│     Client       │                           │   Transmitter    │
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>└────────┬─────────┘                           └────────┬─────────┘
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>         │                                              │
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>         │  1. AuthRequestTxMessage (0x01)              │
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>         │  [opcode][singleUseToken(8)][endByte]        │
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>         │─────────────────────────────────────────────▶│
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>         │                                              │
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>         │  2. AuthChallengeRxMessage (0x03)            │
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>         │  [opcode][tokenHash(8)][challenge(8)]        │
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>         │◀─────────────────────────────────────────────│
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>         │                                              │
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>         │  Client verifies tokenHash matches           │
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>         │  Client computes challengeHash               │
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>         │                                              │
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>         │  3. AuthChallengeTxMessage (0x04)            │
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>         │  [opcode][challengeHash(8)]                  │
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>         │─────────────────────────────────────────────▶│
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>         │                                              │
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>         │  4. AuthStatusRxMessage (0x05)               │
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>         │  [opcode][authenticated][bonded]             │
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>         │◀─────────────────────────────────────────────│
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>         │                                              │
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>         │  If not bonded:                              │
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>         │                                              │
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>         │  5. KeepAliveTxMessage (0x06)                │
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>         │  [opcode][time(25 seconds)]                  │
+<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>         │─────────────────────────────────────────────▶│
+<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>         │                                              │
+<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>         │  6. BondRequestTxMessage (0x07)              │
+<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>         │  [opcode]                                    │
+<a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>         │─────────────────────────────────────────────▶│
+<a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>         │                                              │
+<a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a>         │  BLE pairing completes                       │
+<a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a>         │                                              │
+</code></pre></div>
+<h3 id="encryption-details">Encryption Details<a class="headerlink" href="#encryption-details" title="Permanent link">&para;</a></h3>
+<p>From <code>lib/transmitter.js</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">encrypt</span><span class="p">(</span><span class="nx">buffer</span><span class="p">,</span><span class="w"> </span><span class="nx">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">algorithm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'aes-128-ecb'</span><span class="p">;</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">cipher</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">crypto</span><span class="p">.</span><span class="nx">createCipheriv</span><span class="p">(</span><span class="nx">algorithm</span><span class="p">,</span><span class="w"> </span><span class="sb">`00</span><span class="si">${</span><span class="nx">id</span><span class="si">}</span><span class="sb">00</span><span class="si">${</span><span class="nx">id</span><span class="si">}</span><span class="sb">`</span><span class="p">,</span><span class="w"> </span><span class="s1">''</span><span class="p">);</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">encrypted</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Buffer</span><span class="p">.</span><span class="nx">concat</span><span class="p">([</span><span class="nx">cipher</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">buffer</span><span class="p">),</span><span class="w"> </span><span class="nx">cipher</span><span class="p">.</span><span class="kr">final</span><span class="p">()]);</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">encrypted</span><span class="p">;</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="p">}</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="kd">function</span><span class="w"> </span><span class="nx">calculateHash</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span><span class="w"> </span><span class="nx">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">  </span><span class="c1">// data must be 8 bytes</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">doubleData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Buffer</span><span class="p">.</span><span class="nx">allocUnsafe</span><span class="p">(</span><span class="mf">16</span><span class="p">);</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">  </span><span class="nx">doubleData</span><span class="p">.</span><span class="nx">fill</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span><span class="p">,</span><span class="w"> </span><span class="mf">8</span><span class="p">);</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">  </span><span class="nx">doubleData</span><span class="p">.</span><span class="nx">fill</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span><span class="w"> </span><span class="mf">8</span><span class="p">,</span><span class="w"> </span><span class="mf">16</span><span class="p">);</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">encrypted</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">encrypt</span><span class="p">(</span><span class="nx">doubleData</span><span class="p">,</span><span class="w"> </span><span class="nx">id</span><span class="p">);</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">Buffer</span><span class="p">.</span><span class="nx">allocUnsafe</span><span class="p">(</span><span class="mf">8</span><span class="p">).</span><span class="nx">fill</span><span class="p">(</span><span class="nx">encrypted</span><span class="p">);</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="p">}</span>
+</code></pre></div>
+<p>The encryption key is constructed from the 6-character transmitter ID: <code>00${id}00${id}</code> (16 bytes total).</p>
+<h2 id="message-formats">Message Formats<a class="headerlink" href="#message-formats" title="Permanent link">&para;</a></h2>
+<h3 id="crc-16-xmodem">CRC-16 XMODEM<a class="headerlink" href="#crc-16-xmodem" title="Permanent link">&para;</a></h3>
+<p>All control messages include a 2-byte CRC-16 XMODEM checksum at the end.</p>
+<h3 id="authrequesttxmessage-0x01">AuthRequestTxMessage (0x01)<a class="headerlink" href="#authrequesttxmessage-0x01" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>+--------+-------------------+----------+
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>| [0]    | [1-8]             | [9]      |
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>+--------+-------------------+----------+
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>| opcode | singleUseToken    | endByte  |
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>+--------+-------------------+----------+
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>| 0x01   | random 8 bytes    | 0x02/01  |
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>+--------+-------------------+----------+
+</code></pre></div>
+<ul>
+<li><code>endByte</code>: <code>0x02</code> for standard channel, <code>0x01</code> for alternate (receiver) channel</li>
+</ul>
+<h3 id="authchallengerxmessage-0x03">AuthChallengeRxMessage (0x03)<a class="headerlink" href="#authchallengerxmessage-0x03" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>+--------+-------------------+-------------------+
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>| [0]    | [1-8]             | [9-16]            |
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>+--------+-------------------+-------------------+
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>| opcode | tokenHash         | challenge         |
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>+--------+-------------------+-------------------+
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>| 0x03   | 8 bytes           | 8 bytes           |
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>+--------+-------------------+-------------------+
+</code></pre></div>
+<h3 id="authstatusrxmessage-0x05">AuthStatusRxMessage (0x05)<a class="headerlink" href="#authstatusrxmessage-0x05" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>+--------+--------------+--------+
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>| [0]    | [1]          | [2]    |
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>+--------+--------------+--------+
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>| opcode | authenticated| bonded |
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>+--------+--------------+--------+
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>| 0x05   | 0x01=yes     | 0x01   |
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>+--------+--------------+--------+
+</code></pre></div>
+<h3 id="transmittertimerxmessage-0x25">TransmitterTimeRxMessage (0x25)<a class="headerlink" href="#transmittertimerxmessage-0x25" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>+--------+--------+-------------+-----------------+---------+-------+
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>| [0]    | [1]    | [2-5]       | [6-9]           | [10-13] | [14-15]|
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>+--------+--------+-------------+-----------------+---------+-------+
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>| opcode | status | currentTime | sessionStartTime| unknown | CRC   |
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>+--------+--------+-------------+-----------------+---------+-------+
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>| 0x25   | 0x00   | UInt32LE    | UInt32LE        | -       | -     |
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>+--------+--------+-------------+-----------------+---------+-------+
+</code></pre></div>
+<ul>
+<li><code>currentTime</code>: Seconds since transmitter activation</li>
+<li><code>sessionStartTime</code>: Seconds since transmitter activation when session started (0xFFFFFFFF if no session)</li>
+</ul>
+<h3 id="glucoserxmessage-0x310x4f">GlucoseRxMessage (0x31/0x4F)<a class="headerlink" href="#glucoserxmessage-0x310x4f" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>+--------+--------+----------+-----------+---------+-------+-------+-------+
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>| [0]    | [1]    | [2-5]    | [6-9]     | [10-11] | [12]  | [13]  | [14-15]|
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>+--------+--------+----------+-----------+---------+-------+-------+-------+
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>| opcode | status | sequence | timestamp | glucose | state | trend | CRC   |
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>+--------+--------+----------+-----------+---------+-------+-------+-------+
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>| 0x31   | 0x00   | UInt32LE | UInt32LE  | UInt16LE| UInt8 | Int8  | -     |
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>+--------+--------+----------+-----------+---------+-------+-------+-------+
+</code></pre></div>
+<ul>
+<li><code>glucose</code>: Lower 12 bits = glucose value in mg/dL, bit 12+ = display only flag</li>
+<li><code>state</code>: Session/calibration state (see data-models.md)</li>
+<li><code>trend</code>: Rate of change in mg/dL per 10 minutes (signed)</li>
+</ul>
+<p>Example:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>31 00 0c3e0000 e41c6500 6c00 06 00 0320
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>│  │  │        │        │    │  │  └── CRC
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>│  │  │        │        │    │  └── trend: 0
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>│  │  │        │        │    └── state: 0x06 (OK)
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>│  │  │        │        └── glucose: 108 (0x6c)
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>│  │  │        └── timestamp: 6626532
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>│  │  └── sequence: 15884
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>│  └── status: 0x00 (OK)
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>└── opcode: 0x31
+</code></pre></div></p>
+<h3 id="sensorrxmessage-0x2f">SensorRxMessage (0x2F)<a class="headerlink" href="#sensorrxmessage-0x2f" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>+--------+--------+-----------+------------+----------+-------+
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>| [0]    | [1]    | [2-5]     | [6-9]      | [10-13]  | [14-15]|
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>+--------+--------+-----------+------------+----------+-------+
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>| opcode | status | timestamp | unfiltered | filtered | CRC   |
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>+--------+--------+-----------+------------+----------+-------+
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>| 0x2f   | 0x00   | UInt32LE  | UInt32LE   | UInt32LE | -     |
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>+--------+--------+-----------+------------+----------+-------+
+</code></pre></div>
+<p>G6 transmitters apply a scaling factor:
+- 16-byte message: <code>scale = 34</code>
+- 18-byte message (float format): <code>scale = 35</code></p>
+<h3 id="calibrateglucosetxmessage-0x34">CalibrateGlucoseTxMessage (0x34)<a class="headerlink" href="#calibrateglucosetxmessage-0x34" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>+--------+---------+----------------------+-------+
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>| [0]    | [1-2]   | [3-6]                | [7-8] |
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>+--------+---------+----------------------+-------+
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>| opcode | glucose | dexcomTimeInSeconds  | CRC   |
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>+--------+---------+----------------------+-------+
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>| 0x34   | UInt16LE| UInt32LE             | -     |
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>+--------+---------+----------------------+-------+
+</code></pre></div>
+<p>Example:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>34 cb00 35200000 b3f3
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>│  │    │        └── CRC
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>│  │    └── timestamp: 8245 seconds since transmitter start
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>│  └── glucose: 203 mg/dL
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>└── opcode: 0x34
+</code></pre></div></p>
+<h3 id="calibrateglucoserxmessage-0x35">CalibrateGlucoseRxMessage (0x35)<a class="headerlink" href="#calibrateglucoserxmessage-0x35" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>+--------+---------+--------+-------+
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>| [0]    | [1]     | [2]    | [3-4] |
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>+--------+---------+--------+-------+
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>| opcode | unknown | status | CRC   |
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>+--------+---------+--------+-------+
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>| 0x35   | 0x00    | varies | -     |
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>+--------+---------+--------+-------+
+</code></pre></div>
+<p>Status values:
+- <code>0x00</code>: Calibration successful
+- <code>0x06</code>: Second calibration needed
+- <code>0x08</code>: Calibration rejected, enter another
+- <code>0x0b</code>: Sensor stopped, cannot calibrate</p>
+<h3 id="sessionstarttxmessage-0x26">SessionStartTxMessage (0x26)<a class="headerlink" href="#sessionstarttxmessage-0x26" title="Permanent link">&para;</a></h3>
+<p><strong>G5 Format (11 bytes):</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>+--------+-----------+-------------+-------+
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>| [0]    | [1-4]     | [5-8]       | [9-10]|
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>+--------+-----------+-------------+-------+
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>| opcode | startTime | currentTime | CRC   |
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>+--------+-----------+-------------+-------+
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>| 0x26   | UInt32LE  | UInt32LE    | -     |
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>+--------+-----------+-------------+-------+
+</code></pre></div></p>
+<p><strong>G6 Format (17 bytes):</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>+--------+-----------+-------------+---------+---------+--------+-------+
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>| [0]    | [1-4]     | [5-8]       | [9-10]  | [11-12] | [13-14]| [15-16]|
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>+--------+-----------+-------------+---------+---------+--------+-------+
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>| opcode | startTime | currentTime | paramA  | paramB  | null   | CRC   |
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>+--------+-----------+-------------+---------+---------+--------+-------+
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>| 0x26   | UInt32LE  | UInt32LE    | UInt16LE| UInt16LE| 0x0000 | -     |
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>+--------+-----------+-------------+---------+---------+--------+-------+
+</code></pre></div></p>
+<p>G6 includes calibration parameters derived from sensor serial code.</p>
+<h3 id="sessionstartrxmessage-0x27">SessionStartRxMessage (0x27)<a class="headerlink" href="#sessionstartrxmessage-0x27" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>+--------+--------+----------+-----------------+-----------------+-----------------+
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>| [0]    | [1]    | [2]      | [3-6]           | [7-10]          | [11-14]         |
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>+--------+--------+----------+-----------------+-----------------+-----------------+
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>| opcode | status | received | requestedStart  | sessionStart    | transmitterTime |
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>+--------+--------+----------+-----------------+-----------------+-----------------+
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>| 0x27   | UInt8  | UInt8    | UInt32LE        | UInt32LE        | UInt32LE        |
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>+--------+--------+----------+-----------------+-----------------+-----------------+
+</code></pre></div>
+<h3 id="sessionstoptxmessage-0x28">SessionStopTxMessage (0x28)<a class="headerlink" href="#sessionstoptxmessage-0x28" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>+--------+-----------+-------+
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>| [0]    | [1-4]     | [5-6] |
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>+--------+-----------+-------+
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>| opcode | stopTime  | CRC   |
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>+--------+-----------+-------+
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>| 0x28   | UInt32LE  | -     |
+<a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a>+--------+-----------+-------+
+</code></pre></div>
+<h3 id="batterystatusrxmessage-0x23">BatteryStatusRxMessage (0x23)<a class="headerlink" href="#batterystatusrxmessage-0x23" title="Permanent link">&para;</a></h3>
+<p><strong>G5 Format (12 bytes):</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>+--------+--------+----------+----------+--------+---------+-------------+-------+
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>| [0]    | [1]    | [2-3]    | [4-5]    | [6-7]  | [8]     | [9]         | [10-11]|
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>+--------+--------+----------+----------+--------+---------+-------------+-------+
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>| opcode | status | voltagea | voltageb | resist | runtime | temperature | CRC   |
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>+--------+--------+----------+----------+--------+---------+-------------+-------+
+<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>| 0x23   | UInt8  | UInt16LE | UInt16LE | UInt16LE| UInt8  | UInt8       | -     |
+<a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>+--------+--------+----------+----------+--------+---------+-------------+-------+
+</code></pre></div></p>
+<p><strong>G6/G6+ Format (10 bytes):</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>+--------+--------+----------+----------+---------+-------------+-------+
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>| [0]    | [1]    | [2-3]    | [4-5]    | [6]     | [7]         | [8-9] |
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>+--------+--------+----------+----------+---------+-------------+-------+
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>| opcode | status | voltagea | voltageb | runtime | temperature | CRC   |
+<a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>+--------+--------+----------+----------+---------+-------------+-------+
+<a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>| 0x23   | UInt8  | UInt16LE | UInt16LE | UInt8   | UInt8       | -     |
+<a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a>+--------+--------+----------+----------+---------+-------------+-------+
+</code></pre></div></p>
+<p>Note: G6+ format does not include the <code>resist</code> field.</p>
+<h3 id="version-messages">Version Messages<a class="headerlink" href="#version-messages" title="Permanent link">&para;</a></h3>
+<p><strong>VersionRequestTxMessage (0x20/0x4A/0x52):</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>+--------+-------+
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>| [0]    | [1-2] |
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>+--------+-------+
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>| opcode | CRC   |
+<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>+--------+-------+
+</code></pre></div></p>
+<p>Version opcodes: <code>0x20</code> (v0), <code>0x4A</code> (v1), <code>0x52</code> (v2)</p>
+<p><strong>VersionRequestRx0Message (0x21):</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>+--------+--------+-----------------+-------------------+--------+-----------------+-------+-------+
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>| [0]    | [1]    | [2-5]           | [6-9]             | [10]   | [11-14]         | [15-16]| [17] |
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>+--------+--------+-----------------+-------------------+--------+-----------------+-------+-------+
+<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>| opcode | status | firmwareVersion | btFirmwareVersion | hwRev  | otherFwVersion  | asic  | CRC  |
+<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>+--------+--------+-----------------+-------------------+--------+-----------------+-------+-------+
+</code></pre></div></p>
+<p>Example:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>21 00 02120258 02120258 ff 003145 4141 2412
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>   │  │        │        │  │      │    └── CRC
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>   │  │        │        │  │      └── asic: 0x4141
+<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>   │  │        │        │  └── otherFwVersion: 0.49.69
+<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>   │  │        │        └── hwRev: 255
+<a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a>   │  │        └── btFirmwareVersion: 2.18.2.88
+<a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a>   │  └── firmwareVersion: 2.18.2.88
+<a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a>   └── status: 0x00
+</code></pre></div></p>
+<p><strong>VersionRequestRx1Message (0x4B):</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>+--------+--------+-----------------+------------+-------------+----------+--------------+----------------+
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>| [0]    | [1]    | [2-5]           | [6-9]      | [10-11]     | [12]     | [13]         | [14-15]        |
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>+--------+--------+-----------------+------------+-------------+----------+--------------+----------------+
+<a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>| opcode | status | firmwareVersion | buildVer   | inactiveDays| versionCode| maxRuntimeDays| maxInactiveDays|
+<a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>+--------+--------+-----------------+------------+-------------+----------+--------------+----------------+
+</code></pre></div></p>
+<p><strong>VersionRequestRx2Message (0x53):</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>+--------+--------+-----------------+-------------+--------------+-------+
+<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>| [0]    | [1]    | [2]             | [3-4]       | [5-16]       | [17-18]|
+<a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>+--------+--------+-----------------+-------------+--------------+-------+
+<a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a>| opcode | status | typicalSensorDays| featureBits | unknown     | CRC   |
+<a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>+--------+--------+-----------------+-------------+--------------+-------+
+</code></pre></div></p>
+<h3 id="backfilltxmessage-0x50">BackfillTxMessage (0x50)<a class="headerlink" href="#backfilltxmessage-0x50" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>+--------+------+------+------+--------------+------------+-------+
+<a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>| [0]    | [1]  | [2]  | [3]  | [4-7]        | [8-11]     | [12-13]|
+<a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>+--------+------+------+------+--------------+------------+-------+
+<a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a>| opcode | 0x05 | 0x02 | 0x00 | timestampStart| timestampEnd| CRC  |
+<a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>+--------+------+------+------+--------------+------------+-------+
+<a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a>| 0x50   | -    | -    | -    | UInt32LE     | UInt32LE   | -     |
+<a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a>+--------+------+------+------+--------------+------------+-------+
+</code></pre></div>
+<h3 id="backfillrxmessage-0x51">BackfillRxMessage (0x51)<a class="headerlink" href="#backfillrxmessage-0x51" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>+--------+--------+--------------+------------+--------------+------------+-------+
+<a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>| [0]    | [1]    | [2]          | [3]        | [4-7]        | [8-11]     | ...   |
+<a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>+--------+--------+--------------+------------+--------------+------------+-------+
+<a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a>| opcode | status | backfillStatus| identifier | timestampStart| timestampEnd| CRC  |
+<a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a>+--------+--------+--------------+------------+--------------+------------+-------+
+<a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a>| 0x51   | UInt8  | UInt8        | UInt8      | UInt32LE     | UInt32LE   | -     |
+<a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a>+--------+--------+--------------+------------+--------------+------------+-------+
+</code></pre></div>
+<h3 id="backfill-data-packets">Backfill Data Packets<a class="headerlink" href="#backfill-data-packets" title="Permanent link">&para;</a></h3>
+<p>Backfill data arrives via notifications on the Backfill characteristic:</p>
+<p><strong>First Packet:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>+----------+------------+------------------------+-------------------+
+<a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>| [0]      | [1]        | [2-3]                  | [4-5]             |
+<a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>+----------+------------+------------------------+-------------------+
+<a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a>| sequence | identifier | backfillRequestCounter | unknown           |
+<a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a>+----------+------------+------------------------+-------------------+
+<a id="__codelineno-25-6" name="__codelineno-25-6" href="#__codelineno-25-6"></a>| 0x01     | varies     | UInt16LE               | UInt16LE          |
+<a id="__codelineno-25-7" name="__codelineno-25-7" href="#__codelineno-25-7"></a>+----------+------------+------------------------+-------------------+
+</code></pre></div></p>
+<p><strong>Subsequent Packets:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>+----------+------------+-------------------------------+
+<a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>| [0]      | [1]        | [2-...]                       |
+<a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a>+----------+------------+-------------------------------+
+<a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a>| sequence | identifier | backfill data (8 bytes each)  |
+<a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a>+----------+------------+-------------------------------+
+</code></pre></div></p>
+<p><strong>Backfill Data Entry (8 bytes each):</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>+----------+---------+------+-------+
+<a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>| [0-3]    | [4-5]   | [6]  | [7]   |
+<a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a>+----------+---------+------+-------+
+<a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a>| dextime  | glucose | type | trend |
+<a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a>+----------+---------+------+-------+
+<a id="__codelineno-27-6" name="__codelineno-27-6" href="#__codelineno-27-6"></a>| UInt32LE | UInt16LE| UInt8| Int8  |
+<a id="__codelineno-27-7" name="__codelineno-27-7" href="#__codelineno-27-7"></a>+----------+---------+------+-------+
+</code></pre></div></p>
+<h2 id="communication-flow">Communication Flow<a class="headerlink" href="#communication-flow" title="Permanent link">&para;</a></h2>
+<h3 id="standard-reading-cycle">Standard Reading Cycle<a class="headerlink" href="#standard-reading-cycle" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>┌──────────────────┐                           ┌──────────────────┐
+<a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a>│     Client       │                           │   Transmitter    │
+<a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a>└────────┬─────────┘                           └────────┬─────────┘
+<a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a>         │                                              │
+<a id="__codelineno-28-5" name="__codelineno-28-5" href="#__codelineno-28-5"></a>         │  1. Connect via BLE                          │
+<a id="__codelineno-28-6" name="__codelineno-28-6" href="#__codelineno-28-6"></a>         │─────────────────────────────────────────────▶│
+<a id="__codelineno-28-7" name="__codelineno-28-7" href="#__codelineno-28-7"></a>         │                                              │
+<a id="__codelineno-28-8" name="__codelineno-28-8" href="#__codelineno-28-8"></a>         │  2. Authentication (see auth flow above)     │
+<a id="__codelineno-28-9" name="__codelineno-28-9" href="#__codelineno-28-9"></a>         │◀────────────────────────────────────────────▶│
+<a id="__codelineno-28-10" name="__codelineno-28-10" href="#__codelineno-28-10"></a>         │                                              │
+<a id="__codelineno-28-11" name="__codelineno-28-11" href="#__codelineno-28-11"></a>         │  3. Enable notifications on Control          │
+<a id="__codelineno-28-12" name="__codelineno-28-12" href="#__codelineno-28-12"></a>         │─────────────────────────────────────────────▶│
+<a id="__codelineno-28-13" name="__codelineno-28-13" href="#__codelineno-28-13"></a>         │                                              │
+<a id="__codelineno-28-14" name="__codelineno-28-14" href="#__codelineno-28-14"></a>         │  4. TransmitterTimeTxMessage (0x24)          │
+<a id="__codelineno-28-15" name="__codelineno-28-15" href="#__codelineno-28-15"></a>         │─────────────────────────────────────────────▶│
+<a id="__codelineno-28-16" name="__codelineno-28-16" href="#__codelineno-28-16"></a>         │  5. TransmitterTimeRxMessage (0x25)          │
+<a id="__codelineno-28-17" name="__codelineno-28-17" href="#__codelineno-28-17"></a>         │◀─────────────────────────────────────────────│
+<a id="__codelineno-28-18" name="__codelineno-28-18" href="#__codelineno-28-18"></a>         │                                              │
+<a id="__codelineno-28-19" name="__codelineno-28-19" href="#__codelineno-28-19"></a>         │  6. [Optional] Send pending commands         │
+<a id="__codelineno-28-20" name="__codelineno-28-20" href="#__codelineno-28-20"></a>         │     (Calibrate, Start/Stop session, etc.)    │
+<a id="__codelineno-28-21" name="__codelineno-28-21" href="#__codelineno-28-21"></a>         │◀────────────────────────────────────────────▶│
+<a id="__codelineno-28-22" name="__codelineno-28-22" href="#__codelineno-28-22"></a>         │                                              │
+<a id="__codelineno-28-23" name="__codelineno-28-23" href="#__codelineno-28-23"></a>         │  7. [Optional] BackfillTxMessage (0x50)      │
+<a id="__codelineno-28-24" name="__codelineno-28-24" href="#__codelineno-28-24"></a>         │─────────────────────────────────────────────▶│
+<a id="__codelineno-28-25" name="__codelineno-28-25" href="#__codelineno-28-25"></a>         │  8. BackfillRxMessage (0x51)                 │
+<a id="__codelineno-28-26" name="__codelineno-28-26" href="#__codelineno-28-26"></a>         │◀─────────────────────────────────────────────│
+<a id="__codelineno-28-27" name="__codelineno-28-27" href="#__codelineno-28-27"></a>         │  9. Backfill data via Backfill characteristic│
+<a id="__codelineno-28-28" name="__codelineno-28-28" href="#__codelineno-28-28"></a>         │◀─────────────────────────────────────────────│
+<a id="__codelineno-28-29" name="__codelineno-28-29" href="#__codelineno-28-29"></a>         │                                              │
+<a id="__codelineno-28-30" name="__codelineno-28-30" href="#__codelineno-28-30"></a>         │  10. GlucoseTxMessage (0x30/0x4E)            │
+<a id="__codelineno-28-31" name="__codelineno-28-31" href="#__codelineno-28-31"></a>         │─────────────────────────────────────────────▶│
+<a id="__codelineno-28-32" name="__codelineno-28-32" href="#__codelineno-28-32"></a>         │  11. GlucoseRxMessage (0x31/0x4F)            │
+<a id="__codelineno-28-33" name="__codelineno-28-33" href="#__codelineno-28-33"></a>         │◀─────────────────────────────────────────────│
+<a id="__codelineno-28-34" name="__codelineno-28-34" href="#__codelineno-28-34"></a>         │                                              │
+<a id="__codelineno-28-35" name="__codelineno-28-35" href="#__codelineno-28-35"></a>         │  12. SensorTxMessage (0x2E)                  │
+<a id="__codelineno-28-36" name="__codelineno-28-36" href="#__codelineno-28-36"></a>         │─────────────────────────────────────────────▶│
+<a id="__codelineno-28-37" name="__codelineno-28-37" href="#__codelineno-28-37"></a>         │  13. SensorRxMessage (0x2F)                  │
+<a id="__codelineno-28-38" name="__codelineno-28-38" href="#__codelineno-28-38"></a>         │◀─────────────────────────────────────────────│
+<a id="__codelineno-28-39" name="__codelineno-28-39" href="#__codelineno-28-39"></a>         │                                              │
+<a id="__codelineno-28-40" name="__codelineno-28-40" href="#__codelineno-28-40"></a>         │  14. CalibrationDataTxMessage (0x32)         │
+<a id="__codelineno-28-41" name="__codelineno-28-41" href="#__codelineno-28-41"></a>         │─────────────────────────────────────────────▶│
+<a id="__codelineno-28-42" name="__codelineno-28-42" href="#__codelineno-28-42"></a>         │  15. CalibrationDataRxMessage (0x33)         │
+<a id="__codelineno-28-43" name="__codelineno-28-43" href="#__codelineno-28-43"></a>         │◀─────────────────────────────────────────────│
+<a id="__codelineno-28-44" name="__codelineno-28-44" href="#__codelineno-28-44"></a>         │                                              │
+<a id="__codelineno-28-45" name="__codelineno-28-45" href="#__codelineno-28-45"></a>         │  16. DisconnectTxMessage (0x09)              │
+<a id="__codelineno-28-46" name="__codelineno-28-46" href="#__codelineno-28-46"></a>         │─────────────────────────────────────────────▶│
+<a id="__codelineno-28-47" name="__codelineno-28-47" href="#__codelineno-28-47"></a>         │                                              │
+</code></pre></div>
+<h2 id="g5-vs-g6-differences">G5 vs G6 Differences<a class="headerlink" href="#g5-vs-g6-differences" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>G5</th>
+<th>G6</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Serial prefix</td>
+<td><code>4xxxxx</code></td>
+<td><code>8xxxxx</code></td>
+</tr>
+<tr>
+<td>Glucose opcode (Tx)</td>
+<td><code>0x30</code></td>
+<td><code>0x4E</code></td>
+</tr>
+<tr>
+<td>Glucose opcode (Rx)</td>
+<td><code>0x31</code></td>
+<td><code>0x4F</code></td>
+</tr>
+<tr>
+<td>CalibrationDataRx length</td>
+<td>19 bytes</td>
+<td>20 bytes</td>
+</tr>
+<tr>
+<td>BatteryStatusRx length</td>
+<td>12 bytes</td>
+<td>10 bytes</td>
+</tr>
+<tr>
+<td>SessionStart format</td>
+<td>No sensor code</td>
+<td>Includes calibration params</td>
+</tr>
+<tr>
+<td>Sensor scaling</td>
+<td>None</td>
+<td>34x or 35x multiplier</td>
+</tr>
+<tr>
+<td>Requires calibration</td>
+<td>Yes</td>
+<td>Optional (factory calibrated)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="related-documentation">Related Documentation<a class="headerlink" href="#related-documentation" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="data-models.html">data-models.md</a> - Data structures and status codes</li>
+<li><a href="index.html">README.md</a> - Library overview and architecture</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

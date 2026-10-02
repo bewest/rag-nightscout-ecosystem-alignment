@@ -1,0 +1,5184 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/mapping/loopfollow/remote-commands.html">
+      
+      
+        <link rel="prev" href="alarm-system.html">
+      
+      
+        <link rel="next" href="../nightguard/index.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>LoopFollow Remote Commands Protocol - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#loopfollow-remote-commands-protocol" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              LoopFollow Remote Commands Protocol
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../docs/00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../docs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    mapping/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../_template.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mapping: [Project] - [Scenario/Concept]
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../aaps/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    aaps/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../cgm-remote-monitor/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../cross-project/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cross-project/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../diable/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    diable/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../loop/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    loop/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../loopcaregiver/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    loopcaregiver/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_9" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    loopfollow/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_9" id="__nav_6_9_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_9_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    loopfollow/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="alarm-system.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LoopFollow Alarm System Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LoopFollow Remote Commands Protocol
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="remote-commands.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LoopFollow Remote Commands Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executive Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#source-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source Files
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#remote-type-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Remote Type Selection
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Remote Type Selection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ui-routing-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UI Routing Logic
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-loop-apns-remote-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Loop APNS Remote Commands
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Loop APNS Remote Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#command-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#totp-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TOTP Authentication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bolus-payload-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bolus Payload Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#carbs-payload-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Carbs Payload Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#apns-request-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        APNS Request Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#required-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Required Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-trc-trio-remote-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. TRC (Trio Remote Control)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. TRC (Trio Remote Control)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#architecture_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#command-types_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#command-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command Summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#command-payload-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command Payload Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aes-256-gcm-encryption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AES-256-GCM Encryption
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#encrypted-push-message" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Encrypted Push Message
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#apns-request-structure_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        APNS Request Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#required-configuration_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Required Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-nightscout-remote-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Nightscout Remote Commands
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Nightscout Remote Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#architecture_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#supported-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported Commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#treatment-payload-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Treatment Payload Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#required-configuration_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Required Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#comparison-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparison Matrix
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Comparison
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security Comparison">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#security-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Notes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Handling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Error Handling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common-apns-error-codes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common APNS Error Codes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nightscout-error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nightscout Error Handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cross-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross-References
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gaps-identified" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gaps Identified
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#revision-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Revision History
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightguard/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightguard/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-connect/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-connect/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-librelink-up/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-librelink-up/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-reporter/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-reporter/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-roles-gateway/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-roles-gateway/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nocturne/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nocturne/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../openaps/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    openaps/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../oref0/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    oref0/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../share2nightscout-bridge/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    share2nightscout-bridge/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tconnectsync/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tconnectsync/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../trio/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    trio/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../xdrip/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../xdrip-android/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip-android/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../xdrip-js/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip-js/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../xdrip4ios/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip4ios/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executive Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#source-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source Files
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#remote-type-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Remote Type Selection
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Remote Type Selection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ui-routing-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UI Routing Logic
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-loop-apns-remote-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Loop APNS Remote Commands
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Loop APNS Remote Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#command-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#totp-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TOTP Authentication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bolus-payload-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bolus Payload Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#carbs-payload-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Carbs Payload Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#apns-request-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        APNS Request Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#required-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Required Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-trc-trio-remote-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. TRC (Trio Remote Control)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. TRC (Trio Remote Control)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#architecture_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#command-types_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#command-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command Summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#command-payload-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command Payload Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aes-256-gcm-encryption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AES-256-GCM Encryption
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#encrypted-push-message" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Encrypted Push Message
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#apns-request-structure_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        APNS Request Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#required-configuration_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Required Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-nightscout-remote-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Nightscout Remote Commands
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Nightscout Remote Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#architecture_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#supported-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported Commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#treatment-payload-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Treatment Payload Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#required-configuration_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Required Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#comparison-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparison Matrix
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Comparison
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security Comparison">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#security-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Notes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Handling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Error Handling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common-apns-error-codes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common APNS Error Codes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nightscout-error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nightscout Error Handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cross-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross-References
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gaps-identified" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gaps Identified
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#revision-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Revision History
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="loopfollow-remote-commands-protocol">LoopFollow Remote Commands Protocol<a class="headerlink" href="#loopfollow-remote-commands-protocol" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-01-17 at <code>edf0ec0c</code>.</em></p>
+<p>This document details the three remote command mechanisms supported by LoopFollow for sending commands to Loop and Trio AID systems.</p>
+<hr />
+<h2 id="executive-summary">Executive Summary<a class="headerlink" href="#executive-summary" title="Permanent link">&para;</a></h2>
+<p>LoopFollow implements three distinct remote command mechanisms, each targeting different AID systems with different security models and capabilities.</p>
+<table>
+<thead>
+<tr>
+<th>Remote Type</th>
+<th>Target AID</th>
+<th>Transport</th>
+<th>Security</th>
+<th>Commands</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Loop APNS</strong></td>
+<td>Loop</td>
+<td>Direct APNS</td>
+<td>TOTP + JWT</td>
+<td>Bolus, Carbs, Overrides</td>
+</tr>
+<tr>
+<td><strong>TRC (Trio Remote Control)</strong></td>
+<td>Trio</td>
+<td>Direct APNS</td>
+<td>AES-256-GCM + JWT</td>
+<td>6 command types</td>
+</tr>
+<tr>
+<td><strong>Nightscout</strong></td>
+<td>Trio</td>
+<td>Nightscout API</td>
+<td>Token (careportal role)</td>
+<td>Temp Target only</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="source-files">Source Files<a class="headerlink" href="#source-files" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>LoopFollow/Remote/RemoteType.swift</code></td>
+<td>Remote type enumeration</td>
+</tr>
+<tr>
+<td><code>LoopFollow/Remote/RemoteViewController.swift</code></td>
+<td>Remote view controller routing</td>
+</tr>
+<tr>
+<td><strong>Loop APNS</strong></td>
+<td></td>
+</tr>
+<tr>
+<td><code>LoopFollow/Remote/LoopAPNS/LoopAPNSService.swift</code></td>
+<td>APNS communication service</td>
+</tr>
+<tr>
+<td><code>LoopFollow/Remote/LoopAPNS/LoopAPNSRemoteView.swift</code></td>
+<td>UI for Loop APNS</td>
+</tr>
+<tr>
+<td><code>LoopFollow/Remote/LoopAPNS/LoopAPNSBolusView.swift</code></td>
+<td>Bolus command UI</td>
+</tr>
+<tr>
+<td><code>LoopFollow/Remote/LoopAPNS/LoopAPNSCarbsView.swift</code></td>
+<td>Carbs command UI</td>
+</tr>
+<tr>
+<td><code>LoopFollow/Remote/LoopAPNS/TOTPService.swift</code></td>
+<td>TOTP code management</td>
+</tr>
+<tr>
+<td><strong>TRC (Trio Remote Control)</strong></td>
+<td></td>
+</tr>
+<tr>
+<td><code>LoopFollow/Remote/TRC/PushNotificationManager.swift</code></td>
+<td>TRC APNS implementation</td>
+</tr>
+<tr>
+<td><code>LoopFollow/Remote/TRC/SecureMessenger.swift</code></td>
+<td>AES-256-GCM encryption</td>
+</tr>
+<tr>
+<td><code>LoopFollow/Remote/TRC/TRCCommandType.swift</code></td>
+<td>Command type enumeration</td>
+</tr>
+<tr>
+<td><code>LoopFollow/Remote/TRC/PushMessage.swift</code></td>
+<td>Payload structures</td>
+</tr>
+<tr>
+<td><code>LoopFollow/Remote/TRC/TrioRemoteControlView.swift</code></td>
+<td>TRC main UI</td>
+</tr>
+<tr>
+<td><strong>Nightscout</strong></td>
+<td></td>
+</tr>
+<tr>
+<td><code>LoopFollow/Remote/TRC/TrioNightscoutRemoteController.swift</code></td>
+<td>NS API commands</td>
+</tr>
+<tr>
+<td><code>LoopFollow/Remote/Nightscout/TrioNightscoutRemoteView.swift</code></td>
+<td>NS remote UI</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="remote-type-selection">Remote Type Selection<a class="headerlink" href="#remote-type-selection" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1">// loopfollow:LoopFollow/Remote/RemoteType.swift#L6-L11</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kd">enum</span><span class="w"> </span><span class="nc">RemoteType</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="p">,</span><span class="w"> </span><span class="n">Codable</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="kr">none</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"None"</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">nightscout</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"Nightscout"</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">trc</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"Trio Remote Control"</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">loopAPNS</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"Loop APNS"</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="ui-routing-logic">UI Routing Logic<a class="headerlink" href="#ui-routing-logic" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">// loopfollow:LoopFollow/Remote/RemoteViewController.swift#L33-L60</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="k">if</span><span class="w"> </span><span class="n">remoteType</span><span class="w"> </span><span class="p">==</span><span class="w"> </span><span class="p">.</span><span class="n">nightscout</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="k">switch</span><span class="w"> </span><span class="n">Storage</span><span class="p">.</span><span class="n">shared</span><span class="p">.</span><span class="n">device</span><span class="p">.</span><span class="n">value</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="s">"Trio"</span><span class="p">:</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">        </span><span class="n">remoteView</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">AnyView</span><span class="p">(</span><span class="n">TrioNightscoutRemoteView</span><span class="p">())</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="k">default</span><span class="p">:</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">        </span><span class="n">remoteView</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">AnyView</span><span class="p">(</span><span class="n">NoRemoteView</span><span class="p">())</span><span class="w">  </span><span class="c1">// Loop not supported for NS remote</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">remoteType</span><span class="w"> </span><span class="p">==</span><span class="w"> </span><span class="p">.</span><span class="n">trc</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">Storage</span><span class="p">.</span><span class="n">shared</span><span class="p">.</span><span class="n">device</span><span class="p">.</span><span class="n">value</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="s">"Trio"</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">        </span><span class="c1">// TRC only for Trio</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="nv">trioRemoteControlView</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">TrioRemoteControlView</span><span class="p">(...)</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">remoteType</span><span class="w"> </span><span class="p">==</span><span class="w"> </span><span class="p">.</span><span class="n">loopAPNS</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">    </span><span class="n">hostingController</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">UIHostingController</span><span class="p">(</span><span class="n">rootView</span><span class="p">:</span><span class="w"> </span><span class="n">AnyView</span><span class="p">(</span><span class="n">LoopAPNSRemoteView</span><span class="p">()))</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="p">}</span>
+</code></pre></div>
+<hr />
+<h2 id="1-loop-apns-remote-commands">1. Loop APNS Remote Commands<a class="headerlink" href="#1-loop-apns-remote-commands" title="Permanent link">&para;</a></h2>
+<p>Direct Apple Push Notification to Loop with TOTP authentication.</p>
+<h3 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>┌─────────────────────────────────────────────────────────────────────────────┐
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>│                         Loop APNS Remote Flow                                │
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>├─────────────────────────────────────────────────────────────────────────────┤
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>│                                                                              │
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>│  LoopFollow                    APNS                         Loop            │
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>│  ─────────                     ────                         ────            │
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>│      │                          │                             │             │
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>│      │ 1. Generate JWT token    │                             │             │
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>│      │    (Team ID + Key ID)    │                             │             │
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>│      │                          │                             │             │
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>│      │ 2. Build payload with:   │                             │             │
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>│      │    - TOTP code           │                             │             │
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>│      │    - Command data        │                             │             │
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>│      │    - Expiration          │                             │             │
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>│      │                          │                             │             │
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>│      │ 3. POST to APNS ─────────┼────────────────────────────&gt;│             │
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>│      │    /3/device/{token}     │                             │             │
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>│      │                          │                             │             │
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>│      │                          │ 4. Push notification ──────&gt;│             │
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>│      │                          │                             │             │
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>│      │                          │                             │ 5. Validate │
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>│      │                          │                             │    TOTP     │
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>│      │                          │                             │             │
+<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>│      │                          │                             │ 6. Execute  │
+<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a>│      │                          │                             │    command  │
+<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a>│                                                                              │
+<a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a>└─────────────────────────────────────────────────────────────────────────────┘
+</code></pre></div>
+<h3 id="command-types">Command Types<a class="headerlink" href="#command-types" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Description</th>
+<th>Parameters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Bolus</strong></td>
+<td>Remote insulin bolus</td>
+<td><code>bolus-entry</code> (units)</td>
+</tr>
+<tr>
+<td><strong>Carbs</strong></td>
+<td>Remote carb entry</td>
+<td><code>carbs-entry</code> (grams), <code>absorption-time</code> (hours), <code>start-time</code></td>
+</tr>
+<tr>
+<td><strong>Override</strong></td>
+<td>Activate override preset</td>
+<td>(via Nightscout treatment)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="totp-authentication">TOTP Authentication<a class="headerlink" href="#totp-authentication" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1">// loopfollow:LoopFollow/Remote/LoopAPNS/TOTPService.swift#L7-L36</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kd">class</span><span class="w"> </span><span class="nc">TOTPService</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nv">shared</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">TOTPService</span><span class="p">()</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="c1">// Check if current TOTP already used (prevent replay)</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span><span class="kd">func</span><span class="w"> </span><span class="nf">isTOTPBlocked</span><span class="p">(</span><span class="n">qrCodeURL</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">Bool</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">        </span><span class="k">guard</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nv">currentTOTP</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">TOTPGenerator</span><span class="p">.</span><span class="n">extractOTPFromURL</span><span class="p">(</span><span class="n">qrCodeURL</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">        </span><span class="p">}</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">currentTOTP</span><span class="w"> </span><span class="p">==</span><span class="w"> </span><span class="n">Observable</span><span class="p">.</span><span class="n">shared</span><span class="p">.</span><span class="n">lastSentTOTP</span><span class="p">.</span><span class="n">value</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="w">    </span><span class="c1">// Mark TOTP as used after successful send</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="w">    </span><span class="kd">func</span><span class="w"> </span><span class="nf">markTOTPAsUsed</span><span class="p">(</span><span class="n">qrCodeURL</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nv">currentTOTP</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">TOTPGenerator</span><span class="p">.</span><span class="n">extractOTPFromURL</span><span class="p">(</span><span class="n">qrCodeURL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="w">            </span><span class="n">Observable</span><span class="p">.</span><span class="n">shared</span><span class="p">.</span><span class="n">lastSentTOTP</span><span class="p">.</span><span class="kr">set</span><span class="p">(</span><span class="n">currentTOTP</span><span class="p">)</span>
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="w">        </span><span class="p">}</span>
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="bolus-payload-structure">Bolus Payload Structure<a class="headerlink" href="#bolus-payload-structure" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1">// loopfollow:LoopFollow/Remote/LoopAPNS/LoopAPNSService.swift#L180-L230</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="kd">func</span><span class="w"> </span><span class="nf">sendBolusViaAPNS</span><span class="p">(</span><span class="n">payload</span><span class="p">:</span><span class="w"> </span><span class="n">LoopAPNSPayload</span><span class="p">,</span><span class="w"> </span><span class="n">completion</span><span class="p">:</span><span class="w"> </span><span class="p">...)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">now</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Date</span><span class="p">()</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">expiration</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Date</span><span class="p">(</span><span class="n">timeIntervalSinceNow</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">60</span><span class="p">)</span><span class="w">  </span><span class="c1">// 5 minute expiry</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">finalPayload</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">        </span><span class="s">"bolus-entry"</span><span class="p">:</span><span class="w"> </span><span class="n">bolusAmount</span><span class="p">,</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">        </span><span class="s">"otp"</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="p">(</span><span class="n">payload</span><span class="p">.</span><span class="n">otp</span><span class="p">),</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">        </span><span class="s">"remote-address"</span><span class="p">:</span><span class="w"> </span><span class="s">"LoopFollow"</span><span class="p">,</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">        </span><span class="s">"notes"</span><span class="p">:</span><span class="w"> </span><span class="s">"Sent via LoopFollow APNS"</span><span class="p">,</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">        </span><span class="s">"entered-by"</span><span class="p">:</span><span class="w"> </span><span class="s">"LoopFollow"</span><span class="p">,</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">        </span><span class="s">"sent-at"</span><span class="p">:</span><span class="w"> </span><span class="n">formatDateForAPNS</span><span class="p">(</span><span class="n">now</span><span class="p">),</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">        </span><span class="s">"expiration"</span><span class="p">:</span><span class="w"> </span><span class="n">formatDateForAPNS</span><span class="p">(</span><span class="n">expiration</span><span class="p">),</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="w">        </span><span class="s">"alert"</span><span class="p">:</span><span class="w"> </span><span class="s">"Remote Bolus Entry: </span><span class="si">\(</span><span class="n">bolusAmount</span><span class="si">)</span><span class="s"> U"</span><span class="p">,</span>
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="w">    </span><span class="p">]</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="p">[</span><span class="nb">String</span><span class="p">:</span><span class="w"> </span><span class="nb">Any</span><span class="p">]</span>
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="carbs-payload-structure">Carbs Payload Structure<a class="headerlink" href="#carbs-payload-structure" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1">// loopfollow:LoopFollow/Remote/LoopAPNS/LoopAPNSService.swift#L114-L174</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kd">func</span><span class="w"> </span><span class="nf">sendCarbsViaAPNS</span><span class="p">(</span><span class="n">payload</span><span class="p">:</span><span class="w"> </span><span class="n">LoopAPNSPayload</span><span class="p">,</span><span class="w"> </span><span class="n">completion</span><span class="p">:</span><span class="w"> </span><span class="p">...)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">finalPayload</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">        </span><span class="s">"carbs-entry"</span><span class="p">:</span><span class="w"> </span><span class="n">carbsAmount</span><span class="p">,</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">        </span><span class="s">"absorption-time"</span><span class="p">:</span><span class="w"> </span><span class="n">absorptionTime</span><span class="p">,</span><span class="w">  </span><span class="c1">// hours</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">        </span><span class="s">"otp"</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="p">(</span><span class="n">payload</span><span class="p">.</span><span class="n">otp</span><span class="p">),</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">        </span><span class="s">"remote-address"</span><span class="p">:</span><span class="w"> </span><span class="s">"LoopFollow"</span><span class="p">,</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">        </span><span class="s">"notes"</span><span class="p">:</span><span class="w"> </span><span class="s">"Sent via LoopFollow APNS"</span><span class="p">,</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">        </span><span class="s">"entered-by"</span><span class="p">:</span><span class="w"> </span><span class="s">"LoopFollow"</span><span class="p">,</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">        </span><span class="s">"sent-at"</span><span class="p">:</span><span class="w"> </span><span class="n">formatDateForAPNS</span><span class="p">(</span><span class="n">now</span><span class="p">),</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="w">        </span><span class="s">"expiration"</span><span class="p">:</span><span class="w"> </span><span class="n">formatDateForAPNS</span><span class="p">(</span><span class="n">expiration</span><span class="p">),</span>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="w">        </span><span class="s">"start-time"</span><span class="p">:</span><span class="w"> </span><span class="n">formatDateForAPNS</span><span class="p">(</span><span class="n">startTime</span><span class="p">),</span>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="w">        </span><span class="s">"alert"</span><span class="p">:</span><span class="w"> </span><span class="s">"Remote Carbs Entry: </span><span class="si">\(</span><span class="n">carbsAmount</span><span class="si">)</span><span class="s"> grams"</span><span class="p">,</span>
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="w">    </span><span class="p">]</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="p">[</span><span class="nb">String</span><span class="p">:</span><span class="w"> </span><span class="nb">Any</span><span class="p">]</span>
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="apns-request-structure">APNS Request Structure<a class="headerlink" href="#apns-request-structure" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1">// loopfollow:LoopFollow/Remote/LoopAPNS/LoopAPNSService.swift#L299-L361</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="kd">var</span><span class="w"> </span><span class="nv">request</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">URLRequest</span><span class="p">(</span><span class="n">url</span><span class="p">:</span><span class="w"> </span><span class="n">requestURL</span><span class="p">)</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">request</span><span class="p">.</span><span class="n">httpMethod</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"POST"</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="n">request</span><span class="p">.</span><span class="n">setValue</span><span class="p">(</span><span class="s">"application/json"</span><span class="p">,</span><span class="w"> </span><span class="n">forHTTPHeaderField</span><span class="p">:</span><span class="w"> </span><span class="s">"content-type"</span><span class="p">)</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="n">request</span><span class="p">.</span><span class="n">setValue</span><span class="p">(</span><span class="s">"bearer </span><span class="si">\(</span><span class="n">jwt</span><span class="si">)</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">forHTTPHeaderField</span><span class="p">:</span><span class="w"> </span><span class="s">"authorization"</span><span class="p">)</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="n">request</span><span class="p">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">bundleIdentifier</span><span class="p">,</span><span class="w"> </span><span class="n">forHTTPHeaderField</span><span class="p">:</span><span class="w"> </span><span class="s">"apns-topic"</span><span class="p">)</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="n">request</span><span class="p">.</span><span class="n">setValue</span><span class="p">(</span><span class="s">"alert"</span><span class="p">,</span><span class="w"> </span><span class="n">forHTTPHeaderField</span><span class="p">:</span><span class="w"> </span><span class="s">"apns-push-type"</span><span class="p">)</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="n">request</span><span class="p">.</span><span class="n">setValue</span><span class="p">(</span><span class="s">"10"</span><span class="p">,</span><span class="w"> </span><span class="n">forHTTPHeaderField</span><span class="p">:</span><span class="w"> </span><span class="s">"apns-priority"</span><span class="p">)</span><span class="w">  </span><span class="c1">// High priority</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="kd">let</span><span class="w"> </span><span class="nv">apnsPayload</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="w">    </span><span class="s">"aps"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="w">        </span><span class="s">"alert"</span><span class="p">:</span><span class="w"> </span><span class="n">payload</span><span class="p">[</span><span class="s">"alert"</span><span class="p">]</span><span class="w"> </span><span class="k">as</span><span class="p">?</span><span class="w"> </span><span class="nb">String</span><span class="w"> </span><span class="p">??</span><span class="w"> </span><span class="s">""</span><span class="p">,</span>
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="w">        </span><span class="s">"content-available"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="w">        </span><span class="s">"interruption-level"</span><span class="p">:</span><span class="w"> </span><span class="s">"time-sensitive"</span><span class="p">,</span>
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a><span class="w">    </span><span class="p">],</span>
+<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a><span class="w">    </span><span class="c1">// ... custom payload fields</span>
+<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a><span class="p">]</span>
+</code></pre></div>
+<h3 id="required-configuration">Required Configuration<a class="headerlink" href="#required-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Description</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>keyId</code></td>
+<td>APNS Key ID (10 chars)</td>
+<td>Apple Developer</td>
+</tr>
+<tr>
+<td><code>apnsKey</code></td>
+<td>APNS private key (PEM)</td>
+<td>Apple Developer</td>
+</tr>
+<tr>
+<td><code>deviceToken</code></td>
+<td>Loop device token</td>
+<td>From Loop profile</td>
+</tr>
+<tr>
+<td><code>bundleId</code></td>
+<td>Loop bundle identifier</td>
+<td>From Loop profile</td>
+</tr>
+<tr>
+<td><code>teamId</code></td>
+<td>Apple Team ID</td>
+<td>Apple Developer</td>
+</tr>
+<tr>
+<td><code>loopAPNSQrCodeURL</code></td>
+<td>TOTP secret URL</td>
+<td>From Loop QR code</td>
+</tr>
+<tr>
+<td><code>productionEnvironment</code></td>
+<td>Production vs sandbox</td>
+<td>Match Loop build</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-trc-trio-remote-control">2. TRC (Trio Remote Control)<a class="headerlink" href="#2-trc-trio-remote-control" title="Permanent link">&para;</a></h2>
+<p>Direct APNS to Trio with AES-256-GCM encryption.</p>
+<h3 id="architecture_1">Architecture<a class="headerlink" href="#architecture_1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>┌─────────────────────────────────────────────────────────────────────────────┐
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>│                         TRC Remote Flow                                      │
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>├─────────────────────────────────────────────────────────────────────────────┤
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>│                                                                              │
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>│  LoopFollow                    APNS                         Trio            │
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>│  ─────────                     ────                         ────            │
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>│      │                          │                             │             │
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>│      │ 1. Generate JWT token    │                             │             │
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>│      │                          │                             │             │
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>│      │ 2. Build CommandPayload  │                             │             │
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>│      │    (user, type, params)  │                             │             │
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>│      │                          │                             │             │
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>│      │ 3. Encrypt with          │                             │             │
+<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>│      │    AES-256-GCM           │                             │             │
+<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>│      │    (shared secret)       │                             │             │
+<a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a>│      │                          │                             │             │
+<a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>│      │ 4. POST encrypted ───────┼────────────────────────────&gt;│             │
+<a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a>│      │    payload to APNS       │                             │             │
+<a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a>│      │                          │                             │             │
+<a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a>│      │                          │ 5. Push notification ──────&gt;│             │
+<a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a>│      │                          │    (background)             │             │
+<a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a>│      │                          │                             │             │
+<a id="__codelineno-7-23" name="__codelineno-7-23" href="#__codelineno-7-23"></a>│      │                          │                             │ 6. Decrypt  │
+<a id="__codelineno-7-24" name="__codelineno-7-24" href="#__codelineno-7-24"></a>│      │                          │                             │    with     │
+<a id="__codelineno-7-25" name="__codelineno-7-25" href="#__codelineno-7-25"></a>│      │                          │                             │    shared   │
+<a id="__codelineno-7-26" name="__codelineno-7-26" href="#__codelineno-7-26"></a>│      │                          │                             │    secret   │
+<a id="__codelineno-7-27" name="__codelineno-7-27" href="#__codelineno-7-27"></a>│      │                          │                             │             │
+<a id="__codelineno-7-28" name="__codelineno-7-28" href="#__codelineno-7-28"></a>│      │                          │                             │ 7. Validate │
+<a id="__codelineno-7-29" name="__codelineno-7-29" href="#__codelineno-7-29"></a>│      │                          │                             │    timestamp│
+<a id="__codelineno-7-30" name="__codelineno-7-30" href="#__codelineno-7-30"></a>│      │                          │                             │             │
+<a id="__codelineno-7-31" name="__codelineno-7-31" href="#__codelineno-7-31"></a>│      │                          │                             │ 8. Execute  │
+<a id="__codelineno-7-32" name="__codelineno-7-32" href="#__codelineno-7-32"></a>│      │                          │                             │    command  │
+<a id="__codelineno-7-33" name="__codelineno-7-33" href="#__codelineno-7-33"></a>│                                                                              │
+<a id="__codelineno-7-34" name="__codelineno-7-34" href="#__codelineno-7-34"></a>└─────────────────────────────────────────────────────────────────────────────┘
+</code></pre></div>
+<h3 id="command-types_1">Command Types<a class="headerlink" href="#command-types_1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1">// loopfollow:LoopFollow/Remote/TRC/TRCCommandType.swift#L6-L13</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="kd">enum</span><span class="w"> </span><span class="nc">TRCCommandType</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="p">,</span><span class="w"> </span><span class="n">Encodable</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">bolus</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">tempTarget</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"temp_target"</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">cancelTempTarget</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"cancel_temp_target"</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">meal</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">startOverride</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"start_override"</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">cancelOverride</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"cancel_override"</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="command-summary">Command Summary<a class="headerlink" href="#command-summary" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Type</th>
+<th>Parameters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Bolus</strong></td>
+<td><code>bolus</code></td>
+<td><code>bolusAmount</code> (Decimal)</td>
+</tr>
+<tr>
+<td><strong>Temp Target</strong></td>
+<td><code>temp_target</code></td>
+<td><code>target</code> (Int, mg/dL), <code>duration</code> (Int, minutes)</td>
+</tr>
+<tr>
+<td><strong>Cancel Temp Target</strong></td>
+<td><code>cancel_temp_target</code></td>
+<td>-</td>
+</tr>
+<tr>
+<td><strong>Meal</strong></td>
+<td><code>meal</code></td>
+<td><code>carbs</code>, <code>protein</code>, <code>fat</code> (Int, grams), <code>bolusAmount</code>?, <code>scheduledTime</code>?</td>
+</tr>
+<tr>
+<td><strong>Start Override</strong></td>
+<td><code>start_override</code></td>
+<td><code>overrideName</code> (String)</td>
+</tr>
+<tr>
+<td><strong>Cancel Override</strong></td>
+<td><code>cancel_override</code></td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<h3 id="command-payload-structure">Command Payload Structure<a class="headerlink" href="#command-payload-structure" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1">// loopfollow:LoopFollow/Remote/TRC/PushMessage.swift#L17-L64</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="kd">struct</span><span class="w"> </span><span class="nc">CommandPayload</span><span class="p">:</span><span class="w"> </span><span class="n">Encodable</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">user</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="w">               </span><span class="c1">// User identifier</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">commandType</span><span class="p">:</span><span class="w"> </span><span class="n">TRCCommandType</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">timestamp</span><span class="p">:</span><span class="w"> </span><span class="n">TimeInterval</span><span class="w">    </span><span class="c1">// Unix timestamp (replay protection)</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">bolusAmount</span><span class="p">:</span><span class="w"> </span><span class="n">Decimal</span><span class="p">?</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">target</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="p">?</span>
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">duration</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="p">?</span>
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">carbs</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="p">?</span>
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">protein</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="p">?</span>
+<a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">fat</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="p">?</span>
+<a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">overrideName</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="p">?</span>
+<a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">scheduledTime</span><span class="p">:</span><span class="w"> </span><span class="n">TimeInterval</span><span class="p">?</span>
+<a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">returnNotification</span><span class="p">:</span><span class="w"> </span><span class="n">ReturnNotificationInfo</span><span class="p">?</span>
+<a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a>
+<a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a><span class="w">    </span><span class="kd">struct</span><span class="w"> </span><span class="nc">ReturnNotificationInfo</span><span class="p">:</span><span class="w"> </span><span class="n">Encodable</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-9-18" name="__codelineno-9-18" href="#__codelineno-9-18"></a><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="nv">productionEnvironment</span><span class="p">:</span><span class="w"> </span><span class="nb">Bool</span>
+<a id="__codelineno-9-19" name="__codelineno-9-19" href="#__codelineno-9-19"></a><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="nv">deviceToken</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span>
+<a id="__codelineno-9-20" name="__codelineno-9-20" href="#__codelineno-9-20"></a><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="nv">bundleId</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span>
+<a id="__codelineno-9-21" name="__codelineno-9-21" href="#__codelineno-9-21"></a><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="nv">teamId</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span>
+<a id="__codelineno-9-22" name="__codelineno-9-22" href="#__codelineno-9-22"></a><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="nv">keyId</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span>
+<a id="__codelineno-9-23" name="__codelineno-9-23" href="#__codelineno-9-23"></a><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="nv">apnsKey</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span>
+<a id="__codelineno-9-24" name="__codelineno-9-24" href="#__codelineno-9-24"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-9-25" name="__codelineno-9-25" href="#__codelineno-9-25"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="aes-256-gcm-encryption">AES-256-GCM Encryption<a class="headerlink" href="#aes-256-gcm-encryption" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1">// loopfollow:LoopFollow/Remote/TRC/SecureMessenger.swift#L8-L38</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="kd">struct</span><span class="w"> </span><span class="nc">SecureMessenger</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nv">sharedKey</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="nb">UInt8</span><span class="p">]</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">    </span><span class="kd">init</span><span class="p">?(</span><span class="n">sharedSecret</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">        </span><span class="k">guard</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nv">secretData</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">sharedSecret</span><span class="p">.</span><span class="n">data</span><span class="p">(</span><span class="n">using</span><span class="p">:</span><span class="w"> </span><span class="p">.</span><span class="n">utf8</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="kc">nil</span>
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="w">        </span><span class="p">}</span>
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="w">        </span><span class="c1">// Derive 256-bit key from shared secret using SHA-256</span>
+<a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="w">        </span><span class="n">sharedKey</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">Array</span><span class="p">(</span><span class="n">secretData</span><span class="p">.</span><span class="n">sha256</span><span class="p">())</span>
+<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a>
+<a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="w">    </span><span class="kd">func</span><span class="w"> </span><span class="nf">encrypt</span><span class="p">&lt;</span><span class="n">T</span><span class="p">:</span><span class="w"> </span><span class="n">Encodable</span><span class="p">&gt;(</span><span class="kc">_</span><span class="w"> </span><span class="n">object</span><span class="p">:</span><span class="w"> </span><span class="n">T</span><span class="p">)</span><span class="w"> </span><span class="kr">throws</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">String</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="nv">dataToEncrypt</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">JSONEncoder</span><span class="p">().</span><span class="n">encode</span><span class="p">(</span><span class="n">object</span><span class="p">)</span>
+<a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a>
+<a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a><span class="w">        </span><span class="c1">// Generate 12-byte random nonce</span>
+<a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a><span class="w">        </span><span class="k">guard</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nv">nonce</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">generateSecureRandomBytes</span><span class="p">(</span><span class="bp">count</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a><span class="w">            </span><span class="k">throw</span><span class="w"> </span><span class="bp">NSError</span><span class="p">(...)</span>
+<a id="__codelineno-10-19" name="__codelineno-10-19" href="#__codelineno-10-19"></a><span class="w">        </span><span class="p">}</span>
+<a id="__codelineno-10-20" name="__codelineno-10-20" href="#__codelineno-10-20"></a>
+<a id="__codelineno-10-21" name="__codelineno-10-21" href="#__codelineno-10-21"></a><span class="w">        </span><span class="c1">// AES-GCM encryption (combined mode includes auth tag)</span>
+<a id="__codelineno-10-22" name="__codelineno-10-22" href="#__codelineno-10-22"></a><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="nv">gcm</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">GCM</span><span class="p">(</span><span class="n">iv</span><span class="p">:</span><span class="w"> </span><span class="n">nonce</span><span class="p">,</span><span class="w"> </span><span class="n">mode</span><span class="p">:</span><span class="w"> </span><span class="p">.</span><span class="n">combined</span><span class="p">)</span>
+<a id="__codelineno-10-23" name="__codelineno-10-23" href="#__codelineno-10-23"></a><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="nv">aes</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">AES</span><span class="p">(</span><span class="n">key</span><span class="p">:</span><span class="w"> </span><span class="n">sharedKey</span><span class="p">,</span><span class="w"> </span><span class="n">blockMode</span><span class="p">:</span><span class="w"> </span><span class="n">gcm</span><span class="p">,</span><span class="w"> </span><span class="n">padding</span><span class="p">:</span><span class="w"> </span><span class="p">.</span><span class="n">noPadding</span><span class="p">)</span>
+<a id="__codelineno-10-24" name="__codelineno-10-24" href="#__codelineno-10-24"></a><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="nv">encryptedBytes</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">aes</span><span class="p">.</span><span class="n">encrypt</span><span class="p">(</span><span class="nb">Array</span><span class="p">(</span><span class="n">dataToEncrypt</span><span class="p">))</span>
+<a id="__codelineno-10-25" name="__codelineno-10-25" href="#__codelineno-10-25"></a>
+<a id="__codelineno-10-26" name="__codelineno-10-26" href="#__codelineno-10-26"></a><span class="w">        </span><span class="c1">// Prepend nonce to ciphertext</span>
+<a id="__codelineno-10-27" name="__codelineno-10-27" href="#__codelineno-10-27"></a><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="nv">finalData</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Data</span><span class="p">(</span><span class="n">nonce</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">encryptedBytes</span><span class="p">)</span>
+<a id="__codelineno-10-28" name="__codelineno-10-28" href="#__codelineno-10-28"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">finalData</span><span class="p">.</span><span class="n">base64EncodedString</span><span class="p">()</span>
+<a id="__codelineno-10-29" name="__codelineno-10-29" href="#__codelineno-10-29"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-10-30" name="__codelineno-10-30" href="#__codelineno-10-30"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="encrypted-push-message">Encrypted Push Message<a class="headerlink" href="#encrypted-push-message" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1">// loopfollow:LoopFollow/Remote/TRC/PushMessage.swift#L6-L15</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="kd">struct</span><span class="w"> </span><span class="nc">EncryptedPushMessage</span><span class="p">:</span><span class="w"> </span><span class="n">Encodable</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">aps</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="nb">String</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[</span><span class="s">"content-available"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="w">  </span><span class="c1">// Background push</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">encryptedData</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="w">  </span><span class="c1">// Base64-encoded encrypted payload</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">    </span><span class="kd">enum</span><span class="w"> </span><span class="nc">CodingKeys</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="p">,</span><span class="w"> </span><span class="n">CodingKey</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="n">aps</span>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="n">encryptedData</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"encrypted_data"</span>
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="apns-request-structure_1">APNS Request Structure<a class="headerlink" href="#apns-request-structure_1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1">// loopfollow:LoopFollow/Remote/TRC/PushNotificationManager.swift#L256-L265</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="kd">var</span><span class="w"> </span><span class="nv">request</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">URLRequest</span><span class="p">(</span><span class="n">url</span><span class="p">:</span><span class="w"> </span><span class="n">url</span><span class="p">)</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="n">request</span><span class="p">.</span><span class="n">httpMethod</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"POST"</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="n">request</span><span class="p">.</span><span class="n">setValue</span><span class="p">(</span><span class="s">"bearer </span><span class="si">\(</span><span class="n">jwt</span><span class="si">)</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">forHTTPHeaderField</span><span class="p">:</span><span class="w"> </span><span class="s">"authorization"</span><span class="p">)</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="n">request</span><span class="p">.</span><span class="n">setValue</span><span class="p">(</span><span class="s">"application/json"</span><span class="p">,</span><span class="w"> </span><span class="n">forHTTPHeaderField</span><span class="p">:</span><span class="w"> </span><span class="s">"content-type"</span><span class="p">)</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="n">request</span><span class="p">.</span><span class="n">setValue</span><span class="p">(</span><span class="s">"10"</span><span class="p">,</span><span class="w"> </span><span class="n">forHTTPHeaderField</span><span class="p">:</span><span class="w"> </span><span class="s">"apns-priority"</span><span class="p">)</span>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="n">request</span><span class="p">.</span><span class="n">setValue</span><span class="p">(</span><span class="s">"0"</span><span class="p">,</span><span class="w"> </span><span class="n">forHTTPHeaderField</span><span class="p">:</span><span class="w"> </span><span class="s">"apns-expiration"</span><span class="p">)</span>
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="n">request</span><span class="p">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">bundleId</span><span class="p">,</span><span class="w"> </span><span class="n">forHTTPHeaderField</span><span class="p">:</span><span class="w"> </span><span class="s">"apns-topic"</span><span class="p">)</span>
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="n">request</span><span class="p">.</span><span class="n">setValue</span><span class="p">(</span><span class="s">"background"</span><span class="p">,</span><span class="w"> </span><span class="n">forHTTPHeaderField</span><span class="p">:</span><span class="w"> </span><span class="s">"apns-push-type"</span><span class="p">)</span>
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>
+<a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="n">request</span><span class="p">.</span><span class="n">httpBody</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">JSONEncoder</span><span class="p">().</span><span class="n">encode</span><span class="p">(</span><span class="n">finalMessage</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="required-configuration_1">Required Configuration<a class="headerlink" href="#required-configuration_1" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sharedSecret</code></td>
+<td>Shared secret for AES key derivation</td>
+</tr>
+<tr>
+<td><code>deviceToken</code></td>
+<td>Trio device APNS token</td>
+</tr>
+<tr>
+<td><code>bundleId</code></td>
+<td>Trio bundle identifier</td>
+</tr>
+<tr>
+<td><code>teamId</code></td>
+<td>Apple Team ID</td>
+</tr>
+<tr>
+<td><code>keyId</code></td>
+<td>APNS Key ID</td>
+</tr>
+<tr>
+<td><code>apnsKey</code></td>
+<td>APNS private key (PEM)</td>
+</tr>
+<tr>
+<td><code>user</code></td>
+<td>User identifier</td>
+</tr>
+<tr>
+<td><code>productionEnvironment</code></td>
+<td>Production vs sandbox</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-nightscout-remote-commands">3. Nightscout Remote Commands<a class="headerlink" href="#3-nightscout-remote-commands" title="Permanent link">&para;</a></h2>
+<p>API-based temp target control via Nightscout treatments.</p>
+<h3 id="architecture_2">Architecture<a class="headerlink" href="#architecture_2" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>┌─────────────────────────────────────────────────────────────────────────────┐
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>│                       Nightscout Remote Flow                                 │
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>├─────────────────────────────────────────────────────────────────────────────┤
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>│                                                                              │
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>│  LoopFollow                  Nightscout                      Trio           │
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>│  ─────────                   ──────────                      ────           │
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>│      │                          │                             │             │
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>│      │ 1. POST /api/v1/         │                             │             │
+<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>│      │    treatments            │                             │             │
+<a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a>│      │    (with token)  ────────┼────────&gt;                    │             │
+<a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a>│      │                          │                             │             │
+<a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a>│      │                          │ 2. Store treatment ─────────│             │
+<a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a>│      │                          │    as "Temporary Target"    │             │
+<a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a>│      │                          │                             │             │
+<a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a>│      │                          │                             │             │
+<a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a>│      │                          │ 3. Trio polls treatments ──&gt;│             │
+<a id="__codelineno-13-17" name="__codelineno-13-17" href="#__codelineno-13-17"></a>│      │                          │    (or websocket push)      │             │
+<a id="__codelineno-13-18" name="__codelineno-13-18" href="#__codelineno-13-18"></a>│      │                          │                             │             │
+<a id="__codelineno-13-19" name="__codelineno-13-19" href="#__codelineno-13-19"></a>│      │                          │                             │ 4. Parse    │
+<a id="__codelineno-13-20" name="__codelineno-13-20" href="#__codelineno-13-20"></a>│      │                          │                             │    and      │
+<a id="__codelineno-13-21" name="__codelineno-13-21" href="#__codelineno-13-21"></a>│      │                          │                             │    apply    │
+<a id="__codelineno-13-22" name="__codelineno-13-22" href="#__codelineno-13-22"></a>│      │                          │                             │    target   │
+<a id="__codelineno-13-23" name="__codelineno-13-23" href="#__codelineno-13-23"></a>│                                                                              │
+<a id="__codelineno-13-24" name="__codelineno-13-24" href="#__codelineno-13-24"></a>└─────────────────────────────────────────────────────────────────────────────┘
+</code></pre></div>
+<h3 id="supported-commands">Supported Commands<a class="headerlink" href="#supported-commands" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Description</th>
+<th>Parameters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Temp Target</strong></td>
+<td>Set temporary BG target</td>
+<td><code>targetTop</code>, <code>targetBottom</code>, <code>duration</code></td>
+</tr>
+<tr>
+<td><strong>Cancel Temp Target</strong></td>
+<td>Cancel active temp target</td>
+<td><code>duration: 0</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="treatment-payload-structure">Treatment Payload Structure<a class="headerlink" href="#treatment-payload-structure" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="c1">// loopfollow:LoopFollow/Remote/TRC/TrioNightscoutRemoteController.swift#L7-L50</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="kd">class</span><span class="w"> </span><span class="nc">TrioNightscoutRemoteController</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">    </span><span class="kd">func</span><span class="w"> </span><span class="nf">sendTempTarget</span><span class="p">(</span><span class="n">newTarget</span><span class="p">:</span><span class="w"> </span><span class="bp">HKQuantity</span><span class="p">,</span><span class="w"> </span><span class="n">duration</span><span class="p">:</span><span class="w"> </span><span class="bp">HKQuantity</span><span class="p">,</span><span class="w"> </span><span class="n">completion</span><span class="p">:</span><span class="w"> </span><span class="p">...)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="nv">tempTargetBody</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="nb">String</span><span class="p">:</span><span class="w"> </span><span class="nb">Any</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w">            </span><span class="s">"enteredBy"</span><span class="p">:</span><span class="w"> </span><span class="s">"LoopFollow"</span><span class="p">,</span>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w">            </span><span class="s">"eventType"</span><span class="p">:</span><span class="w"> </span><span class="s">"Temporary Target"</span><span class="p">,</span>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="w">            </span><span class="s">"reason"</span><span class="p">:</span><span class="w"> </span><span class="s">"Manual"</span><span class="p">,</span>
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="w">            </span><span class="s">"targetTop"</span><span class="p">:</span><span class="w"> </span><span class="n">newTarget</span><span class="p">.</span><span class="n">doubleValue</span><span class="p">(</span><span class="k">for</span><span class="p">:</span><span class="w"> </span><span class="p">.</span><span class="n">milligramsPerDeciliter</span><span class="p">),</span>
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="w">            </span><span class="s">"targetBottom"</span><span class="p">:</span><span class="w"> </span><span class="n">newTarget</span><span class="p">.</span><span class="n">doubleValue</span><span class="p">(</span><span class="k">for</span><span class="p">:</span><span class="w"> </span><span class="p">.</span><span class="n">milligramsPerDeciliter</span><span class="p">),</span>
+<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="w">            </span><span class="s">"duration"</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="p">(</span><span class="n">duration</span><span class="p">.</span><span class="n">doubleValue</span><span class="p">(</span><span class="k">for</span><span class="p">:</span><span class="w"> </span><span class="p">.</span><span class="n">minute</span><span class="p">())),</span>
+<a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="w">            </span><span class="s">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="n">ISO8601DateFormatter</span><span class="p">().</span><span class="n">string</span><span class="p">(</span><span class="n">from</span><span class="p">:</span><span class="w"> </span><span class="n">Date</span><span class="p">()),</span>
+<a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a><span class="w">        </span><span class="p">]</span>
+<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a>
+<a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="nv">response</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">NightscoutUtils</span><span class="p">.</span><span class="n">executePostRequest</span><span class="p">(</span>
+<a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a><span class="w">            </span><span class="n">eventType</span><span class="p">:</span><span class="w"> </span><span class="p">.</span><span class="n">treatments</span><span class="p">,</span>
+<a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a><span class="w">            </span><span class="n">body</span><span class="p">:</span><span class="w"> </span><span class="n">tempTargetBody</span>
+<a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a><span class="w">        </span><span class="p">)</span>
+<a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-14-19" name="__codelineno-14-19" href="#__codelineno-14-19"></a>
+<a id="__codelineno-14-20" name="__codelineno-14-20" href="#__codelineno-14-20"></a><span class="w">    </span><span class="kd">func</span><span class="w"> </span><span class="nf">cancelExistingTarget</span><span class="p">(</span><span class="n">completion</span><span class="p">:</span><span class="w"> </span><span class="p">...)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-14-21" name="__codelineno-14-21" href="#__codelineno-14-21"></a><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="nv">tempTargetBody</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="nb">String</span><span class="p">:</span><span class="w"> </span><span class="nb">Any</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-14-22" name="__codelineno-14-22" href="#__codelineno-14-22"></a><span class="w">            </span><span class="s">"enteredBy"</span><span class="p">:</span><span class="w"> </span><span class="s">"LoopFollow"</span><span class="p">,</span>
+<a id="__codelineno-14-23" name="__codelineno-14-23" href="#__codelineno-14-23"></a><span class="w">            </span><span class="s">"eventType"</span><span class="p">:</span><span class="w"> </span><span class="s">"Temporary Target"</span><span class="p">,</span>
+<a id="__codelineno-14-24" name="__codelineno-14-24" href="#__codelineno-14-24"></a><span class="w">            </span><span class="s">"reason"</span><span class="p">:</span><span class="w"> </span><span class="s">"Manual"</span><span class="p">,</span>
+<a id="__codelineno-14-25" name="__codelineno-14-25" href="#__codelineno-14-25"></a><span class="w">            </span><span class="s">"duration"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">  </span><span class="c1">// Duration 0 = cancel</span>
+<a id="__codelineno-14-26" name="__codelineno-14-26" href="#__codelineno-14-26"></a><span class="w">            </span><span class="s">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="n">ISO8601DateFormatter</span><span class="p">().</span><span class="n">string</span><span class="p">(</span><span class="n">from</span><span class="p">:</span><span class="w"> </span><span class="n">Date</span><span class="p">()),</span>
+<a id="__codelineno-14-27" name="__codelineno-14-27" href="#__codelineno-14-27"></a><span class="w">        </span><span class="p">]</span>
+<a id="__codelineno-14-28" name="__codelineno-14-28" href="#__codelineno-14-28"></a>
+<a id="__codelineno-14-29" name="__codelineno-14-29" href="#__codelineno-14-29"></a><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="nv">response</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">NightscoutUtils</span><span class="p">.</span><span class="n">executePostRequest</span><span class="p">(...)</span>
+<a id="__codelineno-14-30" name="__codelineno-14-30" href="#__codelineno-14-30"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-14-31" name="__codelineno-14-31" href="#__codelineno-14-31"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="required-configuration_2">Required Configuration<a class="headerlink" href="#required-configuration_2" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Nightscout URL</td>
+<td>Nightscout server address</td>
+</tr>
+<tr>
+<td>API Token</td>
+<td>Token with <code>careportal</code> and <code>readable</code> roles</td>
+</tr>
+</tbody>
+</table>
+<h3 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Trio only</strong> - Loop does not read temp targets from Nightscout treatments</li>
+<li><strong>Temp Target only</strong> - No bolus/carbs/override support via NS</li>
+<li><strong>No OTP</strong> - Relies on API token security only</li>
+</ul>
+<hr />
+<h2 id="comparison-matrix">Comparison Matrix<a class="headerlink" href="#comparison-matrix" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Loop APNS</th>
+<th>TRC</th>
+<th>Nightscout</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Target AID</strong></td>
+<td>Loop</td>
+<td>Trio</td>
+<td>Trio</td>
+</tr>
+<tr>
+<td><strong>Transport</strong></td>
+<td>Direct APNS</td>
+<td>Direct APNS</td>
+<td>HTTPS</td>
+</tr>
+<tr>
+<td><strong>Encryption</strong></td>
+<td>None (TLS)</td>
+<td>AES-256-GCM</td>
+<td>None (TLS)</td>
+</tr>
+<tr>
+<td><strong>Authentication</strong></td>
+<td>TOTP + JWT</td>
+<td>Timestamp + JWT</td>
+<td>API Token</td>
+</tr>
+<tr>
+<td><strong>Replay Protection</strong></td>
+<td>TOTP blocking</td>
+<td>Timestamp validation</td>
+<td>None</td>
+</tr>
+<tr>
+<td><strong>Bolus</strong></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Carbs</strong></td>
+<td>Yes</td>
+<td>Yes (with protein/fat)</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Temp Target</strong></td>
+<td>No</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><strong>Override</strong></td>
+<td>Yes (via NS)</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Meal with Macro</strong></td>
+<td>No</td>
+<td>Yes (carbs/protein/fat)</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Scheduled Commands</strong></td>
+<td>No</td>
+<td>Yes (<code>scheduledTime</code>)</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Return Notification</strong></td>
+<td>Planned</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="security-comparison">Security Comparison<a class="headerlink" href="#security-comparison" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Loop APNS</th>
+<th>TRC</th>
+<th>Nightscout</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Transport Security</strong></td>
+<td>TLS</td>
+<td>TLS</td>
+<td>TLS</td>
+</tr>
+<tr>
+<td><strong>Message Encryption</strong></td>
+<td>None</td>
+<td>AES-256-GCM</td>
+<td>None</td>
+</tr>
+<tr>
+<td><strong>Authentication</strong></td>
+<td>TOTP (6-digit, 30s)</td>
+<td>Shared secret</td>
+<td>API token</td>
+</tr>
+<tr>
+<td><strong>Replay Protection</strong></td>
+<td>TOTP period (30s)</td>
+<td>Timestamp + decryption</td>
+<td>None</td>
+</tr>
+<tr>
+<td><strong>Key Exchange</strong></td>
+<td>QR code</td>
+<td>Manual sharing</td>
+<td>Token in URL</td>
+</tr>
+<tr>
+<td><strong>Credential Storage</strong></td>
+<td>Keychain</td>
+<td>Keychain</td>
+<td>UserDefaults</td>
+</tr>
+</tbody>
+</table>
+<h3 id="security-notes">Security Notes<a class="headerlink" href="#security-notes" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Loop APNS</strong>: Uses standard TOTP (RFC 6238) but override commands skip OTP validation (GAP-REMOTE-001)</li>
+<li><strong>TRC</strong>: Most secure - AES-256-GCM provides confidentiality and integrity; shared secret derived via SHA-256</li>
+<li><strong>Nightscout</strong>: Least secure - relies solely on token in headers; anyone with token can send commands</li>
+</ol>
+<hr />
+<h2 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h2>
+<h3 id="common-apns-error-codes">Common APNS Error Codes<a class="headerlink" href="#common-apns-error-codes" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Meaning</th>
+<th>Resolution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200</td>
+<td>Success</td>
+<td>-</td>
+</tr>
+<tr>
+<td>400</td>
+<td>Bad request</td>
+<td>Check payload format, device token</td>
+</tr>
+<tr>
+<td>403</td>
+<td>Auth error</td>
+<td>Verify JWT, APNS key, permissions</td>
+</tr>
+<tr>
+<td>410</td>
+<td>Invalid token</td>
+<td>Device token expired/invalid</td>
+</tr>
+<tr>
+<td>429</td>
+<td>Rate limited</td>
+<td>Wait before retrying</td>
+</tr>
+</tbody>
+</table>
+<h3 id="nightscout-error-handling">Nightscout Error Handling<a class="headerlink" href="#nightscout-error-handling" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="c1">// loopfollow:LoopFollow/Remote/Nightscout/TrioNightscoutRemoteView.swift#L48-L52</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="k">if</span><span class="w"> </span><span class="o">!</span><span class="n">nsWriteAuth</span><span class="p">.</span><span class="n">value</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="w">    </span><span class="n">ErrorMessageView</span><span class="p">(</span>
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="w">        </span><span class="n">message</span><span class="p">:</span><span class="w"> </span><span class="s">"Please update your token to include the 'careportal' and 'readable' roles..."</span>
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="w">    </span><span class="p">)</span>
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="p">}</span>
+</code></pre></div>
+<hr />
+<h2 id="cross-references">Cross-References<a class="headerlink" href="#cross-references" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../loopcaregiver/remote-commands.html">LoopCaregiver Remote Commands</a> - Compare with LC's Remote 2.0</li>
+<li><a href="../loopcaregiver/authentication.html">LoopCaregiver Authentication</a> - QR code linking comparison</li>
+<li><a href="../../docs/10-domain/remote-commands-comparison.html">Remote Commands Cross-System</a> - Trio/Loop/AAPS comparison</li>
+<li><a href="../../docs/10-domain/nightscout-api-comparison.html">Nightscout API Comparison</a> - API v1 vs v3</li>
+</ul>
+<hr />
+<h2 id="gaps-identified">Gaps Identified<a class="headerlink" href="#gaps-identified" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Gap ID</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GAP-LF-005</td>
+<td>No command status tracking (fire-and-forget)</td>
+</tr>
+<tr>
+<td>GAP-LF-006</td>
+<td>No command history or audit log</td>
+</tr>
+<tr>
+<td>GAP-LF-007</td>
+<td>TRC return notification not fully implemented</td>
+</tr>
+<tr>
+<td>GAP-LF-008</td>
+<td>Nightscout lacks OTP security for temp targets</td>
+</tr>
+<tr>
+<td>GAP-LF-009</td>
+<td>No unified command abstraction across remote types</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="revision-history">Revision History<a class="headerlink" href="#revision-history" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Date</th>
+<th>Author</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-01-17</td>
+<td>Agent</td>
+<td>Initial deep dive documentation</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,590 @@
+<!doctype html>
+<!-- Provenance: recovered from the private artifact https://claude.ai/artifact/RVEsToTtd4Uy33Fa8ZaooG, read 2026-09-30 with the Artifact tool and reviewed for the public site (tools/site). Snapshot; not updated in place. -->
+<html><head>
+<meta name="robots" content="noindex, nofollow"><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<div role="note" data-site-banner="snapshot" style="max-width:1080px;margin:12px auto 0;padding:10px 14px;border-left:3px solid #a86a00;background:#fbf0de;color:#18252a;font:14px/1.5 system-ui,sans-serif;border-radius:0 6px 6px 0"><b>Snapshot of 2026-09-27.</b> This page records the 15.0.9 journeys as walked on the candidate and is not updated. Current state: <code>docs/60-research/remedial/journey-map-15.0.9.md</code> in the repository.</div>
+
+<title>Nightscout 15.0.9 Journeys</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Public+Sans:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --paper:#f4f7f6; --card:#ffffff; --ink:#18252a; --muted:#56666b; --rule:#d5dfdc;
+  --accent:#1c6b86; --accent-soft:#e1eff4;
+  --inrange:#2e8a63; --inrange-soft:#e2f2ea;
+  --watch:#a8660e; --watch-soft:#fbf0de;
+  --known:#6a5a8c; --known-soft:#eeeaf6;
+  --band:#cfe9dc;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"Public Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  color-scheme:dark;
+  --paper:#0f1518; --card:#161f23; --ink:#e2ebe8; --muted:#9aaaa9; --rule:#2a383d;
+  --accent:#6cc0dc; --accent-soft:#16303a;
+  --inrange:#5cc796; --inrange-soft:#15302a;
+  --watch:#e4a74e; --watch-soft:#33280f;
+  --known:#b7a6e0; --known-soft:#262038;
+  --band:#1f3b31;
+}}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#0f1518; --card:#161f23; --ink:#e2ebe8; --muted:#9aaaa9; --rule:#2a383d;
+  --accent:#6cc0dc; --accent-soft:#16303a;
+  --inrange:#5cc796; --inrange-soft:#15302a;
+  --watch:#e4a74e; --watch-soft:#33280f;
+  --known:#b7a6e0; --known-soft:#262038;
+  --band:#1f3b31;
+}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font:16px/1.6 var(--body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:1080px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.15;margin:0}
+h1{font-size:clamp(2rem,5vw,3.1rem);letter-spacing:-.01em}
+h2{font-size:1.65rem}
+h3{font-size:1.1rem}
+p{margin:0}
+code,.mono{font-family:var(--mono);font-size:.86em}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+header.top{padding-block:40px 20px;display:grid;gap:14px}
+.eyebrow{font:500 .78rem/1.4 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lede{max-width:66ch;font-size:1.08rem;color:var(--ink)}
+.notice{max-width:66ch;border-left:3px solid var(--watch);background:var(--watch-soft);padding:10px 14px;border-radius:0 6px 6px 0;font-size:.95rem}
+
+.strip{margin-block:18px 8px;background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:16px;overflow-x:auto}
+.strip svg{display:block;min-width:720px;width:100%;height:auto}
+.strip text{fill:var(--ink);font-family:var(--body)}
+.strip .lbl{font:600 13px var(--display)}
+.strip .sub{font:12px var(--body);fill:var(--muted)}
+.strip .axis{font:11px var(--mono);fill:var(--muted)}
+
+nav.views{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);padding-block:10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;border-bottom:1px solid var(--rule)}
+.seg{display:inline-flex;border:1px solid var(--rule);border-radius:999px;background:var(--card);padding:3px}
+.seg button{font:600 .9rem var(--body);border:0;background:none;color:var(--muted);padding:6px 14px;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--paper)}
+.jump{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto}
+.jump a{font:500 .8rem var(--mono);text-decoration:none;color:var(--ink);border:1px solid var(--rule);border-radius:6px;padding:3px 8px;background:var(--card)}
+.jump a:hover{border-color:var(--accent);color:var(--accent)}
+
+section.j{padding-block:36px 8px;display:grid;gap:14px;scroll-margin-top:70px}
+.jhead{display:flex;gap:14px;align-items:baseline;flex-wrap:wrap}
+.jid{font:500 .95rem var(--mono);color:var(--accent);background:var(--accent-soft);padding:2px 8px;border-radius:5px}
+.jintro{max-width:70ch;color:var(--muted)}
+.path{font:600 .85rem var(--body);color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:8px}
+
+.step{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:16px;display:grid;gap:12px}
+.step-h{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.sid{font:500 .82rem var(--mono);color:var(--muted);min-width:4.2em}
+.cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:760px){.cols{grid-template-columns:1fr}}
+.c{border-radius:7px;padding:10px 12px;font-size:.95rem;display:grid;gap:6px;align-content:start}
+.c .k{font:600 .72rem var(--mono);letter-spacing:.08em;text-transform:uppercase}
+.c.do{background:var(--accent-soft)} .c.do .k{color:var(--accent)}
+.c.ok{background:var(--inrange-soft)} .c.ok .k{color:var(--inrange)}
+.c.watch{background:var(--watch-soft)} .c.watch .k{color:var(--watch)}
+.c ul{margin:0;padding-left:1.1em;display:grid;gap:4px}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font:500 .75rem var(--mono);border-radius:5px;padding:2px 7px;border:1px solid var(--rule);color:var(--muted)}
+.tag.known{background:var(--known-soft);border-color:transparent;color:var(--known)}
+.tag.found{background:var(--watch-soft);border-color:transparent;color:var(--watch)}
+.tag.fixed{background:var(--inrange-soft);border-color:transparent;color:var(--inrange)}
+.tag.lab{color:var(--accent)}
+[data-view="testers"] .tag.lab{display:none}
+
+.tbl{overflow-x:auto;background:var(--card);border:1px solid var(--rule);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:.9rem;font-variant-numeric:tabular-nums}
+th,td{text-align:left;vertical-align:top;padding:9px 12px;border-bottom:1px solid var(--rule)}
+th{font:600 .75rem var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--paper)}
+tr:last-child td{border-bottom:0}
+td code{white-space:normal;word-break:break-word}
+
+.glossary{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.glossary div{background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:10px 12px;font-size:.92rem}
+.glossary b{font-family:var(--display);display:block}
+.people{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.people div{border-top:3px solid var(--band);background:var(--card);border-radius:0 0 8px 8px;padding:10px 12px;font-size:.92rem}
+.people b{display:block;font-family:var(--display)}
+
+.contrib{display:none}
+[data-view="contributors"] .contrib{display:grid}
+[data-view="contributors"] .testers-only{display:none}
+.finding{border:1px solid var(--watch);border-radius:10px;padding:16px;background:var(--card);display:grid;gap:10px}
+.checked{border:1px solid var(--inrange);border-radius:10px;padding:16px;background:var(--card);display:grid;gap:10px}
+footer{margin-top:48px;padding-top:16px;border-top:1px solid var(--rule);color:var(--muted);font-size:.88rem;display:grid;gap:6px}
+@media (prefers-reduced-motion:no-preference){.step{transition:border-color .15s}.step:hover{border-color:var(--accent)}}
+</style>
+
+<div class="wrap" id="root" data-view="testers">
+<header class="top">
+  <div class="eyebrow">Nightscout 15.0.9 · candidate ff93fa94, walked by hand in a browser 2026-09-26 · release PR #8598</div>
+  <h1>Nightscout 15.0.9 journeys</h1>
+  <p class="lede">What people actually do with Nightscout, from an empty site to a clinic-visit report, written as steps you can check. Each step says what to do, what working looks like, and what to watch for. The contributor view adds what each app sends and where the lab replays it.</p>
+  <p class="notice"><b>Not medical advice.</b> This describes what software does so that testers can check it. It never tells anyone what insulin to take or which settings to use. Every therapy value in the lab is a made-up test value. For changes to your own or a family member's settings, talk to your care team.</p>
+</header>
+
+<div class="strip" aria-label="The six journeys in order">
+<svg viewBox="0 0 1040 190" role="img" aria-labelledby="stripT">
+  <title id="stripT">Six journeys drawn as a day's glucose trace passing through a target band: getting started, everyday data, day 2 changes, fixing mistakes, sharing, reports.</title>
+  <rect x="40" y="70" width="980" height="50" rx="4" fill="var(--band)"/>
+  <text class="axis" x="4" y="74">180</text><text class="axis" x="10" y="124">70</text>
+  <path d="M40 140 C 110 140, 120 60, 200 88 S 330 100, 370 84 S 480 40, 540 72 S 640 110, 700 96 S 820 70, 870 92 S 980 100, 1020 90" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/>
+  <g>
+    <circle cx="120" cy="95" r="7" fill="var(--accent)"/><text class="lbl" x="120" y="30" text-anchor="middle">J1 Getting started</text><text class="sub" x="120" y="48" text-anchor="middle">empty site → app or Profile Editor</text>
+    <circle cx="290" cy="93" r="7" fill="var(--accent)"/><text class="lbl" x="290" y="170" text-anchor="middle">J2 Everyday data</text><text class="sub" x="290" y="186" text-anchor="middle">readings, doses, pills</text>
+    <circle cx="455" cy="62" r="7" fill="var(--accent)"/><text class="lbl" x="455" y="30" text-anchor="middle">J3 Day 2 changes</text><text class="sub" x="455" y="48" text-anchor="middle">overrides, temp targets, profiles</text>
+    <circle cx="620" cy="95" r="7" fill="var(--accent)"/><text class="lbl" x="620" y="170" text-anchor="middle">J4 Fixing mistakes</text><text class="sub" x="620" y="186" text-anchor="middle">edit and delete, both ways</text>
+    <circle cx="790" cy="80" r="7" fill="var(--accent)"/><text class="lbl" x="790" y="30" text-anchor="middle">J5 Sharing</text><text class="sub" x="790" y="48" text-anchor="middle">followers, caregivers, remote</text>
+    <circle cx="960" cy="95" r="7" fill="var(--accent)"/><text class="lbl" x="960" y="170" text-anchor="middle">J6 Reports</text><text class="sub" x="960" y="186" text-anchor="middle">14 days to 90 days</text>
+  </g>
+</svg>
+</div>
+
+<nav class="views" aria-label="View and journeys">
+  <div class="seg" role="group" aria-label="Audience">
+    <button type="button" id="v-testers" aria-pressed="true">For testers</button>
+    <button type="button" id="v-contrib" aria-pressed="false">For contributors</button>
+  </div>
+  <div class="jump">
+    <a href="#words">Words</a><a href="#J1">J1</a><a href="#J2">J2</a><a href="#J3">J3</a><a href="#J4">J4</a><a href="#J5">J5</a><a href="#J6">J6</a><a href="#checked">Checked</a><a href="#known">Known issues</a><a href="#contrib-flags">Technical</a>
+  </div>
+</nav>
+
+<section class="j" id="words">
+  <h2>Words used here</h2>
+  <div class="glossary">
+    <div><b>Nightscout site</b>the web page and database a person runs for their own diabetes data</div>
+    <div><b>AID app</b>an automated insulin delivery app on a phone: Loop, Trio or AndroidAPS (AAPS)</div>
+    <div><b>Profile</b>the therapy settings: basal rates, insulin sensitivity (ISF), carb ratio, targets, insulin duration (DIA)</div>
+    <div><b>Careportal</b>the site's own form for entering treatments and events, the <b style="display:inline">+</b> button</div>
+    <div><b>Profile Editor</b>the site's page for entering or changing a profile (menu → Profile Editor)</div>
+    <div><b>Override</b>(Loop, Trio) a temporary change to targets and insulin needs, e.g. "Running" for 90 minutes</div>
+    <div><b>Temp target</b>(Trio, AAPS) a temporary glucose target, e.g. 140 mg/dL for an hour</div>
+    <div><b>Profile switch</b>(AAPS) changing to another profile, or the same one at a percentage</div>
+    <div><b>API secret</b>the site's master password; whoever has it can change anything</div>
+    <div><b>Token</b>a limited-access link made on the site's admin page, e.g. read-only for a follower</div>
+    <div><b>IOB / COB</b>insulin on board / carbs on board</div>
+    <div><b>Device status</b>the app's regular report: loop status, pump battery, predictions</div>
+  </div>
+  <h3 style="margin-top:10px">The people</h3>
+  <div class="people">
+    <div><b>Starting on an AID app</b>set up a new site, connect the app, see their data</div>
+    <div><b>Running a site for someone else</b>the same, and watching and helping from another phone</div>
+    <div><b>An experienced user</b>overrides, temp targets, new profiles, fixing wrong entries</div>
+    <div><b>A follower or caregiver</b>sees data, gets alarms, may enter carbs or send a remote command</div>
+    <div><b>Going to a clinic visit</b>reports over 2 weeks to 3 months that make sense</div>
+  </div>
+</section>
+
+<!-- J1 -->
+<section class="j" id="J1">
+  <div class="jhead"><span class="jid">J1</span><h2>Getting started on an empty site</h2></div>
+  <p class="jintro">A new site with the settings the app's setup guide asks for. How a person gets going depends on where they are coming from. These are the ways the apps themselves expect people to start; only path B uses the Profile Editor.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>path</th><th>who</th><th>the profile comes from</th></tr></thead>
+    <tbody>
+      <tr><td><b>A</b> app first</td><td>new to looping, new site</td><td>the app</td></tr>
+      <tr><td><b>B</b> site first</td><td>types settings into Nightscout before connecting the app</td><td>the Profile Editor, then the app</td></tr>
+      <tr><td><b>C</b> add Nightscout later</td><td>already looping, adding a site now</td><td>the app, sometimes only after a setting changes</td></tr>
+      <tr><td><b>D</b> new phone or reinstall</td><td>the site already holds their history</td><td>the site: the app's own earlier upload</td></tr>
+      <tr><td><b>E</b> CGM first</td><td>readings already reach the site through the built-in connector (Dexcom Share, LibreLinkUp)</td><td>the app, which uses the site as its CGM</td></tr>
+      <tr><td><b>F</b> a caregiver's app</td><td>a parent or partner with AAPSClient, LoopFollow or LoopCaregiver</td><td>the site</td></tr>
+      <tr><td><b>G</b> changing apps or versions</td><td>AAPS 3.4 → 4.0, NSClient v1 → v3, Loop ↔ Trio</td><td>depends</td></tr>
+    </tbody>
+  </table></div>
+
+  <article class="step">
+    <div class="step-h"><span class="sid">J1.0</span><h3>Open the new site</h3></div>
+    <div class="cols">
+      <div class="c do"><span class="k">Do</span>Open the site's address and log in with the API secret.</div>
+      <div class="c ok"><span class="k">Working</span>One message, "Redirecting you to the Profile Editor to create a new profile.", then the Profile Editor opens. It appears once, not in a loop.</div>
+      <div class="c watch"><span class="k">Watch for</span>The message repeating; a blank page; an error instead of the Profile Editor.</div>
+    </div>
+    <div class="tags"><span class="tag fixed">checked in a browser 2026-09-26</span><span class="tag lab">lab: any empty site</span></div>
+  </article>
+
+  <p class="path">Path A · the app first</p>
+  <article class="step">
+    <div class="step-h"><span class="sid">J1.A1–A2</span><h3>Connect the app</h3></div>
+    <div class="cols">
+      <div class="c do"><span class="k">Do</span>Enter the site address and the API secret (Loop, Trio). AAPS 3.4 with NSClient v3 asks for a token made on the admin page with the admin role, not the API secret.</div>
+      <div class="c ok"><span class="k">Working</span>The app says it is connected (Trio also posts a "Trio connected" note). With nothing to import, the app goes on to its own setup.</div>
+      <div class="c watch"><span class="k">Watch for</span>The app saying the secret or token is wrong when it isn't.</div>
+    </div>
+    <div class="tags"><span class="tag lab">lab: loop | trio | aaps · connect</span></div>
+  </article>
+  <article class="step">
+    <div class="step-h"><span class="sid">J1.A3</span><h3>The app sends its settings</h3></div>
+    <div class="cols">
+      <div class="c do"><span class="k">Do</span>Finish the app's setup so it saves its therapy settings.</div>
+      <div class="c ok"><span class="k">Working</span><ul><li>The Profile Editor shows the app's basal rates, ISF, carb ratios and targets in the right units.</li><li>The main page stops redirecting and draws the basal line.</li><li>Loop sites: careportal offers Temporary Override with Loop's presets.</li></ul></div>
+      <div class="c watch"><span class="k">Watch for</span>Values in the wrong units; times shifted by hours (time zone); the redirect still happening. <b>When the profile arrives differs:</b> Loop at "Save Settings"; Trio <b>not</b> at the end of onboarding but at the next full relaunch or first settings edit (the site keeps redirecting until then); AAPS on save, then a required profile switch. An open Profile Editor does not refresh by itself: reload it.</div>
+    </div>
+    <div class="tags"><span class="tag fixed">checked in a browser 2026-09-26</span><span class="tag lab">lab: onboard, status, trio finish-onboarding, aaps wizard</span></div>
+  </article>
+  <article class="step">
+    <div class="step-h"><span class="sid">J1.A4</span><h3>The app starts sending data</h3></div>
+    <div class="cols">
+      <div class="c do"><span class="k">Do</span>Let the app run for a while.</div>
+      <div class="c ok"><span class="k">Working</span>Readings every 5 minutes; boluses, carbs and temp basals on the chart; the loop pill shows a recent time; IOB, COB, reservoir and battery close to the app.</div>
+      <div class="c watch"><span class="k">Watch for</span>A pill stuck on an old time while the app runs; duplicate boluses or carbs.</div>
+    </div>
+    <div class="tags"><span class="tag lab">lab: backfill, tick, live</span></div>
+  </article>
+
+  <p class="path">Path B · the site first</p>
+  <article class="step">
+    <div class="step-h"><span class="sid">J1.B1–B2</span><h3>Type a profile into the Profile Editor and save it</h3></div>
+    <div class="cols">
+      <div class="c do"><span class="k">Do</span>Replace every starting value with the person's own, pick the time zone, and save (needs the API secret).</div>
+      <div class="c ok"><span class="k">Working</span>"Default values used" shows until real values are saved. After a reload the values stay and the main page draws the basal line. On 15.0.9 the first save works as filled in; 15.0.8 refused it until a start date after 1970 was chosen.</div>
+      <div class="c watch"><span class="k">Watch for · safety</span>The starting values are placeholders: DIA 3 h, carb ratio 30, ISF 100, basal 0.1 U/h and targets of 0. The page lets you save them unchanged (so does 15.0.8). The time zone starts as UTC, not the browser's. Note how visible the warning is.</div>
+    </div>
+    <div class="tags"><span class="tag fixed">checked in a browser 2026-09-26</span><span class="tag lab">lab: cp-loop | cp-trio | cp-aaps · by hand (editor-save automates it)</span></div>
+  </article>
+  <article class="step">
+    <div class="step-h"><span class="sid">J1.B3–B4</span><h3>Connect the app to a site that already has a profile</h3></div>
+    <div class="tbl"><table>
+      <thead><tr><th>app</th><th>what it does with a profile typed on the site</th><th>what working looks like</th></tr></thead>
+      <tbody>
+        <tr><td>Loop</td><td>Does not offer to import it: Loop only imports a profile Loop made.</td><td>Loop continues its own setup, then sends its own profile, which the site uses.</td></tr>
+        <tr><td>Trio</td><td>Cannot import it: Trio only reads profiles shaped like Trio's own.</td><td>The person enters settings in Trio; Trio sends its own profile.</td></tr>
+        <tr><td>AAPS 3.4</td><td>With "accept profile from Nightscout" on (the 3.4 default) it may replace the profiles on the phone.</td><td>The person checks the phone's profile before looping.</td></tr>
+        <tr><td>AAPS 4.0 (dev)</td><td>Accepting profiles from the site is off by default.</td><td>The phone keeps its own profile.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="c watch"><span class="k">Watch for · safety</span>A phone's profile changing without the person expecting it (AAPS 3.4). Afterwards the site uses the newest profile; the typed one stays in the list.</div>
+    <div class="tags"><span class="tag lab">lab: connect (predicts the app's decision), onboard · real app proves it</span></div>
+  </article>
+
+  <p class="path">Path C · adding Nightscout to an app already running</p>
+  <article class="step">
+    <div class="step-h"><span class="sid">J1.C</span><h3>Connect the app someone has used for months</h3></div>
+    <div class="tbl"><table>
+      <thead><tr><th>app</th><th>what reaches the site (read from the app's code)</th><th>what to check</th></tr></thead>
+      <tbody>
+        <tr><td>Loop</td><td>only data from now on; <b>no profile</b> until a therapy setting changes</td><td>data flows but the site keeps redirecting to the Profile Editor; after a settings change the profile arrives</td></tr>
+        <tr><td>Trio</td><td>its profile, and at most the last 24 hours</td><td>the last day is filled in, nothing older</td></tr>
+        <tr><td>AAPS</td><td>everything the phone still holds, up to about 6 months, one record at a time</td><td>the site stays responsive; reports cover the whole period; no duplicates</td></tr>
+      </tbody>
+    </table></div>
+    <div class="c watch"><span class="k">Watch for</span>The Loop case pushes people toward the Profile Editor, and a profile made there breaks Loop's remote commands.</div>
+    <div class="tags"><span class="tag lab">lab: add-later</span></div>
+  </article>
+
+  <p class="path">Path D · new phone or reinstall</p>
+  <article class="step">
+    <div class="step-h"><span class="sid">J1.D</span><h3>Restore settings from the site</h3></div>
+    <div class="tbl"><table>
+      <thead><tr><th>app</th><th>imports</th><th>does not bring back</th></tr></thead>
+      <tbody>
+        <tr><td>Loop</td><td>basal, ISF, carb ratio, targets, pre-meal, override presets, max basal and bolus, suspend threshold, from a profile Loop made</td><td>insulin model, closed loop on/off, dosing strategy. If the lowest target is below the suspend threshold, the whole target schedule is cleared. A profile Loop didn't make: the import is silently skipped</td></tr>
+        <tr><td>Trio</td><td>basal, ISF, carb ratio, the low end of each target, from a profile Trio made</td><td>DIA (set to the 10-hour default); the top of each target range; times not on a half hour move to midnight. Other profiles: "Cannot find the Nightscout Profile named "default"."</td></tr>
+        <tr><td>AAPS 3.4</td><td>the newest profile, automatically</td><td>treatments at default settings (Full sync brings them, "may take many hours")</td></tr>
+        <tr><td>AAPS 4.0</td><td>nothing by default</td><td>the profile, until the setting is turned on</td></tr>
+      </tbody>
+    </table></div>
+    <div class="c watch"><span class="k">Watch for · safety</span>Values changed on import (Trio's targets and DIA); misleading failure messages; AAPS 3.4 taking a profile unexpectedly. For about a minute after the new phone uploads its profile, a caregiver's remote command can still go to the old phone (JL-2).</div>
+    <div class="tags"><span class="tag found">found JL-2</span><span class="tag lab">lab: restore, full-sync, new-phone</span></div>
+  </article>
+
+  <p class="path">Path E · CGM first, through the built-in connector</p>
+  <article class="step">
+    <div class="step-h"><span class="sid">J1.E1</span><h3>Turn on the connector</h3></div>
+    <div class="cols">
+      <div class="c do"><span class="k">Do</span>Add <code>connect</code> to ENABLE; set <code>CONNECT_SOURCE=dexcomshare</code> with the Share account name, password and region (or <code>linkup</code> with the LibreLinkUp login).</div>
+      <div class="c ok"><span class="k">Working</span>Up to 2 days of Dexcom history (about 12 h from LibreLinkUp) within a minute or so, then a reading every 5 minutes, each from <code>nightscout-connect</code>. The page still redirects to the Profile Editor: the connector brings readings only, so the chart stays hidden until an app sends a profile.</div>
+      <div class="c watch"><span class="k">Watch for</span>A typo in <code>CONNECT_SOURCE</code> starts quietly with a built-in test driver instead of the real one.</div>
+    </div>
+    <div class="tags"><span class="tag fixed">checked in a browser 2026-09-26</span><span class="tag lab">lab: cgm-loop · cgm-trio · cgm-aaps, share, cgm-status</span></div>
+  </article>
+  <article class="step">
+    <div class="step-h"><span class="sid">J1.E2</span><h3>The app uses the site as its CGM</h3></div>
+    <div class="tbl"><table>
+      <thead><tr><th>app</th><th>setting</th><th>sends readings back?</th></tr></thead>
+      <tbody>
+        <tr><td>Loop</td><td>CGM → Nightscout Remote CGM</td><td>no</td></tr>
+        <tr><td>Trio</td><td>CGM → Nightscout</td><td>yes, with Upload Glucose on (the default, though the screen says OFF). The site merges them: no duplicates (checked 2026-09-26: 628 re-sent readings, count unchanged)</td></tr>
+        <tr><td>AAPS</td><td>BG source → NSClient BG</td><td>no</td></tr>
+      </tbody>
+    </table></div>
+    <div class="c ok"><span class="k">Checked 2026-09-26</span>After a 14-minute signal loss, the connector filled the gap on its first poll after readings resumed, and the page showed it without a reload.</div>
+    <div class="c watch"><span class="k">Watch for</span>Two readings seconds apart (the app also has its own CGM connection); a gap after signal loss that isn't filled in when readings resume.</div>
+    <div class="tags"><span class="tag fixed">checked in a browser 2026-09-26</span><span class="tag lab">lab: remote-cgm, ns-cgm, ns-bg, cgm-pause / cgm-resume</span></div>
+  </article>
+
+  <p class="path">Paths F and G · caregivers, and changing apps</p>
+  <article class="step">
+    <div class="step-h"><span class="sid">J1.F–G</span><h3>A caregiver's app starts from the site; moving between apps and versions</h3></div>
+    <div class="cols">
+      <div class="c do"><span class="k">Caregivers</span>AAPSClient takes the profile and every treatment (100 days). LoopFollow and LoopCaregiver read the newest profile for remote-command details and presets.</div>
+      <div class="c ok"><span class="k">Changing</span>AAPS v1 → v3 downloads 100 days again. 3.4 → 4.0 drops v1, so a v1 user may need to turn on v3 (unconfirmed). Loop ↔ Trio: neither imports the other's profile; the newest wins, so Loop-only features stop after Trio takes over.</div>
+      <div class="c watch"><span class="k">Found by the lab</span>After any new profile, remote commands keep going to the phone in the previous profile until the site next reloads its data: the next upload, or at the latest about a minute later (JL-2, also on 15.0.8).</div>
+    </div>
+    <div class="tags"><span class="tag found">found JL-2</span><span class="tag lab">lab: client-bootstrap, switch-to-trio, new-phone</span></div>
+  </article>
+</section>
+
+<!-- J2 -->
+<section class="j" id="J2">
+  <div class="jhead"><span class="jid">J2</span><h2>Everyday data flowing in</h2></div>
+  <article class="step">
+    <div class="step-h"><span class="sid">J2.1–J2.5</span><h3>Readings, treatments, pills and followers</h3></div>
+    <div class="cols">
+      <div class="c do"><span class="k">Do</span>Watch the main page as the app uploads. Enter a Site Change and a Sensor Start from the careportal. Open a follower link in another browser profile.</div>
+      <div class="c ok"><span class="k">Working</span><ul><li>Trend arrows and "minutes ago"; gaps show as gaps.</li><li>COB says where it came from (Loop or OpenAPS).</li><li>Loop/OpenAPS pill shows what the loop did; a prediction line.</li><li>Cannula and sensor age reset.</li><li>The follower's page updates by itself.</li><li>Two carb entries at the same time, with different amounts, are both kept (fixed in 15.0.9).</li></ul></div>
+      <div class="c watch"><span class="k">Watch for</span>COB or IOB very different from the app; duplicates; a follower page that needs reloading. Two careportal entries in the same minute with the <b>same</b> amount are still stored as one.</div>
+    </div>
+    <div class="tags"><span class="tag fixed">fixed BF-121 same-time carbs · checked 2026-09-26</span><span class="tag known">known BF-133 COB "last carbs" names an older entry</span><span class="tag known">known JL-4 Entered By shows "undefined"</span><span class="tag lab">lab: tick, live</span></div>
+  </article>
+</section>
+
+<!-- J3 -->
+<section class="j" id="J3">
+  <div class="jhead"><span class="jid">J3</span><h2>Changing things for a while (day 2)</h2></div>
+  <article class="step">
+    <div class="step-h"><span class="sid">J3.1–J3.2</span><h3>Start an override or temp target in the app, then end it early</h3></div>
+    <div class="cols">
+      <div class="c do"><span class="k">Do</span>Start one in the app, check the chart, then end it early.</div>
+      <div class="c ok"><span class="k">Working</span>A bar with the name and length; after ending, the bar stops at that time, without a reload, and there is one record, not two. A temp target shows as a thin grey bar at the target.</div>
+      <div class="c watch"><span class="k">Differences, not defects</span>Loop sends "indefinite" as indefinite. Trio sends it as 30 days (43200 min), labelled Exercise with the name in the notes, and doesn't send the percentage or target.</div>
+    </div>
+    <div class="tags"><span class="tag fixed">checked in a browser 2026-09-26 (AAPS temp target)</span><span class="tag lab">lab: override-start / -end, tt-start / -end / -cancel</span></div>
+  </article>
+  <article class="step">
+    <div class="step-h"><span class="sid">J3.3</span><h3>Start one from the site's careportal</h3></div>
+    <div class="cols">
+      <div class="c do"><span class="k">Do</span>Loop: Temporary Override → a preset. Trio: Temporary Target. AAPS: Temporary Target or Profile Switch.</div>
+      <div class="c ok"><span class="k">Working</span>Loop: the site sends a push to the phone (needs the API secret or admin, and Loop's profile newest); the override appears on the chart once Loop uploads it. Trio picks it up only with "Allow downloads" on. AAPS applies it only if its "accept … from Nightscout" setting is on.</div>
+      <div class="c watch"><span class="k">Watch for</span>When a Loop command succeeds, the careportal just closes, with no message (the same on 15.0.8); only a failure shows one. Check on the phone that it arrived before sending it again.</div>
+    </div>
+    <div class="tags"><span class="tag fixed">checked in a browser 2026-09-26 (override, remote carbs, cancel)</span><span class="tag lab">lab: apns, downloads, accept-check</span></div>
+  </article>
+  <article class="step">
+    <div class="step-h"><span class="sid">J3.4</span><h3>Profile switch with a percentage (AAPS)</h3></div>
+    <div class="cols">
+      <div class="c do"><span class="k">Do</span>Turn on the basal display, then switch to a profile at 150%.</div>
+      <div class="c ok"><span class="k">Working</span>The switch shows in the chart's basal area. The basal pill and its pop-up follow the percentage the way AAPS does: basal × 1.5, ISF and carb ratio ÷ 1.5. Checked: 0.950 → 1.425 U/h, ISF 2.8 → 1.87, carb ratio 12 → 8; 15.0.8 showed the 100% values.</div>
+      <div class="c watch"><span class="k">Known issue</span>The pop-up shows the scaled ISF unrounded, for example 1.866666666667 (JL-5, cosmetic). If AAPS uses Dynamic ISF, the ISF it doses with can differ from the one shown.</div>
+    </div>
+    <div class="tags"><span class="tag fixed">fixed BF-123 · checked 2026-09-26</span><span class="tag known">known JL-5 unrounded ISF</span><span class="tag lab">lab: ps-start 150 0 LabDay</span></div>
+  </article>
+  <article class="step">
+    <div class="step-h"><span class="sid">J3.5–J3.6</span><h3>Change settings in the app, or make a profile on the site</h3></div>
+    <div class="cols">
+      <div class="c do"><span class="k">Do</span>Change a basal rate in the app. Separately, Profile Editor → Add new → Save.</div>
+      <div class="c ok"><span class="k">Working</span>Each change is a new profile record; the newest is used; a new Loop preset appears in the careportal without a reload.</div>
+      <div class="c watch"><span class="k">Watch for · Loop sites</span>After a profile made on the site, remote commands and override presets stop working ("Could not find loopSettings in profile") until Loop sends its settings again. Reports → Profiles can miss profiles saved later on the report's last day (JL-3).</div>
+    </div>
+    <div class="tags"><span class="tag known">known JL-3 Reports → Profiles, last day</span><span class="tag lab">lab: settings-change, new-phone, caregiver-override</span></div>
+  </article>
+</section>
+
+<!-- J4 -->
+<section class="j" id="J4">
+  <div class="jhead"><span class="jid">J4</span><h2>Fixing mistakes</h2></div>
+  <article class="step">
+    <div class="step-h"><span class="sid">J4.1–J4.2</span><h3>Edit or delete on the site</h3></div>
+    <div class="cols">
+      <div class="c do"><span class="k">Do</span>In edit mode, drag a treatment; in Reports → Treatments, edit one and delete one.</div>
+      <div class="c ok"><span class="k">Working</span>Changes stay after a reload; the chart follows without a reload; IOB and COB follow the new time. An edit to an AAPS entry now reaches AAPS's sync history (fixed in 15.0.9).</div>
+      <div class="c watch"><span class="k">Which way changes travel</span>Site changes do not go back to Loop or Trio. A delete on the site never reaches AAPS: delete in AAPS as well. Right after an edit or delete, the Treatments table can still show the old row until you press Show again (JL-6).</div>
+    </div>
+    <div class="tags"><span class="tag fixed">fixed BF-122 · checked 2026-09-26</span><span class="tag known">known JL-6 table shows the old row</span><span class="tag known">known BF-124 tooltip unit conversion</span></div>
+  </article>
+  <article class="step">
+    <div class="step-h"><span class="sid">J4.3</span><h3>Edit or delete in the app</h3></div>
+    <div class="cols">
+      <div class="c do"><span class="k">Do</span>Delete a carb entry in the app.</div>
+      <div class="c ok"><span class="k">Working</span>Loop and Trio: the entry is gone from the site. AAPS: the entry leaves the chart and COB without a reload (fixed in 15.0.9; 15.0.8 kept counting it).</div>
+      <div class="c watch"><span class="k">Watch for</span>A deleted entry still on the chart, in COB or in reports.</div>
+    </div>
+    <div class="tags"><span class="tag fixed">fixed JL-1 / BF-135 · checked 2026-09-26</span><span class="tag lab">lab: carbs, carb-delete</span></div>
+  </article>
+  <article class="step">
+    <div class="step-h"><span class="sid">J4.5</span><h3>Delete a profile record</h3></div>
+    <div class="cols">
+      <div class="c do"><span class="k">Do</span>Profile Editor with two or more records: delete the older one.</div>
+      <div class="c ok"><span class="k">Working</span>Only that record goes. Deleting one named profile inside a record takes effect on Save.</div>
+      <div class="c watch"><span class="k">Watch for</span>The wrong record going; the newest changing unexpectedly.</div>
+    </div>
+  </article>
+</section>
+
+<!-- J5 -->
+<section class="j" id="J5">
+  <div class="jhead"><span class="jid">J5</span><h2>Sharing and handing over control</h2></div>
+  <article class="step">
+    <div class="step-h"><span class="sid">J5.1–J5.2</span><h3>A follower who watches, a caregiver who enters carbs</h3></div>
+    <div class="cols">
+      <div class="c do"><span class="k">Do</span>Admin page → new subject: <b>readable</b> for a follower; <b>readable + careportal</b> for a caregiver. Open each link in its own browser profile.</div>
+      <div class="c ok"><span class="k">Working</span>The follower sees data and reports and has no + button. The caregiver's + button works, with their name filled in. A caregiver can add but not edit or delete: Reports still shows the edit and delete icons, and using them fails.</div>
+      <div class="c watch"><span class="k">Known issue</span>careportal on its own does nothing on a "denied" site: it can add but cannot read, and adding needs reading.</div>
+    </div>
+    <div class="tags"><span class="tag fixed">checked in a browser 2026-09-26 (all four roles)</span><span class="tag known">known BF-78</span><span class="tag lab">lab: share, share-check</span></div>
+  </article>
+  <article class="step">
+    <div class="step-h"><span class="sid">J5.3–J5.6</span><h3>Follower apps, remote commands, alarms, taking access back</h3></div>
+    <div class="tbl"><table>
+      <thead><tr><th>app or task</th><th>how it works</th></tr></thead>
+      <tbody>
+        <tr><td>LoopFollow</td><td>makes its own read-only subject from the API secret</td></tr>
+        <tr><td>nightguard · Nightscout Reporter</td><td>a token</td></tr>
+        <tr><td>xDrip+ follower</td><td>the API secret</td></tr>
+        <tr><td>Loop remote</td><td>LoopCaregiver or careportal → the site → a push to the phone; needs the API secret or admin and the site's Apple push settings</td></tr>
+        <tr><td>Trio remote</td><td>LoopFollow → straight to the phone; the site only stores the phone's address</td></tr>
+        <tr><td>AAPS remote</td><td>careportal entries through the site</td></tr>
+        <tr><td>Alarms</td><td>silencing from a read-only token silences that page only; with admin, every page</td></tr>
+        <tr><td>Taking access back</td><td>delete the subject; its link stops working</td></tr>
+      </tbody>
+    </table></div>
+    <div class="tags"><span class="tag known">known BF-127 clock views blank for a token on a denied site</span><span class="tag lab">lab: follow-loopfollow, follow-nightguard, follow-xdrip, follow-reporter, caregiver-*</span></div>
+  </article>
+</section>
+
+<!-- J6 -->
+<section class="j" id="J6">
+  <div class="jhead"><span class="jid">J6</span><h2>Looking back: reports</h2></div>
+  <article class="step">
+    <div class="step-h"><span class="sid">J6.1–J6.6</span><h3>Two weeks, then ninety days</h3></div>
+    <div class="cols">
+      <div class="c do"><span class="k">Do</span>Reports with a token or the secret. Last 14 days: Day to day with IOB, COB and basal ticked; then Daily Stats, Distribution, Hourly, Percentile, Weekly, Treatments, Profiles, Loopalyzer. Then 90 days: Week to week and Percentile.</div>
+      <div class="c ok"><span class="k">Working</span>Every day drawn; pages agree on reading counts and roughly on averages and time in range; the Treatments event-type filter (new in 15.0.9) narrows the list; mmol/L sites stay in mmol/L; ranges over 186 days are refused.</div>
+      <div class="c watch"><span class="k">Watch for</span>A report showing nothing for a range with data; numbers that differ between pages. 15.0.9 counts some things differently (duplicate readings, COB from the app), so A1c estimates can shift a little.</div>
+    </div>
+    <div class="tags"><span class="tag fixed">checked in a browser 2026-09-26 (every tab, 7 days)</span><span class="tag lab">lab: rep-loop · rep-trio · rep-aaps (14 d) · rep-90 (90 d)</span></div>
+  </article>
+</section>
+
+<section class="j" id="checked">
+  <h2>Checked by hand in a browser</h2>
+  <p class="jintro">On 2026-09-26 a maintainer walked eleven scenarios in Chrome on the candidate ff93fa94, with the lab playing Loop, Trio and AndroidAPS, and ten of them side by side on 15.0.8. No 15.0.9 regression was found. Where the two differed, 15.0.9 did what its release notes say.</p>
+  <div class="checked">
+    <div class="tbl"><table>
+      <thead><tr><th>what changed in 15.0.9</th><th>15.0.9</th><th>15.0.8</th></tr></thead>
+      <tbody>
+        <tr><td>AAPS deletes carbs (BF-135)</td><td>gone from the chart and COB, live</td><td>still counted</td></tr>
+        <tr><td>Two careportal carb entries at the same time (BF-121)</td><td>both kept</td><td>the second replaced the first</td></tr>
+        <tr><td>AAPS profile switch at 150% (BF-123)</td><td>basal, ISF and carb ratio scaled</td><td>100% values</td></tr>
+        <tr><td>Editing an AAPS entry on the site (BF-122)</td><td>the edit reaches AAPS's sync history</td><td>it did not</td></tr>
+        <tr><td>Watch data in mg/dL from an mmol/L site (BF-128, BF-138)</td><td>all in mg/dL</td><td>some values left in mmol/L</td></tr>
+        <tr><td>First Profile Editor save on an empty site</td><td>works as filled in</td><td>needs a start date after 1970</td></tr>
+      </tbody>
+    </table></div>
+    <p>Unchanged on both and working: first-run redirects, Loop remote commands, AAPS temp targets, live updates, all four sharing roles, every Reports tab, and the CGM-first connector path (15.0.9 only).</p>
+  </div>
+</section>
+
+<section class="j" id="known">
+  <h2>Known issues in 15.0.9</h2>
+  <p class="jintro">Known on the candidate. None is new in 15.0.9: each behaves the same on 15.0.8. Please don't report these again, but do tell us if one looks worse than described.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>id</th><th>what you'd see</th><th>journey</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">BF-78</td><td>a caregiver token with only "careportal" can't do anything on a denied site</td><td>J5</td></tr>
+      <tr><td class="mono">BF-124</td><td>a treatment tooltip converts glucose units twice</td><td>J4</td></tr>
+      <tr><td class="mono">BF-127</td><td>clock views blank for a token viewer on a denied site</td><td>J5</td></tr>
+      <tr><td class="mono">BF-133</td><td>the COB pill's "last carbs" names an older entry</td><td>J2</td></tr>
+      <tr><td class="mono">JL-2</td><td>for about a minute after a new profile, remote commands can go to the previous phone</td><td>J1.D, J5</td></tr>
+      <tr><td class="mono">JL-3</td><td>Reports → Profiles can miss profiles saved later on the report's last day</td><td>J3, J6</td></tr>
+      <tr><td class="mono">JL-4</td><td>after one careportal entry with Entered By empty, the field comes back as "undefined"</td><td>J2</td></tr>
+      <tr><td class="mono">JL-5</td><td>the basal pill shows a scaled ISF unrounded (1.866666666667)</td><td>J3</td></tr>
+      <tr><td class="mono">JL-6</td><td>after an edit or delete in Reports → Treatments, the table can show the old row until Show is pressed</td><td>J4</td></tr>
+      <tr><td class="mono">as designed</td><td>a delete on the site doesn't reach AAPS; a Loop command's success shows no message</td><td>J3, J4</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- contributor layer -->
+<section class="j testers-only" id="contributors">
+  <h2>For contributors</h2>
+  <p class="jintro">Switch to <b>For contributors</b> above to see what each app sends, the flags each site uses, and where the lab replays every step.</p>
+</section>
+
+<section class="j contrib" id="contrib-flags">
+  <div class="jhead"><span class="jid">B1</span><h2>Flag sets</h2></div>
+  <div class="tbl"><table>
+    <thead><tr><th>site</th><th>ENABLE beyond defaults</th><th>other</th></tr></thead>
+    <tbody>
+      <tr><td>Loop</td><td><code>careportal basal iob cob bwp boluscalc pump profile sage cage iage bage loop override</code></td><td><code>LOOP_APNS_KEY</code>, <code>LOOP_APNS_KEY_ID</code>, <code>LOOP_DEVELOPER_TEAM_ID</code> (10 chars), <code>LOOP_PUSH_SERVER_ENVIRONMENT</code> · <code>lib/server/loop.js:16-29</code></td></tr>
+      <tr><td>Trio, AAPS</td><td>the same with <code>openaps</code> instead of <code>loop override</code></td><td><code>override</code> reads <code>loop.override</code> only (<code>lib/plugins/override.js:23</code>)</td></tr>
+      <tr><td>all</td><td><code>SHOW_PLUGINS</code> lists the pills (default <code>dbsize</code> only)</td><td><code>AUTH_DEFAULT_ROLES=denied</code>; <code>DEVICESTATUS_ADVANCED</code> defaults true; <code>API_SECRET</code> ≥ 12 characters</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="j contrib" id="contrib-wire">
+  <div class="jhead"><span class="jid">B2</span><h2>What each app sends</h2></div>
+  <div class="tbl"><table>
+    <thead><tr><th>step</th><th>Loop</th><th>Trio</th><th>AAPS 3.4 (v3 · v1 socket)</th></tr></thead>
+    <tbody>
+      <tr><td>auth</td><td><code>api-secret</code> SHA-1 only</td><td><code>api-secret</code> SHA-1 only</td><td>v3 admin token → JWT; v1 socket <code>authorize</code> with the secret</td></tr>
+      <tr><td>J1 import</td><td><code>GET /api/v1/profile/current</code> at onboarding; only a Loop-shaped record (<code>loopSettings</code>, <code>enteredBy</code>, store <code>Default</code>, <code>ETC/GMT±N</code>)</td><td><code>GET /api/v1/profile.json?count=1</code> decoded as <code>FetchedNightscoutProfileStore</code>: needs <code>enteredBy</code>, numeric <code>mills</code>, <code>created_at</code>; then <code>store["default"]</code></td><td>continuous; replaces the local store if <code>NsClientAcceptProfileStore</code> (true on 3.4, false on 4.0-dev) and newer or whole-second <code>createdAt</code></td></tr>
+      <tr><td>J1 profile</td><td><code>POST /api/v1/profile</code> array; <code>mills</code> string; <code>loopSettings.overridePresets</code>, <code>deviceToken</code></td><td><code>POST /api/v1/profile.json</code> object; <code>store.default</code>; top-level APNs fields</td><td>v3 <code>POST /api/v3/profile</code> (<code>app:"AAPS"</code>); v1 <code>dbAdd</code></td></tr>
+      <tr><td>J3 start</td><td><code>Temporary Override</code>, <code>_id</code> UPPER UUID → <code>identifier</code>; <code>durationType:"indefinite"</code></td><td><code>Exercise</code>, no id, indefinite = 43200; <code>Temporary Target</code>, no id</td><td><code>Temporary Target</code> in mg/dL (<code>units:"mg/dl"</code>) whatever the display units; <code>Profile Switch</code> + <code>profileJson</code> (Nightscout schedule items, unscaled); creates carry no <code>identifier</code></td></tr>
+      <tr><td>J3 end</td><td>re-POST same UUID, actual duration → one record</td><td>DELETE by <code>created_at</code>+<code>eventType</code>, re-POST; TT second POST → one record</td><td>v3 <code>PATCH /api/v3/treatments/{identifier}</code>; v1 <code>dbUpdate</code></td></tr>
+      <tr><td>J4 delete</td><td><code>DELETE /api/v1/treatments/&lt;UUID&gt;</code>; carbs PUT/DELETE by <code>_id</code></td><td><code>DELETE …?find[id][$eq]=&lt;UUID&gt;</code></td><td>v3 <code>DELETE</code> → server <code>isValid:false</code>; v1 <code>dbUpdate isValid:false</code> (honoured since BF-135)</td></tr>
+      <tr><td>site → app</td><td>APNs only, <code>POST /api/v2/notifications/loop</code></td><td>carbs + TT poll if Allow downloads</td><td>per-type accept switches (off by default in 3.4)</td></tr>
+    </tbody>
+  </table></div>
+  <p class="jintro">Every shape is built by <code>tools/review/journey-lab/clients.js</code> with the client source line cited per builder.</p>
+</section>
+
+<section class="j contrib" id="contrib-cover">
+  <div class="jhead"><span class="jid">B4</span><h2>Coverage by journey</h2></div>
+  <div class="tbl"><table>
+    <thead><tr><th>step</th><th>journey lab</th><th>other coverage</th><th>register</th></tr></thead>
+    <tbody>
+      <tr><td>J1.A</td><td><code>loop|trio|aaps|aaps-v1|aaps40</code>: connect, onboard; browser 2026-09-26</td><td>rc-soak profile POSTs; <code>tools/aaps/fixtures</code></td><td>BF-99 merged</td></tr>
+      <tr><td>J1.B</td><td><code>cp-*</code>: Profile Editor by hand, connect, onboard; browser 2026-09-26</td><td><b>none automated</b>; real-app track</td><td>JL-3</td></tr>
+      <tr><td>J1.E</td><td><code>cgm-*</code> with the real connector against a fake Share; browser 2026-09-26</td><td>connector-soak</td><td>—</td></tr>
+      <tr><td>J2</td><td>backfill, tick, live, <code>live &lt;site&gt; cgm</code></td><td>rc-soak 72 h; manual lab #10</td><td>BF-121 merged; BF-133; JL-4</td></tr>
+      <tr><td>J3</td><td>override / tt / ps steps; apns; new-phone; downloads; accept-check; browser 2026-09-26</td><td>rc-soak; object-id lab; apns-shutdown probe</td><td>BF-123, BF-134 merged; JL-2, JL-5</td></tr>
+      <tr><td>J4</td><td>carb-edit / -delete, override-delete; by hand; browser 2026-09-26</td><td>rc-soak edits; manual lab #1–4, #11</td><td>BF-103, BF-122, BF-135 merged; BF-124; JL-6</td></tr>
+      <tr><td>J5</td><td>share, share-check, follow-*, caregiver-*; browser 2026-09-26</td><td>rc-soak followers; manual lab #5–6</td><td>BF-78, BF-127</td></tr>
+      <tr><td>J6</td><td><code>rep-loop|rep-trio|rep-aaps</code> (14 d), <code>rep-90</code>; browser 2026-09-26 (rep-aaps, 7 d)</td><td>—</td><td>#8584, #6066 pending confirmation</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="j contrib" id="contrib-findings">
+  <div class="jhead"><span class="jid">B5</span><h2>Findings from walking the journeys</h2></div>
+  <div class="finding">
+    <p><b>JL-2, mechanism found.</b> Profile <code>create</code>, <code>save</code> and <code>remove</code> emit <code>data-received</code> before the database write completes (<code>lib/server/profile.js:90,130,210</code>). The reload on the debounce's leading edge (<code>lib/server/bootevent.js:349</code>) reads the previous profile, and <code>ctx.ddata.profiles[0]</code>, which <code>lib/server/loop.js</code> reads, stays stale until the next write or the 60 s heartbeat. Measured with no other writes: the previous token at 2 s, the new token from 60 s, on both trees. Recorded as GAP-REMOTE-010; the classification is open to review now that the mechanism is known.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>id</th><th>finding</th><th>code</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">JL-1</td><td>AAPS soft deletes kept counting: now BF-135, merged in #8775</td><td><code>lib/data/ddata.js</code></td></tr>
+        <tr><td class="mono">JL-3</td><td>Reports → Profiles: day strings parsed as UTC midnight drop later profiles on the last day</td><td><code>lib/report/reportclient.js:480,764,796</code></td></tr>
+        <tr><td class="mono">JL-4</td><td>careportal writes <code>undefined</code> to local storage for a blank Entered By, then pre-fills it</td><td><code>lib/client/careportal.js:286,408</code></td></tr>
+        <tr><td class="mono">JL-5</td><td>basal pill rounds ISF only on unit conversion, never the carb ratio</td><td><code>lib/plugins/basalprofile.js:64-77</code></td></tr>
+        <tr><td class="mono">JL-6</td><td>Treatments report repaints before its own PUT or DELETE lands</td><td><code>lib/report_plugins/treatments.js:181-182,229-231</code></td></tr>
+      </tbody>
+    </table></div>
+    <p>All are the same on 15.0.8, and none of JL-3 to JL-6 is filed. Full record: <code>docs/60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.md</code>.</p>
+  </div>
+</section>
+
+<footer>
+  <span>Checked against cgm-remote-monitor official/dev e3adc91d on 2026-09-25 (scripted) and ff93fa94 on 2026-09-26 (by hand in a browser). dev has since moved to 699eb5fa with two server-only merges (#8781, #8783). Nothing here is released.</span>
+  <span>Sources in the alignment repository: <code>docs/60-research/remedial/journey-map-15.0.9.md</code> (this map), <code>tools/review/journey-lab/</code> (the lab, walkthrough and real-app track), <code>docs/60-research/remedial/journey-lab-15.0.9-2026-09-25.md</code> (the scripted walk), <code>docs/60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.md</code> (the browser walk).</span>
+  <span>Testers: report a problem as an issue on nightscout/cgm-remote-monitor, naming 15.0.9 and the step (for example "J3.6"). Leave out secrets, tokens and anything from real data.</span>
+</footer>
+</div>
+
+<script>
+(function(){
+  var root=document.getElementById('root'), bt=document.getElementById('v-testers'), bc=document.getElementById('v-contrib');
+  function set(v){ root.setAttribute('data-view',v); bt.setAttribute('aria-pressed',v==='testers'); bc.setAttribute('aria-pressed',v==='contributors'); try{localStorage.setItem('jm-view',v)}catch(e){} }
+  bt.addEventListener('click',function(){set('testers')});
+  bc.addEventListener('click',function(){set('contributors')});
+  var start='testers'; try{start=localStorage.getItem('jm-view')||start}catch(e){}
+  if(location.hash==='#contributors'||location.hash.indexOf('#contrib')===0) start='contributors';
+  set(start);
+  document.querySelector('a[href="#contrib-flags"]').addEventListener('click',function(){set('contributors')});
+})();
+</script>
+
+</body></html>

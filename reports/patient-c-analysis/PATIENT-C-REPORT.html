@@ -1,0 +1,3438 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/patient-c-analysis/PATIENT-C-REPORT.html">
+      
+      
+        <link rel="prev" href="index.html">
+      
+      
+        <link rel="next" href="clinical-decision-report.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Patient C — Production Pipeline Demo Report - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#patient-c--production-pipeline-demo-report" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Patient C — Production Pipeline Demo Report
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../docs/00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../docs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    reports/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../c-analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    c-analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../connector-pr-bodies/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    connector-pr-bodies/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../consumer-impact-15.0.9/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    consumer-impact-15.0.9/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-3022b/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    exp-3022b/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_6" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    patient-c-analysis/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7_6" id="__nav_7_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    patient-c-analysis/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Patient C — Production Pipeline Demo Report
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="PATIENT-C-REPORT.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Patient C — Production Pipeline Demo Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-glycemic-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Glycemic summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-new-wave-13-controller-dynamics-facts-exp-2753" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. New Wave-13 controller-dynamics facts (EXP-2753)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-basal-mismatch-facts-exp-2869" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Basal-mismatch facts (EXP-2869)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-production-pipeline-recommendations-with-safety-clamps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Production pipeline recommendations (with safety clamps)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-side-question-a-per-patient-egp-modelling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Side question A: per-patient EGP modelling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-side-question-b-meal-isolation-thresholds-smell-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Side question B: meal-isolation thresholds (smell test)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Side question B: meal-isolation thresholds (smell test)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-patient-c-eats-small-meals--the-50-g-floor-doesnt-fit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Patient C eats small meals — the 50 g floor doesn't fit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-treat-of-low-contamination-15--at-the-10-g-floor--now-filterable-in-production" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Treat-of-low contamination: ~15 % at the 10 g floor — now filterable in production
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-the-lunchdinnerdessert-pattern-is-visible--but-breakfast--overnight-events-surface-a-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 The lunch+dinner+dessert pattern is visible — but breakfast &amp; overnight events surface a problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#65-pipeline-integrated-meal-logging-qc-wave-13-follow-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.5 Pipeline-integrated meal-logging QC (Wave-13 follow-up)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-recommendations-for-meal-isolation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 Recommendations for meal isolation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-code-quality-snapshot-for-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Code quality snapshot (for context)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-what-this-demo-proves" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. What this demo proves
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-reproduce" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Reproduce
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="clinical-decision-report.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clinical Decision Support — patient c
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="clinical-report.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clinical Analysis Report — patient c
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../phase0-pr-bodies/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    phase0-pr-bodies/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../reviewer-packets/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reviewer-packets/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-glycemic-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Glycemic summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-new-wave-13-controller-dynamics-facts-exp-2753" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. New Wave-13 controller-dynamics facts (EXP-2753)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-basal-mismatch-facts-exp-2869" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Basal-mismatch facts (EXP-2869)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-production-pipeline-recommendations-with-safety-clamps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Production pipeline recommendations (with safety clamps)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-side-question-a-per-patient-egp-modelling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Side question A: per-patient EGP modelling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-side-question-b-meal-isolation-thresholds-smell-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Side question B: meal-isolation thresholds (smell test)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Side question B: meal-isolation thresholds (smell test)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-patient-c-eats-small-meals--the-50-g-floor-doesnt-fit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Patient C eats small meals — the 50 g floor doesn't fit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-treat-of-low-contamination-15--at-the-10-g-floor--now-filterable-in-production" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Treat-of-low contamination: ~15 % at the 10 g floor — now filterable in production
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-the-lunchdinnerdessert-pattern-is-visible--but-breakfast--overnight-events-surface-a-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 The lunch+dinner+dessert pattern is visible — but breakfast &amp; overnight events surface a problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#65-pipeline-integrated-meal-logging-qc-wave-13-follow-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.5 Pipeline-integrated meal-logging QC (Wave-13 follow-up)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-recommendations-for-meal-isolation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 Recommendations for meal isolation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-code-quality-snapshot-for-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Code quality snapshot (for context)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-what-this-demo-proves" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. What this demo proves
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-reproduce" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Reproduce
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="patient-c--production-pipeline-demo-report">Patient C — Production Pipeline Demo Report<a class="headerlink" href="#patient-c--production-pipeline-demo-report" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-10-01 at <code>66c337cd</code>.</em></p>
+<p><strong>Generated:</strong> 2026-04-23 (180-day analysis window: 2025-10-03 → 2026-04-01)
+<strong>Controller:</strong> Loop (autobolus-on)
+<strong>Data source:</strong> <code>externals/ns-parquet/training/grid.parquet</code> (51,841 5-minute rows)
+<strong>Analysis script:</strong> <code>tools/cgmencode/analyze_patient_c.py</code>
+<strong>Raw outputs:</strong> <code>reports/patient-c-analysis/{facts.json, pipeline.json, meal_audit.csv, plots/}</code></p>
+<p>This report demonstrates the production pipeline (<code>tools/cgmencode/production</code>)
+end-to-end on patient C, exercising the <strong>new Wave-12/13 work just landed</strong>:
+correction-denominator ISF (EXP-2741), controller-dynamics factloader
+(EXP-2753), basal-mismatch facts (EXP-2869), and ISF-gap bootstrap
+(EXP-2861), all under the safety-margin doctrine (EXP-2738).</p>
+<hr />
+<h2 id="1-glycemic-summary">1. Glycemic summary<a class="headerlink" href="#1-glycemic-summary" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Value</th>
+<th>Threshold</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mean glucose</td>
+<td>162 mg/dL</td>
+<td>—</td>
+<td></td>
+</tr>
+<tr>
+<td>eA1c (GMI)</td>
+<td><strong>7.19 %</strong></td>
+<td>&lt;7.0 %</td>
+<td>⚠️</td>
+</tr>
+<tr>
+<td>CV</td>
+<td>43.4 %</td>
+<td>&lt;36 %</td>
+<td>⚠️ high variability</td>
+</tr>
+<tr>
+<td>TIR (70–180)</td>
+<td><strong>61.6 %</strong></td>
+<td>≥70 %</td>
+<td>⚠️</td>
+</tr>
+<tr>
+<td>TBR &lt;70</td>
+<td><strong>4.7 %</strong></td>
+<td>&lt;4 %</td>
+<td>⚠️ above safety threshold</td>
+</tr>
+<tr>
+<td>TBR &lt;54</td>
+<td><strong>1.6 %</strong></td>
+<td>&lt;1 %</td>
+<td>⚠️</td>
+</tr>
+<tr>
+<td>TAR &gt;180</td>
+<td>33.7 %</td>
+<td>&lt;25 %</td>
+<td>⚠️</td>
+</tr>
+<tr>
+<td>TAR &gt;250</td>
+<td>12.1 %</td>
+<td>&lt;5 %</td>
+<td>⚠️</td>
+</tr>
+</tbody>
+</table>
+<p>Patient C is <strong>below TIR target</strong> <em>and</em> <strong>above hypo target</strong> — a classic
+"over-corrected" phenotype. The Wave-13 facts loaders below show why.</p>
+<p><img alt="AGP" src="plots/01_agp.png" /></p>
+<hr />
+<h2 id="2-new-wave-13-controller-dynamics-facts-exp-2753">2. New Wave-13 controller-dynamics facts (EXP-2753)<a class="headerlink" href="#2-new-wave-13-controller-dynamics-facts-exp-2753" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>controller_type</code></td>
+<td><strong>loop</strong></td>
+<td>Loop autobolus-on</td>
+</tr>
+<tr>
+<td><code>n_events</code></td>
+<td>368 corrections analyzed</td>
+<td>sufficient sample</td>
+</tr>
+<tr>
+<td><code>mean_correction_fraction</code></td>
+<td><strong>0.154</strong></td>
+<td>only 15 % of correction insulin came from user manual boluses</td>
+</tr>
+<tr>
+<td><code>mean_smb_fraction</code></td>
+<td><strong>0.846</strong></td>
+<td><strong>85 % of corrections delivered as controller SMBs</strong></td>
+</tr>
+<tr>
+<td><code>mean_excess_basal_fraction</code></td>
+<td>0.000</td>
+<td>no excess basal channel</td>
+</tr>
+<tr>
+<td><code>corr_denom_gap_closure</code></td>
+<td><strong>−0.43</strong></td>
+<td>observed correction <em>over</em>-shoots target ⇒ ISF too aggressive</td>
+</tr>
+<tr>
+<td><code>isf_profile_median</code></td>
+<td>75 mg/dL/U</td>
+<td>currently programmed</td>
+</tr>
+<tr>
+<td><code>isf_corr_denom_median</code></td>
+<td><strong>126 mg/dL/U</strong></td>
+<td>what corrections actually accomplished</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="Channel mix" src="plots/02_controller_donut.png" /></p>
+<p>This patient is essentially in <strong>fully automated correction mode</strong> — Loop
+delivers 85 % of correction insulin as SMBs with very little user
+intervention. The ISF gap (75 vs 126) means each correction is sized for a
+75 mg/dL drop per unit but actually moves glucose 126 mg/dL — a <strong>+68 %
+over-correction</strong> that drives the elevated TBR.</p>
+<p><img alt="ISF reconciliation" src="plots/03_isf_reconciliation.png" /></p>
+<p>This is exactly the signal the Wave-12 correction-denominator advisor was
+built for, and it agrees with the bootstrap ISF-gap fact:</p>
+<table>
+<thead>
+<tr>
+<th><code>isf_gap_facts</code> (EXP-2861)</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>p_isf_over_correction</code></td>
+<td><strong>1.00</strong> (consistent over-correction)</td>
+</tr>
+<tr>
+<td><code>p_isf_under_correction</code></td>
+<td>0.00</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-basal-mismatch-facts-exp-2869">3. Basal-mismatch facts (EXP-2869)<a class="headerlink" href="#3-basal-mismatch-facts-exp-2869" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>p_basal_mismatch</code></td>
+<td><strong>1.00</strong> (controller persistently overrides scheduled basal)</td>
+</tr>
+<tr>
+<td><code>median_recommended_mult</code></td>
+<td><strong>0.00</strong> (advisory floor — TRIAGE only, do not auto-apply)</td>
+</tr>
+<tr>
+<td>Scheduled basal (median)</td>
+<td>1.40 U/h</td>
+</tr>
+<tr>
+<td>Actual basal (median)</td>
+<td><strong>0.00 U/h</strong></td>
+</tr>
+</tbody>
+</table>
+<p><img alt="Basal pattern" src="plots/04_basal_pattern.png" /></p>
+<p>Loop is suspending basal almost continuously across the day. Combined with
+the over-correction signal above, this paints a coherent picture: <strong>the
+schedule is too aggressive on both basal and ISF</strong>, so the controller cuts
+basal hard and SMBs over-correct on the descents.</p>
+<hr />
+<h2 id="4-production-pipeline-recommendations-with-safety-clamps">4. Production pipeline recommendations (with safety clamps)<a class="headerlink" href="#4-production-pipeline-recommendations-with-safety-clamps" title="Permanent link">&para;</a></h2>
+<p><code>run_pipeline()</code> returned 5 advisories. Top 4 settings recommendations
+(all clamped to ±25 % per EXP-2738 safety doctrine — actual observed
+deltas in <code>evidence</code> field):</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Parameter</th>
+<th style="text-align: right;">Current</th>
+<th style="text-align: right;">Suggested</th>
+<th style="text-align: right;">Cap</th>
+<th style="text-align: right;">ΔTIR</th>
+<th style="text-align: right;">Confidence</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>ISF (overnight 00–06 local)</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;"><strong>349</strong> <em>(clamped from +366 %)</em></td>
+<td style="text-align: right;">+25 %</td>
+<td style="text-align: right;">+18.8 pp*</td>
+<td style="text-align: right;">0.30</td>
+<td>EXP-2271</td>
+</tr>
+<tr>
+<td>2</td>
+<td>CR (morning)</td>
+<td style="text-align: right;">4.5</td>
+<td style="text-align: right;"><strong>3.8</strong> <em>(clamped from −15 %)</em></td>
+<td style="text-align: right;">−25 %</td>
+<td style="text-align: right;">−4.1 pp</td>
+<td style="text-align: right;">0.34</td>
+<td>EXP-2341</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Basal (overnight)</td>
+<td style="text-align: right;">1.40</td>
+<td style="text-align: right;"><strong>1.12</strong> <em>(clamped from −31 %)</em></td>
+<td style="text-align: right;">−25 %</td>
+<td style="text-align: right;">+2.2 pp</td>
+<td style="text-align: right;">0.20</td>
+<td>EXP-2589 quadrant</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Correction threshold</td>
+<td style="text-align: right;">180</td>
+<td style="text-align: right;"><strong>250</strong> <em>(clamped from +39 %)</em></td>
+<td style="text-align: right;">+25 %</td>
+<td style="text-align: right;">+0.7 pp</td>
+<td style="text-align: right;">0.27</td>
+<td>EXP-2528</td>
+</tr>
+</tbody>
+</table>
+<p>* ΔTIR figure for ISF is the recommender's headline number (+18.8 pp from
+the recommendations array); the underlying advisor's per-block prediction
+is +3.7 pp.</p>
+<blockquote>
+<p><strong>2026-04-24 corrections (Phase 3 follow-up):</strong> A latent bug in
+<code>analyze_patient_c.py</code> divided ms timestamps by 1 000 000 before
+handing them to the pipeline, which collapsed every reading to
+~21 Jan 1970. With the timestamps and TZ both correct, the advisor
+now sees the <strong>real</strong> circadian distribution. The headline shifts:</p>
+<ul>
+<li><strong>Overnight ISF jumps from 237 → 349 mg/dL/U</strong> (366 % deviation).
+  724 nocturnal correction events confirm the patient is dramatically
+  over-correcting at night.</li>
+<li><strong>CR direction flips</strong> to "decrease" (more insulin) for the
+  morning bin. ⚠️ Patient C reports <strong>never eating breakfast</strong>, so the
+  118 "morning meals" backing this rec are almost certainly
+  treats-of-low (small carbs at low BG); the rec is treating
+  rescue carbs as missed bolus opportunities. <strong>Do not act on this
+  rec without meal-stream cleanup.</strong> See §6 below.</li>
+<li><strong>Overnight basal</strong>: −20 % (was −25 % in broken run).</li>
+<li>Four pipeline-level wiring bugs were also fixed alongside (missing
+  <code>BasalAssessment</code> import, stale <code>cgmencode.*</code> absolute imports,
+  <code>_OVERNIGHT_START</code>/<code>MIN_CORRECTION_DELTA</code> undefined). Previously
+  masked because the corrupted timestamps tripped early-exit paths.</li>
+</ul>
+<p><strong>2026-04-24 — Phase 4 meal-stream cleanup (treat-of-low filter +
+compression-low detector):</strong> Following user-confirmed Patient C
+physiology (no breakfast; late-night dessert digestion compounds
+overnight; most "lows" are CGM artifacts; only 1–4 real
+treats-of-low/year during pump/CGM gaps):</p>
+<ul>
+<li>Wired the existing <code>meal_filter.is_real_meal(prior_glucose_30min_min=…)</code>
+  guard (EXP-2866) into pipeline <code>_extract_meal_events</code> and
+  <code>_extract_correction_events</code>. Filter was a dead branch — no
+  production caller had been using it.</li>
+<li>Added <code>data_quality.detect_compression_lows()</code> which flags
+  pressure-on-sensor artifacts (sharp drop into &lt;60 mg/dL with
+  rapid recovery and no insulin/carb cause). Result is reported
+  on <code>CleanedData.n_compression_lows</code>; raw glucose is <strong>not</strong>
+  modified — the advisor decides how to use the count.</li>
+</ul>
+<p>Patient C numbers after Phase 4:</p>
+<table>
+<thead>
+<tr>
+<th>Signal</th>
+<th style="text-align: right;">Before</th>
+<th style="text-align: right;">After</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Carb entries kept as meal events</td>
+<td style="text-align: right;">333</td>
+<td style="text-align: right;"><strong>304</strong></td>
+<td>29 dropped as treats-of-low (8 %)</td>
+</tr>
+<tr>
+<td>Removed by local hour</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">11 in 00–03 h</td>
+<td>matches user's "treats during overnight false-lows" pattern</td>
+</tr>
+<tr>
+<td>Compression-lows detected</td>
+<td style="text-align: right;">n/a</td>
+<td style="text-align: right;"><strong>11</strong> in 180 days</td>
+<td>conservative; only events with no insulin/carb cause</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Recommendations are unchanged in shape.</strong> The morning CR rec
+persists because the bulk of the 7–9 h local-time carb entries
+have legitimate prior glucose (&gt;80 mg/dL) and pass the filter.
+User reports the patient never eats breakfast — that points to a
+data-source problem (pump auto-carbs / cached COB entries vs
+user-entered food) one layer below this pipeline. Recommended
+next step before acting on the CR: audit the <code>carbs</code> source in
+<code>grid.parquet</code> for Patient C against the raw NS treatments
+stream to determine whether morning entries are user-entered
+meals or pump-internal corrections.</p>
+</blockquote>
+<p>The ISF / basal / correction-threshold recs are <strong>directionally
+consistent</strong> — back off insulin on every channel. The CR rec is the
+outlier and likely a meal-stream-quality artifact, not a real
+under-dosing signal.</p>
+<hr />
+<h2 id="5-side-question-a-per-patient-egp-modelling">5. Side question A: per-patient EGP modelling<a class="headerlink" href="#5-side-question-a-per-patient-egp-modelling" title="Permanent link">&para;</a></h2>
+<p><strong>Is it feasible? Does it help?</strong></p>
+<p><strong>Method (read-only proxy of EXP-2739):</strong> isolate deep-fasting rows
+(<code>cob=0</code>, <code>time_since_carb_min ≥ 240</code>, <code>time_since_bolus_min ≥ 240</code>,
+no exercise/override, IOB &lt; 0.5 U) and read the median <code>glucose_roc</code>.
+This is the rate the patient's EGP outpaces minimal IOB.</p>
+<p><strong>Result for patient C (n = 8,449 rows = 16.3 % of grid):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Quantity</th>
+<th style="text-align: right;">Population</th>
+<th style="text-align: right;">Patient C</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EGP (<code>_BASE_EGP</code>, mg/dL / 5 min)</td>
+<td style="text-align: right;">1.50</td>
+<td style="text-align: right;"><strong>1.00</strong></td>
+</tr>
+<tr>
+<td>Equilibrium basal multiplier</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;"><strong>0.00</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Patient C runs ~33 % below population EGP, <em>and</em> the controller settles
+at 0 % of scheduled basal in fasting equilibrium. Both signals point the
+same way: this patient's metabolic insulin demand is materially lower
+than the schedule presumes.</p>
+<p><img alt="Per-patient EGP" src="plots/06_per_patient_egp.png" /></p>
+<p><strong>Verdict:</strong>
+- <strong>Feasible:</strong> yes. Computed in &lt;1 s per patient from existing grid columns.
+- <strong>Helps:</strong> yes — the EGP estimate corroborates the basal recommendation
+  (decrease) and the over-correction signal (high observed ISF). It would
+  let the metabolic engine simulate descents more accurately for triage.
+- <strong>NOT yet productionized:</strong> per the EXP-2738 safety doctrine, naively
+  swapping <code>_BASE_EGP = 1.5</code> in <code>metabolic_engine.py</code> is unsafe. The
+  correct shape is a <strong>facts loader</strong> (parallel to
+  <code>controller_dynamics_facts_loader</code>) that exposes
+  <code>egp_mgdl_per_5min_p50</code> per patient into <code>AuditionInputs</code>, where the
+  triage-only safety margin can clamp downstream effects.
+- This is tracked as <code>prod_todos.egp-personalization</code> (status: blocked
+  pending facts-loader design pass).</p>
+<p><strong>Caveats:</strong>
+1. The proxy assumes IOB &lt; 0.5 U is "low enough" — for a Loop user that
+   continuously suspends basal, this filter passes nearly all fasting
+   rows (8,449/8,449). A finer estimate would solve a 2-compartment
+   ODE (EXP-2739), but the 5-min-resolution proxy is sufficient to
+   <em>triage</em> who needs personalization.
+2. Equilibrium-window count (176) is small; the per-patient EGP CI would
+   need bootstrap before being trusted for control decisions.</p>
+<hr />
+<h2 id="6-side-question-b-meal-isolation-thresholds-smell-test">6. Side question B: meal-isolation thresholds (smell test)<a class="headerlink" href="#6-side-question-b-meal-isolation-thresholds-smell-test" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p><strong>Ground-truth update (2026-04-23, user-confirmed):</strong>
+<em>Patient C eats lunch + dinner + dessert; never breakfast.</em>
+This invalidates the original "under-logger" framing and produces a more
+useful finding (below).</p>
+</blockquote>
+<p><strong>User's general smell test:</strong> most people eat 2–8 logged meals/day, evening
+dessert is real, "real meals" should be ≥ 50 g.</p>
+<p><strong>Production today</strong> (<code>tools/cgmencode/production/meal_filter.py</code>):
+- <code>REAL_CARB_EVENT_THRESHOLD_G = 5</code> g  → "is this a carb event at all?"
+- <code>REAL_MEAL_FLOOR_G = 10</code> g           → "is this a meal vs a snack?"
+- <code>SUBSTANTIAL_MEAL_G = 30</code> g          → "is this a substantial planned meal?"</p>
+<h3 id="61-patient-c-eats-small-meals--the-50-g-floor-doesnt-fit">6.1 Patient C eats small meals — the 50 g floor doesn't fit<a class="headerlink" href="#61-patient-c-eats-small-meals--the-50-g-floor-doesnt-fit" title="Permanent link">&para;</a></h3>
+<p>Carb-size histogram for patient C's 396 logged events (180 days):</p>
+<table>
+<thead>
+<tr>
+<th>Size bin</th>
+<th style="text-align: right;">Count</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0–2 g</td>
+<td style="text-align: right;">11</td>
+<td>(treat-of-low dust)</td>
+</tr>
+<tr>
+<td>5–10 g</td>
+<td style="text-align: right;">8</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>10–15 g</strong></td>
+<td style="text-align: right;"><strong>133</strong></td>
+<td>dessert / snack / light lunch</td>
+</tr>
+<tr>
+<td>15–20 g</td>
+<td style="text-align: right;">10</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>20–25 g</strong></td>
+<td style="text-align: right;"><strong>84</strong></td>
+<td>medium meal</td>
+</tr>
+<tr>
+<td>25–30 g</td>
+<td style="text-align: right;">9</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>30–40 g</strong></td>
+<td style="text-align: right;"><strong>133</strong></td>
+<td>full dinner</td>
+</tr>
+<tr>
+<td>40–50 g</td>
+<td style="text-align: right;">6</td>
+<td></td>
+</tr>
+<tr>
+<td>&gt; 50 g</td>
+<td style="text-align: right;">2</td>
+<td>(n=2 in 180 days — meaningless)</td>
+</tr>
+</tbody>
+</table>
+<p>The distribution is sharply quantized at <strong>10 / 20 / 30 g</strong> (90 % of all
+events) — the patient mentally rounds. <strong>Max meal = 50 g.</strong> A "real meal
+≥ 50 g" floor would be 0 events for this patient. The user's
+50-g intuition is calibrated for higher-carb eaters; for this cohort
+<strong>30 g is the right "substantial meal" floor</strong> and matches production.</p>
+<h3 id="62-treat-of-low-contamination-15--at-the-10-g-floor--now-filterable-in-production">6.2 Treat-of-low contamination: ~15 % at the 10 g floor — now filterable in production<a class="headerlink" href="#62-treat-of-low-contamination-15--at-the-10-g-floor--now-filterable-in-production" title="Permanent link">&para;</a></h3>
+<p><code>meal_filter.is_real_meal()</code> now accepts an optional
+<code>prior_glucose_30min_min</code> argument (added 2026-04-23). With the
+production filter (<code>glucose.rolling(6, min_periods=1).min()</code>):</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;">Events</th>
+<th style="text-align: right;">Per day</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>≥ 10 g logged</td>
+<td style="text-align: right;">377</td>
+<td style="text-align: right;">2.10</td>
+</tr>
+<tr>
+<td>≥ 10 g AND prior 30-min ≥ 80 (real meals)</td>
+<td style="text-align: right;"><strong>320</strong></td>
+<td style="text-align: right;"><strong>1.78</strong></td>
+</tr>
+<tr>
+<td>Treat-of-low rejection</td>
+<td style="text-align: right;"><strong>57</strong></td>
+<td style="text-align: right;"><strong>15.1 %</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Patient C's elevated TBR (4.7 %) means 15 % treat-of-low contamination
+is a meaningful confounder. <strong>Now in production:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">tools.cgmencode.production.meal_filter</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_real_meal</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">if</span> <span class="n">is_real_meal</span><span class="p">(</span><span class="n">carbs_g</span><span class="p">,</span> <span class="n">prior_glucose_30min_min</span><span class="o">=</span><span class="n">g_min_prior</span><span class="p">):</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="o">...</span>  <span class="c1"># safe to include in meal-response cohort</span>
+</code></pre></div>
+<p>Also added: <code>tools/cgmencode/production/meal_reconciliation.py</code> →
+<code>reconcile_meal_logging(logged, inferred, days_of_data)</code> returns a
+per-patient <code>MealLoggingQC</code> with <code>flag ∈ {under_logger, phantom_logger,
+well_aligned, insufficient_data}</code> plus a per-daypart breakdown
+(breakfast/lunch/dinner/overnight). Use it to widen confidence
+intervals on patients whose logged-vs-inferred ratio is out of band.</p>
+<h3 id="63-the-lunchdinnerdessert-pattern-is-visible--but-breakfast--overnight-events-surface-a-problem">6.3 The lunch+dinner+dessert pattern is visible — but breakfast &amp; overnight events surface a problem<a class="headerlink" href="#63-the-lunchdinnerdessert-pattern-is-visible--but-breakfast--overnight-events-surface-a-problem" title="Permanent link">&para;</a></h3>
+<p>After treat-of-low filter, by daypart:</p>
+<table>
+<thead>
+<tr>
+<th>Daypart</th>
+<th style="text-align: right;">Events / day</th>
+<th>Vs ground truth</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Breakfast (05–11)</td>
+<td style="text-align: right;">0.31</td>
+<td>ground truth = <strong>0</strong> ⇒ likely phantom / dawn treat-of-low &gt; 80</td>
+</tr>
+<tr>
+<td>Lunch (11–15)</td>
+<td style="text-align: right;">0.22</td>
+<td>matches ground-truth lunch</td>
+</tr>
+<tr>
+<td>Dinner (15–22)</td>
+<td style="text-align: right;"><strong>0.69</strong></td>
+<td>matches ground-truth dinner + dessert</td>
+</tr>
+<tr>
+<td>Overnight (22–05)</td>
+<td style="text-align: right;"><strong>0.55</strong></td>
+<td>ground truth = 0 ⇒ contamination</td>
+</tr>
+</tbody>
+</table>
+<p>Lunch + dinner align with ground truth. But <strong>0.86/day events outside
+expected windows</strong> — and most aren't classical treat-of-low. Likely
+sources:
+1. <strong>Late-night dessert mis-stamped as "overnight"</strong> (legitimate eating)
+2. <strong>Loop UAM phantom-carb entries</strong> (controller sometimes annotates
+   inferred meals as carb entries with size 10–15 g)
+3. <strong>Wider-window hypo prophylaxis</strong> (carbs eaten before bed because
+   "I felt low" but glucose was already &gt; 80)</p>
+<p>This confirms: <strong>logged carbs alone are an unreliable meal sensor for
+Loop users</strong>, even when not under-logging. The right fix is to combine
+logged carbs with <strong>glucose-rise inference</strong> (<code>meal_detector.py</code>,
+EXP-1597 ARI = 0.976) and reconcile.</p>
+<h3 id="65-pipeline-integrated-meal-logging-qc-wave-13-follow-up">6.5 Pipeline-integrated meal-logging QC (Wave-13 follow-up)<a class="headerlink" href="#65-pipeline-integrated-meal-logging-qc-wave-13-follow-up" title="Permanent link">&para;</a></h3>
+<p>The new <code>meal_reconciliation</code> module is now wired into <code>run_pipeline()</code>
+(commit pending). For Patient C the pipeline emits:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Flag</td>
+<td><strong>phantom_logger</strong></td>
+</tr>
+<tr>
+<td>Logged events</td>
+<td>377 (2.09 / day)</td>
+</tr>
+<tr>
+<td>Glucose-rise inferred</td>
+<td>18 (0.10 / day)</td>
+</tr>
+<tr>
+<td>Inferred / logged</td>
+<td>0.05 (≈ 1 in 20)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Interpretation.</strong> Patient C <em>logs</em> ≈ 2 carb events per day — exactly the
+"lunch + dinner + dessert" pattern the patient self-reports. But the
+glucose-rise detector finds only ~1 inferred meal every ten days. Two
+non-mutually-exclusive explanations:</p>
+<ol>
+<li><strong>Patient C is a remarkably tight pre-bolus user.</strong> With aggressive
+   pre-bolusing, the post-meal rise is suppressed enough to slip under
+   the production rise-detection thresholds (currently tuned for the
+   under-logger phenotype where rises are visible).</li>
+<li><strong>The <code>carbs</code> stream in <code>grid.parquet</code> includes programmatic /
+   non-meal entries.</strong> The UTC hour distribution of the 377 events is
+   nearly flat (CV ≈ 0.45, no clear noon/evening peak), which is
+   inconsistent with two scheduled human meal times. Likely candidates:
+   treat-of-low entries, controller annotations, micro-corrections,
+   re-imports.</li>
+</ol>
+<p><strong>Daypart breakdown is suppressed in this report</strong> because the patient
+profile carries no timezone metadata and the auto-inferred TZ from
+event distribution is unreliable when the source distribution is flat.
+The <strong>flag and totals are still meaningful</strong> because they don't depend
+on TZ.</p>
+<p><strong>Action items surfaced by this finding:</strong></p>
+<ul>
+<li><strong>GAP-PROF-NNN (new):</strong> PatientData should carry an explicit
+  <code>tz_offset_hours</code> derived from profile or upstream metadata; the
+  pipeline now accepts <code>run_pipeline(..., tz_offset_hours=…)</code>.</li>
+<li><strong>Investigation:</strong> audit Nightscout <code>treatments</code> for patient C —
+  separate genuine carb logs from programmatic entries before feeding
+  them into the meal-rise detector tuning set.</li>
+<li><strong>Detector tuning:</strong> if explanation (1) holds, the rise detector's
+  threshold (currently +30 mg/dL over 30 min after bolus) is too
+  conservative for the pre-bolus phenotype and could be lowered or
+  IOB-adjusted.</li>
+</ul>
+<h3 id="64-recommendations-for-meal-isolation">6.4 Recommendations for meal isolation<a class="headerlink" href="#64-recommendations-for-meal-isolation" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Use case</th>
+<th>Recommended floor + filter</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Did anything happen?" detection</td>
+<td>≥ 5 g (current)</td>
+<td>catches all logged events</td>
+</tr>
+<tr>
+<td><strong>Meal-response statistics</strong> (CR, COB)</td>
+<td><strong><code>is_real_meal(carbs_g, prior_glucose_30min_min=g_min)</code></strong></td>
+<td>excludes ~15 % treat-of-low contamination</td>
+</tr>
+<tr>
+<td>Substantial-meal absorption studies</td>
+<td>≥ 30 g (current)</td>
+<td>matches population EXP-2866 <em>and</em> this patient's actual dinner size</td>
+</tr>
+<tr>
+<td>User's "real meal ≥ 50 g" floor</td>
+<td><strong>NOT recommended</strong></td>
+<td>excludes ~98 % of meals for small-meal eaters like patient C; calibrated for higher-carb populations</td>
+</tr>
+<tr>
+<td><strong>Phantom-carb / UAM detection</strong></td>
+<td>logged_rate vs <code>meal_detector.detect_meal_events</code> rate, per-patient</td>
+<td>flag patients whose ratio &lt; 0.5 (under-logging) or &gt; 2.0 (Loop phantom carbs)</td>
+</tr>
+</tbody>
+</table>
+<p>The per-patient validation should compare <strong>logged carb event rate</strong> to
+<strong>glucose-rise-inferred event rate</strong> (<code>meal_detector.detect_meal_events</code>)
+<em>per daypart</em>, not just globally — patient C would show breakfast
+glucose-rise events near zero (no breakfast = no rise) which would
+confirm the daypart pattern automatically.</p>
+<hr />
+<h2 id="7-code-quality-snapshot-for-context">7. Code quality snapshot (for context)<a class="headerlink" href="#7-code-quality-snapshot-for-context" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Test markers:</strong> unit/integration split landed (<code>pytestmark</code> on every
+  TestCase); <code>pytest -m unit</code> runs in 35 s, <code>pytest -m integration</code> in 112 s,
+  full suite 4:47 (997 tests). See commit <code>c27661a5</code>.</li>
+<li><strong>Wave-13 factloader</strong> (<code>controller_dynamics_facts_loader.py</code>) has 7
+  unit tests, follows the standard contract (lookup returns frozen
+  dataclass with all-None for unknown patients). Commit <code>15b0d759</code>.</li>
+<li><strong>Safety doctrine</strong> (β ≥ 1, 22 % ISF margin, ±25 % clamp on
+  recommendations) enforced in advisor pipeline. Commit <code>098118c1</code>.</li>
+</ul>
+<hr />
+<h2 id="8-what-this-demo-proves">8. What this demo proves<a class="headerlink" href="#8-what-this-demo-proves" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>The new Wave-13 factloader works end-to-end</strong> — patient C comes back
+   with the controller-dynamics signal expected from the offline experiment.</li>
+<li><strong>The new correction-denominator ISF advisor produces a coherent,
+   high-priority recommendation</strong> (overnight ISF +216 % observed, clamped
+   to +25 %) that aligns with the over-correction phenotype indicated by
+   the bootstrap ISF-gap facts.</li>
+<li><strong>All recommendations are safety-clamped</strong> per EXP-2738 — no single
+   review cycle can move a setting more than 25 %.</li>
+<li><strong>Per-patient EGP is feasible and informative</strong> but should be
+   productionized as a facts loader, not as a <code>_BASE_EGP</code> swap.</li>
+<li><strong>Meal-isolation thresholds in production are sound</strong> for the cohort,
+   but a 50 g "real meal" floor would be too aggressive for Loop
+   under-loggers. Glucose-rise fallback (<code>meal_detector.py</code>) is wired
+   into <code>run_pipeline()</code>; logged-vs-inferred reconciliation is now
+   surfaced via <code>result.meal_logging_qc</code> (see §6.5).</li>
+</ol>
+<hr />
+<h2 id="9-reproduce">9. Reproduce<a class="headerlink" href="#9-reproduce" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nb">cd</span><span class="w"> </span>&lt;workspace&gt;/rag-nightscout-ecosystem-alignment
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nv">PYTHONPATH</span><span class="o">=</span>.<span class="w"> </span>python3<span class="w"> </span>tools/cgmencode/analyze_patient_c.py
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>ls<span class="w"> </span>reports/patient-c-analysis/plots/
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

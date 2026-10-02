@@ -1,0 +1,6107 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/backlogs/archive/pr-8421-review-analysis.html">
+      
+      
+        <link rel="prev" href="loop-source-analysis.html">
+      
+      
+        <link rel="next" href="trio-entries-upload-testing.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>PR #8421 Reviewer's Guide - Analysis Backlog - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#pr-8421-reviewers-guide---analysis-backlog" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              PR #8421 Reviewer's Guide - Analysis Backlog
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../30-design/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../60-research/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_33" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_33" id="__nav_5_33_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_33_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_33">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    backlogs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../future-dated-entries-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Future-Dated Entries Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../integration-test-harness.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration Test Harness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mongodb-upgrade-report.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MongoDB 5.x Upgrade Compatibility Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../profile-api-array-regression.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Profile API Array Handling Regression
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release-15.0.7-documentation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release 15.0.7 Documentation Needs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../swift-integration-testing-proposal.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Swift Integration Testing Proposal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../uuid-identifier-lookup.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UUID Identifier Handling Feature
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_33_9" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_33_9" id="__nav_5_33_9_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_33_9_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_33_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    archive/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="aaps-nightscout-upload-testing.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS → Nightscout Upload Testing Backlog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api-version-uuid-comparison.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Version UUID Handling Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bwp-test-timing-determinism.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BWP Test Timing Determinism
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="insulin-rounding-epsilon-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Insulin Rounding Epsilon Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="loop-nightscout-upload-testing.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loop → Nightscout Upload Testing Backlog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="loop-source-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loop Upload Source Analysis Sub-Backlog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PR #8421 Reviewer's Guide - Analysis Backlog
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="pr-8421-review-analysis.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PR #8421 Reviewer's Guide - Analysis Backlog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#analysis-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analysis Strategy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Analysis Strategy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prioritization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prioritization
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#work-items" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Work Items
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Work Items">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-library-code-analysis-p0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 1: Library Code Analysis (P0)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 1: Library Code Analysis (P0)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-core-storage-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Core Storage Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-api-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 API Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-other-library" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Other Library
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-test-code-analysis-p1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 2: Test Code Analysis (P1)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 2: Test Code Analysis (P1)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-uuidsync-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 UUID/Sync Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-shapebatch-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Shape/Batch Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-test-fixtures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Test Fixtures
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-documentation-audit-p2-p3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 3: Documentation Audit (P2-P3)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 3: Documentation Audit (P2-P3)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-verify-doc-accuracy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Verify Doc Accuracy
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-ciconfig-analysis-p4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 4: CI/Config Analysis (P4)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-5-test-database-safety-p0p1-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5: Test Database Safety (P0/P1) 🔴
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#iteration-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Iteration Plan
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Iteration Plan">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#iteration-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Iteration Template
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#suggested-iteration-sequence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Suggested Iteration Sequence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-work-on-this-backlog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to Work on This Backlog
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to Work on This Backlog">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#finding-work-items" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finding Work Items
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workflow-per-iteration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workflow Per Iteration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#analysis-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analysis Template
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Constraints
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#completion-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Completion Criteria
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Completion Criteria">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-each-work-item" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For Each Work Item
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-overall-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For Overall Guide
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommended-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended Workflow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Recommended Workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#best-existing-conv-file-integration-test-cycleconv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Best Existing Conv File: integration-test-cycle.conv
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dedicated-workflow-pr-review-analysis-v2conv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dedicated Workflow: pr-review-analysis-v2.conv
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#suggested-conv-modifications-for-future-version" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Suggested Conv Modifications (for future version)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verification-tools-to-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification Tools to Run
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quick-start-for-teammates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Start for Teammates
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="trio-entries-upload-testing.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Trio → Nightscout Entries Upload Testing Backlog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#analysis-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analysis Strategy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Analysis Strategy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prioritization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prioritization
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#work-items" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Work Items
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Work Items">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-library-code-analysis-p0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 1: Library Code Analysis (P0)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 1: Library Code Analysis (P0)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-core-storage-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Core Storage Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-api-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 API Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-other-library" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Other Library
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-test-code-analysis-p1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 2: Test Code Analysis (P1)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 2: Test Code Analysis (P1)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-uuidsync-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 UUID/Sync Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-shapebatch-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Shape/Batch Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-test-fixtures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Test Fixtures
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-documentation-audit-p2-p3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 3: Documentation Audit (P2-P3)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 3: Documentation Audit (P2-P3)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-verify-doc-accuracy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Verify Doc Accuracy
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-ciconfig-analysis-p4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 4: CI/Config Analysis (P4)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-5-test-database-safety-p0p1-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5: Test Database Safety (P0/P1) 🔴
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#iteration-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Iteration Plan
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Iteration Plan">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#iteration-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Iteration Template
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#suggested-iteration-sequence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Suggested Iteration Sequence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-work-on-this-backlog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to Work on This Backlog
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to Work on This Backlog">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#finding-work-items" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finding Work Items
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workflow-per-iteration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workflow Per Iteration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#analysis-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analysis Template
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Constraints
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#completion-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Completion Criteria
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Completion Criteria">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-each-work-item" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For Each Work Item
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-overall-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For Overall Guide
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommended-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended Workflow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Recommended Workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#best-existing-conv-file-integration-test-cycleconv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Best Existing Conv File: integration-test-cycle.conv
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dedicated-workflow-pr-review-analysis-v2conv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dedicated Workflow: pr-review-analysis-v2.conv
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#suggested-conv-modifications-for-future-version" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Suggested Conv Modifications (for future version)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verification-tools-to-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification Tools to Run
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quick-start-for-teammates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Start for Teammates
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="pr-8421-reviewers-guide---analysis-backlog">PR #8421 Reviewer's Guide - Analysis Backlog<a class="headerlink" href="#pr-8421-reviewers-guide---analysis-backlog" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-09-30 at <code>cc2c5e2e</code>.</em></p>
+<blockquote>
+<p><strong>Goal</strong>: Systematically analyze PR #8421 and complete the reviewer's guide<br />
+<strong>PR Size</strong>: 146 files, +36,222 / -4,654 lines<br />
+<strong>Constraint</strong>: ~1,200 LOC analysis per iteration<br />
+<strong>Created</strong>: 2026-03-12</p>
+</blockquote>
+<hr />
+<h2 id="analysis-strategy">Analysis Strategy<a class="headerlink" href="#analysis-strategy" title="Permanent link">&para;</a></h2>
+<p>Given the PR size (~40k LOC) and our working context (~1,200 LOC), we need <strong>~30-35 focused analysis passes</strong> to thoroughly review and document.</p>
+<h3 id="prioritization">Prioritization<a class="headerlink" href="#prioritization" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Priority</th>
+<th>Category</th>
+<th>Files</th>
+<th>Est. Iterations</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0</td>
+<td>Library code (core storage)</td>
+<td>10</td>
+<td>5-6</td>
+</tr>
+<tr>
+<td>P0</td>
+<td>Library code (API layer)</td>
+<td>10</td>
+<td>4-5</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>Test code (UUID/sync)</td>
+<td>5</td>
+<td>3-4</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>Test code (shape/batch)</td>
+<td>5</td>
+<td>3-4</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>Test fixtures</td>
+<td>10</td>
+<td>2-3</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>Scripts/tooling</td>
+<td>5</td>
+<td>1-2</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>Documentation (audits)</td>
+<td>7</td>
+<td>3-4</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>Documentation (proposals)</td>
+<td>15</td>
+<td>4-5</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>Documentation (schemas)</td>
+<td>12</td>
+<td>2-3</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>CI/Config</td>
+<td>5</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="work-items">Work Items<a class="headerlink" href="#work-items" title="Permanent link">&para;</a></h2>
+<h3 id="phase-1-library-code-analysis-p0">Phase 1: Library Code Analysis (P0)<a class="headerlink" href="#phase-1-library-code-analysis-p0" title="Permanent link">&para;</a></h3>
+<h4 id="11-core-storage-layer">1.1 Core Storage Layer<a class="headerlink" href="#11-core-storage-layer" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>File</th>
+<th>Lines</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LIB-001</td>
+<td><code>lib/server/treatments.js</code></td>
+<td>+216/-33</td>
+<td>❌</td>
+<td>UUID handling, identifier promotion</td>
+</tr>
+<tr>
+<td>LIB-002</td>
+<td><code>lib/server/entries.js</code></td>
+<td>+100/-29</td>
+<td>❌</td>
+<td>UUID handling, sysTime+type dedup</td>
+</tr>
+<tr>
+<td>LIB-003</td>
+<td><code>lib/server/devicestatus.js</code></td>
+<td>+68/-39</td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td>LIB-004</td>
+<td><code>lib/server/activity.js</code></td>
+<td>+29/-16</td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td>LIB-005</td>
+<td><code>lib/server/food.js</code></td>
+<td>+15/-11</td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td>LIB-006</td>
+<td><code>lib/server/profile.js</code></td>
+<td>+10/-5</td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td>LIB-007</td>
+<td><code>lib/server/query.js</code></td>
+<td>+26/-4</td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td>LIB-008</td>
+<td><code>lib/server/bootevent.js</code></td>
+<td>+6/-16</td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td>LIB-009</td>
+<td><code>lib/server/env.js</code></td>
+<td>+17/-0</td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td>LIB-010</td>
+<td><code>lib/data/ddata.js</code></td>
+<td>+23/-1</td>
+<td>❌</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Analysis template for each file:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gu">### LIB-XXX: filename.js</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gs">**Purpose**</span>: [What this file does]
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gs">**Changes Summary**</span>:
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="k">-</span><span class="w"> </span>[Bullet points of key changes]
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="gs">**Key Review Points**</span>:
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="k">1.</span> [Specific things reviewers should check]
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="gs">**Breaking Changes**</span>: None / [Description]
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="gs">**Test Coverage**</span>: [Reference to test file]
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="gs">**Security Considerations**</span>: None / [Description]
+</code></pre></div></p>
+<h4 id="12-api-layer">1.2 API Layer<a class="headerlink" href="#12-api-layer" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>File</th>
+<th>Lines</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LIB-011</td>
+<td><code>lib/api/entries/index.js</code></td>
+<td>+18/-2</td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td>LIB-012</td>
+<td><code>lib/api3/storage/mongoCollection/find.js</code></td>
+<td>+16/-2</td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td>LIB-013</td>
+<td><code>lib/api3/storage/mongoCollection/utils.js</code></td>
+<td>+3/-3</td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td>LIB-014</td>
+<td><code>lib/api3/storage/mongoCollection/modify.js</code></td>
+<td>+2/-2</td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td>LIB-015</td>
+<td><code>lib/api3/generic/patch/operation.js</code></td>
+<td>+4/-5</td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td>LIB-016</td>
+<td><code>lib/api3/generic/update/replace.js</code></td>
+<td>+3/-0</td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td>LIB-017</td>
+<td><code>lib/api3/generic/search/input.js</code></td>
+<td>+2/-2</td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td>LIB-018</td>
+<td><code>lib/api3/generic/collection.js</code></td>
+<td>+2/-2</td>
+<td>❌</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h4 id="13-other-library">1.3 Other Library<a class="headerlink" href="#13-other-library" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>File</th>
+<th>Lines</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LIB-019</td>
+<td><code>lib/authorization/storage.js</code></td>
+<td>+15/-6</td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td>LIB-020</td>
+<td><code>lib/authorization/delaylist.js</code></td>
+<td>+1/-1</td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td>LIB-021</td>
+<td><code>lib/plugins/openaps.js</code></td>
+<td>+6/-13</td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td>LIB-022</td>
+<td><code>lib/sandbox.js</code></td>
+<td>+3/-2</td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td>LIB-023</td>
+<td><code>lib/language.js</code></td>
+<td>+6/-7</td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td>LIB-024</td>
+<td><code>lib/client/renderer.js</code></td>
+<td>+2/-0</td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td>LIB-025</td>
+<td><code>lib/client/index.js</code></td>
+<td>+1/-1</td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td>LIB-026</td>
+<td><code>lib/report_plugins/daytoday.js</code></td>
+<td>+2/-1</td>
+<td>❌</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="phase-2-test-code-analysis-p1">Phase 2: Test Code Analysis (P1)<a class="headerlink" href="#phase-2-test-code-analysis-p1" title="Permanent link">&para;</a></h3>
+<h4 id="21-uuidsync-tests">2.1 UUID/Sync Tests<a class="headerlink" href="#21-uuidsync-tests" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>File</th>
+<th>Lines</th>
+<th>Status</th>
+<th>Gap/Req</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TEST-001</td>
+<td><code>tests/api.entries.uuid.test.js</code></td>
+<td>~577</td>
+<td>❌</td>
+<td>GAP-SYNC-045</td>
+</tr>
+<tr>
+<td>TEST-002</td>
+<td><code>tests/gap-treat-012.test.js</code></td>
+<td>~428</td>
+<td>❌</td>
+<td>GAP-TREAT-012</td>
+</tr>
+<tr>
+<td>TEST-003</td>
+<td><code>tests/identity-matrix.test.js</code></td>
+<td>~476</td>
+<td>❌</td>
+<td>REQ-SYNC-072</td>
+</tr>
+<tr>
+<td>TEST-004</td>
+<td><code>tests/objectid-cache.test.js</code></td>
+<td>~468</td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td>TEST-005</td>
+<td><code>tests/api.deduplication.test.js</code></td>
+<td>~200</td>
+<td>❌</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h4 id="22-shapebatch-tests">2.2 Shape/Batch Tests<a class="headerlink" href="#22-shapebatch-tests" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>File</th>
+<th>Lines</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TEST-006</td>
+<td><code>tests/sgv-devicestatus.test.js</code></td>
+<td>~646</td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td>TEST-007</td>
+<td><code>tests/websocket.shape-handling.test.js</code></td>
+<td>~643</td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td>TEST-008</td>
+<td><code>tests/storage.shape-handling.test.js</code></td>
+<td>~410</td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td>TEST-009</td>
+<td><code>tests/api.aaps-client.test.js</code></td>
+<td>~300</td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td>TEST-010</td>
+<td><code>tests/flakiness-control.test.js</code></td>
+<td>~306</td>
+<td>❌</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h4 id="23-test-fixtures">2.3 Test Fixtures<a class="headerlink" href="#23-test-fixtures" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>File</th>
+<th>Lines</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FIX-001</td>
+<td><code>tests/fixtures/loop-override.js</code></td>
+<td>~219</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>FIX-002</td>
+<td><code>tests/fixtures/partial-failures.js</code></td>
+<td>~190</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>FIX-003</td>
+<td><code>tests/fixtures/trio-pipeline.js</code></td>
+<td>~198</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>FIX-004</td>
+<td><code>tests/lib/test-helpers.js</code></td>
+<td>~277</td>
+<td>❌</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="phase-3-documentation-audit-p2-p3">Phase 3: Documentation Audit (P2-P3)<a class="headerlink" href="#phase-3-documentation-audit-p2-p3" title="Permanent link">&para;</a></h3>
+<h4 id="31-verify-doc-accuracy">3.1 Verify Doc Accuracy<a class="headerlink" href="#31-verify-doc-accuracy" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Document</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DOC-001</td>
+<td><code>docs/meta/architecture-overview.md</code></td>
+<td>❌</td>
+<td>Verify matches code</td>
+</tr>
+<tr>
+<td>DOC-002</td>
+<td><code>docs/meta/modernization-roadmap.md</code></td>
+<td>❌</td>
+<td>Check completion status</td>
+</tr>
+<tr>
+<td>DOC-003</td>
+<td><code>docs/audits/*.md</code> (7 files)</td>
+<td>❌</td>
+<td>Spot-check accuracy</td>
+</tr>
+<tr>
+<td>DOC-004</td>
+<td><code>docs/proposals/*.md</code> (15 files)</td>
+<td>❌</td>
+<td>Identify implemented vs proposed</td>
+</tr>
+<tr>
+<td>DOC-005</td>
+<td><code>docs/requirements/*.md</code> (3 files)</td>
+<td>❌</td>
+<td>Verify test coverage</td>
+</tr>
+<tr>
+<td>DOC-006</td>
+<td><code>docs/test-specs/*.md</code> (4 files)</td>
+<td>❌</td>
+<td>Match to actual tests</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="phase-4-ciconfig-analysis-p4">Phase 4: CI/Config Analysis (P4)<a class="headerlink" href="#phase-4-ciconfig-analysis-p4" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>File</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CI-001</td>
+<td><code>.github/workflows/main.yml</code></td>
+<td>❌</td>
+<td>Node version change</td>
+</tr>
+<tr>
+<td>CI-002</td>
+<td><code>package-lock.json</code></td>
+<td>❌</td>
+<td>Dependency audit</td>
+</tr>
+<tr>
+<td>CI-003</td>
+<td><code>Makefile</code></td>
+<td>❌</td>
+<td>New targets</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="phase-5-test-database-safety-p0p1-">Phase 5: Test Database Safety (P0/P1) 🔴<a class="headerlink" href="#phase-5-test-database-safety-p0p1-" title="Permanent link">&para;</a></h3>
+<p><strong>CRITICAL</strong>: Tests have no safeguards against running on production databases.</p>
+<p>See <a href="../../../traceability/sync-identity-gaps.html#gap-sync-046-test-suite-lacks-production-database-safeguards">GAP-SYNC-046</a> and <a href="../../PR-8421-reviewers-guide.html#-theme-7-test-database-safety-resolved">Theme 7</a></p>
+<p><strong>Status</strong>: ✅ <strong>COMPLETE</strong> (2026-03-12)</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Task</th>
+<th>Priority</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SAFETY-001</td>
+<td>Mandate <code>NODE_ENV=test</code> for test runs</td>
+<td>🔴 <strong>P0</strong></td>
+<td>✅ <code>tests/hooks.js</code> - <code>process.exit(1)</code></td>
+</tr>
+<tr>
+<td>SAFETY-002</td>
+<td>Update <code>ci.test.env</code> to use <code>NODE_ENV=test</code></td>
+<td>🔴 <strong>P0</strong></td>
+<td>✅ Fixed</td>
+</tr>
+<tr>
+<td>SAFETY-003</td>
+<td>Create <code>guardDestructiveOperation()</code> helper</td>
+<td>🟠 <strong>P1</strong></td>
+<td>✅ <code>tests/fixtures/test-guard.js</code></td>
+</tr>
+<tr>
+<td>SAFETY-004</td>
+<td>Hard fail if NODE_ENV !== 'test'</td>
+<td>🟠 <strong>P1</strong></td>
+<td>✅ Commit <code>e12cf3d2</code></td>
+</tr>
+<tr>
+<td>SAFETY-005</td>
+<td>Add opt-in <code>ALLOW_DESTRUCTIVE_TESTS=true</code></td>
+<td>🟡 <strong>P2</strong></td>
+<td>⏳ Not needed (hard fail sufficient)</td>
+</tr>
+<tr>
+<td>SAFETY-006</td>
+<td>Document test database setup in README</td>
+<td>🟢 <strong>P3</strong></td>
+<td>⏳ Future</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Commits</strong>:
+- <code>61501cac</code> - feat(tests): add NODE_ENV=test safety check (warn + guard module)
+- <code>e12cf3d2</code> - fix(tests): make NODE_ENV=test check a hard failure
+- <code>ee3e6af7</code> - ci: temporarily allow Node 20 for branch protection (tests [20, 22, 24])
+- <code>b76fb3e1</code> - test: remove completed MongoDB 5.x array investigation tests</p>
+<p><strong>Tests</strong>: 729 passing, 1 pending, 0 failing</p>
+<p><strong>Implementation</strong>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">// tests/lib/test-helpers.js - guardDestructiveOperation()</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kd">function</span><span class="w"> </span><span class="nx">guardDestructiveOperation</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="w"> </span><span class="nx">operationName</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="c1">// Layer 1: NODE_ENV must be 'test'</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NODE_ENV</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="s1">'test'</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="sb">`SAFETY: </span><span class="si">${</span><span class="nx">operationName</span><span class="si">}</span><span class="sb"> blocked - NODE_ENV must be 'test', got '</span><span class="si">${</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NODE_ENV</span><span class="si">}</span><span class="sb">'`</span><span class="p">);</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">  </span><span class="c1">// Layer 2: Database name must contain 'test'</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">dbName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">ctx</span><span class="p">.</span><span class="nx">env</span><span class="o">?</span><span class="p">.</span><span class="nx">storageURI</span><span class="o">?</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/\/([^/?]+)(\?|$)/</span><span class="p">)</span><span class="o">?</span><span class="p">.[</span><span class="mf">1</span><span class="p">]</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="s1">''</span><span class="p">;</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">dbName</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">().</span><span class="nx">includes</span><span class="p">(</span><span class="s1">'test'</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">ALLOW_DESTRUCTIVE_TESTS</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="s1">'true'</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="sb">`SAFETY: </span><span class="si">${</span><span class="nx">operationName</span><span class="si">}</span><span class="sb"> blocked - database '</span><span class="si">${</span><span class="nx">dbName</span><span class="si">}</span><span class="sb">' doesn't contain 'test'. Set ALLOW_DESTRUCTIVE_TESTS=true to override.`</span><span class="p">);</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">warn</span><span class="p">(</span><span class="sb">`WARNING: Running destructive tests on database '</span><span class="si">${</span><span class="nx">dbName</span><span class="si">}</span><span class="sb">'`</span><span class="p">);</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="p">}</span>
+</code></pre></div>
+<p><strong>CI changes needed</strong>:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a># tests/ci.test.env
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="gd">-NODE_ENV=production</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="gi">+NODE_ENV=test</span>
+</code></pre></div></p>
+<p><strong>Why all layers?</strong>
+1. <code>NODE_ENV=test</code> - Catches obvious mistakes (running with prod .env)
+2. DB name validation - Catches misconfigurations even when NODE_ENV is correct
+3. Opt-in flag - Allows intentional override with explicit acknowledgment</p>
+<hr />
+<h2 id="iteration-plan">Iteration Plan<a class="headerlink" href="#iteration-plan" title="Permanent link">&para;</a></h2>
+<h3 id="iteration-template">Iteration Template<a class="headerlink" href="#iteration-template" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="gu">## Iteration N: [Focus Area]</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="gs">**Files analyzed**</span>:
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="k">-</span><span class="w"> </span>file1.js (+X/-Y)
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="k">-</span><span class="w"> </span>file2.js (+X/-Y)
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="gs">**Findings**</span>:
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="k">1.</span> ...
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="gs">**Guide updates**</span>:
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="k">-</span><span class="w"> </span>Section X.Y updated
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="k">-</span><span class="w"> </span>Added review point for Z
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="gs">**Next iteration**</span>: [Focus]
+</code></pre></div>
+<h3 id="suggested-iteration-sequence">Suggested Iteration Sequence<a class="headerlink" href="#suggested-iteration-sequence" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Iter</th>
+<th>Focus</th>
+<th>Work Items</th>
+<th>Est. Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>treatments.js deep dive</td>
+<td>LIB-001</td>
+<td>30 min</td>
+</tr>
+<tr>
+<td>2</td>
+<td>entries.js deep dive</td>
+<td>LIB-002</td>
+<td>30 min</td>
+</tr>
+<tr>
+<td>3</td>
+<td>devicestatus.js, activity.js</td>
+<td>LIB-003, LIB-004</td>
+<td>25 min</td>
+</tr>
+<tr>
+<td>4</td>
+<td>food.js, profile.js, query.js</td>
+<td>LIB-005-007</td>
+<td>20 min</td>
+</tr>
+<tr>
+<td>5</td>
+<td>bootevent, env, ddata</td>
+<td>LIB-008-010</td>
+<td>15 min</td>
+</tr>
+<tr>
+<td>6</td>
+<td>API layer (entries)</td>
+<td>LIB-011-014</td>
+<td>20 min</td>
+</tr>
+<tr>
+<td>7</td>
+<td>API layer (v3 generic)</td>
+<td>LIB-015-018</td>
+<td>20 min</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Other lib files</td>
+<td>LIB-019-026</td>
+<td>25 min</td>
+</tr>
+<tr>
+<td>9</td>
+<td>UUID test files</td>
+<td>TEST-001-003</td>
+<td>30 min</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Sync test files</td>
+<td>TEST-004-005</td>
+<td>25 min</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Shape test files</td>
+<td>TEST-006-008</td>
+<td>30 min</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Other test files</td>
+<td>TEST-009-010</td>
+<td>20 min</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Test fixtures</td>
+<td>FIX-001-004</td>
+<td>20 min</td>
+</tr>
+<tr>
+<td>14</td>
+<td>Doc accuracy check</td>
+<td>DOC-001-002</td>
+<td>25 min</td>
+</tr>
+<tr>
+<td>15</td>
+<td>Doc audit check</td>
+<td>DOC-003</td>
+<td>30 min</td>
+</tr>
+<tr>
+<td>16</td>
+<td>Doc proposals check</td>
+<td>DOC-004</td>
+<td>30 min</td>
+</tr>
+<tr>
+<td>17</td>
+<td>Doc requirements/specs</td>
+<td>DOC-005-006</td>
+<td>25 min</td>
+</tr>
+<tr>
+<td>18</td>
+<td>CI/Config</td>
+<td>CI-001-003</td>
+<td>15 min</td>
+</tr>
+<tr>
+<td>19</td>
+<td>Final guide polish</td>
+<td>-</td>
+<td>20 min</td>
+</tr>
+<tr>
+<td>20</td>
+<td>Cross-reference check</td>
+<td>-</td>
+<td>20 min</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="how-to-work-on-this-backlog">How to Work on This Backlog<a class="headerlink" href="#how-to-work-on-this-backlog" title="Permanent link">&para;</a></h2>
+<h3 id="finding-work-items">Finding Work Items<a class="headerlink" href="#finding-work-items" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p><strong>Check SQL todos</strong> for ready items (no pending dependencies):
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">SELECT</span><span class="w"> </span><span class="n">t</span><span class="p">.</span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">todos</span><span class="w"> </span><span class="n">t</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="k">WHERE</span><span class="w"> </span><span class="n">t</span><span class="p">.</span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'pending'</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="k">AND</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="p">(</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">todo_deps</span><span class="w"> </span><span class="n">td</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">    </span><span class="k">JOIN</span><span class="w"> </span><span class="n">todos</span><span class="w"> </span><span class="n">dep</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">td</span><span class="p">.</span><span class="n">depends_on</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dep</span><span class="p">.</span><span class="n">id</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">    </span><span class="k">WHERE</span><span class="w"> </span><span class="n">td</span><span class="p">.</span><span class="n">todo_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">t</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">dep</span><span class="p">.</span><span class="n">status</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="s1">'done'</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="p">);</span>
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>Read the backlog tables</strong> above to understand file scope for each work item</p>
+</li>
+<li>
+<p><strong>Check the reviewer's guide</strong> to see what's already documented:</p>
+</li>
+<li><a href="../../PR-8421-reviewers-guide.html">docs/PR-8421-reviewers-guide.md</a></li>
+</ol>
+<h3 id="workflow-per-iteration">Workflow Per Iteration<a class="headerlink" href="#workflow-per-iteration" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Pick a work item</strong> from the tables above (start with P0)</li>
+<li><strong>Read relevant files</strong> from worktree: <code>&lt;workspace&gt;/worktrees/nightscout/cgm-pr-8447</code></li>
+<li><strong>Document findings</strong> using the analysis template below</li>
+<li><strong>Update the reviewer's guide</strong> with key review points</li>
+<li><strong>Mark complete</strong> in this backlog and SQL todos</li>
+<li><strong>Commit progress</strong> to alignment repo</li>
+</ol>
+<h3 id="analysis-template">Analysis Template<a class="headerlink" href="#analysis-template" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="gu">### LIB-XXX: filename.js</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="gs">**Purpose**</span>: What this file does
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="gs">**Changes Summary**</span>:
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="k">-</span><span class="w"> </span>Bullet 1
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="k">-</span><span class="w"> </span>Bullet 2
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="gs">**Key Review Points**</span>:
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="k">1.</span> Specific thing to verify
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="k">2.</span> Another thing to check
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="gs">**Breaking Changes**</span>: None / Description
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="gs">**Test Coverage**</span>: <span class="sb">`tests/relevant.test.js`</span> (lines X-Y)
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="gs">**Security Considerations**</span>: None / Description
+<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a>
+<a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a><span class="gs">**Gap/Req References**</span>: GAP-XXX-NNN, REQ-XXX
+</code></pre></div>
+<h3 id="constraints">Constraints<a class="headerlink" href="#constraints" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Analyze ~1,200 LOC per iteration maximum</li>
+<li>Focus on substance, not style changes</li>
+<li>Cross-reference with gap/requirement IDs</li>
+<li>Note breaking changes prominently</li>
+</ul>
+<hr />
+<h2 id="completion-criteria">Completion Criteria<a class="headerlink" href="#completion-criteria" title="Permanent link">&para;</a></h2>
+<h3 id="for-each-work-item">For Each Work Item<a class="headerlink" href="#for-each-work-item" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> File analyzed and understood</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Key changes documented</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Review points identified</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Breaking changes noted</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Test coverage verified</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Guide section updated</li>
+</ul>
+<h3 id="for-overall-guide">For Overall Guide<a class="headerlink" href="#for-overall-guide" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> All library files documented</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> All test files documented</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Documentation accuracy verified</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Review sessions defined</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Checklist complete</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Questions for reviewers added</li>
+</ul>
+<hr />
+<h2 id="recommended-workflow">Recommended Workflow<a class="headerlink" href="#recommended-workflow" title="Permanent link">&para;</a></h2>
+<h3 id="best-existing-conv-file-integration-test-cycleconv">Best Existing Conv File: <code>integration-test-cycle.conv</code><a class="headerlink" href="#best-existing-conv-file-integration-test-cycleconv" title="Permanent link">&para;</a></h3>
+<p>This workflow is closest to our needs because it:
+- Uses minimal context with explore-as-needed pattern
+- Has phased structure (Select → Execute → Verify → Commit)
+- Already references backlog files for task selection
+- Includes ALLOW-SHELL for file exploration</p>
+<h3 id="dedicated-workflow-pr-review-analysis-v2conv">Dedicated Workflow: <code>pr-review-analysis-v2.conv</code><a class="headerlink" href="#dedicated-workflow-pr-review-analysis-v2conv" title="Permanent link">&para;</a></h3>
+<p><strong>Created specifically for this work:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>sdqctl<span class="w"> </span>iterate<span class="w"> </span>./workflows/pr-review-analysis-v2.conv<span class="w"> </span>-n<span class="w"> </span><span class="m">5</span>
+</code></pre></div></p>
+<p><strong>Phases:</strong>
+1. <strong>Verify Environment</strong> - Check worktree branch, run tests
+2. <strong>Select Work Item</strong> - Pick from backlog (LIB/TEST/DOC priority)
+3. <strong>Analyze File</strong> - Read from worktree, use template
+4. <strong>Update Guide</strong> - Add findings to reviewer's guide
+5. <strong>Mark Complete</strong> - Update backlog ❌ → ✅
+6. <strong>Verify</strong> - Run <code>verify_refs</code> + <code>backlog_hygiene</code>
+7. <strong>Commit</strong> - With trace refs</p>
+<p><strong>Built-in verification:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># Phase 5 runs automatically:</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>python<span class="w"> </span>tools/verify_refs.py<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">"BROKEN|ERROR"</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>python<span class="w"> </span>tools/backlog_hygiene.py<span class="w"> </span>--check
+</code></pre></div></p>
+<h3 id="suggested-conv-modifications-for-future-version">Suggested Conv Modifications (for future version)<a class="headerlink" href="#suggested-conv-modifications-for-future-version" title="Permanent link">&para;</a></h3>
+<p>If creating a dedicated <code>pr-review-analysis.conv</code>, consider:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Changes from integration-test-cycle.conv:</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="l l-Scalar l-Scalar-Plain">CONTEXT @docs/backlogs/pr-8421-review-analysis.md</span><span class="w">    </span><span class="c1"># Add backlog</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="l l-Scalar l-Scalar-Plain">CONTEXT @docs/PR-8421-reviewers-guide.md</span><span class="w">             </span><span class="c1"># Add output target</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="c1"># Phase 1: Task Selection - modify prompt to point here:</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="nt">PROMPT Pick task from `docs/backlogs/pr-8421-review-analysis.md`</span><span class="p">:</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Phase 1</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LIB-001 to LIB-026 (library code)</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Phase 2</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TEST-001 to TEST-010 (test code)</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Phase 3</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DOC-001 to DOC-006 (documentation audit)</span>
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="c1"># Phase 2: Analysis - use worktree path:</span>
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="l l-Scalar l-Scalar-Plain">PROMPT Analyze files in `&lt;workspace&gt;/worktrees/nightscout/cgm-pr-8447/`</span>
+<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>
+<a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a><span class="c1"># Phase 4: Update guide - add this:</span>
+<a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a><span class="l l-Scalar l-Scalar-Plain">PROMPT Update `docs/PR-8421-reviewers-guide.md` with findings.</span>
+</code></pre></div>
+<h3 id="verification-tools-to-run">Verification Tools to Run<a class="headerlink" href="#verification-tools-to-run" title="Permanent link">&para;</a></h3>
+<p>After each analysis iteration, run these checks:</p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Command</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>verify_refs</strong></td>
+<td><code>python tools/verify_refs.py</code></td>
+<td>Ensure code references resolve</td>
+</tr>
+<tr>
+<td><strong>verify_coverage</strong></td>
+<td><code>python tools/verify_coverage.py</code></td>
+<td>Check gap/req coverage</td>
+</tr>
+<tr>
+<td><strong>backlog_hygiene</strong></td>
+<td><code>python tools/backlog_hygiene.py --check</code></td>
+<td>Validate backlog structure</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Suggested verification sequence:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># After updating reviewer's guide</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>python<span class="w"> </span>tools/verify_refs.py<span class="w"> </span>--verbose<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">"BROKEN|ERROR"</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"All refs valid"</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="c1"># After marking items complete</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>python<span class="w"> </span>tools/backlog_hygiene.py<span class="w"> </span>--check
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="c1"># Periodically check coverage</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>python<span class="w"> </span>tools/verify_coverage.py<span class="w"> </span>--json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">'.summary'</span>
+</code></pre></div></p>
+<h3 id="quick-start-for-teammates">Quick Start for Teammates<a class="headerlink" href="#quick-start-for-teammates" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># 1. Check what's pending</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">"^\| (LIB|TEST|DOC)-"</span><span class="w"> </span>docs/backlogs/pr-8421-review-analysis.md<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">"❌"</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="c1"># 2. Run integration cycle (will find P0 work in README.md)</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>sdqctl<span class="w"> </span>iterate<span class="w"> </span>./workflows/integration-test-cycle.conv<span class="w"> </span>-n<span class="w"> </span><span class="m">3</span>
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="c1"># 3. Verify changes</span>
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>python<span class="w"> </span>tools/verify_refs.py
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>git<span class="w"> </span>status
+</code></pre></div>
+<hr />
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://github.com/nightscout/cgm-remote-monitor/pull/8421">PR #8421</a></li>
+<li><a href="../../PR-8421-reviewers-guide.html">Reviewer's Guide</a></li>
+<li><a href="../../../LIVE-BACKLOG.html">LIVE-BACKLOG.md</a> - Session tracking</li>
+<li>Worktree (not in the repository)</li>
+<li><a href="../../test-reports/GAP-SYNC-045-entries-uuid-fix.html">GAP-SYNC-045 Test Report</a></li>
+<li><a href="../../10-domain/client-id-handling-deep-dive.html">Client ID Deep Dive</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,3232 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/traceability/pumps-requirements.html">
+      
+      
+        <link rel="prev" href="pumps-gaps.html">
+      
+      
+        <link rel="next" href="requirements.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Pumps Requirements - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#pumps-requirements" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Pumps Requirements
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../docs/00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../docs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    traceability/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="aid-algorithms-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Aid Algorithms Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="aid-algorithms-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Aid Algorithms Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-remote-monitor-docs-inventory.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Documentation Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-sources-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cgm Sources Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-sources-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cgm Sources Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="connectors-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Connectors Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="connectors-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Connectors Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cross-validation-log.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-Validation Assessment Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="gap-discovery.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gap discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ml-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ML Pipeline Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-api-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Api Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-api-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Api Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="orphan-artifact-priorities.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Orphan Artifact Priority Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="pumps-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pumps Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pumps Requirements
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="pumps-requirements.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pumps Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#req-pump-001-pump-precision-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PUMP-001: Pump Precision Constraints
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#req-pump-002-command-acknowledgment-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PUMP-002: Command Acknowledgment Verification
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#req-pump-003-bolus-progress-reporting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PUMP-003: Bolus Progress Reporting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#req-pump-004-history-reconciliation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PUMP-004: History Reconciliation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#req-pump-005-clock-drift-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PUMP-005: Clock Drift Handling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#req-pump-006-connection-timeout-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PUMP-006: Connection Timeout Handling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#insulin-curve-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Insulin Curve Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Insulin Curve Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-pump-007-nonce-management-for-pod-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PUMP-007: Nonce Management for Pod Commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-pump-008-ble-session-establishment-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PUMP-008: BLE Session Establishment Security
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-pump-009-crc-validation-for-pump-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PUMP-009: CRC Validation for Pump Messages
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-pump-010-bolus-delivery-rate-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PUMP-010: Bolus Delivery Rate Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#device-architecture-requirements-2026-02-03" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Device Architecture Requirements (2026-02-03)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Device Architecture Requirements (2026-02-03)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-arch-001-device-state-separation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-ARCH-001: Device State Separation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-arch-002-capability-enumeration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-ARCH-002: Capability Enumeration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-arch-003-vendor-specific-state-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-ARCH-003: Vendor-Specific State Extensions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sync-identity-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sync Identity Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sync-identity-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sync Identity Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="telemetry-observability-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry and Observability Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="telemetry-observability-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry and Observability Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tool-validation-2026-01-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tool validation 2026 01 23
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="traceability-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requirements Traceability Matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="treatments-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Treatments Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="treatments-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Treatments Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="domain-matrices/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    domain-matrices/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="stpa/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    stpa/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#req-pump-001-pump-precision-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PUMP-001: Pump Precision Constraints
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#req-pump-002-command-acknowledgment-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PUMP-002: Command Acknowledgment Verification
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#req-pump-003-bolus-progress-reporting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PUMP-003: Bolus Progress Reporting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#req-pump-004-history-reconciliation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PUMP-004: History Reconciliation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#req-pump-005-clock-drift-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PUMP-005: Clock Drift Handling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#req-pump-006-connection-timeout-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PUMP-006: Connection Timeout Handling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#insulin-curve-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Insulin Curve Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Insulin Curve Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-pump-007-nonce-management-for-pod-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PUMP-007: Nonce Management for Pod Commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-pump-008-ble-session-establishment-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PUMP-008: BLE Session Establishment Security
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-pump-009-crc-validation-for-pump-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PUMP-009: CRC Validation for Pump Messages
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-pump-010-bolus-delivery-rate-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PUMP-010: Bolus Delivery Rate Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#device-architecture-requirements-2026-02-03" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Device Architecture Requirements (2026-02-03)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Device Architecture Requirements (2026-02-03)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-arch-001-device-state-separation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-ARCH-001: Device State Separation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-arch-002-capability-enumeration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-ARCH-002: Capability Enumeration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-arch-003-vendor-specific-state-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-ARCH-003: Vendor-Specific State Extensions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="pumps-requirements">Pumps Requirements<a class="headerlink" href="#pumps-requirements" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-03-10 at <code>60b3b389</code>.</em></p>
+<p>Domain-specific requirements extracted from requirements.md.
+See <a href="requirements.html">requirements.md</a> for the index.</p>
+<hr />
+<h3 id="req-pump-001-pump-precision-constraints">REQ-PUMP-001: Pump Precision Constraints<a class="headerlink" href="#req-pump-001-pump-precision-constraints" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: AID controllers MUST round all insulin amounts (bolus and basal) to the pump's supported step size BEFORE sending commands.</p>
+<p><strong>Rationale</strong>: Pumps reject or truncate commands that don't match their precision constraints. Rounding rules should err on the side of safety.</p>
+<p><strong>Scenarios</strong>:
+- Pump Command Precision (to be created)</p>
+<p><strong>Verification</strong>:
+- Request 1.03U bolus on pump with 0.05U step → Verify command uses nearest supported value (1.00U or 1.05U per system rules)
+- Request 0.07U/hr basal on pump with 0.05U step → Verify command uses nearest supported value
+- Verify rounding follows pump-specific rules (Loop rounds to nearest; AAPS applies constraints per pump driver)</p>
+<p><strong>Cross-System Status</strong>:
+- Loop: ✅ <code>roundToSupportedBolusVolume()</code>, <code>roundToSupportedBasalRate()</code>
+- AAPS: ✅ <code>constraintChecker.applyBolusConstraints()</code>
+- Trio: ✅ Inherits Loop's LoopKit implementation</p>
+<hr />
+<hr />
+<h3 id="req-pump-002-command-acknowledgment-verification">REQ-PUMP-002: Command Acknowledgment Verification<a class="headerlink" href="#req-pump-002-command-acknowledgment-verification" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: AID controllers MUST verify pump command acknowledgment before recording the dose as delivered.</p>
+<p><strong>Rationale</strong>: Network failures, BLE disconnections, and RF interference can cause commands to fail. Recording unverified doses corrupts IOB calculations.</p>
+<p><strong>Scenarios</strong>:
+- Pump Command Verification (to be created)</p>
+<p><strong>Verification</strong>:
+- Send bolus command → Verify pump acknowledges start (system-specific mechanism)
+- Verify delivery amount matches request (within step precision)
+- On timeout or error → Verify dose NOT recorded as delivered
+- Verify uncertainty is signaled via platform-appropriate mechanism</p>
+<p><strong>Cross-System Status</strong>:
+- Loop: ✅ <code>PumpManagerStatus.deliveryIsUncertain</code> flag indicates command uncertainty
+- AAPS: ✅ <code>PumpEnactResult.success=false</code> and pump history reconciliation detect failures
+- Trio: ✅ Inherits Loop's <code>deliveryIsUncertain</code> pattern</p>
+<hr />
+<hr />
+<h3 id="req-pump-003-bolus-progress-reporting">REQ-PUMP-003: Bolus Progress Reporting<a class="headerlink" href="#req-pump-003-bolus-progress-reporting" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: AID controllers SHOULD provide real-time bolus delivery progress to the user.</p>
+<p><strong>Rationale</strong>: Large boluses take minutes to deliver. Users need feedback during delivery and ability to cancel.</p>
+<p><strong>Scenarios</strong>:
+- Bolus Progress UI (to be created)</p>
+<p><strong>Verification</strong>:
+- Start 5U bolus → Verify progress updates during delivery
+- Verify "Cancel" option available during delivery
+- Verify final delivered amount reported</p>
+<p><strong>Cross-System Status</strong>:
+- Loop: ✅ <code>createBolusProgressReporter()</code>
+- AAPS: ✅ <code>EventOverviewBolusProgress</code> events
+- Trio: ✅ Inherits Loop's pattern</p>
+<hr />
+<hr />
+<h3 id="req-pump-004-history-reconciliation">REQ-PUMP-004: History Reconciliation<a class="headerlink" href="#req-pump-004-history-reconciliation" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: AID controllers MUST periodically reconcile local dose records with pump history to detect manual doses and missed events.</p>
+<p><strong>Rationale</strong>: Users may deliver manual boluses via pump UI. Untracked doses corrupt IOB calculations and lead to incorrect dosing decisions.</p>
+<p><strong>Scenarios</strong>:
+- Pump History Sync (to be created)</p>
+<p><strong>Verification</strong>:
+- Deliver manual bolus via pump UI
+- Verify controller detects dose within next loop cycle
+- Verify IOB calculation includes manual dose</p>
+<p><strong>Cross-System Status</strong>:
+- Loop: ✅ <code>PumpManagerDelegate.hasNewPumpEvents()</code> callback
+- AAPS: ✅ <code>PumpSync.syncBolusWithPumpId()</code> for history-capable pumps
+- Trio: ✅ Inherits Loop's pattern</p>
+<hr />
+<hr />
+<h3 id="req-pump-005-clock-drift-handling">REQ-PUMP-005: Clock Drift Handling<a class="headerlink" href="#req-pump-005-clock-drift-handling" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: AID controllers MUST detect and handle clock drift between controller and pump to maintain accurate dose timing.</p>
+<p><strong>Rationale</strong>: Pump clocks drift over time. Inaccurate timestamps affect IOB decay calculations and event ordering.</p>
+<p><strong>Scenarios</strong>:
+- Pump Clock Sync (to be created)</p>
+<p><strong>Verification</strong>:
+- Pump clock 5 minutes ahead → Verify controller compensates
+- Verify IOB calculations use corrected timestamps
+- Verify user notified of significant drift (&gt;5 minutes)</p>
+<p><strong>Cross-System Status</strong>:
+- Loop: ✅ <code>pumpManager.didAdjustPumpClockBy()</code> delegate
+- AAPS: ✅ <code>canHandleDST()</code> and <code>timezoneOrDSTChanged()</code> methods</p>
+<hr />
+<hr />
+<h3 id="req-pump-006-connection-timeout-handling">REQ-PUMP-006: Connection Timeout Handling<a class="headerlink" href="#req-pump-006-connection-timeout-handling" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Pump commands MUST timeout within a reasonable period (30-60 seconds) and report failure rather than hanging indefinitely.</p>
+<p><strong>Rationale</strong>: Stuck commands prevent loop iterations and leave delivery state uncertain.</p>
+<p><strong>Scenarios</strong>:
+- Pump Timeout Handling (to be created)</p>
+<p><strong>Verification</strong>:
+- Move pump out of range during command → Verify timeout within 60 sec
+- Verify clear error message to user
+- Verify loop can continue after timeout</p>
+<p><strong>Cross-System Status</strong>:
+- Loop: ✅ Per-driver timeouts (typically 30 sec)
+- AAPS: ✅ <code>waitForDisconnectionInSeconds()</code> and command timeouts
+- Trio: ✅ Inherits Loop's pattern</p>
+<hr />
+<h2 id="insulin-curve-requirements">Insulin Curve Requirements<a class="headerlink" href="#insulin-curve-requirements" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="req-pump-007-nonce-management-for-pod-commands">REQ-PUMP-007: Nonce Management for Pod Commands<a class="headerlink" href="#req-pump-007-nonce-management-for-pod-commands" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Controllers communicating with nonce-protected pumps (Omnipod DASH) MUST track and increment nonces correctly to prevent replay rejection.</p>
+<p><strong>Rationale</strong>: Omnipod DASH pods track the last received nonce and reject commands with stale or duplicate nonces. Incorrect nonce management causes command failures.</p>
+<p><strong>Scenarios</strong>:
+- Pod Nonce Synchronization (to be created)</p>
+<p><strong>Verification</strong>:
+- Send command with valid nonce → Verify acceptance
+- Resend same nonce → Verify rejection
+- After pod rejects nonce → Verify controller resynchronizes</p>
+<p><strong>Cross-System Status</strong>:
+- Loop/Trio: ✅ <code>NonceResyncableMessageBlock</code> protocol handles nonce-bearing commands
+- Source: <code>OmniBLE/OmnipodCommon/MessageBlocks/MessageBlock.swift</code></p>
+<hr />
+<hr />
+<h3 id="req-pump-008-ble-session-establishment-security">REQ-PUMP-008: BLE Session Establishment Security<a class="headerlink" href="#req-pump-008-ble-session-establishment-security" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: BLE-connected pumps with session-based authentication MUST complete mutual authentication before accepting insulin delivery commands.</p>
+<p><strong>Rationale</strong>: Omnipod DASH uses EAP-AKA (Milenage) for session establishment; Dana RS uses passkey + time-based encryption. Commands sent without session establishment are rejected.</p>
+<p><strong>Scenarios</strong>:
+- BLE Session Security (to be created)</p>
+<p><strong>Verification</strong>:
+- Attempt command before session → Verify rejection
+- Complete session establishment → Verify command acceptance
+- Session timeout → Verify re-authentication required</p>
+<p><strong>Cross-System Status</strong>:
+- Omnipod DASH: ✅ EAP-AKA with Milenage algorithm (3GPP standard)
+- Dana RS: ✅ Three encryption modes (DEFAULT, RSv3, BLE5)
+- Source: <code>OmniBLE/Bluetooth/Session/SessionEstablisher.swift</code>, <code>danars/encryption/BleEncryption.kt</code></p>
+<hr />
+<hr />
+<h3 id="req-pump-009-crc-validation-for-pump-messages">REQ-PUMP-009: CRC Validation for Pump Messages<a class="headerlink" href="#req-pump-009-crc-validation-for-pump-messages" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Controllers MUST validate CRC checksums on all pump response messages and reject messages with invalid checksums.</p>
+<p><strong>Rationale</strong>: RF/BLE transmission errors can corrupt message payloads. CRC validation prevents acting on corrupted commands or status.</p>
+<p><strong>Scenarios</strong>:
+- Message Integrity Validation (to be created)</p>
+<p><strong>Verification</strong>:
+- Receive valid message → Verify CRC passes
+- Inject bit error → Verify CRC fails and message rejected
+- Verify all pump drivers implement CRC validation</p>
+<p><strong>Cross-System Status</strong>:
+- Omnipod DASH: ✅ Checksum in SetInsulinScheduleCommand
+- Dana RS: ✅ CRC-16 with encryption-specific polynomials
+- Medtronic: ✅ CRC validation in history page decoding
+- Source: <code>SetInsulinScheduleCommand.swift</code>, <code>BleEncryption.kt:generateCrc()</code></p>
+<hr />
+<hr />
+<h3 id="req-pump-010-bolus-delivery-rate-configuration">REQ-PUMP-010: Bolus Delivery Rate Configuration<a class="headerlink" href="#req-pump-010-bolus-delivery-rate-configuration" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Controllers SHOULD respect pump-specific bolus delivery rates when calculating delivery times and progress updates.</p>
+<p><strong>Rationale</strong>: Different pumps deliver boluses at different rates (Omnipod: 0.025 U/s, Dana RS: configurable). Accurate delivery time estimation requires knowing the actual rate.</p>
+<p><strong>Scenarios</strong>:
+- Bolus Progress Timing (to be created)</p>
+<p><strong>Verification</strong>:
+- 5U bolus on Omnipod → Expect ~400 seconds (0.025 U/s × 200 pulses)
+- 5U bolus on Dana RS Fast → Expect ~60 seconds
+- Verify progress bar timing matches actual delivery</p>
+<p><strong>Cross-System Status</strong>:
+- Omnipod DASH: 0.05U per 2 seconds (0.025 U/s)
+- Dana RS: Configurable (12/30/60 sec per unit)
+- Source: <code>Pod.swift:bolusDeliveryRate</code>, Dana RS packet handlers
+- Trio: ✅ Inherits Loop's pattern</p>
+<hr />
+<h2 id="device-architecture-requirements-2026-02-03">Device Architecture Requirements (2026-02-03)<a class="headerlink" href="#device-architecture-requirements-2026-02-03" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="req-arch-001-device-state-separation">REQ-ARCH-001: Device State Separation<a class="headerlink" href="#req-arch-001-device-state-separation" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: AID implementations MUST use separate state types for CGM devices and pump devices. A single "connection state" type MUST NOT be used for both device categories.</p>
+<p><strong>Rationale</strong>: CGM and pump devices have fundamentally different:
+- Capability sets (read-only glucose vs bidirectional insulin commands)
+- Safety profiles (display-only vs delivery-critical)
+- Lifecycle models (sensor warmup vs pod activation with priming)
+- Error handling (retry with backoff vs delivery uncertainty tracking)</p>
+<p><strong>Scenarios</strong>:
+- CGM Pairing (Dexcom G6/G7, Libre 2/3)
+- Pump Pairing (Omnipod DASH/Eros, Medtronic, Dana)</p>
+<p><strong>Verification</strong>:
+- <code>CGMPairingState</code> and <code>PumpPairingState</code> are distinct types with no shared base class
+- No casting between CGM and pump state types
+- State machine transitions specific to device category
+- UI components bound to correct state type</p>
+<p><strong>Cross-System Status</strong>:
+- Loop: ✅ Separate <code>CGMManager</code> and <code>PumpManager</code> protocols
+- AAPS: ✅ Separate <code>BgSource</code> and <code>Pump</code> plugin interfaces
+- Trio: ✅ Inherits Loop's separation
+- T1Pal: ❌ <code>ConnectionPreviewState</code> overloaded (documented in STATE-ARCHITECTURE-AUDIT.md)</p>
+<p><strong>Gap Reference</strong>: GAP-ARCH-002</p>
+<hr />
+<hr />
+<h3 id="req-arch-002-capability-enumeration">REQ-ARCH-002: Capability Enumeration<a class="headerlink" href="#req-arch-002-capability-enumeration" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Device state types MUST enumerate device-specific capabilities using typed fields rather than generic strings.</p>
+<p><strong>Rationale</strong>: 
+- Generic fields like <code>connectionStatus: String</code> lose type safety
+- Cannot validate allowed values at compile time
+- No IDE assistance for device-specific states
+- String comparison is error-prone</p>
+<p><strong>Example (Anti-pattern)</strong>:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kd">struct</span><span class="w"> </span><span class="nc">ConnectionPreviewState</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">connectionStatus</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="w">  </span><span class="c1">// "connected", "pairing", etc.</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">deviceName</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Example (Correct pattern)</strong>:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kd">struct</span><span class="w"> </span><span class="nc">CGMPairingState</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">sensorState</span><span class="p">:</span><span class="w"> </span><span class="n">SensorState</span><span class="w">   </span><span class="c1">// .warmingUp, .ready, .expired</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">authState</span><span class="p">:</span><span class="w"> </span><span class="n">AuthState</span><span class="w">       </span><span class="c1">// .pending, .authenticated</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">transmitterId</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="p">}</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="kd">struct</span><span class="w"> </span><span class="nc">PumpPairingState</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">setupProgress</span><span class="p">:</span><span class="w"> </span><span class="n">SetupProgress</span><span class="w">  </span><span class="c1">// 8-step enum</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">primeProgress</span><span class="p">:</span><span class="w"> </span><span class="nb">Double</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">podLot</span><span class="p">:</span><span class="w"> </span><span class="nb">UInt32</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Scenarios</strong>:
+- CGM Pairing State (auth state, sensor state, warmup)
+- Pump Pairing State (setup progress, prime progress, reservoir)</p>
+<p><strong>Verification</strong>:
+- State types use enums for status fields
+- No <code>String</code> or <code>Int</code> for values with known domain
+- Swift/Kotlin exhaustive switch coverage</p>
+<p><strong>Cross-System Status</strong>:
+- Loop: ✅ <code>SetupProgress</code> enum with 8 cases
+- AAPS: ✅ <code>PodActivationProgress</code> enum
+- Trio: ✅ Inherits Loop's enums
+- xDrip+: ✅ <code>SensorState</code> enum</p>
+<p><strong>Gap Reference</strong>: GAP-ARCH-001</p>
+<hr />
+<hr />
+<h3 id="req-arch-003-vendor-specific-state-extensions">REQ-ARCH-003: Vendor-Specific State Extensions<a class="headerlink" href="#req-arch-003-vendor-specific-state-extensions" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Device state types SHOULD support vendor-specific extensions without breaking the base interface.</p>
+<p><strong>Rationale</strong>: Different vendors have unique capabilities:
+- Dexcom G7 has J-PAKE authentication state; G6 has AES auth state
+- Omnipod has pod lot/sequence; Medtronic has pump history pages
+- Dana has encryption mode selection; Omnipod DASH has LTK
+- Extensions must be type-safe and not require downcasting</p>
+<p><strong>Pattern (Protocol-based)</strong>:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kd">protocol</span><span class="w"> </span><span class="nc">CGMPairingState</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">transmitterId</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kr">get</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">authState</span><span class="p">:</span><span class="w"> </span><span class="n">AuthState</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kr">get</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">signalStrength</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kr">get</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="p">}</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="kd">struct</span><span class="w"> </span><span class="nc">DexcomG7PairingState</span><span class="p">:</span><span class="w"> </span><span class="n">CGMPairingState</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span><span class="c1">// Base properties</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">transmitterId</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">authState</span><span class="p">:</span><span class="w"> </span><span class="n">AuthState</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">signalStrength</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">    </span><span class="c1">// G7-specific extensions</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">jpakeRound</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">sensorCode</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">certVerified</span><span class="p">:</span><span class="w"> </span><span class="nb">Bool</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="p">}</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="kd">struct</span><span class="w"> </span><span class="nc">Libre3PairingState</span><span class="p">:</span><span class="w"> </span><span class="n">CGMPairingState</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="w">    </span><span class="c1">// Base properties</span>
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">transmitterId</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span>
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">authState</span><span class="p">:</span><span class="w"> </span><span class="n">AuthState</span>
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">signalStrength</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span>
+<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>
+<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a><span class="w">    </span><span class="c1">// Libre 3-specific extensions</span>
+<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">securityHandshakeState</span><span class="p">:</span><span class="w"> </span><span class="n">SecurityState</span>
+<a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">publicKey</span><span class="p">:</span><span class="w"> </span><span class="n">Data</span><span class="p">?</span>
+<a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a><span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Scenarios</strong>:
+- Dexcom G7 pairing (J-PAKE rounds, certificate exchange)
+- Libre 3 pairing (ECDH key exchange, security handshake)
+- Omnipod Eros pairing (RileyLink state, nonce synchronization)</p>
+<p><strong>Verification</strong>:
+- Vendor-specific state types conform to base protocol
+- Extensions accessible without type casting
+- Base UI works with any conforming type
+- Vendor-specific UI components available for extensions</p>
+<p><strong>Cross-System Status</strong>:
+- Loop: ✅ <code>CGMManager</code> protocol with vendor implementations
+- AAPS: ✅ <code>Pump</code> interface with vendor plugins
+- Trio: ✅ Inherits Loop's protocol pattern</p>
+<p><strong>Gap Reference</strong>: GAP-ARCH-003</p>
+<hr />
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

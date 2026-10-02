@@ -1,0 +1,8591 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/60-research/tenancy/multitenancy-k-and-residency-2026-09-14.html">
+      
+      
+        <link rel="prev" href="exp-mt-026-database-in-the-loop-2026-09-14.html">
+      
+      
+        <link rel="next" href="ns-evaluator-spike-2026-09-15.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>What sets K: residency, the load cycle, and two quadratics - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#what-sets-k-residency-the-load-cycle-and-two-quadratics" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              What sets K: residency, the load cycle, and two quadratics
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../30-design/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_27" id="__nav_5_27_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_27_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_27">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    60-research/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-2844-phenotype-drilldown-report-2026-04-22.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-0001 to 2869
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-2870-envelope-crossover-report-2026-04-22.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2870 to 2909
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-2910-eight-dim-regrade-2026-04-23.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2910 to 2949
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-2950-uniform-action-curve-2026-04-23.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2950 to 2999
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-3000-3003-cf-replay-maturation-2026-04-25.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-3000 and later
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../AUTORESEARCH-SESSION-2026-04-26.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Programme, closeouts and syntheses
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../accuracy-validation-2026-04-05.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Productionization and pipelines
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../capability-report-clinical-decision-support.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Capability reports
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../circadian-therapy-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Therapy
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../aid-aware-settings-report-2026-04-09.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings and profiles
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../natural-experiment-deconfounding-2026-04-09.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Natural experiments
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../bilateral-deconfounding-report-2026-04-19.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EGP, supply-demand and deconfounding
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../autotune-uam-characterization-report.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Meals and carbohydrates
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../causal-pk-leakage-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Insulin, ISF and pharmacokinetics
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../acceleration-clinical-utility-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clinical, safety and hypoglycaemia
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../aid-author-recommendations-report-2026-04-20.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AID controllers, cohorts and waves
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../centering-dynamics-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forecasting, prediction and classification
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../advanced-architectures-benchmark-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ML methods and architectures
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../canonical/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    canonical/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../collaboration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    collaboration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../external-inventories/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    external-inventories/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../modernization/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    modernization/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../programme/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    programme/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../remedial/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    remedial/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27_26" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenancy/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_27_26" id="__nav_5_27_26_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_27_26_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_27_26">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    tenancy/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="alarm-critical-slice-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The alarm-critical slice, measured: 32.7 KB and 1.94 ms, not 852 KB and 27.5 ms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="auth-plane-ory-vs-inhouse-2026-09-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The auth plane: Ory Kratos/Hydra against building it ourselves
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="exp-mt-026-database-in-the-loop-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-MT-026: a real database in the loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What sets K: residency, the load cycle, and two quadratics
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="multitenancy-k-and-residency-2026-09-14.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What sets K: residency, the load cycle, and two quadratics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executive summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-the-harness-defect-first" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The harness defect, first
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-memory--exp-mt-035" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Memory — EXP-MT-035
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-load-cycle--and-where-it-goes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The load cycle — and where it goes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. The load cycle — and where it goes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-the-plugin-tier--exp-mt-035b" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 The plugin tier — EXP-MT-035b
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-the-fix-and-what-it-is-worth--exp-mt-028-extended" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. The fix, and what it is worth — EXP-MT-028 extended
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-solving-for-k" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Solving for K
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-k-per-component--now-measured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. K per component — now measured
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. K per component — now measured">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-realtime--exp-mt-045a" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Realtime — EXP-MT-045a
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-vendor-connectivity--exp-mt-048a-and-a-corrected-guess" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Vendor connectivity — EXP-MT-048a, and a corrected guess
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-what-this-means-for-splitting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 What this means for splitting
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-what-this-says-about-b-c-d-and-e" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. What this says about B, C, D and E
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-the-structural-change-set--worth-doing-with-or-without-multitenancy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. The structural change set — worth doing with or without multitenancy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-storage--deliberately-not-measured-here" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Storage — deliberately not measured here
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-what-is-not-measured-and-matters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. What is not measured, and matters
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-reproduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Reproduction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-third-pass-the-rest-tier-and-three-corrections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Third pass: the REST tier, and three corrections
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="12. Third pass: the REST tier, and three corrections">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#121-api-v3-holds-no-resident-state--counted-not-estimated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.1 API v3 holds no resident state — counted, not estimated
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#122-exp-mt-055--what-residency-buys-and-a-42-defect-in-how-it-buys-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.2 EXP-MT-055 — what residency buys, and a 42× defect in how it buys it
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#123-exp-mt-055b--after-8733-the-largest-cost-in-the-load-cycle-is-a-defensive-clone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.3 EXP-MT-055b — after #8733, the largest cost in the load cycle is a defensive clone
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#124-exp-mt-035c--the-resident-figure-omits-ctxcache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.4 EXP-MT-035c — the resident figure omits ctx.cache
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#125-exp-mt-035d--the-alarm-slice-is-506-kb-not-06-kb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.5 EXP-MT-035d — the alarm slice is 50.6 KB, not 0.6 KB
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#126-exp-mt-056--the-cost-model-and-why-the-815-ms-margin-was-the-wrong-axis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.6 EXP-MT-056 — the cost model, and why the 8–15 ms margin was the wrong axis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#127-what-is-still-not-measured-and-would-change-this" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.7 What is still not measured, and would change this
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ns-evaluator-spike-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ns-evaluator: what a per-tenant evaluation loop actually needs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="pgbouncer-tenant-binding-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    pgbouncer and the D3 tenant binding — isolation holds, and two of the three modes are usable
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="seam-filter-ast-three-arm-validation-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Three-arm validation of the storage seam's filter AST: closing §8.5
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="seam-filter-re-operator-validation-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    T2.3 — the nine operators in SQL, and what turning re on found
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="seam-limit-and-projection-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    limit and projection across the seam — and two live API defects
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="seam-ordering-and-pagination-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ordering across the seam — and a live pagination defect in API v3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="seam-readoptions-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    readOptions across the seam — a bound that stops holding exactly where it matters
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="seam-write-path-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The write path across the seam — three divergences, and a vacuity trap in my own harness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sort-key-typing-corpus-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Are sort keys really "one type in practice"? — measured against the corpus
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="t25-postgres-backend-verification-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Verifying the T2.5 PostgreSQL backend — four predictions, two of them wrong
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tenant-resolution-adversarial-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Attacking tenant resolution — the half of isolation that runs before the database
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tenant-shared-state-audit-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module-level shared state: what T3.3 has to fix before it can exist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="v1-operator-census-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What API v1 operators clients actually send — the census behind T2.4's allowlist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executive summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-the-harness-defect-first" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The harness defect, first
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-memory--exp-mt-035" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Memory — EXP-MT-035
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-load-cycle--and-where-it-goes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The load cycle — and where it goes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. The load cycle — and where it goes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-the-plugin-tier--exp-mt-035b" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 The plugin tier — EXP-MT-035b
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-the-fix-and-what-it-is-worth--exp-mt-028-extended" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. The fix, and what it is worth — EXP-MT-028 extended
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-solving-for-k" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Solving for K
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-k-per-component--now-measured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. K per component — now measured
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. K per component — now measured">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-realtime--exp-mt-045a" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Realtime — EXP-MT-045a
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-vendor-connectivity--exp-mt-048a-and-a-corrected-guess" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Vendor connectivity — EXP-MT-048a, and a corrected guess
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-what-this-means-for-splitting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 What this means for splitting
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-what-this-says-about-b-c-d-and-e" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. What this says about B, C, D and E
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-the-structural-change-set--worth-doing-with-or-without-multitenancy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. The structural change set — worth doing with or without multitenancy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-storage--deliberately-not-measured-here" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Storage — deliberately not measured here
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-what-is-not-measured-and-matters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. What is not measured, and matters
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-reproduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Reproduction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-third-pass-the-rest-tier-and-three-corrections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Third pass: the REST tier, and three corrections
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="12. Third pass: the REST tier, and three corrections">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#121-api-v3-holds-no-resident-state--counted-not-estimated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.1 API v3 holds no resident state — counted, not estimated
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#122-exp-mt-055--what-residency-buys-and-a-42-defect-in-how-it-buys-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.2 EXP-MT-055 — what residency buys, and a 42× defect in how it buys it
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#123-exp-mt-055b--after-8733-the-largest-cost-in-the-load-cycle-is-a-defensive-clone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.3 EXP-MT-055b — after #8733, the largest cost in the load cycle is a defensive clone
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#124-exp-mt-035c--the-resident-figure-omits-ctxcache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.4 EXP-MT-035c — the resident figure omits ctx.cache
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#125-exp-mt-035d--the-alarm-slice-is-506-kb-not-06-kb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.5 EXP-MT-035d — the alarm slice is 50.6 KB, not 0.6 KB
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#126-exp-mt-056--the-cost-model-and-why-the-815-ms-margin-was-the-wrong-axis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.6 EXP-MT-056 — the cost model, and why the 8–15 ms margin was the wrong axis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#127-what-is-still-not-measured-and-would-change-this" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.7 What is still not measured, and would change this
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="what-sets-k-residency-the-load-cycle-and-two-quadratics">What sets K: residency, the load cycle, and two quadratics<a class="headerlink" href="#what-sets-k-residency-the-load-cycle-and-two-quadratics" title="Permanent link">&para;</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Record</p>
+<p>Record as of 2026-09-14. A point-in-time document; it is not kept up to date.</p>
+</div>
+<blockquote>
+<p><strong>Snapshot — research as of 2026-09-14, measured against <code>cgm-remote-monitor</code> <code>origin/dev</code> <code>a8888f0d</code>. Status: superseded in part — tenancy research, not on a shipping path; §12 revises §2/§5/§7 (read it first), the alarm slice is re-measured at 32.7 KB in <a href="alarm-critical-slice-2026-09-15.html">the alarm-critical slice</a>, and the quadratic fixes are PR #8733 (merged to dev 2026-09-17, unreleased). Current facts: <a href="../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan</a>, <a href="exp-mt-026-database-in-the-loop-2026-09-14.html">EXP-MT-026</a>, <a href="../../30-design/remedial/nightscout-backfix-register.html">backfix register</a> (BF-08, BF-34).</strong></p>
+</blockquote>
+<p><em>Audience: contributors.</em></p>
+<p><strong>Experiments</strong>: EXP-MT-035 (resident cost against real <code>ddata</code>), EXP-MT-003 (residency
+tiering), EXP-MT-004 (stateless rebuild), EXP-MT-005 (tenants per process),
+EXP-MT-028 (adaptive merge/delta, extended), <strong>EXP-MT-035b (plugin tier)</strong>,
+<strong>EXP-MT-045a (realtime fan-out)</strong>, <strong>EXP-MT-048a (vendor-connectivity density)</strong>,
+<strong>EXP-MT-055/055b (REST tier, cache clone)</strong>, <strong>EXP-MT-035c/035d (resident cost, alarm
+slice)</strong>, <strong>EXP-MT-056 (deployment cost model)</strong>
+<strong>Date</strong>: 2026-09-14 (components added in a second session, §12 in a third, same day)
+<strong>Harness</strong>: <code>tools/mt-bench/{residency,cycle-fix,plugin-cycle,realtime,vcpool,apitier,deployment-cost}.js</code>;
+figures from <code>tools/mt-bench/figures.py</code>; raw results in
+<code>tools/mt-bench/results/exp-mt-035.json</code>, <code>exp-mt-components.json</code>,
+<code>exp-mt-apitier.json</code> and <code>exp-mt-deployment-cost.json</code>
+<strong>Under test</strong>: <code>cgm-remote-monitor</code> <code>origin/dev</code> @ <code>a8888f0d</code>, real <code>lib/data/ddata.js</code>
+and <code>lib/data/calcdelta.js</code>
+<strong>Environment</strong>: Node v24.15.0, Linux, shared development machine, <strong>no database in the
+loop</strong> — these are event-loop CPU and heap measurements, not capacity results
+<strong>Confidence</strong>: <strong>measured</strong> (committed scripts, re-run on a second pass, headline numbers
+reproduced within 4 %)</p>
+<p>Answers the question put to
+<a href="../../30-design/tenancy/nightscout-multitenancy-discussion-2026-09-09.html">the multitenancy discussion</a>
+§5: of candidate architectures <strong>B</strong> (context per tenant, resident), <strong>C</strong> (B plus residency
+tiering), <strong>D</strong> (stateless, storage-resident) and <strong>E</strong> (K tenants per process, M
+processes) — which to commit to, and what order K and M take.</p>
+<hr />
+<h2 id="executive-summary">Executive summary<a class="headerlink" href="#executive-summary" title="Permanent link">&para;</a></h2>
+<p><strong>The architecture question is nearly decided by the measurements, and not in the way the
+axis was framed.</strong></p>
+<ol>
+<li><strong>Memory is not the constraint, and was never close.</strong> A fully-processed real <code>ddata</code>
+   tenant costs <strong>1,204 KB resident</strong> — <em>less</em> than §7.4's synthetic 2.2 MB, and stable from
+   N=50 to N=300. At a 4 GB heap that is ~3,470 resident tenants per process.</li>
+<li><strong>The load cycle is the constraint, and it is ~8× worse than anything recorded so far.</strong>
+   One incremental cycle for a typical 600-treatment tenant costs <strong>9.5 ms p50 / 12.6 ms
+   p99</strong> of event-loop time. Prior harness numbers said 0.03 ms.</li>
+<li><strong>The 0.03 ms was a fixture defect, not a result.</strong> <code>tools/mt-bench/gen.js</code> gives every
+   document the same <code>_id</code> (<code>'a'.repeat(24)</code>). Both hot loops break on first match, so the
+   quadratics collapse to linear and were never exercised. <strong>Every number derived from that
+   fixture understates the merge and delta paths</strong>, §7.5's "typical sizes are fine" row
+   included.</li>
+<li><strong>Two quadratics set K, and one of them was never identified.</strong> <code>processDurations</code>
+   (<code>ddata.js:198-247</code>) is quadratic <em>twice over</em> and accounts for <strong>63 %</strong> of the cycle;
+   <code>calcDelta</code>'s treatment scan accounts for <strong>34 %</strong>. §2.1 lists three cost centres and
+   <code>processDurations</code> is not among them.</li>
+<li><strong>Fixing both is worth 6.3× at typical size and 27× at heavy size</strong>, verified
+   output-equivalent. That moves K by an order of magnitude — <strong>K is set by code quality,
+   not by architecture.</strong></li>
+<li><strong>So: C, on top of B, with E as deployment shape — and E's M is small.</strong> With the fixes,
+   a realistic 10 000-tenant hoster needs ~2 application shards for capacity. Sharding is
+   therefore justified by blast radius, rolling upgrades and noisy-tenant relocation — <strong>not
+   by capacity</strong>, which is what §5 suspected and this measures.</li>
+<li><strong>D is not competitive, for a reason that also indicts B.</strong> A full stateless rebuild
+   costs <strong>10.8 ms</strong> — statistically the same as one <em>incremental</em> cycle at 9.5 ms. Today's
+   incremental path buys almost nothing over recomputing from scratch, because the quadratics
+   run in full regardless of how little changed. After the fixes the incremental path is
+   7× cheaper than rebuild, and D loses properly.</li>
+<li><strong>The plugin tier is small and flat</strong> — 0.61 ms p50, and 0.64 → 0.93 ms from 300 to 2 400
+   treatments. It does not have the quadratic problem. It adds ~6 % to a broken cycle and
+   ~40 % to a fixed one.
+   [Correction 2026-09-22: with the full shipped alarm set, including <code>cob</code>, the plugin tier
+   measures 27.5 ms p50 — see <a href="alarm-critical-slice-2026-09-15.html">the alarm-critical slice</a> §4.2.]</li>
+<li><strong>K measured per component spans two orders of magnitude</strong>: ~150 tenants for an APP shard
+   today, ~685 fixed, ~9 700 for the vendor pool's <em>machinery</em>, ~27 500 for realtime fan-out.
+   <strong>The vendor pool's real limit is a vendor rate limit, which this cannot measure</strong> — the
+   machinery is not what binds it.</li>
+</ol>
+<p><strong>Direct answer to "is the per-tenant Map recommended?"</strong> — <strong>yes, and separately from
+everything else.</strong> <code>Map&lt;tenantId, ctx&gt;</code> (§5B) is the substrate, with tiering (§5C) layered
+on it. But the two quadratics are <strong>not multitenancy work</strong>: they are defects in the current
+product that stall single-tenant sites today, and they should be fixed upstream whether or
+not multitenancy ever happens. §8 lists them as a standalone change set.</p>
+<blockquote>
+<p><strong>Superseded in part by §12, added the same day.</strong> The quadratics are now
+<a href="https://github.com/nightscout/cgm-remote-monitor/pull/8733">PR #8733</a>, so the fixed cycle
+is the baseline rather than a hypothetical. Measuring the REST tier for the first time
+turned up three corrections to figures above — the resident cost omits <code>ctx.cache</code> (1,204
+→ <strong>2,652 KB</strong>), the alarm slice models one plugin of eighteen (0.6 → <strong>50.6 KB</strong>), and the
+cycle measurement stops at <code>ddata</code>'s door, missing <code>cache.insertData</code>'s <strong>4.08 ms</strong>
+defensive clone, which is <strong>65 % of the post-#8733 cycle</strong> and drops K from 685 to <strong>239</strong>.
+Point 7 above — "D is not competitive" — <strong>does not survive</strong>: it was decided on a CPU
+margin, and §12.6 shows the stateless decomposition needs <strong>5 processes and 633 DB ops/s at
+10,000 tenants against 10–13 processes and 4,285–6,183 ops/s</strong> for the resident options.
+Read §12 before quoting §2, §5 or §7.</p>
+</blockquote>
+<hr />
+<h2 id="1-the-harness-defect-first">1. The harness defect, first<a class="headerlink" href="#1-the-harness-defect-first" title="Permanent link">&para;</a></h2>
+<p><code>gen.js</code> builds every document with <code>_id: 'a'.repeat(24)</code>. Both hot loops are written as
+"scan until the ids match, then break":</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1">// calcdelta.js nsArrayTreatments</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="nx">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">m</span><span class="p">;</span><span class="w"> </span><span class="nx">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">oo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">oldArray</span><span class="p">[</span><span class="nx">j</span><span class="p">];</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">no</span><span class="p">.</span><span class="nx">_id</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="nx">oo</span><span class="p">.</span><span class="nx">_id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">found</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="k">break</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<p>With identical ids the inner loop exits at <code>j = 0</code> every time. The O(n²) scan becomes O(n),
+and a benchmark built on that fixture measures a code path that does not exist in
+production. Re-measuring the delta amplifier both ways, at three sizes:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">n treatments</th>
+<th>ids</th>
+<th style="text-align: right;">nested scan</th>
+<th style="text-align: right;">Map-indexed</th>
+<th>verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">600</td>
+<td>identical</td>
+<td style="text-align: right;">0.568 ms</td>
+<td style="text-align: right;">0.545 ms</td>
+<td>a wash — <strong>the published result</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">600</td>
+<td><strong>distinct</strong></td>
+<td style="text-align: right;"><strong>1.369 ms</strong></td>
+<td style="text-align: right;"><strong>0.507 ms</strong></td>
+<td>indexed wins <strong>2.7×</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">2 000</td>
+<td>identical</td>
+<td style="text-align: right;">1.880 ms</td>
+<td style="text-align: right;">1.802 ms</td>
+<td>a wash</td>
+</tr>
+<tr>
+<td style="text-align: right;">2 000</td>
+<td><strong>distinct</strong></td>
+<td style="text-align: right;"><strong>11.717 ms</strong></td>
+<td style="text-align: right;"><strong>1.751 ms</strong></td>
+<td>indexed wins <strong>6.7×</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">5 000</td>
+<td>identical</td>
+<td style="text-align: right;">5.005 ms</td>
+<td style="text-align: right;">4.611 ms</td>
+<td>a wash</td>
+</tr>
+<tr>
+<td style="text-align: right;">5 000</td>
+<td><strong>distinct</strong></td>
+<td style="text-align: right;"><strong>66.391 ms</strong></td>
+<td style="text-align: right;"><strong>4.389 ms</strong></td>
+<td>indexed wins <strong>15×</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>§7.5's conclusion needs splitting in two, because it blended two different functions:</strong></p>
+<ul>
+<li><strong>The delta (<code>nsArrayTreatments</code>) should just be indexed.</strong> There is no crossover at any
+  size measured. §7.5's "the fix is over 3× slower at typical sizes, so make it adaptive" is
+  an artifact of the fixture.</li>
+<li><strong>The merge (<code>idMergePreferNew</code>) should be left alone</strong>, and §7.5 is right about it — but
+  for a reason it did not state. Its second argument is the <em>incremental batch</em> (~3
+  documents), so the scan is O(n×3), never quadratic. Re-measured with distinct ids at 600
+  old / 3 new: nested 0.031 ms vs indexed 0.053 ms; at 5 000 / 3: 0.144 ms vs 0.404 ms.
+  Building a Set costs more than scanning three items. <strong>Nested wins under both id regimes.</strong></li>
+</ul>
+<p>A first attempt at a "distinct id" generator in <code>residency.js</code> was itself degenerate — an
+LCG whose low bits cycled, yielding 16 distinct values from 5 000 calls. It is now a
+monotonic counter in hex, asserted distinct. <strong>Recorded because the failure mode is the
+same one that produced the original defect, and it is invisible in the output.</strong></p>
+<h2 id="2-memory--exp-mt-035">2. Memory — EXP-MT-035<a class="headerlink" href="#2-memory--exp-mt-035" title="Permanent link">&para;</a></h2>
+<p>Marginal cost per tenant, measured as <code>heapUsed + external</code> delta with forced GC, sweeping
+to N=300, distinct ids throughout.</p>
+<table>
+<thead>
+<tr>
+<th>Arm</th>
+<th>What is held</th>
+<th style="text-align: right;">Per tenant @N=300</th>
+<th style="text-align: right;">vs resident</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>raw</code></td>
+<td><code>gen.js</code>-shaped fixture in a <code>Map</code> (reproduces §7.4's method)</td>
+<td style="text-align: right;">1,278 KB</td>
+<td style="text-align: right;">1.06×</td>
+</tr>
+<tr>
+<td><strong><code>resident</code></strong></td>
+<td><strong>real <code>ddata</code>: processed clone, 8 derived arrays, retained client projection</strong></td>
+<td style="text-align: right;"><strong>1,204 KB</strong></td>
+<td style="text-align: right;">1×</td>
+</tr>
+<tr>
+<td><code>alarm</code></td>
+<td>last SGV, direction, delta, thresholds, ack/snooze state</td>
+<td style="text-align: right;"><strong>0.6 KB</strong></td>
+<td style="text-align: right;"><strong>1/2,007</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Three results:</p>
+<ol>
+<li><strong>EXP-MT-035 answers yes, favourably.</strong> §7.4's 2.2 MB/tenant not only survives the real
+   <code>ddata</code>/<code>processTreatments</code> path, it <em>improves</em> to 1.18 MB — matching §2.7's independent
+   ~1.2 MB estimate. The synthetic arm was pessimistic because <code>JSON.parse</code> compacts the
+   object graph that the raw fixture holds loosely.</li>
+<li><strong>The per-tenant figure is flat.</strong> 1,206 → 1,204 KB from N=25 to N=300; no super-linear
+   term appears. Memory scales as expected.</li>
+<li><strong>The hot/cold ratio is 2,000×</strong>, which is what makes §5C tractable. §7.4.1 argued
+   <code>ddata</code> must split into an alarm-critical slice that survives eviction and a display slice
+   that does not; the alarm slice measures at <strong>0.6 KB</strong>. Ten thousand cold tenants cost
+   ~6 MB — alarm coverage for an entire hoster fits in the noise of one process.</li>
+</ol>
+<h2 id="3-the-load-cycle--and-where-it-goes">3. The load cycle — and where it goes<a class="headerlink" href="#3-the-load-cycle--and-where-it-goes" title="Permanent link">&para;</a></h2>
+<p>One incremental cycle, as <code>dataloader</code> performs it: process the new documents, merge them,
+re-derive the treatment arrays, rebuild the client projection, diff it. 600-treatment
+tenant, distinct ids, 400 iterations, first fifth discarded as warm-up.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>per-cycle breakdown (mean of 200):
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>  process         0.029 ms    0.3%   processRawDataForRuntime on the new batch
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>  merge           0.057 ms    0.6%   idMergePreferNew x3
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>  treatments      5.983 ms   63.3%   processTreatments  &lt;-- not in §2.1's cost centres
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>  projection      0.203 ms    2.1%   dataWithRecentStatuses
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>  delta           3.184 ms   33.7%   calcDelta
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>  TOTAL           9.457 ms
+</code></pre></div>
+<p><strong><code>processDurations</code> (<code>ddata.js:198-247</code>) is quadratic twice over:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nx">treatments</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">treatments</span><span class="p">.</span><span class="nx">filter</span><span class="p">((</span><span class="nx">t</span><span class="p">,</span><span class="w"> </span><span class="nx">index</span><span class="p">,</span><span class="w"> </span><span class="nx">self</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w">            </span><span class="c1">// O(n^2) dedup</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nx">index</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="nx">self</span><span class="p">.</span><span class="nx">findIndex</span><span class="p">(</span><span class="nx">x</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">x</span><span class="p">.</span><span class="nx">mills</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">mills</span><span class="p">));</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="p">...</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="nx">treatments</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">                              </span><span class="c1">// O(n^2) overlap cut</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="p">.</span><span class="nx">duration</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">treatments</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="w"> </span><span class="p">(</span><span class="nx">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">cutIfInInterval</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span><span class="w"> </span><span class="nx">e</span><span class="p">);</span><span class="w"> </span><span class="p">});</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="p">});</span>
+</code></pre></div>
+<p>It runs on every load, on each filtered treatment subset. Measured in isolation, with every
+event carrying a duration (the Loop/AAPS temp-basal case):</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">temp basals</th>
+<th style="text-align: right;"><code>processDurations</code></th>
+<th style="text-align: right;">ms / n² × 10⁶</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">0.379 ms</td>
+<td style="text-align: right;">37.9</td>
+</tr>
+<tr>
+<td style="text-align: right;">300</td>
+<td style="text-align: right;">1.523 ms</td>
+<td style="text-align: right;">16.9</td>
+</tr>
+<tr>
+<td style="text-align: right;">600</td>
+<td style="text-align: right;">4.614 ms</td>
+<td style="text-align: right;">12.8</td>
+</tr>
+<tr>
+<td style="text-align: right;">1 200</td>
+<td style="text-align: right;">19.322 ms</td>
+<td style="text-align: right;">13.4</td>
+</tr>
+<tr>
+<td style="text-align: right;">2 400</td>
+<td style="text-align: right;">88.902 ms</td>
+<td style="text-align: right;">15.4</td>
+</tr>
+<tr>
+<td style="text-align: right;">5 000</td>
+<td style="text-align: right;"><strong>343.481 ms</strong></td>
+<td style="text-align: right;">13.7</td>
+</tr>
+</tbody>
+</table>
+<p>The constant <code>ms/n²</code> from 600 upward confirms the quadratic. <strong>600 temp basals is not a
+tail case</strong>: §2.2's 60-hour treatment retention over a 5-minute temp-basal cadence is ~720.
+The typical Loop or AAPS site sits in the middle of this table, and a long-history site at
+the bottom of it — <strong>a 343 ms event-loop stall per load cycle, on single-tenant Nightscout
+today.</strong></p>
+<h3 id="31-the-plugin-tier--exp-mt-035b">3.1 The plugin tier — EXP-MT-035b<a class="headerlink" href="#31-the-plugin-tier--exp-mt-035b" title="Permanent link">&para;</a></h3>
+<p>The first pass omitted it, and named the omission as the most important gap. <code>bootevent.js</code>
+runs this after <strong>every</strong> load, per tenant:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kd">var</span><span class="w"> </span><span class="nx">sbx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">require</span><span class="p">(</span><span class="s1">'../sandbox'</span><span class="p">)().</span><span class="nx">serverInit</span><span class="p">(</span><span class="nx">env</span><span class="p">,</span><span class="w"> </span><span class="nx">ctx</span><span class="p">);</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nx">ctx</span><span class="p">.</span><span class="nx">plugins</span><span class="p">.</span><span class="nx">setProperties</span><span class="p">(</span><span class="nx">sbx</span><span class="p">);</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="nx">ctx</span><span class="p">.</span><span class="nx">notifications</span><span class="p">.</span><span class="nx">initRequests</span><span class="p">();</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="nx">ctx</span><span class="p">.</span><span class="nx">plugins</span><span class="p">.</span><span class="nx">checkNotifications</span><span class="p">(</span><span class="nx">sbx</span><span class="p">);</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="nx">ctx</span><span class="p">.</span><span class="nx">notifications</span><span class="p">.</span><span class="nx">process</span><span class="p">(</span><span class="nx">sbx</span><span class="p">);</span>
+</code></pre></div>
+<p>Measured with 30 enabled plugins — a realistic Loop/AAPS <code>ENABLE</code> set — against the same
+real <code>ddata</code>:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">treatments</th>
+<th style="text-align: right;"><code>serverInit</code></th>
+<th style="text-align: right;"><code>setProperties</code></th>
+<th style="text-align: right;"><code>checkNotifications</code></th>
+<th style="text-align: right;"><strong>total p50</strong></th>
+<th style="text-align: right;">total p99</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">300</td>
+<td style="text-align: right;">0.071</td>
+<td style="text-align: right;">0.585</td>
+<td style="text-align: right;">0.037</td>
+<td style="text-align: right;"><strong>0.639 ms</strong></td>
+<td style="text-align: right;">1.297 ms</td>
+</tr>
+<tr>
+<td style="text-align: right;">600</td>
+<td style="text-align: right;">0.130</td>
+<td style="text-align: right;">0.550</td>
+<td style="text-align: right;">0.047</td>
+<td style="text-align: right;"><strong>0.666 ms</strong></td>
+<td style="text-align: right;">1.639 ms</td>
+</tr>
+<tr>
+<td style="text-align: right;">1 200</td>
+<td style="text-align: right;">0.167</td>
+<td style="text-align: right;">0.569</td>
+<td style="text-align: right;">0.068</td>
+<td style="text-align: right;"><strong>0.745 ms</strong></td>
+<td style="text-align: right;">1.616 ms</td>
+</tr>
+<tr>
+<td style="text-align: right;">2 400</td>
+<td style="text-align: right;">0.322</td>
+<td style="text-align: right;">0.556</td>
+<td style="text-align: right;">0.124</td>
+<td style="text-align: right;"><strong>0.928 ms</strong></td>
+<td style="text-align: right;">1.838 ms</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Good news, and it sharpens the rest.</strong> The plugin tier is <strong>flat</strong> — 0.64 → 0.93 ms across
+an 8× change in treatment volume — so it has none of the quadratic behaviour the data path
+has. <code>setProperties</code> (all 30 plugins) is the bulk of it and does not move at all; the growth
+is entirely in <code>serverInit</code>, which does <code>ddata.clone()</code> plus a deep clone of profiles.</p>
+<p>It adds ~6 % to a broken cycle and ~40 % to a fixed one. <strong>K falls by ~4 % on current code
+and ~30 % after the fixes</strong> — real, but not the order-of-magnitude risk flagged earlier.</p>
+<h2 id="4-the-fix-and-what-it-is-worth--exp-mt-028-extended">4. The fix, and what it is worth — EXP-MT-028 extended<a class="headerlink" href="#4-the-fix-and-what-it-is-worth--exp-mt-028-extended" title="Permanent link">&para;</a></h2>
+<p><code>processDurations</code> replaced by a sorted forward scan (dedup via <code>Set</code> on <code>mills</code>; sort by
+<code>mills</code>; for each event with a duration, scan forward only while the next event starts
+before the current end). Semantics-preserving by construction: <code>cutIfInInterval</code> only fires
+when <code>base.mills &lt; end.mills</code>, so only later events can act, and durations shrink
+monotonically under cutting, so re-reading the bound each step visits exactly the pairs that
+can matter. <code>calcDelta</code>'s treatment scan replaced by a <code>Map</code> lookup.</p>
+<p>Output equivalence is asserted against the stock implementation on a mixed fixture including
+zero-duration end events: <strong>MATCH</strong> at every size run.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">treatments</th>
+<th style="text-align: right;">current p50</th>
+<th style="text-align: right;">+delta indexed</th>
+<th style="text-align: right;"><strong>+both</strong></th>
+<th style="text-align: right;">speedup</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">300</td>
+<td style="text-align: right;">2.734 ms</td>
+<td style="text-align: right;">2.618 ms</td>
+<td style="text-align: right;"><strong>1.033 ms</strong></td>
+<td style="text-align: right;">2.6×</td>
+</tr>
+<tr>
+<td style="text-align: right;">600</td>
+<td style="text-align: right;">9.541 ms</td>
+<td style="text-align: right;">7.753 ms</td>
+<td style="text-align: right;"><strong>1.523 ms</strong></td>
+<td style="text-align: right;"><strong>6.3×</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">1 200</td>
+<td style="text-align: right;">31.934 ms</td>
+<td style="text-align: right;">27.382 ms</td>
+<td style="text-align: right;"><strong>2.518 ms</strong></td>
+<td style="text-align: right;">12.7×</td>
+</tr>
+<tr>
+<td style="text-align: right;">2 400</td>
+<td style="text-align: right;">121.178 ms</td>
+<td style="text-align: right;">101.689 ms</td>
+<td style="text-align: right;"><strong>4.477 ms</strong></td>
+<td style="text-align: right;"><strong>27×</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Indexing the delta alone buys only ~19 %, because <code>processDurations</code> dominates. <strong>The two
+fixes are not independent and should not be scheduled separately.</strong></p>
+<p><img alt="Composition of one load cycle, current code versus both quadratics fixed, and how each scales with treatment volume" src="../../visualizations/mt-load-cycle-composition.svg" /></p>
+<p>Per-stage means at 600 treatments, from the same run (<code>cycle-fix.js --stages</code>):</p>
+<table>
+<thead>
+<tr>
+<th>stage</th>
+<th style="text-align: right;">current</th>
+<th style="text-align: right;">both fixed</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>processDurations</code></td>
+<td style="text-align: right;">5.856 ms</td>
+<td style="text-align: right;"><strong>0.104 ms</strong></td>
+<td><strong>56×</strong></td>
+</tr>
+<tr>
+<td><code>calcDelta</code> treatments</td>
+<td style="text-align: right;">3.077 ms</td>
+<td style="text-align: right;">1.381 ms</td>
+<td>2.2×</td>
+</tr>
+<tr>
+<td>rest of the data path</td>
+<td style="text-align: right;">0.259 ms</td>
+<td style="text-align: right;">0.208 ms</td>
+<td>—</td>
+</tr>
+<tr>
+<td>plugin tier (§3.1)</td>
+<td style="text-align: right;">0.666 ms</td>
+<td style="text-align: right;">0.666 ms</td>
+<td>unchanged</td>
+</tr>
+<tr>
+<td><strong>total</strong></td>
+<td style="text-align: right;"><strong>9.86 ms</strong></td>
+<td style="text-align: right;"><strong>2.36 ms</strong></td>
+<td><strong>4.2×</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The fixed <code>calcDelta</code> figure is <strong>conservative</strong>: the replacement pre-resolves whether
+anything changed and then delegates to the stock function, rather than replacing
+<code>nsArrayTreatments</code> outright. A proper indexed implementation would be faster still.</p>
+<h2 id="5-solving-for-k">5. Solving for K<a class="headerlink" href="#5-solving-for-k" title="Permanent link">&para;</a></h2>
+<p>K is bounded by whichever binds first:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>K_memory = heap_budget / resident_bytes_per_tenant
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>K_cpu    = (utilisation_target x 1000 ms/s) / (cycle_ms x loads_per_second)
+</code></pre></div>
+<p>Using a 30 % event-loop utilisation target (leaving headroom for GC, request handling and
+socket fan-out), an <em>active</em> tenant loading once per 5 s (<code>UPDATE_MAX_WAIT</code> under a write
+stream), and an <em>idle</em> tenant on the 60 s heartbeat:</p>
+<table>
+<thead>
+<tr>
+<th>Tenant profile</th>
+<th>code</th>
+<th style="text-align: right;">cycle incl. plugins</th>
+<th style="text-align: right;">K (active)</th>
+<th style="text-align: right;">K (idle)</th>
+<th style="text-align: right;">K_memory @4 GB</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>typical, 600 treatments</td>
+<td>current</td>
+<td style="text-align: right;">10.21 ms</td>
+<td style="text-align: right;"><strong>147</strong></td>
+<td style="text-align: right;">1 764</td>
+<td style="text-align: right;">3 471</td>
+</tr>
+<tr>
+<td>typical, 600 treatments</td>
+<td><strong>+both fixes</strong></td>
+<td style="text-align: right;">2.19 ms</td>
+<td style="text-align: right;"><strong>685</strong></td>
+<td style="text-align: right;">8 220</td>
+<td style="text-align: right;">3 471</td>
+</tr>
+<tr>
+<td>heavy, 2 400 treatments</td>
+<td>current</td>
+<td style="text-align: right;">122.1 ms</td>
+<td style="text-align: right;"><strong>12</strong></td>
+<td style="text-align: right;">147</td>
+<td style="text-align: right;">3 471</td>
+</tr>
+<tr>
+<td>heavy, 2 400 treatments</td>
+<td><strong>+both fixes</strong></td>
+<td style="text-align: right;">5.41 ms</td>
+<td style="text-align: right;"><strong>277</strong></td>
+<td style="text-align: right;">3 326</td>
+<td style="text-align: right;">3 471</td>
+</tr>
+</tbody>
+</table>
+<p><strong>K_cpu is below K_memory in every row</strong>, by between 4× and 290×. §7.4.1's inferred claim —
+that tiering moves the binding constraint from memory to the load cycle — is now measured,
+and it holds with room to spare. With the fixes, K_cpu and K_memory come within the same
+order of magnitude for the first time, which is when residency tiering starts to pay for
+itself on memory as well as on cycles.</p>
+<p><strong>And M.</strong> A hoster with 10 000 tenants at a 15 % concurrent-active fraction, 5 % of active
+tenants being heavy:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;">work per second</th>
+<th style="text-align: right;">M (application shards)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>current code</td>
+<td style="text-align: right;">4 741 ms/s</td>
+<td style="text-align: right;"><strong>~16</strong></td>
+</tr>
+<tr>
+<td>+both fixes</td>
+<td style="text-align: right;">705 ms/s</td>
+<td style="text-align: right;"><strong>~3</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Two functions are worth a factor of five in M.</strong> That is the single most decision-relevant
+number here: at M≈3 the sharding in §5E is justified by blast radius, rolling upgrades and
+the ability to relocate a noisy tenant — <strong>not by capacity</strong>. A design that shards for
+capacity reasons before fixing the quadratics would be buying hardware to run an O(n²) loop.</p>
+<h2 id="6-k-per-component--now-measured">6. K per component — now measured<a class="headerlink" href="#6-k-per-component--now-measured" title="Permanent link">&para;</a></h2>
+<p>Three of the five components are measured; two (router/auth, storage) are not.</p>
+<p><img alt="K by component: APP shard 147 current and 685 fixed, vendor pool machinery 9,700, realtime fan-out 27,500, on a log scale" src="../../visualizations/mt-k-by-component.svg" /></p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Binding resource</th>
+<th style="text-align: right;">K (tenants/process)</th>
+<th>Measured</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>APP shard</strong>, current</td>
+<td>event-loop CPU, 10.2 ms/cycle</td>
+<td style="text-align: right;"><strong>147</strong></td>
+<td>yes</td>
+</tr>
+<tr>
+<td><strong>APP shard</strong>, fixed</td>
+<td>event-loop CPU, 2.2 ms/cycle</td>
+<td style="text-align: right;"><strong>685</strong></td>
+<td>yes</td>
+</tr>
+<tr>
+<td><strong>VCPOOL</strong> machinery</td>
+<td>actor memory, 419 KB/account</td>
+<td style="text-align: right;"><strong>~9 700</strong></td>
+<td>yes — but see below</td>
+</tr>
+<tr>
+<td><strong>REALTIME</strong> fan-out</td>
+<td>emit cost + socket memory</td>
+<td style="text-align: right;"><strong>~27 500</strong></td>
+<td>yes</td>
+</tr>
+<tr>
+<td><strong>ROUTER / AUTH</strong></td>
+<td>stateless; request rate</td>
+<td style="text-align: right;">unbounded at this scale</td>
+<td>no — EXP-MT-041</td>
+</tr>
+<tr>
+<td><strong>STORAGE</strong></td>
+<td>see §9</td>
+<td style="text-align: right;">—</td>
+<td>not measured here, by choice</td>
+</tr>
+</tbody>
+</table>
+<h3 id="61-realtime--exp-mt-045a">6.1 Realtime — EXP-MT-045a<a class="headerlink" href="#61-realtime--exp-mt-045a" title="Permanent link">&para;</a></h3>
+<p>A socket.io server in its own process, clients in four separate processes so their cost
+never lands in the server's RSS, broadcasting a realistic <code>dataUpdate</code> delta (one SGV, one
+devicestatus with a 72-point prediction) exactly as <code>websocket.js:150</code> does.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">sockets</th>
+<th style="text-align: right;">rooms</th>
+<th style="text-align: right;">KB/socket</th>
+<th style="text-align: right;">broadcast p50</th>
+<th style="text-align: right;">µs/socket</th>
+<th style="text-align: right;">delivered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">500</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">38.2</td>
+<td style="text-align: right;">11.06 ms</td>
+<td style="text-align: right;">22.1</td>
+<td style="text-align: right;">500</td>
+</tr>
+<tr>
+<td style="text-align: right;">1 000</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">42.9</td>
+<td style="text-align: right;">14.15 ms</td>
+<td style="text-align: right;">14.2</td>
+<td style="text-align: right;">1 000</td>
+</tr>
+<tr>
+<td style="text-align: right;">2 000</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">39.1</td>
+<td style="text-align: right;">25.64 ms</td>
+<td style="text-align: right;">12.8</td>
+<td style="text-align: right;">2 000</td>
+</tr>
+<tr>
+<td style="text-align: right;">4 000</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">30.5</td>
+<td style="text-align: right;">41.45 ms</td>
+<td style="text-align: right;">10.4</td>
+<td style="text-align: right;">4 000</td>
+</tr>
+<tr>
+<td style="text-align: right;">2 000</td>
+<td style="text-align: right;">500</td>
+<td style="text-align: right;">32.6</td>
+<td style="text-align: right;">33.90 ms</td>
+<td style="text-align: right;">17.0</td>
+<td style="text-align: right;">2 000</td>
+</tr>
+<tr>
+<td style="text-align: right;">4 000</td>
+<td style="text-align: right;">1 000</td>
+<td style="text-align: right;">31.9</td>
+<td style="text-align: right;">54.56 ms</td>
+<td style="text-align: right;">13.6</td>
+<td style="text-align: right;">4 000</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>~31 KB per connected socket</strong> at scale — 100 000 sockets is ~3 GB, so memory bounds this
+  around 10⁵ sockets.</li>
+<li><strong>Fan-out is linear at ~10–14 µs/socket</strong>, plus roughly 20 µs fixed per room emit. Tenant
+  rooms cost ~30 % more than one shared room at equal socket count, because each emit pays
+  its own fixed cost — the price of the tenant isolation §2.4 requires, and worth it.</li>
+<li>At one tenant-room emit per 5 s with four followers (~55 µs/tenant), a 30 % budget gives
+  <strong>K ≈ 27 500 tenants</strong>. CPU and memory bound at about the same place.</li>
+</ul>
+<p><strong>Realtime is 40–190× the APP shard's K.</strong> That is the clearest split in the system.</p>
+<h3 id="62-vendor-connectivity--exp-mt-048a-and-a-corrected-guess">6.2 Vendor connectivity — EXP-MT-048a, and a corrected guess<a class="headerlink" href="#62-vendor-connectivity--exp-mt-048a-and-a-corrected-guess" title="Permanent link">&para;</a></h3>
+<p>800 real <code>nightscout-connect</code> actor graphs (session + cycle + fetch + poller machines) in one
+process, each configured for the <code>nightscout</code> source pointed at a <strong>local mock</strong>. No vendor
+endpoint was contacted and no credentials were used.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">accounts</th>
+<th style="text-align: right;">RSS</th>
+<th style="text-align: right;">KB/actor (idle)</th>
+<th style="text-align: right;">active handles</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">16.6 MB</td>
+<td style="text-align: right;">170</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: right;">400</td>
+<td style="text-align: right;">84.1 MB</td>
+<td style="text-align: right;">216</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: right;">800</td>
+<td style="text-align: right;">155.0 MB</td>
+<td style="text-align: right;">198</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: right;">800, running</td>
+<td style="text-align: right;">327.6 MB</td>
+<td style="text-align: right;"><strong>419</strong></td>
+<td style="text-align: right;">256</td>
+</tr>
+</tbody>
+</table>
+<p>Every shipped vendor source declares <code>expected_data_interval_ms = 5 * 60 * 1000</code>. Confirmed
+in a single-actor trace: after one <code>/api/v1/verifyauth</code>, the actor goes <strong>silent</strong> — no
+upstream request for the next 20 s. Starting all 800 took 166 ms.</p>
+<p>The machinery supports
+<strong>~9 700 accounts per process at 4 GB</strong>, and event-loop cost is negligible because an
+account does real work once per five minutes. What actually bounds a vendor pool is the
+<strong>vendor's per-account and per-egress-IP rate limiting</strong>, which no harness here can measure
+— that needs real credentials and is EXP-MT-051.</p>
+<p>Two structural observations that do not need vendor access:</p>
+<ol>
+<li><strong>Start is a thundering herd.</strong> All 800 actors issued their first upstream request within
+   the same 4-second window, because <code>run()</code> sends <code>START</code> immediately with no jitter. On a
+   real vendor that is 800 requests from one IP in under a second, <strong>on every pool restart
+   and every deploy</strong> — precisely the pattern a per-IP limiter penalises. Start jitter is a
+   small, obviously correct change to make before any pool runs at density.</li>
+<li>
+<p><strong>The aligned poll interval is already jittered; the start is the burst.</strong> (The 20-second
+   trace above never reaches a second cycle, so this comes from T0.4, 2026-09-15.) All four
+   vendor drivers independently spell <code>Math.floor(Math.random() * 18000)</code> into the timestamp
+   they align to. Measured over <strong>700 s at 400 actors</strong> (EXP-MT-048b,
+   <code>tools/mt-bench/vcherd.js</code>), the second and third cycles arrive as a band about <strong>15 s wide
+   peaking at 30 requests/s</strong> — while the first cycle is <strong>400 requests in one second</strong>, 13×
+   that peak. The burst does not repeat; the start is the burst.
+   What <em>is</em> unjittered is the <strong>unaligned</strong> interval — the branch taken when a source declines
+   to align, i.e. when the vendor has produced nothing new — and that is the case where the
+   pool is already stepping together. Both are now configurable
+   (<code>CONNECT_START_JITTER_MS</code>, <code>CONNECT_INTERVAL_JITTER_MS</code>, each defaulting to 0);
+   see the register's BF-08 (status 2026-09-22: fixed on branch <code>fix/connect-timer-jitter</code>,
+   not merged).</p>
+</li>
+<li>
+<p><strong>Backoff discards its configuration.</strong> With a deliberately broken auth mock, one actor made
+   4 <code>verifyauth</code> attempts in 12 s. T0.4 (2026-09-15) found why: <code>backoff()</code> merges its options
+   as <code>{ ...config, ...defaults }</code>, so <strong>every value every source passes it is discarded</strong> and
+   every retry runs on the 256 ms default instead of the configured 2.5 minutes.
+   <code>use_random_slot</code> is discarded the same way, so the pool retries in lockstep. At 100 actors
+   the shipped code delivered <strong>800 requests in 3 seconds</strong> to an upstream that was refusing
+   every one of them. This is the register's <strong>BF-34</strong> (status 2026-09-22: fixed on branch
+   <code>fix/connect-timer-jitter</code>, not merged).</p>
+</li>
+</ol>
+<h3 id="63-what-this-means-for-splitting">6.3 What this means for splitting<a class="headerlink" href="#63-what-this-means-for-splitting" title="Permanent link">&para;</a></h3>
+<p>Split where K differs by an order of magnitude:</p>
+<ul>
+<li><strong>APP shard (~10²–10³) vs everything else (~10⁴)</strong> is the real boundary. Realtime fan-out
+  and the vendor pool both belong outside the shard, and for <em>different</em> reasons — one is
+  bounded by socket memory, the other by somebody else's rate limiter.</li>
+<li><strong>Do not split realtime and vcpool from each other</strong> on these numbers; they are within the
+  same order of magnitude, and splitting costs a hop for no measured benefit.</li>
+<li><strong>Router/auth is stateless</strong> and can live wherever is convenient until EXP-MT-041 says
+  otherwise.</li>
+</ul>
+<h2 id="7-what-this-says-about-b-c-d-and-e">7. What this says about B, C, D and E<a class="headerlink" href="#7-what-this-says-about-b-c-d-and-e" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>B (resident context per tenant) is the right substrate</strong> and is cheaper than believed:
+  1.18 MB/tenant against real code.</li>
+<li><strong>C (B plus tiering) is what makes a hoster's numbers work</strong>, and the alarm slice that
+  §7.4.1 requires measures at 0.6 KB — a 2 000× ratio. The hard part was never the wake cost
+  (§7.1: 2.5–4 ms); it is the policy and the alarm split, and the split is now sized.</li>
+<li><strong>D (stateless) loses, and the margin is the finding.</strong> A full rebuild is 10.8 ms against
+  9.5 ms for an incremental cycle — today, <em>that is not a margin at all</em>, which is itself an
+  indictment of the incremental path. After the fixes the incremental cycle is 1.5 ms and D
+  loses by 7×. <strong>D only looks competitive while the resident path is broken.</strong></li>
+<li><strong>E is the deployment shape, not an alternative</strong>, exactly as §5 says — and M is small
+  once the quadratics are gone. Commit to E for operational reasons, size it from K, and do
+  not let it become the answer to a performance problem that is really two functions.</li>
+</ul>
+<p><strong>Recommended commitment: B + C as the runtime, E as the deployment shape, D rejected</strong> —
+with the explicit condition that the quadratics are fixed first, because they move K by
+~6× and M by ~8× and nothing about the architecture choice does.</p>
+<h2 id="8-the-structural-change-set--worth-doing-with-or-without-multitenancy">8. The structural change set — worth doing with or without multitenancy<a class="headerlink" href="#8-the-structural-change-set--worth-doing-with-or-without-multitenancy" title="Permanent link">&para;</a></h2>
+<p><strong>This section exists because the two are easy to conflate, and should not be.</strong> The
+per-tenant <code>Map&lt;tenantId, ctx&gt;</code> is a multitenancy feature. The quadratics are not — they are
+defects in the shipping product. A single-tenant operator with a long treatment history is
+paying a 121 ms event-loop stall on every load cycle today, and nothing about that requires a
+second tenant to be a problem.</p>
+<pre class="mermaid"><code>graph LR
+    subgraph NOW["Ships today · every Nightscout site"]
+        direction TB
+        F1["&lt;b&gt;Fix processDurations&lt;/b&gt;&lt;br/&gt;ddata.js:198-247&lt;br/&gt;O(n²) dedup + O(n²) overlap cut&lt;br/&gt;→ sorted forward scan"]
+        F2["&lt;b&gt;Index calcDelta's treatment scan&lt;/b&gt;&lt;br/&gt;calcdelta.js:15-76&lt;br/&gt;→ Map lookup"]
+        F3["&lt;b&gt;Regression test for per-service&lt;br/&gt;alarm state&lt;/b&gt;&lt;br/&gt;protects 9e869662 on #8605"]
+        F4["&lt;b&gt;speech.js module state&lt;/b&gt;&lt;br/&gt;+ lint rule banning&lt;br/&gt;module-scope plugin state"]
+    end
+    subgraph LATER["Multitenancy · needs the above first"]
+        direction TB
+        M1["&lt;b&gt;ctxFor(tenantId)&lt;/b&gt;&lt;br/&gt;Map&amp;lt;tenantId, ctx&amp;gt;&lt;br/&gt;§5B substrate"]
+        M2["&lt;b&gt;ddata split&lt;/b&gt;&lt;br/&gt;alarm slice 0.6 KB resident&lt;br/&gt;display slice 1,204 KB evictable"]
+        M3["&lt;b&gt;Tenant socket rooms&lt;/b&gt;&lt;br/&gt;+ tenant-bound socket auth"]
+        M4["&lt;b&gt;Per-tenant load guard&lt;/b&gt;&lt;br/&gt;replaces the shared&lt;br/&gt;dataloadRunning flag"]
+    end
+    NOW ==&gt;|"K: 147 → 685&lt;br/&gt;M: 16 → 3"| LATER
+
+    style F1 fill:#d4edda,stroke:#2c7a3f,color:#111
+    style F2 fill:#d4edda,stroke:#2c7a3f,color:#111
+    style F3 fill:#d4edda,stroke:#2c7a3f,color:#111
+    style F4 fill:#d4edda,stroke:#2c7a3f,color:#111
+    style M1 fill:#fff3cd,stroke:#a1791b,color:#111
+    style M2 fill:#fff3cd,stroke:#a1791b,color:#111
+    style M3 fill:#fff3cd,stroke:#a1791b,color:#111
+    style M4 fill:#fff3cd,stroke:#a1791b,color:#111</code></pre>
+<p><strong>The left column is a standalone PR set against the post-#8605 tree.</strong> It needs no tenancy
+design decision, no schema change and no new dependency. Its justification is single-tenant
+responsiveness; the multitenancy payoff (K ×4.7, M ÷5) is a side effect.</p>
+<p><strong>The right column is the multitenancy work</strong>, and §7's answer applies to it: the per-tenant
+Map is the recommended substrate. But building it <em>first</em> means building a shard whose
+capacity is 147 tenants instead of 685, and then discovering that the fix was in two
+functions all along.</p>
+<h2 id="9-storage--deliberately-not-measured-here">9. Storage — deliberately not measured here<a class="headerlink" href="#9-storage--deliberately-not-measured-here" title="Permanent link">&para;</a></h2>
+<p>The storage component's scaling properties are well documented by both engines' own
+projects, and re-deriving them on a shared development machine with no representative
+working set would produce numbers worse than the published ones. The
+<a href="../../30-design/tenancy/nightscout-multitenancy-discussion-2026-09-09.html#67-storage-decision-a-ladder-and-the-number-that-decides-the-last-rung">storage ladder</a>
+already sets the direction; what remains genuinely project-specific is <strong>N*</strong>, the tenant
+count at which database-per-tenant on one MongoDB cluster degrades, because that depends on
+Nightscout's own index set — <strong>35 secondary indexes per tenant database</strong>, counted from
+<code>indexedFields</code>. That is the one storage number worth measuring locally, and it is
+EXP-MT-040's neighbour rather than part of this report.</p>
+<h2 id="10-what-is-not-measured-and-matters">10. What is not measured, and matters<a class="headerlink" href="#10-what-is-not-measured-and-matters" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Plugin execution — measured (§3.1)</strong>: 0.61–0.93 ms, flat. K falls ~4 % on current code
+   and ~30 % after the fixes. (Revised upward in <a href="alarm-critical-slice-2026-09-15.html">the alarm-critical slice</a> §4.2: 27.5 ms p50 with <code>cob</code> enabled.)</li>
+<li><strong>No database in the loop.</strong> Every figure is local CPU and heap. §2.3's ~14 DB operations
+   per load are not included, and EXP-MT-026 should establish whether network RTT dominates
+   before K is quoted as capacity.</li>
+<li><strong>No socket fan-out, no HTTP request handling, no GC pressure at N.</strong> The utilisation
+   target of 30 % is a placeholder for exactly these, not a measurement of them.</li>
+<li><strong>The load-rate assumption drives K linearly.</strong> "Active = one load per 5 s" is taken from
+   <code>UPDATE_MAX_WAIT</code>, not from observed uploader behaviour. §8.1's replayable traces would
+   replace it.</li>
+<li><strong>The treatment fixture is homogeneous</strong> — 600 Temp Basals. Real sites mix 28 event types
+   with different <code>duration</code> semantics, and <code>processDurations</code> cost depends on how many
+   events carry durations.</li>
+<li><strong>The proposed <code>processDurations</code> replacement is asserted equivalent on a fixture, not
+   proved.</strong> It needs the existing suites plus adversarial cases (nested overlaps, zero and
+   negative durations, identical <code>mills</code>, profile-switch cutting) before it is a patch.</li>
+<li><strong>The vendor pool's actual limit is unmeasured and unmeasurable here.</strong> §6.2 bounds the
+   <em>machinery</em> at ~9 700 accounts; the vendor's per-account and per-egress-IP rate limits are
+   what bind in production, and establishing them needs real credentials (EXP-MT-051). Treat
+   the 9 700 as a ceiling the real answer sits well below.</li>
+<li><strong>Realtime was measured with idle clients.</strong> The client processes connect and count
+   <code>dataUpdate</code> events; they do not render, reconnect, or churn. Reconnect storms after a
+   deploy are the interesting case and are not covered.</li>
+<li><strong>Router/auth (EXP-MT-041) and storage (§9) are not measured</strong>, so the component picture
+   has two gaps — both in components expected to be far from binding.</li>
+</ol>
+<h2 id="11-reproduction">11. Reproduction<a class="headerlink" href="#11-reproduction" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nb">cd</span><span class="w"> </span>tools/mt-bench
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>node<span class="w"> </span>--expose-gc<span class="w"> </span>residency.js<span class="w"> </span>resident<span class="w"> </span><span class="m">300</span><span class="w"> </span>--unique<span class="w">   </span><span class="c1"># memory, real ddata</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>node<span class="w"> </span>--expose-gc<span class="w"> </span>residency.js<span class="w"> </span>alarm<span class="w">    </span><span class="m">300</span><span class="w"> </span>--unique<span class="w">   </span><span class="c1"># cold-tier slice</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>node<span class="w"> </span>--expose-gc<span class="w"> </span>residency.js<span class="w"> </span>cycle<span class="w">    </span><span class="m">400</span><span class="w"> </span>--unique<span class="w">   </span><span class="c1"># incremental cycle</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>node<span class="w"> </span>--expose-gc<span class="w"> </span>residency.js<span class="w"> </span>rebuild<span class="w">  </span><span class="m">200</span><span class="w"> </span>--unique<span class="w">   </span><span class="c1"># stateless (§5D)</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>node<span class="w"> </span>cycle-fix.js<span class="w"> </span><span class="m">300</span><span class="w"> </span><span class="m">600</span><span class="w">                             </span><span class="c1"># current vs indexed vs both, + stages</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>node<span class="w"> </span>--expose-gc<span class="w"> </span>plugin-cycle.js<span class="w"> </span><span class="m">200</span><span class="w"> </span><span class="m">600</span><span class="w">              </span><span class="c1"># plugin tier</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>node<span class="w"> </span>realtime.js<span class="w"> </span><span class="m">4000</span><span class="w"> </span><span class="m">1000</span><span class="w"> </span><span class="m">4</span><span class="w">                          </span><span class="c1"># socket fan-out</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>node<span class="w"> </span>--expose-gc<span class="w"> </span>vcpool.js<span class="w"> </span><span class="m">800</span><span class="w">                        </span><span class="c1"># vendor-connectivity density</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>python3<span class="w"> </span>figures.py<span class="w">                                    </span><span class="c1"># regenerate both SVGs</span>
+</code></pre></div>
+<p>Raw results: <code>tools/mt-bench/results/exp-mt-035.json</code> (memory, cycle),
+<code>exp-mt-components.json</code> (plugins, realtime, vcpool), <code>exp-mt-cycle-stages.json</code>.
+Figures: <code>docs/visualizations/mt-load-cycle-composition.svg</code>, <code>mt-k-by-component.svg</code>.</p>
+<hr />
+<h2 id="12-third-pass-the-rest-tier-and-three-corrections">12. Third pass: the REST tier, and three corrections<a class="headerlink" href="#12-third-pass-the-rest-tier-and-three-corrections" title="Permanent link">&para;</a></h2>
+<p><strong>Experiments</strong>: EXP-MT-055 (api/entries cached read), EXP-MT-055b (<code>cache.insertData</code>
+clone), EXP-MT-035c (resident cost including <code>ctx.cache</code>), EXP-MT-035d (alarm slice
+re-scoped), EXP-MT-056 (deployment cost model)
+<strong>Harness</strong>: <code>tools/mt-bench/apitier.js</code>, <code>deployment-cost.js</code>; raw results in
+<code>results/exp-mt-apitier.json</code> and <code>exp-mt-deployment-cost.json</code>
+<strong>Added</strong>: 2026-09-14, third session. Same machine, same conditions, no database in the loop.</p>
+<p>This pass was prompted by two maintainer questions the first two passes could not answer:
+whether the REST tier scales differently from the websocket tier, and whether an 8–15 ms
+margin is the right thing to decide an architecture on. Answering the first required
+measuring a tier no pass had measured. Doing that turned up three corrections to figures
+this report already published.</p>
+<h3 id="121-api-v3-holds-no-resident-state--counted-not-estimated">12.1 API v3 holds no resident state — counted, not estimated<a class="headerlink" href="#121-api-v3-holds-no-resident-state--counted-not-estimated" title="Permanent link">&para;</a></h3>
+<p>Every server-side reader of <code>ctx.ddata</code> on <code>dev</code> @ <code>a8888f0d</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Reader</th>
+<th>Reads</th>
+<th>Residency needed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>lib/sandbox.js:52,60-61</code></td>
+<td><code>ddata.clone()</code> + profiles deep clone</td>
+<td>full</td>
+</tr>
+<tr>
+<td><code>lib/server/websocket.js:813,820</code></td>
+<td>full <code>ddata</code>, plus the retained <code>lastData</code></td>
+<td>full</td>
+</tr>
+<tr>
+<td><code>lib/api2/summary/index.js:116-119</code></td>
+<td><code>ddata.sgvs</code>, <code>ddata.treatments</code></td>
+<td>full</td>
+</tr>
+<tr>
+<td><code>lib/api/entries/index.js:93-97</code></td>
+<td>last SGV, for the <code>Last-Modified</code> header</td>
+<td>latest only</td>
+</tr>
+<tr>
+<td><code>lib/server/loop.js:31-36</code></td>
+<td><code>ddata.profiles[0].loopSettings</code></td>
+<td>profile only</td>
+</tr>
+<tr>
+<td><code>lib/notifications.js:60-65</code></td>
+<td><code>ddata.lastUpdated</code></td>
+<td>one scalar</td>
+</tr>
+<tr>
+<td><code>lib/server/{entries,treatments,devicestatus}.js</code></td>
+<td><code>processRawDataForRuntime</code> <strong>as a function</strong></td>
+<td>none</td>
+</tr>
+<tr>
+<td><code>lib/server/cache.js:58</code></td>
+<td><code>idMergePreferNew</code> <strong>as a function</strong></td>
+<td>none</td>
+</tr>
+<tr>
+<td><strong><code>lib/api3/**</code></strong></td>
+<td>—</td>
+<td><strong>none — zero references</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>API v3 is already the stateless tier this programme kept proposing to build.</strong> Its
+<code>mongoCachedCollection</code> wrapper is write-through only: <code>findOne</code>, <code>findOneFilter</code> and
+<code>findMany</code> all delegate straight to <code>baseStorage</code>, so the cache it maintains exists to keep
+<em>v1's</em> read path warm, not to serve v3.</p>
+<p>Only two paths genuinely require a whole resident <code>ddata</code> — API v2's summary and the socket
+delta — and both are derivable from a query or a change feed rather than from residency.</p>
+<h3 id="122-exp-mt-055--what-residency-buys-and-a-42-defect-in-how-it-buys-it">12.2 EXP-MT-055 — what residency buys, and a 42× defect in how it buys it<a class="headerlink" href="#122-exp-mt-055--what-residency-buys-and-a-42-defect-in-how-it-buys-it" title="Permanent link">&para;</a></h3>
+<p><code>lib/api/entries/index.js:459-500</code> answers <code>/api/v1/entries.json</code> <strong>from resident memory with
+no database operation at all</strong> whenever the query is a bare count, or a count plus a <code>type</code>
+filter, and the cache holds enough documents. That is the highest-QPS endpoint in the
+Nightscout ecosystem — every follower app polls it — and no document in this workspace had
+recorded that it is served this way.</p>
+<p>The two branches of that one function do not cost the same:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;"><code>?count=</code></th>
+<th style="text-align: right;">untyped branch</th>
+<th style="text-align: right;">typed branch (<code>find[type]=sgv</code>)</th>
+<th style="text-align: right;">ratio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.827 ms</td>
+<td style="text-align: right;">0.007 ms</td>
+<td style="text-align: right;"><strong>110×</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0.830 ms</td>
+<td style="text-align: right;">0.020 ms</td>
+<td style="text-align: right;"><strong>42×</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">144</td>
+<td style="text-align: right;">1.008 ms</td>
+<td style="text-align: right;">0.197 ms</td>
+<td style="text-align: right;">5.1×</td>
+</tr>
+<tr>
+<td style="text-align: right;">576</td>
+<td style="text-align: right;">1.629 ms</td>
+<td style="text-align: right;">0.823 ms</td>
+<td style="text-align: right;">2.0×</td>
+</tr>
+</tbody>
+</table>
+<p>The untyped branch calls <code>ctx.cache.getData('entries')</code>, which deep-clones the <strong>entire</strong>
+48-hour array (<code>cache.js:73-76</code>) before anything is sliced, then clones the slice again. The
+typed branch reaches <code>ctx.cache.entries</code> through <code>Array.filter</code>, which copies references, and
+clones only the slice. <strong>So <code>?count=10</code> costs 0.83 ms or 0.02 ms for a byte-identical
+response, depending on whether the caller happened to pass a type filter.</strong></p>
+<p>Slicing before cloning preserves the defensive property exactly — the documents handed out
+are still clones — so this is behaviour-preserving. K for this tier, at three followers per
+tenant polling once a minute and a 30 % budget: <strong>7,555 tenants untyped, 314,136 typed.</strong>
+Either way the REST tier is nowhere near binding.</p>
+<h3 id="123-exp-mt-055b--after-8733-the-largest-cost-in-the-load-cycle-is-a-defensive-clone">12.3 EXP-MT-055b — after #8733, the largest cost in the load cycle is a defensive clone<a class="headerlink" href="#123-exp-mt-055b--after-8733-the-largest-cost-in-the-load-cycle-is-a-defensive-clone" title="Permanent link">&para;</a></h3>
+<p>§3's cycle measurement times <code>ddata</code>'s own functions. It does not include what the
+<em>dataloader</em> does on either side of them. <code>dataloader.js:196</code>, <code>:333</code> and <code>:490</code> each call
+<code>ctx.cache.insertData(type, batch)</code>, and <code>insertData</code> ends with <code>return data.getData(type)</code> —
+a JSON round-trip over the <strong>whole retained array</strong>, not over the incremental batch just
+merged. Three datatypes, every cycle:</p>
+<table>
+<thead>
+<tr>
+<th><code>getData</code></th>
+<th style="text-align: right;">n</th>
+<th style="text-align: right;">p50</th>
+<th style="text-align: right;">p99</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>entries</code></td>
+<td style="text-align: right;">576</td>
+<td style="text-align: right;">0.876 ms</td>
+<td style="text-align: right;">1.033 ms</td>
+</tr>
+<tr>
+<td><code>treatments</code></td>
+<td style="text-align: right;">600</td>
+<td style="text-align: right;">0.747 ms</td>
+<td style="text-align: right;">0.920 ms</td>
+</tr>
+<tr>
+<td><code>devicestatus</code></td>
+<td style="text-align: right;">576</td>
+<td style="text-align: right;"><strong>2.454 ms</strong></td>
+<td style="text-align: right;">4.579 ms</td>
+</tr>
+<tr>
+<td><strong>total per cycle</strong></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"><strong>4.08 ms</strong></td>
+<td style="text-align: right;"></td>
+</tr>
+</tbody>
+</table>
+<p>With <strong>PR #8733 treated as landed</strong> — the maintainer's own fix for the two quadratic scans,
+differential-tested over 636 randomised fixtures:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;">ddata work</th>
+<th style="text-align: right;">cache clone</th>
+<th style="text-align: right;">cycle</th>
+<th style="text-align: right;">K (active tenants/shard)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>as §3/§4 reported</td>
+<td style="text-align: right;">2.19 ms</td>
+<td style="text-align: right;"><em>not counted</em></td>
+<td style="text-align: right;">2.19 ms</td>
+<td style="text-align: right;">684</td>
+</tr>
+<tr>
+<td><strong>actual</strong></td>
+<td style="text-align: right;">2.19 ms</td>
+<td style="text-align: right;"><strong>4.08 ms</strong></td>
+<td style="text-align: right;"><strong>6.27 ms</strong></td>
+<td style="text-align: right;"><strong>239</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>#8733 does not make the load cycle cheap; it makes a defensive deep clone the dominant
+term.</strong> 65 % of the post-#8733 cycle is <code>cache.insertData</code> reconciling a resident copy, and
+§5's K of 685 is optimistic by 2.7× because the measurement stopped at <code>ddata</code>'s door.</p>
+<p>The caller does not keep the returned array — it reverses it and projects each element into
+a fresh object — so the clone defends against a mutation that mostly does not happen. There
+are only five <code>getData</code> call sites. <strong>But <code>dataloader.js:203</code> does <code>if (!element.mills)
+element.mills = element.date</code>, which writes to the element</strong>, and any change here has to
+resolve that write first. The number sizes the prize; it does not license the patch.</p>
+<p>Because <code>insertData</code> returns <code>getData(...)</code>, a clone, the caller's <code>.reverse()</code> does not flip
+the cache's own order.</p>
+<h3 id="124-exp-mt-035c--the-resident-figure-omits-ctxcache">12.4 EXP-MT-035c — the resident figure omits <code>ctx.cache</code><a class="headerlink" href="#124-exp-mt-035c--the-resident-figure-omits-ctxcache" title="Permanent link">&para;</a></h3>
+<p>§2's <code>resident</code> arm holds <code>ddata</code> plus the retained client projection. A real <code>ctx</code> also
+holds <code>lib/server/cache.js</code>'s arrays, and they are <strong>not</strong> a view onto <code>ddata</code>: the loader
+deep-clones each batch into the cache and separately <em>projects</em> entries into new objects for
+<code>ddata.sgvs</code>/<code>mbgs</code>/<code>cals</code>. Two independent object graphs over the same window.</p>
+<table>
+<thead>
+<tr>
+<th>Held</th>
+<th style="text-align: right;">Per tenant</th>
+<th style="text-align: right;">K_memory @ 4 GB</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ddata</code> + client projection (as §2 reported)</td>
+<td style="text-align: right;">1,331 KB</td>
+<td style="text-align: right;">3,152</td>
+</tr>
+<tr>
+<td><strong>+ <code>ctx.cache</code> arrays (what a <code>ctx</code> actually holds)</strong></td>
+<td style="text-align: right;"><strong>2,652 KB</strong></td>
+<td style="text-align: right;"><strong>1,581</strong></td>
+</tr>
+</tbody>
+</table>
+<p>§2's figure reproduces here at 1,331 KB rather than 1,204 KB because this fixture carries a
+real profile document where <code>gen.js</code> has <code>{}</code> — a fixture gap worth fixing in its own right.
+The ~2× cache factor is the finding.</p>
+<p>CPU still binds before memory, so §5's conclusion survives. The margin narrows from 4–290×
+to about 2–6×.</p>
+<h3 id="125-exp-mt-035d--the-alarm-slice-is-506-kb-not-06-kb">12.5 EXP-MT-035d — the alarm slice is 50.6 KB, not 0.6 KB<a class="headerlink" href="#125-exp-mt-035d--the-alarm-slice-is-506-kb-not-06-kb" title="Permanent link">&para;</a></h3>
+<p>§2's <code>alarm</code> arm (<code>residency.js:111-122</code>) models <code>simplealarms</code> only: last SGV, thresholds,
+ack state. The shipped alarm set is 18 plugins. Surveying what each actually reads on
+<code>dev</code> @ <code>a8888f0d</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Plugins</th>
+<th>Needs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>latest value only</td>
+<td><code>simplealarms</code> <code>errorcodes</code> <code>timeago</code> <code>dbsize</code> <code>pump</code> <code>loop</code> <code>openaps</code> <code>xdripjs</code> <code>upbat</code> <code>treatmentnotify</code></td>
+<td>one document</td>
+</tr>
+<tr>
+<td>short SGV window</td>
+<td><code>ar2</code>, via <code>bgnow</code>'s buckets</td>
+<td>~20 minutes of SGVs</td>
+</tr>
+<tr>
+<td>latest-of-type</td>
+<td><code>cannulaage</code> <code>insulinage</code> <code>sensorage</code> <code>batteryage</code></td>
+<td>newest of six event types — which <code>dataloader.js:396-418</code> already fetches as six <code>count:1</code> queries</td>
+</tr>
+<tr>
+<td>DIA window</td>
+<td><code>boluswizardpreview</code></td>
+<td>profile + IOB/COB over the treatment window</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Slice</th>
+<th style="text-align: right;">Per tenant</th>
+<th style="text-align: right;">vs resident</th>
+<th style="text-align: right;">10,000 cold tenants</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>minimal (<code>simplealarms</code> only, as §2 reported)</td>
+<td style="text-align: right;">0.5 KB</td>
+<td style="text-align: right;">5,017×</td>
+<td style="text-align: right;">5 MB</td>
+</tr>
+<tr>
+<td><strong>shipped (all 18 plugins)</strong></td>
+<td style="text-align: right;"><strong>50.6 KB</strong></td>
+<td style="text-align: right;"><strong>50×</strong></td>
+<td style="text-align: right;"><strong>494 MB</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>§2's 2,000× hot/cold ratio is really about 50×</strong>, and alarm coverage for a 10,000-tenant
+hoster is a few hundred MB rather than "the noise of one process". The conclusion that
+tiering is tractable survives; the number does not, and it should not be quoted as published.</p>
+<p>The important part is not the size but the <em>lifetime</em>: 50.6 KB is a <strong>transient</strong> working set
+— materialise, evaluate, discard — not something that must stay resident. The only alarm
+state that must be durable is ack/snooze, which is a few hundred bytes and belongs in storage
+rather than in process memory. That is what makes §12.6 possible.</p>
+<h3 id="126-exp-mt-056--the-cost-model-and-why-the-815-ms-margin-was-the-wrong-axis">12.6 EXP-MT-056 — the cost model, and why the 8–15 ms margin was the wrong axis<a class="headerlink" href="#126-exp-mt-056--the-cost-model-and-why-the-815-ms-margin-was-the-wrong-axis" title="Permanent link">&para;</a></h3>
+<p>§7 rejected architecture D on a CPU margin: a stateless rebuild costs 10.8 ms against 9.5 ms
+for an incremental cycle, 1.5 ms once the quadratics are fixed. The maintainer's objection is
+that a constant-factor CPU difference should not decide between a component that scales
+horizontally without constraint and one that does not. <strong>That objection is correct, and the
+numbers this report collected support it rather than the conclusion it drew.</strong></p>
+<p>Three things, none of them latency, decide it:</p>
+<p><strong>1. After #8733, most of the resident path's remaining cost is bookkeeping for residency
+itself.</strong> Of the 6.27 ms cycle, 4.08 ms is <code>cache.insertData</code>'s defensive clone and ~1.0 ms
+is <code>calcDelta</code> deep-comparing two snapshots to rediscover what the write path already knew.
+<strong>About 81 % is reconciliation, not derivation.</strong> A stateless tier does not do any of it.</p>
+<p><strong>2. Polling costs more database than querying on demand.</strong> The resident model runs ~14
+database operations per tenant per cycle on a timer, whether or not anything changed. A
+stateless model queries when asked. At 10,000 tenants:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;">processes</th>
+<th style="text-align: right;">resident RAM</th>
+<th style="text-align: right;"><strong>database ops/s</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A · stateful shards, all tenants resident</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">26.4 GB</td>
+<td style="text-align: right;"><strong>6,183</strong></td>
+</tr>
+<tr>
+<td>B · stateful shards, residency tiered</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">5.0 GB</td>
+<td style="text-align: right;"><strong>4,285</strong></td>
+</tr>
+<tr>
+<td><strong>C · stateless api + evaluator + realtime</strong></td>
+<td style="text-align: right;"><strong>5</strong></td>
+<td style="text-align: right;"><strong>0.5 GB</strong></td>
+<td style="text-align: right;"><strong>633</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>The stateless decomposition puts an order of magnitude <em>less</em> load on the database</strong>, which
+inverts the usual objection to it. The resident cache is not absorbing database load; the
+polling loop that fills it is <em>generating</em> database load, for tenants nobody is asking about.</p>
+<p><strong>3. At small scale the options converge, so the cheap choice costs nothing to start.</strong> At
+1,000 tenants: A is 4 processes, B is 3, C is 5. The stateless decomposition is never
+materially more expensive and becomes 2–3× cheaper by 10,000.</p>
+<p>Reproduce: <code>node deployment-cost.js 10000</code> and <code>node deployment-cost.js 1000</code>. Every input is
+listed at the top of that file with its provenance; the assumptions (active fraction,
+followers per tenant, sockets per tenant) are flagged as assumptions.</p>
+<h3 id="127-what-is-still-not-measured-and-would-change-this">12.7 What is still not measured, and would change this<a class="headerlink" href="#127-what-is-still-not-measured-and-would-change-this" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>No database is in the loop, and option C is the option most exposed to that.</strong> Every
+   figure here is local CPU and heap. C trades resident memory for queries, so its real cost
+   is dominated by something this harness cannot see. <strong>EXP-MT-026 is now the highest-value
+   unrun experiment in the programme</strong>, not a footnote.</li>
+<li><strong><code>dbQueryCpu_ms = 0.15</code> is a guess.</strong> It is the app-side CPU to issue and parse one
+   query, not the round-trip. If it is 1 ms rather than 0.15 ms, option C's api tier needs 3
+   processes instead of 1 — which changes nothing about the ordering, but should be measured
+   rather than assumed.</li>
+<li><strong>The active fraction (15 %) is still unvalidated</strong> against a real hoster, and it drives
+   A and B far harder than it drives C.</li>
+<li><strong><code>/api/v1/entries</code> without its cache becomes 533 queries/s</strong> at 10,000 tenants. That is
+   included in the 633 above, and it is the one place where a shared response cache — keyed
+   on <code>(tenant, lastUpdated)</code>, not a resident <code>ddata</code> — would pay for itself. Unmeasured.</li>
+<li><strong>Alarm evaluation driven by a change feed is a design, not a measurement.</strong> Nothing here
+   ran a Mongo change stream or a Postgres replication slot at tenant scale.</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

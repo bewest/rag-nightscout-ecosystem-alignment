@@ -1,0 +1,5718 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/traceability/connectors-requirements.html">
+      
+      
+        <link rel="prev" href="connectors-gaps.html">
+      
+      
+        <link rel="next" href="cross-validation-log.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Connectors Requirements - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#connectors-requirements" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Connectors Requirements
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../docs/00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../docs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    traceability/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="aid-algorithms-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Aid Algorithms Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="aid-algorithms-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Aid Algorithms Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-remote-monitor-docs-inventory.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Documentation Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-sources-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cgm Sources Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-sources-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cgm Sources Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="connectors-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Connectors Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Connectors Requirements
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="connectors-requirements.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Connectors Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#nightscout-connect-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        nightscout-connect Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="nightscout-connect Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-connect-001-v3-api-output-driver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CONNECT-001: V3 API Output Driver
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-connect-002-sync-identity-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CONNECT-002: Sync Identity Generation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-connect-003-multi-collection-source-coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CONNECT-003: Multi-Collection Source Coverage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-connect-004-automated-test-suite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CONNECT-004: Automated Test Suite
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-connect-005-typescript-type-definitions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CONNECT-005: TypeScript Type Definitions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-connect-006-formal-vendor-driver-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CONNECT-006: Formal Vendor Driver Interface
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nocturne-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nocturne Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Nocturne Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-nocturne-001-v4-api-compatibility-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-NOCTURNE-001: V4 API Compatibility Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-nocturne-002-cross-implementation-algorithm-conformance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-NOCTURNE-002: Cross-Implementation Algorithm Conformance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-nocturne-003-real-time-latency-budget" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-NOCTURNE-003: Real-Time Latency Budget
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-bridge-001-core-event-parity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-BRIDGE-001: Core Event Parity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-bridge-002-sgv-data-format-translation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-BRIDGE-002: SGV Data Format Translation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-bridge-003-event-ordering-preservation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-BRIDGE-003: Event Ordering Preservation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tconnectsync-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tconnectsync Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="tconnectsync Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-tconnect-001-v3-api-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TCONNECT-001: V3 API Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-tconnect-002-control-iq-algorithm-data-export" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TCONNECT-002: Control-IQ Algorithm Data Export
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-tconnect-003-batch-sync-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TCONNECT-003: Batch Sync Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-tconnect-004-trend-direction-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TCONNECT-004: Trend Direction Handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-infrastructure-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing Infrastructure Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing Infrastructure Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-test-001-cross-implementation-test-vectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TEST-001: Cross-Implementation Test Vectors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-test-002-spm-package-support-for-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TEST-002: SPM Package Support for Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-test-003-modern-ci-infrastructure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TEST-003: Modern CI Infrastructure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-test-004-shared-algorithm-test-vectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TEST-004: Shared Algorithm Test Vectors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-test-005-protocol-based-hardware-abstraction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TEST-005: Protocol-Based Hardware Abstraction
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#share2nightscout-bridge-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        share2nightscout-bridge Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="share2nightscout-bridge Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-share-001-v3-api-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-SHARE-001: V3 API Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-share-002-gap-detection-and-backfill" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-SHARE-002: Gap Detection and Backfill
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-share-003-configurable-application-id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-SHARE-003: Configurable Application ID
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nightscout-librelink-up-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        nightscout-librelink-up Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="nightscout-librelink-up Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-librelink-001-v3-api-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-LIBRELINK-001: V3 API Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-librelink-002-historical-backfill-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-LIBRELINK-002: Historical Backfill Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-librelink-003-trend-arrow-mapping-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-LIBRELINK-003: Trend Arrow Mapping Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loopfollow-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LoopFollow Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="LoopFollow Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-loopfollow-001-v3-api-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-LOOPFOLLOW-001: V3 API Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-loopfollow-002-real-time-push-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-LOOPFOLLOW-002: Real-Time Push Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-loopfollow-003-extensible-eventtype-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-LOOPFOLLOW-003: Extensible EventType Handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loopcaregiver-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LoopCaregiver Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="LoopCaregiver Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-loopcaregiver-001-multi-aid-target-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-LOOPCAREGIVER-001: Multi-AID Target Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-loopcaregiver-002-v2-commands-mainline-merge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-LOOPCAREGIVER-002: V2 Commands Mainline Merge
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-loopcaregiver-003-standard-command-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-LOOPCAREGIVER-003: Standard Command API
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#algorithm-conformance-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Algorithm Conformance Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Algorithm Conformance Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-oref-conform-001-cross-implementation-iob-equivalence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-OREF-CONFORM-001: Cross-Implementation IOB Equivalence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-oref-conform-002-peak-time-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-OREF-CONFORM-002: Peak Time Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-oref-conform-003-cob-algorithm-equivalence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-OREF-CONFORM-003: COB Algorithm Equivalence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nocturne-connector-coordination-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nocturne Connector Coordination Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Nocturne Connector Coordination Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-connect-010-datasource-tagging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CONNECT-010: DataSource Tagging
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-connect-011-resilient-polling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CONNECT-011: Resilient Polling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-connect-012-incremental-sync" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CONNECT-012: Incremental Sync
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-connect-013-dexcom-share-auth-failure-propagation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CONNECT-013: Dexcom Share Auth Failure Propagation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-connect-014-region-safe-glooko-authentication-and-timestamp-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CONNECT-014: Region-Safe Glooko Authentication and Timestamp Handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-connect-015-nightscout-v3-source-and-output-parity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CONNECT-015: Nightscout V3 Source and Output Parity
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nodejs--dependency-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Node.js &amp; Dependency Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Node.js &amp; Dependency Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-node-001-minimum-nodejs-lts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-NODE-001: Minimum Node.js LTS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-node-002-no-deprecated-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-NODE-002: No Deprecated Dependencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-node-003-engines-field-required" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-NODE-003: Engines Field Required
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-bridge-001-bridge-consolidation-into-nightscout-connect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-BRIDGE-001: Bridge Consolidation into nightscout-connect
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification-tooling-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification Tooling Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Verification Tooling Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-verify-001-multi-language-code-reference-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-VERIFY-001: Multi-Language Code Reference Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-verify-002-cross-language-algorithm-conformance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-VERIFY-002: Cross-Language Algorithm Conformance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-verify-003-conformance-vector-currency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-VERIFY-003: Conformance Vector Currency
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-verify-004-ci-matrix-coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-VERIFY-004: CI Matrix Coverage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-verify-005-accuracy-reporting-dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-VERIFY-005: Accuracy Reporting Dashboard
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#apple-watch-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Apple Watch Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Apple Watch Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-watch-001-use-widgetkit-for-watch-complications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-WATCH-001: Use WidgetKit for Watch Complications
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-watch-002-display-live-glucose-on-complications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-WATCH-002: Display Live Glucose on Complications
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-watch-003-shared-complication-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-WATCH-003: Shared Complication Components
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#healthkit-integration-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HealthKit Integration Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="HealthKit Integration Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-hk-001-single-writer-principle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-HK-001: Single-Writer Principle
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-hk-002-cross-app-source-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-HK-002: Cross-App Source Detection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-hk-003-standardized-metadata-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-HK-003: Standardized Metadata Keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#widgetkit-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WidgetKit Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="WidgetKit Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-widget-001-shared-glucosewidgetkit-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-WIDGET-001: Shared GlucoseWidgetKit Package
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-widget-002-minimum-widget-family-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-WIDGET-002: Minimum Widget Family Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-widget-003-standardized-color-scheme" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-WIDGET-003: Standardized Color Scheme
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#distribution-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Distribution Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Distribution Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-dist-001-browser-build-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-DIST-001: Browser Build Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-dist-002-standardized-build-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-DIST-002: Standardized Build Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-dist-003-unified-build-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-DIST-003: Unified Build Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ble-cgm-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BLE CGM Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BLE CGM Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-ble-001-shared-packages-license-compatible" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-BLE-001: Shared Packages License Compatible
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ble-002-protocol-constants-match-specifications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-BLE-002: Protocol Constants Match Specifications
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ble-003-glucose-model-support-mgdl-and-mmoll" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-BLE-003: Glucose Model Support mg/dL and mmol/L
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ble-004-backward-compatibility-required" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-BLE-004: Backward Compatibility Required
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-tidepool-001-ios-cgm-app-tidepool-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TIDEPOOL-001: iOS CGM App Tidepool Integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-tidepool-002-oauth2-authentication-for-android" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TIDEPOOL-002: OAuth2 Authentication for Android
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-tidepool-003-nightscout-tidepool-connector" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TIDEPOOL-003: Nightscout Tidepool Connector
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-tidepool-004-dosing-decision-parity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TIDEPOOL-004: Dosing Decision Parity
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cross-validation-log.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-Validation Assessment Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="gap-discovery.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gap discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ml-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ML Pipeline Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-api-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Api Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-api-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Api Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="orphan-artifact-priorities.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Orphan Artifact Priority Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="pumps-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pumps Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="pumps-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pumps Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sync-identity-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sync Identity Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sync-identity-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sync Identity Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="telemetry-observability-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry and Observability Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="telemetry-observability-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry and Observability Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tool-validation-2026-01-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tool validation 2026 01 23
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="traceability-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requirements Traceability Matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="treatments-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Treatments Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="treatments-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Treatments Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="domain-matrices/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    domain-matrices/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="stpa/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    stpa/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#nightscout-connect-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        nightscout-connect Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="nightscout-connect Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-connect-001-v3-api-output-driver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CONNECT-001: V3 API Output Driver
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-connect-002-sync-identity-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CONNECT-002: Sync Identity Generation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-connect-003-multi-collection-source-coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CONNECT-003: Multi-Collection Source Coverage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-connect-004-automated-test-suite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CONNECT-004: Automated Test Suite
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-connect-005-typescript-type-definitions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CONNECT-005: TypeScript Type Definitions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-connect-006-formal-vendor-driver-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CONNECT-006: Formal Vendor Driver Interface
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nocturne-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nocturne Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Nocturne Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-nocturne-001-v4-api-compatibility-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-NOCTURNE-001: V4 API Compatibility Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-nocturne-002-cross-implementation-algorithm-conformance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-NOCTURNE-002: Cross-Implementation Algorithm Conformance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-nocturne-003-real-time-latency-budget" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-NOCTURNE-003: Real-Time Latency Budget
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-bridge-001-core-event-parity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-BRIDGE-001: Core Event Parity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-bridge-002-sgv-data-format-translation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-BRIDGE-002: SGV Data Format Translation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-bridge-003-event-ordering-preservation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-BRIDGE-003: Event Ordering Preservation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tconnectsync-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tconnectsync Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="tconnectsync Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-tconnect-001-v3-api-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TCONNECT-001: V3 API Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-tconnect-002-control-iq-algorithm-data-export" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TCONNECT-002: Control-IQ Algorithm Data Export
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-tconnect-003-batch-sync-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TCONNECT-003: Batch Sync Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-tconnect-004-trend-direction-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TCONNECT-004: Trend Direction Handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-infrastructure-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing Infrastructure Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing Infrastructure Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-test-001-cross-implementation-test-vectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TEST-001: Cross-Implementation Test Vectors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-test-002-spm-package-support-for-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TEST-002: SPM Package Support for Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-test-003-modern-ci-infrastructure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TEST-003: Modern CI Infrastructure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-test-004-shared-algorithm-test-vectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TEST-004: Shared Algorithm Test Vectors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-test-005-protocol-based-hardware-abstraction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TEST-005: Protocol-Based Hardware Abstraction
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#share2nightscout-bridge-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        share2nightscout-bridge Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="share2nightscout-bridge Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-share-001-v3-api-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-SHARE-001: V3 API Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-share-002-gap-detection-and-backfill" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-SHARE-002: Gap Detection and Backfill
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-share-003-configurable-application-id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-SHARE-003: Configurable Application ID
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nightscout-librelink-up-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        nightscout-librelink-up Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="nightscout-librelink-up Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-librelink-001-v3-api-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-LIBRELINK-001: V3 API Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-librelink-002-historical-backfill-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-LIBRELINK-002: Historical Backfill Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-librelink-003-trend-arrow-mapping-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-LIBRELINK-003: Trend Arrow Mapping Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loopfollow-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LoopFollow Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="LoopFollow Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-loopfollow-001-v3-api-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-LOOPFOLLOW-001: V3 API Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-loopfollow-002-real-time-push-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-LOOPFOLLOW-002: Real-Time Push Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-loopfollow-003-extensible-eventtype-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-LOOPFOLLOW-003: Extensible EventType Handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loopcaregiver-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LoopCaregiver Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="LoopCaregiver Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-loopcaregiver-001-multi-aid-target-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-LOOPCAREGIVER-001: Multi-AID Target Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-loopcaregiver-002-v2-commands-mainline-merge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-LOOPCAREGIVER-002: V2 Commands Mainline Merge
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-loopcaregiver-003-standard-command-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-LOOPCAREGIVER-003: Standard Command API
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#algorithm-conformance-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Algorithm Conformance Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Algorithm Conformance Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-oref-conform-001-cross-implementation-iob-equivalence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-OREF-CONFORM-001: Cross-Implementation IOB Equivalence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-oref-conform-002-peak-time-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-OREF-CONFORM-002: Peak Time Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-oref-conform-003-cob-algorithm-equivalence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-OREF-CONFORM-003: COB Algorithm Equivalence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nocturne-connector-coordination-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nocturne Connector Coordination Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Nocturne Connector Coordination Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-connect-010-datasource-tagging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CONNECT-010: DataSource Tagging
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-connect-011-resilient-polling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CONNECT-011: Resilient Polling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-connect-012-incremental-sync" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CONNECT-012: Incremental Sync
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-connect-013-dexcom-share-auth-failure-propagation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CONNECT-013: Dexcom Share Auth Failure Propagation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-connect-014-region-safe-glooko-authentication-and-timestamp-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CONNECT-014: Region-Safe Glooko Authentication and Timestamp Handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-connect-015-nightscout-v3-source-and-output-parity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CONNECT-015: Nightscout V3 Source and Output Parity
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nodejs--dependency-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Node.js &amp; Dependency Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Node.js &amp; Dependency Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-node-001-minimum-nodejs-lts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-NODE-001: Minimum Node.js LTS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-node-002-no-deprecated-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-NODE-002: No Deprecated Dependencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-node-003-engines-field-required" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-NODE-003: Engines Field Required
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-bridge-001-bridge-consolidation-into-nightscout-connect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-BRIDGE-001: Bridge Consolidation into nightscout-connect
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification-tooling-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification Tooling Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Verification Tooling Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-verify-001-multi-language-code-reference-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-VERIFY-001: Multi-Language Code Reference Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-verify-002-cross-language-algorithm-conformance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-VERIFY-002: Cross-Language Algorithm Conformance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-verify-003-conformance-vector-currency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-VERIFY-003: Conformance Vector Currency
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-verify-004-ci-matrix-coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-VERIFY-004: CI Matrix Coverage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-verify-005-accuracy-reporting-dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-VERIFY-005: Accuracy Reporting Dashboard
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#apple-watch-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Apple Watch Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Apple Watch Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-watch-001-use-widgetkit-for-watch-complications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-WATCH-001: Use WidgetKit for Watch Complications
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-watch-002-display-live-glucose-on-complications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-WATCH-002: Display Live Glucose on Complications
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-watch-003-shared-complication-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-WATCH-003: Shared Complication Components
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#healthkit-integration-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HealthKit Integration Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="HealthKit Integration Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-hk-001-single-writer-principle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-HK-001: Single-Writer Principle
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-hk-002-cross-app-source-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-HK-002: Cross-App Source Detection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-hk-003-standardized-metadata-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-HK-003: Standardized Metadata Keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#widgetkit-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WidgetKit Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="WidgetKit Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-widget-001-shared-glucosewidgetkit-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-WIDGET-001: Shared GlucoseWidgetKit Package
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-widget-002-minimum-widget-family-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-WIDGET-002: Minimum Widget Family Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-widget-003-standardized-color-scheme" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-WIDGET-003: Standardized Color Scheme
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#distribution-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Distribution Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Distribution Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-dist-001-browser-build-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-DIST-001: Browser Build Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-dist-002-standardized-build-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-DIST-002: Standardized Build Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-dist-003-unified-build-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-DIST-003: Unified Build Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ble-cgm-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BLE CGM Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BLE CGM Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-ble-001-shared-packages-license-compatible" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-BLE-001: Shared Packages License Compatible
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ble-002-protocol-constants-match-specifications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-BLE-002: Protocol Constants Match Specifications
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ble-003-glucose-model-support-mgdl-and-mmoll" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-BLE-003: Glucose Model Support mg/dL and mmol/L
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ble-004-backward-compatibility-required" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-BLE-004: Backward Compatibility Required
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-tidepool-001-ios-cgm-app-tidepool-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TIDEPOOL-001: iOS CGM App Tidepool Integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-tidepool-002-oauth2-authentication-for-android" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TIDEPOOL-002: OAuth2 Authentication for Android
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-tidepool-003-nightscout-tidepool-connector" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TIDEPOOL-003: Nightscout Tidepool Connector
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-tidepool-004-dosing-decision-parity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TIDEPOOL-004: Dosing Decision Parity
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="connectors-requirements">Connectors Requirements<a class="headerlink" href="#connectors-requirements" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-07-07 at <code>1277d05c</code>.</em></p>
+<p>Domain-specific requirements for connector projects (bridges, sync tools).
+See <a href="requirements.html">requirements.md</a> for the index.</p>
+<hr />
+<h2 id="nightscout-connect-requirements">nightscout-connect Requirements<a class="headerlink" href="#nightscout-connect-requirements" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="req-connect-001-v3-api-output-driver">REQ-CONNECT-001: V3 API Output Driver<a class="headerlink" href="#req-connect-001-v3-api-output-driver" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Connector output drivers MUST support Nightscout API v3 with UPSERT operations.</p>
+<p><strong>Rationale</strong>: V3 API provides deduplication, server-side validation, and identifier-based sync identity that prevents duplicate records.</p>
+<p><strong>Scenarios</strong>:
+- Entry upload via v3 UPSERT
+- Treatment upload with identifier
+- Duplicate prevention on re-run</p>
+<p><strong>Verification</strong>:
+- Upload entry via v3 endpoint
+- Re-upload same entry
+- Verify no duplicate created</p>
+<p><strong>Gap Reference</strong>: GAP-CONNECT-001</p>
+<hr />
+<h3 id="req-connect-002-sync-identity-generation">REQ-CONNECT-002: Sync Identity Generation<a class="headerlink" href="#req-connect-002-sync-identity-generation" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Connectors MUST generate deterministic sync identifiers for uploaded records using source-specific attributes.</p>
+<p><strong>Rationale</strong>: Client-side identifier generation enables idempotent uploads and prevents duplicates without server-side state.</p>
+<p><strong>Scenarios</strong>:
+- Entry with UUID v5 identifier
+- Treatment with consistent ID across re-runs
+- Cross-source identifier uniqueness</p>
+<p><strong>Verification</strong>:
+- Generate identifier for entry
+- Regenerate from same source data
+- Verify identical identifier produced</p>
+<p><strong>Gap Reference</strong>: GAP-CONNECT-003</p>
+<hr />
+<h3 id="req-connect-003-multi-collection-source-coverage">REQ-CONNECT-003: Multi-Collection Source Coverage<a class="headerlink" href="#req-connect-003-multi-collection-source-coverage" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Sources SHOULD upload all available collection types (entries, treatments, devicestatus) when the vendor API provides them.</p>
+<p><strong>Rationale</strong>: Single-collection uploads leave incomplete data in Nightscout, limiting utility for downstream consumers.</p>
+<p><strong>Scenarios</strong>:
+- Minimed source: entries + treatments + devicestatus
+- Glooko source: treatments only (API limit)
+- Dexcom Share: entries only (API limit)</p>
+<p><strong>Verification</strong>:
+- Run sync for source with multiple collections
+- Verify all available collections uploaded</p>
+<p><strong>Gap Reference</strong>: GAP-CONNECT-002</p>
+<hr />
+<h3 id="req-connect-004-automated-test-suite">REQ-CONNECT-004: Automated Test Suite<a class="headerlink" href="#req-connect-004-automated-test-suite" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Connectors MUST have automated tests for state machine transitions and vendor adapter integrations.</p>
+<p><strong>Rationale</strong>: Complex XState machines require test coverage to prevent regressions when adding vendors or upgrading dependencies.</p>
+<p><strong>Scenarios</strong>:
+- State machine model tests
+- Vendor driver mock tests
+- Integration tests with test server</p>
+<p><strong>Verification</strong>:
+- Run <code>npm test</code>
+- Verify state coverage report
+- Verify vendor adapter coverage</p>
+<p><strong>Gap Reference</strong>: GAP-CONNECT-004</p>
+<hr />
+<h3 id="req-connect-005-typescript-type-definitions">REQ-CONNECT-005: TypeScript Type Definitions<a class="headerlink" href="#req-connect-005-typescript-type-definitions" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Connectors SHOULD provide TypeScript type definitions for machine contexts, events, and vendor interfaces.</p>
+<p><strong>Rationale</strong>: Type definitions enable IDE autocomplete, catch errors at compile time, and document the API contract.</p>
+<p><strong>Scenarios</strong>:
+- FetchContext type definition
+- SessionContext type definition
+- VendorDriver interface</p>
+<p><strong>Verification</strong>:
+- TypeScript compilation succeeds
+- No implicit <code>any</code> types in core interfaces</p>
+<p><strong>Gap Reference</strong>: GAP-CONNECT-005</p>
+<hr />
+<h3 id="req-connect-006-formal-vendor-driver-interface">REQ-CONNECT-006: Formal Vendor Driver Interface<a class="headerlink" href="#req-connect-006-formal-vendor-driver-interface" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Connectors MUST define a formal VendorDriver interface contract with validation.</p>
+<p><strong>Rationale</strong>: Current adapter pattern is brittle with inconsistent naming and mixed concerns.</p>
+<p><strong>Scenarios</strong>:
+- New vendor implementation
+- Driver interface validation
+- Adapter contract enforcement</p>
+<p><strong>Verification</strong>:
+- Interface enforces required methods
+- Runtime validation catches missing methods
+- Consistent naming across adapters</p>
+<p><strong>Gap Reference</strong>: GAP-CONNECT-006</p>
+<hr />
+<h2 id="nocturne-requirements">Nocturne Requirements<a class="headerlink" href="#nocturne-requirements" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="req-nocturne-001-v4-api-compatibility-documentation">REQ-NOCTURNE-001: V4 API Compatibility Documentation<a class="headerlink" href="#req-nocturne-001-v4-api-compatibility-documentation" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Nocturne-specific V4 API endpoints MUST be documented as optional extensions, not core Nightscout API.</p>
+<p><strong>Rationale</strong>: V4 endpoints are Nocturne-specific and clients depending on them won't work with cgm-remote-monitor.</p>
+<p><strong>Scenarios</strong>:
+- V4 endpoint discovery
+- Feature detection
+- Graceful fallback to v3</p>
+<p><strong>Verification</strong>:
+- Documentation clearly marks V4 as optional
+- Clients detect V4 availability
+- Fallback to v3 when V4 unavailable</p>
+<p><strong>Gap Reference</strong>: GAP-NOCTURNE-001</p>
+<hr />
+<h3 id="req-nocturne-002-cross-implementation-algorithm-conformance">REQ-NOCTURNE-002: Cross-Implementation Algorithm Conformance<a class="headerlink" href="#req-nocturne-002-cross-implementation-algorithm-conformance" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Rust oref implementation MUST produce equivalent results to JavaScript oref0/oref1 for the same inputs.</p>
+<p><strong>Rationale</strong>: Multiple algorithm implementations must be verifiable against shared test vectors to prevent divergence.</p>
+<p><strong>Scenarios</strong>:
+- IOB calculation parity
+- COB calculation parity
+- Dosing recommendation parity</p>
+<p><strong>Verification</strong>:
+- Run conformance test suite
+- Compare outputs for shared fixtures
+- Document any intentional differences</p>
+<p><strong>Gap Reference</strong>: GAP-NOCTURNE-002</p>
+<hr />
+<h3 id="req-nocturne-003-real-time-latency-budget">REQ-NOCTURNE-003: Real-Time Latency Budget<a class="headerlink" href="#req-nocturne-003-real-time-latency-budget" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: SignalR to Socket.IO bridge latency SHOULD be less than 500ms for glucose update events.</p>
+<p><strong>Rationale</strong>: Bridge adds overhead; must be bounded to maintain acceptable real-time experience.</p>
+<p><strong>Scenarios</strong>:
+- SignalR event received
+- Bridge translation
+- Socket.IO emission</p>
+<p><strong>Verification</strong>:
+- Measure end-to-end latency
+- Report latency percentiles
+- Alert if exceeds budget</p>
+<p><strong>Gap Reference</strong>: GAP-NOCTURNE-003</p>
+<hr />
+<h3 id="req-bridge-001-core-event-parity">REQ-BRIDGE-001: Core Event Parity<a class="headerlink" href="#req-bridge-001-core-event-parity" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: SignalR→Socket.IO bridges MUST translate all core events: <code>dataUpdate</code>, <code>alarm</code>, <code>urgent_alarm</code>, <code>clear_alarm</code>, <code>announcement</code>, <code>notification</code>, <code>create</code>, <code>update</code>, <code>delete</code>.</p>
+<p><strong>Rationale</strong>: Legacy clients (Loop, AAPS, xDrip+) depend on these events for real-time updates.</p>
+<p><strong>Scenarios</strong>:
+- SGV entry created → <code>create</code> event received by Socket.IO clients
+- Alarm triggered → <code>alarm</code> or <code>urgent_alarm</code> event received
+- Treatment updated → <code>update</code> event with colName/doc structure</p>
+<p><strong>Verification</strong>:
+- Connect legacy Socket.IO client
+- Trigger each event type on server
+- Verify client receives correctly formatted event</p>
+<p><strong>Gap Reference</strong>: GAP-NOCTURNE-003, <a href="../docs/10-domain/nocturne-signalr-bridge-analysis.html">Analysis</a></p>
+<hr />
+<h3 id="req-bridge-002-sgv-data-format-translation">REQ-BRIDGE-002: SGV Data Format Translation<a class="headerlink" href="#req-bridge-002-sgv-data-format-translation" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Bridges MUST normalize SGV data to include <code>_id</code>, <code>sgv</code>, <code>date</code>, <code>dateString</code>, <code>direction</code>, <code>type</code> fields expected by legacy clients.</p>
+<p><strong>Rationale</strong>: Legacy clients parse specific field names; Nocturne uses different internal field names.</p>
+<p><strong>Scenarios</strong>:
+- <code>id</code> → <code>_id</code>
+- <code>value</code> → <code>sgv</code>
+- <code>timestamp</code> → <code>date</code>
+- Missing <code>dateString</code> → computed from date</p>
+<p><strong>Verification</strong>:
+- Send Nocturne-format SGV via SignalR
+- Verify Socket.IO client receives cgm-remote-monitor format</p>
+<p><strong>Gap Reference</strong>: <a href="../docs/10-domain/nocturne-signalr-bridge-analysis.html">Analysis</a></p>
+<hr />
+<h3 id="req-bridge-003-event-ordering-preservation">REQ-BRIDGE-003: Event Ordering Preservation<a class="headerlink" href="#req-bridge-003-event-ordering-preservation" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Bridges MUST preserve event ordering within each event type.</p>
+<p><strong>Rationale</strong>: Out-of-order glucose readings could confuse trend calculations and displays.</p>
+<p><strong>Scenarios</strong>:
+- Multiple <code>dataUpdate</code> events sent in sequence
+- Bridge delivers in same sequence
+- Clients process in order</p>
+<p><strong>Verification</strong>:
+- Send 10 sequential SGV readings
+- Verify client receives in same order
+- No reordering observed</p>
+<p><strong>Gap Reference</strong>: <a href="../docs/10-domain/nocturne-signalr-bridge-analysis.html">Analysis</a></p>
+<hr />
+<h2 id="tconnectsync-requirements">tconnectsync Requirements<a class="headerlink" href="#tconnectsync-requirements" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="req-tconnect-001-v3-api-support">REQ-TCONNECT-001: V3 API Support<a class="headerlink" href="#req-tconnect-001-v3-api-support" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: tconnectsync MUST support Nightscout API v3 with proper identifiers for deduplication.</p>
+<p><strong>Rationale</strong>: V1-only support causes duplicates on re-sync and lacks sync identity tracking.</p>
+<p><strong>Scenarios</strong>:
+- Treatment upload with identifier
+- Entry upload with identifier
+- Re-sync without duplicates</p>
+<p><strong>Verification</strong>:
+- Upload via v3 endpoint
+- Re-run sync
+- Verify no duplicates created</p>
+<p><strong>Gap Reference</strong>: GAP-TCONNECT-001</p>
+<hr />
+<h3 id="req-tconnect-002-control-iq-algorithm-data-export">REQ-TCONNECT-002: Control-IQ Algorithm Data Export<a class="headerlink" href="#req-tconnect-002-control-iq-algorithm-data-export" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: tconnectsync SHOULD extract and upload available Control-IQ algorithm data to devicestatus when accessible.</p>
+<p><strong>Rationale</strong>: Algorithm decision data enables debugging and visualization of Control-IQ behavior.</p>
+<p><strong>Scenarios</strong>:
+- Auto-basal adjustment data
+- Predicted glucose curves
+- Algorithm decision reasons</p>
+<p><strong>Verification</strong>:
+- Check devicestatus for Control-IQ data
+- Verify prediction curves if available
+- Document API limitations</p>
+<p><strong>Gap Reference</strong>: GAP-TCONNECT-002</p>
+<hr />
+<h3 id="req-tconnect-003-batch-sync-documentation">REQ-TCONNECT-003: Batch Sync Documentation<a class="headerlink" href="#req-tconnect-003-batch-sync-documentation" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: tconnectsync documentation MUST clearly state batch-based operation and expected latency.</p>
+<p><strong>Rationale</strong>: Users need to understand this is not real-time and plan accordingly.</p>
+<p><strong>Scenarios</strong>:
+- Initial setup documentation
+- Cron scheduling guidance
+- Latency expectations</p>
+<p><strong>Verification</strong>:
+- Documentation explains batch mode
+- Cron examples provided
+- Expected delay documented</p>
+<p><strong>Gap Reference</strong>: GAP-TCONNECT-003</p>
+<hr />
+<h3 id="req-tconnect-004-trend-direction-handling">REQ-TCONNECT-004: Trend Direction Handling<a class="headerlink" href="#req-tconnect-004-trend-direction-handling" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: tconnectsync SHOULD either calculate trend direction from consecutive readings or clearly document its absence.</p>
+<p><strong>Rationale</strong>: Missing direction field affects Nightscout UI and downstream algorithm consumers.</p>
+<p><strong>Scenarios</strong>:
+- Direction field population
+- Fallback calculation from history
+- Documentation of limitation</p>
+<p><strong>Verification</strong>:
+- Check entries for direction field
+- If missing, verify documentation
+- Algorithm impact noted</p>
+<p><strong>Gap Reference</strong>: GAP-TCONNECT-004</p>
+<hr />
+<h2 id="testing-infrastructure-requirements">Testing Infrastructure Requirements<a class="headerlink" href="#testing-infrastructure-requirements" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="req-test-001-cross-implementation-test-vectors">REQ-TEST-001: Cross-Implementation Test Vectors<a class="headerlink" href="#req-test-001-cross-implementation-test-vectors" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Algorithm conformance testing MUST use shared JSON test vectors consumable by all implementations.</p>
+<p><strong>Rationale</strong>: Enables verification of algorithm consistency across Swift, JavaScript, and Rust implementations.</p>
+<p><strong>Scenarios</strong>:
+- IOB test vectors
+- COB test vectors
+- Full algorithm test vectors</p>
+<p><strong>Verification</strong>:
+- Test vectors exist in common format
+- All implementations can load vectors
+- Results compared automatically</p>
+<p><strong>Gap Reference</strong>: GAP-TEST-001</p>
+<hr />
+<h3 id="req-test-002-spm-package-support-for-testing">REQ-TEST-002: SPM Package Support for Testing<a class="headerlink" href="#req-test-002-spm-package-support-for-testing" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Swift packages SHOULD support <code>swift test</code> for cross-platform testing when resource constraints allow.</p>
+<p><strong>Rationale</strong>: SPM enables Linux/macOS testing without Xcode, supporting CI and algorithm extraction.</p>
+<p><strong>Scenarios</strong>:
+- swift test on Linux
+- swift test on macOS
+- GitHub Actions integration</p>
+<p><strong>Verification</strong>:
+- Package.swift functional
+- Tests pass via <code>swift test</code>
+- CI workflow uses SPM</p>
+<p><strong>Gap Reference</strong>: GAP-TEST-002</p>
+<hr />
+<h3 id="req-test-003-modern-ci-infrastructure">REQ-TEST-003: Modern CI Infrastructure<a class="headerlink" href="#req-test-003-modern-ci-infrastructure" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Projects SHOULD use modern CI (GitHub Actions) with current SDK versions.</p>
+<p><strong>Rationale</strong>: Outdated CI with old SDKs may miss compatibility issues and blocks modern feature adoption.</p>
+<p><strong>Scenarios</strong>:
+- GitHub Actions workflow
+- Current Xcode version
+- Current Node/Python versions</p>
+<p><strong>Verification</strong>:
+- Workflow file exists
+- SDK version is current
+- Tests pass in CI</p>
+<p><strong>Gap Reference</strong>: GAP-TEST-003</p>
+<hr />
+<h3 id="req-test-004-shared-algorithm-test-vectors">REQ-TEST-004: Shared Algorithm Test Vectors<a class="headerlink" href="#req-test-004-shared-algorithm-test-vectors" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Algorithm implementations MUST be validated against a common set of test vectors in a standardized YAML format.</p>
+<p><strong>Rationale</strong>: Ensures algorithm parity across oref0, Loop, AAPS, and Trio. Detects drift when code is forked.</p>
+<p><strong>Scenarios</strong>:
+- IOB calculation across projects
+- COB decay validation
+- determineBasal output comparison
+- Autosens factor validation</p>
+<p><strong>Verification</strong>:
+- Test vector YAML schema defined
+- All runners pass same vectors
+- Parity report generated</p>
+<p><strong>Gap Reference</strong>: GAP-TEST-004</p>
+<hr />
+<h3 id="req-test-005-protocol-based-hardware-abstraction">REQ-TEST-005: Protocol-Based Hardware Abstraction<a class="headerlink" href="#req-test-005-protocol-based-hardware-abstraction" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: CGM and pump managers SHOULD use protocol-based abstractions to enable mock injection for testing.</p>
+<p><strong>Rationale</strong>: Enables unit testing on Linux without hardware. Reduces CI costs by 90%.</p>
+<p><strong>Scenarios</strong>:
+- CGM packet parsing tests
+- Pump command/response validation
+- BLE state machine tests</p>
+<p><strong>Verification</strong>:
+- Protocol definitions exist
+- Mock implementations exist
+- Tests run on Linux CI</p>
+<p><strong>Gap Reference</strong>: GAP-TEST-005</p>
+<hr />
+<h2 id="share2nightscout-bridge-requirements">share2nightscout-bridge Requirements<a class="headerlink" href="#share2nightscout-bridge-requirements" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="req-share-001-v3-api-support">REQ-SHARE-001: V3 API Support<a class="headerlink" href="#req-share-001-v3-api-support" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: share2nightscout-bridge MUST support Nightscout API v3 with proper identifiers.</p>
+<p><strong>Rationale</strong>: V3 deduplication prevents duplicates on bridge restart or polling overlap.</p>
+<p><strong>Scenarios</strong>:
+- Entry upload with identifier
+- Bridge restart handling
+- Polling overlap deduplication</p>
+<p><strong>Verification</strong>:
+- Upload via v3 endpoint
+- Restart bridge
+- Verify no duplicates</p>
+<p><strong>Gap Reference</strong>: GAP-SHARE-001</p>
+<hr />
+<h3 id="req-share-002-gap-detection-and-backfill">REQ-SHARE-002: Gap Detection and Backfill<a class="headerlink" href="#req-share-002-gap-detection-and-backfill" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: share2nightscout-bridge SHOULD detect data gaps and backfill missed readings on recovery.</p>
+<p><strong>Rationale</strong>: Bridge downtime shouldn't cause permanent data gaps when historical data is available.</p>
+<p><strong>Scenarios</strong>:
+- Bridge offline for 1 hour
+- Bridge restart and recovery
+- Gap detection and backfill</p>
+<p><strong>Verification</strong>:
+- Stop bridge for period
+- Restart bridge
+- Verify historical readings fetched</p>
+<p><strong>Gap Reference</strong>: GAP-SHARE-002</p>
+<hr />
+<h3 id="req-share-003-configurable-application-id">REQ-SHARE-003: Configurable Application ID<a class="headerlink" href="#req-share-003-configurable-application-id" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: share2nightscout-bridge SHOULD allow configurable application ID rather than hardcoding.</p>
+<p><strong>Rationale</strong>: Hardcoded IDs create single point of failure if vendor revokes credentials.</p>
+<p><strong>Scenarios</strong>:
+- Custom application ID configuration
+- Environment variable override
+- Documentation of default</p>
+<p><strong>Verification</strong>:
+- Configuration option exists
+- Override works as documented
+- Default still functional</p>
+<p><strong>Gap Reference</strong>: GAP-SHARE-003</p>
+<hr />
+<h2 id="nightscout-librelink-up-requirements">nightscout-librelink-up Requirements<a class="headerlink" href="#nightscout-librelink-up-requirements" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="req-librelink-001-v3-api-support">REQ-LIBRELINK-001: V3 API Support<a class="headerlink" href="#req-librelink-001-v3-api-support" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: nightscout-librelink-up MUST implement the v3 client stub with proper identifiers.</p>
+<p><strong>Rationale</strong>: V3 client currently throws "Not implemented". Functional v3 support prevents duplicates.</p>
+<p><strong>Scenarios</strong>:
+- Entry upload with identifier
+- Bridge restart handling
+- Deduplication verification</p>
+<p><strong>Verification</strong>:
+- V3 client functional
+- No "Not implemented" errors
+- Duplicates prevented</p>
+<p><strong>Gap Reference</strong>: GAP-LIBRELINK-001</p>
+<hr />
+<h3 id="req-librelink-002-historical-backfill-support">REQ-LIBRELINK-002: Historical Backfill Support<a class="headerlink" href="#req-librelink-002-historical-backfill-support" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: nightscout-librelink-up SHOULD support historical data backfill using the graph endpoint.</p>
+<p><strong>Rationale</strong>: Bridge downtime shouldn't cause permanent data gaps when historical data is available.</p>
+<p><strong>Scenarios</strong>:
+- Bridge offline for period
+- Recovery and backfill
+- Gap detection</p>
+<p><strong>Verification</strong>:
+- Graph endpoint used for history
+- Gaps detected and filled
+- No duplicate historical entries</p>
+<p><strong>Gap Reference</strong>: GAP-LIBRELINK-002</p>
+<hr />
+<h3 id="req-librelink-003-trend-arrow-mapping-documentation">REQ-LIBRELINK-003: Trend Arrow Mapping Documentation<a class="headerlink" href="#req-librelink-003-trend-arrow-mapping-documentation" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: nightscout-librelink-up MUST document the 5-to-9 trend arrow mapping with precision loss.</p>
+<p><strong>Rationale</strong>: LibreLink only provides 5 trend values vs Nightscout's 9, causing precision loss for extreme trends.</p>
+<p><strong>Scenarios</strong>:
+- Trend value 1 mapping
+- Trend value 5 mapping
+- Documentation review</p>
+<p><strong>Verification</strong>:
+- Mapping table documented
+- Precision loss noted
+- No false Double arrows</p>
+<p><strong>Gap Reference</strong>: GAP-LIBRELINK-003</p>
+<hr />
+<h2 id="loopfollow-requirements">LoopFollow Requirements<a class="headerlink" href="#loopfollow-requirements" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="req-loopfollow-001-v3-api-support">REQ-LOOPFOLLOW-001: V3 API Support<a class="headerlink" href="#req-loopfollow-001-v3-api-support" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: LoopFollow SHOULD support Nightscout API v3 for improved filtering and real-time features.</p>
+<p><strong>Rationale</strong>: V3 provides server-side filtering, sync identity, and enhanced query capabilities.</p>
+<p><strong>Scenarios</strong>:
+- Entry fetch via v3
+- Treatment fetch via v3
+- Devicestatus fetch via v3</p>
+<p><strong>Verification</strong>:
+- V3 endpoints used
+- Filtering via query parameters
+- Performance improvement measured</p>
+<p><strong>Gap Reference</strong>: GAP-LOOPFOLLOW-001</p>
+<hr />
+<h3 id="req-loopfollow-002-real-time-push-support">REQ-LOOPFOLLOW-002: Real-Time Push Support<a class="headerlink" href="#req-loopfollow-002-real-time-push-support" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: LoopFollow SHOULD implement WebSocket or SSE for real-time data updates.</p>
+<p><strong>Rationale</strong>: Polling causes delays and higher resource usage vs push-based updates.</p>
+<p><strong>Scenarios</strong>:
+- WebSocket connection
+- SSE subscription
+- Fallback to polling</p>
+<p><strong>Verification</strong>:
+- Push notification received
+- Latency vs polling measured
+- Battery impact assessed</p>
+<p><strong>Gap Reference</strong>: GAP-LOOPFOLLOW-002</p>
+<hr />
+<h3 id="req-loopfollow-003-extensible-eventtype-handling">REQ-LOOPFOLLOW-003: Extensible EventType Handling<a class="headerlink" href="#req-loopfollow-003-extensible-eventtype-handling" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: LoopFollow SHOULD implement extensible eventType handling for unknown treatment types.</p>
+<p><strong>Rationale</strong>: Hardcoded eventType matching silently fails for new treatment types from Loop/Trio/AAPS.</p>
+<p><strong>Scenarios</strong>:
+- Unknown eventType received
+- Fallback display/handling
+- Dynamic category assignment</p>
+<p><strong>Verification</strong>:
+- Unknown type logged
+- Fallback display rendered
+- No silent data loss</p>
+<p><strong>Gap Reference</strong>: GAP-LOOPFOLLOW-003</p>
+<hr />
+<h2 id="loopcaregiver-requirements">LoopCaregiver Requirements<a class="headerlink" href="#loopcaregiver-requirements" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="req-loopcaregiver-001-multi-aid-target-support">REQ-LOOPCAREGIVER-001: Multi-AID Target Support<a class="headerlink" href="#req-loopcaregiver-001-multi-aid-target-support" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: LoopCaregiver SHOULD abstract the command layer to support multiple AID targets (Loop, Trio, AAPS).</p>
+<p><strong>Rationale</strong>: Loop-only support fragments caregiver experience across AID systems.</p>
+<p><strong>Scenarios</strong>:
+- Loop target commands
+- Trio target commands
+- AAPS target commands</p>
+<p><strong>Verification</strong>:
+- Target abstraction exists
+- At least 2 targets supported
+- Command translation works</p>
+<p><strong>Gap Reference</strong>: GAP-LOOPCAREGIVER-001</p>
+<hr />
+<h3 id="req-loopcaregiver-002-v2-commands-mainline-merge">REQ-LOOPCAREGIVER-002: V2 Commands Mainline Merge<a class="headerlink" href="#req-loopcaregiver-002-v2-commands-mainline-merge" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Remote Commands 2.0 features (status tracking) SHOULD be merged to mainline branches.</p>
+<p><strong>Rationale</strong>: Experimental branches increase deployment complexity and maintenance burden.</p>
+<p><strong>Scenarios</strong>:
+- Command status tracking
+- Mainline branch support
+- No special branch required</p>
+<p><strong>Verification</strong>:
+- Features in mainline
+- Standard deployment works
+- Status tracking functional</p>
+<p><strong>Gap Reference</strong>: GAP-LOOPCAREGIVER-002</p>
+<hr />
+<h3 id="req-loopcaregiver-003-standard-command-api">REQ-LOOPCAREGIVER-003: Standard Command API<a class="headerlink" href="#req-loopcaregiver-003-standard-command-api" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Remote commands SHOULD use a standard Nightscout API endpoint rather than proprietary push notification format.</p>
+<p><strong>Rationale</strong>: Standard API enables interoperability and command history in Nightscout.</p>
+<p><strong>Scenarios</strong>:
+- Command via API endpoint
+- Command history query
+- Cross-system interoperability</p>
+<p><strong>Verification</strong>:
+- API endpoint documented
+- Command history accessible
+- Non-Loop clients can issue commands</p>
+<p><strong>Gap Reference</strong>: GAP-LOOPCAREGIVER-003</p>
+<hr />
+<h2 id="algorithm-conformance-requirements">Algorithm Conformance Requirements<a class="headerlink" href="#algorithm-conformance-requirements" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="req-oref-conform-001-cross-implementation-iob-equivalence">REQ-OREF-CONFORM-001: Cross-Implementation IOB Equivalence<a class="headerlink" href="#req-oref-conform-001-cross-implementation-iob-equivalence" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Rust oref implementations MUST produce IOB values within 0.01 U tolerance of JS oref0 for identical inputs.</p>
+<p><strong>Rationale</strong>: Algorithm drift between implementations causes inconsistent dosing predictions and user confusion.</p>
+<p><strong>Scenarios</strong>:
+- Bilinear curve at t=0, t=peak, t=DIA
+- Exponential rapid-acting curve
+- Exponential ultra-rapid curve</p>
+<p><strong>Verification</strong>:
+- Run conformance tests in <code>conformance/scenarios/nocturne-oref/iob-tests.yaml</code>
+- Compare output values within tolerance
+- All test cases pass</p>
+<p><strong>Gap Reference</strong>: GAP-OREF-CONFORMANCE-003</p>
+<hr />
+<h3 id="req-oref-conform-002-peak-time-validation">REQ-OREF-CONFORM-002: Peak Time Validation<a class="headerlink" href="#req-oref-conform-002-peak-time-validation" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: oref implementations SHOULD validate peak time parameters against curve-specific bounds.</p>
+<p><strong>Rationale</strong>: Invalid peak times can produce unexpected insulin action curves.</p>
+<p><strong>Peak Time Bounds</strong>:
+| Curve | Min | Max |
+|-------|-----|-----|
+| Rapid-acting | 50 min | 120 min |
+| Ultra-rapid | 35 min | 100 min |</p>
+<p><strong>Verification</strong>:
+- Pass out-of-bounds peak time
+- Implementation either clamps or rejects
+- No undefined behavior</p>
+<p><strong>Gap Reference</strong>: GAP-OREF-CONFORMANCE-001</p>
+<hr />
+<h3 id="req-oref-conform-003-cob-algorithm-equivalence">REQ-OREF-CONFORM-003: COB Algorithm Equivalence<a class="headerlink" href="#req-oref-conform-003-cob-algorithm-equivalence" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Rust oref COB calculation MUST match JS oref0 deviation-based algorithm.</p>
+<p><strong>Rationale</strong>: COB drives carb absorption and prediction curves across all oref-based systems.</p>
+<p><strong>Algorithm Steps</strong>:
+1. Bucket glucose to 5-minute intervals
+2. Calculate BGI from IOB activity
+3. Deviation = actual delta - expected BGI
+4. Carb impact = max(deviation, min_5m_carbimpact)
+5. Absorbed = CI × CR / ISF</p>
+<p><strong>Verification</strong>:
+- Provide identical glucose + treatment history
+- Compare carbs_absorbed within tolerance
+- All deviation calculations match</p>
+<p><strong>Gap Reference</strong>: GAP-OREF-CONFORMANCE-003</p>
+<hr />
+<h2 id="nocturne-connector-coordination-requirements">Nocturne Connector Coordination Requirements<a class="headerlink" href="#nocturne-connector-coordination-requirements" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="req-connect-010-datasource-tagging">REQ-CONNECT-010: DataSource Tagging<a class="headerlink" href="#req-connect-010-datasource-tagging" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Connectors MUST tag all submitted data with their <code>data_source</code> identifier.</p>
+<p><strong>Rationale</strong>: Enables filtering, auditing, and cleanup by data origin.</p>
+<p><strong>Verification</strong>: Query entries by <code>data_source</code>, verify connector attribution.</p>
+<p><strong>Source</strong>: <a href="../docs/10-domain/nocturne-connector-coordination.html">Connector Coordination Analysis</a></p>
+<p><strong>Status</strong>: ✅ Implemented</p>
+<hr />
+<h3 id="req-connect-011-resilient-polling">REQ-CONNECT-011: Resilient Polling<a class="headerlink" href="#req-connect-011-resilient-polling" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Connectors SHOULD implement adaptive polling with fast reconnection and exponential backoff.</p>
+<p><strong>Rationale</strong>: Balances quick recovery with API rate-limit respect.</p>
+<p><strong>Polling Modes</strong>:
+| State | Interval | Trigger |
+|-------|----------|---------|
+| Healthy | 5 min (config) | Success |
+| Disconnected | 10 sec | First failure |
+| Extended | Backoff to 5 min | 30+ failures |</p>
+<p><strong>Verification</strong>: 
+- Disconnect network, verify 10s polling begins
+- After 30 failures, verify backoff increases</p>
+<p><strong>Source</strong>: <a href="../docs/10-domain/nocturne-connector-coordination.html">Connector Coordination Analysis</a></p>
+<p><strong>Status</strong>: ✅ Implemented</p>
+<hr />
+<h3 id="req-connect-012-incremental-sync">REQ-CONNECT-012: Incremental Sync<a class="headerlink" href="#req-connect-012-incremental-sync" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Connectors SHOULD track last successful sync timestamp and only fetch new data.</p>
+<p><strong>Rationale</strong>: Reduces API load and bandwidth; enables backfill on reconnection.</p>
+<p><strong>Verification</strong>: 
+- Initial sync fetches all data in range
+- Subsequent syncs only fetch new records</p>
+<p><strong>Source</strong>: <a href="../docs/10-domain/nocturne-connector-coordination.html">Connector Coordination Analysis</a></p>
+<p><strong>Status</strong>: ✅ Implemented</p>
+<hr />
+<h3 id="req-connect-013-dexcom-share-auth-failure-propagation">REQ-CONNECT-013: Dexcom Share Auth Failure Propagation<a class="headerlink" href="#req-connect-013-dexcom-share-auth-failure-propagation" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Dexcom Share adapters MUST reject authentication, session, and glucose-fetch failures instead of returning error objects as successful data.</p>
+<p><strong>Rationale</strong>: The connector state machine can only enter recovery and diagnostic paths when driver failures reject. Returning error objects as data hides actionable Dexcom failures and can serialize invalid objects into follow-up API calls.</p>
+<p><strong>Scenarios</strong>:
+- <code>AuthenticatePublisherAccount</code> returns <code>AccountPasswordInvalid</code>
+- <code>AuthenticatePublisherAccount</code> returns <code>{ accountId: "..." }</code>
+- Latest glucose request fails without an HTTP response object</p>
+<p><strong>Verification</strong>:
+- Mock each response shape and assert the driver returns a bare <code>accountId</code> or rejects.
+- Assert transform returns an empty entry batch only for non-array success payloads, not for hidden auth failures.</p>
+<p><strong>Gap Reference</strong>: GAP-CONNECT-013</p>
+<hr />
+<h3 id="req-connect-014-region-safe-glooko-authentication-and-timestamp-handling">REQ-CONNECT-014: Region-Safe Glooko Authentication and Timestamp Handling<a class="headerlink" href="#req-connect-014-region-safe-glooko-authentication-and-timestamp-handling" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Glooko adapters MUST support region-specific authentication flows and SHOULD use named time zones instead of fixed offsets when converting treatment timestamps.</p>
+<p><strong>Rationale</strong>: EU Glooko users report CSRF rejection on JSON API login, and fixed offsets cannot handle DST changes. Connector output must preserve event time semantics because downstream Nightscout treatments drive retrospective analysis.</p>
+<p><strong>Scenarios</strong>:
+- EU web login obtains authenticity token and session cookie before API reads.
+- Glooko account uses a regional host such as <code>de-fr.api.glooko.com</code>.
+- DST boundary occurs within the sync window.
+- <code>/api/v2/cgm/readings</code> is empty but <code>/api/v3/graph/data</code> contains delayed CGM series.</p>
+<p><strong>Verification</strong>:
+- Fixture tests for web-login token extraction and cookie reuse.
+- Timestamp tests across winter and summer offsets for the same named time zone.
+- CGM fallback tests that clearly mark Glooko-derived glucose latency.</p>
+<p><strong>Gap Reference</strong>: GAP-CONNECT-014</p>
+<hr />
+<h3 id="req-connect-015-nightscout-v3-source-and-output-parity">REQ-CONNECT-015: Nightscout V3 Source and Output Parity<a class="headerlink" href="#req-connect-015-nightscout-v3-source-and-output-parity" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Nightscout source and output adapters SHOULD support API v3 entries and treatments in small, independently testable slices without regressing v1 compatibility.</p>
+<p><strong>Rationale</strong>: V3 enables validation, history, and identifier-aware sync. A broad untested v3 rewrite creates more release risk than the missing feature itself.</p>
+<p><strong>Scenarios</strong>:
+- Read entries from a v3 source using bearer token auth.
+- Upload entries and treatments through v3 with deterministic identifiers.
+- Fall back to v1 when v3 is unavailable or explicitly disabled.</p>
+<p><strong>Verification</strong>:
+- Unit tests for v1 and v3 URL construction and auth headers.
+- Loop registration test for each source driver.
+- Idempotent upload test for entries and treatments.</p>
+<p><strong>Gap Reference</strong>: GAP-CONNECT-015, GAP-CONNECT-001, GAP-CONNECT-003</p>
+<hr />
+<h2 id="nodejs--dependency-requirements">Node.js &amp; Dependency Requirements<a class="headerlink" href="#nodejs--dependency-requirements" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="req-node-001-minimum-nodejs-lts">REQ-NODE-001: Minimum Node.js LTS<a class="headerlink" href="#req-node-001-minimum-nodejs-lts" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: All Nightscout JavaScript projects MUST specify a currently-supported Node.js LTS version in <code>engines.node</code>.</p>
+<p><strong>Rationale</strong>: EOL Node.js versions receive no security updates, leaving users vulnerable.</p>
+<p><strong>Current LTS Versions</strong> (2026-01-30):
+- Node 24: EOL 2028-04-30
+- Node 22: EOL 2027-04-30
+- Node 20: EOL 2026-04-30</p>
+<p><strong>Verification</strong>: 
+- CI matrix includes minimum and latest LTS
+- <code>engines.node</code> specifies supported version</p>
+<p><strong>Gap Reference</strong>: GAP-NODE-001</p>
+<p><strong>Source</strong>: <a href="../docs/10-domain/node-lts-upgrade-analysis.html">Node.js LTS Upgrade Analysis</a></p>
+<hr />
+<h3 id="req-node-002-no-deprecated-dependencies">REQ-NODE-002: No Deprecated Dependencies<a class="headerlink" href="#req-node-002-no-deprecated-dependencies" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Projects SHOULD NOT depend on packages deprecated more than 2 years.</p>
+<p><strong>Rationale</strong>: Deprecated packages receive no security updates and may break on newer Node.js.</p>
+<p><strong>Known Violations</strong>:
+- <code>request</code> package (deprecated 2020-02-11)</p>
+<p><strong>Verification</strong>: 
+- <code>npm audit</code> in CI pipeline
+- Dependency age check</p>
+<p><strong>Gap Reference</strong>: GAP-NODE-002</p>
+<p><strong>Source</strong>: <a href="../docs/10-domain/node-lts-upgrade-analysis.html">Node.js LTS Upgrade Analysis</a></p>
+<hr />
+<h3 id="req-node-003-engines-field-required">REQ-NODE-003: Engines Field Required<a class="headerlink" href="#req-node-003-engines-field-required" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: All npm packages MUST include <code>engines.node</code> field in package.json.</p>
+<p><strong>Rationale</strong>: Enables npm to warn users of incompatible Node.js versions during install.</p>
+<p><strong>Verification</strong>: 
+- package.json lint check
+- npm install on unsupported version fails</p>
+<p><strong>Gap Reference</strong>: GAP-NODE-003</p>
+<p><strong>Source</strong>: <a href="../docs/10-domain/node-lts-upgrade-analysis.html">Node.js LTS Upgrade Analysis</a></p>
+<hr />
+<h3 id="req-bridge-001-bridge-consolidation-into-nightscout-connect">REQ-BRIDGE-001: Bridge Consolidation into nightscout-connect<a class="headerlink" href="#req-bridge-001-bridge-consolidation-into-nightscout-connect" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Legacy bridge packages SHOULD be deprecated in favor of nightscout-connect.</p>
+<p><strong>Rationale</strong>: 
+- Reduces maintenance burden (3 packages → 1)
+- Eliminates deprecated dependencies (<code>request</code> package)
+- Provides consistent state machine architecture (xstate)
+- Enables feature reuse across vendors</p>
+<p><strong>Affected Packages</strong>:
+- share2nightscout-bridge → DEPRECATED
+- minimed-connect-to-nightscout → DEPRECATED</p>
+<p><strong>Migration Path</strong>: <a href="../docs/10-domain/bridge-deprecation-plan.html">Bridge Deprecation Plan</a></p>
+<p><strong>Verification</strong>: 
+- Legacy packages archived on GitHub
+- npm deprecation warnings published
+- Documentation updated</p>
+<p><strong>Gap Reference</strong>: GAP-NODE-002, GAP-NODE-003</p>
+<p><strong>Source</strong>: <a href="../docs/10-domain/bridge-deprecation-plan.html">Bridge Deprecation Plan</a></p>
+<hr />
+<h2 id="verification-tooling-requirements">Verification Tooling Requirements<a class="headerlink" href="#verification-tooling-requirements" title="Permanent link">&para;</a></h2>
+<h3 id="req-verify-001-multi-language-code-reference-validation">REQ-VERIFY-001: Multi-Language Code Reference Validation<a class="headerlink" href="#req-verify-001-multi-language-code-reference-validation" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The verification system SHOULD support validating code references across Swift, JavaScript, Kotlin, and Java source files.</p>
+<p><strong>Rationale</strong>: The Nightscout ecosystem spans multiple languages; documentation references must be verifiable regardless of language.</p>
+<p><strong>Scenarios</strong>:
+- Validate <code>externals/Trio/...swift:123</code> line anchor
+- Validate <code>externals/cgm-remote-monitor/...js:456</code> symbol reference
+- Report missing or moved code across languages</p>
+<p><strong>Verification</strong>:
+- Run <code>verify_refs.py</code> on mixed-language references
+- Confirm line validation works for all languages
+- Confirm semantic validation works for JS/TS (tsserver available)</p>
+<p><strong>Gap Reference</strong>: GAP-VERIFY-001</p>
+<p><strong>Source</strong>: <a href="../docs/10-domain/lsp-environment-check.html">lsp-environment-check.md</a></p>
+<p><strong>Status</strong>: ⚠️ Partial (JS/TS ready, Swift/Kotlin limited)</p>
+<hr />
+<h3 id="req-verify-002-cross-language-algorithm-conformance">REQ-VERIFY-002: Cross-Language Algorithm Conformance<a class="headerlink" href="#req-verify-002-cross-language-algorithm-conformance" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Algorithm conformance runners MUST exist for at least 2 implementations to enable cross-language validation.</p>
+<p><strong>Rationale</strong>: Different implementations (JS oref0, Kotlin AAPS, Swift Loop) should produce equivalent outputs for identical inputs; divergence may indicate bugs or undocumented changes.</p>
+<p><strong>Scenarios</strong>:
+- Run 85 test vectors through oref0-runner.js and aaps-runner.kt
+- Compare outputs for numerical precision (0.01 tolerance)
+- Document intentional divergence vs bugs</p>
+<p><strong>Verification</strong>:
+- <code>make conformance-algorithms</code> runs multiple runners
+- Cross-comparison report generated
+- &gt;80% match rate for shared feature set</p>
+<p><strong>Gap Reference</strong>: GAP-VERIFY-002</p>
+<p><strong>Source</strong>: <a href="../docs/10-domain/cross-platform-testing-research.html">cross-platform-testing-research.md</a></p>
+<p><strong>Status</strong>: 🔄 In progress (oref0 runner complete, AAPS scaffolding ready)</p>
+<hr />
+<h3 id="req-verify-003-conformance-vector-currency">REQ-VERIFY-003: Conformance Vector Currency<a class="headerlink" href="#req-verify-003-conformance-vector-currency" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Conformance test vectors SHOULD be refreshed quarterly to cover new algorithm features.</p>
+<p><strong>Rationale</strong>: Algorithm implementations evolve; test vectors must keep pace with new features (Dynamic ISF, SMB scheduling, sigmoid formulas).</p>
+<p><strong>Scenarios</strong>:
+- Extract new vectors from AAPS 3.x replay tests
+- Add vectors for Trio-specific features (SMB scheduling, override integration)
+- Validate coverage of all documented algorithm features</p>
+<p><strong>Verification</strong>:
+- Vector extraction date tracked in <code>conformance/vectors/README.md</code>
+- Coverage report shows &gt;90% of documented features have vectors
+- Quarterly review process documented</p>
+<p><strong>Gap Reference</strong>: GAP-VERIFY-003</p>
+<p><strong>Source</strong>: <a href="../docs/10-domain/cross-platform-testing-research.html">cross-platform-testing-research.md</a></p>
+<p><strong>Status</strong>: ⚠️ Partial (vectors exist but dated 2026-01-29)</p>
+<hr />
+<h3 id="req-verify-004-ci-matrix-coverage">REQ-VERIFY-004: CI Matrix Coverage<a class="headerlink" href="#req-verify-004-ci-matrix-coverage" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The CI pipeline MUST run static analysis on all PRs and conformance tests on algorithm-related changes.</p>
+<p><strong>Rationale</strong>: Automated verification prevents documentation drift and algorithm regression.</p>
+<p><strong>Scenarios</strong>:
+- PR to <code>docs/</code> triggers static verification (refs, terminology)
+- PR to <code>conformance/</code> or algorithm docs triggers full conformance suite
+- macOS runner for Swift verification (10x cost but necessary)</p>
+<p><strong>Verification</strong>:
+- GitHub Actions workflow with matrix (Linux + macOS)
+- CI blocks merges with failing verification
+- Badge in README shows verification status</p>
+<p><strong>Gap Reference</strong>: GAP-VERIFY-002, GAP-VERIFY-004</p>
+<p><strong>Source</strong>: <a href="../docs/10-domain/cross-platform-testing-research.html">cross-platform-testing-research.md</a></p>
+<p><strong>Status</strong>: ⚠️ Partial (Linux CI exists, macOS not configured)</p>
+<hr />
+<h3 id="req-verify-005-accuracy-reporting-dashboard">REQ-VERIFY-005: Accuracy Reporting Dashboard<a class="headerlink" href="#req-verify-005-accuracy-reporting-dashboard" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The verification system SHOULD provide a unified accuracy dashboard showing claim verification status by category.</p>
+<p><strong>Rationale</strong>: Single-command visibility into documentation quality enables prioritization and trend tracking.</p>
+<p><strong>Scenarios</strong>:
+- Run <code>make verify-accuracy</code> to see breakdown
+- Categories: code refs, algorithm claims, cross-language parity
+- Historical tracking for regression detection</p>
+<p><strong>Verification</strong>:
+- <code>tools/accuracy_dashboard.py</code> exists ✅
+- Output shows accuracy percentage per claim type ✅
+- CI generates accuracy badge (pending CI integration)</p>
+<p><strong>Gap Reference</strong>: GAP-VERIFY-004</p>
+<p><strong>Source</strong>: <a href="../docs/10-domain/cross-platform-testing-research.html">cross-platform-testing-research.md</a></p>
+<p><strong>Status</strong>: ✅ Implemented (2026-01-31)</p>
+<hr />
+<h2 id="apple-watch-requirements">Apple Watch Requirements<a class="headerlink" href="#apple-watch-requirements" title="Permanent link">&para;</a></h2>
+<h3 id="req-watch-001-use-widgetkit-for-watch-complications">REQ-WATCH-001: Use WidgetKit for Watch Complications<a class="headerlink" href="#req-watch-001-use-widgetkit-for-watch-complications" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: All iOS apps with watch complications MUST use WidgetKit TimelineProvider, not deprecated ClockKit.</p>
+<p><strong>Rationale</strong>: ClockKit is deprecated in watchOS 9+. WidgetKit ensures future compatibility and access to new complication families.</p>
+<p><strong>Scenarios</strong>:
+- Glucose display on accessoryCircular
+- Chart display on accessoryRectangular
+- Trend arrow on accessoryCorner</p>
+<p><strong>Verification</strong>:
+- [ ] Loop migrated from ClockKit to WidgetKit
+- [x] Trio uses WidgetKit
+- [x] Nightguard uses WidgetKit
+- [x] xDrip4iOS uses WidgetKit</p>
+<p><strong>Gap Reference</strong>: GAP-WATCH-001</p>
+<p><strong>Source</strong>: <a href="../docs/10-domain/apple-watch-complications-survey.html">apple-watch-complications-survey.md</a></p>
+<p><strong>Status</strong>: ⚠️ Partial (Loop needs migration)</p>
+<hr />
+<h3 id="req-watch-002-display-live-glucose-on-complications">REQ-WATCH-002: Display Live Glucose on Complications<a class="headerlink" href="#req-watch-002-display-live-glucose-on-complications" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Watch complications SHOULD display current glucose value, trend, and delta when sufficient display space is available.</p>
+<p><strong>Rationale</strong>: Users rely on watch face for quick glucose checks. Icon-only complications require opening the app.</p>
+<p><strong>Scenarios</strong>:
+- accessoryRectangular: glucose + trend + delta + timestamp
+- accessoryCircular: glucose value with trend arrow
+- accessoryCorner: glucose value</p>
+<p><strong>Verification</strong>:
+- [x] Loop displays glucose data
+- [ ] Trio displays glucose (currently icon-only)
+- [ ] LoopCaregiver has complications
+- [x] Nightguard displays glucose
+- [x] xDrip4iOS displays glucose</p>
+<p><strong>Gap Reference</strong>: GAP-WATCH-002, GAP-WATCH-003</p>
+<p><strong>Source</strong>: <a href="../docs/10-domain/apple-watch-complications-survey.html">apple-watch-complications-survey.md</a></p>
+<p><strong>Status</strong>: ⚠️ Partial (Trio and LoopCaregiver missing)</p>
+<hr />
+<h3 id="req-watch-003-shared-complication-components">REQ-WATCH-003: Shared Complication Components<a class="headerlink" href="#req-watch-003-shared-complication-components" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The ecosystem SHOULD provide shared SPM packages for watch complications (GlucoseComplicationKit) and phone-watch sync (WatchSyncKit).</p>
+<p><strong>Rationale</strong>: Reduces code duplication across 5+ apps, ensures consistent UX, lowers maintenance burden.</p>
+<p><strong>Scenarios</strong>:
+- Import GlucoseComplicationKit for views and entry models
+- Import WatchSyncKit for WCSession management
+- Apps customize appearance while sharing core logic</p>
+<p><strong>Verification</strong>:
+- [ ] GlucoseComplicationKit package exists
+- [ ] WatchSyncKit package exists
+- [ ] At least 2 apps adopt shared packages</p>
+<p><strong>Gap Reference</strong>: GAP-WATCH-004</p>
+<p><strong>Source</strong>: <a href="../docs/10-domain/apple-watch-complications-survey.html">apple-watch-complications-survey.md</a></p>
+<p><strong>Status</strong>: Open (packages not created)</p>
+<hr />
+<h2 id="healthkit-integration-requirements">HealthKit Integration Requirements<a class="headerlink" href="#healthkit-integration-requirements" title="Permanent link">&para;</a></h2>
+<h3 id="req-hk-001-single-writer-principle">REQ-HK-001: Single-Writer Principle<a class="headerlink" href="#req-hk-001-single-writer-principle" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: When multiple iOS apps are installed, only ONE app SHOULD write glucose data to HealthKit; other apps SHOULD read from HealthKit instead.</p>
+<p><strong>Rationale</strong>: Prevents duplicate glucose samples that corrupt daily averages and potentially confuse AID algorithms.</p>
+<p><strong>Scenarios</strong>:
+- Loop + xDrip4iOS: xDrip4iOS writes, Loop reads via background delivery
+- Trio standalone: Trio writes all data types
+- Nightguard + Loop: Loop writes, Nightguard should not duplicate</p>
+<p><strong>Verification</strong>:
+- [ ] Apps document recommended HK configuration
+- [ ] Settings warn about multi-app conflicts
+- [ ] Read-from-HK mode available for CGM apps</p>
+<p><strong>Gap Reference</strong>: GAP-HK-001, GAP-HK-002</p>
+<p><strong>Source</strong>: <a href="../docs/10-domain/healthkit-integration-audit.html">healthkit-integration-audit.md</a></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h3 id="req-hk-002-cross-app-source-detection">REQ-HK-002: Cross-App Source Detection<a class="headerlink" href="#req-hk-002-cross-app-source-detection" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Apps SHOULD query HKSource at startup to detect other CGM/AID apps writing to HealthKit.</p>
+<p><strong>Rationale</strong>: Enables warning users about potential duplicate data before it occurs.</p>
+<p><strong>Scenarios</strong>:
+- Startup check for other glucose-writing apps
+- Settings view shows detected competing apps
+- Recommendation displayed based on detected configuration</p>
+<p><strong>Verification</strong>:
+- [ ] HKSource query implemented in at least 2 apps
+- [ ] Warning UI displayed when conflicts detected
+- [ ] User guidance links provided</p>
+<p><strong>Gap Reference</strong>: GAP-HK-002</p>
+<p><strong>Source</strong>: <a href="../docs/10-domain/healthkit-integration-audit.html">healthkit-integration-audit.md</a></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h3 id="req-hk-003-standardized-metadata-keys">REQ-HK-003: Standardized Metadata Keys<a class="headerlink" href="#req-hk-003-standardized-metadata-keys" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: HealthKit samples SHOULD include standardized metadata keys for cross-app identification and Nightscout correlation.</p>
+<p><strong>Rationale</strong>: Enables programmatic deduplication and source attribution across ecosystem apps.</p>
+<p><strong>Scenarios</strong>:
+- All apps use <code>"app.nightscout.syncId"</code> format
+- Nightscout identifier included for correlation
+- Source app identifiable from metadata</p>
+<p><strong>Verification</strong>:
+- [ ] Metadata key format documented
+- [ ] At least 2 apps implement standard format
+- [ ] Cross-app query can identify source</p>
+<p><strong>Gap Reference</strong>: GAP-HK-003</p>
+<p><strong>Source</strong>: <a href="../docs/10-domain/healthkit-integration-audit.html">healthkit-integration-audit.md</a></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h2 id="widgetkit-requirements">WidgetKit Requirements<a class="headerlink" href="#widgetkit-requirements" title="Permanent link">&para;</a></h2>
+<h3 id="req-widget-001-shared-glucosewidgetkit-package">REQ-WIDGET-001: Shared GlucoseWidgetKit Package<a class="headerlink" href="#req-widget-001-shared-glucosewidgetkit-package" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The ecosystem SHOULD provide a shared SPM package for glucose widget implementation.</p>
+<p><strong>Rationale</strong>: Reduces code duplication, ensures consistent UX, lowers maintenance burden across 5+ apps.</p>
+<p><strong>Scenarios</strong>:
+- Shared <code>GlucoseWidgetEntry</code> model
+- Reusable views for all widget families
+- Common color scheme logic</p>
+<p><strong>Verification</strong>:
+- [ ] GlucoseWidgetKit package exists
+- [ ] Shared entry model defined
+- [ ] At least 2 apps adopt package</p>
+<p><strong>Gap Reference</strong>: GAP-WIDGET-001</p>
+<p><strong>Source</strong>: <a href="../docs/10-domain/widgetkit-standardization-survey.html">widgetkit-standardization-survey.md</a></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h3 id="req-widget-002-minimum-widget-family-support">REQ-WIDGET-002: Minimum Widget Family Support<a class="headerlink" href="#req-widget-002-minimum-widget-family-support" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: All glucose display apps SHOULD support at minimum <code>.systemSmall</code> and <code>.accessoryRectangular</code> widget families.</p>
+<p><strong>Rationale</strong>: Provides consistent experience across home screen and lock screen for all users.</p>
+<p><strong>Scenarios</strong>:
+- Home screen quick glance (systemSmall)
+- Lock screen always-visible (accessoryRectangular)
+- Optional: larger sizes for detailed view</p>
+<p><strong>Verification</strong>:
+- [ ] Loop adds widget support
+- [ ] Trio adds home screen widgets
+- [ ] All apps support accessory families</p>
+<p><strong>Gap Reference</strong>: GAP-WIDGET-002, GAP-WIDGET-003</p>
+<p><strong>Source</strong>: <a href="../docs/10-domain/widgetkit-standardization-survey.html">widgetkit-standardization-survey.md</a></p>
+<p><strong>Status</strong>: ⚠️ Partial (xDrip4iOS, Nightguard, LoopCaregiver compliant)</p>
+<hr />
+<h3 id="req-widget-003-standardized-color-scheme">REQ-WIDGET-003: Standardized Color Scheme<a class="headerlink" href="#req-widget-003-standardized-color-scheme" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Widgets SHOULD use consistent color ranges for glucose values across all apps.</p>
+<p><strong>Rationale</strong>: Users with multiple apps should see consistent color meaning for same glucose value.</p>
+<p><strong>Scenarios</strong>:
+- Urgent Low: &lt; 55 mg/dL (red)
+- Low: 55-70 mg/dL (yellow-red)
+- In Range: 70-180 mg/dL (green)
+- High: 180-250 mg/dL (yellow-orange)
+- Urgent High: &gt; 250 mg/dL (orange-red)</p>
+<p><strong>Verification</strong>:
+- [ ] Color ranges documented
+- [ ] Shared color scheme in package
+- [ ] At least 2 apps use same colors</p>
+<p><strong>Gap Reference</strong>: GAP-WIDGET-004</p>
+<p><strong>Source</strong>: <a href="../docs/10-domain/widgetkit-standardization-survey.html">widgetkit-standardization-survey.md</a></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h2 id="distribution-requirements">Distribution Requirements<a class="headerlink" href="#distribution-requirements" title="Permanent link">&para;</a></h2>
+<h3 id="req-dist-001-browser-build-support">REQ-DIST-001: Browser Build Support<a class="headerlink" href="#req-dist-001-browser-build-support" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: All ecosystem iOS apps SHOULD support browser-based builds via GitHub Actions.</p>
+<p><strong>Rationale</strong>: Eliminates need for Mac computer, lowers barrier to entry for non-technical users.</p>
+<p><strong>Scenarios</strong>:
+- Fork repo, add secrets, run workflow
+- Automatic upload to personal TestFlight
+- Weekly rebuild to stay current</p>
+<p><strong>Verification</strong>:
+- [x] Loop supports browser build
+- [x] Trio supports browser build
+- [x] xDrip4iOS supports browser build
+- [x] LoopFollow supports browser build
+- [x] LoopCaregiver supports browser build
+- [ ] Nightguard supports browser build
+- [ ] DiaBLE supports browser build</p>
+<p><strong>Gap Reference</strong>: GAP-DIST-002</p>
+<p><strong>Source</strong>: <a href="../docs/10-domain/testflight-distribution-infrastructure.html">testflight-distribution-infrastructure.md</a></p>
+<p><strong>Status</strong>: ⚠️ Partial (5/7 apps)</p>
+<hr />
+<h3 id="req-dist-002-standardized-build-configuration">REQ-DIST-002: Standardized Build Configuration<a class="headerlink" href="#req-dist-002-standardized-build-configuration" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Apps SHOULD use consistent secret names, workflow structure, and Fastlane configuration.</p>
+<p><strong>Rationale</strong>: Users building multiple apps should have consistent experience; maintainers benefit from shared patterns.</p>
+<p><strong>Scenarios</strong>:
+- Same secret names across all apps
+- Similar workflow structure
+- Reusable Fastfile components</p>
+<p><strong>Verification</strong>:
+- [ ] Shared workflow action exists
+- [ ] Secret naming documented
+- [ ] At least 3 apps use shared template</p>
+<p><strong>Gap Reference</strong>: GAP-DIST-001</p>
+<p><strong>Source</strong>: <a href="../docs/10-domain/testflight-distribution-infrastructure.html">testflight-distribution-infrastructure.md</a></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h3 id="req-dist-003-unified-build-documentation">REQ-DIST-003: Unified Build Documentation<a class="headerlink" href="#req-dist-003-unified-build-documentation" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The ecosystem SHOULD provide a single unified build guide covering all iOS apps.</p>
+<p><strong>Rationale</strong>: Reduces confusion for new users, eliminates duplicate documentation effort.</p>
+<p><strong>Scenarios</strong>:
+- Single URL for iOS build instructions
+- App-specific sections within unified guide
+- Consistent terminology across apps</p>
+<p><strong>Verification</strong>:
+- [ ] Unified guide exists
+- [ ] All app READMEs link to it
+- [ ] Covers at least 5 apps</p>
+<p><strong>Gap Reference</strong>: GAP-DIST-003</p>
+<p><strong>Source</strong>: <a href="../docs/10-domain/testflight-distribution-infrastructure.html">testflight-distribution-infrastructure.md</a></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h2 id="ble-cgm-requirements">BLE CGM Requirements<a class="headerlink" href="#ble-cgm-requirements" title="Permanent link">&para;</a></h2>
+<h3 id="req-ble-001-shared-packages-license-compatible">REQ-BLE-001: Shared Packages License Compatible<a class="headerlink" href="#req-ble-001-shared-packages-license-compatible" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Shared BLE packages MUST use MIT or equivalent permissive license.</p>
+<p><strong>Rationale</strong>: All ecosystem apps have different licenses. MIT is compatible with all. GPL would prevent adoption.</p>
+<p><strong>Scenarios</strong>: Package creation, dependency adoption</p>
+<p><strong>Verification</strong>: Check LICENSE file in shared package.</p>
+<p><strong>Source</strong>: <code>docs/10-domain/ble-cgm-library-consolidation.md</code></p>
+<hr />
+<h3 id="req-ble-002-protocol-constants-match-specifications">REQ-BLE-002: Protocol Constants Match Specifications<a class="headerlink" href="#req-ble-002-protocol-constants-match-specifications" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Shared BLE constants MUST exactly match manufacturer protocol specifications.</p>
+<p><strong>Rationale</strong>: Incorrect UUIDs or opcodes will cause connection failures. Must be verified against device behavior.</p>
+<p><strong>Scenarios</strong>: Adding new CGM protocol, updating for firmware changes</p>
+<p><strong>Verification</strong>: Test against actual device, compare with manufacturer documentation.</p>
+<p><strong>Source</strong>: <code>docs/10-domain/ble-cgm-library-consolidation.md</code></p>
+<hr />
+<h3 id="req-ble-003-glucose-model-support-mgdl-and-mmoll">REQ-BLE-003: Glucose Model Support mg/dL and mmol/L<a class="headerlink" href="#req-ble-003-glucose-model-support-mgdl-and-mmoll" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Shared glucose data model MUST support both mg/dL and mmol/L units.</p>
+<p><strong>Rationale</strong>: Different regions use different units. US uses mg/dL, EU uses mmol/L. Apps must interoperate.</p>
+<p><strong>Scenarios</strong>: Data exchange, HealthKit writing, display</p>
+<p><strong>Verification</strong>: Unit conversion tests, display tests in both unit modes.</p>
+<p><strong>Source</strong>: <code>docs/10-domain/ble-cgm-library-consolidation.md</code></p>
+<hr />
+<h3 id="req-ble-004-backward-compatibility-required">REQ-BLE-004: Backward Compatibility Required<a class="headerlink" href="#req-ble-004-backward-compatibility-required" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Shared packages MUST NOT break existing app functionality when adopted.</p>
+<p><strong>Rationale</strong>: Apps have production users on TestFlight. Breaking changes could impact insulin delivery.</p>
+<p><strong>Scenarios</strong>: Package updates, version migrations</p>
+<p><strong>Verification</strong>: Integration tests in each adopting app, regression testing.</p>
+<p><strong>Source</strong>: <code>docs/10-domain/ble-cgm-library-consolidation.md</code></p>
+<hr />
+<hr />
+<h3 id="req-tidepool-001-ios-cgm-app-tidepool-integration">REQ-TIDEPOOL-001: iOS CGM App Tidepool Integration<a class="headerlink" href="#req-tidepool-001-ios-cgm-app-tidepool-integration" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: iOS CGM display apps (xDrip4iOS, DiaBLE) SHOULD provide optional Tidepool upload capability.</p>
+<p><strong>Rationale</strong>: Users of CGM-only apps should not need to run an AID controller just for data aggregation.</p>
+<p><strong>Scenarios</strong>:
+- User configures Tidepool credentials in xDrip4iOS
+- CGM readings automatically upload to Tidepool
+- Upload works independently of Nightscout sync</p>
+<p><strong>Verification</strong>:
+- Tidepool account shows CGM data from xDrip4iOS
+- No duplicate uploads when also using Loop</p>
+<p><strong>Gap Reference</strong>: GAP-TIDEPOOL-001</p>
+<p><strong>Source</strong>: <code>docs/10-domain/tidepool-integration-inventory.md</code></p>
+<p><strong>Status</strong>: ❌ Not implemented</p>
+<hr />
+<h3 id="req-tidepool-002-oauth2-authentication-for-android">REQ-TIDEPOOL-002: OAuth2 Authentication for Android<a class="headerlink" href="#req-tidepool-002-oauth2-authentication-for-android" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Android apps (AAPS, xDrip+) SHOULD migrate to OAuth2 for Tidepool authentication.</p>
+<p><strong>Rationale</strong>: OAuth2 is more secure than email/password and aligns with iOS implementations.</p>
+<p><strong>Scenarios</strong>:
+- User authenticates via Tidepool OAuth2 flow
+- Refresh tokens stored securely
+- No password stored on device</p>
+<p><strong>Verification</strong>:
+- OAuth2 flow completes successfully
+- Session refresh works without user interaction
+- Legacy auth code path removed</p>
+<p><strong>Gap Reference</strong>: GAP-TIDEPOOL-002</p>
+<p><strong>Source</strong>: <code>docs/10-domain/tidepool-integration-inventory.md</code></p>
+<p><strong>Status</strong>: ❌ Not implemented</p>
+<hr />
+<h3 id="req-tidepool-003-nightscout-tidepool-connector">REQ-TIDEPOOL-003: Nightscout Tidepool Connector<a class="headerlink" href="#req-tidepool-003-nightscout-tidepool-connector" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: nightscout-connect SHOULD support Tidepool as a data source.</p>
+<p><strong>Rationale</strong>: Enables bidirectional sync between Nightscout and Tidepool ecosystems.</p>
+<p><strong>Scenarios</strong>:
+- nightscout-connect polls Tidepool API
+- CGM/treatment data normalized to Nightscout format
+- Historical import supported</p>
+<p><strong>Verification</strong>:
+- Tidepool data appears in Nightscout
+- No duplicates with direct app uploads
+- Rate limiting respected</p>
+<p><strong>Gap Reference</strong>: GAP-TIDEPOOL-003</p>
+<p><strong>Source</strong>: <code>docs/10-domain/tidepool-integration-inventory.md</code></p>
+<p><strong>Status</strong>: ❌ Not implemented (Nocturne has connector, cgm-remote-monitor does not)</p>
+<hr />
+<h3 id="req-tidepool-004-dosing-decision-parity">REQ-TIDEPOOL-004: Dosing Decision Parity<a class="headerlink" href="#req-tidepool-004-dosing-decision-parity" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: All AID apps with Tidepool integration SHOULD upload dosing decision data.</p>
+<p><strong>Rationale</strong>: Complete algorithm data enables better analysis and comparison across platforms.</p>
+<p><strong>Scenarios</strong>:
+- AAPS uploads dosingDecision equivalent
+- Decision data includes predicted values, constraints, enacted actions
+- Format compatible with Tidepool dosingDecision schema</p>
+<p><strong>Verification</strong>:
+- Tidepool shows decision data from AAPS
+- Data comparable to Loop dosingDecision uploads</p>
+<p><strong>Gap Reference</strong>: GAP-TIDEPOOL-004</p>
+<p><strong>Source</strong>: <code>docs/10-domain/tidepool-integration-inventory.md</code></p>
+<p><strong>Status</strong>: ❌ Not implemented</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

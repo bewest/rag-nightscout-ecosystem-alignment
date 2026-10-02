@@ -1,0 +1,4623 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/releases/cgm-remote-monitor-15.0.9/release-notes.html">
+      
+      
+        <link rel="prev" href="decisions.html">
+      
+      
+        <link rel="next" href="testing-notes.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Nightscout 15.0.9 — release notes - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#nightscout-1509--release-notes" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Nightscout 15.0.9 — release notes
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../docs/00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Releases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VERIFICATION-RECORDS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Verification records
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../_template/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _template/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor-15.0.9/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    cgm-remote-monitor-15.0.9/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="contents.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor 15.0.9 — contents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="decisions.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor 15.0.9 — decisions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout 15.0.9 — release notes
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="release-notes.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout 15.0.9 — release notes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#before-you-upgrade-what-to-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before you upgrade: what to check
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#read-this-first-the-insulin-reservoir-urgent-alarm-starts-working" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Read this first: the insulin-reservoir urgent alarm starts working
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alarm-fixes-mmoll-alarm-levels-pump-and-loop-alerts-watch-faces-and-ifttt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alarm fixes: mmol/L alarm levels, pump and loop alerts, watch faces and IFTTT
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Alarm fixes: mmol/L alarm levels, pump and loop alerts, watch faces and IFTTT">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#low-alarms-on-sites-that-use-mmoll" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Low alarms on sites that use mmol/L
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-pump-suspended-warning-now-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The "pump suspended" warning now works
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#androidaps-loop-and-pump-alerts-return-when-you-turn-the-loop-back-on" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AndroidAPS: loop and pump alerts return when you turn the loop back on
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#watch-faces-and-a-false-low-alarm-on-sites-that-use-mgdl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Watch faces, and a false low alarm on sites that use mg/dL
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ifttt-alerts-on-sites-not-set-to-english" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IFTTT alerts on sites not set to English
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#androidaps-the-careportal-and-caregivers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AndroidAPS, the careportal and caregivers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="AndroidAPS, the careportal and caregivers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#careportal-and-caregiver-entries-now-reach-androidaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Careportal and caregiver entries now reach AndroidAPS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deleting-a-treatment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deleting a treatment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#androidaps-changes-to-careportal-entries-are-no-longer-lost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AndroidAPS changes to careportal entries are no longer lost
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#two-treatments-at-the-same-time-are-no-longer-stored-as-one" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two treatments at the same time are no longer stored as one
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#late-or-edited-androidaps-entries-now-count-in-insulin-and-carbs-on-board" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Late or edited AndroidAPS entries now count in insulin and carbs on board
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#androidaps-percentage-profile-switches-the-numbers-on-your-site-change" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AndroidAPS percentage Profile Switches: the numbers on your site change
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security fixes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security fixes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-new-trust_proxy-setting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The new TRUST_PROXY setting
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#corrections-requests-answered-differently" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Corrections: requests answered differently
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Corrections: requests answered differently">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#asking-for-a-number-of-records-count" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Asking for a number of records (count)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filter-conditions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filter conditions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#asking-for-a-glucose-reading-by-an-id-that-does-not-exist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Asking for a glucose reading by an ID that does not exist
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#records-deleted-by-androidaps-and-two-server-time-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Records deleted by AndroidAPS, and two server time fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#saving-a-glucose-reading-that-is-already-stored" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Saving a glucose reading that is already stored
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#carbs-on-board-in-apiv2properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Carbs on board in /api/v2/properties
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fields-stored-on-users-and-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fields stored on users and roles
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-old-minimed-and-dexcom-connections-are-being-retired" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The old MiniMed and Dexcom connections are being retired
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-built-in-cgm-connector" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The built-in CGM connector
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The built-in CGM connector">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#your-cgm-account-password" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Your CGM account password
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#other-changes-you-may-notice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Other changes you may notice
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Other changes you may notice">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bolus-calculator-quick-picks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bolus calculator quick picks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-page-with-no-reading-no-longer-hits-an-error-when-a-device-alarm-arrives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A page with no reading no longer hits an error when a device alarm arrives
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#edited-records-no-longer-leave-an-old-copy-behind" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Edited records no longer leave an old copy behind
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#moving-a-treatment-on-the-chart-now-moves-its-insulin-and-carbs-too" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Moving a treatment on the chart now moves its insulin and carbs too
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#searches-reports-and-filters-return-the-right-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Searches, reports and filters return the right records
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#editing-a-user-on-the-admin-page-keeps-its-notes-and-creation-date" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Editing a user on the admin page keeps its notes and creation date
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pages-that-would-not-load" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pages that would not load
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#passwords-and-account-names-with-leading-zeros-or-a-plus-sign" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Passwords and account names with leading zeros or a plus sign
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quieter-logs-and-two-new-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quieter logs, and two new settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#if-you-run-nightscout-with-docker-compose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        If you run Nightscout with Docker Compose
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clock-pages-show-when-their-reading-is-old-even-when-they-lose-their-connection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Clock pages show when their reading is old, even when they lose their connection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-user-without-a-name-no-longer-stops-your-site" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A user without a name no longer stops your site
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#numbers-that-may-look-different-on-the-same-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Numbers that may look different on the same data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-48-hour-view-on-the-main-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A 48-hour view on the main chart
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filter-the-treatments-report-by-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filter the treatments report by type
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#day-to-day-report-events-that-run-past-midnight" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Day to Day report: events that run past midnight
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#food-editor-scrolls-on-phones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Food Editor scrolls on phones
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bulk-deletes-from-xdrip4ios-remove-the-readings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bulk deletes from xDrip4iOS remove the readings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#translations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Translations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other-fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Other fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-you-must-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What you must do
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-to-check-afterwards" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What to check afterwards
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#known-issues--not-fixed-in-this-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known issues — not fixed in this release
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Known issues — not fixed in this release">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#access-tokens-stored-in-plain-text" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Access tokens stored in plain text
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#about-the-version-number" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        About the version number
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="testing-notes.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout 15.0.9 — testing notes for the release candidate
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="verification-record.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Verification record
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-connect-v0.0.14/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-connect-v0.0.14/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../docs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#before-you-upgrade-what-to-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before you upgrade: what to check
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#read-this-first-the-insulin-reservoir-urgent-alarm-starts-working" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Read this first: the insulin-reservoir urgent alarm starts working
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alarm-fixes-mmoll-alarm-levels-pump-and-loop-alerts-watch-faces-and-ifttt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alarm fixes: mmol/L alarm levels, pump and loop alerts, watch faces and IFTTT
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Alarm fixes: mmol/L alarm levels, pump and loop alerts, watch faces and IFTTT">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#low-alarms-on-sites-that-use-mmoll" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Low alarms on sites that use mmol/L
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-pump-suspended-warning-now-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The "pump suspended" warning now works
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#androidaps-loop-and-pump-alerts-return-when-you-turn-the-loop-back-on" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AndroidAPS: loop and pump alerts return when you turn the loop back on
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#watch-faces-and-a-false-low-alarm-on-sites-that-use-mgdl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Watch faces, and a false low alarm on sites that use mg/dL
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ifttt-alerts-on-sites-not-set-to-english" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IFTTT alerts on sites not set to English
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#androidaps-the-careportal-and-caregivers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AndroidAPS, the careportal and caregivers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="AndroidAPS, the careportal and caregivers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#careportal-and-caregiver-entries-now-reach-androidaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Careportal and caregiver entries now reach AndroidAPS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deleting-a-treatment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deleting a treatment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#androidaps-changes-to-careportal-entries-are-no-longer-lost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AndroidAPS changes to careportal entries are no longer lost
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#two-treatments-at-the-same-time-are-no-longer-stored-as-one" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two treatments at the same time are no longer stored as one
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#late-or-edited-androidaps-entries-now-count-in-insulin-and-carbs-on-board" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Late or edited AndroidAPS entries now count in insulin and carbs on board
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#androidaps-percentage-profile-switches-the-numbers-on-your-site-change" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AndroidAPS percentage Profile Switches: the numbers on your site change
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security fixes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security fixes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-new-trust_proxy-setting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The new TRUST_PROXY setting
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#corrections-requests-answered-differently" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Corrections: requests answered differently
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Corrections: requests answered differently">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#asking-for-a-number-of-records-count" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Asking for a number of records (count)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filter-conditions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filter conditions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#asking-for-a-glucose-reading-by-an-id-that-does-not-exist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Asking for a glucose reading by an ID that does not exist
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#records-deleted-by-androidaps-and-two-server-time-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Records deleted by AndroidAPS, and two server time fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#saving-a-glucose-reading-that-is-already-stored" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Saving a glucose reading that is already stored
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#carbs-on-board-in-apiv2properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Carbs on board in /api/v2/properties
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fields-stored-on-users-and-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fields stored on users and roles
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-old-minimed-and-dexcom-connections-are-being-retired" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The old MiniMed and Dexcom connections are being retired
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-built-in-cgm-connector" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The built-in CGM connector
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The built-in CGM connector">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#your-cgm-account-password" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Your CGM account password
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#other-changes-you-may-notice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Other changes you may notice
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Other changes you may notice">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bolus-calculator-quick-picks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bolus calculator quick picks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-page-with-no-reading-no-longer-hits-an-error-when-a-device-alarm-arrives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A page with no reading no longer hits an error when a device alarm arrives
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#edited-records-no-longer-leave-an-old-copy-behind" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Edited records no longer leave an old copy behind
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#moving-a-treatment-on-the-chart-now-moves-its-insulin-and-carbs-too" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Moving a treatment on the chart now moves its insulin and carbs too
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#searches-reports-and-filters-return-the-right-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Searches, reports and filters return the right records
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#editing-a-user-on-the-admin-page-keeps-its-notes-and-creation-date" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Editing a user on the admin page keeps its notes and creation date
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pages-that-would-not-load" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pages that would not load
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#passwords-and-account-names-with-leading-zeros-or-a-plus-sign" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Passwords and account names with leading zeros or a plus sign
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quieter-logs-and-two-new-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quieter logs, and two new settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#if-you-run-nightscout-with-docker-compose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        If you run Nightscout with Docker Compose
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clock-pages-show-when-their-reading-is-old-even-when-they-lose-their-connection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Clock pages show when their reading is old, even when they lose their connection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-user-without-a-name-no-longer-stops-your-site" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A user without a name no longer stops your site
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#numbers-that-may-look-different-on-the-same-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Numbers that may look different on the same data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-48-hour-view-on-the-main-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A 48-hour view on the main chart
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filter-the-treatments-report-by-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filter the treatments report by type
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#day-to-day-report-events-that-run-past-midnight" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Day to Day report: events that run past midnight
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#food-editor-scrolls-on-phones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Food Editor scrolls on phones
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bulk-deletes-from-xdrip4ios-remove-the-readings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bulk deletes from xDrip4iOS remove the readings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#translations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Translations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other-fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Other fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-you-must-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What you must do
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-to-check-afterwards" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What to check afterwards
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#known-issues--not-fixed-in-this-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known issues — not fixed in this release
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Known issues — not fixed in this release">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#access-tokens-stored-in-plain-text" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Access tokens stored in plain text
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#about-the-version-number" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        About the version number
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="nightscout-1509--release-notes">Nightscout 15.0.9 — release notes<a class="headerlink" href="#nightscout-1509--release-notes" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-10-02 at <code>a48cdbe6</code>.</em></p>
+<p><strong>Draft: 15.0.9 is not yet released, and the wording may change before it is.</strong></p>
+<p><em>For people who run a Nightscout site for themselves or a family member. Nightscout is a
+secondary display, nothing in these notes is advice about insulin doses, and you should talk
+with your care team before changing therapy settings.</em></p>
+<p>The changelog lists every change; these notes say what you will notice, what you must do, what
+to check afterwards, and what is still not fixed.</p>
+<p>This is a bug-fix and security release. Most of what is in it is something that should
+already have worked. A few fixes change what you see on screen, some change which alarms can
+reach your phone, and some requests from apps and scripts are now answered differently. Please
+read the first three sections even if you usually skip release notes.</p>
+<p><strong>A few words used throughout these notes:</strong></p>
+<ul>
+<li><strong>API</strong> — the web addresses that apps (uploaders, phone and watch apps, follower apps,
+  reporting tools, scripts) use to read from and save to your Nightscout site. You do not see
+  it in the browser, but almost everything connected to your site uses it.</li>
+<li><strong>Admin page</strong> — the "Admin tools" page, reached from your site's menu, where you create
+  <strong>users</strong> for people and devices. The page calls them <em>subjects</em>. Each one gets its own
+  <strong>access token</strong>: a password-like string that lets that person or app use your site with the
+  roles you gave them, without knowing your site's main password (<code>API_SECRET</code>).</li>
+<li><strong>Proxy</strong> — a server that sits in front of Nightscout and passes visitors' requests on to it.
+  Many hosting set-ups have one without you having set it up yourself: a hosting platform's
+  router, a CDN, nginx, Apache, a Kubernetes ingress.</li>
+<li><strong>Setting</strong> — one of the environment variables you configure your site with, written here in
+  <code>CAPITALS</code>.</li>
+</ul>
+<hr />
+<h2 id="before-you-upgrade-what-to-check">Before you upgrade: what to check<a class="headerlink" href="#before-you-upgrade-what-to-check" title="Permanent link">&para;</a></h2>
+<p>Work through this list first. Most people will find that nothing applies to them except the last
+item.</p>
+<ol>
+<li><strong>Which MongoDB version your database runs.</strong> MongoDB is the database Nightscout keeps your
+   readings and treatments in. <strong>MongoDB 4.4 is deprecated in this release.</strong> It still works and
+   is still tested, but support for it will be removed in a later release (the version that
+   removes it has not been decided). MongoDB itself stopped supporting 4.4 in February 2024. The
+   supported versions are 5.0.32 or later and 6.0.27 or later. If you are on 4.4, plan to
+   upgrade one major version at a time (4.4 to 5.0, then 6.0). If you use a hosted database
+   (such as MongoDB Atlas), your provider decides this and you may have nothing to do.</li>
+<li><strong><code>TRUST_PROXY</code>, a new setting: nothing to do unless you want the stronger protection.</strong>
+   If you leave it unset, Nightscout behaves exactly as it does today. Setting it turns on a
+   stronger protection against password guessing, but setting it wrongly can stop your site
+   loading. See <a href="#the-new-trust_proxy-setting">The new <code>TRUST_PROXY</code> setting</a>.</li>
+<li><strong>If you have ever edited a user on the admin page</strong>, a readable copy of that user's access
+   token may be stored in your database. <strong>Upgrading does not remove it, and does not make the
+   token stop working.</strong> Read <a href="#access-tokens-stored-in-plain-text">Access tokens stored in plain text</a>
+   and decide whether to retire any tokens.</li>
+<li><strong>If you get MiniMed CareLink data through settings that start with <code>MMCONNECT_</code></strong>, or
+   <strong>Dexcom Share data through settings that start with <code>BRIDGE_</code></strong>, those old built-in
+   connections are being retired. Move to the built-in CGM connector's settings. See
+   <a href="#the-old-minimed-and-dexcom-connections-are-being-retired">The old MiniMed and Dexcom connections are being retired</a>.</li>
+<li><strong>If you run apps, scripts or reports against your site's API</strong>, some requests are now
+   answered differently or refused with an error. See
+   <a href="#corrections-requests-answered-differently">Corrections: requests answered differently</a>.
+   This includes asking for zero records, badly formed record counts, unsupported filter
+   conditions, and extra fields a tool stores on a user.</li>
+<li><strong>If you run Nightscout with the bundled <code>docker-compose.yml</code> file</strong>, or a copy of it, see
+   <a href="#if-you-run-nightscout-with-docker-compose">If you run Nightscout with Docker Compose</a>.</li>
+<li><strong>If insulin-age alerts are turned on</strong> (<code>IAGE_ENABLE_ALERTS</code>), a new urgent alert can reach
+   your phone. Tell whoever receives your Nightscout alerts. See the next section.</li>
+<li><strong>If your site shows glucose in mmol/L</strong> (<code>DISPLAY_UNITS=mmol</code>), write down the alarm levels
+   you expect before you upgrade, and check them afterwards: some sites' alarm levels are read
+   differently now, and on some sites low alarms start working. See
+   <a href="#low-alarms-on-sites-that-use-mmoll">Low alarms on sites that use mmol/L</a>.</li>
+<li><strong>If you turned on <code>PUMP_WARN_ON_SUSPEND</code></strong>, a "Pump Suspended" warning can now reach your
+   phone; it never did before. See
+   <a href="#the-pump-suspended-warning-now-works">The "pump suspended" warning now works</a>.</li>
+<li><strong>If you use AndroidAPS</strong>, carbs and insulin entered in the careportal or by a caregiver can
+    now reach the phone, deleting an entry anywhere except AndroidAPS still does not reach the
+    phone, and during a percentage Profile Switch the numbers on your site change to match the
+    phone. See <a href="#androidaps-the-careportal-and-caregivers">AndroidAPS, the careportal and caregivers</a>.</li>
+<li><strong>If you get Nightscout alarms through IFTTT on a site that is not in English</strong>, and you renamed
+    your IFTTT applets to translated names to make them work, rename them back. See
+    <a href="#ifttt-alerts-on-sites-not-set-to-english">IFTTT alerts on sites not set to English</a>.</li>
+<li><strong>Have a second way to see your readings</strong> while you upgrade and for a day afterwards —
+    your CGM app, your pump or your meter — in case something that connects to your site stops
+    working.</li>
+</ol>
+<p>Node.js 20 or later is still required (as for 15.0.8). Versions 20, 22 and 24 are tested.</p>
+<hr />
+<h2 id="read-this-first-the-insulin-reservoir-urgent-alarm-starts-working">Read this first: the insulin-reservoir urgent alarm starts working<a class="headerlink" href="#read-this-first-the-insulin-reservoir-urgent-alarm-starts-working" title="Permanent link">&para;</a></h2>
+<p>Nightscout's <strong>insulin age</strong> feature (shown as the "IAGE" box on your page) tracks how long it
+has been since you last recorded an insulin reservoir or cartridge change. It has a setting
+for when the reservoir is "urgently" overdue — <strong>72 hours unless you changed it</strong> (the setting
+is <code>IAGE_URGENT</code>).</p>
+<p><strong>The urgent level has never worked, on any release.</strong> A mistake in the code meant the check
+could never be true. Past the threshold, the box showed the lower "warning" level for as long
+as the reservoir stayed overdue. This release fixes that.</p>
+<p>What changes, and for whom:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Who</th>
+<th>What</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>The IAGE box shows URGENT</strong></td>
+<td>everyone who uses insulin age</td>
+<td>From the threshold onward, and for as long as the reservoir stays overdue. No sound and no phone notification on its own.</td>
+</tr>
+<tr>
+<td><strong>A notification: "Insulin reservoir change overdue!"</strong></td>
+<td><strong>only</strong> if insulin-age alerts are turned on (<code>IAGE_ENABLE_ALERTS</code>, which is <strong>off unless you turned it on</strong>)</td>
+<td>A real alert, sent with the "persistent" sound on services that support sounds.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The notification is sent once and does not repeat.</strong> It is sent only during the hour your
+reservoir reaches the threshold, and only in the first 20 minutes of that hour. If your site
+was not running then, or you upgrade after that window, <strong>no catch-up alert is sent.</strong> The
+URGENT box on the page stays up while the reservoir is overdue — <strong>the box is the thing to
+watch</strong>, not an alarm that will keep reminding you. This matches how the cannula, sensor and
+battery age alerts already behave.</p>
+<p><strong>What to do:</strong></p>
+<ul>
+<li>If you have insulin-age alerts turned on, <strong>tell everyone who receives your Nightscout
+  alerts</strong> (a parent, partner, school nurse) that a new urgent alert may arrive, what it says,
+  and that it is about the reservoir, not glucose.</li>
+<li>If you do not want the notification, turn <code>IAGE_ENABLE_ALERTS</code> off or raise <code>IAGE_URGENT</code>.
+  Turning alerts off does <strong>not</strong> stop the box turning URGENT.</li>
+</ul>
+<p>Nothing about your pump or insulin changes — only whether Nightscout tells you. This is not a
+schedule for changing a reservoir; if you are unsure what interval is right for you, ask your
+care team.</p>
+<hr />
+<h2 id="alarm-fixes-mmoll-alarm-levels-pump-and-loop-alerts-watch-faces-and-ifttt">Alarm fixes: mmol/L alarm levels, pump and loop alerts, watch faces and IFTTT<a class="headerlink" href="#alarm-fixes-mmoll-alarm-levels-pump-and-loop-alerts-watch-faces-and-ifttt" title="Permanent link">&para;</a></h2>
+<p>These fixes change which alarms Nightscout raises. None of them changes anything on your pump,
+CGM or looping app. <strong>Nightscout is a secondary display: keep the alarms on your CGM, pump and
+phone app switched on, and do not rely on Nightscout alone to warn you.</strong> This is not medical
+advice; if you are unsure what your alarm levels should be, talk to your care team.</p>
+<h3 id="low-alarms-on-sites-that-use-mmoll">Low alarms on sites that use mmol/L<a class="headerlink" href="#low-alarms-on-sites-that-use-mmoll" title="Permanent link">&para;</a></h3>
+<p>Glucose is measured in one of two units, <strong>mmol/L</strong> or <strong>mg/dL</strong>, depending on the country and
+the meter. Your site shows mmol/L if its
+<code>DISPLAY_UNITS</code> setting is <code>mmol</code>. Nightscout's glucose alarms use four <strong>alarm levels</strong>, each a
+setting:</p>
+<ul>
+<li><code>BG_HIGH</code> — the urgent high alarm;</li>
+<li><code>BG_TARGET_TOP</code> — the top of your target range, where the high warning starts;</li>
+<li><code>BG_TARGET_BOTTOM</code> — the bottom of your target range, where the low warning starts;</li>
+<li><code>BG_LOW</code> — the urgent low alarm.</li>
+</ul>
+<p>Any you leave unset use a built-in default, written in mg/dL (260, 180, 80 and 55).</p>
+<p><strong>What was wrong.</strong> On a site set to mmol/L, Nightscout converted the alarm levels you wrote in
+mmol/L only if <code>BG_HIGH</code> was also written in mmol/L, and then it converted all four. If you set
+only your target range in mmol/L (for example <code>BG_TARGET_TOP=8.5</code> and <code>BG_TARGET_BOTTOM=3.9</code>) and
+left <code>BG_HIGH</code> unset, nothing was converted. Your targets were read as 8.5 and 3.9 <strong>mg/dL</strong>, far
+below any real reading, and the urgent low level was then lowered to 2.9 mg/dL to sit beneath
+them. As a result <strong>the low and urgent-low alarms could never go off, and every reading, even a
+low one, raised "Warning HIGH".</strong> This was the same on 15.0.8 and earlier.</p>
+<p><strong>What changes.</strong> Nightscout now looks at each of the four alarm levels on its own. A number
+<strong>below 30</strong> is read as mmol/L and converted; a number of <strong>30 or more</strong> is read as mg/dL and kept
+as you wrote it. Levels you leave unset keep their defaults. So a site that sets only some of its
+levels in mmol/L gets working low alarms. <strong>The server log shows one line for each level it
+converts</strong>, for example <code>Threshold bgTargetTop 8.5 taken as mmol/L, converted to 153 mg/dl</code>, so
+you can see what Nightscout did with each one.</p>
+<ul>
+<li><strong>If you set all four levels in mmol/L, or all four in mg/dL,</strong> nothing changes for you.</li>
+<li><strong>One uncommon mix is now stored differently.</strong> If you set <code>BG_HIGH</code> in mmol/L and a target in
+  mg/dL (for example <code>BG_HIGH=14</code> and <code>BG_TARGET_TOP=180</code>), the mg/dL number is now kept as you
+  wrote it. Before, it was converted by mistake into a very large number, and your alarm levels
+  did not make sense.</li>
+</ul>
+<p><strong>What to do after upgrading, if your site uses mmol/L:</strong></p>
+<ol>
+<li><strong>Check your alarm levels.</strong> Look at the target lines on your chart and the alarm levels your
+   site uses, and make sure they are the numbers you meant. The start-up lines in your server log
+   show each level Nightscout converted.</li>
+<li><strong>If you had set only some levels in mmol/L, expect low alarms to start</strong> and "Warning HIGH" to
+   stop appearing on in-range and low readings. Tell whoever receives your Nightscout alerts.</li>
+<li><strong>Keep your CGM's and pump's own low alarms on.</strong> Do not rely on Nightscout alone for low
+   alerts.</li>
+</ol>
+<p>If you are not sure what your alarm levels should be, talk to your care team. This is not medical
+advice.</p>
+<p>This fix is only for sites set to mmol/L. On a site set to mg/dL, an alarm level typed in mmol/L
+is still not caught; see <a href="#known-issues--not-fixed-in-this-release">Known issues</a>.</p>
+<h3 id="the-pump-suspended-warning-now-works">The "pump suspended" warning now works<a class="headerlink" href="#the-pump-suspended-warning-now-works" title="Permanent link">&para;</a></h3>
+<p>A pump is <strong>suspended</strong> when it has stopped delivering insulin, whether you stopped it or the
+pump did. Nightscout has a setting meant to warn you when that happens, <code>PUMP_WARN_ON_SUSPEND</code>,
+used together with <code>PUMP_ENABLE_ALERTS</code> (which turns on Nightscout's pump alerts). <strong>It never
+worked:</strong> the pump box on your page showed "suspended", but no warning was sent.</p>
+<p>In this release, with both settings on, Nightscout raises a <strong>"Pump Suspended"</strong> warning for as
+long as your pump reports that it is suspended. It is sent, snoozed and sounded like Nightscout's
+other pump warnings. With <code>PUMP_WARN_ON_SUSPEND</code> on, the pump box on your page also turns the
+warning colour while the pump is suspended. <strong>If you have not turned <code>PUMP_WARN_ON_SUSPEND</code> on,
+nothing changes for you.</strong></p>
+<p>Things to know:</p>
+<ul>
+<li>If you turned this setting on some time ago, a warning you have never seen may now reach your
+  phone. Tell whoever receives your Nightscout alerts what it means.</li>
+<li>The warning depends on your phone app or uploader sending your pump's status to Nightscout, and
+  on how your site sends notifications. It can arrive late or not at all. Some apps report a
+  suspended pump in a way that shows "suspended" in the pump box without raising the warning.</li>
+<li>Like Nightscout's other pump alerts, it is not sent while your looping app has marked the loop
+  as offline.</li>
+<li><strong>Keep the alerts on your pump and your phone app switched on.</strong> Do not rely on Nightscout alone
+  to tell you your pump is suspended.</li>
+</ul>
+<p>This is not medical advice. If you are unsure how you should be alerted to a suspended pump, talk
+to your care team.</p>
+<h3 id="androidaps-loop-and-pump-alerts-return-when-you-turn-the-loop-back-on">AndroidAPS: loop and pump alerts return when you turn the loop back on<a class="headerlink" href="#androidaps-loop-and-pump-alerts-return-when-you-turn-the-loop-back-on" title="Permanent link">&para;</a></h3>
+<p>In <strong>AndroidAPS</strong> (AAPS), you can turn the loop off ("disable loop") with no end time. While the
+loop is off on purpose, Nightscout does not raise its "not looping" alert (<code>OPENAPS_ENABLE_ALERTS</code>)
+or its pump alerts (<code>PUMP_ENABLE_ALERTS</code>), if you have turned those on.</p>
+<p>On 15.0.8 and earlier, when you later turned the loop back on in AAPS, <strong>Nightscout kept treating
+the loop as switched off</strong>, so those alerts stayed silent, with nothing on screen to say so, for
+as long as the "disable" record stayed among the recent records Nightscout looks at. In this
+release, Nightscout sees that the loop was turned back on, and those alerts work again.</p>
+<ul>
+<li>This covers the way <strong>released versions of AAPS</strong> record turning the loop off and on, and the
+  different way <strong>current development builds</strong> of AAPS record it.</li>
+<li>Loop and Trio are not affected.</li>
+<li>Keep the alerts in AAPS and on your pump switched on. This is not medical advice; talk to your
+  care team about how you are alerted.</li>
+</ul>
+<h3 id="watch-faces-and-a-false-low-alarm-on-sites-that-use-mgdl">Watch faces, and a false low alarm on sites that use mg/dL<a class="headerlink" href="#watch-faces-and-a-false-low-alarm-on-sites-that-use-mgdl" title="Permanent link">&para;</a></h3>
+<p>Some watch faces and small displays get the latest reading from an older address on your site,
+<code>/pebble</code> (first written for Pebble watches). They can ask for the reading in mg/dL or in mmol/L,
+whatever your site uses.</p>
+<p><strong>A false low alarm.</strong> On a site that shows mg/dL, a watch face asking <code>/pebble</code> for mmol/L could
+change the reading your site's own alarm check looks at, so that the check judged the reading in
+the wrong units. That could raise a <strong>low alarm when your glucose was not low</strong>, and the alarm
+message could show the wrong number. The values some apps and watch faces read from your site
+(<code>/api/v2/properties</code>), and what Alexa and Google Home said, could also be wrong until your site
+next loaded new data. This depended on timing and did not happen on every request. It is fixed:
+a watch-face request can no longer change what the rest of your site sees. The same was true on
+15.0.8 and earlier.</p>
+<p>If your site raised a low alarm that did not match your sensor, and a watch face on your site asks
+for mmol/L, this may have been the cause. <strong>Always check a surprising alarm against your meter or
+CGM.</strong></p>
+<p><strong>Two more <code>/pebble</code> fixes:</strong></p>
+<ul>
+<li><strong>The change since the last reading</strong> (the <em>delta</em>, for example "falling 2") now comes back in the
+  same units as the reading. On a site that shows mmol/L, a watch face asking for mg/dL got the
+  reading in mg/dL but the change in mmol/L, so a fall looked about 18 times smaller than it was.</li>
+<li><strong>The bolus estimate</strong> some watch faces show (Nightscout's <em>Bolus Wizard Preview</em>, available when
+  insulin on board is turned on) is now worked out the same way your site works it out for itself,
+  whatever units the watch face asks for, and its expected glucose result comes back in the units
+  the watch face asked for. Before, a watch face asking for the other units could get a different
+  estimate from the one your site shows. The estimate is a rough indicator, not a dosing
+  recommendation.</li>
+</ul>
+<p>If you adjusted a watch face to make these numbers look right, for example by multiplying or
+dividing by 18, undo that adjustment after upgrading. Keep the alarms on your CGM, pump and phone
+app switched on. This is not medical advice; talk to your care team about how you are alerted.</p>
+<h3 id="ifttt-alerts-on-sites-not-set-to-english">IFTTT alerts on sites not set to English<a class="headerlink" href="#ifttt-alerts-on-sites-not-set-to-english" title="Permanent link">&para;</a></h3>
+<p><strong>IFTTT</strong> ("If This Then That") is an outside service that can turn an alert from Nightscout into a
+phone notification, a call or a smart-light flash. Nightscout sends it a named <em>event</em> for each
+alarm, and each IFTTT <em>applet</em> you set up listens for one event name. Nightscout's documentation
+tells you to name your applets <code>ns-warning</code>, <code>ns-urgent</code>, <code>ns-warning-low</code>, <code>ns-urgent-high</code> and
+so on.</p>
+<p>On a site whose language (<code>LANGUAGE</code>) is not English, Nightscout translated the alarm level in the
+event name, for example <code>ns-warnung</code> on a German site, so applets named as the documentation says
+<strong>never fired</strong>. In this release every site sends the documented names, whatever its language.
+The text of the alert itself stays in your site's language. English sites see no change.</p>
+<p><strong>What to do:</strong> if your applets use the documented names, nothing. <strong>If you renamed your applets to
+the translated names</strong> to make them work, rename them back to <code>ns-warning</code>, <code>ns-urgent</code> and the
+other documented names after upgrading, or they will stop firing. Then send a test alarm and check
+that it arrives.</p>
+<p>Not changed: when a send to IFTTT fails, Nightscout tries the same alarm again at its next check
+until a send succeeds, so a failed alarm is not silently dropped. An IFTTT alert is an extra, not a
+replacement for your CGM app's own alarms. This is not medical advice.</p>
+<hr />
+<h2 id="androidaps-the-careportal-and-caregivers">AndroidAPS, the careportal and caregivers<a class="headerlink" href="#androidaps-the-careportal-and-caregivers" title="Permanent link">&para;</a></h2>
+<p>These changes are about how treatments (carbs, insulin, temporary targets, notes) move between
+your Nightscout site and the apps connected to it. They matter most if you use <strong>AndroidAPS</strong>
+(AAPS), an automated insulin delivery app for Android phones, together with Nightscout's
+<strong>careportal</strong> (the form on your site for entering treatments) or a caregiver who enters
+treatments for you. AndroidAPS talks to Nightscout through its <strong>NSClient</strong> settings. Nightscout's
+web pages, Loop, Trio, xDrip+ and OpenAPS use Nightscout's older interface (API version 1);
+AndroidAPS uses the newer one (API version 3).</p>
+<p><strong>None of these changes alters how any app doses insulin.</strong> They change what Nightscout stores,
+shows and passes on. This is not medical advice; if the carbs or insulin on your site and on your
+phone do not match, go by the app that doses and by your meter, and talk to your care team before
+relying on the Nightscout numbers.</p>
+<h3 id="careportal-and-caregiver-entries-now-reach-androidaps">Careportal and caregiver entries now reach AndroidAPS<a class="headerlink" href="#careportal-and-caregiver-entries-now-reach-androidaps" title="Permanent link">&para;</a></h3>
+<p>Before, after its first sync AndroidAPS asked Nightscout only for "what changed since last time",
+and Nightscout left out everything written through the older interface: carbs, insulin, temporary
+targets and notes entered in the careportal or bolus wizard, including a caregiver's entries,
+readings uploaded by other apps, and edits made that way. AndroidAPS never received them unless
+someone ran a full sync.</p>
+<p>In this release they reach AndroidAPS at its next regular check. <strong>What the phone does with them
+depends on its own settings:</strong></p>
+<ul>
+<li>On a phone that loops, AndroidAPS takes carbs and insulin from Nightscout only if <strong>"accept
+  carbs"</strong> and <strong>"accept insulin"</strong> are switched on in its NSClient settings. <strong>Both are off unless
+  you turned them on.</strong></li>
+<li>The <strong>AAPSClient</strong> follower app always takes them, and does not show these two settings.</li>
+<li><strong>If you have been entering the same meal both in the careportal and on the phone</strong> as a
+  workaround, the phone may now see it <strong>twice</strong>. Check the phone's treatment list after the
+  update.</li>
+<li>Entries written before the update are not sent again.</li>
+</ul>
+<p>When an app using the older interface edits a record that AndroidAPS created, the record keeps the
+label AndroidAPS knows it by, so AndroidAPS updates its copy instead of adding a second one.</p>
+<h3 id="deleting-a-treatment">Deleting a treatment<a class="headerlink" href="#deleting-a-treatment" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>A treatment you delete in AndroidAPS now stops counting on your site.</strong> AndroidAPS deletes by
+  marking a record as deleted rather than removing it. Nightscout used to ignore that mark, so a
+  deleted entry kept counting in carbs on board (COB) and insulin on board (IOB), on the chart, in
+  reports and in what followers and other apps read. It now disappears from all of them, and a
+  deleted profile is no longer taken as the current one.</li>
+<li><strong>Deleting a treatment in the careportal, Loop, Trio or xDrip+ still does not reach AndroidAPS.</strong>
+  This stays as it is by decision. An entry deleted that way keeps counting on the phone. <strong>Delete
+  it in AndroidAPS as well.</strong></li>
+</ul>
+<h3 id="androidaps-changes-to-careportal-entries-are-no-longer-lost">AndroidAPS changes to careportal entries are no longer lost<a class="headerlink" href="#androidaps-changes-to-careportal-entries-are-no-longer-lost" title="Permanent link">&para;</a></h3>
+<p>When AndroidAPS changed a treatment that had been entered in the careportal (for example a
+temporary target entered on your site), Nightscout refused the change and AndroidAPS did not try
+again, so your site kept the old version and nothing said so. An AndroidAPS entry recorded at
+exactly the same moment, to the thousandth of a second, as an existing entry of the same kind was
+refused the same way and never reached your site. Both are now accepted. In the same-moment case,
+the AndroidAPS version replaces the existing entry; it does not add a second one. Entries that were
+refused in the past are not sent again.</p>
+<h3 id="two-treatments-at-the-same-time-are-no-longer-stored-as-one">Two treatments at the same time are no longer stored as one<a class="headerlink" href="#two-treatments-at-the-same-time-are-no-longer-stored-as-one" title="Permanent link">&para;</a></h3>
+<p>When two treatments of the same kind had exactly the same time, Nightscout kept only one of them,
+with no error. In the report behind this fix, a caregiver sent 16 g and then 4 g of carbs through
+Loop, both back-dated to the same time, and Nightscout kept only the 4 g. The 16 g disappeared from
+the chart, the reports and the daily totals, and from what followers saw. The app that entered the
+carbs kept both and dosed from its own records.</p>
+<p>Now two entries at the same time are kept apart when anything tells them apart: the app's own label
+for each entry (Loop, Trio, xDrip+ and NSClient each send one), or, for entries that arrive without
+one (such as the careportal), a different carb or insulin amount. An app that sends the same entry
+again, or an updated version of it, still updates the one record. Entries lost before this update
+are not brought back. Some cases are still stored as one; see
+<a href="#known-issues--not-fixed-in-this-release">Known issues</a>.</p>
+<h3 id="late-or-edited-androidaps-entries-now-count-in-insulin-and-carbs-on-board">Late or edited AndroidAPS entries now count in insulin and carbs on board<a class="headerlink" href="#late-or-edited-androidaps-entries-now-count-in-insulin-and-carbs-on-board" title="Permanent link">&para;</a></h3>
+<p>Nightscout works out its own <strong>insulin on board</strong> (IOB: insulin from earlier doses that is still
+expected to act) and <strong>carbs on board</strong> (COB: carbs not yet expected to be absorbed) from the
+treatments it holds in memory. When AndroidAPS, or another app using API version 3, sent a bolus or
+carb entry <strong>late</strong> (dated more than about 15 minutes before it reached Nightscout, for example
+after the phone had been offline), or <strong>changed an older entry</strong>, Nightscout could leave that entry
+out of its own IOB and COB, on the server and in the browser, until the server restarted (without
+a restart, the entry was never counted). The same
+cause could put treatments out of time order. That could make Nightscout's COB <strong>too high</strong>,
+because carbs that should already have been absorbed were counted again, and could make the "last
+carbs" line under the COB pill name an older entry instead of the newest one.</p>
+<p>These entries now count as soon as they arrive, and treatments stay in time order. Nothing stored
+changes. A <strong>device status</strong> (the status report a looping app uploads) that such an app sends late
+is now also listed in its place by time when another app asks your site for the latest device
+statuses; before, it could be left out. The same problem is in 15.0.8.</p>
+<ul>
+<li>Where your looping app reports its own IOB and COB (AndroidAPS does when it uploads its status),
+  the IOB and COB pills show the app's values, so you may not have noticed this. Nightscout's own
+  figures are still worked out and can be read by other apps.</li>
+<li>AndroidAPS's own dosing was not affected: it works out IOB and COB on the phone.</li>
+<li>After the update, Nightscout's own IOB and COB can differ from what you saw before on the same
+  treatments. If they differ from your looping app's, go by the app that doses and talk to your care
+  team before relying on the Nightscout numbers. This is not medical advice.</li>
+</ul>
+<h3 id="androidaps-percentage-profile-switches-the-numbers-on-your-site-change">AndroidAPS percentage Profile Switches: the numbers on your site change<a class="headerlink" href="#androidaps-percentage-profile-switches-the-numbers-on-your-site-change" title="Permanent link">&para;</a></h3>
+<p>In AndroidAPS a <strong>Profile Switch</strong> can run your profile at a percentage (for example 150% during
+illness, or 80% for exercise), or shift its schedule a few hours earlier or later. Your profile
+holds your <strong>basal</strong> rate (background insulin, in units per hour), your <strong>ISF</strong> (insulin
+sensitivity factor: how far one unit is expected to lower glucose) and your <strong>carb ratio</strong> (grams
+of carbohydrate one unit covers).</p>
+<p>During such a switch, Nightscout named the profile correctly, for example "Default (150%)", but
+showed and calculated with the 100% values and ignored a time shift. It now reads the switch the
+way AndroidAPS does: basal is multiplied by the percentage, ISF and carb ratio are divided by it,
+glucose targets are not changed, and a time shift moves the whole schedule. <strong>So the basal, ISF and
+carb ratio your site shows change to match the phone</strong>, and so do the basal pill, the chart's basal
+line, the Bolus Wizard Preview, Nightscout's own IOB and COB, and the reports. Nothing stored
+changes.</p>
+<ul>
+<li>AndroidAPS's own insulin delivery was never affected: it works out its doses on the phone.</li>
+<li>If AndroidAPS uses <strong>Dynamic ISF</strong> or another feature that changes ISF on the phone, the ISF it
+  doses with can still differ from the profile ISF your site shows.</li>
+<li>Switches from older AndroidAPS versions (2.x) are read exactly as before.</li>
+</ul>
+<p>If the numbers on your site and in AndroidAPS still do not match, or you are unsure which numbers
+are right, check with your care team.</p>
+<hr />
+<h2 id="security-fixes">Security fixes<a class="headerlink" href="#security-fixes" title="Permanent link">&para;</a></h2>
+<p><strong>These fixes are in this release. Earlier releases, including 15.0.8 (the release most sites
+run today), are affected.</strong> The descriptions are kept short on purpose until the related
+security advisories are published.</p>
+<ol>
+<li><strong>Sites set to require login now apply that to the live-update connection.</strong> The live-update
+   connection is what keeps your page current without reloading. If you set
+   <code>AUTH_DEFAULT_ROLES=denied</code> so that only people you have given access can see your site, it
+   now checks a visitor's access the same way the rest of the site does before sending live
+   information, alarms or notifications. If your site uses the standard setting, where anyone
+   with the address can read it (<code>AUTH_DEFAULT_ROLES=readable</code>), nothing changes. On a site set to
+   <code>denied</code>, a page that is signed in, on an internet connection where another device (for example
+   an app with an old password on the same home Wi-Fi) has recently failed to sign in, starts
+   receiving alarms only after the failed-login delay described in item 7. An alarm raised in that
+   time reaches it when the site repeats the alarm. Fix the device that is failing to sign in; the
+   admin page's "Failed authentication" notice helps you find it.</li>
+<li><strong>Silencing alarms through the live-update connection now requires the permission meant for
+   it.</strong> Among the built-in roles only <code>admin</code> has it, on the standard setting too. An app that
+   silences Nightscout alarms with an access token needs a user with the <code>admin</code> role; with any
+   other role the app's silence does nothing, and the app is not told.</li>
+<li><strong>The older API (version 1) accepts only a fixed, documented list of filter conditions</strong>
+   and refuses anything else with an error. See
+   <a href="#corrections-requests-answered-differently">Corrections</a> for what this means for tools.</li>
+<li><strong>Two shared read addresses in the API now check per-collection read permission</strong>, as the
+   rest of the API already does. On the standard setting nothing changes. On a site that has
+   turned off anonymous access and gives out tokens limited to particular kinds of data, those
+   addresses now refuse a token that lacks the permission.</li>
+<li><strong>Alarm subscriptions no longer write credentials to the server log.</strong> This matters if your
+   logs are kept or shared.</li>
+<li><strong>Editing a user on the admin page no longer writes that user's access token into your
+   database.</strong> It used to save the token in readable form, so anyone who could read your
+   database — or a backup, snapshot or copy of it — could use it. <strong>Fixing the code does not
+   remove copies already written and does not retire those tokens.</strong> Read
+   <a href="#access-tokens-stored-in-plain-text">Access tokens stored in plain text</a>.</li>
+<li><strong>The failed-login delay also follows the password, and its list no longer grows forever.</strong>
+   After a failed login, Nightscout makes the next request from that address wait before it
+   checks the password, as it always has, so a correct guess made during the wait is answered no
+   sooner than a wrong one. The wait now also follows the password or token that failed,
+   wherever it is tried from, and the list of recent failures is cleared regularly and has a
+   size limit. Every request from an address with recent failures waits, including ones with
+   the correct password; once <code>TRUST_PROXY</code> is set to match your site, that address is the
+   visitor's own, so only devices that really share an address (one home network, or a mobile
+   carrier's shared address) share a wait. <strong>On its own this does not stop someone who is
+   guessing passwords from avoiding the delay</strong>, because the address it counts attempts against
+   is read from information any visitor can supply. That is closed only once you set
+   <code>TRUST_PROXY</code> — see the next section.</li>
+<li><strong>The "Nightscout readable by world" warning now appears when it should.</strong> If you use the
+   older <code>TREATMENTS_AUTH=off</code> setting, anyone with your address can read your data <strong>and add
+   treatments</strong> without logging in. That is what the setting does and this release does not
+   change it — but the admin warning that should tell you this was never shown. It is now.</li>
+<li><strong>Error replies no longer show technical details about where Nightscout is installed.</strong> When
+   Nightscout hit an unexpected error, the error page or reply it sent back included a technical
+   trace that names folders on the computer or service where Nightscout runs, and anyone who
+   could reach your site could see it. It did not include your readings, treatments or
+   <code>API_SECRET</code>. Error replies now carry only the error code and a short message, sometimes a
+   standard phrase such as "Bad Request"; the full details still go to your server log, where
+   you or someone helping you can read them. This applies to every site that does not set
+   <code>NODE_ENV=development</code>, including sites where <code>NODE_ENV</code> is not set at all: on those, the
+   error pages you see in a browser also stop showing the trace.</li>
+<li><strong>A kind of request to two little-used API addresses could make Nightscout stop responding
+    for several seconds, and it is now refused.</strong> Nothing you see changes.</li>
+</ol>
+<p><strong>What to do:</strong> upgrade. If you rely on <code>AUTH_DEFAULT_ROLES=denied</code> to keep your data private,
+this release is the one that makes the live-update connection respect it. If you use
+<code>TREATMENTS_AUTH=off</code>, read the new warning and decide whether you still want it. If you have
+ever edited a user on the admin page, read the token section below.</p>
+<h3 id="the-new-trust_proxy-setting">The new <code>TRUST_PROXY</code> setting<a class="headerlink" href="#the-new-trust_proxy-setting" title="Permanent link">&para;</a></h3>
+<p>Nightscout counts failed logins per visitor address, and per password or token tried. Today it
+takes that address from labels
+attached to the request (called <em>forwarded headers</em>), <strong>whoever attached them</strong>. A proxy
+normally adds these labels, but a visitor can add them too. <code>TRUST_PROXY</code> tells Nightscout whose
+labels to believe:</p>
+<table>
+<thead>
+<tr>
+<th><code>TRUST_PROXY</code></th>
+<th>What Nightscout believes</th>
+<th>Who should use it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>not set (the default)</td>
+<td>forwarded headers from anyone — <strong>exactly as today</strong></td>
+<td>nobody needs to change anything to upgrade</td>
+</tr>
+<tr>
+<td><code>false</code></td>
+<td>no forwarded headers at all; only the address actually connecting, and whether that connection itself is https</td>
+<td>sites that visitors reach directly, with no proxy in front</td>
+</tr>
+<tr>
+<td>your proxy's IP address(es) or ranges, comma-separated (for example <code>10.0.0.5</code> or <code>10.0.0.0/24</code>)</td>
+<td>forwarded headers only when they come from those addresses</td>
+<td>sites behind a proxy whose address you know</td>
+</tr>
+<tr>
+<td>a whole number of proxies, such as <code>1</code></td>
+<td>forwarded headers from that many proxies closest to Nightscout</td>
+<td>sites behind a known number of proxies whose addresses change</td>
+</tr>
+<tr>
+<td><code>true</code></td>
+<td>every forwarded address; the visitor is taken to be the left-most one</td>
+<td>only sites where every proxy in front of Nightscout rewrites these labels</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Which value to use.</strong> Most sites behind a proxy or a hosting service need a number. Each proxy
+adds the address it received the request from to the end of the list of labels, after anything
+the visitor wrote there. Counting back from Nightscout to the proxy you trust is what separates
+the visitor's real address from whatever the visitor wrote: <code>1</code> if one proxy or hosting service
+sits in front of Nightscout, <code>2</code> if there are two (for example Cloudflare in front of your own
+proxy). Too small a number gives everyone your proxy's address, so one failing uploader slows
+everybody; too large a number believes what the visitor wrote. To check, send one deliberately
+wrong password from your phone on mobile data: the "Failed authentication" message on the admin
+page should show your phone's address. Nightscout's README links to a proxy configuration guide
+with a table of the value for common hosting services. On Azure App Service use <code>1</code>: Azure writes
+the visitor's address with a port number on the end, and Nightscout now accepts that form.</p>
+<p><strong>It also sets the address recorded for Loop remote commands.</strong> When a caregiver sends Loop a
+temporary override, carbs or a bolus through Nightscout, Loop saves where the command came from on
+the override it records back in Nightscout. Before, on most hosted sites, that was your hosting
+service's address. Now it is the caregiver's address, worked out from this setting the same way
+as everywhere else. <strong>That address is stored with each remote override in your Nightscout data,
+where anyone who can read your site's data can see it</strong>, including visitors without a login if
+your site lets them read. Whether a command is accepted does not depend on it.</p>
+<p>Once it is set, the failed-login delay counts attempts against an address a visitor cannot make
+up, and it starts doing its job. <strong>While it is unset, Nightscout writes a message to its log at
+startup saying the delay does not protect against guessing passwords or tokens.</strong> Until you set
+it, restricting access at your proxy or hosting provider is what actually helps.</p>
+<p><strong>Be careful setting it behind a proxy that handles https for you.</strong> With <code>false</code>, or with a list
+that does not include your proxy, Nightscout stops believing the proxy's "the visitor used https"
+label, decides the visitor used plain http, and redirects them to https — over and over. <strong>If
+your site stops loading after you set <code>TRUST_PROXY</code>, remove the setting and check your proxy's
+address.</strong> The address to list is the one Nightscout <em>sees</em> the proxy connecting from, which on
+hosting platforms can change or be shared; do not guess a range. With <code>true</code>, the startup message
+warns that the visitor's address is only as trustworthy as the outermost proxy, because a visitor
+can put any address first. Names like <code>loopback</code> are refused at startup, and a number of proxies
+cannot be combined with addresses. Nightscout's README links to a proxy
+configuration guide with more detail.</p>
+<p>No release has been chosen in which the default will change; until one is, unset is a permanent,
+supported choice.</p>
+<hr />
+<h2 id="corrections-requests-answered-differently">Corrections: requests answered differently<a class="headerlink" href="#corrections-requests-answered-differently" title="Permanent link">&para;</a></h2>
+<p>This section is for <strong>apps and tools that talk to your site through the API</strong>, not the pages you
+look at. Each item below corrects behaviour that was never intended. Some requests that used to
+get an answer now get an error, and that is deliberate.</p>
+<p><strong>If a tool you use stops working after the upgrade</strong>, with an error such as "Bad count" or a
+refused filter condition, report it to that tool's author with the tool's name and version (not
+your data). <strong>If your glucose data stops arriving, use your meter or CGM app and your usual
+routine while it is sorted out.</strong></p>
+<h3 id="asking-for-a-number-of-records-count">Asking for a number of records (<code>count</code>)<a class="headerlink" href="#asking-for-a-number-of-records-count" title="Permanent link">&para;</a></h3>
+<p>Apps add <code>count</code> to a request to say how many records they want back, for example "the last 10
+readings". On 15.0.8, a request for <strong>zero</strong> records could send back your <strong>entire</strong> history,
+and counts that are not plain whole numbers were read in surprising ways. On the version 1 API,
+in this release:</p>
+<table>
+<thead>
+<tr>
+<th>The request</th>
+<th>15.0.9 answers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a read with <code>count=0</code> and a date range (a "from" and a "to" on the same date field). GluPredKit asks this way.</td>
+<td><strong>everything in that range</strong>, as 15.0.8 did, with a deprecation warning. (Device status reports gave only the last 10 here on 15.0.8; they now give everything in the range.)</td>
+</tr>
+<tr>
+<td>a read with <code>count=0</code> and no date range</td>
+<td>the <strong>usual default</strong>, as if no count had been given, with a deprecation warning. On 15.0.8 this could return your whole history.</td>
+</tr>
+<tr>
+<td>a read with a whole number followed by <code>?</code> and other text, such as <code>1?token=…</code>. OpenAPS (oref0) asks for its latest treatment this way.</td>
+<td>the number is read as the count, as 15.0.8 did, with a deprecation warning. What follows the <code>?</code> is not logged.</td>
+</tr>
+<tr>
+<td>a read with an ordinary count such as <code>10</code> or <code>288</code></td>
+<td>as before</td>
+</tr>
+<tr>
+<td>a read with no <code>count</code></td>
+<td>the usual default (for glucose readings, the last 10), as before</td>
+</tr>
+<tr>
+<td>a read with a count that is not a plain whole number: <code>abc</code>, <code>-3</code>, <code>2.5</code>, <code>1e2</code>, <code>0x10</code>, or a number too large to handle exactly (followed by <code>?</code> or not)</td>
+<td>an error, "Bad count" (HTTP 400)</td>
+</tr>
+<tr>
+<td>a save or an update that carries a <code>count</code></td>
+<td>carried out normally; <code>count</code> is ignored</td>
+</tr>
+<tr>
+<td>a delete that carries <code>count=0</code> or a count that is not a plain whole number, including a number followed by <code>?</code></td>
+<td><strong>refused</strong> with an error, and <strong>nothing is deleted</strong></td>
+</tr>
+<tr>
+<td>a delete that carries a valid count such as <code>2</code></td>
+<td>carried out as before. <strong>The count does not limit a delete</strong>: it still deletes every record the request matches.</td>
+</tr>
+</tbody>
+</table>
+<p>The newer API (version 3) keeps its own rule: a <code>limit</code> of <code>0</code>, or one that is not a whole
+number within the site's maximum, gets an error.</p>
+<p>The "deprecation warning" is two extra headers on the answer (<code>Deprecation: true</code> and a
+<code>Warning</code> that says what to send instead), plus one line in the server log the first time it
+happens. Nothing changes for the app today. A future major release may refuse these two forms,
+so app authors should send a plain whole number of 1 or more.</p>
+<p>Each form has a setting, and both are on unless you change them:
+- <code>API_V1_COUNT_LEADING_NUMBER</code> covers the OpenAPS form. Set to <code>false</code>, it is refused with an error.
+- <code>API_V1_COUNT_ZERO_WINDOW</code> covers the GluPredKit form. Set to <code>false</code>, every read with <code>count=0</code> gets an empty list.</p>
+<p>Leave <code>API_V1_COUNT_LEADING_NUMBER</code> on if an OpenAPS rig uploads to your site. A future release is
+expected to change both defaults to <code>false</code>.</p>
+<h3 id="filter-conditions">Filter conditions<a class="headerlink" href="#filter-conditions" title="Permanent link">&para;</a></h3>
+<p>Apps use filter conditions to ask for particular records, for example "readings at or above
+180". The version 1 API now accepts a fixed, documented list of conditions: <em>equal</em>, <em>not
+equal</em>, <em>greater than</em>, <em>less than</em> and their "or equal" forms, <em>in a list</em>, <em>not in a list</em>,
+<em>has a value</em> (<code>$exists</code>), <em>type</em>, and text matching (<code>$regex</code>), combined with <em>and</em> / <em>or</em>.
+Anything else gets an error (HTTP 400) that names the refused condition, instead of a server
+error or a silently empty answer. A survey of 14 Nightscout apps found none that use a refused
+condition. One condition that used to work is now refused: <code>$expr</code> on the profiles address. An
+undocumented <code>pipeline</code> option on the counting addresses is also refused.</p>
+<h3 id="asking-for-a-glucose-reading-by-an-id-that-does-not-exist">Asking for a glucose reading by an ID that does not exist<a class="headerlink" href="#asking-for-a-glucose-reading-by-an-id-that-does-not-exist" title="Permanent link">&para;</a></h3>
+<p>When an app asks for one glucose reading by its ID (API version 1, <code>GET /api/v1/entries/&lt;id&gt;</code>) and
+no reading has that ID, the answer is now "nothing found" (HTTP 200 with an empty list), as for any
+other search that finds nothing. 15.0.8 answered with a server error (HTTP 500), which an app could
+take to mean your site was down. If the database cannot be reached, the answer is still a server
+error.</p>
+<h3 id="records-deleted-by-androidaps-and-two-server-time-fields">Records deleted by AndroidAPS, and two server time fields<a class="headerlink" href="#records-deleted-by-androidaps-and-two-server-time-fields" title="Permanent link">&para;</a></h3>
+<p>Records that AndroidAPS has deleted (marked <code>isValid: false</code>) are no longer returned by version 1
+reads and counts. A tool that needs them can still ask for them with <code>find[isValid]=false</code>. Records
+read through version 1 now also carry the server's <code>srvModified</code> and <code>srvCreated</code> times, as records
+written by AndroidAPS already did. The server sets both; a value an app sends for them is replaced.</p>
+<h3 id="saving-a-glucose-reading-that-is-already-stored">Saving a glucose reading that is already stored<a class="headerlink" href="#saving-a-glucose-reading-that-is-already-stored" title="Permanent link">&para;</a></h3>
+<p>When an app sends a glucose reading (API version 1, <code>POST /api/v1/entries</code>) that matches one
+already stored, the reply now carries the stored reading's ID. 15.0.8 answered with the ID the app
+sent, or with none. The reading itself is stored as before.</p>
+<h3 id="carbs-on-board-in-apiv2properties">Carbs on board in <code>/api/v2/properties</code><a class="headerlink" href="#carbs-on-board-in-apiv2properties" title="Permanent link">&para;</a></h3>
+<p>The <code>cob</code> property's <code>treatmentCOB</code> field changed shape. On 15.0.8, when carbs on board came from
+treatments entered in Nightscout, <code>treatmentCOB</code> held a nested copy of that result. In this
+release, carbs on board comes from the uploading system when its value is recent (see
+<a href="#numbers-that-may-look-different-on-the-same-data">Numbers that may look different</a>), and
+<code>treatmentCOB</code> is a number, present only then and only when the treatment-based figure is not
+zero. A tool that reads <code>treatmentCOB</code> should expect it to be missing.</p>
+<h3 id="fields-stored-on-users-and-roles">Fields stored on users and roles<a class="headerlink" href="#fields-stored-on-users-and-roles" title="Permanent link">&para;</a></h3>
+<p>When a user or role is created or saved, Nightscout now stores only these fields:</p>
+<ul>
+<li>for a <strong>user</strong>: name, roles, notes and the date it was created;</li>
+<li>for a <strong>role</strong>: name, permissions, notes and the date it was created.</li>
+</ul>
+<p><strong>Any other field a third-party tool stored on a user or role is not kept</strong> the next time that
+user or role is saved, and is not stored when one is created. No open-source tool that stores
+other fields was found. If you use a tool that manages users on your site, check it still works
+after the upgrade.</p>
+<hr />
+<h2 id="the-old-minimed-and-dexcom-connections-are-being-retired">The old MiniMed and Dexcom connections are being retired<a class="headerlink" href="#the-old-minimed-and-dexcom-connections-are-being-retired" title="Permanent link">&para;</a></h2>
+<p>Nightscout has two ways to fetch readings from a CGM company's online service: the <strong>built-in
+CGM connector</strong> (a component called <em>nightscout-connect</em>, configured with settings that start
+with <code>CONNECT_</code>), and two <strong>older built-in connections</strong> that are being retired.</p>
+<ul>
+<li><strong>MiniMed CareLink through settings that start with <code>MMCONNECT_</code></strong>: this older connection is
+  reported not to work, and it will be removed in a later release. Move to the built-in
+  connector: add <code>connect</code> to your <code>ENABLE</code> setting, set <code>CONNECT_SOURCE=minimedcarelink</code>, and
+  set your CareLink username, password, region and country with the connector's settings
+  (<code>CONNECT_CARELINK_USERNAME</code>, <code>CONNECT_CARELINK_PASSWORD</code>, <code>CONNECT_CARELINK_REGION</code>,
+  <code>CONNECT_COUNTRY_CODE</code>). Once readings arrive through the connector, remove the <code>MMCONNECT_</code>
+  settings and <code>mmconnect</code> from <code>ENABLE</code>.</li>
+<li><strong>Dexcom Share through settings that start with <code>BRIDGE_</code></strong>: since 15.0.8, these settings are
+  already handled by the built-in connector unless you set <code>DEXCOM_BRIDGE_USE_LEGACY=true</code>, and
+  Nightscout writes a deprecation warning to its log. If you set <code>DEXCOM_BRIDGE_USE_LEGACY=true</code>
+  to keep the old Dexcom bridge, plan to remove it: that option goes when the old bridge is
+  removed. Moving to the connector's own settings (<code>CONNECT_SOURCE=dexcomshare</code>,
+  <code>CONNECT_SHARE_ACCOUNT_NAME</code>, <code>CONNECT_SHARE_PASSWORD</code>, and <code>CONNECT_SHARE_REGION</code> if you are
+  outside the US) means nothing changes for you when that happens.</li>
+</ul>
+<p>The release that removes the older connections has not been numbered yet. The connector's own
+documentation lists every setting. <strong>After any change, check that your readings are arriving,
+and keep a second way to see them</strong> until you are sure.</p>
+<hr />
+<h2 id="the-built-in-cgm-connector">The built-in CGM connector<a class="headerlink" href="#the-built-in-cgm-connector" title="Permanent link">&para;</a></h2>
+<p>This release installs <strong>nightscout-connect 0.1.0</strong>, the built-in CGM connector (it fetches
+readings from Dexcom Share, MiniMed CareLink, LibreLinkUp, Glooko, another Nightscout site and
+others). It is installed as that exact version. If you use the connector — including if you use
+Dexcom <code>BRIDGE_</code> settings, which the connector handles — compared with 15.0.8:</p>
+<ul>
+<li><strong>It no longer writes your CGM account details or readings to the log.</strong> On 15.0.8 and earlier,
+  the built-in connector printed your CGM account login details, session information and glucose
+  data to the log every time it started, with no way to turn that off. In this release it logs
+  short summaries instead, with or without the debug settings below.</li>
+<li><strong>Its detailed diagnostic logging is off unless you turn it on</strong> (see
+  <a href="#quieter-logs-and-two-new-settings">Quieter logs</a>).</li>
+<li><strong>A MiniMed CareLink "no reading" marker is no longer stored as a glucose reading of 0.</strong> While
+  such a 0 was the newest reading, Nightscout did not check your high and low glucose alarms.
+  Readings already stored are not changed. How often CareLink sends such a marker as the newest
+  value has not been measured. Keep your pump's or CGM app's own alarms on; do not rely on
+  Nightscout as your only alarm.</li>
+<li><strong>It waits properly between retries after a CGM service outage.</strong> Earlier versions ignored the
+  retry interval each source was designed with, so after an outage they started retrying within a
+  fraction of a second instead of after minutes, and every site retried at the same moment.
+  Retries now follow the intended interval, are spread out, and have an upper limit, so the
+  connector does not stop trying for a very long time either.</li>
+<li><strong>Copying data from another Nightscout site that requires login now works.</strong> If the site you
+  copy from uses <code>AUTH_DEFAULT_ROLES=denied</code>, earlier versions could not read from it. <strong>If an
+  earlier version already created a user called <code>nightscout-connect-reader</code> on that site</strong>, it is
+  reused as it is and still cannot read: on that site's admin page, give that user the
+  <code>readable</code> role, or delete it so the connector creates it again. The connector now says this
+  once in its log when it finds such a user.</li>
+<li><strong>When copying from another Nightscout site, profile changes are copied too.</strong> A profile (basal
+  rates, insulin sensitivity, carb ratios) saved on the site you copy <strong>from</strong> reaches this site
+  at the next poll. 15.0.8 copied only new profiles. <strong>Make profile changes on the site you copy
+  from:</strong> a profile edited on the receiving site is overwritten when the source's copy changes,
+  and can also be overwritten when the connector restarts. A profile changed on the source
+  without the profile editor (for example by a script) is noticed only if it is the newest one.
+  The connector now downloads only the profiles that are new or changed since its last check,
+  instead of every profile every five minutes. If a profile on the receiving site does not match
+  the source, check it on both sites before relying on the receiving site's reports, and talk to
+  your care team about any settings you are unsure of.</li>
+<li><strong>It shuts down cleanly when Nightscout stops.</strong></li>
+<li>For developers: the connector's standalone <code>capture</code> command no longer fails for the
+  Nightscout and Dexcom Share sources.</li>
+</ul>
+<p>Two new optional settings, <code>CONNECT_START_JITTER_MS</code> and <code>CONNECT_INTERVAL_JITTER_MS</code>, spread out
+when many connectors sharing one server contact the CGM service. Both default to <code>0</code>, so nothing
+changes unless you set them. A single self-hosted site does not need them.</p>
+<h3 id="your-cgm-account-password">Your CGM account password<a class="headerlink" href="#your-cgm-account-password" title="Permanent link">&para;</a></h3>
+<p><strong>Most people do not need to do anything here.</strong> A Nightscout log is normally seen only by the
+person who runs the site, and sharing a whole log is uncommon. Consider changing your CGM account
+password only if both of these are true:</p>
+<ul>
+<li>you ran Nightscout 15.0.8 or an earlier release with the built-in connector on (<code>connect</code> in
+  your <code>ENABLE</code> setting), or you used Dexcom <code>BRIDGE_</code> settings on 15.0.8, which the connector
+  handles; <strong>and</strong></li>
+<li>you shared a Nightscout log with anyone (in a forum, an issue, a chat, or with a person
+  helping you), or your hosting provider keeps logs that other people can read.</li>
+</ul>
+<p>On those releases the connector wrote your CGM account username and password into Nightscout's
+log. Upgrading stops new logs containing them. It cannot remove them from a log that already
+exists.</p>
+<p>If this applies to you:</p>
+<ol>
+<li><strong>Change the password</strong> at the CGM company's own website or app, and anywhere else you use
+   the same password.</li>
+<li><strong>Then update it in Nightscout's connector settings straight away, or readings will stop
+   arriving.</strong> That is the setting ending in <code>_PASSWORD</code> for your source, for example
+   <code>CONNECT_SHARE_PASSWORD</code>, <code>CONNECT_CARELINK_PASSWORD</code> or <code>CONNECT_LINK_UP_PASSWORD</code>, or
+   <code>BRIDGE_PASSWORD</code> if you use the Dexcom <code>BRIDGE_</code> settings. Until Nightscout has the new
+   password it keeps trying the old one, and some CGM services lock an account for a while after
+   repeated failed logins.</li>
+<li><strong>Check that new readings arrive</strong> afterwards, and keep your CGM app or meter to hand until
+   they do.</li>
+<li><strong>Delete old Nightscout log files you still have.</strong></li>
+<li><strong>Check places where you pasted a log</strong>, such as a GitHub issue, a forum or group post, a
+   screenshot or a message, and remove the log where you can.</li>
+</ol>
+<p>Whatever release you run, read a log before sharing it, and turn debugging off again when you
+are done.</p>
+<hr />
+<h2 id="other-changes-you-may-notice">Other changes you may notice<a class="headerlink" href="#other-changes-you-may-notice" title="Permanent link">&para;</a></h2>
+<h3 id="bolus-calculator-quick-picks">Bolus calculator quick picks<a class="headerlink" href="#bolus-calculator-quick-picks" title="Permanent link">&para;</a></h3>
+<p>A <em>quick pick</em> is a saved meal in Nightscout's food editor (for example "Breakfast, 45 g of
+carbs") that you can choose in the bolus calculator instead of typing carbs in.</p>
+<p><strong>The list you choose from and the record that was loaded did not line up</strong>, so choosing one
+quick pick could load a different food's carbohydrate amount into the calculation, with
+nothing on screen to say so. The list also offered plain foods that are not quick picks, and
+choosing the last entry did nothing. This release fixes the mismatch. Hidden quick picks stay
+hidden, the order follows the position numbers you set, and quick picks saved by other apps
+are no longer left out of the list other apps can read.</p>
+<p><strong>The quick-pick list now shows your quick picks.</strong> On 15.0.8 and earlier, the Quickpick list
+in the bolus calculator only ever showed "(none)", however many quick picks were saved, because
+the list was built before your food data had loaded. People had to add foods one at a time with
+<em>Add from database</em> instead. The list is now built each time you open the bolus calculator. It
+shows your saved quick picks in the order you set, and choosing one fills in the carbs with that
+quick pick's own total. Quick picks marked hidden are not listed. A quick pick set to "hide after
+use" disappears from the list the next time you open the calculator, after you submit with it.</p>
+<p>Two things to know:</p>
+<ul>
+<li><strong>The bolus calculator is not shown to everyone.</strong> It appears only if <code>boluscalc</code> is in your
+  <code>SHOW_PLUGINS</code> setting, and only to someone who is allowed to enter treatments.</li>
+<li><strong>A quick pick added or changed elsewhere does not appear on a page that is already open.</strong> It
+  appears after that page reloads or reconnects. This is how Nightscout already sends food data
+  to open pages, and this release does not change it.</li>
+</ul>
+<p>The bolus calculator is a calculator, not a recommendation, and this release does not change
+that. It does not decide a dose. <strong>Always check that the carbohydrate amount shown is the one you
+meant: check the carbs against the meal you are actually eating before you rely on them.</strong> If you
+use quick picks for meal dosing, go over how you use them with your care team. If you think a
+past calculation used an amount you did not choose, raise it with your care team. This is not
+medical advice.</p>
+<h3 id="a-page-with-no-reading-no-longer-hits-an-error-when-a-device-alarm-arrives">A page with no reading no longer hits an error when a device alarm arrives<a class="headerlink" href="#a-page-with-no-reading-no-longer-hits-an-error-when-a-device-alarm-arrives" title="Permanent link">&para;</a></h3>
+<p>Nightscout can raise alarms for things other than glucose, if you have switched them on: for
+example a pump reservoir running low (<code>PUMP_ENABLE_ALERTS</code>), a loop that has stopped, or a
+cannula or sensor that is overdue for a change. These are off unless you turned them on.</p>
+<p>On 15.0.8 and earlier, if one of these alarms reached a Nightscout page that had <strong>no glucose
+reading to show</strong> (the big number reads <code>---</code>), the page hit an internal error while handling it.
+Nothing on screen changed, and the error was visible only in the browser's developer console.
+This release removes that error.</p>
+<p><strong>This fix does not make a <code>---</code> page sound device alarms.</strong> What you see does not change. A
+Nightscout page decides whether to sound an alarm from the server by looking at the latest glucose
+reading. With no reading, it does not sound or show any of them, including pump, loop and age
+alarms that have nothing to do with glucose. In testing, the same "URGENT: Pump Reservoir Low"
+alarm turned the page red and played the alarm sound when a reading was on screen, and showed
+nothing when no reading was on screen. This is listed under
+<a href="#known-issues--not-fixed-in-this-release">Known issues</a>.</p>
+<p>If you rely on a Nightscout page for device alarms such as pump, loop or site-change alerts,
+<strong>do not assume a page showing <code>---</code> will alert you. Keep the alarms on your devices themselves
+(pump, phone app, CGM receiver) switched on.</strong> This is not medical advice. Talk to your care team
+about how you get alerted.</p>
+<h3 id="edited-records-no-longer-leave-an-old-copy-behind">Edited records no longer leave an old copy behind<a class="headerlink" href="#edited-records-no-longer-leave-an-old-copy-behind" title="Permanent link">&para;</a></h3>
+<p>Some records were saved with their ID (the label Nightscout uses to find a record again) in a
+different form from the one Nightscout looks up: profiles, device status reports, foods and
+activity records that arrived with their own ID, for example <strong>copied from another Nightscout
+site</strong> or <strong>restored from an export</strong>, and treatments and glucose readings saved that way by
+<strong>Nightscout 15.0.6 or earlier</strong>. Nightscout showed them, but <strong>editing</strong> one saved a <strong>second copy</strong>
+and kept the old one, and <strong>deleting</strong> it by its ID did nothing. Apps using the newer API
+(version 3), or the live connection some apps keep open, had the same trouble.</p>
+<p>In this release those records are found. New records that arrive with their own ID are saved in
+the normal form. Records already saved the old way are left as they are until one is edited or
+deleted. Deleting one removes it, together with any old copy an earlier edit left beside it,
+whether you delete it on a Nightscout page or from an app that uses the newer API, such as
+AndroidAPS. Where an app can show only one of the two copies, it shows the one with the latest
+edit. <strong>If your site receives data from another Nightscout site, or you have restored data from an
+export, or it has run since 15.0.6 or earlier</strong>, look at any profile or treatment you have edited
+there. If you see an old copy beside the one you edited, open the record in the profile editor, or
+in the treatment list on the Reports page, and save it: the two become one record with that edit.
+An edit made by dragging a treatment on the main chart, or from an app, changes the record but
+leaves both copies. Deleting either copy deletes both. If you are unsure which settings or entries
+are correct, check with your care team.</p>
+<p>A device status report (the loop or pump status your phone app sends) that an app sends again is
+recognised as already saved: it is not saved twice, and any new reports sent with it are saved.</p>
+<p>A treatment or glucose reading sent to Nightscout without a usable ID is given one. One kind of
+badly formed record could stop a Nightscout site from running, and stop it again after every
+restart; that can no longer happen, and a site that already holds such a record keeps running.</p>
+<p>The same change fixes deleting an access entry (a "subject" on the admin page) that was restored
+from a backup or created by a tool that set its own ID. Before, the page reported success and the
+entry stayed, <strong>still able to access your site</strong>. It is now removed. If you have deleted such an
+entry before, check the list on the admin page to make sure it is gone.</p>
+<h3 id="moving-a-treatment-on-the-chart-now-moves-its-insulin-and-carbs-too">Moving a treatment on the chart now moves its insulin and carbs too<a class="headerlink" href="#moving-a-treatment-on-the-chart-now-moves-its-insulin-and-carbs-too" title="Permanent link">&para;</a></h3>
+<p>If you split a treatment by dragging it on the chart into the "Move carbs" or "Move insulin"
+area, the chart showed the moved part at its new time, but Nightscout kept the <strong>old</strong> time when
+it worked out insulin on board (IOB) and carbs on board (COB). In testing, 25 g of moved carbs
+counted as 0 g on board. The same was true on 15.0.8 and earlier.</p>
+<p>In this release, dragging a treatment to a new time, whether you move all of it or split it,
+saves the new time everywhere Nightscout uses it. A treatment that an earlier version split this
+way is corrected when you drag it to its time again, or when you open it in the Reports
+treatment editor and save it. Other apps that edit treatments through Nightscout's API are not
+changed by this fix.</p>
+<p><strong>If you rely on Nightscout's IOB, COB or Bolus Wizard</strong> and have split treatments by dragging
+them before, look at those treatments after upgrading and check with your care team about any
+you are unsure of. This is not medical advice.</p>
+<h3 id="searches-reports-and-filters-return-the-right-records">Searches, reports and filters return the right records<a class="headerlink" href="#searches-reports-and-filters-return-the-right-records" title="Permanent link">&para;</a></h3>
+<p>Some filters compared numbers as if they were words, so "temp basals of 30 minutes or more"
+matched nothing and the site answered with an empty list instead of an error. Decimal amounts
+such as "1.5 units or more" were rounded down to 1. A filter for records <em>without</em> a value
+returned the records <em>with</em> it. Counting addresses could return zero for everything. Paging
+through newer-API results could skip some records and repeat others.</p>
+<p><strong>What you will notice:</strong> reports, dashboards and tools that use these filters may show
+different numbers — often many more records than before.</p>
+<p><strong>Earlier results may have under- or over-reported delivered therapy.</strong> If you have used a
+report or tool built on these filters to look back at insulin, carbs or temp basals, the numbers
+it showed may have been wrong. Nothing stored in your database was wrong; the question was being
+asked wrongly. This is not medical advice. If a corrected figure changes your understanding of a
+past period, discuss it with your care team rather than acting on it alone.</p>
+<p>For a filter asking whether a value is present, only <code>true</code>, <code>false</code>, <code>1</code> and <code>0</code> are
+understood. Other spellings, such as <code>null</code> or leaving the value empty, still mean "has the
+value".</p>
+<h3 id="editing-a-user-on-the-admin-page-keeps-its-notes-and-creation-date">Editing a user on the admin page keeps its notes and creation date<a class="headerlink" href="#editing-a-user-on-the-admin-page-keeps-its-notes-and-creation-date" title="Permanent link">&para;</a></h3>
+<p>On earlier releases, opening a user on the admin page and saving it — for example to give it another
+role — wiped that user's notes and replaced the date it was created with the date of the edit,
+with no warning. Both are now kept, for users and for roles. You can still clear the notes on
+purpose by emptying the notes box and saving. Notes and dates already lost to earlier edits
+cannot be recovered.</p>
+<h3 id="pages-that-would-not-load">Pages that would not load<a class="headerlink" href="#pages-that-would-not-load" title="Permanent link">&para;</a></h3>
+<ul>
+<li>A web address with a setting that has no value — <code>?mute</code> instead of <code>?mute=true</code>, or a
+  stray <code>&amp;</code> at the end — could leave the page stuck on "Loading" with nothing on screen. It now
+  loads.</li>
+<li>Deleting one treatment while another update arrived could freeze the page until you
+  reloaded. The "time since last reading" kept counting, so a frozen page looked stale rather
+  than current. If your page ever stops advancing, reload it and check your pump, meter or CGM
+  directly.</li>
+<li>On a first load the main chart could briefly render blank. That is guarded against.</li>
+</ul>
+<p><strong>One side effect:</strong> an underscore <code>_</code> in a web address is no longer turned into a space. If you
+have a bookmarked link containing <code>_</code>, open it once and check it still does what you expect.</p>
+<h3 id="passwords-and-account-names-with-leading-zeros-or-a-plus-sign">Passwords and account names with leading zeros or a plus sign<a class="headerlink" href="#passwords-and-account-names-with-leading-zeros-or-a-plus-sign" title="Permanent link">&para;</a></h3>
+<p>Settings such as your Dexcom Share account name and password were converted to numbers if they
+looked like numbers. A phone-number account name lost its leading <code>+</code>, and a password like
+<code>007700</code> became <code>7700</code>, so logins failed. Credential settings are now kept exactly as typed.
+Nothing needs changing in your settings.</p>
+<h3 id="quieter-logs-and-two-new-settings">Quieter logs, and two new settings<a class="headerlink" href="#quieter-logs-and-two-new-settings" title="Permanent link">&para;</a></h3>
+<p>Nightscout and its built-in CGM connector no longer write routine "heartbeat" and data-reload
+messages to the log by default. Warnings and errors still appear. Two new settings turn the
+detail back on when you are troubleshooting:</p>
+<ul>
+<li><code>DEBUG_LOGGING=true</code> — more detail from Nightscout and the connector.</li>
+<li><code>CONNECT_DEBUG=true</code> — more detail from the connector only (<code>CONNECT_DEBUG=false</code> turns the
+  connector detail off even when <code>DEBUG_LOGGING</code> is on).</li>
+</ul>
+<h3 id="if-you-run-nightscout-with-docker-compose">If you run Nightscout with Docker Compose<a class="headerlink" href="#if-you-run-nightscout-with-docker-compose" title="Permanent link">&para;</a></h3>
+<p><em>Docker Compose</em> runs Nightscout and its database together from one file, <code>docker-compose.yml</code>,
+which ships with Nightscout. Docker lets a container keep only 1024 files open unless told
+otherwise, which is too few for MongoDB: when it runs out it <strong>stops completely</strong> with "Too many
+open files", and Nightscout cannot read or save anything until the database is restarted. Your
+data is still there once it restarts. The bundled file now raises the limit to 64000, the
+minimum MongoDB recommends.</p>
+<p><strong>If you copied <code>docker-compose.yml</code> into your own set-up</strong>, add these lines under your <code>mongo:</code>
+service, then recreate the container (<code>docker compose up -d</code>):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="w">    </span><span class="nt">ulimits</span><span class="p">:</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">      </span><span class="nt">nofile</span><span class="p">:</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">        </span><span class="nt">soft</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">64000</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">        </span><span class="nt">hard</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">64000</span>
+</code></pre></div>
+<p>To check it worked, look at the database's start-up log: the warning <code>Soft rlimits for open
+file descriptors too low</code> should be gone. If you run MongoDB another way (MongoDB Atlas, a
+hosting provider, or installed directly on a server), this does not affect you.</p>
+<h3 id="clock-pages-show-when-their-reading-is-old-even-when-they-lose-their-connection">Clock pages show when their reading is old, even when they lose their connection<a class="headerlink" href="#clock-pages-show-when-their-reading-is-old-even-when-they-lose-their-connection" title="Permanent link">&para;</a></h3>
+<p>The clock pages (the Clock, Color and Simple views, and custom clock faces) check your site for a
+new reading every 20 seconds. On 15.0.8 and earlier, once those checks started failing, for
+example because the network dropped or your site was down, the page kept showing the last
+reading as if it were current: it never turned grey and never said how old it was. Only the time
+of day kept changing. In this release the page keeps working out the reading's age while the
+checks fail, and turns grey once the reading is old, as it does when readings simply stop.</p>
+<p>A clock page is a display, not an alarm. Keep the alarms on your phone, CGM app or receiver
+switched on. This is not medical advice.</p>
+<h3 id="a-user-without-a-name-no-longer-stops-your-site">A user without a name no longer stops your site<a class="headerlink" href="#a-user-without-a-name-no-longer-stops-your-site" title="Permanent link">&para;</a></h3>
+<p>If a tool created a user or role on the admin page without a name, Nightscout stopped, and
+stopped again at every restart, until that record was removed from the database by hand. Only
+someone with administrator rights could cause this. A user or role without a name is now refused,
+and a site that already holds one starts normally and notes it in the server log.</p>
+<h3 id="numbers-that-may-look-different-on-the-same-data">Numbers that may look different on the same data<a class="headerlink" href="#numbers-that-may-look-different-on-the-same-data" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>COB (carbs on board)</strong> now shows the value reported by your looping app (Loop, AndroidAPS,
+  Trio, OpenAPS) rather than Nightscout's own estimate, and appears on sites without a full
+  profile. The tooltip says where the number came from. It may differ from what you saw before.
+  COB is an estimate either way; how you use it is a question for your care team.</li>
+<li><strong>Daily Stats estimated A1c</strong> was inflated in mg/dL mode. It is now calculated the same way in
+  both units, so the figure may drop. It is an estimate, not a lab result.</li>
+<li><strong>Reports</strong> no longer throw away valid readings after two closely spaced ones, so charts,
+  averages and time-in-range may change slightly.</li>
+<li><strong>Basal, ISF and carb ratio during an AndroidAPS percentage Profile Switch</strong>, and the IOB, COB,
+  Bolus Wizard Preview and reports worked out from them, now match the phone. <strong>Carbs and insulin
+  that AndroidAPS deleted</strong> no longer count in COB, IOB and reports. <strong>Two treatments at the same
+  time</strong> are now both counted in daily totals. <strong>AndroidAPS entries that arrived late or were
+  edited</strong> now count in Nightscout's own IOB and COB, and a COB that was too high because treatments
+  were out of time order can drop. See
+  <a href="#androidaps-the-careportal-and-caregivers">AndroidAPS, the careportal and caregivers</a>.</li>
+</ul>
+<h3 id="a-48-hour-view-on-the-main-chart">A 48-hour view on the main chart<a class="headerlink" href="#a-48-hour-view-on-the-main-chart" title="Permanent link">&para;</a></h3>
+<p>The "Hours:" choices on the main page, which set how much time the main chart shows, now include
+<strong>48</strong>, after 24, so you can see two days at once. Nothing else about the chart changes, and the view it opens with is the same as before.</p>
+<h3 id="filter-the-treatments-report-by-type">Filter the treatments report by type<a class="headerlink" href="#filter-the-treatments-report-by-type" title="Permanent link">&para;</a></h3>
+<p><strong>Reports → Treatments</strong> now has a list of event types above the table (for example "Meal Bolus"
+or "Temp Basal", each with how many entries it has), so a long list can be narrowed to one kind of
+entry. The default, "All event types", shows the same list as before.</p>
+<h3 id="day-to-day-report-events-that-run-past-midnight">Day to Day report: events that run past midnight<a class="headerlink" href="#day-to-day-report-events-that-run-past-midnight" title="Permanent link">&para;</a></h3>
+<p>In <strong>Reports → Day to Day</strong>, an event that lasts a while (for example Exercise, a Note with a
+length, a Temporary Target, or a Loop override) now shows on every day it covers. An exercise
+entered at 22:00 for four hours shows from 22:00 to midnight on the first day and from midnight to
+02:00 on the next, including when you look at the next day on its own. Before, it showed only on
+the day it started and ran off the edge of that day's chart. Events that start and end on the same
+day look the same as before.</p>
+<h3 id="food-editor-scrolls-on-phones">Food Editor scrolls on phones<a class="headerlink" href="#food-editor-scrolls-on-phones" title="Permanent link">&para;</a></h3>
+<p>On a phone, the food list in the Food Editor could not be scrolled by swiping: it has room for
+two or three foods, and a swipe that started on a food did nothing, so the rest of the list
+could not be reached. A swipe that started on a quick pick did not scroll the page either. Both
+now scroll. Dragging a food into a quick pick and reordering quick picks still need a mouse, as
+before.</p>
+<h3 id="bulk-deletes-from-xdrip4ios-remove-the-readings">Bulk deletes from xDrip4iOS remove the readings<a class="headerlink" href="#bulk-deletes-from-xdrip4ios-remove-the-readings" title="Permanent link">&para;</a></h3>
+<p>xDrip4iOS can delete glucose readings from your site in bulk by listing the time of each
+reading. Nightscout answered every such request with an error and deleted nothing, so readings
+you deleted in the app stayed on your site, in the chart and in reports. Nightscout now deletes
+the listed readings, and only those. No reading was changed or lost: the readings that stayed
+were ones the app meant to remove. Readings you deleted in xDrip4iOS before upgrading are still
+on your site; delete them again from the app, or in Nightscout, if you want them gone. Other
+apps that ask for several readings or treatments by their times at once now get them, where
+they got an error before.</p>
+<h3 id="translations">Translations<a class="headerlink" href="#translations" title="Permanent link">&para;</a></h3>
+<p>Updated translations from Nightscout's volunteer translators on Crowdin, as of early September
+2026. Later Crowdin updates are not in this release.</p>
+<h3 id="other-fixes">Other fixes<a class="headerlink" href="#other-fixes" title="Permanent link">&para;</a></h3>
+<p>Faster data loading on sites with many treatments; deleted records no longer reappear; failed
+treatment searches no longer crash the server; a problem reading from the database no longer stops
+Nightscout until it is restarted (it answers that request with an error and keeps running); clearer error messages when a Loop remote
+command fails (the form keeps what you entered); profile switches and unnamed profiles handled
+correctly; a site with no profile no longer shows an alert that cannot be dismissed; the clock
+view shows the worried face for low and falling readings; voice assistants (Alexa, Google Home)
+always answer in your site's configured language (a language requested by the assistant is no
+longer used, and one assistant request can no longer change the language of the whole site);
+Alexa gets an immediate answer to a kind of request Nightscout does not handle, instead of being
+left waiting; a misspelled plugin name in <code>ENABLE</code> now gets a suggestion in the server log; the
+"Nightscout is having trouble" start-up page no longer fails on one kind of error message that
+no current version produces; deployment with npm 12 no longer fails; the library that reads web
+addresses and form posts is updated to a version that clears three published security notices
+against it; a filter listing more than 20 values (for example, "these 30 records") now works,
+where 15.0.8 refused it with an error, so a tool that deletes records by such a list now deletes
+them; each Loop remote command (override, carbs or bolus) now closes its connection to Apple's push
+service when the push is done, where 15.0.8 kept every one open until the server restarted, so a
+busy site accumulated connections and memory; more software libraries are updated to versions
+that clear security notices published against them in late September, with no change in how
+Nightscout works (none of them changes what your browser loads); updated translations
+and many other software library updates.</p>
+<hr />
+<h2 id="what-you-must-do">What you must do<a class="headerlink" href="#what-you-must-do" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Check the list in <a href="#before-you-upgrade-what-to-check">Before you upgrade</a></strong> before you
+   start.</li>
+<li><strong>If you are on MongoDB 4.4</strong>, plan your move to 5.0 or later. 15.0.9 still works with 4.4.</li>
+<li><strong>If insulin-age alerts are on</strong>, tell whoever receives your alerts about the new urgent
+   alert (see <a href="#read-this-first-the-insulin-reservoir-urgent-alarm-starts-working">Read this first</a>).</li>
+<li><strong>If you have saved users on the admin page and think a token may have been exposed</strong>,
+   retire it by deleting and re-creating the user, or by changing <code>API_SECRET</code> — see
+   <a href="#access-tokens-stored-in-plain-text">Access tokens stored in plain text</a>. Note that
+   <strong>renaming the user does not retire its token</strong>, even though the token's appearance changes.</li>
+<li><strong>If you use <code>MMCONNECT_</code> settings, or <code>DEXCOM_BRIDGE_USE_LEGACY=true</code></strong>, move to the built-in
+   connector's settings (see
+   <a href="#the-old-minimed-and-dexcom-connections-are-being-retired">The old MiniMed and Dexcom connections are being retired</a>).</li>
+<li><strong>If you ran the built-in connector on 15.0.8 or earlier and shared a log, or your hosting
+   provider keeps logs others can read</strong>, consider changing your CGM account password, and then
+   update it in Nightscout's connector settings so readings keep arriving — see
+   <a href="#your-cgm-account-password">Your CGM account password</a>.</li>
+<li><strong>If you copied <code>docker-compose.yml</code></strong>, add the open-file limit to your <code>mongo:</code> service.</li>
+<li><strong>If you use <code>TREATMENTS_AUTH=off</code></strong>, read the new admin warning and decide whether to keep it.</li>
+<li><strong>If you want the stronger protection against password guessing</strong>, set <code>TRUST_PROXY</code> as
+   described in <a href="#the-new-trust_proxy-setting">The new <code>TRUST_PROXY</code> setting</a>. Otherwise leave it
+   unset.</li>
+<li><strong>If your site uses mmol/L</strong>, check your alarm levels after upgrading (see
+    <a href="#low-alarms-on-sites-that-use-mmoll">Low alarms on sites that use mmol/L</a>).</li>
+<li><strong>If you use <code>PUMP_WARN_ON_SUSPEND</code></strong>, tell whoever receives your alerts that a "Pump
+    Suspended" warning can now arrive.</li>
+<li><strong>If you use AndroidAPS with the careportal or a caregiver</strong>, check the phone's treatment list
+    for meals entered twice, and delete treatments in AndroidAPS as well as elsewhere (see
+    <a href="#androidaps-the-careportal-and-caregivers">AndroidAPS, the careportal and caregivers</a>).</li>
+<li><strong>If you renamed IFTTT applets to translated names</strong>, rename them back to the documented names
+    (see <a href="#ifttt-alerts-on-sites-not-set-to-english">IFTTT alerts on sites not set to English</a>).</li>
+<li><strong>After upgrading, check that everything connected to your site still works</strong>, and watch for
+    a day.</li>
+</ol>
+<h2 id="what-to-check-afterwards">What to check afterwards<a class="headerlink" href="#what-to-check-afterwards" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Your glucose readings are arriving and the page updates.</li>
+<li>Uploaders, phone and watch apps, and follower apps still connect.</li>
+<li>Any tool that reads from or saves to your site through the API still works. An error such as
+  "Bad count" or a refused filter condition is from the corrections above; report it to the
+  tool's author.</li>
+<li>Any report or filtered view you rely on — expect numbers to change; that is the fix.</li>
+<li>The IAGE box, if you use insulin age: it may now show URGENT.</li>
+<li>If your site uses mmol/L: the target lines on your chart and your alarm levels are the numbers
+  you meant. The server log's start-up lines show each alarm level Nightscout converted from
+  mmol/L.</li>
+<li>If you use <code>PUMP_WARN_ON_SUSPEND</code>: while your pump is suspended, the pump box turns the warning
+  colour.</li>
+<li>Bookmarked links that contain an underscore.</li>
+<li>If you set <code>TRUST_PROXY</code>: your site still loads over https, the startup warning about the
+  failed-login delay is gone from the log, and one wrong password sent from your phone shows your
+  phone's address in the "Failed authentication" message.</li>
+<li>If you moved from <code>MMCONNECT_</code> or <code>BRIDGE_</code> settings: readings arrive through the connector.</li>
+<li>If you changed your CGM account password: the new password is in Nightscout's connector
+  settings, and readings arrive.</li>
+<li>If you use AndroidAPS: the treatment list on the phone has no meal twice, and during a percentage
+  Profile Switch the basal, ISF and carb ratio on your site match the phone.</li>
+<li>If you use IFTTT on a site not set to English: a test alarm reaches your applets.</li>
+<li>If a watch face reads your site: its delta and bolus estimate look right without any adjustment.</li>
+</ul>
+<hr />
+<h2 id="known-issues--not-fixed-in-this-release">Known issues — not fixed in this release<a class="headerlink" href="#known-issues--not-fixed-in-this-release" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>A page with no glucose reading does not sound or show any server alarm.</strong> When the big
+  number reads <code>---</code>, a Nightscout page ignores every alarm the server sends, including pump,
+  loop, cannula, sensor and insulin-age alarms that have nothing to do with glucose. This is the
+  same on 15.0.8 and earlier. A change is planned for a later release. Until then, keep your
+  devices' own alarms on and do not rely on a <code>---</code> page to alert you.</li>
+<li><strong>If the device uploading your readings has its clock set ahead, the stale-data warning comes
+  late.</strong> Nightscout can warn you when no new glucose reading has arrived for a while; by default
+  it warns in the browser at 15 and 30 minutes. If the phone or device uploading your readings
+  has its clock set <strong>ahead</strong> of the real time, Nightscout treats each reading as newer than it
+  is. If your readings then stop, the warning comes late, by roughly how far ahead that clock is.
+  For example, if the clock is an hour fast, the 15-minute warning comes after about an hour and
+  a quarter. What you might see is the "minutes ago" display reading "future", or staying at
+  "1m" while readings are arriving. If you see that, check the date, time and time zone on the
+  uploading device. If you depend on the stale-data warning, make sure you have another way to
+  notice that readings have stopped. (A single reading dated in the future does <strong>not</strong> switch
+  the warning off: Nightscout skips readings dated in the future when it decides whether your
+  data is stale.) This is not medical advice; talk to your care team about what you rely on
+  Nightscout for.</li>
+<li><strong>While <code>TRUST_PROXY</code> is unset, the failed-login delay can be avoided</strong>, as on earlier
+  releases. Nightscout says so in its log at startup. Set <code>TRUST_PROXY</code>, or restrict access at
+  your proxy or hosting provider.</li>
+<li><strong>Access tokens already stored in plain text stay in your database</strong> until you retire them
+  or save that user again. See the next section.</li>
+<li><strong>Alarm thresholds entered in the wrong units are not caught.</strong> Unless you have set
+  Nightscout to mmol/L, it reads alarm thresholds (<code>BG_LOW</code>, <code>BG_HIGH</code> and the target range)
+  as mg/dL. A low alarm entered as <code>3.9</code> (meaning mmol/L) is kept as 3.9 mg/dL, a level no
+  reading ever reaches, so <strong>that low alarm can never go off</strong>, and nothing warns you. A high
+  alarm entered as <code>14</code> is instead quietly changed to a different number, and only the server
+  log says so. (How a site set to mmol/L reads its alarm levels is described
+  <a href="#low-alarms-on-sites-that-use-mmoll">above</a>.) Check that the thresholds on your settings page
+  are the numbers you meant, keep
+  your device's own alarms on, and talk through your alarm settings with your care team. This
+  is not medical advice.</li>
+<li><strong>Deleting a treatment anywhere except AndroidAPS does not reach AndroidAPS.</strong> A treatment
+  deleted in the careportal, Loop, Trio or xDrip+ is removed from your site but keeps counting on
+  an AndroidAPS phone. Delete it in AndroidAPS as well.</li>
+<li><strong>Rarely, an entry can appear twice.</strong> When the careportal and AndroidAPS record the same kind of
+  treatment at exactly the same moment, and an app later sends the careportal entry again,
+  Nightscout can show it twice. Check your treatment list if totals look high.</li>
+<li><strong>Some treatments at the same time are still stored as one.</strong> Two careportal entries in the same
+  minute with the same amount are stored as one, because nothing tells them apart from pressing
+  Save twice. A bolus and carbs that AndroidAPS records in the same thousandth of a second, both as
+  "Meal Bolus", can also be stored as one.</li>
+<li><strong>A treatment's pop-up on the chart can show its glucose in the wrong units</strong> when your profile
+  and your site use different units (one mg/dL, the other mmol/L). This affects only that pop-up;
+  what is stored and calculated is not changed.</li>
+<li><strong>The careportal can fill in "Entered By" with the word <code>undefined</code>.</strong> If you save a careportal
+  entry with Entered By left empty, the next time you open the careportal that field shows
+  <code>undefined</code>, and entries are saved as entered by "undefined" unless you clear or change it.
+  Nothing else about the entry is affected. The same happens on 15.0.8 and earlier.</li>
+<li><strong>After you edit or delete a treatment in Reports → Treatments, the table can still show the old
+  entry.</strong> The change is saved, and the main chart shows it. Press <strong>Show</strong> again to refresh the
+  table. The same happens on 15.0.8.</li>
+<li><strong>During an AndroidAPS percentage Profile Switch, the basal pill's pop-up can show ISF and carb
+  ratio with many decimal places</strong>, for example <code>1.866666666667</code>. The number is correct; it is
+  only not rounded for display.</li>
+<li><strong>Reports → Profiles can leave out profiles saved on the last day of the report.</strong> When more
+  than one profile was saved on that day, only the earliest is listed, and other report pages may
+  draw that day's basal and targets from it. The same happens on 15.0.8.</li>
+<li><strong>In Reports → Day to Day, a temporary target that was cancelled early is shown for the full
+  time it was set for</strong>, and a Loop override that was ended early probably is too. The main chart
+  shows when it really ended. Because events that run past midnight now also show on the next
+  day, such a band can now appear on that day's chart as well. The same happens on 15.0.8 within
+  one day.</li>
+<li><strong>For about a minute after a new phone, or a reinstalled Loop, uploads its settings, a remote
+  command from the careportal or LoopCaregiver can still go to the old phone</strong>, and Nightscout
+  answers as if it was sent. After changing phones, check on the phone in use that a remote
+  command arrived before relying on it. This is not medical advice. The same happens on 15.0.8.</li>
+<li><strong>A clock view opened from the menu can be blank</strong> on a site that requires sign-in
+  (<code>AUTH_DEFAULT_ROLES=denied</code>) when you opened Nightscout with an access token in the address.
+  Opening the clock's own address with the token (<code>/clock/&lt;face&gt;?token=…</code>) works. A clock view is
+  a display, not an alarm.</li>
+<li><strong>A record whose identity was saved as a list cannot be deleted through API v3</strong>, which
+  AndroidAPS uses. 15.0.8 deleted it. Nightscout shows such a record's list as its identity, and
+  this release deletes a record only by the identity Nightscout shows for it. No commonly used app
+  is known to save an identity as a list. If a record you deleted in AndroidAPS still shows on
+  your site, delete it in the careportal as well.</li>
+<li><strong>A record saved with an empty identity cannot be edited through API v3 by the id Nightscout
+  shows for it</strong>: the edit is refused, or a second copy is saved. No commonly used app is known to
+  save records this way. The same on 15.0.8.</li>
+<li>Filters asking "is this value present" understand only <code>true</code>, <code>false</code>, <code>1</code> and <code>0</code>.</li>
+<li>Silencing an alarm from an app has no upper limit on how long it can be silenced for.</li>
+<li><strong>A security check of this release reports two "high" findings that do not affect Nightscout.</strong>
+  If you, your hosting service or a security tool run a check such as <code>npm audit</code> on 15.0.9, it
+  reports the same published notice twice (GHSA-86w9-cpqp-85rv, tracked by the project as
+  BF-154). The notice concerns how a library called node-forge checks one kind of digital
+  signature. Nightscout does not use that part of the library. node-forge is used only when Loop
+  remote commands are set up, to read your site's own Apple push-notification key and certificate,
+  and nothing in Nightscout asks it to check a signature. The project analysed this in the code,
+  so for Nightscout the finding is a false positive. No fixed version of node-forge has been
+  published yet, and the newer Apple push-notification library planned for the next releases
+  still uses the same version, so the update is deferred to that modernization work and will be
+  made once a fixed version exists. You do not need to do anything.</li>
+</ul>
+<h3 id="access-tokens-stored-in-plain-text">Access tokens stored in plain text<a class="headerlink" href="#access-tokens-stored-in-plain-text" title="Permanent link">&para;</a></h3>
+<p>An <strong>access token</strong> is the password-like string that lets a person or an app use your
+Nightscout site with the roles you gave them. It is supposed to be worked out fresh each time
+and never stored. On 15.0.8 and earlier, <strong>saving a user on the admin page wrote that user's
+token into your database in plain text.</strong> Anyone who can read your database, or a backup,
+replica or hosting snapshot of it, can read the token. This release stops new copies being
+written.</p>
+<p><strong>Upgrading does not delete it.</strong> A copy already stored stays in your database until that user
+is next saved on the admin page, and <strong>removing the copy does not make the token stop working.</strong>
+Anyone who has had read access to your database since the first edit could have used it.</p>
+<p><strong>Why a code change cannot retire a token.</strong> Your tokens are worked out from the user's internal
+id and your site's key (<code>API_SECRET</code>). The same inputs always give the same working token. To
+retire a token, one of those two inputs has to change, and only you can do that.</p>
+<p><strong>If you think a token may have been exposed, there are exactly two ways to retire it:</strong></p>
+<table>
+<thead>
+<tr>
+<th>What you do</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Delete the user and create a new one</strong> with the same roles</td>
+<td>That user's old token stops working, because the new user gets a new internal id. Give the person or app the new token.</td>
+</tr>
+<tr>
+<td><strong>Change your site's <code>API_SECRET</code></strong></td>
+<td><strong>Every token on your site stops working at once</strong>, and everything that connects with the old secret — uploaders, watches, phone apps — stops until you update it.</td>
+</tr>
+</tbody>
+</table>
+<p>Use the first if you are worried about one user; use the second if you think your database
+contents were exposed. Plan either for a time when you can update everything that connects to
+your site. If your glucose data stops arriving while you do this, use your meter or CGM app and
+your usual routine, and talk to your care team about what you rely on Nightscout for.</p>
+<p>Renaming the user is <strong>not</strong> a third way, even though it looks like one. Renaming changes
+the short word at the front of the token, but the part Nightscout actually checks comes from
+the internal id and <code>API_SECRET</code>, so the old token keeps working. If you rename a user and stop
+there, you have not retired anything.</p>
+<p><strong>Who this applies to:</strong> anyone who has saved a user through the Nightscout admin page. If you
+have only ever used your <code>API_SECRET</code> and never created separate users, there is nothing to
+retire. If you can look inside your database, a user is affected if its record in the
+<code>auth_subjects</code> collection has an <code>accessToken</code>, <code>accessTokenDigest</code> or <code>digest</code> field. <strong>Never
+paste a token or your <code>API_SECRET</code> into an issue, forum post, screenshot or chat</strong> — those
+values are the credential itself. Treat any database backup or export as containing working
+credentials.</p>
+<h2 id="about-the-version-number">About the version number<a class="headerlink" href="#about-the-version-number" title="Permanent link">&para;</a></h2>
+<p>This release is <strong>15.0.9</strong>, the number the development version already carries. Some changes in
+it refuse requests that earlier releases accepted (the <code>count</code>, filter-condition and user-field
+items under <a href="#corrections-requests-answered-differently">Corrections</a>); they are released as
+corrections of behaviour that was never intended, not as new features, and nothing you receive
+depends on the number. Sites that follow the development channel may already report <code>15.0.9</code>;
+a report from "15.0.9" made before this release is from that channel.</p>
+<hr />
+<p><em>Draft, 2026-10-02, on the development version 25fc41d9; not yet released.</em></p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

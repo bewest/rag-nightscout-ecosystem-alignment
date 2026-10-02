@@ -1,0 +1,4925 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/PR-8421-reviewers-guide.html">
+      
+      
+        <link rel="prev" href="PLATFORM-AND-SKILLS-ANALYSIS.html">
+      
+      
+        <link rel="next" href="STPA-ROADMAP.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#reviewers-guide-pr-8421---mongodb-5x-modernization" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="PR-8421-reviewers-guide.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#why-this-pr-exists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why This PR Exists
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Why This PR Exists">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#origin-mongodb-driver-upgrade" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Origin: MongoDB Driver Upgrade
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-grew-from-that" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Grew From That
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#categories-of-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Categories of Changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related Issues
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-reviewers-should-focus-on" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Reviewers Should Focus On
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What Reviewers Should Focus On">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-8020-rule-for-this-pr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The 80/20 Rule for This PR
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#review-themes-not-file-lists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Review Themes (Not File Lists)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#theme-1-uuid-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Theme 1: UUID Handling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#theme-2-backwards-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Theme 2: Backwards Compatibility
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#theme-3-mongodb-5x-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Theme 3: MongoDB 5.x Compatibility
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#theme-4-test-coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Theme 4: Test Coverage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#theme-5-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Theme 5: Documentation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#theme-6-undocumented-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Theme 6: Undocumented Changes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#-theme-7-test-database-safety-resolved" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✅ Theme 7: Test Database Safety (Resolved)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#size-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Size Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-review-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Review Checklist
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick Review Checklist">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#before-approving-verify" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before Approving, Verify:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#blocking-implementation-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Blocking Implementation Work:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#known-safe-to-skip" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known Safe to Skip:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification Commands
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-file-inventory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix: File Inventory
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="30-design/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="60-research/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#why-this-pr-exists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why This PR Exists
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Why This PR Exists">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#origin-mongodb-driver-upgrade" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Origin: MongoDB Driver Upgrade
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-grew-from-that" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Grew From That
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#categories-of-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Categories of Changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related Issues
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-reviewers-should-focus-on" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Reviewers Should Focus On
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What Reviewers Should Focus On">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-8020-rule-for-this-pr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The 80/20 Rule for This PR
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#review-themes-not-file-lists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Review Themes (Not File Lists)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#theme-1-uuid-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Theme 1: UUID Handling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#theme-2-backwards-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Theme 2: Backwards Compatibility
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#theme-3-mongodb-5x-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Theme 3: MongoDB 5.x Compatibility
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#theme-4-test-coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Theme 4: Test Coverage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#theme-5-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Theme 5: Documentation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#theme-6-undocumented-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Theme 6: Undocumented Changes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#-theme-7-test-database-safety-resolved" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✅ Theme 7: Test Database Safety (Resolved)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#size-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Size Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-review-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Review Checklist
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick Review Checklist">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#before-approving-verify" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before Approving, Verify:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#blocking-implementation-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Blocking Implementation Work:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#known-safe-to-skip" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known Safe to Skip:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification Commands
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-file-inventory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix: File Inventory
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="reviewers-guide-pr-8421---mongodb-5x-modernization">Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization<a class="headerlink" href="#reviewers-guide-pr-8421---mongodb-5x-modernization" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-10-01 at <code>66c337cd</code>.</em></p>
+<blockquote>
+<p><strong>Status</strong>: 🚧 STUB - Analysis in progress<br />
+<strong>PR</strong>: <a href="https://github.com/nightscout/cgm-remote-monitor/pull/8421">#8421</a><br />
+<strong>Branch</strong>: <code>wip/bewest/mongodb-5x</code><br />
+<strong>Size</strong>: 146 files, +36,222 / -4,654 lines<br />
+<strong>Created</strong>: 2026-03-12<br />
+<strong>Work Tracking</strong>: <a href="backlogs/archive/pr-8421-review-analysis.html">pr-8421-review-analysis.md</a><br />
+<strong>Worktree</strong>: <code>&lt;workspace&gt;/worktrees/nightscout/cgm-pr-8447</code></p>
+</blockquote>
+<hr />
+<h2 id="why-this-pr-exists">Why This PR Exists<a class="headerlink" href="#why-this-pr-exists" title="Permanent link">&para;</a></h2>
+<h3 id="origin-mongodb-driver-upgrade">Origin: MongoDB Driver Upgrade<a class="headerlink" href="#origin-mongodb-driver-upgrade" title="Permanent link">&para;</a></h3>
+<p>This PR started as an upgrade of the MongoDB driver library. Nightscout uses MongoDB directly (no ORM/ODM like Mongoose), so driver changes touch the storage layer throughout the codebase.</p>
+<h3 id="what-grew-from-that">What Grew From That<a class="headerlink" href="#what-grew-from-that" title="Permanent link">&para;</a></h3>
+<p>During the upgrade, analysis of popular AID apps revealed several issues:</p>
+<ol>
+<li><strong>UUID <code>_id</code> handling</strong> - Loop and Trio send UUID strings as <code>_id</code>, which the v1 API mishandled</li>
+<li><strong>Deduplication edge cases</strong> - Some apps re-upload data with slightly different fields</li>
+<li><strong>Precision issues</strong> - Floating point values need consistent handling</li>
+<li><strong>Test coverage gaps</strong> - Many behaviors were untested</li>
+</ol>
+<h3 id="categories-of-changes">Categories of Changes<a class="headerlink" href="#categories-of-changes" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Description</th>
+<th>Documentation Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MongoDB driver upgrade</td>
+<td>Update to 5.x compatible driver</td>
+<td>✅ Documented</td>
+</tr>
+<tr>
+<td>UUID <code>_id</code> fix</td>
+<td>Handle client UUIDs correctly</td>
+<td>✅ Documented (GAP-TREAT-012, GAP-SYNC-045)</td>
+</tr>
+<tr>
+<td>Test additions</td>
+<td>Coverage for Loop, AAPS, Trio patterns</td>
+<td>✅ Documented</td>
+</tr>
+<tr>
+<td>Behavior fixes</td>
+<td>Precision, edge cases</td>
+<td>✅ Verified (Theme 6)</td>
+</tr>
+<tr>
+<td>Library tweaks</td>
+<td>Better control flow</td>
+<td>✅ Verified (Theme 6)</td>
+</tr>
+<tr>
+<td>Test safety</td>
+<td>Prevent accidental production DB deletion</td>
+<td>✅ Implemented (Theme 7)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="related-issues">Related Issues<a class="headerlink" href="#related-issues" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://github.com/nightscout/cgm-remote-monitor/issues/8450">#8450</a> - Loop overrides not syncing</li>
+<li>GAP-TREAT-012 - Treatment UUID fix</li>
+<li>GAP-SYNC-045 - Entry UUID fix</li>
+</ul>
+<hr />
+<h2 id="what-reviewers-should-focus-on">What Reviewers Should Focus On<a class="headerlink" href="#what-reviewers-should-focus-on" title="Permanent link">&para;</a></h2>
+<h3 id="the-8020-rule-for-this-pr">The 80/20 Rule for This PR<a class="headerlink" href="#the-8020-rule-for-this-pr" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Focus Area</th>
+<th>% of Changes</th>
+<th>What Matters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>UUID Fix</strong></td>
+<td>~2% of code</td>
+<td>🔴 <strong>Critical</strong>: Does the fix work? Is it safe?</td>
+</tr>
+<tr>
+<td><strong>Test Coverage</strong></td>
+<td>~8%</td>
+<td>🟠 Do tests prove the fix? Cover edge cases?</td>
+</tr>
+<tr>
+<td><strong>Documentation</strong></td>
+<td>~51%</td>
+<td>🟢 Reference only - skim for accuracy</td>
+</tr>
+<tr>
+<td><strong>package-lock.json</strong></td>
+<td>~11%</td>
+<td>⚪ Ignore - npm churn</td>
+</tr>
+</tbody>
+</table>
+<h3 id="review-themes-not-file-lists">Review Themes (Not File Lists)<a class="headerlink" href="#review-themes-not-file-lists" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Theme</th>
+<th>Question to Answer</th>
+<th>Key Files</th>
+<th>Est. Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#theme-1-uuid-handling">1. UUID Handling</a></td>
+<td>Is the identifier fix correct and safe?</td>
+<td>treatments.js, entries.js</td>
+<td>30 min</td>
+</tr>
+<tr>
+<td><a href="#theme-2-backwards-compatibility">2. Backwards Compatibility</a></td>
+<td>Will existing installations break?</td>
+<td>Same + tests</td>
+<td>20 min</td>
+</tr>
+<tr>
+<td><a href="#theme-3-mongodb-5x-compatibility">3. MongoDB 5.x Compat</a></td>
+<td>Do queries work on new MongoDB?</td>
+<td>storage layer</td>
+<td>15 min</td>
+</tr>
+<tr>
+<td><a href="#theme-4-test-coverage">4. Test Coverage</a></td>
+<td>Are edge cases tested?</td>
+<td>test files</td>
+<td>30 min</td>
+</tr>
+<tr>
+<td><a href="#theme-5-documentation">5. Documentation</a></td>
+<td>Is it accurate?</td>
+<td>docs/</td>
+<td>10 min</td>
+</tr>
+<tr>
+<td><a href="#theme-6-undocumented-changes">6. Undocumented Changes</a></td>
+<td>What else changed?</td>
+<td>lib/*.js diff</td>
+<td>20 min</td>
+</tr>
+<tr>
+<td><a href="#-theme-7-test-database-safety-resolved">7. Test Database Safety</a></td>
+<td>Could tests destroy production data?</td>
+<td>tests/*.js</td>
+<td>15 min</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="theme-1-uuid-handling">Theme 1: UUID Handling<a class="headerlink" href="#theme-1-uuid-handling" title="Permanent link">&para;</a></h2>
+<p><strong>Claim</strong>: The fix promotes client UUIDs to an <code>identifier</code> field and strips non-ObjectId <code>_id</code> before MongoDB write.</p>
+<p><strong>What to verify</strong>:
+1. <code>normalizeEntryId()</code> and <code>normalizeTreatmentId()</code> extract UUID correctly
+2. <code>upsertQueryFor()</code> uses correct dedup key (sysTime+type for entries, created_at+eventType for treatments)
+3. Original UUID is preserved in <code>identifier</code> field
+4. MongoDB immutable <code>_id</code> error is avoided</p>
+<p><strong>Key code to review</strong>:
+- <code>lib/server/treatments.js</code> lines ~189-250: <code>normalizeTreatmentId()</code>, <code>upsertQueryFor()</code>
+- <code>lib/server/entries.js</code> lines ~99-120: <code>normalizeEntryId()</code>, <code>upsertQueryFor()</code></p>
+<p><strong>Look for</strong>:
+- [x] Is <code>_id</code> deleted from <code>$set</code> before write? ✅ <strong>VERIFIED 2026-03-12</strong>
+  - <code>entries.js:209</code>: <code>delete doc._id;</code> in <code>upsertQueryFor()</code> strips non-ObjectId <code>_id</code>
+  - <code>treatments.js:309</code>: <code>delete obj._id;</code> when using identifier-based query
+  - Comment at entries.js:202 explicitly documents this as "immutable field '_id'" fix
+- [x] Is <code>identifier</code> field indexed? ✅ <strong>VERIFIED 2026-03-12</strong> - <code>lib/api3/storage/mongoCollection/index.js:21</code> calls <code>ensureIndexes()</code> with <code>identifier</code>
+- [x] Does batch upload handle mixed ObjectId/UUID correctly? ✅ <strong>VERIFIED 2026-03-12</strong> - <code>normalizeEntryId()</code> handles all 3 cases, tested by <code>TEST-ENTRY-UUID-004</code></p>
+<p><strong>Test coverage</strong>: <code>tests/api.entries.uuid.test.js</code>, <code>tests/gap-treat-012.test.js</code></p>
+<hr />
+<h2 id="theme-2-backwards-compatibility">Theme 2: Backwards Compatibility<a class="headerlink" href="#theme-2-backwards-compatibility" title="Permanent link">&para;</a></h2>
+<p><strong>Claim</strong>: Existing data and clients continue to work without migration.</p>
+<p><strong>What to verify</strong>:
+1. GET/DELETE by ObjectId still works
+2. Existing UUID <code>_id</code> entries are not corrupted
+3. Clients sending ObjectId <code>_id</code> are unaffected
+4. v3 API is unchanged</p>
+<p><strong>Key scenarios</strong>:
+| Scenario | Expected Behavior | Test Reference |
+|----------|-------------------|----------------|
+| Existing ObjectId data | Works unchanged | TEST-ENTRY-DEDUP-001 |
+| Existing UUID <code>_id</code> data | Preserved, queryable | TEST-ENTRY-MIGRATE-001 |
+| New UUID upload | Promoted to <code>identifier</code> | TEST-ENTRY-UUID-001 |
+| Re-upload same UUID | Deduped correctly | TEST-ENTRY-UUID-002 |</p>
+<p><strong>Look for</strong>:
+- [x] No <code>dropIndex</code> or schema migration ✅ <strong>VERIFIED 2026-03-12</strong> - No drop operations, existing indexes preserved
+- [x] Upsert matches by content (sysTime+type), not <code>_id</code> ✅ <strong>VERIFIED 2026-03-12</strong> - <code>entries.js:212-214</code> returns <code>{ sysTime, type }</code> query
+- [x] Rollback is safe (revert code, data still works) ✅ <strong>VERIFIED 2026-03-12</strong> - Dedup key unchanged, <code>identifier</code> is additive/ignored</p>
+<hr />
+<h2 id="theme-3-mongodb-5x-compatibility">Theme 3: MongoDB 5.x Compatibility<a class="headerlink" href="#theme-3-mongodb-5x-compatibility" title="Permanent link">&para;</a></h2>
+<p><strong>Claim</strong>: PR fixes issues with MongoDB 5.x+ strict mode.</p>
+<p><strong>What to verify</strong>:
+1. No attempts to modify immutable <code>_id</code> field
+2. Queries use proper ObjectId construction
+3. No deprecated MongoDB driver methods</p>
+<p><strong>Look for</strong>:
+- [x] <code>new ObjectId(id)</code> only for 24-hex strings ✅ <strong>VERIFIED 2026-03-12</strong> - <code>OBJECT_ID_HEX_RE.test()</code> guards all conversions
+- [x] <code>isId()</code> function validates before conversion ✅ <strong>VERIFIED 2026-03-12</strong> - <code>lib/api/entries/index.js:15-18</code> uses <code>/^[a-f\d]{24}$/</code>
+- [x] No <code>$set: { _id: ... }</code> in upsert operations ✅ <strong>VERIFIED 2026-03-12</strong> - <code>entries.js:208</code> and <code>treatments.js:309</code> delete non-ObjectId <code>_id</code> before <code>$set</code>/<code>replaceOne</code></p>
+<hr />
+<h2 id="theme-4-test-coverage">Theme 4: Test Coverage<a class="headerlink" href="#theme-4-test-coverage" title="Permanent link">&para;</a></h2>
+<p><strong>Claim</strong>: +245 new tests (+50% increase) covering UUID handling and edge cases.</p>
+<p><strong>What to verify</strong>:
+1. Tests cover the specific bug scenarios
+2. Tests verify deduplication behavior
+3. Tests are not flaky (no timing dependencies)</p>
+<p><strong>Key test files</strong>:
+| File | Tests | Coverage |
+|------|-------|----------|
+| <code>api.entries.uuid.test.js</code> | 9 | GAP-SYNC-045 |
+| <code>gap-treat-012.test.js</code> | 8 | GAP-TREAT-012 |
+| <code>identity-matrix.test.js</code> | 12 | REQ-SYNC-072 |</p>
+<p><strong>Look for</strong>:
+- [x] Tests POST with UUID, verify storage ✅ <strong>VERIFIED 2026-03-12</strong> - <code>TEST-ENTRY-UUID-001</code> and <code>TEST-ENTRY-UUID-006</code>
+- [x] Tests re-POST same data, verify dedup ✅ <strong>VERIFIED 2026-03-12</strong> - <code>TEST-ENTRY-UUID-002</code>, <code>TEST-ENTRY-UUID-003</code>
+- [x] Tests batch with mixed IDs ✅ <strong>VERIFIED 2026-03-12</strong> - <code>TEST-ENTRY-UUID-004</code> at line 431
+- [x] Tests GET/DELETE still work ✅ <strong>VERIFIED 2026-03-12</strong> - <code>api.entries.test.js</code> existing coverage</p>
+<hr />
+<h2 id="theme-5-documentation">Theme 5: Documentation<a class="headerlink" href="#theme-5-documentation" title="Permanent link">&para;</a></h2>
+<p><strong>Claim</strong>: Comprehensive documentation explains the changes.</p>
+<p><strong>What to verify</strong>:
+1. Claims in docs match actual code
+2. Gap/requirement references are valid
+3. No sensitive information exposed</p>
+<p><strong>Key docs</strong> (spot check only):
+- <code>docs/meta/architecture-overview.md</code> - System overview
+- <code>docs/proposals/mongodb-modernization-*.md</code> - Design rationale</p>
+<hr />
+<h2 id="theme-6-undocumented-changes">Theme 6: Undocumented Changes<a class="headerlink" href="#theme-6-undocumented-changes" title="Permanent link">&para;</a></h2>
+<p><strong>Claim</strong>: Some behavior fixes and precision improvements may not be fully documented yet.</p>
+<p><strong>Discovery process</strong>:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Find all lib changes not related to UUID handling</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">cd</span><span class="w"> </span>&lt;workspace&gt;/worktrees/nightscout/cgm-pr-8447
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>git<span class="w"> </span>diff<span class="w"> </span>official/master<span class="w"> </span>--<span class="w"> </span>lib/<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">"^\+"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-v<span class="w"> </span><span class="s2">"identifier\|UUID\|normalize"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-50
+</code></pre></div></p>
+<p><strong>What to look for</strong>:
+1. <strong>Precision handling</strong> - <code>toFixed()</code>, rounding, floating point comparisons
+2. <strong>Error handling</strong> - New try/catch, validation checks
+3. <strong>Query changes</strong> - MongoDB query syntax updates
+4. <strong>Control flow</strong> - Early returns, guard clauses</p>
+<p><strong>Found changes to document</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Change Type</th>
+<th>Description</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>lib/api3/storage/mongoCollection/find.js</code></td>
+<td><strong>Type safety</strong></td>
+<td>Added <code>toSafeInt()</code> - ensures limit/skip are integers, fixes env string bug</td>
+<td>✅ Discovered</td>
+</tr>
+<tr>
+<td><code>lib/api3/doc/history/query.js</code></td>
+<td><strong>parseInt radix</strong></td>
+<td>Changed <code>parseInt(req.query.limit)</code> → <code>parseInt(..., 10)</code></td>
+<td>✅ Discovered</td>
+</tr>
+<tr>
+<td><code>lib/api3/doc/history/query.js</code></td>
+<td><strong>parseInt radix</strong></td>
+<td>Changed <code>parseInt(req.query.skip)</code> → <code>parseInt(..., 10)</code></td>
+<td>✅ Discovered</td>
+</tr>
+<tr>
+<td><code>lib/api/entries/index.js</code></td>
+<td><strong>Response format</strong></td>
+<td>Added <code>format_post_response()</code> - cleaner POST response handling</td>
+<td>✅ Discovered</td>
+</tr>
+<tr>
+<td><code>lib/api/entries/index.js</code></td>
+<td><strong>Error handling</strong></td>
+<td><code>format_post_response()</code> returns proper JSON error on <code>entries_err</code></td>
+<td>✅ Discovered</td>
+</tr>
+<tr>
+<td><code>lib/api3/storage/mongoCollection/modify.js</code></td>
+<td><strong>Driver compat</strong></td>
+<td><code>result.modifiedCount</code> replaces deprecated <code>result.nModified</code></td>
+<td>✅ Discovered</td>
+</tr>
+<tr>
+<td><code>lib/api3/storage/mongoCollection/modify.js</code></td>
+<td><strong>Driver compat</strong></td>
+<td><code>result.deletedCount</code> replaces deprecated <code>result.n</code></td>
+<td>✅ Discovered</td>
+</tr>
+<tr>
+<td><code>lib/server/*.js</code></td>
+<td><strong>Query syntax</strong></td>
+<td><code>.insert()</code> → <code>.insertOne()</code> across entries, treatments, devicestatus, food, activity</td>
+<td>✅ Discovered</td>
+</tr>
+<tr>
+<td><code>lib/server/*.js</code></td>
+<td><strong>Query syntax</strong></td>
+<td><code>.update()</code> → <code>.updateOne()</code> in treatments.js, websocket.js</td>
+<td>✅ Discovered</td>
+</tr>
+<tr>
+<td><code>lib/server/devicestatus.js</code></td>
+<td><strong>Query syntax</strong></td>
+<td>Added <code>.insertMany()</code> for batch device status</td>
+<td>✅ Discovered</td>
+</tr>
+<tr>
+<td><code>lib/server/*.js</code></td>
+<td><strong>Query syntax</strong></td>
+<td>Added <code>.deleteOne()</code>, <code>.deleteMany()</code> replacing deprecated patterns</td>
+<td>✅ Discovered</td>
+</tr>
+<tr>
+<td><code>lib/storage/mongo-storage.js</code></td>
+<td><strong>Pool config</strong></td>
+<td>New configurable pool options (see table below)</td>
+<td>✅ Discovered</td>
+</tr>
+</tbody>
+</table>
+<p><strong>MongoDB Pool Configuration</strong> (new in this PR):</p>
+<table>
+<thead>
+<tr>
+<th>Env Variable</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MONGO_POOL_SIZE</code></td>
+<td><code>5</code></td>
+<td>Max connections (legacy was 100)</td>
+</tr>
+<tr>
+<td><code>MONGO_MIN_POOL_SIZE</code></td>
+<td><code>0</code></td>
+<td>Min idle connections to maintain</td>
+</tr>
+<tr>
+<td><code>MONGO_MAX_IDLE_TIME_MS</code></td>
+<td><code>30000</code></td>
+<td>Close idle connections after this time</td>
+</tr>
+<tr>
+<td><code>MONGO_POOL_DEBUG</code></td>
+<td>unset</td>
+<td>Enable pool event logging</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Why this matters</strong>: Default pool reduced from 100→5 for better resource usage. Use <code>MONGO_POOL_SIZE=100</code> to restore legacy behavior if needed.</p>
+<p><strong>Look for</strong>:
+- [x] Precision/rounding changes identified ✅ <strong>VERIFIED 2026-03-12</strong>
+  - <code>toSafeInt()</code> in <code>find.js:10-17</code> ensures limit/skip are always integers
+  - Fixes bug where env strings passed to <code>.limit()/.skip()</code> caused MongoDB errors
+- [x] Error handling improvements identified ✅ <strong>VERIFIED 2026-03-12</strong> - <code>format_post_response()</code> JSON error handling
+- [x] Query syntax updates identified ✅ <strong>VERIFIED 2026-03-12</strong> - <code>.insert()</code>→<code>.insertOne()</code>, <code>.update()</code>→<code>.updateOne()</code>, etc.
+- [x] Pool configuration documented ✅ <strong>VERIFIED 2026-03-12</strong> - <code>MONGO_POOL_SIZE</code>, <code>MONGO_MIN_POOL_SIZE</code>, <code>MONGO_MAX_IDLE_TIME_MS</code>
+- [x] All changes documented or triaged ✅ <strong>VERIFIED 2026-03-12</strong> - Major changes in Theme 6 table; remaining are additive/cleanup</p>
+<hr />
+<h2 id="-theme-7-test-database-safety-resolved">✅ Theme 7: Test Database Safety (Resolved)<a class="headerlink" href="#-theme-7-test-database-safety-resolved" title="Permanent link">&para;</a></h2>
+<p><strong>Background</strong>: This PR adds 245+ new tests using <code>deleteMany({})</code>. A pre-existing gap (GAP-SYNC-046) meant tests had no safeguards against running on production databases.</p>
+<p><strong>What was fixed in this PR</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Change</th>
+<th>File</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hard fail check</td>
+<td><code>tests/hooks.js</code></td>
+<td><code>process.exit(1)</code> if <code>NODE_ENV !== 'test'</code></td>
+</tr>
+<tr>
+<td>CI env fix</td>
+<td><code>tests/ci.test.env</code></td>
+<td>Changed <code>NODE_ENV=production</code> → <code>NODE_ENV=test</code></td>
+</tr>
+<tr>
+<td>Guard module</td>
+<td><code>tests/fixtures/test-guard.js</code></td>
+<td><code>guardDestructiveOperation()</code> available</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Current state (after this PR)</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Deployment</th>
+<th>NODE_ENV</th>
+<th>Safe?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>docker-compose.yml</td>
+<td><code>production</code></td>
+<td>✅ Tests won't run</td>
+</tr>
+<tr>
+<td>Heroku (app.json)</td>
+<td>User-provided</td>
+<td>✅ Tests won't run unless <code>test</code></td>
+</tr>
+<tr>
+<td>CI (ci.test.env)</td>
+<td><code>test</code></td>
+<td>✅ Fixed</td>
+</tr>
+<tr>
+<td>Local dev (my.test.env)</td>
+<td><code>test</code></td>
+<td>✅ Fixed</td>
+</tr>
+</tbody>
+</table>
+<p><strong>What reviewers should verify</strong>:
+- [x] <code>tests/hooks.js</code> contains hard fail check ✅
+- [x] <code>ci.test.env</code> has <code>NODE_ENV=test</code> ✅
+- [x] Guard module created in <code>tests/fixtures/test-guard.js</code> ✅</p>
+<p><strong>Merge status</strong>: ✅ <strong>UNBLOCKED</strong> - Safety implemented</p>
+<hr />
+<h2 id="size-breakdown">Size Breakdown<a class="headerlink" href="#size-breakdown" title="Permanent link">&para;</a></h2>
+<p>Despite 36k lines, most is documentation or package-lock:</p>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Files</th>
+<th>Lines Added</th>
+<th>% of Total</th>
+<th>Review Effort</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Documentation</td>
+<td>48</td>
+<td>+18,419</td>
+<td>51%</td>
+<td>🟢 Skim</td>
+</tr>
+<tr>
+<td>package-lock.json</td>
+<td>1</td>
+<td>~4,000</td>
+<td>11%</td>
+<td>⚪ Skip</td>
+</tr>
+<tr>
+<td>Test Code</td>
+<td>20</td>
+<td>+3,094</td>
+<td>8%</td>
+<td>🟠 Verify</td>
+</tr>
+<tr>
+<td>Library Code</td>
+<td>28</td>
+<td>+738</td>
+<td>2%</td>
+<td>🔴 <strong>Focus</strong></td>
+</tr>
+<tr>
+<td>Other</td>
+<td>~50</td>
+<td>~10,000</td>
+<td>28%</td>
+<td>🟡 Glance</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Net library changes: ~738 lines</strong> - This is the actual code to review carefully.</p>
+<hr />
+<h2 id="quick-review-checklist">Quick Review Checklist<a class="headerlink" href="#quick-review-checklist" title="Permanent link">&para;</a></h2>
+<h3 id="before-approving-verify">Before Approving, Verify:<a class="headerlink" href="#before-approving-verify" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <strong>Theme 1</strong>: UUID handling extracts to <code>identifier</code>, strips from <code>$set</code> ✅</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <strong>Theme 2</strong>: GET/DELETE by ObjectId still works (check tests) ✅</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <strong>Theme 3</strong>: No <code>$set: { _id: ... }</code> in upsert operations ✅</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <strong>Theme 4</strong>: Tests cover POST UUID, re-POST dedup, batch mixed ✅</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <strong>Theme 5</strong>: Spot-check one doc matches actual code ✅</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <strong>Theme 6</strong>: Undocumented changes identified and triaged ✅</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <strong>Theme 7</strong>: Test database safety implemented ✅</li>
+</ul>
+<h3 id="blocking-implementation-work">Blocking Implementation Work:<a class="headerlink" href="#blocking-implementation-work" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Task</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SAFETY-001</td>
+<td>Add <code>NODE_ENV=test</code> check to test setup</td>
+<td>✅ <code>tests/hooks.js</code> - hard fail</td>
+</tr>
+<tr>
+<td>SAFETY-002</td>
+<td>Update <code>ci.test.env</code> to <code>NODE_ENV=test</code></td>
+<td>✅ Fixed</td>
+</tr>
+<tr>
+<td>SAFETY-003</td>
+<td>Create <code>guardDestructiveOperation()</code></td>
+<td>✅ <code>tests/fixtures/test-guard.js</code></td>
+</tr>
+<tr>
+<td>SAFETY-004</td>
+<td>Hard fail if NODE_ENV !== 'test'</td>
+<td>✅ <code>process.exit(1)</code> in hooks.js</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Commits</strong>:
+- <code>61501cac</code> - feat(tests): add NODE_ENV=test safety check (warn + guard module)
+- <code>e12cf3d2</code> - fix(tests): make NODE_ENV=test check a hard failure
+- <code>ee3e6af7</code> - ci: temporarily allow Node 20 for branch protection (tests [20, 22, 24])
+- <code>b76fb3e1</code> - test: remove completed MongoDB 5.x array investigation tests</p>
+<p><strong>Tests</strong>: 729 passing, 1 pending, 0 failing</p>
+<h3 id="known-safe-to-skip">Known Safe to Skip:<a class="headerlink" href="#known-safe-to-skip" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>package-lock.json</code> - npm churn</li>
+<li><code>docs/**/*.md</code> - Reference material (51% of PR)</li>
+<li><code>translations/*.json</code> - i18n updates</li>
+</ul>
+<hr />
+<h2 id="verification-commands">Verification Commands<a class="headerlink" href="#verification-commands" title="Permanent link">&para;</a></h2>
+<p>Run these after reviewing to validate claims:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Verify all code references in docs resolve</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>python<span class="w"> </span>tools/verify_refs.py<span class="w"> </span>--verbose<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">"BROKEN|ERROR"</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"✅ All refs valid"</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># Check gap/requirement coverage</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>python<span class="w"> </span>tools/verify_coverage.py<span class="w"> </span>--json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">'.summary'</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="c1"># Run the specific UUID tests</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="nb">cd</span><span class="w"> </span>&lt;workspace&gt;/worktrees/nightscout/cgm-pr-8447
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>npm<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--<span class="w"> </span>--grep<span class="w"> </span><span class="s2">"UUID"</span><span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tail<span class="w"> </span>-20
+</code></pre></div>
+<hr />
+<h2 id="appendix-file-inventory">Appendix: File Inventory<a class="headerlink" href="#appendix-file-inventory" title="Permanent link">&para;</a></h2>
+<details>
+<summary>Click to expand full file list (for reference only)</summary>
+
+### Library Files (28 files, +738/-417) { data-search-exclude }
+
+| File | Changes | Theme |
+|------|---------|-------|
+| `lib/server/treatments.js` | +216/-33 | UUID handling |
+| `lib/server/entries.js` | +100/-29 | UUID handling |
+| `lib/server/devicestatus.js` | +68/-39 | Storage |
+| `lib/server/activity.js` | +29/-16 | Storage |
+| `lib/server/food.js` | +15/-11 | Storage |
+| `lib/server/profile.js` | +10/-5 | Storage |
+| `lib/server/query.js` | +26/-4 | Query |
+| `lib/api/entries/index.js` | +18/-2 | API |
+| Other lib files | Various | Supporting |
+
+### Test Files (20 files, +3,094) { data-search-exclude }
+
+| File | Lines | Gap/Req |
+|------|-------|---------|
+| `api.entries.uuid.test.js` | ~577 | GAP-SYNC-045 |
+| `gap-treat-012.test.js` | ~428 | GAP-TREAT-012 |
+| `identity-matrix.test.js` | ~476 | REQ-SYNC-072 |
+| Other test files | Various | Coverage |
+
+### Documentation (48 files, +18,419) { data-search-exclude }
+
+Audits, proposals, requirements, schemas - all new documentation.
+
+</details>
+
+<hr />
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://github.com/nightscout/cgm-remote-monitor/pull/8421">PR #8421</a></li>
+<li><a href="https://github.com/nightscout/cgm-remote-monitor/issues/8450">Issue #8450</a> - Loop override sync</li>
+<li><a href="test-reports/GAP-SYNC-045-entries-uuid-fix.html">GAP-SYNC-045 Test Report</a></li>
+<li><a href="../traceability/treatments-gaps.html#gap-treat-012-v1-api-incorrectly-coerces-uuid-_id-to-objectid">GAP-TREAT-012</a> - Treatment UUID fix</li>
+<li><a href="10-domain/client-id-handling-deep-dive.html">Client ID Handling Deep Dive</a></li>
+<li><a href="backlogs/archive/pr-8421-review-analysis.html">Analysis Backlog</a> - Detailed work tracking</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

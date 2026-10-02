@@ -1,0 +1,5354 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/remedial/trust-proxy-deployment-matrix.html">
+      
+      
+        <link rel="prev" href="rc-15.0.9-integration-record.html">
+      
+      
+        <link rel="next" href="../tenancy/index.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>TRUST_PROXY deployment matrix - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#trust_proxy-deployment-matrix" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              TRUST_PROXY deployment matrix
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_24" id="__nav_5_24_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_24_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    30-design/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cgm-remote-monitor-telemetry-emitter-map-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor Telemetry Emitter Integration Map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-adoption-roadmap-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adoption roadmap: who builds what, in what order
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-integration-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Integration Guide for App Developers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-backend-service-design-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Backend Service Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-deployment-lifecycle-examples-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Deployment Lifecycle Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-implementation-breakdown-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Implementation Breakdown
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-lifecycle-policy-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Lifecycle Policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-local-integration-plan-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Local Integration Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-scheduling-dedupe-model-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Scheduling and Dedupe Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ns2parquet-keyed-pseudonyms.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ns2parquet keyed pseudonyms: design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../modernization/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    modernization/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../platform/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    platform/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24_14" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    remedial/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_24_14" id="__nav_5_24_14_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_24_14_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24_14">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    remedial/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="dev-cycle-review-harness-plan-2026-09-17.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    dev-cycle review harness — plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="maintainer-release-brief-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 0 release brief — for the maintainer who merges
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-backfix-register.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backfix register — defects that ship to existing operators, independent of multitenancy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="phase0-pr-sequencing-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 0: how to land ten branches as pull requests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="rc-15.0.9-integration-record.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    15.0.9 integration record
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="trust-proxy-deployment-matrix.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TRUST_PROXY deployment matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tenancy/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenancy/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../60-research/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="trust_proxy-deployment-matrix"><code>TRUST_PROXY</code> deployment matrix<a class="headerlink" href="#trust_proxy-deployment-matrix" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-10-02 at <code>79cbc140</code>.</em></p>
+<p><em>Contributor-facing. Living document; status dated 2026-10-02. Code anchors: §1 and the self-hosted rows
+were reproduced on <code>bf2/auth-delay-dev-order</code> at <code>f6f361b1</code> (<code>lib/server/client-ip.js</code>,
+<code>lib/authorization/delaylist.js</code>, <code>lib/authorization/index.js</code> <code>resolve()</code>), the fix branch for
+nightscout/cgm-remote-monitor#8754, and the port rule at <code>9c6cde72</code>. Those files changed after both anchors
+(#8765's single policy, BF-80's alarm-socket delay). On dev <code>7000eb18</code>, the four auth_request-chain topologies were
+re-measured over HTTP and sockets on 2026-09-30, with the same addresses; the other rows were not re-run on dev.</em></p>
+<p><strong>Status.</strong> <code>TRUST_PROXY</code>: <strong>merged to dev, not released.</strong> #8754 merged on 2026-09-24 as <code>4f705217</code>, and</p>
+<h1 id="8765-bae655a0-followed-the-same-day-8765-makes-every-part-of-nightscout-that-reads-a-client-address-use">8765 (<code>bae655a0</code>) followed the same day. #8765 makes every part of Nightscout that reads a client address use<a class="headerlink" href="#8765-bae655a0-followed-the-same-day-8765-makes-every-part-of-nightscout-that-reads-a-client-address-use" title="Permanent link">&para;</a></h1>
+<p>one policy compiled from <code>TRUST_PROXY</code>, and lets an explicit setting accept an <code>X-Forwarded-For</code> entry that
+carries a port. The 15.0.9 candidate is dev <code>7000eb18</code>, dev is at <code>25fc41d9</code>, and 15.0.9 is not tagged. Every
+Nightscout release up to and including 15.0.8 behaves as the "unset" column below and has no setting to
+change it. Nothing here is fixed for operators until 15.0.9 is released.</p>
+<p>This page maps each deployment shape to the <code>TRUST_PROXY</code> value it needs, what a correct and an incorrect
+setting look like, and how to fix the incorrect one. Platform claims are research, not measurement; each
+carries its source and a confidence level. Self-hosted rows marked <strong>(lab)</strong> were measured on 2026-09-24 in
+<a href="../../../tools/lab/proxy-trust/index.html"><code>tools/lab/proxy-trust/</code></a> (direct, nginx appending and replacing,
+two nginx hops, Caddy 2.8, Traefik v3.1, HAProxy 3.0 <code>option forwardfor</code>, nginx terminating TLS, and a
+PROXY-protocol chain) against <code>lib/server/client-ip.js</code> at <code>81623f9b</code>, identical at <code>f6f361b1</code> and
+<code>607d51b0</code>. Cells the lab did not run are still marked <strong>(lab: pending)</strong>.</p>
+<p><strong>What protects the address is the setting, not the proxy.</strong> When a trusted proxy or load balancer adds its
+entry to a value the caller may have supplied, setting <code>TRUST_PROXY</code> to that trusted hop is what makes the
+difference: Nightscout reads the entry that hop added and nothing to its left. Measured (lab, all
+client-address header families the unset mode reads): with <code>TRUST_PROXY</code> unset, <strong>not protected</strong> on all nine
+lab topologies, including nginx <code>$remote_addr</code>, Caddy and Traefik, which replace or rebuild <code>X-Forwarded-For</code>;
+with the right setting (<code>false</code> direct, <code>1</code> one proxy, <code>2</code> two hops or the PROXY-protocol chain),
+<strong>protected</strong> on all nine. A replacing proxy does not make the unset default protected.</p>
+<p><strong>Sockets follow the same table.</strong> The socket.io server resolves the handshake request through the same
+helper, and a wrong-secret <code>authorize</code> feeds the same failed-auth delay. Measured 2026-09-30 on the four
+auth_request-chain topologies (<code>tools/lab/proxy-trust/README-ws.md</code>) against the 15.0.9 candidate, dev
+<code>7000eb18</code>, at every setting, and 15.0.8 unset; first measured 2026-09-28 on #8754 <code>81623f9b</code>, same
+grid. In every topology × setting × transport cell (polling-only, which is what the web client uses;
+polling-then-upgrade; websocket-only), the socket ended on the transport asked for, and the address
+recorded for it matched the HTTP one. Across all header families and all three transports, the result was
+the same as HTTP: unset not protected, the expected count protected. No row below needs a separate socket
+column. One socket-only constraint: every hop's idle timeout, and any load balancer's, must sit well above
+socket.io's 25 s ping; a hop timeout below it dropped an idle socket every cycle in the lab, and 60 s held.</p>
+<p>Operator-facing versions: the Nightscout docs page <em>Proxy setting (<code>TRUST_PROXY</code>)</em> (draft,
+<code>nightscout.github.io</code> <code>docs/nightscout/trust_proxy.md</code>) and the cgm-remote-monitor reference
+<code>docs/proposals/trusted-proxy-migration.md</code>.</p>
+<h2 id="1-what-nightscout-does-with-each-value-reproduced-at-f6f361b1">1. What Nightscout does with each value (reproduced at <code>f6f361b1</code>)<a class="headerlink" href="#1-what-nightscout-does-with-each-value-reproduced-at-f6f361b1" title="Permanent link">&para;</a></h2>
+<p>These rows were reproduced on 2026-09-24 by calling <code>createClientIP()</code> and an Express app with
+<code>compileTrust()</code> directly in the worktree (not read from code). "Peer" is the address of the TCP connection
+Nightscout accepted; "chain" is the <code>X-Forwarded-For</code> list, left to right.</p>
+<table>
+<thead>
+<tr>
+<th><code>TRUST_PROXY</code></th>
+<th>Client address used for the failed-login delay and the "Failed authentication" notification</th>
+<th><code>X-Forwarded-Proto</code> believed (https redirect)</th>
+<th>Startup log</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>unset / empty</td>
+<td>Read from forwarding headers any caller can set (the <code>forwarded-for</code> package, as on every release)</td>
+<td>yes, from any peer</td>
+<td><code>console.warn</code>: <code>SECURITY: failed-authentication throttling is keyed on the client address, and TRUST_PROXY is not set, …</code></td>
+</tr>
+<tr>
+<td><code>false</code></td>
+<td>The peer. Behind a proxy this is the proxy's address, so <strong>every client shares one address</strong></td>
+<td>no — only a TLS socket counts as https</td>
+<td><code>console.info</code>: <code>Failed-authentication throttling is keyed on the client address as resolved through TRUST_PROXY=false.</code></td>
+</tr>
+<tr>
+<td><code>n</code> (1, 2, …)</td>
+<td>The chain entry added by the proxy <code>n</code> hops away. If the chain is shorter than <code>n</code>, the left-most entry, which the caller may have supplied</td>
+<td>yes, when <code>n</code> ≥ 1</td>
+<td><code>console.info</code>: <code>… as resolved through TRUST_PROXY=1: the X-Forwarded-For entry added by the proxy 1 hop from Nightscout.</code></td>
+</tr>
+<tr>
+<td><code>true</code></td>
+<td>The left-most chain entry</td>
+<td>yes</td>
+<td><code>console.warn</code>: <code>SECURITY: … TRUST_PROXY=true trusts every proxy hop, so that address is the left-most X-Forwarded-For entry. …</code></td>
+</tr>
+<tr>
+<td>IP / CIDR list</td>
+<td>Walks right to left past listed addresses; the first unlisted address. If the peer is not listed, the peer</td>
+<td>only when the peer is listed</td>
+<td><code>console.info</code>: <code>… as resolved through TRUST_PROXY=&lt;value&gt;.</code></td>
+</tr>
+<tr>
+<td>anything else (<code>0</code>, negative, fraction, number mixed with addresses, <code>loopback</code>/<code>linklocal</code>/<code>uniquelocal</code>)</td>
+<td>Nightscout does not start: <code>TRUST_PROXY must be false, true, a whole number of proxy hops (1 or more), or a comma-separated list of proxy IP addresses or CIDRs</code> (plus a suffix naming the problem)</td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>Properties that decide the per-platform rows:</p>
+<ul>
+<li><strong>Explicit modes read only <code>X-Forwarded-For</code>.</strong> Platform-specific client headers (<code>Fly-Client-IP</code>,
+  <code>do-connecting-ip</code>, <code>CF-Connecting-IP</code>, <code>True-Client-IP</code>, <code>X-Client-IP</code>, <code>X-Real-IP</code>) are not read by any
+  explicit mode. Where a platform puts the client only in such a header, no explicit value yields a per-client
+  address.</li>
+<li><strong>A numeric port is removed.</strong> An entry of the form <code>address:port</code>, <code>[v6]:port</code> or <code>[v6]</code> resolves to the
+  address in every explicit mode (<code>9c6cde72</code>); other malformed entries fall back to the peer. The unset mode
+  strips IPv4 ports, as before. This is what makes <code>1</code> usable on Azure App Service (§3).</li>
+<li><strong>Too many hops fails towards the caller's claim, and looks correct in a simple test.</strong> With <code>n</code> larger than
+  the real hop count, a client that sends no header still resolves to its own address, so a phone test passes;
+  a client that sends a chain gets its own left-hand entry believed. Operators must use the <strong>smallest</strong> <code>n</code>
+  that shows a real client address.</li>
+<li><strong>Too few hops fails towards a shared address.</strong> The address resolved is a proxy's, so all clients share one
+  delay and the notification shows a provider or private address.</li>
+<li><strong>A hop count trusts whatever connects.</strong> If the origin is reachable without the proxy (for example a home
+  server's port also open to the internet, or a CDN origin not firewalled to the CDN), a direct caller is
+  counted as hop 1. Only a list, or a firewall, closes that.</li>
+<li><strong>An address list that misses the real proxy disables https detection.</strong> Reproduced: a list not containing
+  the peer made <code>req.secure</code> false with a forwarded https header present, which is the redirect loop when
+  <code>INSECURE_USE_HTTP=false</code>.</li>
+</ul>
+<h2 id="2-the-failed-login-delay-what-the-address-is-used-for">2. The failed-login delay (what the address is used for)<a class="headerlink" href="#2-the-failed-login-delay-what-the-address-is-used-for" title="Permanent link">&para;</a></h2>
+<p><code>AUTH_FAIL_DELAY</code> (milliseconds, default <code>5000</code>). Each failed password or token check adds that delay to two
+keys: the client address and the credential tried (<code>delaylist.js</code> <code>keysFor</code>, <code>addFailedRequest</code>; successive
+failures extend the entry from its current expiry). <strong>The wait happens before the credential is checked</strong>
+(<code>index.js</code> <code>resolve()</code>, lines 151-164 at <code>f6f361b1</code>, the order of every earlier release): any request whose
+address or credential has a pending entry sleeps for the longest pending delay first, including a request with
+the correct credential and a request with no credential. A success clears both keys.</p>
+<p>Consequences for deployment:</p>
+<ul>
+<li>With the address resolved correctly, only clients that truly share a public address share a delay: one home
+  network behind one router, or a mobile carrier's shared (CGNAT) address. Example: a caregiver's phone on the
+  same Wi-Fi as an uploader configured with an old <code>API_SECRET</code> waits on every request while that uploader
+  keeps failing. The credential key follows the old secret wherever the uploader connects from.</li>
+<li>With the address resolved to a proxy (<code>false</code> behind a proxy, too few hops), every
+  client shares that delay: one misconfigured uploader slows every viewer and every uploader.</li>
+<li>With <code>TRUST_PROXY</code> unset, the address comes from headers any visitor can set, so the delay does not protect
+  against guessing (the startup <code>SECURITY:</code> line says so). The default stays unset in 15.0.9 by maintainer
+  decision (compatibility default plus opt-in setting; flip in a later planned release).</li>
+</ul>
+<h2 id="3-platform-research">3. Platform research<a class="headerlink" href="#3-platform-research" title="Permanent link">&para;</a></h2>
+<p>Confidence: <strong>high</strong> = the vendor's own documentation states it; <strong>medium</strong> = a vendor staff statement, or
+consistent measured third-party reports; <strong>low</strong> = one report, contradictory statements, or inference.
+Where sources conflict the table says so and does not choose.</p>
+<table>
+<thead>
+<tr>
+<th>Platform</th>
+<th>Edge <code>X-Forwarded-For</code> handling</th>
+<th>Proxy hops in front of the app</th>
+<th>TLS / <code>X-Forwarded-Proto</code></th>
+<th>Proxy source addresses</th>
+<th>Own client-IP header</th>
+<th>Recommended <code>TRUST_PROXY</code></th>
+<th>Confidence</th>
+<th>Sources</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Heroku</strong> (Common Runtime)</td>
+<td>Appends the address that connected to the router</td>
+<td>1 (router; the TLS load balancer in front is not recorded in the chain per the docs)</td>
+<td>Terminated at the load balancer; sets <code>X-Forwarded-Proto</code>, <code>X-Forwarded-Port</code></td>
+<td>Not stable (only Private Spaces documents stable router IPs)</td>
+<td>none</td>
+<td><code>1</code></td>
+<td>high for append / proto; medium for hop count (docs do not state it)</td>
+<td><a href="https://devcenter.heroku.com/articles/http-routing">Heroku HTTP routing</a></td>
+</tr>
+<tr>
+<td><strong>Railway</strong></td>
+<td><strong>Conflicting.</strong> Staff 2026-03-09: "our edge proxy appends to the chain", leftmost is the client. Staff (earlier thread): "We do strip X-Forwarded-For at our edge". Staff (2024 thread): the rightmost value is trustworthy. Traffic may or may not pass a Fastly CDN layer</td>
+<td>1 without the CDN path is the community consensus; not documented; may differ on the CDN path</td>
+<td>Terminated at the edge (<code>tcp-proxy</code>); proto not documented</td>
+<td>Community reply: 100.0.0.0/8; one report shows 100.64.0.0/10 addresses. Not documented by Railway</td>
+<td><code>X-Real-IP</code> (staff: currently set to the CDN edge on the CDN path, a known bug); <code>Fastly-Client-IP</code> on the CDN path</td>
+<td><code>1</code>, then <strong>verify</strong> with the notification test (§5)</td>
+<td>low</td>
+<td><a href="https://docs.railway.com/networking/edge-networking">edge networking</a>; <a href="https://station.railway.com/questions/which-header-should-i-rely-on-for-real-c-d78a6f96">staff 2026-03-09</a>; <a href="https://station.railway.com/questions/security-critical-questions-on-edge-prox-8fddd775">conflicting thread</a>; <a href="https://station.railway.com/questions/edge-proxy-x-forwarded-for-and-x-real-ip-c5a50049">2024 thread</a>; <a href="https://station.railway.com/questions/x-forwarded-for-and-x-real-ip-127-0-0-1-dc17c205">chain shape</a></td>
+</tr>
+<tr>
+<td><strong>Render</strong></td>
+<td><strong>Conflicting.</strong> Staff 2021-05-28: "we set the first IP in the list to the real client IP"; a user in the same thread: Render "only appends". A measured 2026-09 third-party report: chain of three entries, visitor then a Cloudflare edge then a Render-internal address; one trusted hop resolved every visitor to the internal address</td>
+<td>3 by the measured report (Cloudflare edge, Render internal, peer)</td>
+<td>Terminated by Render's load balancer; proto not documented on the page read</td>
+<td>Not published; the Cloudflare hop's ranges are published</td>
+<td>none documented</td>
+<td><code>3</code>, <strong>verify</strong>; an address list of private ranges plus Cloudflare's published ranges is the non-count alternative</td>
+<td>low</td>
+<td><a href="https://render.com/docs/web-services">Render web services</a>; <a href="https://feedback.render.com/features/p/send-the-correct-x-forwarded-for">feedback thread</a>; <a href="https://github.com/Het415/listinglens/pull/10">measured report</a></td>
+</tr>
+<tr>
+<td><strong>Fly.io</strong></td>
+<td>Docs warn the header "must be treated with caution to avoid spoofing"; community (2022, non-staff): the last chain entry is a Fly address, and <code>2</code> "seemed effective"</td>
+<td>2 by community report (Fly edge recorded in the chain, plus the local proxy as peer)</td>
+<td>Proxy sets <code>X-Forwarded-Proto</code>, <code>X-Forwarded-SSL</code></td>
+<td>Not published</td>
+<td><code>Fly-Client-IP</code> (not read by Nightscout)</td>
+<td><code>2</code>, <strong>verify</strong></td>
+<td>low</td>
+<td><a href="https://docs.fly.io/networking/request-headers/">request headers</a>; <a href="https://community.fly.io/t/recommended-setting-for-trust-proxy-on-express/6346">community thread</a></td>
+</tr>
+<tr>
+<td><strong>Azure App Service</strong></td>
+<td>Append vs replace <strong>not documented</strong>. Reported and measured (2017, 2026-09-22): the client is sent as <code>address:port</code></td>
+<td>1 per Microsoft's own Express example (<code>trust proxy</code> 1)</td>
+<td>Terminated at the front ends; app must read <code>X-Forwarded-Proto</code></td>
+<td>Not stable</td>
+<td><code>X-Client-IP</code> reported, not read by Nightscout</td>
+<td><code>1</code>, <strong>verify</strong> (port-bearing entries are accepted since <code>9c6cde72</code>; lab F7 emulates the <code>address:port</code> form)</td>
+<td>medium (port suffix: two independent reports, one measured 2026-09-22; not in Microsoft docs)</td>
+<td><a href="https://learn.microsoft.com/en-us/azure/app-service/configure-language-nodejs">Node on App Service</a>; <a href="https://github.com/pbojinov/request-ip/issues/29">request-ip #29</a>; <a href="https://github.com/pepti/hallismiley/pull/166">measured PR</a></td>
+</tr>
+<tr>
+<td><strong>Google Cloud Run</strong> (run.app, no load balancer)</td>
+<td>Appends the client as the right-most entry (third-party PRs; not in the container contract)</td>
+<td>1</td>
+<td>Terminated by Cloud Run; proto header not documented on the contract page</td>
+<td>Not applicable (serverless)</td>
+<td>none</td>
+<td><code>1</code></td>
+<td>medium</td>
+<td><a href="https://docs.cloud.google.com/run/docs/container-contract">container contract</a>; third-party: <a href="https://github.com/UofUEpiBio/doim-explorer/pull/2">PR</a></td>
+</tr>
+<tr>
+<td><strong>Cloud Run behind a global external Application Load Balancer</strong></td>
+<td>The load balancer appends two entries, the client then the load balancer's own address, after any caller-supplied value</td>
+<td>2</td>
+<td>LB sets <code>X-Forwarded-Proto</code></td>
+<td>GFE ranges do not apply to serverless backends</td>
+<td>none</td>
+<td><code>2</code></td>
+<td>medium (LB behaviour is documented; the Cloud Run hop after it is inferred)</td>
+<td><a href="https://docs.cloud.google.com/load-balancing/docs/https">ALB overview</a>; <a href="https://discuss.google.dev/t/http-x-forwarded-for-only-pass-the-real-client-ip-if-the-load-balancer-is-global-cloud-run/98724">regional LB report</a></td>
+</tr>
+<tr>
+<td><strong>DigitalOcean App Platform</strong></td>
+<td><strong>Conflicting.</strong> DO support doc: the header carries "the IP address of the DigitalOcean ingress server". A 2021 user test: the header contains the client</td>
+<td>unknown</td>
+<td>Terminated by DO ingress</td>
+<td>Not published</td>
+<td><code>do-connecting-ip</code> (not read by Nightscout)</td>
+<td><strong>No reliable value known.</strong> Leave unset; if testing, <code>1</code> and verify</td>
+<td>low</td>
+<td><a href="https://docs.digitalocean.com/support/where-can-i-find-the-client-ip-address-of-a-request-connecting-to-my-app/">DO support</a>; <a href="https://www.digitalocean.com/community/questions/client-ip-on-app-platform">community 2021</a></td>
+</tr>
+<tr>
+<td><strong>DigitalOcean Load Balancer / DOKS</strong></td>
+<td>See §4</td>
+<td>—</td>
+<td>—</td>
+<td>"Backend IP addresses may change at any time"</td>
+<td>—</td>
+<td>see §4</td>
+<td>—</td>
+<td>§4</td>
+</tr>
+<tr>
+<td><strong>Northflank</strong></td>
+<td>"attached to all HTTP/S requests by the Northflank load balancer"; append vs replace not documented</td>
+<td>not documented</td>
+<td>not documented on the page read</td>
+<td>not documented</td>
+<td>none documented</td>
+<td><code>1</code>, <strong>verify</strong></td>
+<td>low</td>
+<td><a href="https://northflank.com/docs/v1/application/network/networking-on-northflank">networking</a></td>
+</tr>
+<tr>
+<td><strong>Koyeb</strong></td>
+<td>Appends the connecting address; "the last IP of the x-forwarded-for is the only IP we can certify as valid"</td>
+<td>1 as recorded in the chain (edge; the service mesh is not documented as adding an entry)</td>
+<td>Terminated at the edge; proto header not mentioned</td>
+<td>not published</td>
+<td>none</td>
+<td><code>1</code></td>
+<td>medium</td>
+<td><a href="https://www.koyeb.com/docs/reference/edge-network">edge network</a></td>
+</tr>
+<tr>
+<td><strong>Cloudflare proxy</strong> (orange cloud)</td>
+<td>Appends the connecting address to any existing chain</td>
+<td>+1 in front of whatever is next</td>
+<td>Sets <code>X-Forwarded-Proto</code></td>
+<td><strong>Published</strong>: <a href="https://www.cloudflare.com/ips/">https://www.cloudflare.com/ips/</a></td>
+<td><code>CF-Connecting-IP</code>; <code>True-Client-IP</code> on Enterprise (not read by Nightscout)</td>
+<td>Adds one to the count behind it: Cloudflare → Nightscout <code>1</code> only if the origin accepts Cloudflare only; Cloudflare → nginx → Nightscout <code>2</code>; or a list (see §5 row D)</td>
+<td>high</td>
+<td><a href="https://developers.cloudflare.com/fundamentals/reference/http-headers/">Cloudflare headers</a></td>
+</tr>
+<tr>
+<td><strong>Cloudflare Tunnel</strong> (<code>cloudflared</code>)</td>
+<td>Visitor address appended at the right of any caller-supplied chain (open bug report asks for the opposite order)</td>
+<td>1 (<code>cloudflared</code> is the peer); +1 per local proxy after it</td>
+<td><strong>Conflicting</strong>: Cloudflare docs say the edge sets <code>X-Forwarded-Proto</code>; a closed 2024 issue reports the origin sees http when <code>cloudflared</code> forwards to an http service</td>
+<td>local</td>
+<td><code>CF-Connecting-IP</code></td>
+<td><code>1</code> (tunnel straight to Nightscout); <code>2</code> with a local proxy between</td>
+<td>medium (hop), low (proto)</td>
+<td><a href="https://github.com/cloudflare/cloudflared/issues/1426">cloudflared #1426</a>; <a href="https://github.com/cloudflare/cloudflared/issues/1245">cloudflared #1245</a></td>
+</tr>
+<tr>
+<td><strong>VPS / home server + nginx</strong></td>
+<td><code>$proxy_add_x_forwarded_for</code> appends; <code>$remote_addr</code> replaces; <strong>no directive passes the caller's header through unchanged and adds nothing</strong></td>
+<td>1</td>
+<td>Wherever TLS ends; nginx sets <code>X-Forwarded-Proto</code> only if configured</td>
+<td>local: <code>127.0.0.1</code> or the host's bridge address</td>
+<td>none</td>
+<td><code>1</code>, <strong>after</strong> making nginx add the header (the Nightscout docs' Ubuntu example sets none, see §6). Lab: append and replace with <code>1</code> resolve the client, protected; unset not protected with either; no-directive config not run (B6)</td>
+<td>high (nginx semantics; lab)</td>
+<td>nginx <code>proxy_set_header</code>; <a href="https://nightscout.github.io/nightscout/ubuntu/">Ubuntu guide</a></td>
+</tr>
+<tr>
+<td><strong>VPS + Caddy</strong></td>
+<td>Ignores the caller's <code>X-Forwarded-For</code> by default and sets its own ("to prevent spoofing")</td>
+<td>1</td>
+<td>Sets <code>X-Forwarded-Proto</code></td>
+<td>local</td>
+<td>none</td>
+<td><code>1</code> (<code>true</code> also resolves correctly, but logs a warning). Lab: <code>1</code> resolves the client, protected; unset not protected</td>
+<td>high (lab for <code>1</code> and unset)</td>
+<td><a href="https://caddyserver.com/docs/caddyfile/directives/reverse_proxy">Caddy reverse_proxy</a></td>
+</tr>
+<tr>
+<td><strong>VPS + Traefik</strong>, and the shipped <strong>docker-compose</strong></td>
+<td>From an untrusted peer, discards the caller's <code>X-Forwarded-For</code> and appends the peer, so the chain is the client alone</td>
+<td>1</td>
+<td>Rebuilds <code>X-Forwarded-Proto</code> from the connection</td>
+<td>container address on the compose network, not stable</td>
+<td>none</td>
+<td><code>1</code>. Lab (Traefik v3.1, file provider, fixed container addresses): <code>1</code> resolves the client, protected; unset not protected. The shipped compose file and Docker port publishing not run (C1, C3)</td>
+<td>high (source code; lab)</td>
+<td><a href="https://raw.githubusercontent.com/traefik/traefik/master/pkg/middlewares/forwardedheaders/forwarded_header.go">forwarded_header.go</a>; <a href="https://doc.traefik.io/traefik/reference/install-configuration/entrypoints/">entrypoints</a>; <a href="https://github.com/traefik/traefik/issues/12001">traefik #12001</a></td>
+</tr>
+<tr>
+<td><strong>VPS + Apache</strong> (<code>mod_proxy_http</code>)</td>
+<td>Appends ("will contain more than one (comma-separated) value if the original request already contained one")</td>
+<td>1</td>
+<td><strong>Does not set <code>X-Forwarded-Proto</code></strong> by default; operator must add it or Nightscout redirects forever with <code>INSECURE_USE_HTTP=false</code></td>
+<td>local</td>
+<td>none</td>
+<td><code>1</code> (lab: pending)</td>
+<td>high</td>
+<td><a href="https://httpd.apache.org/docs/2.4/mod/mod_proxy.html">mod_proxy</a></td>
+</tr>
+<tr>
+<td><strong>VPS + HAProxy</strong></td>
+<td><code>option forwardfor</code> appends (lab, HAProxy 3.0: a caller's chain is kept and the peer added); <code>if-none</code> keeps a caller's header instead</td>
+<td>1</td>
+<td>only if configured</td>
+<td>local</td>
+<td>none</td>
+<td><code>1</code>, never with <code>if-none</code>. Lab: <code>option forwardfor</code> with <code>1</code> resolves the client, protected; unset not protected; <code>if-none</code> not run (lab: pending)</td>
+<td>high for <code>option forwardfor</code> (lab); medium for <code>if-none</code> (the tutorial page does not state append vs replace)</td>
+<td><a href="https://www.haproxy.com/documentation/haproxy-configuration-tutorials/proxying-essentials/client-ip-preservation/add-x-forward-for-header/">HAProxy XFF tutorial</a></td>
+</tr>
+<tr>
+<td><strong>Kubernetes ingress-nginx</strong></td>
+<td>Default <code>use-forwarded-headers: false</code>: replaces a caller's <code>X-Forwarded-For</code> with the request information it sees; <code>compute-full-forwarded-for: true</code> appends instead</td>
+<td>1 (ingress pod is the peer)</td>
+<td>Sets <code>X-Forwarded-Proto</code></td>
+<td>pod addresses, not stable; do not infer a CIDR from a pod list</td>
+<td>none</td>
+<td><code>1</code>. Meaningful only if the ingress sees real clients (PROXY protocol, or a source-preserving load balancer). <strong>Project retired March 2026</strong> (no further security fixes)</td>
+<td>high</td>
+<td><a href="https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/configmap/">ingress-nginx ConfigMap</a>; <a href="https://www.kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/">retirement</a></td>
+</tr>
+<tr>
+<td><strong>T1Pal, NS10BE, other managed Nightscout</strong></td>
+<td>the provider's</td>
+<td>the provider's</td>
+<td>the provider's</td>
+<td>—</td>
+<td>—</td>
+<td><strong>Ask the provider.</strong> The site owner does not control the proxy</td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="4-digitalocean-load-balancer-and-doks">4. DigitalOcean Load Balancer and DOKS<a class="headerlink" href="#4-digitalocean-load-balancer-and-doks" title="Permanent link">&para;</a></h2>
+<p>Sources: <a href="https://docs.digitalocean.com/products/kubernetes/how-to/configure-load-balancers/">DOKS load balancer settings</a>,
+<a href="https://docs.digitalocean.com/products/networking/load-balancers/details/features/">LB features</a>,
+<a href="https://raw.githubusercontent.com/digitalocean/digitalocean-cloud-controller-manager/master/docs/controllers/services/annotations.md">CCM annotations</a>,
+<a href="https://docs.digitalocean.com/support/how-do-i-enable-proxy-protocol-when-my-load-balancer-sends-requests-to-the-nginx-ingress-controller/">PROXY with ingress-nginx</a>,
+<a href="https://docs.digitalocean.com/support/why-did-all-of-my-backend-droplets-become-unhealthy-when-i-enabled-proxy-protocol-on-my-load-balancer/">unhealthy after enabling PROXY</a>.</p>
+<p>Established:</p>
+<ul>
+<li>DO load balancers "terminate client connection requests with proxy", so <code>externalTrafficPolicy: Local</code> does
+  not preserve the client source address on the (regional HTTP) load balancer. (high)</li>
+<li>The default DOKS Service protocol (<code>do-loadbalancer-protocol</code>) is <code>tcp</code>. (high)</li>
+<li>The load balancer adds <code>X-Forwarded-For</code>, <code>X-Forwarded-Proto</code> and <code>X-Forwarded-Port</code> only "when the entry and
+  target protocols are HTTP, or HTTPS with a certificate (not passthrough)". In TCP mode, and with TLS
+  passthrough, it adds no headers. So <strong>in TCP mode with PROXY protocol, the client address travels only in the
+  PROXY protocol header</strong>; no <code>X-Forwarded-For</code> is sent by the load balancer. (high for "no headers in TCP /
+  passthrough", stated by DO; "only in the PROXY header" follows, since a TCP-mode proxy cannot inject HTTP
+  headers)</li>
+<li>PROXY protocol v1 only, on regional HTTP load balancers (not network load balancers). Network load
+  balancers preserve the client source address instead. (high)</li>
+<li>In HTTP/HTTPS mode, whether the load balancer appends to or replaces a caller-supplied <code>X-Forwarded-For</code> is
+  <strong>not documented</strong>. (unknown; lab can only model it)</li>
+<li>Backend (source) addresses "may change at any time and should not be used to configure firewalls", so an
+  address list for the load balancer is not feasible. (high)</li>
+<li>With PROXY protocol, in-cluster requests to the load balancer's address can bypass it (kube-proxy); DO's
+  <code>do-loadbalancer-hostname</code> annotation is the documented workaround. (high)</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>What reaches Nightscout</th>
+<th><code>TRUST_PROXY</code></th>
+<th>Lab</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TCP + PROXY protocol, ingress-nginx <code>use-proxy-protocol: "true"</code> (default <code>use-forwarded-headers: false</code>)</td>
+<td>ingress-nginx takes the client from the PROXY header and sends a chain containing only that client; peer = ingress pod</td>
+<td><code>1</code></td>
+<td>Rule measured (lab): an nginx stream front with <code>proxy_protocol on</code> is not an <code>X-Forwarded-For</code> hop; the value counts only the appending HTTP proxies after it. Ingress straight to Nightscout was not run separately (the lab chain has one further hop, next row)</td>
+</tr>
+<tr>
+<td>Same, with further proxies between ingress and Nightscout, each appending</td>
+<td>chain grows by one per appending hop</td>
+<td><code>1</code> + number of appending hops after the ingress</td>
+<td>Lab (stream front → nginx consuming PROXY protocol, appending → one appending nginx → Nightscout): <code>2</code> resolves the client, protected; <code>1</code> resolves the ingress address; <code>3</code> resolves the client but is not protected; <code>false</code> resolves the inner hop; unset not protected</td>
+</tr>
+<tr>
+<td>TCP, no PROXY protocol on either side</td>
+<td>site works; ingress sees the load balancer / node address for everyone</td>
+<td>any value resolves a shared address; fix the chain first (enable PROXY on both sides)</td>
+<td>(lab: pending)</td>
+</tr>
+<tr>
+<td>HTTP/HTTPS mode (LB terminates TLS) → ingress-nginx default</td>
+<td>ingress replaces the LB's chain with the LB's address</td>
+<td>shared address for everyone. Prefer TCP + PROXY. The alternative (<code>use-forwarded-headers: true</code> with <code>proxy-real-ip-cidr</code>) needs the LB's source range, which DO says changes</td>
+<td>(lab: pending); LB append/replace unknown</td>
+</tr>
+<tr>
+<td>HTTP/HTTPS mode → Droplet with Nightscout directly</td>
+<td>LB-added chain; peer = LB</td>
+<td><code>1</code> if the LB appends or replaces with the client (undocumented)</td>
+<td>(lab: pending)</td>
+</tr>
+<tr>
+<td>TLS passthrough</td>
+<td>no headers; TLS ends at the backend</td>
+<td>TCP + PROXY rules apply</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Misconfigured PROXY protocol (site-down, not a <code>TRUST_PROXY</code> problem):</strong></p>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Observed</th>
+<th>Symptom the operator sees</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LB sends PROXY, ingress not consuming it</td>
+<td>the backend reads the PROXY line as the start of an HTTP request and answers 400; DO: "those Droplets give a 400 response to the load balancer's health checks", the LB marks them unhealthy and stops routing</td>
+<td>site unreachable (LB error page); all backends unhealthy in the DO control panel</td>
+<td>set <code>use-proxy-protocol: "true"</code> in the ingress-nginx ConfigMap, or remove the annotation. Lab (nginx stand-in): the ingress answers <strong>HTTP 400</strong>, logs the PROXY line as the request, and Nightscout sees no request (no authentication, no notification)</td>
+</tr>
+<tr>
+<td>ingress expects PROXY, LB not sending it</td>
+<td>nginx rejects the connection; error log reports a broken PROXY header</td>
+<td>site unreachable; TLS or connection errors in browsers and uploaders</td>
+<td>add <code>service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"</code> (a string, per DO) to the ingress Service, or disable <code>use-proxy-protocol</code> (lab: pending for the exact log line)</td>
+</tr>
+<tr>
+<td>Both enabled, Nightscout <code>TRUST_PROXY=false</code></td>
+<td>peer = the hop nearest Nightscout for everyone (lab: the inner hop's address)</td>
+<td>everyone slowed together after one failure; notification shows a pod address; redirect loop if Nightscout enforces https</td>
+<td><code>TRUST_PROXY=1</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="5-scenario-matrix-working--misconfigured--fix">5. Scenario matrix (working / misconfigured / fix)<a class="headerlink" href="#5-scenario-matrix-working--misconfigured--fix" title="Permanent link">&para;</a></h2>
+<p>Row shape matches the lab's output: topology | state | config | observed | symptom | fix. <strong>(lab)</strong> marks an
+observed value measured on 2026-09-24 (see the introduction); "protected" means no caller-supplied value moved
+the address. <strong>(lab: pending)</strong> marks a value the lab did not run; the expected value is given from §1.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Topology</th>
+<th>State</th>
+<th>Config</th>
+<th>Observed (expected → lab)</th>
+<th>Symptom</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A1</td>
+<td>Direct (no proxy; Nightscout TLS or LAN http)</td>
+<td>working</td>
+<td><code>false</code></td>
+<td>peer = real client; protected (lab)</td>
+<td>log: <code>… resolved through TRUST_PROXY=false.</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td>A2</td>
+<td>Direct</td>
+<td>misconfigured</td>
+<td>unset</td>
+<td>the honest client's own address, but not protected: a caller-supplied value moves it (lab)</td>
+<td><code>SECURITY:</code> line at startup</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td>A3</td>
+<td>Direct</td>
+<td>misconfigured</td>
+<td><code>1</code> or <code>true</code> or a list containing client ranges</td>
+<td>a direct caller is treated as a proxy; its chain is believed: not protected (lab, <code>1</code>; <code>true</code> and a list not run)</td>
+<td><strong>none visible</strong> for <code>1</code> / list (info line logged); <code>true</code> logs <code>SECURITY:</code></td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td>B1</td>
+<td>One local proxy that appends (nginx <code>$proxy_add_x_forwarded_for</code>, Apache, HAProxy <code>forwardfor</code>)</td>
+<td>working</td>
+<td><code>1</code></td>
+<td>the entry the proxy added = client; protected (lab: nginx append, HAProxy <code>option forwardfor</code>, nginx terminating TLS; Apache not run)</td>
+<td>hop info line; notification shows the phone's public address</td>
+<td>—</td>
+</tr>
+<tr>
+<td>B2</td>
+<td>One local proxy that replaces (Caddy, Traefik, nginx <code>$remote_addr</code>)</td>
+<td>working</td>
+<td><code>1</code></td>
+<td>client; protected (lab: nginx <code>$remote_addr</code>, Caddy, Traefik)</td>
+<td>as B1</td>
+<td>—</td>
+</tr>
+<tr>
+<td>B3</td>
+<td>One local proxy</td>
+<td>misconfigured</td>
+<td><code>false</code></td>
+<td>proxy address for everyone (lab: nginx, the proxy's address; two hops, the inner proxy's). Redirect loop from §1, not run in the lab</td>
+<td>redirect loop if the proxy terminates TLS and <code>INSECURE_USE_HTTP=false</code>; otherwise everyone slowed together; notification shows <code>127.0.0.1</code> / a container address</td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td>B4</td>
+<td>One local proxy</td>
+<td>misconfigured</td>
+<td><code>2</code> or more</td>
+<td>honest client resolves correctly, but a caller's own left-hand entry is believed: not protected (lab: <code>2</code> behind one nginx, <code>3</code> behind two hops and behind the PROXY-protocol chain)</td>
+<td>none in a phone test (phone sends no chain, so it resolves correctly)</td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td>B5</td>
+<td>Appending proxy</td>
+<td>misconfigured</td>
+<td><code>true</code></td>
+<td>left-most = caller's claim: not protected (lab, nginx append)</td>
+<td><code>SECURITY: … TRUST_PROXY=true …</code> at startup</td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td>B6</td>
+<td>nginx with <strong>no</strong> <code>X-Forwarded-For</code> directive (the Nightscout Ubuntu guide's config)</td>
+<td>misconfigured</td>
+<td><code>1</code> or a loopback list</td>
+<td>clients that send nothing share the peer address; a caller-supplied chain passes through and is believed (lab: pending)</td>
+<td>everyone slowed together; notification shows <code>127.0.0.1</code></td>
+<td>add <code>proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</code> (or <code>$remote_addr</code>), then <code>1</code></td>
+</tr>
+<tr>
+<td>B7</td>
+<td>Local proxy, list mode</td>
+<td>misconfigured</td>
+<td>list missing the proxy's real address (e.g. <code>127.0.0.1</code> while the proxy connects over <code>::1</code>, or a changed container address)</td>
+<td>peer untrusted: https not detected, address = peer (reproduced for https; lab: a list without the proxy's address resolves the proxy's address, protected; lab: pending for <code>::1</code> and IPv4-mapped peers)</td>
+<td>redirect loop</td>
+<td>correct the list, or use <code>1</code></td>
+</tr>
+<tr>
+<td>B8</td>
+<td>Apache, TLS at Apache</td>
+<td>misconfigured</td>
+<td>any, <code>INSECURE_USE_HTTP=false</code></td>
+<td>no <code>X-Forwarded-Proto</code> sent (lab: pending)</td>
+<td>redirect loop in every mode</td>
+<td>add <code>RequestHeader set X-Forwarded-Proto "https"</code> in the TLS virtual host</td>
+</tr>
+<tr>
+<td>C1</td>
+<td>Shipped docker-compose (Traefik, <code>INSECURE_USE_HTTP: 'true'</code>)</td>
+<td>working</td>
+<td><code>1</code></td>
+<td>client, if Traefik sees the client's address (lab: Traefik v3.1 with <code>1</code> resolves the client, protected; the shipped compose file and its port publishing not run)</td>
+<td>hop info line</td>
+<td>—</td>
+</tr>
+<tr>
+<td>C2</td>
+<td>docker-compose</td>
+<td>misconfigured</td>
+<td><code>false</code></td>
+<td>Traefik's container address for everyone; no redirect loop because the compose file sets <code>INSECURE_USE_HTTP: 'true'</code> (lab: <code>false</code> resolves the proxy's address behind nginx; not run behind Traefik or on the compose file)</td>
+<td>everyone slowed together; notification shows a <code>172.x</code> address</td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td>C3</td>
+<td>docker-compose where Docker's port publishing hides the client (userland proxy, rootless Docker, some IPv6 setups)</td>
+<td>misconfigured upstream</td>
+<td><code>1</code></td>
+<td>Docker's gateway address for everyone (lab: pending)</td>
+<td>everyone slowed together; notification shows the Docker gateway</td>
+<td>fix port publishing (host networking for Traefik, or a source-preserving setup); not fixable with <code>TRUST_PROXY</code></td>
+</tr>
+<tr>
+<td>D1</td>
+<td>Cloudflare proxy → local nginx (appending) → Nightscout</td>
+<td>working</td>
+<td><code>2</code></td>
+<td>the entry Cloudflare added (lab: pending, lab models Cloudflare as an appending front)</td>
+<td>notification shows the phone's address</td>
+<td>—</td>
+</tr>
+<tr>
+<td>D2</td>
+<td>same</td>
+<td>misconfigured</td>
+<td><code>1</code></td>
+<td>a Cloudflare edge address, shared by many visitors (lab: pending)</td>
+<td>notification shows an address in Cloudflare's published ranges; unrelated visitors share delays</td>
+<td><code>2</code></td>
+</tr>
+<tr>
+<td>D3</td>
+<td>same, origin also reachable without Cloudflare</td>
+<td>misconfigured</td>
+<td><code>2</code></td>
+<td>a direct caller supplies both entries (lab: pending)</td>
+<td>none visible</td>
+<td>firewall the origin to Cloudflare's ranges, or use a list: the local proxy address plus Cloudflare's published ranges (kept current by the operator)</td>
+</tr>
+<tr>
+<td>D4</td>
+<td>Cloudflare → nginx that <strong>replaces</strong> with <code>$remote_addr</code> → Nightscout</td>
+<td>misconfigured</td>
+<td><code>1</code> or <code>2</code></td>
+<td>a Cloudflare edge address (lab: pending)</td>
+<td>as D2</td>
+<td>make nginx append, or restore the client with nginx's real-ip module limited to Cloudflare's ranges</td>
+</tr>
+<tr>
+<td>E1</td>
+<td>Cloudflare Tunnel → Nightscout</td>
+<td>working</td>
+<td><code>1</code></td>
+<td>visitor (lab: not reproducible locally)</td>
+<td>notification shows the phone's address</td>
+<td>—</td>
+</tr>
+<tr>
+<td>E2</td>
+<td>Cloudflare Tunnel → nginx → Nightscout</td>
+<td>working</td>
+<td><code>2</code></td>
+<td>visitor</td>
+<td>as E1</td>
+<td>—</td>
+</tr>
+<tr>
+<td>F1</td>
+<td>Hosted platform (§3)</td>
+<td>working</td>
+<td>the §3 value</td>
+<td>client</td>
+<td>notification test passes at the smallest value</td>
+<td>—</td>
+</tr>
+<tr>
+<td>F2</td>
+<td>Hosted platform</td>
+<td>misconfigured</td>
+<td>too small</td>
+<td>provider or CDN address for everyone</td>
+<td>everyone slowed together; notification shows a private (<code>10.</code>, <code>172.16–31.</code>, <code>192.168.</code>, <code>100.64–127.</code>) or provider address</td>
+<td>raise by one, re-test, stop at the first value showing the phone's address</td>
+</tr>
+<tr>
+<td>F3</td>
+<td>Hosted platform</td>
+<td>misconfigured</td>
+<td><code>false</code></td>
+<td>provider address for everyone</td>
+<td>redirect loop (all listed platforms terminate TLS)</td>
+<td>unset, or the §3 value</td>
+</tr>
+<tr>
+<td>F4</td>
+<td>Azure App Service</td>
+<td>working</td>
+<td><code>1</code></td>
+<td>client; the port on Azure's entry is removed (lab F7: <code>address:port</code> front end resolved the client with <code>1</code> and with a list, 2026-09-24, <code>9c6cde72</code>; not measured on Azure itself)</td>
+<td>notification test passes</td>
+<td>—</td>
+</tr>
+<tr>
+<td>G</td>
+<td>DOKS / DO LB</td>
+<td>see §4</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>H</td>
+<td>Managed Nightscout (T1Pal, NS10BE)</td>
+<td>—</td>
+<td>provider-controlled</td>
+<td>—</td>
+<td>—</td>
+<td>ask the provider</td>
+</tr>
+<tr>
+<td>any</td>
+<td>any</td>
+<td>misconfigured</td>
+<td>typo in the variable name, value not saved, app not restarted, <code>.env</code> not passed to the container</td>
+<td>unset behaviour</td>
+<td><code>SECURITY:</code> line still logged</td>
+<td>set it where Nightscout reads it (Azure's <code>CUSTOMCONNSTR_TRUST_PROXY</code> also works), restart</td>
+</tr>
+<tr>
+<td>any</td>
+<td>any</td>
+<td>misconfigured</td>
+<td>invalid value</td>
+<td>Nightscout exits at startup</td>
+<td>log: <code>TRUST_PROXY must be false, true, a whole number of proxy hops (1 or more), or a comma-separated list …</code></td>
+<td>correct or remove the value</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Undo for every row:</strong> remove <code>TRUST_PROXY</code> (or set it empty) and restart. That restores the behaviour of
+every earlier release, including https detection behind any proxy.</p>
+<p><strong>Verification procedure (hosted and self-hosted).</strong> From a phone on mobile data (Wi-Fi off), sign in with a
+deliberately wrong API secret once, then sign in correctly on another device and open the admin
+notifications. The "Failed authentication" message reads <code>A device at IP address %1 attempted
+authenticating with Nightscout with wrong credentials. …</code>; <code>%1</code> is the resolved address. It should equal the
+phone's public address as a "what is my IP" page on that phone shows it. Because a too-large hop count also
+passes this test, start at <code>1</code> and increase only while the address shown is a provider's or a private one.
+The test itself puts one <code>AUTH_FAIL_DELAY</code> on the phone's address and on the wrong secret.</p>
+<h2 id="6-existing-claims-checked-flagged-not-changed">6. Existing claims checked (flagged, not changed)<a class="headerlink" href="#6-existing-claims-checked-flagged-not-changed" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Where</th>
+<th>Claim</th>
+<th>Finding</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>crm</code> <code>docs/proposals/trusted-proxy-migration.md</code>, Deployment guidance</td>
+<td>"Docker, nginx/Apache, Heroku and Azure: existing edge-managed proxy setups can use the compatibility default without guessing provider address ranges."</td>
+<td><strong>Misleading.</strong> They keep working, but the compatibility default leaves the failed-login delay ineffective on all of them. Measured (lab): unset is not protected behind nginx (appending or replacing), Caddy, Traefik and HAProxy; a replacing proxy does not make the unset default protected. Setting <code>TRUST_PROXY</code> to the hop count (<code>1</code>) is protected behind each, and needs no address ranges on nginx, Apache, Traefik, Caddy and Heroku. Azure is the exception: explicit values currently collapse to a shared address because of the port suffix</td>
+<td>§1, §3, lab</td>
+</tr>
+<tr>
+<td>same, Kubernetes / ingress-nginx bullet</td>
+<td>"existing sanitized HTTP forwarding behind TLS termination works with the default"</td>
+<td><strong>Incomplete.</strong> An edge that overwrites <code>X-Forwarded-For</code>, as ingress-nginx's default does, does not make the unset default protected (lab: replacing and rebuilding proxies measured not protected under unset; ingress-nginx itself not run). Set <code>TRUST_PROXY</code> to the hop count: <code>1</code> with ingress-nginx straight to Nightscout, which survives ingress pod replacement</td>
+<td>ingress-nginx ConfigMap doc; §1; lab</td>
+</tr>
+<tr>
+<td>same, Compatibility boundary</td>
+<td>"The proxy must overwrite untrusted forwarded headers"</td>
+<td>Not sufficient. Measured (lab): proxies that overwrite or rebuild <code>X-Forwarded-For</code> (nginx <code>$remote_addr</code>, Caddy, Traefik) leave the unset default not protected. The boundary is <code>TRUST_PROXY</code> set to the trusted hop count, not a proxy configuration</td>
+<td>§3, lab</td>
+</tr>
+<tr>
+<td>same, HTTPS paragraph</td>
+<td>"Disabling Nightscout's HTTPS enforcement is not necessary to solve the ingress redirect loop."</td>
+<td>True for unset, a hop count, <code>true</code>, and a list that contains the proxy; false for <code>false</code> and for a list missing the proxy</td>
+<td>§1 reproduced</td>
+</tr>
+<tr>
+<td>same, intro and Validation</td>
+<td>"The production Kubernetes trial exposed redirect loops …", "That migration is superseded", "Rollback of this compatibility correction restores the mandatory explicit-IP candidate behavior"</td>
+<td>Review narrative ("was X, now Y"), not current fact. The revised draft replaces the intro; the rollback sentence is flagged</td>
+<td>—</td>
+</tr>
+<tr>
+<td>same, header note</td>
+<td>"This branch (bf2/auth-hardening) differs from chore/nightscout-modernization …"</td>
+<td>The worktree branch is <code>bf2/auth-delay-dev-order</code>; the note describes the backport difference that <code>client-ip.js</code> documents and is otherwise accurate</td>
+<td><code>client-ip.js</code> comment</td>
+</tr>
+<tr>
+<td><code>nightscout.github.io</code> <code>docs/nightscout/ubuntu.md</code> nginx block</td>
+<td>sets <code>Host</code>, <code>Upgrade</code>, <code>Connection</code>, <code>X-Forwarded-Proto</code>, no <code>X-Forwarded-For</code></td>
+<td>With this config any explicit <code>TRUST_PROXY</code> value believes a caller-supplied chain (nginx forwards it unchanged and adds nothing) and resolves everyone else to <code>127.0.0.1</code></td>
+<td>§5 B6 (lab: pending; nginx semantics)</td>
+</tr>
+<tr>
+<td><code>crm</code> <code>docker-compose.yml</code></td>
+<td><code>INSECURE_USE_HTTP: 'true'</code></td>
+<td>Not wrong; it means <code>TRUST_PROXY=false</code> does not loop on the shipped compose file but still collapses every client to Traefik's address</td>
+<td>file at <code>f6f361b1</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Code gap:</strong></p>
+<ol>
+<li><strong>Platform client headers are not readable</strong> in explicit modes (DO App Platform's <code>do-connecting-ip</code>,
+   Fly's <code>Fly-Client-IP</code>, Cloudflare's <code>CF-Connecting-IP</code>). On DO App Platform, if the support doc is right, no
+   value gives a per-client address.</li>
+</ol>
+<h2 id="7-lab-coverage">7. Lab coverage<a class="headerlink" href="#7-lab-coverage" title="Permanent link">&para;</a></h2>
+<p>Measured 2026-09-24 (<a href="../../../tools/lab/proxy-trust/index.html">lab README</a>, results in
+<code>tools/lab/proxy-trust/results/</code>):</p>
+<ul>
+<li>B1/B2/B4/B5: nginx append and replace, Caddy, Traefik, HAProxy <code>option forwardfor</code>, nginx terminating TLS,
+  with <code>1</code> resolve the client, protected. Behind one nginx, <code>2</code> and <code>true</code> resolve the honest client but
+  believe a caller's chain.</li>
+<li>A1-A3: direct, <code>false</code> protected; unset and <code>1</code> not protected.</li>
+<li>B3: <code>false</code> behind nginx resolves the proxy's address (the inner proxy's with two hops).</li>
+<li>Two appending hops: <code>2</code> protected; <code>1</code> the inner proxy's address; <code>3</code> not protected.</li>
+<li>DO-style chain (§4): nginx stream <code>proxy_protocol on</code> → nginx consuming PROXY protocol → one further nginx:
+  <code>2</code> protected; <code>1</code> the ingress address; <code>3</code> not protected; ingress not consuming PROXY protocol → HTTP 400.</li>
+<li>Unset, across every client-address header family the unset mode reads: not protected on all nine
+  topologies; the right setting protected on all nine.</li>
+<li>TLS termination: 200 with no redirect loop under unset and <code>1</code>; the plain-HTTP control redirects (307).</li>
+</ul>
+<p>Not run (still <strong>(lab: pending)</strong>):</p>
+<ol>
+<li>Apache (B1 row, B8: no <code>X-Forwarded-Proto</code> by default).</li>
+<li>HAProxy <code>option forwardfor if-none</code>.</li>
+<li>B6: nginx with no <code>X-Forwarded-For</code> directive.</li>
+<li>B7: list mode with <code>127.0.0.1</code> when the proxy connects over <code>::1</code>; IPv4-mapped peers.</li>
+<li>C1/C3: the shipped docker-compose file and Docker port publishing (iptables vs userland proxy).</li>
+<li>D1-D4: Cloudflare modelled as an appending front; E1 is not reproducible locally.</li>
+<li>§4: ingress-nginx straight to Nightscout; TCP without PROXY protocol; HTTP/HTTPS load-balancer modes; the
+   log line when the ingress expects PROXY protocol and the load balancer does not send it.</li>
+<li><code>false</code> behind a proxy terminating TLS with <code>INSECURE_USE_HTTP=false</code> (redirect loop from §1 only).</li>
+<li>Startup log lines in each state against §1.</li>
+</ol>
+<h2 id="sources">Sources<a class="headerlink" href="#sources" title="Permanent link">&para;</a></h2>
+<p>Listed per row above. General: <a href="https://expressjs.com/en/guide/behind-proxies/">Express behind proxies</a>,
+<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For">MDN X-Forwarded-For</a>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

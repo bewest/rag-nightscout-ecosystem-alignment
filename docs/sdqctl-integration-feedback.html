@@ -1,0 +1,5553 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/sdqctl-integration-feedback.html">
+      
+      
+        <link rel="prev" href="progress-update-confirmation.html">
+      
+      
+        <link rel="next" href="state-of-diabetes-2026.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>sdqctl Integration Feedback Report - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#sdqctl-integration-feedback-report" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              sdqctl Integration Feedback Report
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="sdqctl-integration-feedback.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executive Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Executive Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#compatibility-score-updated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compatibility Score (Updated)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resolved-p0-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resolved P0 Issues
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-validation-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1: Validation Issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1: Validation Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-workflow-validation-matrix-updated-2026-01-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Workflow Validation Matrix (Updated 2026-01-24)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-root-cause-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Root Cause Analysis
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.2 Root Cause Analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#issue-1-aspirational-context-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Issue 1: Aspirational Context Patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-2-naming-divergence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Issue 2: Naming Divergence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-3-glob-pattern-bug-suspected" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Issue 3: Glob Pattern Bug (Suspected)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-proposed-solutions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Proposed Solutions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.3 Proposed Solutions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#solution-a-validation-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Solution A: Validation Modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#solution-b-context-optional-directive" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Solution B: CONTEXT-OPTIONAL Directive
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#solution-c-warning-vs-error-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Solution C: Warning vs Error Behavior
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-ergonomic-friction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2: Ergonomic Friction
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2: Ergonomic Friction">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-iterative-development-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Iterative Development Pattern
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-living-workspace-vs-declarative-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Living Workspace vs Declarative Workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-session-tracking-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Session Tracking Pattern
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-feature-requests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3: Feature Requests
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3: Feature Requests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-from-integration-proposalmd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 From INTEGRATION-PROPOSAL.md
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.1 From INTEGRATION-PROPOSAL.md">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#priority-high" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Priority: High
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#priority-medium" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Priority: Medium
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-additional-feature-requests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Additional Feature Requests
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.2 Additional Feature Requests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fr-001-dynamic-context-inclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FR-001: Dynamic Context Inclusion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fr-002-conditional-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FR-002: Conditional Context
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fr-003-output-append-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FR-003: Output Append Mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fr-004-workspace-aware-defaults" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FR-004: Workspace-Aware Defaults
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-workarounds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4: Workarounds
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4: Workarounds">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-workflow-splitting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Workflow Splitting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-symlink-missing-directories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Symlink Missing Directories
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-touch-empty-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Touch Empty Files
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-use-make-as-orchestrator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Use make as Orchestrator
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-compatibility-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5: Compatibility Notes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5: Compatibility Notes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-what-works-well" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 What Works Well
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-modeladapter-observations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Model/Adapter Observations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-version-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Version Compatibility
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-a-test-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix A: Test Commands
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-b-file-structure-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix B: File Structure Reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-c-related-documents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix C: Related Documents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-6-recent-improvements-2026-01-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 6: Recent Improvements (2026-01-24)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 6: Recent Improvements (2026-01-24)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-verify-refs-now-supports-alias-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 verify refs Now Supports Alias References
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-refcat-for-code-extraction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 refcat for Code Extraction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-iterative-improvement-workflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Iterative Improvement Workflows
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-false-positive-reduction-progress" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 False Positive Reduction Progress
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#65-correct-reference-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.5 Correct Reference Format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#66-remaining-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.6 Remaining Work
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="30-design/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="60-research/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executive Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Executive Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#compatibility-score-updated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compatibility Score (Updated)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resolved-p0-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resolved P0 Issues
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-validation-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1: Validation Issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1: Validation Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-workflow-validation-matrix-updated-2026-01-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Workflow Validation Matrix (Updated 2026-01-24)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-root-cause-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Root Cause Analysis
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.2 Root Cause Analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#issue-1-aspirational-context-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Issue 1: Aspirational Context Patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-2-naming-divergence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Issue 2: Naming Divergence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-3-glob-pattern-bug-suspected" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Issue 3: Glob Pattern Bug (Suspected)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-proposed-solutions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Proposed Solutions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.3 Proposed Solutions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#solution-a-validation-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Solution A: Validation Modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#solution-b-context-optional-directive" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Solution B: CONTEXT-OPTIONAL Directive
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#solution-c-warning-vs-error-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Solution C: Warning vs Error Behavior
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-ergonomic-friction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2: Ergonomic Friction
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2: Ergonomic Friction">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-iterative-development-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Iterative Development Pattern
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-living-workspace-vs-declarative-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Living Workspace vs Declarative Workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-session-tracking-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Session Tracking Pattern
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-feature-requests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3: Feature Requests
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3: Feature Requests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-from-integration-proposalmd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 From INTEGRATION-PROPOSAL.md
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.1 From INTEGRATION-PROPOSAL.md">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#priority-high" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Priority: High
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#priority-medium" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Priority: Medium
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-additional-feature-requests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Additional Feature Requests
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.2 Additional Feature Requests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fr-001-dynamic-context-inclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FR-001: Dynamic Context Inclusion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fr-002-conditional-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FR-002: Conditional Context
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fr-003-output-append-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FR-003: Output Append Mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fr-004-workspace-aware-defaults" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FR-004: Workspace-Aware Defaults
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-workarounds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4: Workarounds
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4: Workarounds">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-workflow-splitting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Workflow Splitting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-symlink-missing-directories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Symlink Missing Directories
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-touch-empty-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Touch Empty Files
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-use-make-as-orchestrator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Use make as Orchestrator
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-compatibility-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5: Compatibility Notes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5: Compatibility Notes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-what-works-well" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 What Works Well
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-modeladapter-observations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Model/Adapter Observations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-version-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Version Compatibility
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-a-test-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix A: Test Commands
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-b-file-structure-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix B: File Structure Reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-c-related-documents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix C: Related Documents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-6-recent-improvements-2026-01-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 6: Recent Improvements (2026-01-24)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 6: Recent Improvements (2026-01-24)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-verify-refs-now-supports-alias-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 verify refs Now Supports Alias References
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-refcat-for-code-extraction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 refcat for Code Extraction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-iterative-improvement-workflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Iterative Improvement Workflows
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-false-positive-reduction-progress" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 False Positive Reduction Progress
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#65-correct-reference-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.5 Correct Reference Format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#66-remaining-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.6 Remaining Work
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="sdqctl-integration-feedback-report">sdqctl Integration Feedback Report<a class="headerlink" href="#sdqctl-integration-feedback-report" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-09-30 at <code>333274b0</code>.</em></p>
+<p><strong>From:</strong> rag-nightscout-ecosystem-alignment workspace<br />
+<strong>To:</strong> sdqctl development team<br />
+<strong>Date:</strong> 2026-01-24 (Updated)<br />
+<strong>sdqctl Version Tested:</strong> 0.1.0 → 0.1.1</p>
+<hr />
+<h2 id="executive-summary">Executive Summary<a class="headerlink" href="#executive-summary" title="Permanent link">&para;</a></h2>
+<p>We've been evaluating sdqctl for orchestrating AI-assisted workflows in a complex multi-repository documentation workspace. Our workspace has evolved over months through iterative Replit AI development, resulting in 14 ConversationFile workflows, 14+ Python tools, and extensive cross-project documentation.</p>
+<p><strong>UPDATE (2026-01-24):</strong> After iterative improvements, <strong>all 14 workflows now pass validation</strong>. Key improvements:</p>
+<ul>
+<li><strong>50% reduction in false positives</strong> (502 → 249 broken refs)</li>
+<li><strong>Glob pattern fixes</strong> resolved all <code>@mapping/*/README.md</code> style issues</li>
+<li><strong>VALIDATION-MODE lenient</strong> directive now available for exploratory workflows</li>
+<li><strong>verify refs</strong> now supports <code>alias:path</code> references using refcat resolution</li>
+</ul>
+<h3 id="compatibility-score-updated">Compatibility Score (Updated)<a class="headerlink" href="#compatibility-score-updated" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Previous</th>
+<th>Current</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ConversationFile parsing</td>
+<td>✅ Works</td>
+<td>✅ Works</td>
+<td>All .conv files parse correctly</td>
+</tr>
+<tr>
+<td>Context file resolution</td>
+<td>⚠️ Partial</td>
+<td>✅ Works</td>
+<td>Globs and wildcards fully supported</td>
+</tr>
+<tr>
+<td>Validation strictness</td>
+<td>❌ Blocking</td>
+<td>✅ Resolved</td>
+<td><code>VALIDATION-MODE lenient</code> available</td>
+</tr>
+<tr>
+<td>Command coverage</td>
+<td>⚠️ Partial</td>
+<td>✅ Full</td>
+<td>verify refs/links/traceability implemented</td>
+</tr>
+</tbody>
+</table>
+<h3 id="resolved-p0-issues">Resolved P0 Issues<a class="headerlink" href="#resolved-p0-issues" title="Permanent link">&para;</a></h3>
+<ol>
+<li>~~<strong>P0:</strong> Add <code>--allow-missing</code> flag or <code>MODE lenient</code> directive~~ → ✅ <code>VALIDATION-MODE lenient</code></li>
+<li>~~<strong>P0:</strong> Fix glob pattern matching for <code>@mapping/*/README.md</code> style patterns~~ → ✅ Fixed</li>
+<li>~~<strong>P1:</strong> Make CONTEXT validation warn by default~~ → ✅ Lenient mode available</li>
+<li>~~<strong>P2:</strong> Implement workspace/verify/trace subcommands~~ → ✅ <code>sdqctl verify refs/links/traceability</code></li>
+</ol>
+<hr />
+<h2 id="part-1-validation-issues">Part 1: Validation Issues<a class="headerlink" href="#part-1-validation-issues" title="Permanent link">&para;</a></h2>
+<h3 id="11-workflow-validation-matrix-updated-2026-01-24">1.1 Workflow Validation Matrix (Updated 2026-01-24)<a class="headerlink" href="#11-workflow-validation-matrix-updated-2026-01-24" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Workflow</th>
+<th>Previous</th>
+<th>Current</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ci-pipeline.conv</code></td>
+<td>❌ Failed</td>
+<td>✅ Valid</td>
+<td>Glob patterns fixed</td>
+</tr>
+<tr>
+<td><code>cross-project-alignment.conv</code></td>
+<td>❌ Failed</td>
+<td>✅ Valid</td>
+<td>Path resolution improved</td>
+</tr>
+<tr>
+<td><code>deep-dive-template.conv</code></td>
+<td>✅ Valid</td>
+<td>✅ Valid</td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>example-audit.conv</code></td>
+<td>✅ Valid</td>
+<td>✅ Valid</td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>faceted-analysis.conv</code></td>
+<td>✅ Valid</td>
+<td>✅ Valid</td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>full-verification.conv</code></td>
+<td>❌ Failed</td>
+<td>✅ Valid</td>
+<td>CONTEXT-OPTIONAL now recognized</td>
+</tr>
+<tr>
+<td><code>gap-detection.conv</code></td>
+<td>✅ Valid</td>
+<td>✅ Valid</td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>gen-coverage-report.conv</code></td>
+<td>❌ Failed</td>
+<td>✅ Valid</td>
+<td>Glob patterns fixed</td>
+</tr>
+<tr>
+<td><code>gen-inventory.conv</code></td>
+<td>✅ Valid</td>
+<td>✅ Valid</td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>gen-traceability.conv</code></td>
+<td>❌ Failed</td>
+<td>✅ Valid</td>
+<td>Glob patterns fixed</td>
+</tr>
+<tr>
+<td><code>verify-assertions.conv</code></td>
+<td>❌ Failed</td>
+<td>✅ Valid</td>
+<td>YAML patterns now work</td>
+</tr>
+<tr>
+<td><code>verify-coverage.conv</code></td>
+<td>❌ Failed</td>
+<td>✅ Valid</td>
+<td>Glob patterns fixed</td>
+</tr>
+<tr>
+<td><code>verify-refs.conv</code></td>
+<td>✅ Valid</td>
+<td>✅ Valid</td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>verify-terminology.conv</code></td>
+<td>❌ Failed</td>
+<td>✅ Valid</td>
+<td><code>@mapping/*/README.md</code> fixed</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Result: 14/14 workflows pass (was 6/14)</strong></p>
+<h3 id="12-root-cause-analysis">1.2 Root Cause Analysis<a class="headerlink" href="#12-root-cause-analysis" title="Permanent link">&para;</a></h3>
+<h4 id="issue-1-aspirational-context-patterns">Issue 1: Aspirational Context Patterns<a class="headerlink" href="#issue-1-aspirational-context-patterns" title="Permanent link">&para;</a></h4>
+<p>Our workflows were written to define the <em>intended</em> file structure, not just the current state. This is intentional—the workflow acts as a spec for what files should exist.</p>
+<p><strong>Example from <code>ci-pipeline.conv</code>:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>CONTEXT<span class="w"> </span>@conformance/scenarios/**/*.yaml
+</code></pre></div></p>
+<p><strong>Reality:</strong> We have <code>conformance/scenarios/override-supersede/README.md</code> (markdown), not YAML files. The YAML format is aspirational—we planned to convert but haven't yet.</p>
+<p><strong>Desired Behavior:</strong> Run the workflow anyway, with a warning that some context is missing.</p>
+<h4 id="issue-2-naming-divergence">Issue 2: Naming Divergence<a class="headerlink" href="#issue-2-naming-divergence" title="Permanent link">&para;</a></h4>
+<p>Our workflow references a simplified name that doesn't exist:</p>
+<p><strong>Example from <code>cross-project-alignment.conv</code>:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>CONTEXT<span class="w"> </span>@mapping/xdrip/README.md
+</code></pre></div></p>
+<p><strong>Reality:</strong> We have:
+- <code>mapping/xdrip-android/README.md</code>
+- <code>mapping/xdrip4ios/README.md</code></p>
+<p><strong>Desired Behavior:</strong> Either warn and continue, or support brace expansion <code>@mapping/xdrip{,-android,4ios}/README.md</code>.</p>
+<h4 id="issue-3-glob-pattern-bug-suspected">Issue 3: Glob Pattern Bug (Suspected)<a class="headerlink" href="#issue-3-glob-pattern-bug-suspected" title="Permanent link">&para;</a></h4>
+<p><strong>Example from <code>verify-terminology.conv</code>:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>CONTEXT<span class="w"> </span>@mapping/*/README.md
+</code></pre></div></p>
+<p><strong>Reality:</strong> 14 README.md files exist:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>mapping/aaps/README.md
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>mapping/cgm-remote-monitor/README.md
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>mapping/diable/README.md
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>mapping/loop/README.md
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>mapping/loopcaregiver/README.md
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>mapping/loopfollow/README.md
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>mapping/nightguard/README.md
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>mapping/nightscout/README.md  # Note: not at this exact path
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>mapping/nightscout-connect/README.md
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>mapping/nightscout-reporter/README.md
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>mapping/nightscout-roles-gateway/README.md
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>mapping/openaps/README.md
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>mapping/oref0/README.md
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>mapping/trio/README.md
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>mapping/xdrip4ios/README.md
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>mapping/xdrip-android/README.md
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>mapping/xdrip-js/README.md
+</code></pre></div></p>
+<p><strong>Observed:</strong> Validation fails claiming pattern matches no files.</p>
+<p><strong>Expected:</strong> Pattern should match 14+ files.</p>
+<p><strong>Hypothesis:</strong> The glob implementation may have an issue with <code>*/</code> in the middle of paths, or may be using a different CWD than expected.</p>
+<h3 id="13-proposed-solutions">1.3 Proposed Solutions<a class="headerlink" href="#13-proposed-solutions" title="Permanent link">&para;</a></h3>
+<h4 id="solution-a-validation-modes">Solution A: Validation Modes<a class="headerlink" href="#solution-a-validation-modes" title="Permanent link">&para;</a></h4>
+<p>Add a <code>MODE</code> value or flag for validation strictness:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c"># In .conv file</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>MODE<span class="w"> </span>lenient<span class="w">        </span>#<span class="w"> </span>Warn<span class="w"> </span>on<span class="w"> </span>missing<span class="w"> </span>context,<span class="w"> </span><span class="k">continue</span><span class="w"> </span>execution
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>MODE<span class="w"> </span>strict<span class="w">         </span>#<span class="w"> </span>Current<span class="w"> </span>behavior<span class="w"> </span>-<span class="w"> </span>fail<span class="w"> </span>on<span class="w"> </span>any<span class="w"> </span>missing<span class="w"> </span>context
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>MODE<span class="w"> </span>exploratory<span class="w">    </span>#<span class="w"> </span>Warn<span class="w"> </span>on<span class="w"> </span>missing,<span class="w"> </span>allow<span class="w"> </span>dynamic<span class="w"> </span>context<span class="w"> </span>addition
+</code></pre></div>
+<p>Or via CLI:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>sdqctl<span class="w"> </span>validate<span class="w"> </span>workflow.conv<span class="w"> </span>--allow-missing
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>sdqctl<span class="w"> </span>run<span class="w"> </span>workflow.conv<span class="w"> </span>--allow-missing-context
+</code></pre></div></p>
+<h4 id="solution-b-context-optional-directive">Solution B: CONTEXT-OPTIONAL Directive<a class="headerlink" href="#solution-b-context-optional-directive" title="Permanent link">&para;</a></h4>
+<p>Allow marking specific context as optional:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>CONTEXT<span class="w"> </span>@traceability/requirements.md<span class="w">           </span>#<span class="w"> </span>Required
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>CONTEXT<span class="w"> </span>@traceability/gaps.md<span class="w">                   </span>#<span class="w"> </span>Required
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>CONTEXT-OPTIONAL<span class="w"> </span>@conformance/scenarios/**/*.yaml<span class="w">  </span>#<span class="w"> </span>Nice<span class="w"> </span>to<span class="w"> </span>have
+</code></pre></div>
+<h4 id="solution-c-warning-vs-error-behavior">Solution C: Warning vs Error Behavior<a class="headerlink" href="#solution-c-warning-vs-error-behavior" title="Permanent link">&para;</a></h4>
+<p>Change default behavior:
+- <strong>Current:</strong> Missing context = validation error
+- <strong>Proposed:</strong> Missing context = warning (stderr), continues execution
+- <strong>Strict mode:</strong> Missing context = error (current behavior)</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># Default: warns and continues</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>sdqctl<span class="w"> </span>run<span class="w"> </span>workflow.conv
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="c1"># Strict: fails on any issue</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>sdqctl<span class="w"> </span>run<span class="w"> </span>workflow.conv<span class="w"> </span>--strict
+</code></pre></div>
+<hr />
+<h2 id="part-2-ergonomic-friction">Part 2: Ergonomic Friction<a class="headerlink" href="#part-2-ergonomic-friction" title="Permanent link">&para;</a></h2>
+<h3 id="21-iterative-development-pattern">2.1 Iterative Development Pattern<a class="headerlink" href="#21-iterative-development-pattern" title="Permanent link">&para;</a></h3>
+<p>Our workspace evolved through what we call the "5-facet documentation cycle":</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>For each component analyzed:
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>1. Update terminology matrix (mapping/cross-project/terminology-matrix.md)
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>2. Add gaps discovered (traceability/gaps.md)
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>3. Extract requirements (traceability/requirements.md)
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>4. Write deep-dive doc (docs/10-domain/{component}-deep-dive.md)
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>5. Log progress (progress.md)
+</code></pre></div>
+<p>This pattern emerged organically from Replit AI sessions. Each session:
+1. Explores source code in <code>externals/</code>
+2. Discovers implementation details
+3. Creates/updates documentation
+4. Logs what was done</p>
+<p><strong>Key Insight:</strong> The file structure evolves <em>during</em> work, not before.</p>
+<h3 id="22-living-workspace-vs-declarative-workflow">2.2 Living Workspace vs Declarative Workflow<a class="headerlink" href="#22-living-workspace-vs-declarative-workflow" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>sdqctl Model</th>
+<th>Our Model</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Files exist before workflow runs</td>
+<td>Files created during workflow</td>
+</tr>
+<tr>
+<td>CONTEXT defines inputs</td>
+<td>CONTEXT defines expected outputs too</td>
+</tr>
+<tr>
+<td>Workflow is repeatable</td>
+<td>Each run explores new territory</td>
+</tr>
+<tr>
+<td>Checkpoints capture state</td>
+<td>progress.md captures narrative</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Tension:</strong> sdqctl optimizes for CI/CD repeatability. We need exploratory research support.</p>
+<h3 id="23-session-tracking-pattern">2.3 Session Tracking Pattern<a class="headerlink" href="#23-session-tracking-pattern" title="Permanent link">&para;</a></h3>
+<p>We use <code>progress.md</code> as a session log:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="gu">### Component Name (YYYY-MM-DD)</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>Brief description of what was analyzed.
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>| Deliverable | Location | Key Insights |
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>|-------------|----------|--------------|
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>| Doc Name | <span class="sb">`docs/10-domain/component-deep-dive.md`</span> | Summary |
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="gs">**Gaps Identified**</span>: GAP-XXX-001, GAP-XXX-002
+</code></pre></div>
+<p><strong>Request:</strong> Consider native session logging that:
+- Auto-appends to a configured file
+- Captures workflow outputs
+- Links to checkpoints</p>
+<hr />
+<h2 id="part-3-feature-requests">Part 3: Feature Requests<a class="headerlink" href="#part-3-feature-requests" title="Permanent link">&para;</a></h2>
+<h3 id="31-from-integration-proposalmd">3.1 From INTEGRATION-PROPOSAL.md<a class="headerlink" href="#31-from-integration-proposalmd" title="Permanent link">&para;</a></h3>
+<p>The sdqctl team's own proposal identifies features we strongly endorse:</p>
+<h4 id="priority-high">Priority: High<a class="headerlink" href="#priority-high" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Proposed Command</th>
+<th>Our Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Workspace sync</td>
+<td><code>sdqctl workspace sync</code></td>
+<td>Clone/update 16 external repos</td>
+</tr>
+<tr>
+<td>Workspace status</td>
+<td><code>sdqctl workspace status</code></td>
+<td>Check repo health</td>
+</tr>
+<tr>
+<td>Workspace freeze</td>
+<td><code>sdqctl workspace freeze</code></td>
+<td>Pin commit SHAs</td>
+</tr>
+<tr>
+<td>Verify refs</td>
+<td><code>sdqctl verify refs</code></td>
+<td>Validate code references</td>
+</tr>
+<tr>
+<td>Verify coverage</td>
+<td><code>sdqctl verify coverage</code></td>
+<td>REQ/GAP coverage matrix</td>
+</tr>
+</tbody>
+</table>
+<h4 id="priority-medium">Priority: Medium<a class="headerlink" href="#priority-medium" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Proposed Command</th>
+<th>Our Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Trace requirement</td>
+<td><code>sdqctl trace req REQ-001</code></td>
+<td>Find all refs to requirement</td>
+</tr>
+<tr>
+<td>Trace gap</td>
+<td><code>sdqctl trace gap GAP-SYNC-001</code></td>
+<td>Find all refs to gap</td>
+</tr>
+<tr>
+<td>Generate matrix</td>
+<td><code>sdqctl trace matrix</code></td>
+<td>Full traceability matrix</td>
+</tr>
+<tr>
+<td>Verify terminology</td>
+<td><code>sdqctl verify terminology</code></td>
+<td>Cross-project term consistency</td>
+</tr>
+</tbody>
+</table>
+<h3 id="32-additional-feature-requests">3.2 Additional Feature Requests<a class="headerlink" href="#32-additional-feature-requests" title="Permanent link">&para;</a></h3>
+<h4 id="fr-001-dynamic-context-inclusion">FR-001: Dynamic Context Inclusion<a class="headerlink" href="#fr-001-dynamic-context-inclusion" title="Permanent link">&para;</a></h4>
+<p>Include tool output as context:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>CONTEXT<span class="w"> </span>@tool:verify_refs<span class="w"> </span>--json<span class="w">    </span>#<span class="w"> </span>Run<span class="w"> </span>tool,<span class="w"> </span>include<span class="w"> </span>output
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>CONTEXT<span class="w"> </span>@shell:git<span class="w"> </span>diff<span class="w"> </span>HEAD~1<span class="w">      </span>#<span class="w"> </span>Run<span class="w"> </span>command,<span class="w"> </span>include<span class="w"> </span>output
+</code></pre></div>
+<p><strong>Use Case:</strong> Verification workflows need to see current state, not static files.</p>
+<h4 id="fr-002-conditional-context">FR-002: Conditional Context<a class="headerlink" href="#fr-002-conditional-context" title="Permanent link">&para;</a></h4>
+<p>Include context based on conditions:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>CONTEXT-IF-EXISTS<span class="w"> </span>@conformance/scenarios/**/*.yaml
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>CONTEXT-IF-NOT-EXISTS<span class="w"> </span>@conformance/scenarios/**/*.yaml<span class="w"> </span>THEN-RUN<span class="w"> </span>make<span class="w"> </span>gen-scenarios
+</code></pre></div>
+<p><strong>Use Case:</strong> Bootstrap workflows that create missing files.</p>
+<h4 id="fr-003-output-append-mode">FR-003: Output Append Mode<a class="headerlink" href="#fr-003-output-append-mode" title="Permanent link">&para;</a></h4>
+<p>Append to existing file instead of overwrite:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>OUTPUT-FILE<span class="w"> </span>progress.md
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>OUTPUT-MODE<span class="w"> </span>append<span class="w">     </span>#<span class="w"> </span>Add<span class="w"> </span>to<span class="w"> </span>end<span class="w"> </span>of<span class="w"> </span>file
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>OUTPUT-SECTION<span class="w"> </span><span class="s2">"## Session Log"</span><span class="w">  </span>#<span class="w"> </span>Find<span class="w"> </span>section,<span class="w"> </span>append<span class="w"> </span>there
+</code></pre></div>
+<p><strong>Use Case:</strong> Accumulating session logs.</p>
+<h4 id="fr-004-workspace-aware-defaults">FR-004: Workspace-Aware Defaults<a class="headerlink" href="#fr-004-workspace-aware-defaults" title="Permanent link">&para;</a></h4>
+<p>Auto-detect workspace configuration:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># If .sdqctl/config.yaml exists, use it</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>sdqctl<span class="w"> </span>run<span class="w"> </span>workflow.conv<span class="w">  </span><span class="c1"># Picks up workspace settings</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="c1"># .sdqctl/config.yaml</span>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>workspace:
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="w">  </span>root:<span class="w"> </span>.
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="w">  </span>externals:<span class="w"> </span>externals/
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="w">  </span>lockfile:<span class="w"> </span>workspace.lock.json
+<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>defaults:
+<a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="w">  </span>adapter:<span class="w"> </span>copilot
+<a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a><span class="w">  </span>model:<span class="w"> </span>claude-sonnet-4
+<a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a>context:
+<a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a><span class="w">  </span>allow_missing:<span class="w"> </span><span class="nb">true</span>
+</code></pre></div>
+<hr />
+<h2 id="part-4-workarounds">Part 4: Workarounds<a class="headerlink" href="#part-4-workarounds" title="Permanent link">&para;</a></h2>
+<p>Until features are implemented, here are workarounds we're using:</p>
+<h3 id="41-workflow-splitting">4.1 Workflow Splitting<a class="headerlink" href="#41-workflow-splitting" title="Permanent link">&para;</a></h3>
+<p>Split workflows into "core" (validated) and "extended" (aspirational):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="c1"># Core workflows that pass validation</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>sdqctl<span class="w"> </span>flow<span class="w"> </span>workflows/verify-refs.conv<span class="w"> </span>workflows/gen-inventory.conv
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="c1"># Extended workflows run with make (bypasses validation)</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>make<span class="w"> </span>verify
+</code></pre></div>
+<h3 id="42-symlink-missing-directories">4.2 Symlink Missing Directories<a class="headerlink" href="#42-symlink-missing-directories" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="c1"># Create expected directory structure</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>ln<span class="w"> </span>-s<span class="w"> </span>xdrip-android<span class="w"> </span>mapping/xdrip
+</code></pre></div>
+<p><strong>Problem:</strong> Pollutes workspace with compatibility shims.</p>
+<h3 id="43-touch-empty-files">4.3 Touch Empty Files<a class="headerlink" href="#43-touch-empty-files" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="c1"># Create placeholder YAML files</span>
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>conformance/scenarios/placeholder
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>touch<span class="w"> </span>conformance/scenarios/placeholder/dummy.yaml
+</code></pre></div>
+<p><strong>Problem:</strong> Misleading—suggests content exists when it doesn't.</p>
+<h3 id="44-use-make-as-orchestrator">4.4 Use make as Orchestrator<a class="headerlink" href="#44-use-make-as-orchestrator" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1"># Makefile handles tool execution, sdqctl handles AI workflows</span>
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>make<span class="w"> </span>verify<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sdqctl<span class="w"> </span>run<span class="w"> </span>workflows/gap-detection.conv
+</code></pre></div>
+<p><strong>Problem:</strong> Two tools instead of one unified interface.</p>
+<hr />
+<h2 id="part-5-compatibility-notes">Part 5: Compatibility Notes<a class="headerlink" href="#part-5-compatibility-notes" title="Permanent link">&para;</a></h2>
+<h3 id="51-what-works-well">5.1 What Works Well<a class="headerlink" href="#51-what-works-well" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>ConversationFile format</strong> - Clean, readable, Dockerfile-like syntax</li>
+<li><strong>PROMPT chaining</strong> - Multiple prompts in sequence is intuitive</li>
+<li><strong>CHECKPOINT</strong> - Pause/resume pattern is valuable</li>
+<li><strong>OUTPUT-FORMAT/OUTPUT-FILE</strong> - Clear output specification</li>
+<li><strong>Adapter abstraction</strong> - <code>copilot</code> adapter works with GitHub Copilot CLI</li>
+</ol>
+<h3 id="52-modeladapter-observations">5.2 Model/Adapter Observations<a class="headerlink" href="#52-modeladapter-observations" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Directive</th>
+<th>Value</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MODEL claude-sonnet-4</code></td>
+<td>✅</td>
+<td>Recognized by copilot adapter</td>
+</tr>
+<tr>
+<td><code>MODEL gpt-4</code></td>
+<td>✅</td>
+<td>Recognized</td>
+</tr>
+<tr>
+<td><code>ADAPTER copilot</code></td>
+<td>✅</td>
+<td>Works with Copilot CLI</td>
+</tr>
+<tr>
+<td><code>ADAPTER mock</code></td>
+<td>✅</td>
+<td>Useful for testing</td>
+</tr>
+</tbody>
+</table>
+<h3 id="53-version-compatibility">5.3 Version Compatibility<a class="headerlink" href="#53-version-compatibility" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>sdqctl 0.1.0</strong> - Current version tested</li>
+<li><strong>Python 3.11+</strong> - Required</li>
+<li><strong>Click 8.x</strong> - CLI framework</li>
+</ul>
+<hr />
+<h2 id="appendix-a-test-commands">Appendix A: Test Commands<a class="headerlink" href="#appendix-a-test-commands" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="c1"># Validate all workflows</span>
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="nb">source</span><span class="w"> </span>./activate-sdqctl.sh
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="k">for</span><span class="w"> </span>f<span class="w"> </span><span class="k">in</span><span class="w"> </span>workflows/*.conv<span class="p">;</span><span class="w"> </span><span class="k">do</span><span class="w"> </span>
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="w">  </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"=== </span><span class="nv">$f</span><span class="s2"> ==="</span><span class="w"> </span>
+<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="w">  </span>sdqctl<span class="w"> </span>validate<span class="w"> </span><span class="s2">"</span><span class="nv">$f</span><span class="s2">"</span><span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-5
+<a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a><span class="k">done</span>
+<a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a>
+<a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a><span class="c1"># Show parsed workflow</span>
+<a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a>sdqctl<span class="w"> </span>show<span class="w"> </span>workflows/ci-pipeline.conv
+<a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a>
+<a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a><span class="c1"># Check status</span>
+<a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a>sdqctl<span class="w"> </span>status
+<a id="__codelineno-18-13" name="__codelineno-18-13" href="#__codelineno-18-13"></a>
+<a id="__codelineno-18-14" name="__codelineno-18-14" href="#__codelineno-18-14"></a><span class="c1"># Dry run (doesn't execute AI)</span>
+<a id="__codelineno-18-15" name="__codelineno-18-15" href="#__codelineno-18-15"></a>sdqctl<span class="w"> </span>run<span class="w"> </span>workflows/verify-refs.conv<span class="w"> </span>--dry-run
+</code></pre></div>
+<h2 id="appendix-b-file-structure-reference">Appendix B: File Structure Reference<a class="headerlink" href="#appendix-b-file-structure-reference" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>rag-nightscout-ecosystem-alignment/
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>├── workflows/           # 15 .conv files
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>│   ├── ci-pipeline.conv
+<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>│   ├── cross-project-alignment.conv
+<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>│   ├── deep-dive-template.conv
+<a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>│   ├── example-audit.conv
+<a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a>│   ├── faceted-analysis.conv
+<a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a>│   ├── full-verification.conv
+<a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a>│   ├── gap-detection.conv
+<a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a>│   ├── gen-coverage-report.conv
+<a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a>│   ├── gen-inventory.conv
+<a id="__codelineno-19-12" name="__codelineno-19-12" href="#__codelineno-19-12"></a>│   ├── gen-traceability.conv
+<a id="__codelineno-19-13" name="__codelineno-19-13" href="#__codelineno-19-13"></a>│   ├── verify-assertions.conv
+<a id="__codelineno-19-14" name="__codelineno-19-14" href="#__codelineno-19-14"></a>│   ├── verify-coverage.conv
+<a id="__codelineno-19-15" name="__codelineno-19-15" href="#__codelineno-19-15"></a>│   ├── verify-refs.conv
+<a id="__codelineno-19-16" name="__codelineno-19-16" href="#__codelineno-19-16"></a>│   ├── verify-terminology.conv
+<a id="__codelineno-19-17" name="__codelineno-19-17" href="#__codelineno-19-17"></a>│   └── README.md
+<a id="__codelineno-19-18" name="__codelineno-19-18" href="#__codelineno-19-18"></a>├── tools/               # 14+ Python verification tools
+<a id="__codelineno-19-19" name="__codelineno-19-19" href="#__codelineno-19-19"></a>├── mapping/             # 17 project mapping directories
+<a id="__codelineno-19-20" name="__codelineno-19-20" href="#__codelineno-19-20"></a>├── traceability/        # Requirements, gaps, coverage
+<a id="__codelineno-19-21" name="__codelineno-19-21" href="#__codelineno-19-21"></a>├── conformance/         # Scenarios and assertions
+<a id="__codelineno-19-22" name="__codelineno-19-22" href="#__codelineno-19-22"></a>├── specs/               # OpenAPI and JSON Schema
+<a id="__codelineno-19-23" name="__codelineno-19-23" href="#__codelineno-19-23"></a>├── docs/                # Documentation
+<a id="__codelineno-19-24" name="__codelineno-19-24" href="#__codelineno-19-24"></a>├── externals/           # 16 cloned repositories (gitignored)
+<a id="__codelineno-19-25" name="__codelineno-19-25" href="#__codelineno-19-25"></a>├── workspace.lock.json  # Repository version pins
+<a id="__codelineno-19-26" name="__codelineno-19-26" href="#__codelineno-19-26"></a>├── Makefile             # 22 orchestration targets
+<a id="__codelineno-19-27" name="__codelineno-19-27" href="#__codelineno-19-27"></a>├── progress.md          # Session tracking
+<a id="__codelineno-19-28" name="__codelineno-19-28" href="#__codelineno-19-28"></a>└── activate-sdqctl.sh   # venv activation script
+</code></pre></div>
+<h2 id="appendix-c-related-documents">Appendix C: Related Documents<a class="headerlink" href="#appendix-c-related-documents" title="Permanent link">&para;</a></h2>
+<ul>
+<li>INTEGRATION-PROPOSAL.md (not in the repository) - sdqctl team's integration roadmap</li>
+<li><a href="../workflows/index.html">workflows/README.md</a> - Workflow documentation</li>
+<li>replit.md (not published) - Workspace overview and patterns</li>
+</ul>
+<hr />
+<h2 id="part-6-recent-improvements-2026-01-24">Part 6: Recent Improvements (2026-01-24)<a class="headerlink" href="#part-6-recent-improvements-2026-01-24" title="Permanent link">&para;</a></h2>
+<p>This section documents the improvements made since the original feedback.</p>
+<h3 id="61-verify-refs-now-supports-alias-references">6.1 verify refs Now Supports Alias References<a class="headerlink" href="#61-verify-refs-now-supports-alias-references" title="Permanent link">&para;</a></h3>
+<p>The <code>sdqctl verify refs</code> command now validates both <code>@-references</code> and <code>alias:path</code> references:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="c1"># Verify all references in workspace</span>
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>sdqctl<span class="w"> </span>verify<span class="w"> </span>refs
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>
+<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="c1"># With fix suggestions</span>
+<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>sdqctl<span class="w"> </span>verify<span class="w"> </span>refs<span class="w"> </span>--suggest-fixes
+<a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a>
+<a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a><span class="c1"># JSON output for CI integration</span>
+<a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a>sdqctl<span class="w"> </span>verify<span class="w"> </span>refs<span class="w"> </span>--json<span class="w"> </span>&gt;<span class="w"> </span>refs-report.json
+</code></pre></div>
+<p><strong>Example output:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>✗ FAILED: Scanned 552 file(s), found 845 reference(s): 596 valid, 249 broken
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>  ERROR mapping/trio/README.md:42: Broken alias reference: trio:Trio/Sources/Models/Preferences.swift
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>  HINT: Expected at externals/Trio/Preferences.swift
+<a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>  SUGGEST: Found: externals/Trio/Trio/Sources/Models/Preferences.swift
+</code></pre></div></p>
+<h3 id="62-refcat-for-code-extraction">6.2 refcat for Code Extraction<a class="headerlink" href="#62-refcat-for-code-extraction" title="Permanent link">&para;</a></h3>
+<p>Use <code>refcat</code> to extract code snippets for context:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="c1"># Extract with line range</span>
+<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>sdqctl<span class="w"> </span>refcat<span class="w"> </span><span class="s2">"loop:LoopKit/LoopKit/TemporaryScheduleOverride.swift#L1-L20"</span>
+<a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>
+<a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a><span class="c1"># List what a workflow would gather</span>
+<a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>sdqctl<span class="w"> </span>refcat<span class="w"> </span>--from-workflow<span class="w"> </span>workflows/verify-refs.conv<span class="w"> </span>--list-files
+</code></pre></div>
+<h3 id="63-iterative-improvement-workflows">6.3 Iterative Improvement Workflows<a class="headerlink" href="#63-iterative-improvement-workflows" title="Permanent link">&para;</a></h3>
+<p>Two new workflows for improving sdqctl tools themselves:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="c1"># 3-cycle false positive reduction workflow</span>
+<a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>sdqctl<span class="w"> </span>cycle<span class="w"> </span>examples/workflows/tooling/refcat-improvement.conv<span class="w"> </span>-n<span class="w"> </span><span class="m">3</span>
+<a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>
+<a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="c1"># 5-cycle TDD pattern for verifier improvements</span>
+<a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>sdqctl<span class="w"> </span>cycle<span class="w"> </span>examples/workflows/tooling/verifier-test-loop.conv<span class="w"> </span>-n<span class="w"> </span><span class="m">5</span>
+</code></pre></div>
+<h3 id="64-false-positive-reduction-progress">6.4 False Positive Reduction Progress<a class="headerlink" href="#64-false-positive-reduction-progress" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Broken Refs</th>
+<th>Method</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Initial</td>
+<td>502</td>
+<td>-</td>
+</tr>
+<tr>
+<td>+Root-first resolution</td>
+<td>297</td>
+<td>Try workspace root before file-relative</td>
+</tr>
+<tr>
+<td>+TLD exclusions</td>
+<td>271</td>
+<td>Case-insensitive .edu/.gov/.com</td>
+</tr>
+<tr>
+<td>+Connection strings</td>
+<td>259</td>
+<td>localhost:, mongo:, redis:</td>
+</tr>
+<tr>
+<td>+Unix sockets</td>
+<td>258</td>
+<td>sock:, unix:, docker:</td>
+</tr>
+<tr>
+<td>+Timestamps</td>
+<td>251</td>
+<td>mm:, ss:, hh:</td>
+</tr>
+<tr>
+<td>+path/to fixes</td>
+<td>249</td>
+<td>Replaced antipattern with real paths</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Remaining 249 broken refs are real documentation issues</strong> requiring path updates.</p>
+<h3 id="65-correct-reference-format">6.5 Correct Reference Format<a class="headerlink" href="#65-correct-reference-format" title="Permanent link">&para;</a></h3>
+<p>For sdqctl tools to validate refs, use full paths from repo root:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="gh"># ✅ CORRECT: Full path from repo root</span>
+<a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>See <span class="sb">`trio:Trio/Sources/Models/Preferences.swift#L22`</span> for the setting.
+<a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>
+<a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a><span class="gh"># ❌ INCORRECT: Short-form (won't validate)</span>
+<a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a>See <span class="sb">`trio:Trio/Sources/Models/Preferences.swift`</span> for the setting.
+<a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a>
+<a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a><span class="gh"># ❌ AVOID: Placeholder paths</span>
+<a id="__codelineno-24-8" name="__codelineno-24-8" href="#__codelineno-24-8"></a>See <span class="sb">`loop:path/to/file.swift`</span> for the implementation.
+</code></pre></div>
+<h3 id="66-remaining-work">6.6 Remaining Work<a class="headerlink" href="#66-remaining-work" title="Permanent link">&para;</a></h3>
+<p>The 249 remaining broken refs need ecosystem maintainer action:</p>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Count</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Short-form refs</td>
+<td>140+</td>
+<td>Use full paths</td>
+</tr>
+<tr>
+<td>Moved files</td>
+<td>80+</td>
+<td>Update to new locations</td>
+</tr>
+<tr>
+<td>Missing files</td>
+<td>20+</td>
+<td>Create or remove refs</td>
+</tr>
+</tbody>
+</table>
+<p><strong>To fix:</strong> Run <code>sdqctl verify refs --suggest-fixes</code> and update paths.</p>
+<hr />
+<p><em>Report generated from rag-nightscout-ecosystem-alignment workspace analysis.</em></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

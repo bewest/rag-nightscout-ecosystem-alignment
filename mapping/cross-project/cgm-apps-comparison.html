@@ -1,0 +1,5887 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/mapping/cross-project/cgm-apps-comparison.html">
+      
+      
+        <link rel="prev" href="capability-layer-matrix.html">
+      
+      
+        <link rel="next" href="g7-implementation-comparison.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>CGM Apps Cross-Project Comparison - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#cgm-apps-cross-project-comparison" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              CGM Apps Cross-Project Comparison
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../docs/00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../docs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    mapping/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../_template.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mapping: [Project] - [Scenario/Concept]
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../aaps/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    aaps/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../cgm-remote-monitor/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cross-project/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_5" id="__nav_6_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    cross-project/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="aid-controller-sync-patterns.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AID Controller Sync Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="capability-layer-matrix.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Capability Layer Matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Apps Cross-Project Comparison
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="cgm-apps-comparison.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Apps Cross-Project Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#platform-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Platform Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cgm-data-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CGM Data Sources
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nightscout-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nightscout Integration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Nightscout Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#api-paths-used" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API Paths Used
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sync-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sync Architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#upload-identifiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Upload Identifiers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Models
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bgreading-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BgReading Comparison
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#treatments-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Treatments Comparison
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#unique-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unique Features
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Unique Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#xdrip-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        xDrip+ Only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#xdrip4ios-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        xDrip4iOS Only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nightguard-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nightguard Only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#diable-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DiaBLE Only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#xdrip-js-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        xdrip-js Only
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#treatment-event-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Treatment Event Types
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#authentication-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication Methods
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-flow-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Flow Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Flow Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#xdrip-android" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        xDrip+ (Android)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#xdrip4ios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        xDrip4iOS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nightguard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nightguard
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alarm-system-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alarm System Comparison
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gap-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gap Analysis
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Gap Analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#xdrip-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        xDrip+ Gaps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#xdrip4ios-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        xDrip4iOS Gaps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nightguard-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nightguard Gaps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#diable-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DiaBLE Gaps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#xdrip-js-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        xdrip-js Gaps
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommendations-for-alignment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommendations for Alignment
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#auditable-source-citations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Auditable Source Citations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Auditable Source Citations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-source-files-with-line-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Source Files (with line references)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#full-path-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full Path Template
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#xdrip4ios-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        xDrip4iOS References
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nightguard-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nightguard References
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#diable-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DiaBLE References
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#xdrip-js-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        xdrip-js References
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="g7-implementation-comparison.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    G7 Implementation Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="interoperability-matrix.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-Client Interoperability Matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="terminology-matrix.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-Project Terminology Matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../diable/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    diable/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../loop/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    loop/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../loopcaregiver/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    loopcaregiver/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../loopfollow/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    loopfollow/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightguard/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightguard/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-connect/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-connect/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-librelink-up/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-librelink-up/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-reporter/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-reporter/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-roles-gateway/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-roles-gateway/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nocturne/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nocturne/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../openaps/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    openaps/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../oref0/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    oref0/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../share2nightscout-bridge/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    share2nightscout-bridge/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tconnectsync/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tconnectsync/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../trio/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    trio/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../xdrip/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../xdrip-android/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip-android/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../xdrip-js/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip-js/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../xdrip4ios/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip4ios/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#platform-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Platform Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cgm-data-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CGM Data Sources
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nightscout-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nightscout Integration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Nightscout Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#api-paths-used" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API Paths Used
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sync-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sync Architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#upload-identifiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Upload Identifiers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Models
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bgreading-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BgReading Comparison
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#treatments-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Treatments Comparison
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#unique-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unique Features
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Unique Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#xdrip-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        xDrip+ Only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#xdrip4ios-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        xDrip4iOS Only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nightguard-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nightguard Only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#diable-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DiaBLE Only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#xdrip-js-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        xdrip-js Only
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#treatment-event-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Treatment Event Types
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#authentication-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication Methods
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-flow-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Flow Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Flow Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#xdrip-android" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        xDrip+ (Android)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#xdrip4ios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        xDrip4iOS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nightguard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nightguard
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alarm-system-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alarm System Comparison
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gap-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gap Analysis
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Gap Analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#xdrip-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        xDrip+ Gaps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#xdrip4ios-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        xDrip4iOS Gaps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nightguard-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nightguard Gaps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#diable-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DiaBLE Gaps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#xdrip-js-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        xdrip-js Gaps
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommendations-for-alignment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommendations for Alignment
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#auditable-source-citations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Auditable Source Citations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Auditable Source Citations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-source-files-with-line-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Source Files (with line references)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#full-path-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full Path Template
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#xdrip4ios-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        xDrip4iOS References
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nightguard-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nightguard References
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#diable-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DiaBLE References
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#xdrip-js-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        xdrip-js References
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="cgm-apps-cross-project-comparison">CGM Apps Cross-Project Comparison<a class="headerlink" href="#cgm-apps-cross-project-comparison" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-01-17 at <code>bbaa04fc</code>.</em></p>
+<p>This matrix compares CGM data management applications: xDrip+ (Android), xDrip4iOS, DiaBLE, Nightguard, xdrip-js, and related ecosystem apps.</p>
+<hr />
+<h2 id="platform-overview">Platform Overview<a class="headerlink" href="#platform-overview" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>xDrip+ (Android)</th>
+<th>xDrip4iOS</th>
+<th>DiaBLE</th>
+<th>Nightguard</th>
+<th>xdrip-js</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Platform</strong></td>
+<td>Android</td>
+<td>iOS</td>
+<td>iOS/watchOS</td>
+<td>iOS/watchOS</td>
+<td>Node.js (OpenAPS rigs)</td>
+</tr>
+<tr>
+<td><strong>Language</strong></td>
+<td>Java/Kotlin</td>
+<td>Swift</td>
+<td>Swift</td>
+<td>Swift</td>
+<td>JavaScript</td>
+</tr>
+<tr>
+<td><strong>Primary Role</strong></td>
+<td>CGM hub + producer</td>
+<td>CGM producer</td>
+<td>CGM producer</td>
+<td>Consumer/follower only</td>
+<td>BLE library</td>
+</tr>
+<tr>
+<td><strong>License</strong></td>
+<td>GPL-3.0</td>
+<td>GPL-3.0</td>
+<td>GPL-3.0</td>
+<td>AGPL-3.0</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><strong>Codebase Size</strong></td>
+<td>~16,000 lines (models only)</td>
+<td>~5,000 lines</td>
+<td>~20,000 lines</td>
+<td>~16,600 lines</td>
+<td>~2,500 lines</td>
+</tr>
+<tr>
+<td><strong>Repository</strong></td>
+<td>eveningoutpost/dexdrip</td>
+<td>JohanDegraeve/xdripswift</td>
+<td>gui-dos/DiaBLE</td>
+<td>nightscout/nightguard</td>
+<td>xdrip-js/xdrip-js</td>
+</tr>
+<tr>
+<td><strong>Primary API</strong></td>
+<td><code>/api/v1/entries</code></td>
+<td><code>/api/v1/entries</code></td>
+<td><code>/api/v1/entries</code></td>
+<td><code>/api/v2/properties</code></td>
+<td>N/A (local BLE)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="cgm-data-sources">CGM Data Sources<a class="headerlink" href="#cgm-data-sources" title="Permanent link">&para;</a></h2>
+<p><em>Note: Nightguard and xdrip-js are consumer/library apps without direct CGM connections. xdrip-js provides BLE communication for Lookout/Logger apps.</em></p>
+<table>
+<thead>
+<tr>
+<th>Source Type</th>
+<th>xDrip+ (Android)</th>
+<th>xDrip4iOS</th>
+<th>DiaBLE</th>
+<th>Nightguard</th>
+<th>xdrip-js</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Dexcom G5</strong></td>
+<td>Direct BT</td>
+<td>Direct BT</td>
+<td>Direct BT</td>
+<td>N/A</td>
+<td>Direct BT</td>
+</tr>
+<tr>
+<td><strong>Dexcom G6</strong></td>
+<td>Direct BT</td>
+<td>Direct BT</td>
+<td>Direct BT</td>
+<td>N/A</td>
+<td>Direct BT</td>
+</tr>
+<tr>
+<td><strong>Dexcom G7</strong></td>
+<td>Direct BT</td>
+<td>Direct BT</td>
+<td>Direct BT</td>
+<td>N/A</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Dexcom ONE+/Stelo</strong></td>
+<td>No</td>
+<td>No</td>
+<td>Direct BT</td>
+<td>N/A</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Libre 1</strong></td>
+<td>Via bridge</td>
+<td>Via bridge</td>
+<td>NFC</td>
+<td>N/A</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Libre 2</strong></td>
+<td>Via bridge</td>
+<td>Direct BT</td>
+<td>NFC + BLE</td>
+<td>N/A</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Libre 2 Gen2</strong></td>
+<td>No</td>
+<td>No</td>
+<td>NFC + BLE</td>
+<td>N/A</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Libre 3</strong></td>
+<td>Via companion</td>
+<td>No</td>
+<td>NFC + BLE (partial)</td>
+<td>N/A</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Libre Pro/Pro H</strong></td>
+<td>No</td>
+<td>No</td>
+<td>NFC</td>
+<td>N/A</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Lingo</strong></td>
+<td>No</td>
+<td>No</td>
+<td>NFC</td>
+<td>N/A</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Medtrum A6</strong></td>
+<td>Direct BT</td>
+<td>No</td>
+<td>No</td>
+<td>N/A</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>GluPro</strong></td>
+<td>Direct BT</td>
+<td>No</td>
+<td>No</td>
+<td>N/A</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>MiaoMiao</strong></td>
+<td>Bridge device</td>
+<td>Bridge device</td>
+<td>Bridge device</td>
+<td>N/A</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Bubble</strong></td>
+<td>Bridge device</td>
+<td>Bridge device</td>
+<td>Bridge device</td>
+<td>N/A</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>BluCon</strong></td>
+<td>Bridge device</td>
+<td>No</td>
+<td>Bridge device</td>
+<td>N/A</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Wixel/xBridge</strong></td>
+<td>Bridge device</td>
+<td>No</td>
+<td>No</td>
+<td>N/A</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Carelink (630G/640G/670G)</strong></td>
+<td>Cloud follower</td>
+<td>No</td>
+<td>No</td>
+<td>N/A</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Nightscout Follower</strong></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>No</td>
+<td>Yes (primary)</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Dexcom Share Follower</strong></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>No</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>LibreLinkUp Follower</strong></td>
+<td>No</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Web/Custom Follower</strong></td>
+<td>Yes</td>
+<td>No</td>
+<td>No</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Companion Apps</strong></td>
+<td>5+ (LibreAlarm, NSEmulator, etc.)</td>
+<td>No</td>
+<td>No</td>
+<td>N/A</td>
+<td>Lookout, Logger</td>
+</tr>
+<tr>
+<td><strong>Total Source Types</strong></td>
+<td>20+</td>
+<td>~6</td>
+<td>12+</td>
+<td>1 (NS)</td>
+<td>2 (G5/G6)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="nightscout-integration">Nightscout Integration<a class="headerlink" href="#nightscout-integration" title="Permanent link">&para;</a></h2>
+<p><em>Note: xdrip-js is a BLE library without direct Nightscout integration—client apps (Lookout/Logger) handle uploads.</em></p>
+<h3 id="api-paths-used">API Paths Used<a class="headerlink" href="#api-paths-used" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>xDrip+</th>
+<th>xDrip4iOS</th>
+<th>DiaBLE</th>
+<th>Nightguard</th>
+<th>Direction</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>POST /api/v1/entries</code></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>No</td>
+<td>Upload</td>
+</tr>
+<tr>
+<td><code>GET /api/v1/entries.json</code></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Download</td>
+</tr>
+<tr>
+<td><code>GET /api/v2/properties</code></td>
+<td>No</td>
+<td>No</td>
+<td>No</td>
+<td>Yes (primary)</td>
+<td>Download</td>
+</tr>
+<tr>
+<td><code>GET /api/v1/status.json</code></td>
+<td>No</td>
+<td>No</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Download</td>
+</tr>
+<tr>
+<td><code>POST /api/v1/treatments</code></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>No</td>
+<td>Yes (care only)</td>
+<td>Upload</td>
+</tr>
+<tr>
+<td><code>PUT /api/v1/treatments</code></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>No</td>
+<td>No</td>
+<td>Update</td>
+</tr>
+<tr>
+<td><code>DELETE /api/v1/treatments/{id}</code></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>No</td>
+<td>No</td>
+<td>Delete</td>
+</tr>
+<tr>
+<td><code>GET /api/v1/treatments</code></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>No</td>
+<td>Yes</td>
+<td>Download</td>
+</tr>
+<tr>
+<td><code>POST /api/v1/devicestatus</code></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>No</td>
+<td>Upload</td>
+</tr>
+<tr>
+<td><code>GET /api/v1/devicestatus.json</code></td>
+<td>No</td>
+<td>Yes</td>
+<td>No</td>
+<td>Yes</td>
+<td>Download</td>
+</tr>
+<tr>
+<td><code>GET /api/v1/profile</code></td>
+<td>No</td>
+<td>Yes</td>
+<td>No</td>
+<td>No</td>
+<td>Download</td>
+</tr>
+</tbody>
+</table>
+<h3 id="sync-architecture">Sync Architecture<a class="headerlink" href="#sync-architecture" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>xDrip+ (Android)</th>
+<th>xDrip4iOS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Queue System</strong></td>
+<td>UploaderQueue with bitfield circuits</td>
+<td>Direct upload</td>
+</tr>
+<tr>
+<td><strong>Multi-destination</strong></td>
+<td>5 circuits (NS, Mongo, InfluxDB, Wear, Test)</td>
+<td>Nightscout only</td>
+</tr>
+<tr>
+<td><strong>Treatment Sync</strong></td>
+<td>Bi-directional with delete</td>
+<td>Bi-directional</td>
+</tr>
+<tr>
+<td><strong>Gzip Compression</strong></td>
+<td>Yes (configurable)</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Rate Limiting</strong></td>
+<td>Built-in (JoH.ratelimit)</td>
+<td>Timer-based</td>
+</tr>
+<tr>
+<td><strong>Backfill</strong></td>
+<td>MissedReadingsEstimator</td>
+<td>Time-based</td>
+</tr>
+</tbody>
+</table>
+<h3 id="upload-identifiers">Upload Identifiers<a class="headerlink" href="#upload-identifiers" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>xDrip+</th>
+<th>xDrip4iOS</th>
+<th>DiaBLE</th>
+<th>Nightguard</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>enteredBy</code></td>
+<td><code>"xdrip"</code></td>
+<td><code>"xDrip4iOS"</code></td>
+<td><code>"DiaBLE"</code></td>
+<td><code>"nightguard"</code></td>
+</tr>
+<tr>
+<td><code>device</code></td>
+<td><code>"xDrip-" + manufacturer + model</code></td>
+<td>Device name</td>
+<td><code>"DiaBLE"</code></td>
+<td>N/A</td>
+</tr>
+<tr>
+<td><code>uuid</code></td>
+<td>Client-generated UUID</td>
+<td>Client-generated UUID</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="data-models">Data Models<a class="headerlink" href="#data-models" title="Permanent link">&para;</a></h2>
+<h3 id="bgreading-comparison">BgReading Comparison<a class="headerlink" href="#bgreading-comparison" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>xDrip+</th>
+<th>xDrip4iOS</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>timestamp</code></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Epoch milliseconds</td>
+</tr>
+<tr>
+<td><code>calculated_value</code></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>mg/dL</td>
+</tr>
+<tr>
+<td><code>raw_data</code></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Raw sensor value</td>
+</tr>
+<tr>
+<td><code>filtered_data</code></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Filtered sensor value</td>
+</tr>
+<tr>
+<td><code>noise</code></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Signal quality</td>
+</tr>
+<tr>
+<td><code>uuid</code></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Unique identifier</td>
+</tr>
+<tr>
+<td><code>source_info</code></td>
+<td>Yes</td>
+<td>No</td>
+<td>Provenance tracking</td>
+</tr>
+<tr>
+<td><code>dg_mgdl</code></td>
+<td>Yes</td>
+<td>No</td>
+<td>Dexcom native glucose</td>
+</tr>
+<tr>
+<td><code>dg_slope</code></td>
+<td>Yes</td>
+<td>No</td>
+<td>Dexcom native trend</td>
+</tr>
+<tr>
+<td><code>age_adjusted_raw_value</code></td>
+<td>Yes</td>
+<td>No</td>
+<td>Sensor age compensation</td>
+</tr>
+<tr>
+<td><code>calibration_flag</code></td>
+<td>Yes</td>
+<td>No</td>
+<td>Needs calibration</td>
+</tr>
+<tr>
+<td><code>a</code>, <code>b</code>, <code>c</code>, <code>ra</code>, <code>rb</code>, <code>rc</code></td>
+<td>Yes</td>
+<td>No</td>
+<td>Calibration polynomials</td>
+</tr>
+</tbody>
+</table>
+<h3 id="treatments-comparison">Treatments Comparison<a class="headerlink" href="#treatments-comparison" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>xDrip+</th>
+<th>xDrip4iOS</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>timestamp</code></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Event time</td>
+</tr>
+<tr>
+<td><code>eventType</code></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Treatment type</td>
+</tr>
+<tr>
+<td><code>enteredBy</code></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Creator</td>
+</tr>
+<tr>
+<td><code>notes</code></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Free text</td>
+</tr>
+<tr>
+<td><code>uuid</code></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Unique ID</td>
+</tr>
+<tr>
+<td><code>carbs</code></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Grams</td>
+</tr>
+<tr>
+<td><code>insulin</code></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Total units</td>
+</tr>
+<tr>
+<td><code>insulinJSON</code></td>
+<td>Yes</td>
+<td>No</td>
+<td>Multi-insulin support</td>
+</tr>
+<tr>
+<td><code>duration</code></td>
+<td>Via notes</td>
+<td>Yes</td>
+<td>For exercise/temp targets</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="unique-features">Unique Features<a class="headerlink" href="#unique-features" title="Permanent link">&para;</a></h2>
+<h3 id="xdrip-only">xDrip+ Only<a class="headerlink" href="#xdrip-only" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Local Web Server</strong></td>
+<td>Nightscout API emulation on port 17580</td>
+</tr>
+<tr>
+<td><strong>Multi-Insulin Tracking</strong></td>
+<td>Track multiple insulin types per treatment</td>
+</tr>
+<tr>
+<td><strong>Pluggable Calibration</strong></td>
+<td>5+ calibration algorithms</td>
+</tr>
+<tr>
+<td><strong>Smart Pen Integration</strong></td>
+<td>InPen, Pendiq, NovoPen support</td>
+</tr>
+<tr>
+<td><strong>Tidepool Upload</strong></td>
+<td>Direct Tidepool platform integration</td>
+</tr>
+<tr>
+<td><strong>InfluxDB Upload</strong></td>
+<td>Time-series database export</td>
+</tr>
+<tr>
+<td><strong>MongoDB Direct</strong></td>
+<td>Bypass Nightscout REST API</td>
+</tr>
+<tr>
+<td><strong>Broadcast Service API</strong></td>
+<td>Intent-based inter-app communication</td>
+</tr>
+<tr>
+<td><strong>AAPS Integration</strong></td>
+<td>Deep device status exchange</td>
+</tr>
+<tr>
+<td><strong>Tasker Support</strong></td>
+<td>Automation via local endpoints</td>
+</tr>
+<tr>
+<td><strong>Android Wear Direct</strong></td>
+<td>G6/G7 direct to watch</td>
+</tr>
+</tbody>
+</table>
+<h3 id="xdrip4ios-only">xDrip4iOS Only<a class="headerlink" href="#xdrip4ios-only" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Apple HealthKit</strong></td>
+<td>Native iOS health data integration</td>
+</tr>
+<tr>
+<td><strong>Apple Watch App</strong></td>
+<td>Native watchOS complications</td>
+</tr>
+<tr>
+<td><strong>iOS Widgets</strong></td>
+<td>Home/lock screen widgets</td>
+</tr>
+<tr>
+<td><strong>LibreLinkUp Follower</strong></td>
+<td>Abbott cloud follower</td>
+</tr>
+<tr>
+<td><strong>Calendar Integration</strong></td>
+<td>Events for watch complications</td>
+</tr>
+<tr>
+<td><strong>Speak</strong></td>
+<td>Voice announcements</td>
+</tr>
+</tbody>
+</table>
+<h3 id="nightguard-only">Nightguard Only<a class="headerlink" href="#nightguard-only" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Consumer-Only Design</strong></td>
+<td>Pure follower app, no CGM connection</td>
+</tr>
+<tr>
+<td><strong>Advanced Alarm System</strong></td>
+<td>Smart snooze, prediction, edge detection, persistent high</td>
+</tr>
+<tr>
+<td><strong>Yesterday Overlay</strong></td>
+<td>Chart shows previous day as comparison</td>
+</tr>
+<tr>
+<td><strong>Care Data Tracking</strong></td>
+<td>CAGE, SAGE, BAGE display and creation</td>
+</tr>
+<tr>
+<td><strong>Loop Integration</strong></td>
+<td>IOB, COB, temp basal, temp target from devicestatus</td>
+</tr>
+<tr>
+<td><strong>Screen Lock Mode</strong></td>
+<td>Keeps app running overnight for alarms</td>
+</tr>
+<tr>
+<td><strong>3 Widget Types</strong></td>
+<td>Text, timestamp, and gauge widgets</td>
+</tr>
+<tr>
+<td><strong>Watch Complications</strong></td>
+<td>Multiple complication families</td>
+</tr>
+<tr>
+<td><strong>API V2 Properties</strong></td>
+<td>Uses newer consolidated API endpoint</td>
+</tr>
+</tbody>
+</table>
+<h3 id="diable-only">DiaBLE Only<a class="headerlink" href="#diable-only" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>NFC Direct Reading</strong></td>
+<td>Read Libre sensors via NFC without bridges</td>
+</tr>
+<tr>
+<td><strong>Libre 2/3 BLE Streaming</strong></td>
+<td>Direct Bluetooth to Libre 2/3 sensors</td>
+</tr>
+<tr>
+<td><strong>Dexcom G7 Support</strong></td>
+<td>Native G7 support with backfill</td>
+</tr>
+<tr>
+<td><strong>Sensor Encryption Research</strong></td>
+<td>Publishes technical details for Libre 2/3 encryption</td>
+</tr>
+<tr>
+<td><strong>watchOS Direct BLE</strong></td>
+<td>Experimental direct-to-watch CGM connection</td>
+</tr>
+<tr>
+<td><strong>LibreView CSV Import</strong></td>
+<td>Import data from Abbott's LibreView cloud</td>
+</tr>
+<tr>
+<td><strong>Realm File Parsing</strong></td>
+<td>Read encrypted trident.realm from Libre 3 app</td>
+</tr>
+<tr>
+<td><strong>Temperature Calibration</strong></td>
+<td>Legacy LibreLink 2.3 calibration algorithm</td>
+</tr>
+<tr>
+<td><strong>Dexcom ONE+/Stelo</strong></td>
+<td>Support for newer Dexcom consumer sensors</td>
+</tr>
+</tbody>
+</table>
+<h3 id="xdrip-js-only">xdrip-js Only<a class="headerlink" href="#xdrip-js-only" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>OpenAPS Integration</strong></td>
+<td>Designed for DIY closed-loop rigs</td>
+</tr>
+<tr>
+<td><strong>Headless Operation</strong></td>
+<td>Runs on Raspberry Pi without display</td>
+</tr>
+<tr>
+<td><strong>Transmitter Reset</strong></td>
+<td>Reset G5/G6 transmitters for extended life</td>
+</tr>
+<tr>
+<td><strong>Custom Calibration</strong></td>
+<td>Linear least squares regression (via Logger)</td>
+</tr>
+<tr>
+<td><strong>Backfill Gap Filling</strong></td>
+<td>Retrieve missed readings from transmitter memory</td>
+</tr>
+<tr>
+<td><strong>Battery Monitoring</strong></td>
+<td>Transmitter battery voltage tracking</td>
+</tr>
+<tr>
+<td><strong>Alternate BT Channel</strong></td>
+<td>Use receiver Bluetooth channel option</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="treatment-event-types">Treatment Event Types<a class="headerlink" href="#treatment-event-types" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Event Type</th>
+<th>xDrip+</th>
+<th>xDrip4iOS</th>
+<th>Nightguard</th>
+<th>Nightscout Canonical</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sensor Start</td>
+<td><code>"Sensor Start"</code></td>
+<td><code>"Sensor Start"</code></td>
+<td><code>"Sensor Change"</code> (R/W) *</td>
+<td><code>"Sensor Start"</code></td>
+</tr>
+<tr>
+<td>Sensor Stop</td>
+<td><code>"Sensor Stop"</code></td>
+<td>N/A</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>Meal Bolus</td>
+<td><code>"Meal Bolus"</code></td>
+<td><code>"Bolus"</code></td>
+<td>Read only</td>
+<td><code>"Meal Bolus"</code></td>
+</tr>
+<tr>
+<td>Correction Bolus</td>
+<td><code>"Correction Bolus"</code></td>
+<td><code>"Bolus"</code></td>
+<td>Read only</td>
+<td><code>"Correction Bolus"</code></td>
+</tr>
+<tr>
+<td>Carbs</td>
+<td><code>"Carb Correction"</code></td>
+<td><code>"Carbs"</code></td>
+<td>Read only</td>
+<td><code>"Carbs"</code></td>
+</tr>
+<tr>
+<td>BG Check</td>
+<td><code>"BG Check"</code></td>
+<td><code>"BG Check"</code></td>
+<td>Read only</td>
+<td><code>"BG Check"</code></td>
+</tr>
+<tr>
+<td>Note</td>
+<td><code>"Note"</code></td>
+<td><code>"Note"</code></td>
+<td>Read only</td>
+<td><code>"Note"</code></td>
+</tr>
+<tr>
+<td>Exercise</td>
+<td><code>"Exercise"</code></td>
+<td><code>"Exercise"</code></td>
+<td>Read only</td>
+<td><code>"Exercise"</code></td>
+</tr>
+<tr>
+<td>Temp Basal</td>
+<td>N/A (via AAPS)</td>
+<td><code>"Temp Basal"</code></td>
+<td>Read only</td>
+<td><code>"Temp Basal"</code></td>
+</tr>
+<tr>
+<td>Site Change</td>
+<td>N/A</td>
+<td><code>"Site Change"</code></td>
+<td><code>"Site Change"</code> (R/W)</td>
+<td><code>"Site Change"</code></td>
+</tr>
+<tr>
+<td>Pump Battery</td>
+<td>N/A</td>
+<td><code>"Pump Battery Change"</code></td>
+<td><code>"Pump Battery Change"</code> (R/W)</td>
+<td><code>"Pump Battery Change"</code></td>
+</tr>
+<tr>
+<td>Temp Target</td>
+<td>N/A</td>
+<td>N/A</td>
+<td><code>"Temporary Target"</code> (R)</td>
+<td><code>"Temporary Target"</code></td>
+</tr>
+</tbody>
+</table>
+<p>* Nightguard uses non-canonical event names for some treatments (e.g., "Sensor Change" instead of "Sensor Start")</p>
+<hr />
+<h2 id="authentication-methods">Authentication Methods<a class="headerlink" href="#authentication-methods" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>xDrip+</th>
+<th>xDrip4iOS</th>
+<th>Nightguard</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>API_SECRET (SHA1 header)</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>No (not implemented)</td>
+</tr>
+<tr>
+<td>Token (query parameter)</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes (embedded in base URI)</td>
+</tr>
+<tr>
+<td>Local (no auth)</td>
+<td>Port 17580 loopback</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="data-flow-architecture">Data Flow Architecture<a class="headerlink" href="#data-flow-architecture" title="Permanent link">&para;</a></h2>
+<h3 id="xdrip-android">xDrip+ (Android)<a class="headerlink" href="#xdrip-android" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>CGM Device → Bluetooth → DexCollectionService → BgReading
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>                                                    ↓
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>                                            UploaderQueue
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>                                                    ↓
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>                    ┌───────────────────────────────┼───────────────────────────────┐
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>                    ↓                               ↓                               ↓
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>            Nightscout REST              MongoDB Direct               InfluxDB REST
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>                    ↓                               ↓                               ↓
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>            Local Web Server             Android Wear API             Tidepool API
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>                    ↓
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>            Broadcast Service → AAPS, Watchfaces, Tasker
+</code></pre></div>
+<h3 id="xdrip4ios">xDrip4iOS<a class="headerlink" href="#xdrip4ios" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>CGM Device → Bluetooth → CGMTransmitter → BgReading (CoreData)
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>                                               ↓
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>                                    NightscoutSyncManager
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>                                               ↓
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>                                    ┌──────────┴──────────┐
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>                                    ↓                     ↓
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>                            Nightscout REST         HealthKit
+</code></pre></div>
+<h3 id="nightguard">Nightguard<a class="headerlink" href="#nightguard" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>                                Nightscout Server
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>                                       ↓
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>                           NightscoutService (REST Client)
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>                                       ↓
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>                           NightscoutCacheService
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>                                       ↓
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>               ┌───────────────────────┼───────────────────────┐
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>               ↓                       ↓                       ↓
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>        iOS App (SwiftUI)        Apple Watch         iOS Widgets
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>               ↓                       ↓                       ↓
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>        ┌──────┴──────┐         WatchConnectivity    TimelineProvider
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>        ↓             ↓                ↓                       ↓
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>    ChartScene   AlarmRule     Complications         Widget Views
+</code></pre></div>
+<hr />
+<h2 id="alarm-system-comparison">Alarm System Comparison<a class="headerlink" href="#alarm-system-comparison" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>xDrip+</th>
+<th>xDrip4iOS</th>
+<th>Nightguard</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>High/Low Alerts</strong></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><strong>Missed Readings</strong></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes (configurable)</td>
+</tr>
+<tr>
+<td><strong>Edge Detection (Fast Rise/Drop)</strong></td>
+<td>Yes</td>
+<td>Basic</td>
+<td>Yes (advanced)</td>
+</tr>
+<tr>
+<td><strong>Low Prediction</strong></td>
+<td>Yes</td>
+<td>Basic</td>
+<td>Yes (15 min lookahead)</td>
+</tr>
+<tr>
+<td><strong>Smart Snooze</strong></td>
+<td>No</td>
+<td>No</td>
+<td>Yes (trend-aware)</td>
+</tr>
+<tr>
+<td><strong>Persistent High</strong></td>
+<td>No</td>
+<td>No</td>
+<td>Yes (time-based)</td>
+</tr>
+<tr>
+<td><strong>Snooze Sync (Phone↔Watch)</strong></td>
+<td>N/A</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><strong>Background Alarms</strong></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes (simplified)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="gap-analysis">Gap Analysis<a class="headerlink" href="#gap-analysis" title="Permanent link">&para;</a></h2>
+<h3 id="xdrip-gaps">xDrip+ Gaps<a class="headerlink" href="#xdrip-gaps" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Gap</th>
+<th>Description</th>
+<th>Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No iOS version</td>
+<td>Platform-locked</td>
+<td>iOS users cannot use</td>
+</tr>
+<tr>
+<td>No LibreLinkUp</td>
+<td>Missing follower source</td>
+<td>Libre users limited</td>
+</tr>
+<tr>
+<td>No HealthKit</td>
+<td>No Apple Health integration</td>
+<td>No unified health view</td>
+</tr>
+</tbody>
+</table>
+<h3 id="xdrip4ios-gaps">xDrip4iOS Gaps<a class="headerlink" href="#xdrip4ios-gaps" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Gap</th>
+<th>Description</th>
+<th>Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No local server</td>
+<td>No inter-app API</td>
+<td>Limited automation</td>
+</tr>
+<tr>
+<td>No multi-insulin</td>
+<td>Single insulin per treatment</td>
+<td>Less accurate tracking</td>
+</tr>
+<tr>
+<td>No Tidepool</td>
+<td>No direct upload</td>
+<td>Extra step required</td>
+</tr>
+<tr>
+<td>No pluggable cal</td>
+<td>Native only</td>
+<td>Less flexibility</td>
+</tr>
+<tr>
+<td>Limited sources</td>
+<td>Fewer CGM types</td>
+<td>Device limitations</td>
+</tr>
+</tbody>
+</table>
+<h3 id="nightguard-gaps">Nightguard Gaps<a class="headerlink" href="#nightguard-gaps" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Gap</th>
+<th>Description</th>
+<th>Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No CGM connection</td>
+<td>Consumer-only, no direct sensor</td>
+<td>Depends on Nightscout</td>
+</tr>
+<tr>
+<td>No profile download</td>
+<td>Cannot display profile data</td>
+<td>Limited Loop context</td>
+</tr>
+<tr>
+<td>No treatment editing</td>
+<td>Can only create care events</td>
+<td>Limited management</td>
+</tr>
+<tr>
+<td>No HealthKit</td>
+<td>No Apple Health integration</td>
+<td>Data silo</td>
+</tr>
+<tr>
+<td>Limited treatments</td>
+<td>Only CAGE/SAGE/BAGE writes</td>
+<td>Not a treatment manager</td>
+</tr>
+</tbody>
+</table>
+<h3 id="diable-gaps">DiaBLE Gaps<a class="headerlink" href="#diable-gaps" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Gap</th>
+<th>Description</th>
+<th>Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No treatment support</td>
+<td>Cannot create/sync treatments</td>
+<td>CGM data only</td>
+</tr>
+<tr>
+<td>No follower mode</td>
+<td>Cannot consume Nightscout data</td>
+<td>Primary mode only</td>
+</tr>
+<tr>
+<td>No HealthKit</td>
+<td>No Apple Health integration</td>
+<td>Data silo</td>
+</tr>
+<tr>
+<td>Prototype status</td>
+<td>Not production-ready</td>
+<td>Stability concerns</td>
+</tr>
+<tr>
+<td>No profile download</td>
+<td>Cannot display profile data</td>
+<td>Limited closed-loop context</td>
+</tr>
+<tr>
+<td>Libre 3 partial</td>
+<td>AES-CCM encryption not fully cracked</td>
+<td>Depends on external decryption</td>
+</tr>
+</tbody>
+</table>
+<h3 id="xdrip-js-gaps">xdrip-js Gaps<a class="headerlink" href="#xdrip-js-gaps" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Gap</th>
+<th>Description</th>
+<th>Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G5/G6 only</td>
+<td>No G7, no Libre sensors</td>
+<td>Limited sensor support</td>
+</tr>
+<tr>
+<td>No mobile app</td>
+<td>Library only, requires host app</td>
+<td>Not standalone</td>
+</tr>
+<tr>
+<td>No Nightscout direct</td>
+<td>Relies on client apps (Lookout/Logger)</td>
+<td>Indirect integration</td>
+</tr>
+<tr>
+<td>No calibration UI</td>
+<td>Raw calibration API only</td>
+<td>Developer-focused</td>
+</tr>
+<tr>
+<td>Linux/Raspberry Pi focused</td>
+<td>Not cross-platform mobile</td>
+<td>Niche use case</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="recommendations-for-alignment">Recommendations for Alignment<a class="headerlink" href="#recommendations-for-alignment" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Standardize <code>enteredBy</code></strong>: Both apps should use a consistent format</li>
+<li><strong>Sync identity field</strong>: Adopt common UUID format across apps</li>
+<li><strong>Multi-insulin schema</strong>: Propose <code>insulinJSON</code> extension to Nightscout</li>
+<li><strong>Local API spec</strong>: Document xDrip+ web server for potential xDrip4iOS adoption</li>
+<li><strong>Event type mapping</strong>: Harmonize <code>Sensor Stop</code> and other xDrip+-specific types</li>
+</ol>
+<hr />
+<h2 id="auditable-source-citations">Auditable Source Citations<a class="headerlink" href="#auditable-source-citations" title="Permanent link">&para;</a></h2>
+<p>All claims in this document are traceable to the xDrip+ source code in <code>externals/xDrip/</code>.</p>
+<h3 id="key-source-files-with-line-references">Key Source Files (with line references)<a class="headerlink" href="#key-source-files-with-line-references" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Claim</th>
+<th>Source File</th>
+<th>Line(s)</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>enteredBy: "xdrip"</code></td>
+<td><code>externals/xDrip/.../models/Treatments.java</code></td>
+<td>L76</td>
+<td><code>XDRIP_TAG = "xdrip"</code> constant</td>
+</tr>
+<tr>
+<td>BgReading entity</td>
+<td><code>externals/xDrip/.../models/BgReading.java</code></td>
+<td>L69-200</td>
+<td>Core glucose model fields</td>
+</tr>
+<tr>
+<td>Treatments entity</td>
+<td><code>externals/xDrip/.../models/Treatments.java</code></td>
+<td>L68-110</td>
+<td>Treatment model fields</td>
+</tr>
+<tr>
+<td>20+ DexCollectionType</td>
+<td><code>externals/xDrip/.../utils/DexCollectionType.java</code></td>
+<td>L31-59</td>
+<td>Enum definition</td>
+</tr>
+<tr>
+<td>UploaderQueue circuits</td>
+<td><code>externals/xDrip/.../utilitymodels/UploaderQueue.java</code></td>
+<td>L75-92</td>
+<td>Bitfield constants</td>
+</tr>
+<tr>
+<td>Local web server port</td>
+<td><code>externals/xDrip/.../webservices/XdripWebService.java</code></td>
+<td>L10-20</td>
+<td>Port 17580/17581</td>
+</tr>
+<tr>
+<td>NightscoutService API</td>
+<td><code>externals/xDrip/.../utilitymodels/NightscoutUploader.java</code></td>
+<td>L127-162</td>
+<td>Retrofit interface</td>
+</tr>
+<tr>
+<td>Nightscout follower</td>
+<td><code>externals/xDrip/.../cgm/nsfollow/NightscoutFollow.java</code></td>
+<td>L43-53</td>
+<td>Nightscout interface</td>
+</tr>
+<tr>
+<td>Multi-insulin JSON</td>
+<td><code>externals/xDrip/.../models/Treatments.java</code></td>
+<td>L85</td>
+<td><code>insulinJSON</code> field</td>
+</tr>
+<tr>
+<td>InsulinInjection</td>
+<td><code>externals/xDrip/.../models/InsulinInjection.java</code></td>
+<td>Full file</td>
+<td>Multi-insulin class</td>
+</tr>
+<tr>
+<td>Broadcast service</td>
+<td><code>externals/xDrip/.../services/broadcastservice/BroadcastService.java</code></td>
+<td>L63-156</td>
+<td>Intent receiver</td>
+</tr>
+<tr>
+<td>Calibration plugins</td>
+<td><code>externals/xDrip/.../calibrations/PluggableCalibration.java</code></td>
+<td>Full file</td>
+<td>Plugin manager</td>
+</tr>
+</tbody>
+</table>
+<h3 id="full-path-template">Full Path Template<a class="headerlink" href="#full-path-template" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>externals/xDrip/app/src/main/java/com/eveningoutpost/dexdrip/{path}
+</code></pre></div>
+<h3 id="xdrip4ios-references">xDrip4iOS References<a class="headerlink" href="#xdrip4ios-references" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>externals/xdripswift/xdrip/Managers/Nightscout/NightscoutSyncManager.swift
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>externals/xdripswift/xdrip/Core/Models/BgReading+CoreDataClass.swift
+</code></pre></div>
+<h3 id="nightguard-references">Nightguard References<a class="headerlink" href="#nightguard-references" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Claim</th>
+<th>Source File</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>enteredBy: "nightguard"</code></td>
+<td><code>externals/nightguard/nightguard/external/NightscoutService.swift#L983</code></td>
+<td>Treatment creation</td>
+</tr>
+<tr>
+<td>NightscoutData model</td>
+<td><code>externals/nightguard/nightguard/app/NightscoutData.swift</code></td>
+<td>Current BG model</td>
+</tr>
+<tr>
+<td>BloodSugar model</td>
+<td><code>externals/nightguard/nightguard/domain/BloodSugar.swift</code></td>
+<td>Historical BG model</td>
+</tr>
+<tr>
+<td>AlarmRule</td>
+<td><code>externals/nightguard/nightguard/domain/AlarmRule.swift</code></td>
+<td>Alarm logic</td>
+</tr>
+<tr>
+<td>API V2 Properties</td>
+<td><code>externals/nightguard/nightguard/external/NightscoutService.swift#L421</code></td>
+<td>Primary data source</td>
+</tr>
+<tr>
+<td>Widget Timeline</td>
+<td><code>externals/nightguard/nightguard Widget Extension/NightguardTimelineProvider.swift</code></td>
+<td>Widget data</td>
+</tr>
+<tr>
+<td>Watch Extension</td>
+<td><code>externals/nightguard/nightguard WatchKit App/ExtensionDelegate.swift</code></td>
+<td>Watch app entry</td>
+</tr>
+</tbody>
+</table>
+<p>See <code>mapping/nightguard/</code> for comprehensive documentation.</p>
+<h3 id="diable-references">DiaBLE References<a class="headerlink" href="#diable-references" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Claim</th>
+<th>Source File</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Glucose model</td>
+<td><code>externals/DiaBLE/DiaBLE Playground.swiftpm/Glucose.swift</code></td>
+<td>Core glucose data structure</td>
+</tr>
+<tr>
+<td>Sensor model</td>
+<td><code>externals/DiaBLE/DiaBLE Playground.swiftpm/Sensor.swift</code></td>
+<td>CGM sensor abstraction</td>
+</tr>
+<tr>
+<td>Nightscout sync</td>
+<td><code>externals/DiaBLE/DiaBLE Playground.swiftpm/Nightscout.swift</code></td>
+<td>NS upload/download logic</td>
+</tr>
+<tr>
+<td>Libre protocols</td>
+<td><code>externals/DiaBLE/DiaBLE Playground.swiftpm/Libre*.swift</code></td>
+<td>Libre 1/2/3/Pro support</td>
+</tr>
+<tr>
+<td>Dexcom protocols</td>
+<td><code>externals/DiaBLE/DiaBLE Playground.swiftpm/Dexcom*.swift</code></td>
+<td>G5/G6/G7 support</td>
+</tr>
+<tr>
+<td>Bridge devices</td>
+<td><code>externals/DiaBLE/DiaBLE Playground.swiftpm/{MiaoMiao,Bubble,BluCon}.swift</code></td>
+<td>Third-party bridges</td>
+</tr>
+<tr>
+<td>NFC communication</td>
+<td><code>externals/DiaBLE/DiaBLE Playground.swiftpm/NFC*.swift</code></td>
+<td>NFC sensor reading</td>
+</tr>
+</tbody>
+</table>
+<p>See <code>mapping/diable/</code> for comprehensive documentation.</p>
+<h3 id="xdrip-js-references">xdrip-js References<a class="headerlink" href="#xdrip-js-references" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Claim</th>
+<th>Source File</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Transmitter class</td>
+<td><code>externals/xdrip-js/lib/transmitter.js</code></td>
+<td>Main BLE communication</td>
+</tr>
+<tr>
+<td>Glucose structure</td>
+<td><code>externals/xdrip-js/lib/glucose.js</code></td>
+<td>Glucose event model</td>
+</tr>
+<tr>
+<td>BLE services</td>
+<td><code>externals/xdrip-js/lib/bluetooth-services.js</code></td>
+<td>Dexcom UUIDs</td>
+</tr>
+<tr>
+<td>Auth messages</td>
+<td><code>externals/xdrip-js/lib/messages/auth-*.js</code></td>
+<td>Authentication protocol</td>
+</tr>
+<tr>
+<td>Calibration state</td>
+<td><code>externals/xdrip-js/lib/calibration-state.js</code></td>
+<td>Session state codes</td>
+</tr>
+<tr>
+<td>Backfill parser</td>
+<td><code>externals/xdrip-js/lib/backfill-parser.js</code></td>
+<td>Gap filling logic</td>
+</tr>
+</tbody>
+</table>
+<p>See <code>mapping/xdrip-js/</code> for comprehensive documentation.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,5629 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/mapping/nightscout-reporter/data-models.html">
+      
+      
+        <link rel="prev" href="calculations.html">
+      
+      
+        <link rel="next" href="profile-handling.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Nightscout Reporter Data Models - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#nightscout-reporter-data-models" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Nightscout Reporter Data Models
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../docs/00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../docs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    mapping/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../_template.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mapping: [Project] - [Scenario/Concept]
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../aaps/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    aaps/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../cgm-remote-monitor/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../cross-project/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cross-project/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../diable/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    diable/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../loop/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    loop/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../loopcaregiver/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    loopcaregiver/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../loopfollow/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    loopfollow/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightguard/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightguard/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-connect/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-connect/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-librelink-up/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-librelink-up/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_14" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-reporter/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_14" id="__nav_6_14_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_14_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6_14">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    nightscout-reporter/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="calculations.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Reporter: Calculations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Reporter Data Models
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="data-models.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Reporter Data Models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#source-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source File
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#entrydata--entries-collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EntryData → entries Collection
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="EntryData → entries Collection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#field-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field Mapping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#computed-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Computed Properties
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validation-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validation Rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#treatmentdata--treatments-collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TreatmentData → treatments Collection
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="TreatmentData → treatments Collection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#field-mapping_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field Mapping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-type-classification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Event Type Classification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uploader-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Uploader Detection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#blood-glucose-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Blood Glucose Detection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#carb-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Carb Handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#temp-basal-value-resolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Temp Basal Value Resolution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#duration-conversion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Duration Conversion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-reference_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#profiledata--profile-collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ProfileData → profile Collection
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ProfileData → profile Collection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#document-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Document Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#profilestoredata-individual-profile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ProfileStoreData (Individual Profile)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#profileentrydata-time-value-pair" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ProfileEntryData (Time-Value Pair)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#computed-totals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Computed Totals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#profile-hash-for-change-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Profile Hash (for Change Detection)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-reference_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#devicestatusdata--devicestatus-collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DeviceStatusData → devicestatus Collection
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DeviceStatusData → devicestatus Collection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#field-mapping_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field Mapping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#loopdata-controller-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LoopData (Controller Status)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iobdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IOBData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pumpdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PumpData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uploaderdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UploaderData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-reference_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#statusdata--status-endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        StatusData → status Endpoint
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="StatusData → status Endpoint">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#field-mapping_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field Mapping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#settingsdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SettingsData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#thresholddata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ThresholdData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-reference_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#boluscalcdata--treatmentsboluscalc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BoluscalcData → treatments.boluscalc
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BoluscalcData → treatments.boluscalc">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#field-mapping_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field Mapping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-reference_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aggregation-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aggregation Classes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Aggregation Classes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#daydata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DayData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#statisticdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        StatisticData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-reference_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-coercion-utilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Type Coercion Utilities
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Type Coercion Utilities">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#code-reference_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cross-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross-References
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#revision-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Revision History
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="profile-handling.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Reporter: Profile Handling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="treatment-classification.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Reporter: Treatment Classification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="unit-conversion.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Reporter: Unit Conversion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="uploader-detection.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Reporter: Uploader Detection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-roles-gateway/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-roles-gateway/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nocturne/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nocturne/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../openaps/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    openaps/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../oref0/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    oref0/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../share2nightscout-bridge/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    share2nightscout-bridge/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tconnectsync/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tconnectsync/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../trio/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    trio/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../xdrip/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../xdrip-android/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip-android/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../xdrip-js/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip-js/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../xdrip4ios/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip4ios/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#source-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source File
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#entrydata--entries-collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EntryData → entries Collection
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="EntryData → entries Collection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#field-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field Mapping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#computed-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Computed Properties
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validation-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validation Rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#treatmentdata--treatments-collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TreatmentData → treatments Collection
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="TreatmentData → treatments Collection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#field-mapping_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field Mapping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-type-classification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Event Type Classification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uploader-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Uploader Detection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#blood-glucose-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Blood Glucose Detection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#carb-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Carb Handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#temp-basal-value-resolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Temp Basal Value Resolution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#duration-conversion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Duration Conversion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-reference_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#profiledata--profile-collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ProfileData → profile Collection
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ProfileData → profile Collection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#document-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Document Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#profilestoredata-individual-profile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ProfileStoreData (Individual Profile)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#profileentrydata-time-value-pair" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ProfileEntryData (Time-Value Pair)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#computed-totals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Computed Totals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#profile-hash-for-change-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Profile Hash (for Change Detection)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-reference_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#devicestatusdata--devicestatus-collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DeviceStatusData → devicestatus Collection
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DeviceStatusData → devicestatus Collection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#field-mapping_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field Mapping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#loopdata-controller-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LoopData (Controller Status)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iobdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IOBData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pumpdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PumpData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uploaderdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UploaderData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-reference_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#statusdata--status-endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        StatusData → status Endpoint
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="StatusData → status Endpoint">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#field-mapping_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field Mapping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#settingsdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SettingsData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#thresholddata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ThresholdData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-reference_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#boluscalcdata--treatmentsboluscalc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BoluscalcData → treatments.boluscalc
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BoluscalcData → treatments.boluscalc">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#field-mapping_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field Mapping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-reference_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aggregation-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aggregation Classes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Aggregation Classes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#daydata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DayData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#statisticdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        StatisticData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-reference_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-coercion-utilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Type Coercion Utilities
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Type Coercion Utilities">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#code-reference_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cross-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross-References
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#revision-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Revision History
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="nightscout-reporter-data-models">Nightscout Reporter Data Models<a class="headerlink" href="#nightscout-reporter-data-models" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-01-16 at <code>84cc5ae6</code>.</em></p>
+<p>This document maps Nightscout Reporter's Dart data classes to Nightscout collections, showing how a consumer application interprets the canonical data model.</p>
+<hr />
+<h2 id="source-file">Source File<a class="headerlink" href="#source-file" title="Permanent link">&para;</a></h2>
+<p>All data models are defined in:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>nr:lib/src/json_data.dart (2869 lines)
+</code></pre></div></p>
+<hr />
+<h2 id="entrydata--entries-collection">EntryData → entries Collection<a class="headerlink" href="#entrydata--entries-collection" title="Permanent link">&para;</a></h2>
+<p>Represents glucose readings from CGM.</p>
+<h3 id="field-mapping">Field Mapping<a class="headerlink" href="#field-mapping" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Dart Field</th>
+<th>NS Field</th>
+<th>Type</th>
+<th>Transformation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td><code>_id</code></td>
+<td>String</td>
+<td>Direct</td>
+</tr>
+<tr>
+<td><code>time</code></td>
+<td><code>date</code></td>
+<td>DateTime</td>
+<td><code>JsonData.toDate()</code> - epoch ms to DateTime</td>
+</tr>
+<tr>
+<td><code>rssi</code></td>
+<td><code>rssi</code></td>
+<td>int</td>
+<td>Signal strength</td>
+</tr>
+<tr>
+<td><code>device</code></td>
+<td><code>device</code></td>
+<td>String</td>
+<td>Device identifier</td>
+</tr>
+<tr>
+<td><code>direction</code></td>
+<td><code>direction</code></td>
+<td>String</td>
+<td>Trend arrow</td>
+</tr>
+<tr>
+<td><code>rawbg</code></td>
+<td><code>rawbg</code></td>
+<td>double</td>
+<td>Raw BG value</td>
+</tr>
+<tr>
+<td><code>sgv</code></td>
+<td><code>sgv</code></td>
+<td>double</td>
+<td>Sensor glucose value</td>
+</tr>
+<tr>
+<td><code>mbg</code></td>
+<td><code>mbg</code></td>
+<td>double</td>
+<td>Manual BG (fingerstick)</td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td><code>type</code></td>
+<td>String</td>
+<td>"sgv", "mbg", "cal"</td>
+</tr>
+<tr>
+<td><code>slope</code></td>
+<td><code>slope</code></td>
+<td>double</td>
+<td>Calibration slope</td>
+</tr>
+<tr>
+<td><code>intercept</code></td>
+<td><code>intercept</code></td>
+<td>double</td>
+<td>Calibration intercept</td>
+</tr>
+<tr>
+<td><code>scale</code></td>
+<td><code>scale</code></td>
+<td>double</td>
+<td>Calibration scale</td>
+</tr>
+</tbody>
+</table>
+<h3 id="computed-properties">Computed Properties<a class="headerlink" href="#computed-properties" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kt">bool</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">isGap</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">sgv</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="m">20</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">sgv</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">1000</span><span class="p">;</span><span class="w">  </span><span class="c1">// Gap detection</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">gluc</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">isGap</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="o">-</span><span class="m">1</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Globals</span><span class="p">.</span><span class="n">adjustFactor</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'sgv'</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">sgv</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">rawbg</span><span class="p">);</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">bloodGluc</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'mbg'</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">mbg</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="m">0</span><span class="p">;</span><span class="w">  </span><span class="c1">// Fingerstick only</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">fullGluc</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">isGap</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="o">-</span><span class="m">1</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="n">type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'mbg'</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">mbg</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">gluc</span><span class="p">);</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="kt">bool</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">isGlucInvalid</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">gluc</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">gluc</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="m">0</span><span class="p">;</span>
+</code></pre></div>
+<h3 id="validation-rules">Validation Rules<a class="headerlink" href="#validation-rules" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Gap Detection</strong>: SGV &lt; 20 or &gt; 1000 = gap (sensor error)</li>
+<li><strong>Type Inference</strong>: If <code>type</code> is null but <code>sgv &gt; 0</code>, set <code>type = 'sgv'</code></li>
+<li><strong>Unit Adjustment</strong>: <code>Globals.adjustFactor</code> applies user's unit preference</li>
+</ol>
+<h3 id="code-reference">Code Reference<a class="headerlink" href="#code-reference" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>nr:lib/src/json_data.dart#L1516-L1602
+</code></pre></div>
+<hr />
+<h2 id="treatmentdata--treatments-collection">TreatmentData → treatments Collection<a class="headerlink" href="#treatmentdata--treatments-collection" title="Permanent link">&para;</a></h2>
+<p>Represents all therapy events and interventions.</p>
+<h3 id="field-mapping_1">Field Mapping<a class="headerlink" href="#field-mapping_1" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Dart Field</th>
+<th>NS Field</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td><code>_id</code></td>
+<td>String</td>
+<td>MongoDB ObjectId</td>
+</tr>
+<tr>
+<td><code>eventType</code></td>
+<td><code>eventType</code></td>
+<td>String</td>
+<td>Treatment category</td>
+</tr>
+<tr>
+<td><code>duration</code></td>
+<td><code>duration</code></td>
+<td>int</td>
+<td>Duration in <strong>seconds</strong> (converted from NS minutes: <code>* 60</code>)</td>
+</tr>
+<tr>
+<td><code>createdAt</code></td>
+<td><code>created_at</code></td>
+<td>DateTime</td>
+<td>Event timestamp</td>
+</tr>
+<tr>
+<td><code>enteredBy</code></td>
+<td><code>enteredBy</code></td>
+<td>String</td>
+<td>Source identifier</td>
+</tr>
+<tr>
+<td><code>NSClientId</code></td>
+<td><code>NSCLIENT_ID</code></td>
+<td>String</td>
+<td>NS client identifier</td>
+</tr>
+<tr>
+<td><code>_carbs</code></td>
+<td><code>carbs</code></td>
+<td>double</td>
+<td>Carbohydrates (grams)</td>
+</tr>
+<tr>
+<td><code>insulin</code></td>
+<td><code>insulin</code></td>
+<td>double</td>
+<td>Bolus insulin (units)</td>
+</tr>
+<tr>
+<td><code>microbolus</code></td>
+<td><code>microbolus</code></td>
+<td>double</td>
+<td>SMB amount (units)</td>
+</tr>
+<tr>
+<td><code>splitExt</code></td>
+<td><code>splitExt</code></td>
+<td>int</td>
+<td>Extended bolus %</td>
+</tr>
+<tr>
+<td><code>splitNow</code></td>
+<td><code>splitNow</code></td>
+<td>int</td>
+<td>Immediate bolus %</td>
+</tr>
+<tr>
+<td><code>isSMB</code></td>
+<td><code>isSMB</code></td>
+<td>bool</td>
+<td>Super Micro Bolus flag</td>
+</tr>
+<tr>
+<td><code>pumpId</code></td>
+<td><code>pumpId</code></td>
+<td>String</td>
+<td>Pump-side identifier</td>
+</tr>
+<tr>
+<td><code>glucose</code></td>
+<td><code>glucose</code></td>
+<td>double</td>
+<td>BG at time of treatment</td>
+</tr>
+<tr>
+<td><code>glucoseType</code></td>
+<td><code>glucoseType</code></td>
+<td>String</td>
+<td>"Finger", "Sensor"</td>
+</tr>
+<tr>
+<td><code>notes</code></td>
+<td><code>notes</code></td>
+<td>String</td>
+<td>Free-form notes</td>
+</tr>
+<tr>
+<td><code>reason</code></td>
+<td><code>reason</code></td>
+<td>String</td>
+<td>Override/target reason</td>
+</tr>
+<tr>
+<td><code>targetTop</code></td>
+<td><code>targetTop</code></td>
+<td>double</td>
+<td>Temp target high</td>
+</tr>
+<tr>
+<td><code>targetBottom</code></td>
+<td><code>targetBottom</code></td>
+<td>double</td>
+<td>Temp target low</td>
+</tr>
+<tr>
+<td><code>_percent</code></td>
+<td><code>percent</code></td>
+<td>int</td>
+<td>Temp basal % adjustment</td>
+</tr>
+<tr>
+<td><code>_absolute</code></td>
+<td><code>absolute</code></td>
+<td>double</td>
+<td>Absolute temp basal rate</td>
+</tr>
+<tr>
+<td><code>_rate</code></td>
+<td><code>rate</code></td>
+<td>double</td>
+<td>Basal rate</td>
+</tr>
+<tr>
+<td><code>boluscalc</code></td>
+<td><code>boluscalc</code></td>
+<td>BoluscalcData</td>
+<td>Wizard calculation details</td>
+</tr>
+<tr>
+<td><code>insulinInjections</code></td>
+<td><code>insulinInjections</code></td>
+<td>List</td>
+<td>MDI injection records</td>
+</tr>
+</tbody>
+</table>
+<h3 id="event-type-classification">Event Type Classification<a class="headerlink" href="#event-type-classification" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kt">String</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">_t</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">eventType</span><span class="p">.</span><span class="n">toLowerCase</span><span class="p">();</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="kt">bool</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">isSiteChange</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">_t</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'site change'</span><span class="p">;</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="kt">bool</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">isInsulinChange</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">_t</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'insulin change'</span><span class="p">;</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="kt">bool</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">isSensorChange</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">_t</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'sensor change'</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">_t</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'sensor start'</span><span class="p">;</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="kt">bool</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">isPumpBatteryChange</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">_t</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'pump battery change'</span><span class="p">;</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="kt">bool</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">isProfileSwitch</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">_t</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'profile switch'</span><span class="p">;</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="kt">bool</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">isTempTarget</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">_t</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'temporary target'</span><span class="p">;</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="kt">bool</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">isTempBasal</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">_t</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'temp basal'</span><span class="p">;</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="kt">bool</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">isExercise</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">_t</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'exercise'</span><span class="p">;</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="kt">bool</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">isBGCheck</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">_t</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'bg check'</span><span class="p">;</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="kt">bool</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">isMealBolus</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">_t</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'meal bolus'</span><span class="p">;</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="kt">bool</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">isBolusWizard</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">_t</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'bolus wizard'</span><span class="p">;</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="kt">bool</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">isTempOverride</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">_t</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'temporary override'</span><span class="p">;</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="kt">bool</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">hasNoType</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">_t</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'&lt;none&gt;'</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">_t</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">''</span><span class="p">;</span>
+</code></pre></div>
+<h3 id="uploader-detection">Uploader Detection<a class="headerlink" href="#uploader-detection" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">Uploader</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">_from</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">Uploader</span><span class="p">.</span><span class="n">Unknown</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="n">check</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">enteredBy</span><span class="p">.</span><span class="n">toLowerCase</span><span class="p">()</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="s1">''</span><span class="p">;</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">check</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'openaps'</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">      </span><span class="n">_from</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Uploader</span><span class="p">.</span><span class="n">OpenAPS</span><span class="p">;</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">check</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'tidepool'</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">      </span><span class="n">_from</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Uploader</span><span class="p">.</span><span class="n">Tidepool</span><span class="p">;</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">check</span><span class="p">.</span><span class="n">contains</span><span class="p">(</span><span class="s1">'androidaps'</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">      </span><span class="n">_from</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Uploader</span><span class="p">.</span><span class="n">AndroidAPS</span><span class="p">;</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">check</span><span class="p">.</span><span class="n">startsWith</span><span class="p">(</span><span class="s1">'xdrip'</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">      </span><span class="n">_from</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Uploader</span><span class="p">.</span><span class="n">XDrip</span><span class="p">;</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">check</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'spike'</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">      </span><span class="n">_from</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Uploader</span><span class="p">.</span><span class="n">Spike</span><span class="p">;</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">_from</span><span class="p">;</span>
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="blood-glucose-detection">Blood Glucose Detection<a class="headerlink" href="#blood-glucose-detection" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kt">bool</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">isBloody</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="n">glucoseType</span><span class="o">?</span><span class="p">.</span><span class="n">toLowerCase</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'finger'</span><span class="w"> </span><span class="o">||</span><span class="w"> </span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="n">eventType</span><span class="p">.</span><span class="n">toLowerCase</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'bg check'</span><span class="p">;</span>
+</code></pre></div>
+<h3 id="carb-handling">Carb Handling<a class="headerlink" href="#carb-handling" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">carbs</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">_carbs</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">isECarb</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">_carbs</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="m">0.0</span><span class="p">;</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">eCarbs</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">isECarb</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">_carbs</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="m">0.0</span><span class="p">;</span><span class="w">  </span><span class="c1">// Extended carbs (for slow absorption)</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="kt">bool</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">isCarbBolus</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">isMealBolus</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="p">(</span><span class="n">isBolusWizard</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">carbs</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">0</span><span class="p">);</span>
+</code></pre></div>
+<h3 id="temp-basal-value-resolution">Temp Basal Value Resolution<a class="headerlink" href="#temp-basal-value-resolution" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kt">double</span><span class="w"> </span><span class="n">adjustedValue</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">baseRate</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">_percent</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">baseRate</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">baseRate</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">_percent</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="m">100.0</span><span class="p">;</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">_rate</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">_rate</span><span class="p">;</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">baseRate</span><span class="p">;</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="duration-conversion">Duration Conversion<a class="headerlink" href="#duration-conversion" title="Permanent link">&para;</a></h3>
+<p><strong>Important</strong>: Nightscout stores duration in <strong>minutes</strong>, but Reporter converts to <strong>seconds</strong> during parsing:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">ret</span><span class="p">.</span><span class="n">duration</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">JsonData</span><span class="p">.</span><span class="n">toInt</span><span class="p">(</span><span class="n">json</span><span class="p">[</span><span class="s1">'duration'</span><span class="p">])</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="m">60</span><span class="p">;</span><span class="w"> </span><span class="c1">// duration is saved in minutes</span>
+</code></pre></div>
+<h3 id="code-reference_1">Code Reference<a class="headerlink" href="#code-reference_1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>nr:lib/src/json_data.dart#L1132-L1514
+</code></pre></div>
+<hr />
+<h2 id="profiledata--profile-collection">ProfileData → profile Collection<a class="headerlink" href="#profiledata--profile-collection" title="Permanent link">&para;</a></h2>
+<p>Represents therapy profile with time-based settings.</p>
+<h3 id="document-structure">Document Structure<a class="headerlink" href="#document-structure" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Dart Field</th>
+<th>NS Field</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td><code>_id</code></td>
+<td>String</td>
+</tr>
+<tr>
+<td><code>defaultProfile</code></td>
+<td><code>defaultProfile</code></td>
+<td>String</td>
+</tr>
+<tr>
+<td><code>startDate</code></td>
+<td><code>startDate</code></td>
+<td>DateTime</td>
+</tr>
+<tr>
+<td><code>duration</code></td>
+<td><code>duration</code></td>
+<td>int</td>
+</tr>
+<tr>
+<td><code>store</code></td>
+<td><code>store</code></td>
+<td>Map<String, ProfileStoreData></td>
+</tr>
+<tr>
+<td><code>currentProfile</code></td>
+<td><code>currentProfile</code></td>
+<td>String</td>
+</tr>
+</tbody>
+</table>
+<h3 id="profilestoredata-individual-profile">ProfileStoreData (Individual Profile)<a class="headerlink" href="#profilestoredata-individual-profile" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Dart Field</th>
+<th>NS Field</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td>(key)</td>
+<td>String</td>
+<td>Profile name</td>
+</tr>
+<tr>
+<td><code>dia</code></td>
+<td><code>dia</code></td>
+<td>double</td>
+<td>Duration of Insulin Action (hours)</td>
+</tr>
+<tr>
+<td><code>carbsHr</code></td>
+<td><code>carbs_hr</code></td>
+<td>int</td>
+<td>Carb absorption rate (g/hr)</td>
+</tr>
+<tr>
+<td><code>delay</code></td>
+<td><code>delay</code></td>
+<td>int</td>
+<td>Insulin delay (minutes)</td>
+</tr>
+<tr>
+<td><code>timezone</code></td>
+<td><code>timezone</code></td>
+<td>ProfileTimezone</td>
+<td>IANA timezone</td>
+</tr>
+<tr>
+<td><code>startDate</code></td>
+<td><code>startDate</code></td>
+<td>DateTime</td>
+<td>When profile became active</td>
+</tr>
+<tr>
+<td><code>units</code></td>
+<td><code>units</code></td>
+<td>String</td>
+<td>"mg/dL" or "mmol/L"</td>
+</tr>
+<tr>
+<td><code>listCarbratio</code></td>
+<td><code>carbratio</code></td>
+<td>List<ProfileEntryData></td>
+<td>I:C ratios by time</td>
+</tr>
+<tr>
+<td><code>listSens</code></td>
+<td><code>sens</code></td>
+<td>List<ProfileEntryData></td>
+<td>ISF by time</td>
+</tr>
+<tr>
+<td><code>listBasal</code></td>
+<td><code>basal</code></td>
+<td>List<ProfileEntryData></td>
+<td>Basal rates by time</td>
+</tr>
+<tr>
+<td><code>listTargetLow</code></td>
+<td><code>target_low</code></td>
+<td>List<ProfileEntryData></td>
+<td>Target low by time</td>
+</tr>
+<tr>
+<td><code>listTargetHigh</code></td>
+<td><code>target_high</code></td>
+<td>List<ProfileEntryData></td>
+<td>Target high by time</td>
+</tr>
+</tbody>
+</table>
+<h3 id="profileentrydata-time-value-pair">ProfileEntryData (Time-Value Pair)<a class="headerlink" href="#profileentrydata-time-value-pair" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Dart Field</th>
+<th>NS Field</th>
+<th>Transformation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>_time</code></td>
+<td><code>time</code></td>
+<td>"HH:mm" parsed to DateTime</td>
+</tr>
+<tr>
+<td><code>value</code></td>
+<td><code>value</code></td>
+<td>double</td>
+</tr>
+<tr>
+<td><code>timeAsSeconds</code></td>
+<td><code>timeAsSeconds</code></td>
+<td>Seconds from midnight</td>
+</tr>
+<tr>
+<td><code>duration</code></td>
+<td>(calculated)</td>
+<td>Seconds until next entry</td>
+</tr>
+</tbody>
+</table>
+<h3 id="computed-totals">Computed Totals<a class="headerlink" href="#computed-totals" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">ieBasalSum</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">_listSum</span><span class="p">(</span><span class="n">listBasal</span><span class="p">);</span><span class="w">  </span><span class="c1">// Total daily basal</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">icrSum</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">_listSum</span><span class="p">(</span><span class="n">listCarbratio</span><span class="p">);</span><span class="w">  </span><span class="c1">// Sum of I:C ratios</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">isfSum</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">_listSum</span><span class="p">(</span><span class="n">listSens</span><span class="p">);</span><span class="w">        </span><span class="c1">// Sum of ISF values</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="kt">int</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">carbRatioPerHour</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">carbsHr</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">carbsHr</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="m">12</span><span class="p">;</span><span class="w">  </span><span class="c1">// Default 12g/hr</span>
+</code></pre></div>
+<h3 id="profile-hash-for-change-detection">Profile Hash (for Change Detection)<a class="headerlink" href="#profile-hash-for-change-detection" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="kt">String</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">hash</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">  </span><span class="kd">var</span><span class="w"> </span><span class="n">temp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'</span><span class="si">${</span><span class="n">dia</span><span class="si">}</span><span class="s1">-</span><span class="si">${</span><span class="n">carbsHr</span><span class="si">}</span><span class="s1">-</span><span class="si">${</span><span class="n">list2String</span><span class="p">(</span><span class="n">listCarbratio</span><span class="p">)</span><span class="si">}</span><span class="s1">-</span><span class="si">${</span><span class="n">list2String</span><span class="p">(</span><span class="n">listBasal</span><span class="p">)</span><span class="si">}</span><span class="s1">-'</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">      </span><span class="s1">'</span><span class="si">${</span><span class="n">list2String</span><span class="p">(</span><span class="n">listSens</span><span class="p">)</span><span class="si">}</span><span class="s1">-</span><span class="si">${</span><span class="n">list2String</span><span class="p">(</span><span class="n">listTargetHigh</span><span class="p">)</span><span class="si">}</span><span class="s1">-</span><span class="si">${</span><span class="n">list2String</span><span class="p">(</span><span class="n">listTargetLow</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">;</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">sha1</span><span class="p">.</span><span class="n">convert</span><span class="p">(</span><span class="n">utf8</span><span class="p">.</span><span class="n">encode</span><span class="p">(</span><span class="n">temp</span><span class="p">)).</span><span class="n">toString</span><span class="p">();</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="code-reference_2">Code Reference<a class="headerlink" href="#code-reference_2" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>nr:lib/src/json_data.dart#L498-L941
+</code></pre></div>
+<hr />
+<h2 id="devicestatusdata--devicestatus-collection">DeviceStatusData → devicestatus Collection<a class="headerlink" href="#devicestatusdata--devicestatus-collection" title="Permanent link">&para;</a></h2>
+<p>Represents controller, pump, and uploader status.</p>
+<h3 id="field-mapping_2">Field Mapping<a class="headerlink" href="#field-mapping_2" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Dart Field</th>
+<th>NS Field</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>device</code></td>
+<td><code>device</code></td>
+<td>String</td>
+</tr>
+<tr>
+<td><code>createdAt</code></td>
+<td><code>created_at</code></td>
+<td>DateTime</td>
+</tr>
+<tr>
+<td><code>openAPS</code></td>
+<td><code>openaps</code></td>
+<td>LoopData</td>
+</tr>
+<tr>
+<td><code>loop</code></td>
+<td><code>loop</code></td>
+<td>LoopData</td>
+</tr>
+<tr>
+<td><code>pump</code></td>
+<td><code>pump</code></td>
+<td>PumpData</td>
+</tr>
+<tr>
+<td><code>uploader</code></td>
+<td><code>uploader</code></td>
+<td>UploaderData</td>
+</tr>
+<tr>
+<td><code>xdripjs</code></td>
+<td><code>xdripjs</code></td>
+<td>XDripJSData</td>
+</tr>
+</tbody>
+</table>
+<h3 id="loopdata-controller-status">LoopData (Controller Status)<a class="headerlink" href="#loopdata-controller-status" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="kd">class</span><span class="w"> </span><span class="nc">LoopData</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">  </span><span class="n">IOBData</span><span class="w"> </span><span class="n">iob</span><span class="p">;</span><span class="w">  </span><span class="c1">// Contains iob, basaliob, activity, time</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="iobdata">IOBData<a class="headerlink" href="#iobdata" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Dart Field</th>
+<th>NS Field</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>iob</code></td>
+<td><code>iob</code></td>
+<td>double</td>
+</tr>
+<tr>
+<td><code>basalIob</code></td>
+<td><code>basaliob</code></td>
+<td>double</td>
+</tr>
+<tr>
+<td><code>activity</code></td>
+<td><code>activity</code></td>
+<td>double</td>
+</tr>
+<tr>
+<td><code>time</code></td>
+<td><code>time</code></td>
+<td>DateTime</td>
+</tr>
+</tbody>
+</table>
+<h3 id="pumpdata">PumpData<a class="headerlink" href="#pumpdata" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Dart Field</th>
+<th>NS Field</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>clock</code></td>
+<td><code>clock</code></td>
+<td>DateTime</td>
+</tr>
+<tr>
+<td><code>pumpBattery</code></td>
+<td><code>pumpbattery</code></td>
+<td>PumpBatteryData</td>
+</tr>
+<tr>
+<td><code>reservoir</code></td>
+<td><code>reservoir</code></td>
+<td>double</td>
+</tr>
+<tr>
+<td><code>pumpStatus</code></td>
+<td><code>pumpstatus</code></td>
+<td>PumpStatusData</td>
+</tr>
+</tbody>
+</table>
+<h3 id="uploaderdata">UploaderData<a class="headerlink" href="#uploaderdata" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Dart Field</th>
+<th>NS Field</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>batteryVoltage</code></td>
+<td><code>batteryVoltage</code></td>
+<td>double</td>
+</tr>
+<tr>
+<td><code>batteryPercentageRemaining</code></td>
+<td><code>battery</code></td>
+<td>double</td>
+</tr>
+</tbody>
+</table>
+<h3 id="code-reference_3">Code Reference<a class="headerlink" href="#code-reference_3" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>nr:lib/src/json_data.dart#L1821-L1844
+</code></pre></div>
+<hr />
+<h2 id="statusdata--status-endpoint">StatusData → status Endpoint<a class="headerlink" href="#statusdata--status-endpoint" title="Permanent link">&para;</a></h2>
+<p>Server configuration and settings.</p>
+<h3 id="field-mapping_3">Field Mapping<a class="headerlink" href="#field-mapping_3" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Dart Field</th>
+<th>NS Field</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>status</code></td>
+<td><code>status</code></td>
+<td>String</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td><code>name</code></td>
+<td>String</td>
+</tr>
+<tr>
+<td><code>version</code></td>
+<td><code>version</code></td>
+<td>String</td>
+</tr>
+<tr>
+<td><code>serverTime</code></td>
+<td><code>serverTime</code></td>
+<td>DateTime</td>
+</tr>
+<tr>
+<td><code>serverTimeEpoch</code></td>
+<td><code>serverTimeEpoch</code></td>
+<td>int</td>
+</tr>
+<tr>
+<td><code>apiEnabled</code></td>
+<td><code>apiEnabled</code></td>
+<td>bool</td>
+</tr>
+<tr>
+<td><code>careportalEnabled</code></td>
+<td><code>careportalEnabled</code></td>
+<td>bool</td>
+</tr>
+<tr>
+<td><code>boluscalcEnabled</code></td>
+<td><code>boluscalcEnabled</code></td>
+<td>bool</td>
+</tr>
+<tr>
+<td><code>head</code></td>
+<td><code>head</code></td>
+<td>String</td>
+</tr>
+<tr>
+<td><code>settings</code></td>
+<td><code>settings</code></td>
+<td>SettingsData</td>
+</tr>
+<tr>
+<td><code>extendedSettings</code></td>
+<td><code>extendedSettings</code></td>
+<td>ExtendedSettingsData</td>
+</tr>
+</tbody>
+</table>
+<h3 id="settingsdata">SettingsData<a class="headerlink" href="#settingsdata" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Dart Field</th>
+<th>NS Field</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>units</code></td>
+<td><code>units</code></td>
+<td>"mg/dL" or "mmol/L"</td>
+</tr>
+<tr>
+<td><code>timeFormat</code></td>
+<td><code>timeFormat</code></td>
+<td>12 or 24</td>
+</tr>
+<tr>
+<td><code>nightMode</code></td>
+<td><code>nightMode</code></td>
+<td>Dark theme</td>
+</tr>
+<tr>
+<td><code>thresholds</code></td>
+<td><code>thresholds</code></td>
+<td>BG thresholds</td>
+</tr>
+<tr>
+<td><code>enable</code></td>
+<td><code>enable</code></td>
+<td>Enabled plugins list</td>
+</tr>
+</tbody>
+</table>
+<h3 id="thresholddata">ThresholdData<a class="headerlink" href="#thresholddata" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Dart Field</th>
+<th>NS Field</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>bgHigh</code></td>
+<td><code>bgHigh</code></td>
+<td>Urgent high threshold</td>
+</tr>
+<tr>
+<td><code>bgTargetTop</code></td>
+<td><code>bgTargetTop</code></td>
+<td>Target ceiling</td>
+</tr>
+<tr>
+<td><code>bgTargetBottom</code></td>
+<td><code>bgTargetBottom</code></td>
+<td>Target floor</td>
+</tr>
+<tr>
+<td><code>bgLow</code></td>
+<td><code>bgLow</code></td>
+<td>Urgent low threshold</td>
+</tr>
+</tbody>
+</table>
+<h3 id="code-reference_4">Code Reference<a class="headerlink" href="#code-reference_4" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>nr:lib/src/json_data.dart#L278-L316
+</code></pre></div>
+<hr />
+<h2 id="boluscalcdata--treatmentsboluscalc">BoluscalcData → treatments.boluscalc<a class="headerlink" href="#boluscalcdata--treatmentsboluscalc" title="Permanent link">&para;</a></h2>
+<p>Bolus wizard calculation details embedded in treatment records.</p>
+<h3 id="field-mapping_4">Field Mapping<a class="headerlink" href="#field-mapping_4" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Dart Field</th>
+<th>NS Field</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>profile</code></td>
+<td><code>profile</code></td>
+<td>String</td>
+</tr>
+<tr>
+<td><code>notes</code></td>
+<td><code>notes</code></td>
+<td>String</td>
+</tr>
+<tr>
+<td><code>eventTime</code></td>
+<td><code>eventTime</code></td>
+<td>DateTime</td>
+</tr>
+<tr>
+<td><code>targetBGLow</code></td>
+<td><code>targetBGLow</code></td>
+<td>int</td>
+</tr>
+<tr>
+<td><code>targetBGHigh</code></td>
+<td><code>targetBGHigh</code></td>
+<td>int</td>
+</tr>
+<tr>
+<td><code>isf</code></td>
+<td><code>isf</code></td>
+<td>int</td>
+</tr>
+<tr>
+<td><code>ic</code></td>
+<td><code>ic</code></td>
+<td>int</td>
+</tr>
+<tr>
+<td><code>iob</code></td>
+<td><code>iob</code></td>
+<td>double</td>
+</tr>
+<tr>
+<td><code>bolusIob</code></td>
+<td><code>bolusIob</code></td>
+<td>double</td>
+</tr>
+<tr>
+<td><code>basalIob</code></td>
+<td><code>basalIob</code></td>
+<td>double</td>
+</tr>
+<tr>
+<td><code>bg</code></td>
+<td><code>bg</code></td>
+<td>int</td>
+</tr>
+<tr>
+<td><code>insulinBg</code></td>
+<td><code>insulinBg</code></td>
+<td>double</td>
+</tr>
+<tr>
+<td><code>insulinCarbs</code></td>
+<td><code>insulincarbs</code></td>
+<td>double</td>
+</tr>
+<tr>
+<td><code>carbs</code></td>
+<td><code>carbs</code></td>
+<td>double</td>
+</tr>
+<tr>
+<td><code>cob</code></td>
+<td><code>cob</code></td>
+<td>double</td>
+</tr>
+<tr>
+<td><code>insulin</code></td>
+<td><code>insulin</code></td>
+<td>double</td>
+</tr>
+<tr>
+<td><code>trend</code></td>
+<td><code>trend</code></td>
+<td>String</td>
+</tr>
+<tr>
+<td><code>ttUsed</code></td>
+<td><code>ttused</code></td>
+<td>bool</td>
+</tr>
+</tbody>
+</table>
+<h3 id="code-reference_5">Code Reference<a class="headerlink" href="#code-reference_5" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>nr:lib/src/json_data.dart#L943-L1065
+</code></pre></div>
+<hr />
+<h2 id="aggregation-classes">Aggregation Classes<a class="headerlink" href="#aggregation-classes" title="Permanent link">&para;</a></h2>
+<h3 id="daydata">DayData<a class="headerlink" href="#daydata" title="Permanent link">&para;</a></h3>
+<p>Daily container for glucose and treatment aggregation.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="kd">class</span><span class="w"> </span><span class="nc">DayData</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="w">  </span><span class="n">Date</span><span class="w"> </span><span class="n">date</span><span class="p">;</span>
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="w">  </span><span class="n">ProfileGlucData</span><span class="w"> </span><span class="n">basalData</span><span class="p">;</span>
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>
+<a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="w">  </span><span class="c1">// Glucose counts</span>
+<a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a><span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">lowCount</span><span class="p">,</span><span class="w"> </span><span class="n">normCount</span><span class="p">,</span><span class="w"> </span><span class="n">highCount</span><span class="p">;</span>
+<a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a><span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">stdLowCount</span><span class="p">,</span><span class="w"> </span><span class="n">stdNormCount</span><span class="p">,</span><span class="w"> </span><span class="n">stdHighCount</span><span class="p">;</span>
+<a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a><span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">entryCountValid</span><span class="p">,</span><span class="w"> </span><span class="n">entryCountInvalid</span><span class="p">;</span>
+<a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a>
+<a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a><span class="w">  </span><span class="c1">// Glucose stats</span>
+<a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a><span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">min</span><span class="p">,</span><span class="w"> </span><span class="n">max</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="p">;</span>
+<a id="__codelineno-17-12" name="__codelineno-17-12" href="#__codelineno-17-12"></a><span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">varianz</span><span class="p">;</span>
+<a id="__codelineno-17-13" name="__codelineno-17-13" href="#__codelineno-17-13"></a>
+<a id="__codelineno-17-14" name="__codelineno-17-14" href="#__codelineno-17-14"></a><span class="w">  </span><span class="c1">// Treatment counts</span>
+<a id="__codelineno-17-15" name="__codelineno-17-15" href="#__codelineno-17-15"></a><span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">carbCount</span><span class="p">;</span>
+<a id="__codelineno-17-16" name="__codelineno-17-16" href="#__codelineno-17-16"></a><span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">carbs</span><span class="p">;</span>
+<a id="__codelineno-17-17" name="__codelineno-17-17" href="#__codelineno-17-17"></a>
+<a id="__codelineno-17-18" name="__codelineno-17-18" href="#__codelineno-17-18"></a><span class="w">  </span><span class="c1">// Lists</span>
+<a id="__codelineno-17-19" name="__codelineno-17-19" href="#__codelineno-17-19"></a><span class="w">  </span><span class="n">List</span><span class="o">&lt;</span><span class="n">EntryData</span><span class="o">&gt;</span><span class="w"> </span><span class="n">entries</span><span class="p">;</span>
+<a id="__codelineno-17-20" name="__codelineno-17-20" href="#__codelineno-17-20"></a><span class="w">  </span><span class="n">List</span><span class="o">&lt;</span><span class="n">TreatmentData</span><span class="o">&gt;</span><span class="w"> </span><span class="n">treatments</span><span class="p">;</span>
+<a id="__codelineno-17-21" name="__codelineno-17-21" href="#__codelineno-17-21"></a>
+<a id="__codelineno-17-22" name="__codelineno-17-22" href="#__codelineno-17-22"></a><span class="w">  </span><span class="c1">// Computed</span>
+<a id="__codelineno-17-23" name="__codelineno-17-23" href="#__codelineno-17-23"></a><span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">avgGluc</span><span class="p">;</span>
+<a id="__codelineno-17-24" name="__codelineno-17-24" href="#__codelineno-17-24"></a><span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">stdAbw</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">isMGDL</span><span class="p">);</span>
+<a id="__codelineno-17-25" name="__codelineno-17-25" href="#__codelineno-17-25"></a><span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">varK</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">stdAbw</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="m">100</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="m">0</span><span class="p">;</span>
+<a id="__codelineno-17-26" name="__codelineno-17-26" href="#__codelineno-17-26"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="statisticdata">StatisticData<a class="headerlink" href="#statisticdata" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="kd">class</span><span class="w"> </span><span class="nc">StatisticData</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">low</span><span class="p">,</span><span class="w"> </span><span class="n">high</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="p">;</span>
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="p">;</span>
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">varianz</span><span class="p">;</span>
+<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">stdAbw</span><span class="p">;</span>
+<a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a><span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">varK</span><span class="p">;</span>
+<a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="code-reference_6">Code Reference<a class="headerlink" href="#code-reference_6" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>nr:lib/src/json_data.dart#L1865-L2417
+</code></pre></div>
+<hr />
+<h2 id="type-coercion-utilities">Type Coercion Utilities<a class="headerlink" href="#type-coercion-utilities" title="Permanent link">&para;</a></h2>
+<p>Reporter's <code>JsonData</code> base class provides safe parsing:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="kd">static</span><span class="w"> </span><span class="n">DateTime</span><span class="w"> </span><span class="n">toDate</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">DateTime</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">);</span>
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="kt">int</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">DateTime</span><span class="p">.</span><span class="n">fromMillisecondsSinceEpoch</span><span class="p">(</span><span class="n">value</span><span class="p">);</span>
+<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="kt">double</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">DateTime</span><span class="p">.</span><span class="n">fromMillisecondsSinceEpoch</span><span class="p">(</span><span class="n">value</span><span class="p">.</span><span class="n">toInt</span><span class="p">());</span>
+<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">JsonData</span><span class="p">.</span><span class="n">toLocal</span><span class="p">(</span><span class="n">DateTime</span><span class="p">.</span><span class="n">tryParse</span><span class="p">(</span><span class="n">value</span><span class="p">))</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="n">DateTime</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">);</span>
+<a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a><span class="p">}</span>
+<a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a>
+<a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a><span class="kd">static</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">toDouble</span><span class="p">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="n">def</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.0</span><span class="p">])</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'NaN'</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">def</span><span class="p">;</span>
+<a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="kt">int</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">value</span><span class="p">;</span>
+<a id="__codelineno-20-11" name="__codelineno-20-11" href="#__codelineno-20-11"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="kt">double</span><span class="p">.</span><span class="n">tryParse</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="n">def</span><span class="p">;</span>
+<a id="__codelineno-20-12" name="__codelineno-20-12" href="#__codelineno-20-12"></a><span class="p">}</span>
+<a id="__codelineno-20-13" name="__codelineno-20-13" href="#__codelineno-20-13"></a>
+<a id="__codelineno-20-14" name="__codelineno-20-14" href="#__codelineno-20-14"></a><span class="kd">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">toInt</span><span class="p">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="kt">int</span><span class="w"> </span><span class="n">def</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">])</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-20-15" name="__codelineno-20-15" href="#__codelineno-20-15"></a><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">def</span><span class="p">;</span>
+<a id="__codelineno-20-16" name="__codelineno-20-16" href="#__codelineno-20-16"></a><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="kt">int</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">value</span><span class="p">;</span>
+<a id="__codelineno-20-17" name="__codelineno-20-17" href="#__codelineno-20-17"></a><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="kt">double</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">value</span><span class="p">.</span><span class="n">toInt</span><span class="p">();</span>
+<a id="__codelineno-20-18" name="__codelineno-20-18" href="#__codelineno-20-18"></a><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kt">int</span><span class="p">.</span><span class="n">tryParse</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="n">def</span><span class="p">;</span>
+<a id="__codelineno-20-19" name="__codelineno-20-19" href="#__codelineno-20-19"></a><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="kt">bool</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">def</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">def</span><span class="p">;</span>
+<a id="__codelineno-20-20" name="__codelineno-20-20" href="#__codelineno-20-20"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">def</span><span class="p">;</span>
+<a id="__codelineno-20-21" name="__codelineno-20-21" href="#__codelineno-20-21"></a><span class="p">}</span>
+<a id="__codelineno-20-22" name="__codelineno-20-22" href="#__codelineno-20-22"></a>
+<a id="__codelineno-20-23" name="__codelineno-20-23" href="#__codelineno-20-23"></a><span class="kd">static</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">toBool</span><span class="p">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="kt">bool</span><span class="w"> </span><span class="n">ifEmpty</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">})</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-20-24" name="__codelineno-20-24" href="#__codelineno-20-24"></a><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">ifEmpty</span><span class="p">;</span>
+<a id="__codelineno-20-25" name="__codelineno-20-25" href="#__codelineno-20-25"></a><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="kt">bool</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">value</span><span class="p">;</span>
+<a id="__codelineno-20-26" name="__codelineno-20-26" href="#__codelineno-20-26"></a><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-20-27" name="__codelineno-20-27" href="#__codelineno-20-27"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ifEmpty</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">''</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">ifEmpty</span><span class="p">;</span>
+<a id="__codelineno-20-28" name="__codelineno-20-28" href="#__codelineno-20-28"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'true'</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'yes'</span><span class="p">);</span>
+<a id="__codelineno-20-29" name="__codelineno-20-29" href="#__codelineno-20-29"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-20-30" name="__codelineno-20-30" href="#__codelineno-20-30"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span>
+<a id="__codelineno-20-31" name="__codelineno-20-31" href="#__codelineno-20-31"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="code-reference_7">Code Reference<a class="headerlink" href="#code-reference_7" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>nr:lib/src/json_data.dart#L13-L96
+</code></pre></div>
+<hr />
+<h2 id="cross-references">Cross-References<a class="headerlink" href="#cross-references" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="index.html">README.md</a> - Overview and architecture</li>
+<li><a href="uploader-detection.html">uploader-detection.md</a> - Source detection patterns</li>
+<li><a href="../../docs/10-domain/nightscout-data-model.html">Nightscout Data Model</a> - Authoritative NS schema</li>
+</ul>
+<hr />
+<h2 id="revision-history">Revision History<a class="headerlink" href="#revision-history" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Date</th>
+<th>Author</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-01-16</td>
+<td>Agent</td>
+<td>Initial extraction from json_data.dart</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

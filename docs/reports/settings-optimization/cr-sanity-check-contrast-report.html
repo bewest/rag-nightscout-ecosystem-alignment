@@ -1,0 +1,6397 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/reports/settings-optimization/cr-sanity-check-contrast-report.html">
+      
+      
+        <link rel="prev" href="capabilities-guide.html">
+      
+      
+        <link rel="next" href="research-foundations.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>CR Sanity-Check Contrast Report — EXP-2670 - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#cr-sanity-check-contrast-report--exp-2670" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              CR Sanity-Check Contrast Report — EXP-2670
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../30-design/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../60-research/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_34" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_34" id="__nav_5_34_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_34_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_34">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    reports/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aaps-backfill-display-bug.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Backfill Display Bug — Root Cause Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cgm-remote-monitor-telemetry-branch-reviewer-guide-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor Telemetry Branch Reviewer Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-dependabot-context-2026-07-07.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Dependabot Alert Context Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-board-developer-packet-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Board and Developer Packet
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-buy-vs-build-strategy-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Buy-vs-Build Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-charter-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Aggregate Telemetry Charter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-community-faq-draft-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Aggregate Telemetry Community FAQ Draft
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-execution-summary-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Execution Summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-local-e2e-report-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Local E2E Test Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../option-g-test-validation-report.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Option G Test Validation Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pr-8444-affected-issues.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PR #8444 / 15.0.7 — Affected Issues &amp; Bugs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-release-planning-2026-09/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-release-planning-2026-09/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../security-hotfix-eval-2026/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    security-hotfix-eval-2026/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_34_15" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    settings-optimization/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_34_15" id="__nav_5_34_15_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_34_15_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_34_15">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    settings-optimization/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="best-of-breed-settings-capabilities.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best-of-Breed Settings Optimization Capabilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="capabilities-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings Optimization — Capabilities Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CR Sanity-Check Contrast Report — EXP-2670
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="cr-sanity-check-contrast-report.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CR Sanity-Check Contrast Report — EXP-2670
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-motivation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Motivation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Method
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Method">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-meal-detection-supplydemand-throughput-exp-483" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Meal Detection: Supply×Demand Throughput (EXP-483)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-cr-contrast-sweep" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 CR Contrast Sweep
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-plausibility-scoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Plausibility Scoring
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-how-to-read-the-figures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. How to Read the Figures
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. How to Read the Figures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#top-left-meal-period-distribution-bar-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Top-Left: Meal Period Distribution (Bar Chart)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#top-right-plausibility-curve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Top-Right: Plausibility Curve
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bottom-meal-size-comparison-grouped-bar-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bottom: Meal Size Comparison (Grouped Bar Chart)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-population-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Population Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Population Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#all-patient-figures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        All Patient Figures
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-patient-archetypes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Patient Archetypes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Patient Archetypes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#archetype-1-well-calibrated-h-i--the-profile-is-right" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Archetype 1: Well-Calibrated (h, i) — "The Profile Is Right"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#archetype-2-near-optimal-a-c-e-f--small-adjustment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Archetype 2: Near-Optimal (a, c, e, f) — "Small Adjustment"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#archetype-3-profile-too-high-b-k--halve-the-cr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Archetype 3: Profile Too High (b, k) — "Halve the CR"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#archetype-4-profile-too-low-d-g--bump-it-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Archetype 4: Profile Too Low (d, g) — "Bump It Up"
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-detailed-patient-walkthroughs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Detailed Patient Walkthroughs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Detailed Patient Walkthroughs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-patient-c--the-validation-case" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Patient c — The Validation Case
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-patient-b--profile-too-aggressive" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Patient b — Profile Too Aggressive
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-patient-f--near-perfect-calibration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Patient f — Near-Perfect Calibration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-patient-k--hidden-miscalibration-low-confidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 Patient k — Hidden Miscalibration (Low Confidence)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#65-patient-h--low-meal-frequency-perfect-cr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.5 Patient h — Low Meal Frequency, Perfect CR
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#66-patient-g--profile-may-be-too-low" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.6 Patient g — Profile May Be Too Low
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-meal-detection-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Meal Detection Validation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Meal Detection Validation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-filtering-pipeline-effectiveness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Filtering Pipeline Effectiveness
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-patient-c-15-mealsday" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Patient c: 1.5 Meals/Day
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-population-meal-frequency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 Population Meal Frequency
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-dessert-merge-hysteresis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Dessert Merge (Hysteresis)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Dessert Merge (Hysteresis)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-rationale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 Rationale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 Implementation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-impact-on-patient-c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 Impact on Patient c
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#84-remaining-snack-events" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.4 Remaining Snack Events
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-known-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Known Limitations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Known Limitations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91-dinner-size-underestimation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 Dinner Size Underestimation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#92-excursion-filter-bias" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2 Excursion Filter Bias
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#93-patient-j-no-ready-days" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.3 Patient j: No READY Days
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#94-linear-rescaling-assumption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4 Linear Rescaling Assumption
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#95-low-n-patients" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.5 Low-N Patients
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-clinical-implications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Clinical Implications
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Clinical Implications">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#101-for-clinicians" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.1 For Clinicians
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#102-for-patients" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.2 For Patients
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#103-relationship-to-aid-controllers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.3 Relationship to AID Controllers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#104-patients-needing-attention" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.4 Patients Needing Attention
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-prior-art--cross-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Prior Art &amp; Cross-References
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-verification-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Verification Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="research-foundations.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings Optimization — Research Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-motivation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Motivation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Method
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Method">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-meal-detection-supplydemand-throughput-exp-483" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Meal Detection: Supply×Demand Throughput (EXP-483)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-cr-contrast-sweep" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 CR Contrast Sweep
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-plausibility-scoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Plausibility Scoring
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-how-to-read-the-figures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. How to Read the Figures
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. How to Read the Figures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#top-left-meal-period-distribution-bar-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Top-Left: Meal Period Distribution (Bar Chart)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#top-right-plausibility-curve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Top-Right: Plausibility Curve
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bottom-meal-size-comparison-grouped-bar-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bottom: Meal Size Comparison (Grouped Bar Chart)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-population-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Population Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Population Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#all-patient-figures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        All Patient Figures
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-patient-archetypes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Patient Archetypes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Patient Archetypes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#archetype-1-well-calibrated-h-i--the-profile-is-right" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Archetype 1: Well-Calibrated (h, i) — "The Profile Is Right"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#archetype-2-near-optimal-a-c-e-f--small-adjustment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Archetype 2: Near-Optimal (a, c, e, f) — "Small Adjustment"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#archetype-3-profile-too-high-b-k--halve-the-cr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Archetype 3: Profile Too High (b, k) — "Halve the CR"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#archetype-4-profile-too-low-d-g--bump-it-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Archetype 4: Profile Too Low (d, g) — "Bump It Up"
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-detailed-patient-walkthroughs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Detailed Patient Walkthroughs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Detailed Patient Walkthroughs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-patient-c--the-validation-case" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Patient c — The Validation Case
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-patient-b--profile-too-aggressive" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Patient b — Profile Too Aggressive
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-patient-f--near-perfect-calibration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Patient f — Near-Perfect Calibration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-patient-k--hidden-miscalibration-low-confidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 Patient k — Hidden Miscalibration (Low Confidence)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#65-patient-h--low-meal-frequency-perfect-cr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.5 Patient h — Low Meal Frequency, Perfect CR
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#66-patient-g--profile-may-be-too-low" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.6 Patient g — Profile May Be Too Low
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-meal-detection-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Meal Detection Validation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Meal Detection Validation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-filtering-pipeline-effectiveness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Filtering Pipeline Effectiveness
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-patient-c-15-mealsday" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Patient c: 1.5 Meals/Day
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-population-meal-frequency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 Population Meal Frequency
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-dessert-merge-hysteresis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Dessert Merge (Hysteresis)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Dessert Merge (Hysteresis)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-rationale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 Rationale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 Implementation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-impact-on-patient-c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 Impact on Patient c
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#84-remaining-snack-events" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.4 Remaining Snack Events
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-known-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Known Limitations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Known Limitations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91-dinner-size-underestimation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 Dinner Size Underestimation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#92-excursion-filter-bias" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2 Excursion Filter Bias
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#93-patient-j-no-ready-days" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.3 Patient j: No READY Days
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#94-linear-rescaling-assumption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4 Linear Rescaling Assumption
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#95-low-n-patients" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.5 Low-N Patients
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-clinical-implications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Clinical Implications
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Clinical Implications">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#101-for-clinicians" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.1 For Clinicians
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#102-for-patients" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.2 For Patients
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#103-relationship-to-aid-controllers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.3 Relationship to AID Controllers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#104-patients-needing-attention" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.4 Patients Needing Attention
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-prior-art--cross-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Prior Art &amp; Cross-References
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-verification-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Verification Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="cr-sanity-check-contrast-report--exp-2670">CR Sanity-Check Contrast Report — EXP-2670<a class="headerlink" href="#cr-sanity-check-contrast-report--exp-2670" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-04-18 at <code>329e9933</code>.</em></p>
+<p><strong>Date</strong>: 2026-04-18 (updated)<br />
+<strong>Experiment</strong>: EXP-2670<br />
+<strong>Purpose</strong>: Help clinicians and patients build confidence in Carb Ratio settings by showing how estimated meal sizes change across different CR values<br />
+<strong>Cohort</strong>: 11 Nightscout patients (a–k), 1,838 patient-days<br />
+<strong>Figures</strong>: <code>visualizations/cr-sanity-check/fig_cr_contrast_{a-k}.png</code><br />
+<strong>Code</strong>: <code>tools/cgmencode/experiments/exp_cr_sanity_check_2670.py</code><br />
+<strong>Tests</strong>: 8 unit tests in <code>TestCRSanityCheckContrast</code> (370 total, 32s)</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
+<ol>
+<li><a href="#1-motivation">Motivation</a></li>
+<li><a href="#2-method">Method</a></li>
+<li><a href="#3-how-to-read-the-figures">How to Read the Figures</a></li>
+<li><a href="#4-population-summary">Population Summary</a></li>
+<li><a href="#5-patient-archetypes">Patient Archetypes</a></li>
+<li><a href="#6-detailed-patient-walkthroughs">Detailed Patient Walkthroughs</a></li>
+<li><a href="#7-meal-detection-validation">Meal Detection Validation</a></li>
+<li><a href="#8-dessert-merge-hysteresis">Dessert Merge (Hysteresis)</a></li>
+<li><a href="#9-known-limitations">Known Limitations</a></li>
+<li><a href="#10-clinical-implications">Clinical Implications</a></li>
+<li><a href="#11-prior-art--cross-references">Prior Art &amp; Cross-References</a></li>
+<li><a href="#12-verification-checklist">Verification Checklist</a></li>
+</ol>
+<hr />
+<h2 id="1-motivation">1. Motivation<a class="headerlink" href="#1-motivation" title="Permanent link">&para;</a></h2>
+<p>Carb Ratio (CR) is the hardest AID setting to validate because it is inherently circular:
+estimated carbs = |∫residual| × CR / ISF — so changing CR changes the estimate.</p>
+<p>Traditional approaches ask "what CR minimizes post-meal glucose variance?" but this requires reliable carb entries, which are available for only ~50% of meals (the rest are unannounced/UAM).</p>
+<p><strong>The sanity-check approach inverts the question</strong>: instead of asking which CR produces the best glucose outcomes, we ask <em>which CR makes detected meal sizes look right?</em> If a patient knows they eat ~2–3 meals per day, with lunch around 40–60g and dinner around 70–200g (with dessert), the "right" CR is the one where the physics-estimated meal sizes match that anecdotal experience.</p>
+<p>This is not a replacement for outcome-based CR optimization — it is a <strong>complementary confidence builder</strong> that patients and clinicians can use to sanity-check recommendations.</p>
+<p>[SOURCE: <code>tools/cgmencode/experiments/exp_cr_sanity_check_2670.py:1-30</code>]</p>
+<hr />
+<h2 id="2-method">2. Method<a class="headerlink" href="#2-method" title="Permanent link">&para;</a></h2>
+<h3 id="21-meal-detection-supplydemand-throughput-exp-483">2.1 Meal Detection: Supply×Demand Throughput (EXP-483)<a class="headerlink" href="#21-meal-detection-supplydemand-throughput-exp-483" title="Permanent link">&para;</a></h3>
+<p>Meals are detected using the physics-based demand-weighted throughput method, not carb entries:</p>
+<ol>
+<li>
+<p><strong>Metabolic flux decomposition</strong>: <code>compute_supply_demand(df)</code> separates glucose dynamics into supply (hepatic + carb absorption) and demand (insulin action) channels<br />
+   [SOURCE: <code>tools/cgmencode/exp_metabolic_441.py:114-240</code>]</p>
+</li>
+<li>
+<p><strong>Demand peak detection</strong>: <code>detect_meals_demand_weighted(df, pk)</code> finds demand peaks using <code>scipy.signal.find_peaks</code> with day-local adaptive thresholds and 90-minute minimum inter-peak distance<br />
+   [SOURCE: <code>tools/cgmencode/exp_refined_483.py:74-196</code>]</p>
+</li>
+<li>
+<p><strong>Precondition gating (READY days)</strong>: Only peaks on days with CGM ≥70% and insulin telemetry ≥10% are retained — this filters out sensor warmup, site failures, and data gaps<br />
+   [SOURCE: <code>tools/cgmencode/exp_refined_483.py:41-69</code>]</p>
+</li>
+<li>
+<p><strong>Overnight mask (0–5 h)</strong>: Demand peaks during the 0–5 h window are excluded. Overnight, hepatic glucose production (EGP) drives high insulin demand that mimics meal signatures but is metabolic, not dietary. For patient a, overnight demand magnitude (48 mg/dL) exceeds daytime demand (13–15 mg/dL) — the strongest "meals" were happening while the patient slept<br />
+   [SOURCE: <code>tools/cgmencode/experiments/exp_cr_sanity_check_2670.py:46-47</code>]</p>
+</li>
+<li>
+<p><strong>Glucose excursion gate (≥30 mg/dL rise)</strong>: Each surviving peak must show a ≥30 mg/dL glucose rise in the 2 hours post-peak. Real meals cause glucose to rise; overnight EGP correction events and aggressive temp-basal periods have high demand but <em>flat or falling</em> glucose because the AID is actively fighting them. This single filter reduced patient a from 6.4 raw peaks/day to 2.4 confirmed meals/day<br />
+   [SOURCE: <code>tools/cgmencode/experiments/exp_cr_sanity_check_2670.py:48</code>]</p>
+</li>
+<li>
+<p><strong>Residual-integral carb estimation</strong>: For each peak, the glucose residual (actual change minus modeled supply−demand net flux) is integrated over a 7-hour window. The integral is converted to grams via: <code>carbs_g = |∫residual| × CR / ISF</code><br />
+   [SOURCE: <code>tools/cgmencode/experiments/exp_cr_sanity_check_2670.py</code> main()]</p>
+</li>
+<li>
+<p><strong>Dessert merge</strong>: Snack events within 180 minutes of a preceding dinner event (by dataframe index proximity, not hour-of-day) are merged into the dinner total. This implements the EXP-486 finding that ~18% of dinners have a dessert course at mean gap 123 minutes<br />
+   [SOURCE: <code>tools/cgmencode/experiments/exp_cr_sanity_check_2670.py:119-144</code>]</p>
+</li>
+</ol>
+<h3 id="22-cr-contrast-sweep">2.2 CR Contrast Sweep<a class="headerlink" href="#22-cr-contrast-sweep" title="Permanent link">&para;</a></h3>
+<p>Because <code>carbs_estimated ∝ CR</code>, rescaling is exact — no re-detection needed:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>new_estimate = carbs_estimated × new_CR / profile_CR
+</code></pre></div>
+<p>The experiment sweeps 12 CR multipliers: 0.5×, 0.6×, 0.7×, 0.8×, 0.9×, 1.0×, 1.1×, 1.2×, 1.3×, 1.5×, 1.7×, 2.0× of the patient's profile CR.</p>
+<h3 id="23-plausibility-scoring">2.3 Plausibility Scoring<a class="headerlink" href="#23-plausibility-scoring" title="Permanent link">&para;</a></h3>
+<p>At each CR multiplier, median meal sizes per period are compared against typical dietary ranges:</p>
+<table>
+<thead>
+<tr>
+<th>Period</th>
+<th>Typical Range (g)</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Breakfast</td>
+<td>20–60</td>
+<td>Dietitian training norms</td>
+</tr>
+<tr>
+<td>Lunch</td>
+<td>40–75</td>
+<td>Dietitian training norms</td>
+</tr>
+<tr>
+<td>Dinner</td>
+<td>50–200</td>
+<td>Includes dessert (merged)</td>
+</tr>
+<tr>
+<td>Snack</td>
+<td>10–30</td>
+<td>Between-meal snacking</td>
+</tr>
+</tbody>
+</table>
+<p>The plausibility score (0–1) measures how well all period medians fall within their respective ranges, weighted by the number of events in each period. The best-fit CR is the multiplier with the highest score.</p>
+<p>[SOURCE: <code>tools/cgmencode/experiments/exp_cr_sanity_check_2670.py:205-260</code>]</p>
+<hr />
+<h2 id="3-how-to-read-the-figures">3. How to Read the Figures<a class="headerlink" href="#3-how-to-read-the-figures" title="Permanent link">&para;</a></h2>
+<p>Each per-patient figure (<code>fig_cr_contrast_{id}.png</code>) contains three panels. Here is patient c as a reference example:</p>
+<p><img alt="Patient c — CR Sanity Check" src="../../../visualizations/cr-sanity-check/fig_cr_contrast_c.png" /></p>
+<h3 id="top-left-meal-period-distribution-bar-chart">Top-Left: Meal Period Distribution (Bar Chart)<a class="headerlink" href="#top-left-meal-period-distribution-bar-chart" title="Permanent link">&para;</a></h3>
+<p>Shows how many detected meals fall into each time-of-day period (breakfast 5–10h, lunch 11–14h, dinner 17–22h, snack = all other hours). This count is <strong>CR-independent</strong> — changing CR changes meal <em>sizes</em>, not meal <em>detection</em>.</p>
+<p><strong>What to look for</strong>: Does the distribution match the patient's known eating pattern? Patient c shows 73 breakfasts, 35 lunches, 88 dinners — a dinner-heavy pattern consistent with someone who eats a moderate breakfast, lighter lunch, and more at dinner.</p>
+<h3 id="top-right-plausibility-curve">Top-Right: Plausibility Curve<a class="headerlink" href="#top-right-plausibility-curve" title="Permanent link">&para;</a></h3>
+<p>The blue line shows plausibility score (y-axis, 0–1) across the CR sweep (x-axis, absolute CR value). The red star marks the best-fit CR. The dashed gray line marks the current profile CR.</p>
+<p><strong>Three curve shapes to recognize</strong>:</p>
+<ul>
+<li><strong>Bell-shaped peak near profile</strong> → Profile CR is well-calibrated. The peak indicates the CR where meal sizes most closely match typical portions. (Patients c, f, h, i)</li>
+<li><strong>Monotonic decrease from left</strong> → Profile CR is too high (too many g/U). Even at 0.5× profile, meals still look large, suggesting the true CR is much lower. (Patients b, k)</li>
+<li><strong>Monotonically increasing / plateau to the right</strong> → Profile CR is too low. Meals at profile look small; a higher CR makes them more realistic. (Patients d, g)</li>
+</ul>
+<h3 id="bottom-meal-size-comparison-grouped-bar-chart">Bottom: Meal Size Comparison (Grouped Bar Chart)<a class="headerlink" href="#bottom-meal-size-comparison-grouped-bar-chart" title="Permanent link">&para;</a></h3>
+<p>Shows median meal size (with P25–P75 whiskers) at three representative CRs: 0.7× (red), 1.0× (green), and 1.5× (blue) of profile. Green shaded rectangles show the typical dietary range for each period.</p>
+<p><strong>What to look for</strong>: At which color do the bars best fit inside the green zones? If green (1.0×) bars are already inside the green zones, the profile CR is correct. If the red (0.7×) bars fit better, the profile is too high.</p>
+<hr />
+<h2 id="4-population-summary">4. Population Summary<a class="headerlink" href="#4-population-summary" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Patient</th>
+<th>Profile CR</th>
+<th>Best-Fit CR</th>
+<th>Ratio</th>
+<th>Meals/Day</th>
+<th>n</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>a</strong></td>
+<td>4.0</td>
+<td>3.2</td>
+<td>0.8×</td>
+<td>2.2</td>
+<td>404</td>
+<td>Near-optimal</td>
+</tr>
+<tr>
+<td><strong>b</strong></td>
+<td>12.1</td>
+<td>6.1</td>
+<td>0.5×</td>
+<td>2.7</td>
+<td>487</td>
+<td><strong>Profile 2× too high</strong></td>
+</tr>
+<tr>
+<td><strong>c</strong></td>
+<td>4.5</td>
+<td>4.0</td>
+<td>0.9×</td>
+<td>1.5</td>
+<td>275</td>
+<td>Near-optimal ✓</td>
+</tr>
+<tr>
+<td><strong>d</strong></td>
+<td>14.0</td>
+<td>15.4</td>
+<td>1.1×</td>
+<td>1.3</td>
+<td>243</td>
+<td>Slightly low</td>
+</tr>
+<tr>
+<td><strong>e</strong></td>
+<td>3.0</td>
+<td>2.4</td>
+<td>0.8×</td>
+<td>2.3</td>
+<td>370</td>
+<td>Near-optimal</td>
+</tr>
+<tr>
+<td><strong>f</strong></td>
+<td>5.0</td>
+<td>4.5</td>
+<td>0.9×</td>
+<td>1.8</td>
+<td>322</td>
+<td>Near-optimal ✓</td>
+</tr>
+<tr>
+<td><strong>g</strong></td>
+<td>8.5</td>
+<td>12.8</td>
+<td>1.5×</td>
+<td>2.2</td>
+<td>394</td>
+<td>Profile too low</td>
+</tr>
+<tr>
+<td><strong>h</strong></td>
+<td>10.0</td>
+<td>10.0</td>
+<td>1.0×</td>
+<td>0.7</td>
+<td>126</td>
+<td><strong>Perfectly calibrated</strong> ✓</td>
+</tr>
+<tr>
+<td><strong>i</strong></td>
+<td>10.0</td>
+<td>10.0</td>
+<td>1.0×</td>
+<td>2.2</td>
+<td>398</td>
+<td><strong>Perfectly calibrated</strong> ✓</td>
+</tr>
+<tr>
+<td><strong>j</strong></td>
+<td>6.0</td>
+<td>—</td>
+<td>—</td>
+<td>0.0</td>
+<td>0</td>
+<td>No READY days (data gap)</td>
+</tr>
+<tr>
+<td><strong>k</strong></td>
+<td>10.0</td>
+<td>5.0</td>
+<td>0.5×</td>
+<td>0.3 ⚠</td>
+<td>62</td>
+<td>Profile likely too high (low-N)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Meal count interpretation</strong>: Counts are now filtered by overnight mask (0–5h excluded) and glucose excursion gate (≥30 mg/dL rise required). All patients land between 0.3 and 2.7 meals/day, well within the plausible range for most adults. Patients with very low counts (h at 0.7, k at 0.3) have AID systems that effectively blunt glucose excursions — fewer detectable rises means fewer events pass the ≥30 mg/dL gate. Patient k's 62 events should be treated as directional only. Patients eating 3+ meals but not seeing that count likely have tight control where the AID prevents excursions from reaching the threshold.</p>
+</blockquote>
+<p><strong>Key finding</strong>: 7 of 10 evaluable patients (70%) have profile CRs within 20% of the best-fit — suggesting most profiles are already reasonably calibrated. Two patients (b, k) have profiles approximately 2× too high, which would cause the AID to significantly under-bolus for meals. One patient (g) may have a profile that is too low (1.5× under the best-fit), though this could also reflect the excursion filter removing too many small-excursion meals from a well-controlled patient.</p>
+<p>[SOURCE: <code>externals/experiments/exp-2670_cr_sanity_check.json</code>]</p>
+<h3 id="all-patient-figures">All Patient Figures<a class="headerlink" href="#all-patient-figures" title="Permanent link">&para;</a></h3>
+<details>
+<summary>Patient a — Near-optimal (0.8×)</summary>
+
+![Patient a](../../../visualizations/cr-sanity-check/fig_cr_contrast_a.png)
+</details>
+
+<details>
+<summary>Patient b — Profile 2× too high (0.5×)</summary>
+
+![Patient b](../../../visualizations/cr-sanity-check/fig_cr_contrast_b.png)
+</details>
+
+<details>
+<summary>Patient c — Near-optimal (0.9×) ✓</summary>
+
+![Patient c](../../../visualizations/cr-sanity-check/fig_cr_contrast_c.png)
+</details>
+
+<details>
+<summary>Patient d — Slightly low (1.1×)</summary>
+
+![Patient d](../../../visualizations/cr-sanity-check/fig_cr_contrast_d.png)
+</details>
+
+<details>
+<summary>Patient e — Near-optimal (0.8×)</summary>
+
+![Patient e](../../../visualizations/cr-sanity-check/fig_cr_contrast_e.png)
+</details>
+
+<details>
+<summary>Patient f — Near-optimal (0.9×) ✓</summary>
+
+![Patient f](../../../visualizations/cr-sanity-check/fig_cr_contrast_f.png)
+</details>
+
+<details>
+<summary>Patient g — Profile too low (1.5×)</summary>
+
+![Patient g](../../../visualizations/cr-sanity-check/fig_cr_contrast_g.png)
+</details>
+
+<details>
+<summary>Patient h — Perfectly calibrated (1.0×) ✓</summary>
+
+![Patient h](../../../visualizations/cr-sanity-check/fig_cr_contrast_h.png)
+</details>
+
+<details>
+<summary>Patient i — Perfectly calibrated (1.0×) ✓</summary>
+
+![Patient i](../../../visualizations/cr-sanity-check/fig_cr_contrast_i.png)
+</details>
+
+<details>
+<summary>Patient k — Profile likely too high (0.5×) ⚠ low-N</summary>
+
+![Patient k](../../../visualizations/cr-sanity-check/fig_cr_contrast_k.png)
+</details>
+
+<hr />
+<h2 id="5-patient-archetypes">5. Patient Archetypes<a class="headerlink" href="#5-patient-archetypes" title="Permanent link">&para;</a></h2>
+<p>The 11 patients cluster into four distinct patterns:</p>
+<h3 id="archetype-1-well-calibrated-h-i--the-profile-is-right">Archetype 1: Well-Calibrated (h, i) — "The Profile Is Right"<a class="headerlink" href="#archetype-1-well-calibrated-h-i--the-profile-is-right" title="Permanent link">&para;</a></h3>
+<p><strong>Plausibility curve</strong>: Bell-shaped with peak at profile exactly (1.0×).<br />
+<strong>Interpretation</strong>: Profile CR produces realistic meal sizes. No change needed.</p>
+<ul>
+<li><strong>Patient i</strong>: Best-fit CR = 10.0 = profile. 2.2 meals/day with 398 events — strong sample. Period distribution weighted toward dinner (138) and snack (163), consistent with dinner-centric eating.</li>
+<li><strong>Patient h</strong>: Best-fit CR = 10.0 = profile. Only 0.7 meals/day (126 events) — low count reflects tight AID control that blunts most excursions below the ≥30 mg/dL gate rather than infrequent eating.</li>
+</ul>
+<h3 id="archetype-2-near-optimal-a-c-e-f--small-adjustment">Archetype 2: Near-Optimal (a, c, e, f) — "Small Adjustment"<a class="headerlink" href="#archetype-2-near-optimal-a-c-e-f--small-adjustment" title="Permanent link">&para;</a></h3>
+<p><strong>Plausibility curve</strong>: Bell-shaped with peak within 0.8–0.9× of profile.<br />
+<strong>Interpretation</strong>: Profile is close but marginally too high. A 10–20% reduction would optimize plausibility.</p>
+<p>Best examples:
+- <strong>Patient c</strong>: Best-fit CR = 4.0 (0.9× profile of 4.5). 1.5 meals/day, 275 events. At profile, lunch = 41g [23–62] — within the expected 40–60g range. The small difference (4.0 vs 4.5) may not justify a change, but confirms the profile direction.
+- <strong>Patient f</strong>: Best-fit CR = 4.5 (0.9× profile of 5.0). 1.8 meals/day, 322 events. Dinner-heavy distribution (129 of 322).
+- <strong>Patient a</strong>: Best-fit CR = 3.2 (0.8× profile of 4.0). 2.2 meals/day, 404 events — the largest sample in this archetype, after overnight and excursion filtering removed 66% of raw demand peaks.</p>
+<h3 id="archetype-3-profile-too-high-b-k--halve-the-cr">Archetype 3: Profile Too High (b, k) — "Halve the CR"<a class="headerlink" href="#archetype-3-profile-too-high-b-k--halve-the-cr" title="Permanent link">&para;</a></h3>
+<p><strong>Plausibility curve</strong>: Monotonically decreasing or nearly so — highest plausibility at 0.5× (the lowest multiplier tested).<br />
+<strong>Interpretation</strong>: At profile CR, estimated meals are unrealistically large.</p>
+<p>Best examples:
+- <strong>Patient b</strong>: Profile CR=12.1, best-fit CR=6.1 (0.5×). 2.7 meals/day, 487 events (largest sample in cohort). At profile, dinner median = 203g — implausible for a <em>median</em>. At CR=6.1, dinner drops to 102g, which is realistic.
+- <strong>Patient k</strong>: Profile CR=10, best-fit CR=5.0 (0.5×). Only 0.3 meals/day (62 events) — k's AID is very effective at blunting excursions, so 78% of demand peaks were filtered by the ≥30 mg/dL gate. The directional signal (profile too high) is clear but low-N warrants caution.</p>
+<h3 id="archetype-4-profile-too-low-d-g--bump-it-up">Archetype 4: Profile Too Low (d, g) — "Bump It Up"<a class="headerlink" href="#archetype-4-profile-too-low-d-g--bump-it-up" title="Permanent link">&para;</a></h3>
+<p><strong>Plausibility curve</strong>: Monotonically increasing or plateau to the right of profile line.<br />
+<strong>Interpretation</strong>: At profile CR, meals look small. A higher CR makes sizes more realistic.</p>
+<ul>
+<li><strong>Patient d</strong>: Profile CR=14, best-fit CR=15.4 (1.1×). Modest increase. 1.3 meals/day, 243 events.</li>
+<li><strong>Patient g</strong>: Profile CR=8.5, best-fit CR=12.8 (1.5×). Stronger signal. 2.2 meals/day, 394 events. The large dinner count (182 of 394) suggests g is a dinner-heavy eater whose meals look too small at the current CR. The 1.5× best-fit is the largest upward adjustment in the cohort.</li>
+</ul>
+<hr />
+<h2 id="6-detailed-patient-walkthroughs">6. Detailed Patient Walkthroughs<a class="headerlink" href="#6-detailed-patient-walkthroughs" title="Permanent link">&para;</a></h2>
+<h3 id="61-patient-c--the-validation-case">6.1 Patient c — The Validation Case<a class="headerlink" href="#61-patient-c--the-validation-case" title="Permanent link">&para;</a></h3>
+<p><img alt="Patient c — CR Sanity Check" src="../../../visualizations/cr-sanity-check/fig_cr_contrast_c.png" /></p>
+<p>Patient c is the primary validation case because anecdotal experience is available: ~1.8–2.6 meals/day (depending on meal boundary definition), lunch typically 40–60g, dinner typically 70–200g (with dessert).</p>
+<p><strong>Detected</strong>: 275 meals over 180 days = <strong>1.5 meals/day</strong><br />
+<strong>Period breakdown</strong>: 73 breakfast, 35 lunch, 88 dinner, 79 snack<br />
+<strong>Filtering</strong>: 156 overnight peaks masked, 183 filtered by ≥30 mg/dL excursion gate</p>
+<p><strong>CR contrast table (selected rows)</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>CR</th>
+<th>Abs</th>
+<th>Breakfast</th>
+<th>Lunch</th>
+<th>Dinner</th>
+<th>Snack</th>
+<th>Fit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.7×</td>
+<td>3.1</td>
+<td>22 [14–29]</td>
+<td>29 [16–43]</td>
+<td>20 [13–38]</td>
+<td>30 [17–42]</td>
+<td>—</td>
+</tr>
+<tr>
+<td>0.9×</td>
+<td>4.0</td>
+<td>28 [18–37]</td>
+<td>37 [21–56]</td>
+<td>26 [16–48]</td>
+<td>38 [22–55]</td>
+<td><strong>0.792</strong> ◀</td>
+</tr>
+<tr>
+<td>1.0×</td>
+<td>4.5</td>
+<td>31 [20–41]</td>
+<td>41 [23–62]</td>
+<td>29 [18–54]</td>
+<td>42 [24–61]</td>
+<td>0.791</td>
+</tr>
+<tr>
+<td>1.3×</td>
+<td>5.9</td>
+<td>40 [26–53]</td>
+<td>53 [30–80]</td>
+<td>37 [24–70]</td>
+<td>55 [31–79]</td>
+<td>0.728</td>
+</tr>
+<tr>
+<td>1.5×</td>
+<td>6.8</td>
+<td>46 [30–62]</td>
+<td>62 [35–93]</td>
+<td>43 [27–80]</td>
+<td>63 [36–91]</td>
+<td>0.715</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Validation against anecdotal experience</strong>:
+- <strong>Lunch at profile (CR=4.5)</strong>: 41g [23–62] — <strong>matches the expected 40–60g</strong> ✓
+- <strong>Breakfast at profile</strong>: 31g [20–41] — reasonable for a light-to-moderate breakfast ✓
+- <strong>Meals/day</strong>: 1.5 — below the 1.8–2.6 expected range. The ≥30 mg/dL excursion gate filters out well-bolused meals where the AID prevents large glucose rises. This is a known tradeoff: tighter AID control → fewer detectable meal excursions.
+- <strong>Dinner at profile</strong>: 29g [18–54] — lower than expected 70–200g (see §8 on dessert splitting and §9.1 on announced-meal underestimation)</p>
+<p>The combined dinner + snack estimate at profile would be approximately 29 + 42 = 71g, approaching the lower bound of the 70–200g expected range.</p>
+<p><strong>Verdict</strong>: Profile CR=4.5 is near-optimal. Best-fit CR=4.0 (0.9×) represents a marginal improvement that may not justify a change.</p>
+<h3 id="62-patient-b--profile-too-aggressive">6.2 Patient b — Profile Too Aggressive<a class="headerlink" href="#62-patient-b--profile-too-aggressive" title="Permanent link">&para;</a></h3>
+<p><img alt="Patient b — CR Sanity Check" src="../../../visualizations/cr-sanity-check/fig_cr_contrast_b.png" /></p>
+<p>Profile CR = 12.1, Best-fit CR = 6.1 (0.5× profile), <strong>2.7 meals/day, 487 events</strong></p>
+<p>At profile, dinner median = 203g [155–247] — this means the <em>typical</em> dinner is being scored as 203g of carbs. Unless this patient routinely eats very large pasta/rice dishes, this is implausible.</p>
+<p>At best-fit CR=6.1: breakfast = 24g [13–43], lunch = 50g [39–66], dinner = 102g [78–124]. These are realistic: a light breakfast, moderate lunch, and hearty dinner.</p>
+<p>The meal count of 2.7/day (up from 5.2/day before filtering) is now plausible — a typical 3-meal pattern with some days having only 2 detected excursions.</p>
+<p><strong>Clinical implication</strong>: If patient b entered 60g for a meal, the AID at CR=12 would deliver 5.0U. At the suggested CR=6, it would deliver 10.0U — a 2× difference in bolus. This under-bolusing at CR=12 forces the AID to compensate with aggressive temp basals and SMBs post-meal.</p>
+<h3 id="63-patient-f--near-perfect-calibration">6.3 Patient f — Near-Perfect Calibration<a class="headerlink" href="#63-patient-f--near-perfect-calibration" title="Permanent link">&para;</a></h3>
+<p><img alt="Patient f — CR Sanity Check" src="../../../visualizations/cr-sanity-check/fig_cr_contrast_f.png" /></p>
+<p>Profile CR = 5.0, Best-fit CR = 4.5 (0.9×), <strong>1.8 meals/day, 322 events</strong></p>
+<p>The plausibility curve peaks near the profile value. At profile: lunch median sizes and dinner sizes fall within or near the typical ranges. The 0.9× best-fit represents a marginal difference that may not justify a change.</p>
+<p>Patient f had the cleanest spectral signature in preliminary analysis: three distinct peaks at 1, 2, and 3 cycles/day corresponding to a classic 3-meal circadian pattern.</p>
+<h3 id="64-patient-k--hidden-miscalibration-low-confidence">6.4 Patient k — Hidden Miscalibration (Low Confidence)<a class="headerlink" href="#64-patient-k--hidden-miscalibration-low-confidence" title="Permanent link">&para;</a></h3>
+<p><img alt="Patient k — CR Sanity Check" src="../../../visualizations/cr-sanity-check/fig_cr_contrast_k.png" /></p>
+<p>Profile CR = 10, Best-fit CR = 5.0 (0.5×), <strong>0.3 meals/day, 62 events</strong> ⚠</p>
+<p>Patient k's AID is exceptionally effective at blunting glucose excursions: of 915 READY-gated demand peaks, 716 (78%) were filtered by the ≥30 mg/dL excursion gate, leaving 199 peaks; after dessert merge and minimum carb thresholds, 62 events remained. At profile: breakfast = 128g [111–178], lunch = 93g [82–141] — unrealistically large. At best-fit CR=5: breakfast = 64g [56–89], lunch = 46g [41–70] — more plausible.</p>
+<p>The directional signal (profile is too high) is strong — the monotonically decreasing plausibility curve is unambiguous. However, the very small sample (62 events over 180 days) means the absolute best-fit value should be treated with caution.</p>
+<h3 id="65-patient-h--low-meal-frequency-perfect-cr">6.5 Patient h — Low Meal Frequency, Perfect CR<a class="headerlink" href="#65-patient-h--low-meal-frequency-perfect-cr" title="Permanent link">&para;</a></h3>
+<p><img alt="Patient h — CR Sanity Check" src="../../../visualizations/cr-sanity-check/fig_cr_contrast_h.png" /></p>
+<p>Profile CR = 10, Best-fit CR = 10 (1.0×), <strong>0.7 meals/day, 126 events</strong></p>
+<p>The low count reflects tight AID control rather than infrequent eating — only 167 of 414 READY-gated peaks passed the excursion filter. The flat plausibility curve (0.70–0.75 across the range) is consistent with few scored events, but the peak at 1.0× confirms the profile is correctly calibrated.</p>
+<h3 id="66-patient-g--profile-may-be-too-low">6.6 Patient g — Profile May Be Too Low<a class="headerlink" href="#66-patient-g--profile-may-be-too-low" title="Permanent link">&para;</a></h3>
+<p><img alt="Patient g — CR Sanity Check" src="../../../visualizations/cr-sanity-check/fig_cr_contrast_g.png" /></p>
+<p>Profile CR = 8.5, Best-fit CR = 12.8 (1.5×), <strong>2.2 meals/day, 394 events</strong></p>
+<p>This is the largest upward CR adjustment in the cohort. The dinner-heavy period distribution (182 of 394 events at dinner hours) suggests g is an evening eater. At profile CR=8.5, meal sizes appear too small to be realistic, and the plausibility analysis favors 1.5× higher. However, this could also reflect the excursion filter preferentially retaining larger events for a well-controlled patient, biasing the median upward. The 1.5× recommendation should be viewed as directional rather than prescriptive.</p>
+<hr />
+<h2 id="7-meal-detection-validation">7. Meal Detection Validation<a class="headerlink" href="#7-meal-detection-validation" title="Permanent link">&para;</a></h2>
+<h3 id="71-filtering-pipeline-effectiveness">7.1 Filtering Pipeline Effectiveness<a class="headerlink" href="#71-filtering-pipeline-effectiveness" title="Permanent link">&para;</a></h3>
+<p>The two-stage quality filter (overnight mask + glucose excursion gate) dramatically reduced over-detection:</p>
+<table>
+<thead>
+<tr>
+<th>Patient</th>
+<th>Raw/Day</th>
+<th>READY/Day</th>
+<th>After Filters</th>
+<th>Reduction</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a</td>
+<td>6.4</td>
+<td>6.4</td>
+<td><strong>2.2</strong></td>
+<td>−66%</td>
+</tr>
+<tr>
+<td>b</td>
+<td>5.7</td>
+<td>5.7</td>
+<td><strong>2.7</strong></td>
+<td>−53%</td>
+</tr>
+<tr>
+<td>c</td>
+<td>4.8</td>
+<td>4.6</td>
+<td><strong>1.5</strong></td>
+<td>−69%</td>
+</tr>
+<tr>
+<td>f</td>
+<td>6.1</td>
+<td>6.1</td>
+<td><strong>1.8</strong></td>
+<td>−70%</td>
+</tr>
+<tr>
+<td>k</td>
+<td>6.5</td>
+<td>5.1</td>
+<td><strong>0.3</strong></td>
+<td>−95%</td>
+</tr>
+</tbody>
+</table>
+<p>The overnight mask removes ~20% of raw peaks (0–5h hepatic EGP). The excursion gate removes a further 30–78% — the variation reflects how effectively each patient's AID blunts glucose rises.</p>
+<h3 id="72-patient-c-15-mealsday">7.2 Patient c: 1.5 Meals/Day<a class="headerlink" href="#72-patient-c-15-mealsday" title="Permanent link">&para;</a></h3>
+<p>The filtered count of 1.5/day is below the anecdotally expected 1.8–2.6:</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Meals/Day</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Anecdotal (patient report)</td>
+<td>~1.8–2.6</td>
+<td>User input</td>
+</tr>
+<tr>
+<td>Supply×demand + excursion filter</td>
+<td><strong>1.5</strong></td>
+<td>This experiment</td>
+</tr>
+<tr>
+<td>Supply×demand (no excursion filter)</td>
+<td>2.6</td>
+<td>Previous version</td>
+</tr>
+<tr>
+<td>EXP-483 population median</td>
+<td>2.6</td>
+<td><code>docs/60-research/non-bolusing-robustness-report-2026-04-07.md:424</code></td>
+</tr>
+<tr>
+<td>Carb-entry NE detector</td>
+<td>1.87</td>
+<td>EXP-1559 config sweep</td>
+</tr>
+</tbody>
+</table>
+<p>The gap between 1.5 (filtered) and 2.6 (unfiltered) comes from the ≥30 mg/dL excursion gate filtering out well-bolused meals where the AID prevents significant glucose rises. This is a principled tradeoff: accepting some under-counting of well-controlled meals in exchange for eliminating overnight EGP false positives that inflated counts above 5/day for some patients.</p>
+<h3 id="73-population-meal-frequency">7.3 Population Meal Frequency<a class="headerlink" href="#73-population-meal-frequency" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Patient</th>
+<th>Meals/Day</th>
+<th>Confidence</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>k</td>
+<td>0.3</td>
+<td>⚠ Low-N</td>
+<td>AID blunts nearly all excursions — directional only</td>
+</tr>
+<tr>
+<td>h</td>
+<td>0.7</td>
+<td>✓ Low</td>
+<td>Tight control, few detectable excursions</td>
+</tr>
+<tr>
+<td>d</td>
+<td>1.3</td>
+<td>✓</td>
+<td>Light eater or many well-controlled meals</td>
+</tr>
+<tr>
+<td>c</td>
+<td>1.5</td>
+<td>✓</td>
+<td>2–3 real meals, some filtered by excursion gate</td>
+</tr>
+<tr>
+<td>f</td>
+<td>1.8</td>
+<td>✓</td>
+<td>Classic 2-meal detection pattern</td>
+</tr>
+<tr>
+<td>a, g, i</td>
+<td>2.2</td>
+<td>✓</td>
+<td>Consistent 2–3 meal pattern</td>
+</tr>
+<tr>
+<td>e</td>
+<td>2.3</td>
+<td>✓</td>
+<td>Standard 2–3 meals</td>
+</tr>
+<tr>
+<td>b</td>
+<td>2.7</td>
+<td>✓</td>
+<td>Standard 3-meal pattern</td>
+</tr>
+</tbody>
+</table>
+<p>All counts are now in the 0.3–2.7 range — no patient exceeds 3 meals/day, which is conservative but plausible. The variation across patients reflects both genuine eating frequency differences and AID control effectiveness (tighter control → fewer detectable ≥30 mg/dL excursions).</p>
+<p>The CR plausibility curves remain informative even for low-count patients because the curve shape (monotonic vs bell) is more meaningful than absolute counts.</p>
+<hr />
+<h2 id="8-dessert-merge-hysteresis">8. Dessert Merge (Hysteresis)<a class="headerlink" href="#8-dessert-merge-hysteresis" title="Permanent link">&para;</a></h2>
+<h3 id="81-rationale">8.1 Rationale<a class="headerlink" href="#81-rationale" title="Permanent link">&para;</a></h3>
+<p>EXP-486 established that ~18% of dinners include a secondary "dessert" peak 90–150 minutes later (mean gap 123 min). Without merging, these appear as separate dinner + snack events, underestimating dinner size and inflating snack count.</p>
+<h3 id="82-implementation">8.2 Implementation<a class="headerlink" href="#82-implementation" title="Permanent link">&para;</a></h3>
+<p>Events classified as "snack" (hour ≥22 or hour &lt;5) that occur within 180 minutes (36 dataframe steps × 5 min/step) of a preceding "dinner" event are merged:
+- Carbs summed into the dinner event
+- Excursion takes the maximum of both
+- Bolus summed
+- Snack event removed</p>
+<p>The 180-minute window (wider than EXP-486's 90–150) was chosen based on patient c's observed dinner→dessert gap distribution: median 170 min, with 37% in the 90–150 min range and the remainder at 150–240 min.</p>
+<p>[SOURCE: <code>tools/cgmencode/experiments/exp_cr_sanity_check_2670.py:119-144</code>, EXP-486]</p>
+<h3 id="83-impact-on-patient-c">8.3 Impact on Patient c<a class="headerlink" href="#83-impact-on-patient-c" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Pre-Merge</th>
+<th>Post-Merge</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Total meals</td>
+<td>355 (pre-filter)</td>
+<td>275</td>
+</tr>
+<tr>
+<td>Meals/day</td>
+<td>2.0 (pre-filter)</td>
+<td>1.5</td>
+</tr>
+</tbody>
+</table>
+<p>Note: the pre-merge count (355) reflects events that survived overnight mask + excursion filter but before dessert merge and the ≥5g carb threshold. The final 275 events pass all quality gates.</p>
+<h3 id="84-remaining-snack-events">8.4 Remaining Snack Events<a class="headerlink" href="#84-remaining-snack-events" title="Permanent link">&para;</a></h3>
+<p>The 79 remaining "snack" events for patient c include:
+- <strong>Afternoon snacks (14–17h)</strong>: Events between lunch and dinner periods — these are legitimate between-meal eating
+- <strong>Late-evening events (22–24h)</strong>: Events too far from any dinner peak to merge, possibly genuine late snacking
+- <em>(Overnight 0–5h events are now fully excluded by the overnight mask)</em></p>
+<hr />
+<h2 id="9-known-limitations">9. Known Limitations<a class="headerlink" href="#9-known-limitations" title="Permanent link">&para;</a></h2>
+<h3 id="91-dinner-size-underestimation">9.1 Dinner Size Underestimation<a class="headerlink" href="#91-dinner-size-underestimation" title="Permanent link">&para;</a></h3>
+<p>At profile CR=4.5, patient c's dinner median is 29g [18–54] — below the expected 70–200g. This occurs because:</p>
+<ol>
+<li>
+<p><strong>Announced meal compensation</strong>: For meals where carbs were entered, the AID pre-boluses. The metabolic model's supply-demand decomposition already accounts for this insulin via the demand channel, leaving a small residual. The residual-integral carb estimate is thus smaller than the actual meal.</p>
+</li>
+<li>
+<p><strong>Dessert splitting</strong>: Despite the 180-min merge, some dinner+dessert combos span &gt;3 hours or involve intermediate snacking that breaks the merge logic.</p>
+</li>
+<li>
+<p><strong>Multi-course detection</strong>: A dinner with appetizer, main course, and dessert over 2+ hours may generate 2–3 separate demand peaks, each estimated independently.</p>
+</li>
+</ol>
+<p><strong>Mitigation</strong>: The combined dinner + snack estimate (29 + 42 = 71g at profile) approaches the expected lower bound.</p>
+<h3 id="92-excursion-filter-bias">9.2 Excursion Filter Bias<a class="headerlink" href="#92-excursion-filter-bias" title="Permanent link">&para;</a></h3>
+<p>The ≥30 mg/dL glucose excursion gate preferentially retains <em>poorly-controlled</em> meals (where the AID failed to prevent a rise) and filters out <em>well-controlled</em> meals (where AID pre-bolusing kept glucose flat). This introduces a selection bias:</p>
+<ul>
+<li>Well-controlled patients (h, k) lose most of their meals, yielding low counts and small samples</li>
+<li>The surviving meals may not be representative of the patient's typical eating pattern</li>
+<li>Best-fit CR may be biased toward values that explain larger-than-average meals</li>
+</ul>
+<p>This is a principled tradeoff: without the filter, overnight EGP events inflated counts to &gt;5/day for many patients. The current approach correctly prioritizes plausible counts over statistical power.</p>
+<h3 id="93-patient-j-no-ready-days">9.3 Patient j: No READY Days<a class="headerlink" href="#93-patient-j-no-ready-days" title="Permanent link">&para;</a></h3>
+<p>Patient j has zero READY-gated peaks, producing no results. This is a data quality issue — the patient's CGM or insulin telemetry coverage is too sparse for metabolic analysis. The experiment correctly identifies this rather than producing unreliable estimates.</p>
+<h3 id="94-linear-rescaling-assumption">9.4 Linear Rescaling Assumption<a class="headerlink" href="#94-linear-rescaling-assumption" title="Permanent link">&para;</a></h3>
+<p>The <code>new_estimate = old_estimate × new_CR / old_CR</code> rescaling is mathematically exact given the carb estimation formula, but it assumes:
+- ISF is constant (not co-varying with CR)
+- Meal detection boundaries don't change with CR
+- The residual integral is a faithful carb proxy</p>
+<p>In practice, these hold for the sweep range (0.5–2.0×) but would break down at extreme values.</p>
+<h3 id="95-low-n-patients">9.5 Low-N Patients<a class="headerlink" href="#95-low-n-patients" title="Permanent link">&para;</a></h3>
+<p>Patients k (62 events) and h (126 events) have small samples relative to the rest of the cohort (243–487 events). The best-fit CR for these patients should be considered directional (is the profile too high, too low, or about right?) rather than precisely calibrated.</p>
+<hr />
+<h2 id="10-clinical-implications">10. Clinical Implications<a class="headerlink" href="#10-clinical-implications" title="Permanent link">&para;</a></h2>
+<h3 id="101-for-clinicians">10.1 For Clinicians<a class="headerlink" href="#101-for-clinicians" title="Permanent link">&para;</a></h3>
+<p>The sanity-check figures provide a <strong>shared visual language</strong> between clinician and patient:</p>
+<blockquote>
+<p>"At your current CR of 12, the system estimates your typical lunch is 96g of carbs and dinner is 210g. Does that sound right to you? If your lunch is usually more like 50g, we might want to try a CR closer to 6."</p>
+</blockquote>
+<p>This grounds an abstract setting (g/U) in concrete, verifiable experience.</p>
+<h3 id="102-for-patients">10.2 For Patients<a class="headerlink" href="#102-for-patients" title="Permanent link">&para;</a></h3>
+<p>Patients can use the figures to self-assess:
+1. Look at the meal count — does it match how many times you eat per day?
+2. Look at the meal sizes at your current CR (green bars) — do they match what you actually eat?
+3. If everything looks plausible, your CR is probably fine.
+4. If meals look too big or too small, follow the plausibility curve to find a better CR.</p>
+<h3 id="103-relationship-to-aid-controllers">10.3 Relationship to AID Controllers<a class="headerlink" href="#103-relationship-to-aid-controllers" title="Permanent link">&para;</a></h3>
+<p>CR in an AID context has a different role than in manual dosing:</p>
+<ul>
+<li><strong>Loop</strong>: CR determines announced meal bolus size. Under-bolusing (CR too high) forces Loop to catch up with high temp basals, causing delayed insulin timing and post-meal spikes.</li>
+<li><strong>AAPS/Trio (oref1)</strong>: CR affects both announced boluses and SMB calculations. With UAM enabled, the controller can partially compensate for wrong CR via SMBs, but at the cost of delayed and suboptimal insulin timing.</li>
+<li><strong>No-bolus strategy</strong>: Some patients rely entirely on SMBs with no meal announcements. For these patients, CR primarily affects carb absorption modeling rather than direct bolusing. The sanity check is still useful because estimated carb counts feed back into algorithm predictions.</li>
+</ul>
+<h3 id="104-patients-needing-attention">10.4 Patients Needing Attention<a class="headerlink" href="#104-patients-needing-attention" title="Permanent link">&para;</a></h3>
+<p><strong>Patient b</strong> (CR=12 → suggested ~6) and <strong>patient k</strong> (CR=10 → suggested ~5) show the strongest signal for CR miscalibration. In both cases, the profile appears approximately 2× too high. For an AID system, this means:
+- Announced meal boluses are ~50% of what they should be
+- The AID must compensate with aggressive post-meal corrections
+- Post-meal glucose excursions are likely larger and longer than necessary</p>
+<p>Patient b has strong confidence (487 events, 2.7 meals/day). Patient k has weaker confidence (62 events) but the monotonically decreasing plausibility curve is unambiguous in direction.</p>
+<p><strong>Patient g</strong> (CR=8.5 → suggested ~12.8) shows the opposite pattern: the profile may be too <em>low</em>, meaning the AID over-boluses for meals. This is less common and less dangerous (hypo risk from over-bolusing is generally caught by AID safety features), but worth clinical review.</p>
+<hr />
+<h2 id="11-prior-art--cross-references">11. Prior Art &amp; Cross-References<a class="headerlink" href="#11-prior-art--cross-references" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Experiment</th>
+<th>Finding</th>
+<th>Relevance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EXP-441/446</td>
+<td>Supply×demand metabolic decomposition</td>
+<td>Foundation for meal detection</td>
+</tr>
+<tr>
+<td>EXP-483</td>
+<td>Demand-weighted unified detector, 2.6 meals/day median</td>
+<td>Meal counting method used here</td>
+</tr>
+<tr>
+<td>EXP-486</td>
+<td>Dessert detection: 18% of dinners, mean gap 123min</td>
+<td>Basis for 180-min merge window</td>
+</tr>
+<tr>
+<td>EXP-1341</td>
+<td>4 carb estimation algorithms compared (oref0 r=0.368)</td>
+<td>Validated residual-integral approach</td>
+</tr>
+<tr>
+<td>EXP-1559</td>
+<td>72-config sweep for detection sensitivity</td>
+<td>Census config (5g/30min) identified as optimal</td>
+</tr>
+<tr>
+<td>EXP-2573</td>
+<td>Tiered CR by meal size (small/med/large)</td>
+<td>Size-dependent CR not statistically significant (p=0.34)</td>
+</tr>
+<tr>
+<td>EXP-2651</td>
+<td>Demand-phase ISF 2–10× smaller than apparent ISF</td>
+<td>ISF used in carb estimation is demand-phase</td>
+</tr>
+<tr>
+<td>EXP-2662</td>
+<td>Patience mode for SMB throttling</td>
+<td>Related AID behavior during meals</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Related reports</strong>:
+- <code>docs/reports/settings-optimization/best-of-breed-settings-capabilities.md</code> — §5 covers CR optimization in detail
+- <code>docs/60-research/non-bolusing-robustness-report-2026-04-07.md</code> — Original 2.6 meals/day finding
+- <code>docs/60-research/egp-phase-separation-report-2026-04-12.md</code> — EGP dynamics affecting meal recovery</p>
+<hr />
+<h2 id="12-verification-checklist">12. Verification Checklist<a class="headerlink" href="#12-verification-checklist" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Claim</th>
+<th>Verification</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Patient c: 1.5 meals/day</td>
+<td>Run EXP-2670, check output</td>
+<td>✓ Confirmed</td>
+</tr>
+<tr>
+<td>Patient c lunch 41g at profile</td>
+<td>Table row 1.0× for patient c</td>
+<td>✓ 41 [23–62]</td>
+</tr>
+<tr>
+<td>Patient a filtered from 6.4 to 2.2/day</td>
+<td>EXP-2670 output</td>
+<td>✓ Confirmed</td>
+</tr>
+<tr>
+<td>Patient b filtered from 5.7 to 2.7/day</td>
+<td>EXP-2670 output</td>
+<td>✓ Confirmed</td>
+</tr>
+<tr>
+<td>All patients ≤2.7 meals/day after filters</td>
+<td>EXP-2670 population summary</td>
+<td>✓ Range: 0.3–2.7</td>
+</tr>
+<tr>
+<td>Linear rescaling: 50g at 1.0× → 25g at 0.5×</td>
+<td><code>test_linear_rescaling</code> unit test</td>
+<td>✓ Pass</td>
+</tr>
+<tr>
+<td>Meal count CR-independent</td>
+<td><code>test_meal_tally_cr_independent</code> unit test</td>
+<td>✓ Pass</td>
+</tr>
+<tr>
+<td>UAM meals included</td>
+<td><code>test_uam_meals_included</code> unit test</td>
+<td>✓ Pass</td>
+</tr>
+<tr>
+<td>Hepatic UAM excluded</td>
+<td><code>test_uam_hepatic_excluded</code> unit test</td>
+<td>✓ Pass</td>
+</tr>
+<tr>
+<td>Plausibility peaks correctly</td>
+<td><code>test_plausibility_scoring</code> unit test</td>
+<td>✓ Pass</td>
+</tr>
+<tr>
+<td>Dessert merge works</td>
+<td><code>test_dessert_merge</code> unit test</td>
+<td>✓ 60g dinner + 25g dessert → 85g</td>
+</tr>
+<tr>
+<td>Dessert no merge if far</td>
+<td><code>test_dessert_no_merge_far</code> unit test</td>
+<td>✓ Stays 2 events</td>
+</tr>
+<tr>
+<td>370 total unit tests pass</td>
+<td><code>pytest -m unit</code></td>
+<td>✓ 370 passed, 32s</td>
+</tr>
+<tr>
+<td>Patient h, i best-fit = profile</td>
+<td>Table shows 1.0×</td>
+<td>✓ CR=10.0 = profile</td>
+</tr>
+<tr>
+<td>Patient b best-fit ≈ 0.5× profile</td>
+<td>Table shows 0.5×</td>
+<td>✓ CR=6.1 vs profile 12.1</td>
+</tr>
+<tr>
+<td>No READY days for patient j</td>
+<td>Output shows 0 meals</td>
+<td>✓ Confirmed</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>Report generated from EXP-2670 results (<code>externals/experiments/exp-2670_cr_sanity_check.json</code>). All figures in <code>visualizations/cr-sanity-check/</code>. Code at <code>tools/cgmencode/experiments/exp_cr_sanity_check_2670.py</code>. Tests in <code>tools/cgmencode/production/test_production.py:TestCRSanityCheckContrast</code>.</em></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

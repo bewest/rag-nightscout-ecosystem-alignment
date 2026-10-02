@@ -1,0 +1,4013 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/phase0-pr-bodies/pebble-delta-units.html">
+      
+      
+        <link rel="prev" href="maker-level-names.html">
+      
+      
+        <link rel="next" href="pr-8758-body.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Pebble delta units - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#what-changes-for-you" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Pebble delta units
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../docs/00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../docs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    reports/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../c-analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    c-analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../connector-pr-bodies/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    connector-pr-bodies/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../consumer-impact-15.0.9/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    consumer-impact-15.0.9/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-3022b/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    exp-3022b/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../patient-c-analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    patient-c-analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_7" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    phase0-pr-bodies/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7_7" id="__nav_7_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    phase0-pr-bodies/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="activity-date-coercion.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Activity date coercion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="alarm-anonymous-no-delay.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Alarm anonymous no delay
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api3-app-field-v1-records.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Api3 app field v1 records
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api3-cache-derived-fields.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Api3 cache derived fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api3-delete-nonstring-identifier.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Api3 delete nonstring identifier
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf-alarms.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bf/alarms — an urgent insulin-age alarm that could never fire, and two delivery defects
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf-cache.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bf/cache — a plain read of ten entries was copying 48 hours of CGM data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf-coercion.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bf/coercion — API filters returned the wrong records, and $exists=false returned the opposite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf-food.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    G — bf/food: the bolus calculator's quick-pick chooser loaded a different meal from the one it named
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf-merge.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    H — bf/merge: deleting one treatment and editing another could freeze the page
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf-object-id-crud.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bf/object-id-crud: create, read, update and delete by _id work the same way through API v1, API v3 and the websocket, with a matrix test over every collection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf-operators.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bf operators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf-parms.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    I — bf/parms: a bare flag in the URL stopped the page loading at all
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf-reads.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bf/reads — six read-path fixes, including a request for zero records answered with everything
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf-split-drag-time.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bf/split-drag-time: moving a treatment's time in the web UI no longer leaves IOB and COB at the old time (BF-103)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf2-auth-hardening.withheld.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bf2/auth-hardening: withheld-style PR body
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf2-backports.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bf2/backports: two security fixes from the modernization branch, onto dev
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf2-ops.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bf2/ops: the bundled database could abort, an Alexa request could hang, and two guards
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf3-alarm-no-reading.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bf3/alarm-no-reading — an alarm that reaches a page with no reading no longer crashes its handler
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf3-mmconnect-deprecation-warning.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bf3/mmconnect-deprecation-warning — the MiniMed CareLink warning says what to set instead
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf3-quickpick-rebuild.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bf3/quickpick-rebuild — the Bolus Wizard's Quickpick list shows your saved quick picks again
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="braces-expansion-cap.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Braces expansion cap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="connect-pin-0.1.0.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bf/connect-pin-0.1.0: install nightscout-connect from npm as an exact version
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="count-client-compat.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bf/count-client-compat: reads accept the count shapes OpenAPS and GluPredKit send
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="count-zero-empty.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bf/count-zero-empty: a request for zero records gets an empty answer, and saves and updates ignore count
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="date-filter-list.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Date filter list
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="dependency-refresh-2026-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dependency refresh 2026 10
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="entries-unknown-id.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Entries unknown id
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="fallback-key-empty-identifier.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fallback key empty identifier
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="fix-connect-timer-jitter.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    F — fix/connect-timer-jitter (nightscout-connect repository): every retry interval was 256 ms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="maker-level-names.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Maker level names
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pebble delta units
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="pebble-delta-units.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pebble delta units
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-changes-for-you" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What changes for you
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What changes for you">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-the-delta-on-mmoll-sites-asked-for-mgdl-bf-128" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The delta on mmol/L sites asked for mg/dL (BF-128)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-wrong-alarms-on-mgdl-sites-after-an-mmoll-watch-face-request-bf-139" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Wrong alarms on mg/dL sites after an mmol/L watch face request (BF-139)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-the-bolus-wizard-preview-in-the-requested-units-bf-138" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The bolus wizard preview in the requested units (BF-138)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#everything-else" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Everything else
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#technical-detail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Technical detail
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Technical detail">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bf-128-the-delta-aa224c69" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BF-128: the delta (aa224c69)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bf-139-shared-scaled-readings-b58b937c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BF-139: shared scaled readings (b58b937c)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bf-138-the-bolus-wizard-preview-b3db0f36" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BF-138: the bolus wizard preview (b3db0f36)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#every-field-all-combinations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Every field, all combinations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#break-its" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Break-its
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#client-impact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Client impact
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="pr-8758-body.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pr 8758 body
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="production-error-handler.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production error handler
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="profile-switch-percentage.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Profile switch percentage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="qs-6.16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bf/qs-6.16: web addresses and form posts are read by qs 6.16.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="rt-loop-remote-address.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    rt/loop-remote-address: Loop remote commands carry the sender's address as TRUST_PROXY resolves it
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="rt-trust-one-source-into-8754.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    rt/trust-one-source → bf2/auth-hardening: bring #8764 into #8754
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="rt-trust-one-source.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    rt/trust-one-source: every client-address consumer reads one TRUST_PROXY policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="same-time-treatments.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Same time treatments
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="v1-writes-v3-history.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    V1 writes v3 history
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../reviewer-packets/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reviewer-packets/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-changes-for-you" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What changes for you
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What changes for you">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-the-delta-on-mmoll-sites-asked-for-mgdl-bf-128" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The delta on mmol/L sites asked for mg/dL (BF-128)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-wrong-alarms-on-mgdl-sites-after-an-mmoll-watch-face-request-bf-139" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Wrong alarms on mg/dL sites after an mmol/L watch face request (BF-139)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-the-bolus-wizard-preview-in-the-requested-units-bf-138" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The bolus wizard preview in the requested units (BF-138)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#everything-else" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Everything else
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#technical-detail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Technical detail
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Technical detail">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bf-128-the-delta-aa224c69" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BF-128: the delta (aa224c69)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bf-139-shared-scaled-readings-b58b937c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BF-139: shared scaled readings (b58b937c)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bf-138-the-bolus-wizard-preview-b3db0f36" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BF-138: the bolus wizard preview (b3db0f36)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#every-field-all-combinations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Every field, all combinations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#break-its" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Break-its
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#client-impact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Client impact
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+  <h1>Pebble delta units</h1>
+
+<p><em>Living document, last changed 2026-09-26 at <code>55f506dc</code>.</em></p>
+<!-- Body for bf/pebble-delta-units at b3db0f36 (three commits on origin/dev e3adc91d: aa224c69 BF-128, b58b937c BF-139, b3db0f36 BF-138), 2026-09-26. This comment is hidden on GitHub. Opened as #8777; merged into dev 2026-09-26 as d613c35f; the live body matches this file apart from this comment and the footer. -->
+<blockquote>
+<p><strong>Reproduction detail withheld.</strong> One of these defects (BF-139) is present in the released <code>v15.0.8</code>, so this description explains how it happens and what it could do, but leaves out how to reproduce it. Reproduction detail will be added once a fixed release is out.</p>
+</blockquote>
+<p>Three fixes to <code>/pebble</code>, the older address that watch faces use to get the latest reading, all about units:</p>
+<ul>
+<li><strong>BF-128</strong> (issue #6220): the delta (<code>bgdelta</code>) comes back in the same units as the reading (<code>sgv</code>) when a client asks an mmol/L site for mg/dL. <code>aa224c69</code>.</li>
+<li><strong>BF-139</strong>: a <code>/pebble?units=mmol</code> request on an mg/dL site no longer changes the readings the server's own alarm checks and <code>/api/v2/properties</code> use. <code>b58b937c</code>.</li>
+<li><strong>BF-138</strong>: the bolus wizard preview (<code>bwp</code>) is computed in the site's units whatever units are asked for, and its expected outcome (<code>bwpo</code>) comes back in the requested units. <code>b3db0f36</code>.</li>
+</ul>
+<p>Three commits on <code>dev</code> <code>e3adc91d</code>, one per defect.</p>
+<h2 id="what-changes-for-you">What changes for you<a class="headerlink" href="#what-changes-for-you" title="Permanent link">&para;</a></h2>
+<p><em>This is a plain-language summary for people who run their own Nightscout site for themselves or a family member. Nightscout is not a medical device, and nothing here is medical advice or dosing advice. If a number on a watch or display looks wrong, check it against your meter, and talk to your care team before relying on it.</em></p>
+<p>Some words used below:</p>
+<ul>
+<li><strong><code>/pebble</code></strong>: an older address on your Nightscout site. Watch faces and small displays use it to get the latest glucose reading. It was first written for Pebble watches.</li>
+<li><strong>Reading</strong>: the latest glucose value from your sensor.</li>
+<li><strong>Delta</strong>: how much glucose changed since the reading about 5 minutes before, for example "falling 2".</li>
+<li><strong>Display units</strong>: the units your site is set to show, mg/dL or mmol/L. This is the <code>DISPLAY_UNITS</code> setting.</li>
+<li><strong>Alarm</strong>: the high and low alerts your Nightscout site raises itself, for example "Urgent LOW". Your site sends them to the web page, and to Pushover or other services if you set those up.</li>
+<li><strong>Bolus wizard preview (BWP)</strong>: an estimate Nightscout shows when insulin on board (IOB) is turned on. It takes your current reading, subtracts the effect of the insulin still active, and compares the result with your profile's targets. <code>/pebble</code> returns two numbers from it:</li>
+<li><code>bwp</code>: the estimate itself, in insulin units. A negative number means the estimate is below your low target.</li>
+<li><code>bwpo</code>: the expected glucose result.</li>
+</ul>
+<p>It is a rough indicator, not a dosing recommendation.</p>
+<h3 id="1-the-delta-on-mmoll-sites-asked-for-mgdl-bf-128">1. The delta on mmol/L sites asked for mg/dL (BF-128)<a class="headerlink" href="#1-the-delta-on-mmoll-sites-asked-for-mgdl-bf-128" title="Permanent link">&para;</a></h3>
+<p><strong>Who is affected:</strong> sites set to mmol/L whose watch face asks <code>/pebble</code> for mg/dL.</p>
+<p><strong>What was wrong:</strong> the reading came back in mg/dL but the delta came back in mmol/L, with nothing to say so. For example, a reading of 90 mg/dL falling by 2 mg/dL came back as reading "90" and delta "-0.1". A watch face showing mg/dL would show a fall about 18 times smaller than the real one.</p>
+<p><strong>What this change does:</strong> the delta now comes back in the same units as the reading. In that example it is "90" and "-2".</p>
+<h3 id="2-wrong-alarms-on-mgdl-sites-after-an-mmoll-watch-face-request-bf-139">2. Wrong alarms on mg/dL sites after an mmol/L watch face request (BF-139)<a class="headerlink" href="#2-wrong-alarms-on-mgdl-sites-after-an-mmoll-watch-face-request-bf-139" title="Permanent link">&para;</a></h3>
+<p><strong>Who is affected:</strong> sites set to mg/dL where some watch face or display asks <code>/pebble</code> for mmol/L.</p>
+<p><strong>What was wrong:</strong> such a request could leave the reading converted to mmol/L stored on the server's own copy of the latest reading. Your site's own alarm check could then judge that reading in the wrong units, and raise a <strong>false low alarm</strong> when your glucose was not low. The alarm message could also show the wrong number. Values shown by <code>/api/v2/properties</code> (which some apps and watch faces read), Alexa and Google Home could be wrong until the next time the site loaded new data.</p>
+<p>This could only happen when the watch-face request arrived in the short moment after the site loaded new data and before its alarm check ran, so it depended on timing.</p>
+<p>It also worked the other way round. The mmol/L watch face could pick up the mg/dL value the alarm check had stored, and then show a bolus wizard preview that depended on which came first.</p>
+<p><strong>What this change does:</strong> <code>/pebble</code> now works on its own copy of the readings, so it cannot change what the alarm checks or other parts of the site see.</p>
+<h3 id="3-the-bolus-wizard-preview-in-the-requested-units-bf-138">3. The bolus wizard preview in the requested units (BF-138)<a class="headerlink" href="#3-the-bolus-wizard-preview-in-the-requested-units-bf-138" title="Permanent link">&para;</a></h3>
+<p><strong>Who is affected:</strong> sites with insulin on board turned on whose watch face asks <code>/pebble</code> for the other unit. That means an mg/dL site asked for mmol/L, or an mmol/L site asked for mg/dL.</p>
+<p><strong>What was wrong:</strong></p>
+<ul>
+<li><strong>mg/dL site asked for mmol/L:</strong> the estimate compared the mmol/L reading (5.0) with the mg/dL profile. In one example (sensitivity 70, targets 90-126, 1 U given 30 minutes before, reading 90 mg/dL), the site itself computes <code>bwp</code> -0.96 U and an expected result of 23 mg/dL. <code>/pebble</code> gave -2.17 U and -61.8. Depending on timing (see item 2), it could instead give -0.96 with an expected result of 23.2, which is an mg/dL number shown as if it were mmol/L.</li>
+<li><strong>mmol/L site asked for mg/dL:</strong> the estimate was right, but the expected result stayed in mmol/L (1.3) next to a reading in mg/dL (90), with nothing to say so.</li>
+</ul>
+<p><strong>What this change does:</strong> the estimate is always computed the way the site computes it for itself, against the profile in the site's units, so <code>bwp</code> is the same whatever units the watch face asks for. The expected result <code>bwpo</code> comes back in the units the watch face asked for (23 mg/dL or 1.3 mmol/L in the example).</p>
+<h3 id="everything-else">Everything else<a class="headerlink" href="#everything-else" title="Permanent link">&para;</a></h3>
+<p>The reading, the direction arrow, insulin on board, carbs on board and the raw sensor values are unchanged for every combination of site units and requested units.</p>
+<p><strong>Do you need to do anything?</strong> No. If you had adjusted a watch face to make the delta or the expected result look right, for example by multiplying or dividing by 18, undo that adjustment after updating. If your site raised a low alarm that did not match your sensor reading, and a watch face on your site asks for mmol/L, this may have been the cause. Always check a surprising alarm against your meter.</p>
+<h2 id="technical-detail">Technical detail<a class="headerlink" href="#technical-detail" title="Permanent link">&para;</a></h2>
+<p>All three defects are identical on <code>v15.0.8</code> <code>92d08342</code> and <code>dev</code> <code>e3adc91d</code>. They are all in <code>lib/server/pebble.js</code>, which is mounted only at <code>/pebble</code> (<code>lib/server/app.js</code>).</p>
+<h3 id="bf-128-the-delta-aa224c69">BF-128: the delta (<code>aa224c69</code>)<a class="headerlink" href="#bf-128-the-delta-aa224c69" title="Permanent link">&para;</a></h3>
+<p><strong>The defect:</strong> the middleware sets <code>req.mmol = (req.query.units || env.settings.units) === 'mmol'</code>, which picks the reading's units in <code>mapSGVs</code>. The delta came from the bgnow plugin's <code>delta.scaled</code>, which is in the sandbox's units. <code>prepareSandbox</code> forces the sandbox to <code>mmol</code> when <code>req.mmol</code> is true, and otherwise keeps the site's units. So on an mmol site with <code>?units=mgdl</code>, the delta stayed in mmol/L. Because <code>req.mmol</code> was false, it also came back as a bare number rather than a <code>toFixed(1)</code> string.</p>
+<p><strong>The fix:</strong> <code>addDelta</code> takes <code>delta.mgdl</code> when mg/dL is asked for, and <code>delta.scaled</code> (mmol, from the mmol sandbox) when mmol is asked for. <code>delta.mgdl</code> has the same value that <code>delta.scaled</code> has in an mg/dL sandbox, so an mg/dL site's output is unchanged. The sandbox units are deliberately left alone. Switching the sandbox to mg/dL on an mmol site would move <code>bwp</code>, which BF-138 handles separately.</p>
+<h3 id="bf-139-shared-scaled-readings-b58b937c">BF-139: shared scaled readings (<code>b58b937c</code>)<a class="headerlink" href="#bf-139-shared-scaled-readings-b58b937c" title="Permanent link">&para;</a></h3>
+<p><strong>The defect:</strong></p>
+<ul>
+<li><code>sandbox.scaleEntry</code> stores the reading in the sandbox's units on the entry itself (<code>entry.scaled</code>), and reuses that value on later calls.</li>
+<li><code>sandbox.serverInit</code> takes <code>ctx.ddata.clone()</code>, which is a shallow copy, so every server sandbox's <code>data.sgvs</code> is the server's shared <code>ctx.ddata.sgvs</code> objects.</li>
+<li>The <code>/pebble</code> sandbox is in mmol when <code>?units=mmol</code> is asked for, even on an mg/dL site. Its bgnow step (<code>lib/plugins/bgnow.js</code>, bucket scaling) and <code>bwp.calc</code> (<code>lastScaledSGV</code>) store <code>5.0</code> on a 90 mg/dL reading.</li>
+<li><code>lib/data/dataloader.js</code> rebuilds <code>ddata.sgvs</code> as new objects on each load. <code>bootevent</code>'s <code>data-loaded</code> listener then builds a sandbox in the site's units and runs <code>setProperties</code> and <code>checkNotifications</code>, and keeps that sandbox as <code>ctx.sbx</code>.</li>
+</ul>
+<p>Taken together, these give two effects:</p>
+<ul>
+<li><strong>Write side:</strong> a <code>/pebble?units=mmol</code> request that lands after a data load has replaced <code>ddata.sgvs</code> and before that load's <code>data-loaded</code> evaluation leaves an mmol <code>scaled</code> value on the new readings. The evaluation then reads it against the site's mg/dL thresholds:</li>
+<li><code>simplealarms</code> can request a false low alarm.</li>
+<li><code>ar2</code>'s alarm level comes from <code>mgdl</code> and does not move, but its title and every alarm's <code>BG Now</code> message use the scaled value.</li>
+<li><code>ctx.sbx</code>, which <code>/api/v2/properties</code>, Alexa and Google Home read, keeps the mmol value until the next load.</li>
+<li><strong>Read side:</strong> once <code>data-loaded</code> has stored the mg/dL value, <code>/pebble?units=mmol</code> reads 90 as if it were mmol/L. Its <code>bwp</code> then depends on which ran first.</li>
+</ul>
+<p>Both sides were reproduced on a booted server (MongoDB 7.0.43, <code>DISPLAY_UNITS=mg/dl</code>): on <code>aa224c69</code> the server's own evaluation raised false low alarms and <code>/api/v2/properties</code> kept the mmol value; on <code>b3db0f36</code> the same runs raised none and <code>/api/v2/properties</code> kept the mg/dL value. The conditions and request pattern are left out of this description while <code>v15.0.8</code> is the current release.</p>
+<p><strong>The fix:</strong> <code>prepareSandbox</code> replaces the sandbox's <code>sgvs</code> with shallow copies of each reading and removes any <code>scaled</code> value stored by another sandbox. No other server sandbox has units that differ from the site's: <code>bootevent</code> is the only other <code>serverInit</code> caller, and Alexa, Google Home, <code>/api/v2/properties</code> and <code>/api/v2/summary</code> read its <code>ctx.sbx</code> and never scale.</p>
+<h3 id="bf-138-the-bolus-wizard-preview-b3db0f36">BF-138: the bolus wizard preview (<code>b3db0f36</code>)<a class="headerlink" href="#bf-138-the-bolus-wizard-preview-b3db0f36" title="Permanent link">&para;</a></h3>
+<p><strong>The defect:</strong> <code>bwp.calc</code> computes <code>outcome = lastScaledSGV() - iob × sensitivity</code> and compares it with the profile's targets. <code>lib/profilefunctions.js</code> returns sensitivity and targets as stored, with no unit conversion, so they are in the site's units. <code>/pebble</code> ran this in its display sandbox:</p>
+<ul>
+<li>On an mg/dL site with <code>?units=mmol</code>, 5.0 was compared with the mg/dL profile.</li>
+<li>On an mmol site with <code>?units=mgdl</code>, the sandbox stays in mmol, so <code>bwp</code> was right but <code>bwpo</code> stayed in mmol next to an mg/dL <code>sgv</code>.</li>
+</ul>
+<p><strong>The fix:</strong> <code>pebble()</code> builds a second sandbox in the site's units only when mmol is asked for on an mg/dL site and <code>iob</code> or <code>cob</code> is enabled. It computes <code>iob</code>, <code>cob</code> and <code>bwp</code> there.</p>
+<ul>
+<li><code>bwp</code> is in insulin units and is returned as computed.</li>
+<li><code>bwpo</code> is converted to the requested units when they differ from the site's (<code>units.mgdlToMMOL</code> / <code>units.mmolToMgdl</code>, the same functions the reading uses). It stays a JSON number.</li>
+<li>The <code>"0"</code> placeholders returned when the profile lacks sensitivity or targets are kept as they are.</li>
+<li><code>lib/sandbox</code> is now instantiated per sandbox rather than once per module, because <code>serverInit</code> resets the instance it is called on.</li>
+<li><code>iob</code> and <code>cob</code> do not depend on the sandbox's units. They are computed in the site sandbox so that the <code>iob</code> fed to <code>bwp</code> comes from the same place.</li>
+</ul>
+<h3 id="every-field-all-combinations">Every field, all combinations<a class="headerlink" href="#every-field-all-combinations" title="Permanent link">&para;</a></h3>
+<p>Measured in-process with <code>tools/lab/triage-2026-09/pebble-shared-scaled.js --table</code> (alignment repo). Each request gets fresh data. The site profiles are:</p>
+<ul>
+<li>mg/dL: sensitivity 70, targets 90-126, basal 1.</li>
+<li>mmol: sensitivity 3.9, targets 5-7, basal 1.</li>
+</ul>
+<p>Both have 1 U given 30 min before and a 90 mg/dL reading. Rising, falling and flat differ only in <code>bgdelta</code>: <code>2</code>/<code>-2</code>/<code>0</code> for mg/dL and <code>"0.1"</code>/<code>"-0.1"</code>/<code>"0.0"</code> for mmol. The fields that differ by combination are:</p>
+<table>
+<thead>
+<tr>
+<th>site</th>
+<th>query</th>
+<th><code>sgv</code></th>
+<th><code>bgdelta</code> before → after</th>
+<th><code>bwp</code> before → after</th>
+<th><code>bwpo</code> before → after</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mg/dL</td>
+<td>none</td>
+<td>"90"</td>
+<td>mg/dL (unchanged)</td>
+<td>"-0.96"</td>
+<td>23</td>
+</tr>
+<tr>
+<td>mg/dL</td>
+<td><code>?units=mgdl</code></td>
+<td>"90"</td>
+<td>mg/dL (unchanged)</td>
+<td>"-0.96"</td>
+<td>23</td>
+</tr>
+<tr>
+<td>mg/dL</td>
+<td><code>?units=mmol</code></td>
+<td>"5.0"</td>
+<td>mmol (unchanged)</td>
+<td><strong>"-2.17" → "-0.96"</strong></td>
+<td><strong>-61.8 → 1.3</strong></td>
+</tr>
+<tr>
+<td>mmol</td>
+<td>none</td>
+<td>"5.0"</td>
+<td>mmol (unchanged)</td>
+<td>"-0.96"</td>
+<td>1.3</td>
+</tr>
+<tr>
+<td>mmol</td>
+<td><code>?units=mmol</code></td>
+<td>"5.0"</td>
+<td>mmol (unchanged)</td>
+<td>"-0.96"</td>
+<td>1.3</td>
+</tr>
+<tr>
+<td>mmol</td>
+<td><code>?units=mgdl</code></td>
+<td>"90"</td>
+<td><strong>0.1/-0.1/0 → 2/-2/0</strong> (BF-128)</td>
+<td>"-0.96"</td>
+<td><strong>1.3 → 23</strong></td>
+</tr>
+</tbody>
+</table>
+<p><code>iob</code> ("0.95"), <code>cob</code>, <code>trend</code>, <code>direction</code> and <code>datetime</code> are the same in all 18 rows before and after. <code>/pebble</code> returns no units label field.</p>
+<h3 id="tests">Tests<a class="headerlink" href="#tests" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>tests/pebble-units.test.js</code> (BF-128, extended for BF-138; no database, and each request gets a fresh ctx):</li>
+<li>BF-128's 18 <code>sgv</code>/<code>bgdelta</code> combinations, the not-<code>-0.1</code> test and the no-delta legacy <code>0</code>.</li>
+<li>BF-128's mmol-site <code>bwp</code> test. After BF-138 it asserts that <code>bwp</code>, <code>iob</code> and <code>cob</code> do not move with <code>?units=mgdl</code>, and <code>bwpo</code> does not move with <code>?units=mmol</code>. <code>bwpo</code> for <code>?units=mgdl</code> now changes by design and is asserted in the combinations.</li>
+<li>BF-138: 18 combinations with <code>iob</code>/<code>cob</code> enabled. Each asserts that <code>bwp</code>, <code>iob</code>, <code>cob</code>, <code>trend</code> and <code>direction</code> equal the site's own answer, that <code>bwpo</code> is 23 or 1.3 in the requested units, and that <code>sgv</code>/<code>bgdelta</code> are as in BF-128. Also: not <code>-2.17</code>/<code>-61.8</code>; the <code>"0"</code> placeholders without targets, in both units; <code>cob</code> with 20 g of carbs the same in any units.</li>
+<li><code>tests/pebble-shared-state.test.js</code> (BF-139, new; no database). On an mg/dL site:</li>
+<li>no <code>scaled</code> value is left on the shared readings;</li>
+<li>the server evaluation after <code>?units=mmol</code> reads 90 and requests no notification, and <code>bgnow.sgvs[].scaled</code> and <code>bwp.scaledSGV</code> are 90;</li>
+<li><code>?units=mmol</code> answers the same whether or not the evaluation ran first;</li>
+<li>a plain request after a <code>?units=mmol</code> one answers as it does on freshly loaded readings.</li>
+</ul>
+<p>Red on the parent of each fix, with the original symptoms:</p>
+<ul>
+<li>BF-139 tests on <code>aa224c69</code>: 4 of 4 fail (<code>expected '5.0' to not exist</code>, <code>expected 5 to be 90</code>, <code>bwp "-0.96"/bwpo 23.2</code> vs <code>"-2.17"/-61.8</code>).</li>
+<li>BF-138 tests on <code>b58b937c</code>: 7 fail. Three are <code>expected '-2.17' to be '-0.96'</code>, three are <code>expected 1.3 to be 23</code>, and the last is the <code>-2.17</code> test. The other 12 combinations pass.</li>
+</ul>
+<p>Full suite on <code>b3db0f36</code>: <strong>3216 passing, 0 failing, 3 pending</strong> (<code>npm test</code>, Node 22.23.2, MongoDB 7.0.43 read from the server). <code>aa224c69</code> was 3191/0/3; the difference is the 25 new tests (4 BF-139, 21 BF-138).</p>
+<h3 id="break-its">Break-its<a class="headerlink" href="#break-its" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>change to the fixed code</th>
+<th>result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>bwp.calc</code> on the display sandbox</td>
+<td>4 fail: <code>expected '-2.17' to be '-0.96'</code> ×3, <code>-2.17</code> test</td>
+</tr>
+<tr>
+<td>no second sandbox (<code>siteSbx = sbx</code>)</td>
+<td>same 4 fail</td>
+</tr>
+<tr>
+<td><code>bwpo</code> not converted</td>
+<td>6 fail: <code>expected 1.3 to be 23</code> ×3, <code>expected 23 to be 1.3</code> ×3</td>
+</tr>
+<tr>
+<td>no <code>errors</code> guard on the conversion</td>
+<td>1 fails: <code>expected 0 to be '0'</code></td>
+</tr>
+<tr>
+<td>one module-level sandbox instance, as before</td>
+<td>2 fail: <code>bgdelta</code> <code>'2.0'</code>/<code>'-2.0'</code> instead of <code>'0.1'</code>/<code>'-0.1'</code> (the second <code>serverInit</code> resets the first)</td>
+</tr>
+<tr>
+<td>copies keep <code>scaled</code> (no <code>delete</code>)</td>
+<td>1 fails: the read-side test</td>
+</tr>
+<tr>
+<td>no copies (BF-139 reverted)</td>
+<td>4 of 4 BF-139 tests fail</td>
+</tr>
+<tr>
+<td><code>iob</code>/<code>cob</code> from the display sandbox</td>
+<td>all pass. This is expected: both sandboxes hold the same treatments, devicestatus and profile, and <code>iob</code>/<code>cob</code> do not depend on units.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="client-impact">Client impact<a class="headerlink" href="#client-impact" title="Permanent link">&para;</a></h2>
+<p>The following was read, not run. No client in the corpora under <code>externals/</code> reads <code>bwp</code> or <code>bwpo</code> from <code>/pebble</code>, and none requests <code>/pebble?units=</code>:</p>
+<ul>
+<li><strong>nightguard</strong> moved to <code>api/v2/properties</code> (commit <code>10a8cff</code>). It reads <code>delta.mgdl</code>, <code>delta.display</code>, <code>iob.display</code> and <code>cob.display</code>, which are not affected by BF-139 (they come from <code>mgdl</code> or do not depend on units), and does not read <code>bwp</code>.</li>
+<li><strong>xDrip</strong> serves its own local <code>/pebble</code> (<code>WebServicePebble.java</code>). It ignores <code>?units</code>, has no <code>bwp</code>/<code>bwpo</code> (<code>// TODO output bwp and bwpo</code>, line 97), and does not call Nightscout's.</li>
+<li><strong>Nocturne</strong>'s <code>PebbleController.cs</code> declares <code>Bwp</code>/<code>Bwpo</code> but never sets them, and already returns the delta in the requested units.</li>
+</ul>
+<p>LoopFollow, LoopCaregiver, NightscoutKit, xdripswift, AndroidAPS, Trio, DiaBLE and nightscout-reporter do not call <code>/pebble</code>.</p>
+<p>The callers are watch faces and displays outside the corpora, so the number of affected sites is not known. A watch face that labelled <code>bwpo</code> in its requested units was showing a wrong value in the two mismatched combinations, and now shows the right one. A watch face that had worked around either defect by multiplying or dividing by 18 would now be off by that factor; none was found.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

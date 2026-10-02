@@ -1,0 +1,6394 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/40-migration/mongodb-to-postgres-hosted-2026-09-15.html">
+      
+      
+        <link rel="prev" href="legacy-cgm-ingestion-to-connect-2026-09-15.html">
+      
+      
+        <link rel="next" href="operator-upgrade-path-2026-09-15.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>MongoDB to PostgreSQL — the hosted multi-tenant migration - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#mongodb-to-postgresql--the-hosted-multi-tenant-migration" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              MongoDB to PostgreSQL — the hosted multi-tenant migration
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../30-design/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_26" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_26" id="__nav_5_26_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_26_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_26">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    40-migration/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="connector-pin-consolidation-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Consolidating how cgm-remote-monitor depends on nightscout-connect
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="legacy-cgm-ingestion-to-connect-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Retiring the legacy Dexcom bridge and MiniMed mmconnect: migration plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MongoDB to PostgreSQL — the hosted multi-tenant migration
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="mongodb-to-postgres-hosted-2026-09-15.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MongoDB to PostgreSQL — the hosted multi-tenant migration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-scope-read-this-paragraph-before-anything-else" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. Scope. Read this paragraph before anything else.
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-the-honest-state-of-the-target-measured-today" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The honest state of the target, measured today
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-data-mapping-collection-by-collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The data mapping, collection by collection
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. The data mapping, collection by collection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-the-rule-and-why-it-is-one-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 The rule, and why it is one rule
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-per-collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Per collection
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.2 Per collection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#entries--the-only-collection-that-exists-end-to-end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        entries — the only collection that exists end-to-end
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#treatments--13-columns-14-indexes-2-flagged" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        treatments — 13 columns, 14 indexes, 2 flagged
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#devicestatus--4-columns-3-indexes-1-flagged-d11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        devicestatus — 4 columns, 3 indexes, 1 flagged (D11)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#profile--3-columns-4-indexes-1-flagged" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        profile — 3 columns, 4 indexes, 1 flagged
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#food-activity-settings-auth_subjects-auth_roles-status--no-table-yet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        food, activity, settings, auth_subjects, auth_roles, status — no table yet
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-known-divergences-and-which-ones-block" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The known divergences, and which ones block
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. The known divergences, and which ones block">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-bf-19--order-by-reads-the-generated-column--high--open--blocking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 BF-19 — ORDER BY reads the generated column · high · open · BLOCKING
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-bf-21--bulkupsert-ignores-the-mode-every-caller-asks-for--high--open--blocking-and-it-is-a-migration-integrity-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 BF-21 — bulkUpsert ignores the mode every caller asks for · high · open · BLOCKING, and it is a migration-integrity problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-bf-22--a-dotted-field-stores-two-different-documents--medium--open--blocking-for-the-transform-not-for-the-load" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 BF-22 — a dotted field stores two different documents · medium · open · BLOCKING for the transform, not for the load
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-bf-20--a-date-valued-filter-bound-silently-inverts--low--open--not-blocking-but-it-is-the-shape-of-the-real-hazard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 BF-20 — a Date-valued filter bound silently inverts · low · open · not blocking, but it is the shape of the real hazard
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-bf-23--the-duplicate-key-error-class-crosses-the-seam--low--open--not-blocking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 BF-23 — the duplicate-key error class crosses the seam · low · open · not blocking
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-the-verdict-stated-plainly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 The verdict, stated plainly
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-migration-mechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Migration mechanics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Migration mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-sizing-measured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Sizing, measured
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-export" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Export
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-transform--and-the-encoding-finding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Transform — and the encoding finding
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.3 Transform — and the encoding finding">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#correction-found-in-review-2026-09-15-scalarizedoc-is-not-a-bson-transform-it-handles-two-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Correction, found in review 2026-09-15: scalarizeDoc is not a BSON transform. It handles two types.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-load" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Load
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-verify--differential-not-counted" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 Verify — differential, not counted
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-cutover" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Cutover
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Cutover">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-the-two-candidates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 The two candidates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-recommendation-read-only-window-and-dual-write-should-not-be-attempted-on-this-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Recommendation: read-only window, and dual-write should not be attempted on this code
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-what-the-window-actually-costs-and-what-a-tenants-clients-do-in-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 What the window actually costs, and what a tenant's clients do in it
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-credentials-do-not-migrate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 Credentials do not migrate
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-verification-that-the-migration-was-correct" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Verification that the migration was correct
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Verification that the migration was correct">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#c1--canonical-document-checksum--run-non-vacuous" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C1 — Canonical document checksum · run, non-vacuous
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c2--answer-differential--run-non-vacuous-and-weaker-than-it-looks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C2 — Answer differential · run, non-vacuous, and weaker than it looks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c3--ordering-equivalence--run-currently-red-and-that-is-the-gate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C3 — Ordering equivalence · run, currently RED, and that is the gate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c4--bson-type-census-on-the-source--specified-not-run--run-this-before-anything-else" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C4 — BSON type census on the source · specified, not run · run this before anything else
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c5--field-set-closure--specified-not-run--bf-21s-detector" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C5 — Field-set closure · specified, not run · BF-21's detector
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c6--dotted-key-audit--specified-not-run--bf-22s-detector" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C6 — Dotted-key audit · specified, not run · BF-22's detector
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c7--rls-isolation--specified-not-run--the-check-that-must-not-be-run-as-superuser" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C7 — RLS isolation · specified, not run · the check that must not be run as superuser
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c8--the-completeness-trailer--specified-not-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C8 — The completeness trailer · specified, not run
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#61-the-order-these-run-in" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 The order these run in
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-what-this-means-for-a-self-hoster" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. What this means for a self-hoster
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. What this means for a self-hoster">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-if-you-run-your-own-nightscout-nothing-changes-nothing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 If you run your own Nightscout: nothing changes. Nothing.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-if-you-choose-to-move-to-a-hosted-nightscout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 If you choose to move to a hosted Nightscout
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-rollback-and-the-one-way-doors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Rollback, and the one-way doors
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Rollback, and the one-way doors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-before-the-tenant-writes-to-postgresql-rollback-is-free" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 Before the tenant writes to PostgreSQL: rollback is free
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-after-the-tenant-writes-to-postgresql-it-is-a-one-way-door-and-here-is-exactly-why" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 After the tenant writes to PostgreSQL: it is a one-way door, and here is exactly why
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-what-to-do-about-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 What to do about it
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-corrections-to-existing-documents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Corrections to existing documents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-open-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Open questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-reproduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Reproduction
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="operator-upgrade-path-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator upgrade path across the adopted release train
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../60-research/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-scope-read-this-paragraph-before-anything-else" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. Scope. Read this paragraph before anything else.
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-the-honest-state-of-the-target-measured-today" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The honest state of the target, measured today
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-data-mapping-collection-by-collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The data mapping, collection by collection
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. The data mapping, collection by collection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-the-rule-and-why-it-is-one-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 The rule, and why it is one rule
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-per-collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Per collection
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.2 Per collection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#entries--the-only-collection-that-exists-end-to-end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        entries — the only collection that exists end-to-end
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#treatments--13-columns-14-indexes-2-flagged" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        treatments — 13 columns, 14 indexes, 2 flagged
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#devicestatus--4-columns-3-indexes-1-flagged-d11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        devicestatus — 4 columns, 3 indexes, 1 flagged (D11)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#profile--3-columns-4-indexes-1-flagged" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        profile — 3 columns, 4 indexes, 1 flagged
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#food-activity-settings-auth_subjects-auth_roles-status--no-table-yet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        food, activity, settings, auth_subjects, auth_roles, status — no table yet
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-known-divergences-and-which-ones-block" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The known divergences, and which ones block
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. The known divergences, and which ones block">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-bf-19--order-by-reads-the-generated-column--high--open--blocking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 BF-19 — ORDER BY reads the generated column · high · open · BLOCKING
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-bf-21--bulkupsert-ignores-the-mode-every-caller-asks-for--high--open--blocking-and-it-is-a-migration-integrity-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 BF-21 — bulkUpsert ignores the mode every caller asks for · high · open · BLOCKING, and it is a migration-integrity problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-bf-22--a-dotted-field-stores-two-different-documents--medium--open--blocking-for-the-transform-not-for-the-load" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 BF-22 — a dotted field stores two different documents · medium · open · BLOCKING for the transform, not for the load
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-bf-20--a-date-valued-filter-bound-silently-inverts--low--open--not-blocking-but-it-is-the-shape-of-the-real-hazard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 BF-20 — a Date-valued filter bound silently inverts · low · open · not blocking, but it is the shape of the real hazard
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-bf-23--the-duplicate-key-error-class-crosses-the-seam--low--open--not-blocking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 BF-23 — the duplicate-key error class crosses the seam · low · open · not blocking
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-the-verdict-stated-plainly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 The verdict, stated plainly
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-migration-mechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Migration mechanics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Migration mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-sizing-measured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Sizing, measured
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-export" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Export
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-transform--and-the-encoding-finding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Transform — and the encoding finding
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.3 Transform — and the encoding finding">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#correction-found-in-review-2026-09-15-scalarizedoc-is-not-a-bson-transform-it-handles-two-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Correction, found in review 2026-09-15: scalarizeDoc is not a BSON transform. It handles two types.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-load" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Load
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-verify--differential-not-counted" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 Verify — differential, not counted
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-cutover" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Cutover
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Cutover">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-the-two-candidates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 The two candidates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-recommendation-read-only-window-and-dual-write-should-not-be-attempted-on-this-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Recommendation: read-only window, and dual-write should not be attempted on this code
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-what-the-window-actually-costs-and-what-a-tenants-clients-do-in-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 What the window actually costs, and what a tenant's clients do in it
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-credentials-do-not-migrate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 Credentials do not migrate
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-verification-that-the-migration-was-correct" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Verification that the migration was correct
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Verification that the migration was correct">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#c1--canonical-document-checksum--run-non-vacuous" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C1 — Canonical document checksum · run, non-vacuous
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c2--answer-differential--run-non-vacuous-and-weaker-than-it-looks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C2 — Answer differential · run, non-vacuous, and weaker than it looks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c3--ordering-equivalence--run-currently-red-and-that-is-the-gate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C3 — Ordering equivalence · run, currently RED, and that is the gate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c4--bson-type-census-on-the-source--specified-not-run--run-this-before-anything-else" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C4 — BSON type census on the source · specified, not run · run this before anything else
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c5--field-set-closure--specified-not-run--bf-21s-detector" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C5 — Field-set closure · specified, not run · BF-21's detector
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c6--dotted-key-audit--specified-not-run--bf-22s-detector" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C6 — Dotted-key audit · specified, not run · BF-22's detector
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c7--rls-isolation--specified-not-run--the-check-that-must-not-be-run-as-superuser" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C7 — RLS isolation · specified, not run · the check that must not be run as superuser
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c8--the-completeness-trailer--specified-not-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C8 — The completeness trailer · specified, not run
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#61-the-order-these-run-in" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 The order these run in
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-what-this-means-for-a-self-hoster" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. What this means for a self-hoster
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. What this means for a self-hoster">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-if-you-run-your-own-nightscout-nothing-changes-nothing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 If you run your own Nightscout: nothing changes. Nothing.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-if-you-choose-to-move-to-a-hosted-nightscout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 If you choose to move to a hosted Nightscout
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-rollback-and-the-one-way-doors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Rollback, and the one-way doors
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Rollback, and the one-way doors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-before-the-tenant-writes-to-postgresql-rollback-is-free" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 Before the tenant writes to PostgreSQL: rollback is free
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-after-the-tenant-writes-to-postgresql-it-is-a-one-way-door-and-here-is-exactly-why" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 After the tenant writes to PostgreSQL: it is a one-way door, and here is exactly why
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-what-to-do-about-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 What to do about it
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-corrections-to-existing-documents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Corrections to existing documents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-open-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Open questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-reproduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Reproduction
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="mongodb-to-postgresql--the-hosted-multi-tenant-migration">MongoDB to PostgreSQL — the hosted multi-tenant migration<a class="headerlink" href="#mongodb-to-postgresql--the-hosted-multi-tenant-migration" title="Permanent link">&para;</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Record</p>
+<p>Record as of 2026-09-15. A point-in-time document; it is not kept up to date.</p>
+</div>
+<p><strong>DRAFT REQUIRING REVIEW.</strong> Nothing here has been executed against a real deployment or a real
+person's data. It is a plan, written to be argued with, and it must be reviewed by the
+maintainer and by whoever will operate the hosted service before any tenant's data moves. Where
+it touches what a person sees on their own screen while their data is moving, it also needs a
+reader who is not a developer.</p>
+<p>Date: 2026-09-15 · Main repo HEAD <code>08753474</code> · seam worktree <code>externals/work/crm-seam</code> at
+<code>81a1f6ce</code> · every example below uses <strong>synthetic fixtures invented for this document</strong>. No CGM
+trace, site export, device log, hostname, token or identifier from any real deployment appears
+anywhere in it.</p>
+<blockquote>
+<p><strong>Connector status, 2026-09-22:</strong> no <code>v0.0.14</code> was published and none will be. The connector
+line is <code>0.1.0</code>: connector <code>dev</code> <code>1946beb</code> carries every fix this document attributes to
+<code>v0.0.14</code>, and prerelease <code>0.1.0-dev.1</code> is on npm. Where this document says <code>v0.0.14</code>, read the
+full <code>0.1.0</code> release (queue <code>P0-TAG</code>); the pin move is <code>P0-PIN</code>.</p>
+</blockquote>
+<p><strong>Adversarially reviewed 2026-09-15, same HEAD.</strong> Corrections made during that review are marked
+in place rather than silently applied, and each says what it replaced. The load-bearing one is in
+<strong>§4.3</strong> — the transform this document recommends converts only two BSON types, so the fidelity
+table's <code>clean</code> verdict meant "no errors", not "faithful". §7.2 also lost an unmeasured duration
+that should never have reached a reader, and gained a plain-language "how to tell if something
+went wrong" list, because every failure mode in this plan is silent.</p>
+<hr />
+<h2 id="0-scope-read-this-paragraph-before-anything-else">0. Scope. Read this paragraph before anything else.<a class="headerlink" href="#0-scope-read-this-paragraph-before-anything-else" title="Permanent link">&para;</a></h2>
+<p><strong>This migration is something a self-hoster never runs.</strong> Decision D4 makes MongoDB
+<strong>permanent</strong> for single-tenant Nightscout, and decision D1 makes self-hosted single-tenant
+first-class <strong>permanently</strong> — it must never become a degraded mode or a waiting room for
+something else. The storage seam carries <strong>two mature backends forever, by design</strong>. PostgreSQL
+is not where MongoDB is going; it is where the <em>hosted</em> service is, because a shared multi-tenant
+store needs row-level security (D3) and a tenant discriminator (D2) and MongoDB has no equivalent
+on the write axis. If you run your own Nightscout, nothing in this document is a task for you,
+now or later. §7 says the same thing again in plain language, and says what changes if you
+<em>choose</em> to move to a hosted tenant.</p>
+<p>What this document covers: moving one tenant's documents <strong>into</strong> the hosted multi-tenant
+PostgreSQL service — for a family or a clinic that has chosen to be hosted, and for the hosting
+operator who has to do it without silently changing anyone's data.</p>
+<p><strong>Where the undo button is.</strong> Rollback is <strong>§8</strong>, and it is not an appendix: §8.1 says what is
+free, §8.2 names six things that do not come back once the hosted tenant has been written to, and
+§8.3 says what to keep and for how long. If you read one other section before agreeing to a date,
+read that one. The plain-language version is the last two bullets of §7.2.</p>
+<hr />
+<h2 id="1-the-honest-state-of-the-target-measured-today">1. The honest state of the target, measured today<a class="headerlink" href="#1-the-honest-state-of-the-target-measured-today" title="Permanent link">&para;</a></h2>
+<p>A migration plan whose target does not exist yet is a design document, and saying so is the first
+thing that keeps it useful.</p>
+<table>
+<thead>
+<tr>
+<th>thing</th>
+<th>state, measured 2026-09-15</th>
+<th>how measured</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Emitted PostgreSQL DDL</td>
+<td><strong>four</strong> collections: <code>entries</code>, <code>treatments</code>, <code>devicestatus</code>, <code>profile</code></td>
+<td><code>make schema-emit</code> → <code>specs/generated/postgres/*.sql</code>; re-ran the emitter, output byte-identical to what is committed (<code>git status --porcelain specs/</code> empty afterwards)</td>
+</tr>
+<tr>
+<td>DDL <strong>vendored into the server</strong></td>
+<td><strong>one</strong> collection: <code>lib/storage/postgres/generated/entries.sql</code></td>
+<td><code>ls externals/work/crm-seam/lib/storage/postgres/generated/</code></td>
+</tr>
+<tr>
+<td>Collections with a model</td>
+<td><strong>ten</strong> (T2.2, DONE)</td>
+<td><code>ls specs/nsschema/*.model.json</code></td>
+</tr>
+<tr>
+<td>Collections with index declarations as data</td>
+<td><strong>eight</strong> (adds <code>food</code>, <code>activity</code>, <code>auth_roles</code>, <code>auth_subjects</code>)</td>
+<td><code>specs/nsschema/server-indexes.json</code></td>
+</tr>
+<tr>
+<td>Tenant provisioning</td>
+<td><code>tenants</code> / <code>tenant_members</code>, one writer (<code>bin/admin.js</code>), slug is a host <strong>label</strong> (D10)</td>
+<td><code>lib/admin/platform.sql</code></td>
+</tr>
+<tr>
+<td>Per-tenant <strong>export</strong></td>
+<td><strong>implemented</strong> — streaming server-side cursor, one repeatable-read snapshot, emits the covered-table list before any row</td>
+<td><code>lib/admin/platform-store.js:386</code> <code>exportTenant</code></td>
+</tr>
+<tr>
+<td>Per-tenant <strong>import</strong></td>
+<td><strong>does not exist</strong>, anywhere</td>
+<td>grep of <code>lib/admin/</code>, <code>bin/</code>, <code>tools/</code> on <code>crm-seam</code> — no importer and no Mongo→PostgreSQL loader. <strong>Corrected by review 2026-09-15:</strong> the "no <code>mongoexport</code>/<code>mongodump</code> consumer outside <code>node_modules</code>" half of this cell did <strong>not</strong> reproduce. <code>tools/rehearse-database-upgrade.py:76</code> shells out to <code>mongodump</code>. It is a Mongo→Mongo 5→6→7→8 upgrade and backup-restore <em>rollback</em> rehearsal, not a loader, so the row's verdict stands — but the grep as published was wrong, and that harness is prior art for §8.3.</td>
+</tr>
+<tr>
+<td>A Mongo→PG loader</td>
+<td><strong>does not exist</strong></td>
+<td>same grep</td>
+</tr>
+</tbody>
+</table>
+<p>So the load half of this migration is unwritten code, and four of the ten collections have no
+table to load into. That is not a reason to postpone the plan — the plan is what says which of
+those gaps are <em>blocking</em> and which are merely <em>absent</em>, and §3 is where that distinction is made.</p>
+<p><strong>Three write methods on the PostgreSQL adapter throw by name</strong>: <code>insertMany</code>, <code>updateMany</code> and
+<code>replaceFiltered</code> are <code>unimplemented(...)</code> in <code>lib/api3/storage/pgCollection/index.js:308-318</code>.
+A loader that goes through the seam therefore cannot bulk-insert; it has <code>replaceOne</code> (which does
+upsert) and <code>bulkUpsert</code> (see BF-21, §3.2), one statement per document.</p>
+<hr />
+<h2 id="2-the-data-mapping-collection-by-collection">2. The data mapping, collection by collection<a class="headerlink" href="#2-the-data-mapping-collection-by-collection" title="Permanent link">&para;</a></h2>
+<h3 id="21-the-rule-and-why-it-is-one-rule">2.1 The rule, and why it is one rule<a class="headerlink" href="#21-the-rule-and-why-it-is-one-rule" title="Permanent link">&para;</a></h3>
+<p>Every table has the same shape, and the shape is the whole argument:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">tenant_id</span><span class="w">  </span><span class="n">uuid</span><span class="w">   </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">     </span><span class="c1">-- D2's discriminator; leads the table and every index</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">doc</span><span class="w">        </span><span class="n">jsonb</span><span class="w">  </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">     </span><span class="c1">-- THE RECORD</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="ss">"&lt;indexed field&gt;"</span><span class="w">  </span><span class="o">&lt;</span><span class="k">type</span><span class="o">&gt;</span><span class="w"> </span><span class="k">GENERATED</span><span class="w"> </span><span class="n">ALWAYS</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="p">(</span><span class="err">…</span><span class="p">)</span><span class="w"> </span><span class="n">STORED</span><span class="p">,</span><span class="w">   </span><span class="c1">-- an index accelerator, nothing else</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">tenant_id</span><span class="p">,</span><span class="w"> </span><span class="ss">"_id"</span><span class="p">)</span>
+</code></pre></div>
+<p>Three properties of that shape are load-bearing for a migration and each one is stated in the
+emitted header rather than assumed:</p>
+<ol>
+<li><strong>The document is the record.</strong> Dropping every generated column and re-adding it must not
+   change a single answer. A migration that produces the right columns and the wrong <code>doc</code> has
+   produced nothing.</li>
+<li><strong>The generated columns are <code>CASE WHEN jsonb_typeof(…) = '&lt;kind&gt;' THEN … END</code>, not bare
+   casts.</strong> A value of the wrong type leaves the column SQL NULL instead of raising on INSERT.
+   This is what stops a single dirty stored value from turning a migration load into an ingest
+   outage — and it is also, per BF-19, what makes <code>ORDER BY</code> on that column wrong (§3.1).</li>
+<li><strong>The primary key is <code>(tenant_id, "_id")</code>, scoped to the tenant on purpose.</strong> Two tenants
+   migrated from two different self-hosted deployments can legitimately carry the same <code>_id</code>; a
+   global unique constraint would make the second one unimportable. For a migration this is the
+   difference between "we can onboard anybody" and "we can onboard the first person who asks".</li>
+</ol>
+<p><strong>The tenant discriminator does not come from the source data.</strong> <code>tenant_id</code> is minted by the
+admin plane when the tenant is created — <code>crypto.randomUUID()</code> in
+<code>lib/admin/platform-store.js:242</code> <code>createTenant</code>, reached through the <code>bin/admin.js</code> entrypoint,
+which is itself 79 lines and holds none of the logic — and is bound per transaction with
+<code>set_config('app.current_tenant_id', …, is_local =&gt; true)</code>. A loader supplies it from the
+provisioning step, never from a field in a document. <code>slug</code> is a host <strong>label</strong> (D10) — <code>foo</code>,
+not <code>foo.example.org</code> — and is not stored on any document row.</p>
+<h3 id="22-per-collection">2.2 Per collection<a class="headerlink" href="#22-per-collection" title="Permanent link">&para;</a></h3>
+<p>Counts below come from re-running <code>PYTHONPATH=tools python3 -m nsschema.emit.postgres_emit
+--report</code> on 2026-09-15. Census figures come from <code>reports/schema-census/*.census.json</code>
+(11 pseudonymous sites, two collection passes, REST-derived JSON). <strong>The census document counts
+here span both snapshots (<code>2026-04-01</code> and <code>2026-04-26</code>); the sizing table in §4.1 counts the
+<code>2026-04-01</code> snapshot only.</strong> That is why <code>entries</code> is 896,589 documents in this section and
+649,840 in that one — two denominators, not a contradiction.</p>
+<h4 id="entries--the-only-collection-that-exists-end-to-end"><code>entries</code> — the only collection that exists end-to-end<a class="headerlink" href="#entries--the-only-collection-that-exists-end-to-end" title="Permanent link">&para;</a></h4>
+<p>9 generated columns, 9 indexes, <strong>0 flagged</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>column</th>
+<th>SQL type</th>
+<th>jsonb guard</th>
+<th>note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>_id</code></td>
+<td><code>text</code> NOT NULL</td>
+<td><code>= 'string'</code></td>
+<td>half the PK. A numeric <code>_id</code> <strong>cannot be stored at all</strong> — the row is refused.</td>
+</tr>
+<tr>
+<td><code>date</code></td>
+<td><code>numeric</code></td>
+<td><code>= 'number'</code></td>
+<td><code>numeric</code>, not <code>bigint</code>, because 61.5 % of the corpus carries a fractional epoch and <code>bigint</code> would <em>error</em> on a fractional bound where <code>numeric</code> merely fails to match. <strong>Provenance:</strong> the 61.5 % is the emitter's own comment (<code>tools/nsschema/emit/postgres_emit.py:97</code>), not a measurement made for this document; re-derived during review from <code>reports/schema-census/entries.census.json</code> — 551,257 fractional of 896,589 values = 61.48 %</td>
+</tr>
+<tr>
+<td><code>type</code>, <code>dateString</code>, <code>sysTime</code>, <code>identifier</code>, <code>created_at</code></td>
+<td><code>text</code></td>
+<td><code>= 'string'</code></td>
+<td><code>dateString</code>/<code>sysTime</code>/<code>created_at</code> are <code>datelike</code> in the manifest — range predicates on them are <strong>lexicographic</strong>, chronological only while every writer emits constant-width UTC ISO</td>
+</tr>
+<tr>
+<td><code>sgv</code>, <code>mbg</code></td>
+<td><code>numeric</code></td>
+<td><code>= 'number'</code></td>
+<td>a string <code>"120"</code> leaves the column NULL</td>
+</tr>
+</tbody>
+</table>
+<p>Everything else in the document — 32 model nodes, 19 observed census paths over 896,589
+documents — stays in <code>doc</code> and is reachable only through the jsonb path. That is correct and not
+a gap.</p>
+<h4 id="treatments--13-columns-14-indexes-2-flagged"><code>treatments</code> — 13 columns, 14 indexes, <strong>2 flagged</strong><a class="headerlink" href="#treatments--13-columns-14-indexes-2-flagged" title="Permanent link">&para;</a></h4>
+<p>Columns: <code>_id</code>, <code>created_at</code>, <code>eventType</code>, <code>insulin</code>, <code>carbs</code>, <code>glucose</code>, <code>enteredBy</code>, <code>notes</code>,
+<code>percent</code>, <code>absolute</code>, <code>duration</code>, <code>identifier</code>, <code>date</code>.</p>
+<p>MongoDB declares 15 indexes on <code>treatments</code>. The emitter emits <strong>14</strong> and flags <strong>2</strong>: one index
+does not survive at all, and one survives in a weaker form. Both matter for migration.
+(<em>Corrected by review 2026-09-15</em>: this paragraph previously read "two … do not survive", which
+contradicts the bullet below it and the emitter's own reconciliation line, re-run today —
+<code>15 → 14, 1 dropped: boluscalc.foods._id</code>.)</p>
+<ul>
+<li><strong><code>boluscalc.foods._id</code> — MULTIKEY, dropped entirely.</strong> No column, no index. A generated column
+  cannot reproduce MongoDB's multikey semantics: <code>doc #&gt;&gt; '{boluscalc,foods,_id}'</code> is NULL on an
+  array, not one value per element. The live query <code>?find[boluscalc.foods._id]=…</code> is issued by
+  <code>lib/report/reportclient.js:294</code>, so this is a <strong>capability a migrated tenant loses</strong>, not a
+  vestige. It comes back with D11's decomposition and not before.</li>
+<li><strong><code>NSCLIENT_ID</code> — AMBIGUOUS</strong>, observed as both number and string, so no typed column. The
+  index is still emitted, over the raw jsonb path. <code>NSCLIENT_ID</code> is the websocket write path's
+  <strong>sole</strong> deduplication key when present, so its behaviour after migration is worth a probe of
+  its own — check <strong>C2</strong> (§6) with <code>NSCLIENT_ID</code> predicates in the probe set. (<em>Corrected in
+  review</em>: this pointed at "§6.4", which does not exist in this document.)</li>
+</ul>
+<p>65 model nodes; 41 observed census paths over 369,419 documents.</p>
+<h4 id="devicestatus--4-columns-3-indexes-1-flagged-d11"><code>devicestatus</code> — 4 columns, 3 indexes, <strong>1 flagged</strong> (D11)<a class="headerlink" href="#devicestatus--4-columns-3-indexes-1-flagged-d11" title="Permanent link">&para;</a></h4>
+<p>Columns: <code>_id</code>, <code>created_at</code>, <code>identifier</code>, <code>date</code>. <code>NSCLIENT_ID</code> is AMBIGUOUS, so its index is
+over the jsonb path.</p>
+<p><strong>D11 governs this and the 182-node question is retired, not answered.</strong> The model holds 184
+descendant nodes (measured by walking <code>specs/nsschema/devicestatus.model.json</code>), of which 182 are
+spec- or census-derived and two — <code>NSCLIENT_ID</code> and <code>date</code> — are code-supplemented; 182 is the
+figure the emitter's own comment uses. The census observed 166 distinct paths over 702,254
+documents. <strong>None of those 180 non-indexed nodes gets a column.</strong> Choosing which of them deserve
+one would be building half of a design that is going somewhere else: the real direction is
+<strong>decomposition into normalised time series declared by registered controller descriptions</strong>
+(<code>tools/nsschema/decompose.py</code> measures whether a granular-primitive model can express the
+corpus; Nocturne's V4 <code>TreatmentDecomposer</code> is the built reference). A migration that widened
+this table would have to be migrated again.</p>
+<p>For sizing: <code>devicestatus</code> is <strong>75 % of the bytes</strong> in the corpus snapshot and 1,725 bytes per
+document (§4.1). It is the collection the migration schedule is actually about.</p>
+<h4 id="profile--3-columns-4-indexes-1-flagged"><code>profile</code> — 3 columns, 4 indexes, <strong>1 flagged</strong><a class="headerlink" href="#profile--3-columns-4-indexes-1-flagged" title="Permanent link">&para;</a></h4>
+<p>Columns: <code>_id</code>, <code>startDate</code>, <code>created_at</code>; <code>NSCLIENT_ID</code> AMBIGUOUS. 73 model nodes, 66 observed
+paths over 202 documents across 11 sites — a <em>tiny</em> collection with a <em>large</em> schema, most of it
+inside the nested <code>store</code> object, all of which stays in jsonb.</p>
+<p><code>profile</code> is the collection whose correctness matters most per byte: it carries basal rates,
+insulin sensitivity and carb ratios. A wrong profile document is not a display bug.</p>
+<h4 id="food-activity-settings-auth_subjects-auth_roles-status--no-table-yet"><code>food</code>, <code>activity</code>, <code>settings</code>, <code>auth_subjects</code>, <code>auth_roles</code>, <code>status</code> — <strong>no table yet</strong><a class="headerlink" href="#food-activity-settings-auth_subjects-auth_roles-status--no-table-yet" title="Permanent link">&para;</a></h4>
+<p><code>food</code> and <code>activity</code> are the two with real migration content. Both have models (T2.2) <strong>and</strong>
+index declarations in <code>specs/nsschema/server-indexes.json</code>; what is missing is the emitter's
+hand-transcribed <code>INDEXED_FIELDS</code> entry (see Correction 2, §9). Predicted shape, from the models:</p>
+<ul>
+<li><code>activity</code> — <code>_id</code> <code>text</code>, <code>created_at</code> <code>text</code> (date-time). One index. Mechanical.</li>
+<li><code>food</code> — <code>_id</code> <code>text</code>, <code>type</code> <code>text</code>. <strong><code>position</code> (number, string) and <code>hidden</code> (boolean,
+  string) are both AMBIGUOUS and would be flagged, not columned.</strong> That is the same two-spellings
+  problem BF-16 fixed above the seam: <code>lib/server/food.js</code> compared <code>hidden</code> against the literal
+  string <code>'false'</code>; <code>bf/food</code> changes it to <code>{hidden: {$nin: [true, 'true']}}</code>. On PostgreSQL,
+  with no <code>hidden</code> column, that predicate runs against the jsonb path — so the fix and the DDL
+  agree by accident rather than by design, and it should be checked rather than assumed.</li>
+</ul>
+<p><code>auth_subjects</code> <strong>must not be migrated as data</strong>. Its model carries an explicit
+<code>credential_warning</code>: <code>accessToken</code> is a bearer credential, derived at read time but persisted in
+plaintext by an ordinary subject edit through the admin UI. Moving a tenant means <strong>reissuing
+credentials</strong>, not copying them (§5.4). <code>settings</code> has no writer in <code>cgm-remote-monitor</code> at all
+and <code>status</code> is a response shape, not a collection.</p>
+<hr />
+<h2 id="3-the-known-divergences-and-which-ones-block">3. The known divergences, and which ones block<a class="headerlink" href="#3-the-known-divergences-and-which-ones-block" title="Permanent link">&para;</a></h2>
+<p>These are open register entries. They are not incidental bugs: <strong>each one is a mechanism by
+which a migration completes successfully and produces different answers afterwards.</strong> All five
+were measured against a real <code>mongod</code> and a real PostgreSQL, not reasoned about.</p>
+<p><strong>Coverage of this enumeration, stated because a partial list that does not say so is worse than
+no list (added in review).</strong> These five are the <strong>storage-seam divergence</strong> entries — the ones
+where the two backends answer the same question differently. They are not every open register
+entry that touches a migrating tenant. Three more are relevant and are deliberately out of scope
+here, with the reason:</p>
+<ul>
+<li><strong>BF-24 and BF-25</strong>, both <code>high</code>, both open — tenant authentication and the tenant claim check.
+  A migrating tenant lands on exactly that path. They are not divergences, so they are not in this
+  section; they are prerequisites for hosting anybody, and D13/D14 (§5.4) are the decisions that
+  answer them. <strong>A migration cannot be scheduled before they are closed</strong>, and this document does
+  not otherwise say so.</li>
+<li><strong>BF-13</strong>, <code>high</code>, <strong>fixed</strong> on <code>bf/reads</code> <code>399dc283</code> — the missing <code>_id</code> tiebreak. It is closed
+  above the seam but §4.5 and §3.1 both depend on ordering being deterministic, so the fix has to
+  be in the tree the migration runs against; it is not automatically there, because no <code>bf/*</code>
+  branch has been merged.</li>
+<li><strong>BF-04</strong>, <code>high</code>, status <code>fixed-in-seam</code> — the v1 filter pass-through with no operator
+  allowlist. It ships to every current operator and appears in no open list because of that
+  status. It is a source-side exposure, not a migration divergence, but a hosting operator reading
+  this document should know it is there.</li>
+</ul>
+<h3 id="31-bf-19--order-by-reads-the-generated-column--high--open--blocking">3.1 BF-19 — <code>ORDER BY</code> reads the generated column · <strong>high</strong> · open · <strong>BLOCKING</strong><a class="headerlink" href="#31-bf-19--order-by-reads-the-generated-column--high--open--blocking" title="Permanent link">&para;</a></h3>
+<p><code>pgCollection/sql.js</code> <code>orderBy</code> (lines 100-110) picks between two branches:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kd">const</span><span class="w"> </span><span class="nx">ref</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">Object</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">columnTypes</span><span class="p">,</span><span class="w"> </span><span class="nx">field</span><span class="p">)</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="o">?</span><span class="w"> </span><span class="sb">`"</span><span class="si">${</span><span class="nx">field</span><span class="si">}</span><span class="sb">"`</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="sb">`doc #&gt; '{</span><span class="si">${</span><span class="nx">field</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s1">','</span><span class="p">)</span><span class="si">}</span><span class="sb">}'`</span><span class="p">;</span>
+</code></pre></div>
+<p>They do not order the same values the same way, and neither matches MongoDB. <strong>I reproduced this
+independently</strong> on a fixture of my own (8 synthetic <code>entries</code>, one <code>sgv</code> stored as the string
+<code>"160"</code>, one explicit <code>null</code>, one absent), against <code>mongo:7</code> and <code>postgres:16-alpine</code> in throwaway
+containers I created and removed:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>mongod       ffffff 111111 aaaaaa bbbbbb cccccc dddddd 222222 eeeeee
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>pg column    eeeeee 111111 ffffff aaaaaa bbbbbb cccccc dddddd 222222
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>pg jsonb     111111 ffffff eeeeee aaaaaa bbbbbb cccccc dddddd 222222
+</code></pre></div>
+<p>Three orders where there should be one. The string-valued row (<code>eeeeee</code>) sorts <strong>last</strong> on
+MongoDB — BSON orders Number before String — <strong>first</strong> on the column branch, because the type
+guard makes it SQL NULL and it joins the missing-and-null bucket, and <strong>third</strong> on the jsonb
+branch, because jsonb's own cross-type order is Null &lt; String &lt; Number. Two harnesses reached this
+before me from two other directions (<code>tools/qc/pg-backend-arm.js</code> §6a and
+<code>tools/qc/typeguard-arm.js</code>); this is a third fixture and a third agreement.</p>
+<p><em>Read the rows, not the columns.</em> <strong>Added by review 2026-09-15:</strong> on the column branch the string
+row, the explicit null and the absent row are <strong>all</strong> SQL <code>NULL</code>, and PostgreSQL does not define
+an order within a tie — that is BF-13, the missing <code>_id</code> tiebreak this document cites in §4.5. So
+the relative order of those three cells is not reproducible and should not be quoted as if it
+were. What is reproducible, and is the defect, is that the three orders <strong>differ from each
+other</strong> and that the string row changes bucket depending on whether the field has a column.</p>
+<p><strong>Why it blocks a migration specifically.</strong> Client-reachable via v3 <code>?sort=&lt;field&gt;</code>, which
+<code>parseSort</code> puts first in the chain unvalidated. But worse: <strong>the migration's own verification
+depends on ordering.</strong> Any check that compares "the first N documents from each side" — which is
+how a reasonable person writes a spot check — is comparing two different sets and will report
+agreement or disagreement for reasons that have nothing to do with whether the data moved
+correctly. BF-19 does not just break the product after migration; it breaks the instrument.</p>
+<h3 id="32-bf-21--bulkupsert-ignores-the-mode-every-caller-asks-for--high--open--blocking-and-it-is-a-migration-integrity-problem">3.2 BF-21 — <code>bulkUpsert</code> ignores the mode every caller asks for · <strong>high</strong> · open · <strong>BLOCKING, and it is a migration-integrity problem</strong><a class="headerlink" href="#32-bf-21--bulkupsert-ignores-the-mode-every-caller-asks-for--high--open--blocking-and-it-is-a-migration-integrity-problem" title="Permanent link">&para;</a></h3>
+<p><code>mongoCollection/modify.js</code> has <code>bulkUpsert(col, ops, options)</code> with <code>mode</code> defaulting to
+<code>'replace'</code>. <code>pgCollection/index.js:286</code> has <strong><code>bulkUpsert(ops)</code></strong> — no options parameter — and
+always calls <code>write(..., 'merge')</code>. Its own doc comment, in the block immediately above the
+signature (<code>index.js:272-285</code>), reads:</p>
+<blockquote>
+<p><code>mode</code> carries the same difference it does on the other backend and <strong>must not be defaulted
+away</strong></p>
+</blockquote>
+<p>and then defaults it away. The behaviour — a stored document carrying <code>stale: 'was-here'</code>,
+upserted with a document that does not carry it, keeps <code>stale</code> on PostgreSQL and loses it on
+MongoDB — was measured by the write-path report. <strong>The tally <code>23 agree / 4 differ / 0 vacuous</code> is
+quoted from BF-21's evidence line (<code>tools/qc/write-arm.js</code>); it was not re-run for this
+document.</strong> The caller census below <em>was</em> measured here.</p>
+<p><strong>The caller census, measured 2026-09-15</strong> (<code>grep -rn 'bulkUpsert(' lib/server/*.js
+lib/authorization/*.js</code> on <code>crm-seam</code> 81a1f6ce, reading two lines past each call): there are
+<strong>nine</strong> call sites in six files, and <strong>eight</strong> pass <code>{mode: 'replace'}</code> —
+<code>lib/server/activity.js:61</code> and <code>:102</code>, <code>lib/server/food.js:64</code> and <code>:122</code>,
+<code>lib/server/treatments.js:31</code> and <code>:120</code>, <code>lib/server/profile.js:101</code>, and
+<code>lib/authorization/storage.js:143</code>. Three things follow, and the register does not say any of
+them:</p>
+<ul>
+<li><strong>The blast radius includes <code>profile</code> and <code>auth_subjects</code>.</strong> <code>profile</code> is the collection this
+  document calls the one whose correctness matters most per byte — basal rates, insulin
+  sensitivity, carb ratios — and it is written through a <code>'replace'</code> <code>bulkUpsert</code> that
+  PostgreSQL merges. <code>lib/authorization/storage.js:143</code> is the subject/role writer, which is
+  credential-adjacent (§5.4).</li>
+<li><strong>The ninth caller asks for <code>merge</code> on purpose, and PostgreSQL is accidentally right for it
+  alone.</strong> <code>lib/server/entries.js:168</code> passes <code>{mode: 'merge'}</code> above a comment that says
+  <code>mode:'merge'</code> is <em>not</em> interchangeable with the <code>'replace'</code> the other v1 modules use, because
+  that path was <code>updateOne</code>+<code>$set</code> and a wholesale replace would delete stored fields absent from
+  the incoming entry. So the shipping code distinguishes the two modes deliberately, in writing.</li>
+<li><strong>Therefore "make PostgreSQL always merge" is not available as a shortcut fix</strong>, and neither is
+  "always replace" — <code>entries.js</code> would start deleting fields. The mode has to be threaded. That
+  the one caller PostgreSQL honours is the one that never needed the argument is why this defect
+  survived: the collection with by far the most write traffic is the collection where the bug is
+  invisible.</li>
+</ul>
+<p>The register's own phrasing — "the <code>{mode:'replace'}</code> <strong>every</strong> shipping caller sends" — is
+therefore inaccurate in a way that matters, because it implies a uniform intent that would make
+"always replace" a safe fix. See Correction 7.</p>
+<p><strong>This is the one on the list that corrupts a migration rather than mis-answering a query.</strong>
+Three reasons, and the third is the one that is not in the register entry:</p>
+<ol>
+<li>The consequence is an <strong>unremovable field</strong>. Any key a client deletes stays in the PostgreSQL
+   row for good.</li>
+<li>The two backends <strong>drift apart with every write</strong>, so a dual-write cutover (§4.5) does not
+   converge — it diverges monotonically, and the longer it runs the worse it gets. Dual-write is
+   the cutover strategy that BF-21 specifically forbids.</li>
+<li><strong>A re-runnable loader is the obvious design, and BF-21 makes re-running unsafe.</strong> A migration
+   that can be resumed after a partial failure has to be idempotent, and the idiomatic way to be
+   idempotent is upsert-by-<code>_id</code>. On PostgreSQL that silently merges: if a document was corrected
+   between two loader passes — deduplicated, redacted, or had a bad field stripped — the second
+   pass <em>adds to</em> the first rather than replacing it, and the result is a document that existed
+   in neither source state.</li>
+</ol>
+<p><em>Correction to the register entry's proposed fix</em>: it says to "implement <code>'replace'</code>". Replace is
+<strong>already implemented</strong> — <code>write(ast, doc, 'replace')</code> emits
+<code>$N::jsonb || jsonb_build_object('_id', doc -&gt; '_id')</code> and <code>replaceOne</code> uses it. The fix is to
+thread the existing <code>mode</code> through the signature, or to refuse a mode that cannot be honoured. It
+is smaller than the entry implies, which is an argument for doing it before the migration rather
+than after.</p>
+<h3 id="33-bf-22--a-dotted-field-stores-two-different-documents--medium--open--blocking-for-the-transform-not-for-the-load">3.3 BF-22 — a dotted field stores two different documents · <strong>medium</strong> · open · <strong>BLOCKING for the transform, not for the load</strong><a class="headerlink" href="#33-bf-22--a-dotted-field-stores-two-different-documents--medium--open--blocking-for-the-transform-not-for-the-load" title="Permanent link">&para;</a></h3>
+<p><code>updateOne(identifier, {'nested.leaf': 7})</code> is <code>$set</code> on MongoDB, where a dot is a <strong>path</strong>:
+<code>{"nested": {"leaf": 7}}</code>. The PostgreSQL merge (<code>doc || $N::jsonb</code>) treats it as a <strong>literal
+key</strong>: <code>{"nested.leaf": 7}</code>. The PostgreSQL document then holds a key that no path lookup will
+ever find — not <code>doc #&gt; '{nested,leaf}'</code>, not a generated column, not a client walking the object.</p>
+<p>For migration this cuts twice:</p>
+<ul>
+<li><strong>On the write path after cutover</strong>, reachable through <code>PATCH /api/v3/&lt;collection&gt;/&lt;identifier&gt;</code>
+  (<code>lib/api3/generic/patch/operation.js:85</code> passes the client's body to <code>updateOne</code>, after adding
+  <code>srvModified</code>/<code>modifiedBy</code> and normalising treatment duration). Every PATCH with a dotted key
+  writes an unreachable key.</li>
+</ul>
+<p><strong>The register bounds this claim and the bound can now be lifted.</strong> BF-22's entry says the
+  reachability is "subject to a validation layer that was not audited". Audited during review,
+  2026-09-15, on <code>crm-seam</code> 81a1f6ce: the only two filters between the body and <code>updateOne</code> are
+  <code>lib/api3/shared/writePurifier.js</code> → <code>lib/server/purifier.js</code> <code>purifyObject</code>, which sanitises
+  string <strong>values</strong> and never touches a key (lines 165-191), and
+  <code>lib/api3/generic/update/validate.js</code>, which checks an immutable-field list and then
+  <code>validateCommon</code>'s <code>date</code> / <code>utcOffset</code> / <code>app</code> type tests — all three skipped when the field is
+  absent from a patch. <strong>Nothing inspects key names.</strong> A dotted key reaches <code>updateOne</code> unaltered.
+  This should go back to the register as a correction (§9, item 8).
+* <strong>On the transform</strong>, and this is the part that is not in the entry: if the <em>source</em> MongoDB
+  document already contains a literal dotted key — which MongoDB permits in stored documents even
+  where it forbids it in <code>$set</code> — then a faithful jsonb load reproduces it, and a
+  round-trip-through-<code>$set</code> load does not. The two loaders produce different documents from the
+  same source. <strong>A migration must decide which one it is doing and say so</strong>, because "faithful"
+  and "what the application would have written" are not the same document here.</p>
+<h3 id="34-bf-20--a-date-valued-filter-bound-silently-inverts--low--open--not-blocking-but-it-is-the-shape-of-the-real-hazard">3.4 BF-20 — a <code>Date</code>-valued filter bound silently inverts · low · open · <strong>not blocking, but it is the shape of the real hazard</strong><a class="headerlink" href="#34-bf-20--a-date-valued-filter-bound-silently-inverts--low--open--not-blocking-but-it-is-the-shape-of-the-real-hazard" title="Permanent link">&para;</a></h3>
+<p><code>scalarize()</code> (<code>pgCollection/sql.js:27</code>) turns a JavaScript <code>Date</code> into an ISO string before it
+reaches the adapter. A <code>gte &lt;Date&gt;</code> bound against an ISO-string <code>created_at</code> matches <strong>nothing</strong>
+on MongoDB (BSON compares only within a type) and <strong>everything in range</strong> on PostgreSQL (both
+sides are now text). No shipping caller passes a <code>Date</code>; every one emits epoch numbers or ISO
+strings. Recorded because the adapter is a published interface.</p>
+<p><strong>The migration-relevant twin is on the document side, and it is not low.</strong> <code>scalarizeDoc</code> applies
+the same conversion to stored documents: a BSON <code>Date</code> in a document becomes an ISO string in
+<code>doc</code>. So a stored <code>dateString</code> that is a <strong>BSON Date</strong> on MongoDB becomes a <strong>string</strong> on
+PostgreSQL. That is probably the behaviour you want — but it is a <strong>type change to stored data</strong>,
+performed silently, and <strong>the corpus cannot tell you how often it happens</strong>. The census is built
+from Nightscout REST responses (<code>tools/nsschema/corpus.py</code>: "the Nightscout REST response
+verbatim"), which have already serialised BSON to JSON. Confirmed structurally: <strong>zero</strong> census
+paths in <code>entries</code>, <code>treatments</code>, <code>devicestatus</code> or <code>profile</code> contain a <code>$</code> character, so no
+extended-JSON wrapper survives into the evidence. <strong>The corpus is blind to BSON types.</strong> That is
+not evidence that BSON Dates are absent from real databases; it is evidence that this programme
+has never looked. <strong>C4</strong> (§6) is the check that looks — the cross-reference in this paragraph
+previously read "§6.2", which is not a section this document has; corrected in review.</p>
+<p><strong>And <code>Date</code> is the easy case.</strong> §4.3's correction block measures what <code>scalarizeDoc</code> does to the
+<em>other</em> BSON types: it converts only <code>ObjectId</code> and <code>Date</code>, and turns <code>Decimal128</code>, <code>Binary</code>,
+<code>Timestamp</code> and an out-of-range <code>Long</code> into jsonb <strong>objects</strong>, which null the generated column
+without erroring. So BF-20's document-side twin is wider than a type change — for those types it
+is a value the migrated store cannot answer a predicate about at all. C4 is what sizes it.</p>
+<h3 id="35-bf-23--the-duplicate-key-error-class-crosses-the-seam--low--open--not-blocking">3.5 BF-23 — the duplicate-key error class crosses the seam · low · open · <strong>not blocking</strong><a class="headerlink" href="#35-bf-23--the-duplicate-key-error-class-crosses-the-seam--low--open--not-blocking" title="Permanent link">&para;</a></h3>
+<p><code>MongoServerError</code> / <code>E11000</code> on one side, <code>DatabaseError</code> / <code>duplicate key value violates unique
+constraint</code> on the other. Both refuse the duplicate, which is what matters for correctness. <code>grep</code>
+for <code>11000</code>, <code>E11000</code> and <code>MongoServerError</code> across <code>lib/</code> finds no caller branching on it.
+Relevant to a migration only in that <strong>a loader is exactly the kind of caller that would branch on
+it</strong> — "already loaded, skip" is the natural idempotence idiom — so a loader must not, and should
+test <code>rowCount</code>/<code>upsertedCount</code> instead.</p>
+<h3 id="36-the-verdict-stated-plainly">3.6 The verdict, stated plainly<a class="headerlink" href="#36-the-verdict-stated-plainly" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>entry</th>
+<th>fix before any real data moves?</th>
+<th>why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>BF-21</strong></td>
+<td><strong>Yes, unconditionally</strong></td>
+<td>corrupts stored data on every write; makes a resumable loader unsafe; makes dual-write divergent by construction</td>
+</tr>
+<tr>
+<td><strong>BF-19</strong></td>
+<td><strong>Yes</strong></td>
+<td>breaks the migration's own verification instrument, not only the product</td>
+</tr>
+<tr>
+<td><strong>BF-22</strong></td>
+<td><strong>Yes, at least as a decision</strong></td>
+<td>the transform must state which document it produces; the PATCH half can follow</td>
+</tr>
+<tr>
+<td>BF-20</td>
+<td>No — but <strong>C4</strong>'s type census must run first</td>
+<td>the document-side twin is unmeasured, not absent, and §4.3's correction block shows the recommended transform mishandles four more BSON types</td>
+</tr>
+<tr>
+<td>BF-23</td>
+<td>No</td>
+<td>no caller branches on it; constrain the loader instead</td>
+</tr>
+</tbody>
+</table>
+<p>Three of five block. Two are small and one is not, and the original wording here said "none is
+large", which review does not support. BF-21 is threading an argument that already has an
+implementation behind it. BF-22 is a written-down choice plus a guard. <strong>BF-19 is not settled</strong>:
+<code>nightscout-seam-ordering-translation.md</code> §3 is headed "open, and harder than it looks", and what
+it carries is a <em>recommendation</em> — option O2, restrict sortable fields to declared single-typed
+ones — conditional on a corpus measurement (§3.2). Adopting O2 is also a <strong>client-visible
+restriction</strong>: a v3 request that sorts on an undeclared field stops being answered and starts
+being rejected. For a migrating tenant that is a behaviour change to disclose, not a silent
+internal fix, and it belongs in §7.2's list once the maintainer picks an option.</p>
+<p><strong>One more that is not on the brief's list and belongs on it.</strong> The register and three research
+reports pin BF-19's and BF-21's exposure to "<strong>T2.6</strong>". The execution plan defines no T2.6 — Phase
+2 stops at T2.5 plus T2.1a. A deadline attached to a task that does not exist cannot be scheduled,
+cannot be checked, and will be discovered by whoever loads <code>treatments</code> onto PostgreSQL. See
+Correction 1.</p>
+<hr />
+<h2 id="4-migration-mechanics">4. Migration mechanics<a class="headerlink" href="#4-migration-mechanics" title="Permanent link">&para;</a></h2>
+<h3 id="41-sizing-measured">4.1 Sizing, measured<a class="headerlink" href="#41-sizing-measured" title="Permanent link">&para;</a></h3>
+<p>From the 2026-04-01 snapshot (11 pseudonymous sites; JSON file bytes ÷ document count, no
+document content read):</p>
+<table>
+<thead>
+<tr>
+<th>collection</th>
+<th>documents</th>
+<th>JSON bytes</th>
+<th>bytes/doc</th>
+<th>share of bytes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>entries</code></td>
+<td>649,840</td>
+<td>175.9 MB</td>
+<td>271</td>
+<td>15 %</td>
+</tr>
+<tr>
+<td><code>treatments</code></td>
+<td>277,690</td>
+<td>113.2 MB</td>
+<td>408</td>
+<td>10 %</td>
+</tr>
+<tr>
+<td><code>devicestatus</code></td>
+<td>514,259</td>
+<td>887.1 MB</td>
+<td>1,725</td>
+<td><strong>75 %</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Per site, that is roughly 59,000 entries / 25,000 treatments / 47,000 devicestatus and <strong>~107 MB
+of JSON</strong>. <strong>These are lower bounds.</strong> The corpus is a bounded REST read over eleven sites that
+agreed to be sampled, not a full database dump, and a long-running deployment will be larger by an
+unknown factor. Quote the <em>ordering</em> — devicestatus dominates by bytes, entries by count — rather
+than the absolutes, per the programme's standing rule.</p>
+<p>The practical consequence: <strong><code>devicestatus</code> decides the migration window</strong>, and <code>devicestatus</code>
+also has the fewest columns (four) and the largest jsonb bodies. If a schedule needs to fit inside
+a window, the lever is devicestatus retention, not parallelism.</p>
+<h3 id="42-export">4.2 Export<a class="headerlink" href="#42-export" title="Permanent link">&para;</a></h3>
+<p>Source is the tenant's MongoDB. Two candidate readers, and the choice is not cosmetic:</p>
+<p><strong>(a) Read through the driver, in <code>_id</code> order, with an explicit resume point.</strong> Preferred.
+<code>find({}).sort({_id: 1})</code> with a <code>_id &gt; &lt;last&gt;</code> cursor is resumable, does not depend on a
+transaction MongoDB cannot open on a standalone <code>mongod</code> (<code>lib/storage/tenant-scope.js</code> documents
+exactly this: plenty of self-hosters run standalone, which cannot start a replica set, so the
+Mongo adapter has no transactions), and lets the transform run streaming.</p>
+<p><strong>(b) <code>mongoexport</code> / <code>mongodump</code>.</strong> Available and familiar, and <strong>the encoding is a trap</strong>. See
+§4.3.</p>
+<p>Whichever is used, the export must <strong>state what it covered</strong> before it is trusted. The hosted
+side already does this — <code>exportTenant</code> calls <code>onCollection</code> with the table list before any row,
+because "an export that is truncated by a dropped connection is otherwise indistinguishable from a
+complete one". The <em>inbound</em> reader needs the same property and does not have it, because it does
+not exist yet.</p>
+<h3 id="43-transform--and-the-encoding-finding">4.3 Transform — and the encoding finding<a class="headerlink" href="#43-transform--and-the-encoding-finding" title="Permanent link">&para;</a></h3>
+<p><strong>Measured, 2026-09-15</strong>, on 8 synthetic <code>entries</code> documents carrying an <code>ObjectId</code>, a BSON
+<code>Date</code>, a <code>Long</code>, a <code>Double</code>, a string-valued <code>sgv</code>, an explicit <code>null</code>, an absent field and a
+<code>Decimal128</code>; loaded into the emitted <code>entries</code> table shape on <code>postgres:16-alpine</code>; harness at
+<code>/tmp/…/scratchpad/fidelity.js</code> (scratchpad, not committed):</p>
+<table>
+<thead>
+<tr>
+<th>export encoding</th>
+<th>rows loaded</th>
+<th>load errors</th>
+<th>result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>relaxed EJSON (<code>mongoexport</code> default)</td>
+<td>0</td>
+<td>8</td>
+<td><code>null value in column "_id" of relation "entries" violates not-null constraint</code></td>
+</tr>
+<tr>
+<td>canonical EJSON (<code>--jsonFormat=canonical</code>)</td>
+<td>0</td>
+<td>8</td>
+<td>same</td>
+</tr>
+<tr>
+<td><code>scalarizeDoc</code> (the seam's own write path)</td>
+<td><strong>8</strong></td>
+<td>0</td>
+<td>clean</td>
+</tr>
+<tr>
+<td>relaxed EJSON <strong>with <code>_id</code> rewritten to a plain hex string</strong></td>
+<td><strong>8</strong></td>
+<td><strong>0</strong></td>
+<td><strong>loads clean and silently corrupts</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The first three rows are the good news: <strong>the emitted DDL fails closed on an EJSON-encoded load</strong>,
+because <code>_id</code> is <code>text NOT NULL</code> guarded by <code>jsonb_typeof = 'string'</code> and EJSON writes
+<code>{"$oid": "…"}</code>, which is an object. Every row was attempted individually in the harness, which is
+why the error count is 8 rather than 1; a loader batching inside one transaction stops on the
+first row instead. Either way it fails loudly, which is the point.</p>
+<p><strong>The fourth row is the finding.</strong> A site whose <code>_id</code> is <em>already</em> a 24-hex string — which API v1
+permits a client to supply, and which is therefore not hypothetical — exports with a plain-string
+<code>_id</code>, so the row loads. Every <em>other</em> EJSON wrapper then passes silently: one document's
+<code>dateString</code> landed in <code>doc</code> as <code>{"$date": "2025-09-15T01:38:20Z"}</code>, the <code>dateString</code> generated
+column went SQL NULL for that row, <strong>and nothing errored</strong>. That document is now invisible to
+every <code>dateString</code> predicate and sorts into the missing bucket, with a success status on the load
+and a plausible-looking row count.</p>
+<p><strong>Therefore: the transform is <code>scalarizeDoc</code>, or something that provably agrees with it.</strong>
+<code>lib/api3/storage/pgCollection/sql.js:51</code>. It is the function the hosted service's own write path
+uses, so a migrated document and a natively-written document are the same document. Its rules:
+<code>ObjectId → 24-hex string</code> (which is what every v1 client has always seen on the wire),
+<code>Date → ISO string</code>, recursively through objects and arrays. <strong><code>_id</code> is not stripped on insert</strong> —
+the loader supplies it (<code>pgCollection/index.js:188-197</code> keeps a supplied <code>_id</code> and mints one only
+when it is absent), because it is half the primary key and it is what the tenant's clients already
+hold.</p>
+<h4 id="correction-found-in-review-2026-09-15-scalarizedoc-is-not-a-bson-transform-it-handles-two-types">Correction, found in review 2026-09-15: <code>scalarizeDoc</code> is not a BSON transform. It handles two types.<a class="headerlink" href="#correction-found-in-review-2026-09-15-scalarizedoc-is-not-a-bson-transform-it-handles-two-types" title="Permanent link">&para;</a></h4>
+<p><strong>The recommendation above is right about <em>which function</em> and wrong about <em>what it covers</em>, and
+the table's <code>clean</code> verdict cannot be read as <code>faithful</code>.</strong> Measured during review by calling the
+shipping <code>sql.scalarizeDoc</code> directly in <code>externals/work/crm-seam</code> (bson 7.3.2, mongodb 7.6.0,
+Node in that worktree), on one document holding one value of each BSON type:</p>
+<table>
+<thead>
+<tr>
+<th>value handed in</th>
+<th>what <code>scalarizeDoc</code> returns</th>
+<th><code>jsonb_typeof</code> of the stored value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ObjectId</code></td>
+<td><code>"6aa9f9ac…"</code> (24-hex)</td>
+<td><code>string</code> ✔</td>
+</tr>
+<tr>
+<td><code>Date</code></td>
+<td><code>"2025-09-15T01:38:20.000Z"</code></td>
+<td><code>string</code> ✔</td>
+</tr>
+<tr>
+<td><code>Long</code></td>
+<td><code>{"high":409,"low":-1414615903,"unsigned":false}</code></td>
+<td><strong><code>object</code></strong> ✘</td>
+</tr>
+<tr>
+<td><code>Double</code></td>
+<td><code>{"value":1.5}</code></td>
+<td><strong><code>object</code></strong> ✘</td>
+</tr>
+<tr>
+<td><code>Decimal128</code></td>
+<td><code>{"bytes":{"0":210,"1":4,…}}</code></td>
+<td><strong><code>object</code></strong> ✘</td>
+</tr>
+<tr>
+<td><code>Binary</code></td>
+<td><code>{"buffer":{"0":171},"sub_type":0,"position":1}</code></td>
+<td><strong><code>object</code></strong> ✘</td>
+</tr>
+<tr>
+<td><code>Int32</code></td>
+<td><code>{"value":7}</code></td>
+<td><strong><code>object</code></strong> ✘</td>
+</tr>
+<tr>
+<td><code>Timestamp</code></td>
+<td><code>{"high":1,"low":2,"unsigned":true}</code></td>
+<td><strong><code>object</code></strong> ✘</td>
+</tr>
+</tbody>
+</table>
+<p>The rule is one line of the source: <code>scalarize()</code> converts a value only if it has a
+<code>toHexString()</code> method or <code>instanceof Date</code>. Everything else that is an object is <strong>recursed into
+as an ordinary object</strong>, so the BSON wrapper's internal representation is what lands in <code>doc</code>.</p>
+<p><strong>That is the same silent corruption as row 4 of the table above, inside the recommended
+transform.</strong> A <code>date</code> arriving as a <code>Long</code> loads with no error, leaves the <code>date</code> generated column
+SQL <code>NULL</code> because <code>jsonb_typeof(…) = 'object'</code>, and the document becomes invisible to every
+<code>date</code> predicate and sorts into the missing bucket — success status, plausible row count.
+The refusal list below as originally written <strong>does not catch it</strong>: <code>{"high":…,"low":…}</code> contains
+no <code>$</code>.</p>
+<p><em>How much of this is reachable.</em> With the Node driver's defaults (<code>promoteLongs</code>/<code>promoteValues</code>
+both true, measured on bson 7.3.2 by round-tripping a serialised document): a <code>Long</code> inside 2^53
+and a <code>Double</code> come back as plain JS numbers and are safe. <strong><code>Decimal128</code>, <code>Binary</code>, <code>Timestamp</code>
+and any <code>Long</code> outside 2^53 come back as BSON objects and are not.</strong> A reader that sets
+<code>promoteLongs: false</code> or <code>promoteValues: false</code> — which is exactly what a fidelity-minded loader
+author would reach for — makes <em>every</em> numeric field unsafe.</p>
+<p><em>What this means for the table above.</em> <code>clean</code> in the <code>scalarizeDoc</code> row means <strong>0 load errors</strong>,
+which is the whole point of the section: 0 errors is what silent corruption looks like. A fixture
+carrying a <code>Long</code>, a <code>Double</code> and a <code>Decimal128</code> cannot have round-tripped them through
+<code>scalarizeDoc</code>, so that row does not support the conclusion it was offered for. The conclusion
+survives in a narrower form: <em><code>scalarizeDoc</code> is the right agreement target because it is what the
+hosted write path does, and the loader must extend it to the BSON types <code>scalarizeDoc</code> does not
+handle, with the extension reviewed as a data decision rather than written as a default.</em></p>
+<p><strong>This is a defect in shipping code, not only in a migration plan, and D4 forbids deferring it to
+"Postgres will replace that".</strong> It is described in this reviewer's return value as a proposed
+register entry with <strong>no id allocated</strong> (rule 3); the reconciliation agent allocates one.</p>
+<p>The transform must also <strong>refuse</strong>, not coerce, on:</p>
+<ul>
+<li>a non-string <code>_id</code> (the row cannot be stored; the DDL already refuses, and the loader should say
+  which document rather than letting PostgreSQL say which constraint);</li>
+<li>any remaining <code>$</code>-prefixed top-level key after transform, which means an EJSON wrapper survived;</li>
+<li><strong>any value that is still a JSON object where the model declares a scalar</strong> — this is the check
+  that catches the <code>scalarizeDoc</code> gap above, and it is the one the original list was missing.
+  <code>jsonb_typeof</code> is already the test the DDL uses, so the loader can ask the same question before
+  the row is written instead of after;</li>
+<li><strong>any value carrying a BSON wrapper's shape</strong> (<code>_bsontype</code> on the JavaScript object, before
+  serialisation) — cheaper than the previous check and it names the cause rather than the symptom;</li>
+<li>a literal dotted key, which is BF-22's transform half and needs a decision, not a default.</li>
+</ul>
+<h3 id="44-load">4.4 Load<a class="headerlink" href="#44-load" title="Permanent link">&para;</a></h3>
+<p>Provision first: the admin plane creates the tenant and mints <code>tenant_id</code>
+(<code>lib/admin/platform-store.js:242</code>, reached through the <code>bin/admin.js</code> entrypoint). The slug is a
+host label (D10) and is validated in two places on purpose — a <code>CHECK</code> constraint at
+<code>lib/admin/platform.sql:37</code> and <code>requireSlug</code> in <strong><code>lib/admin/slug.js</code></strong> — because the admin plane
+is cross-tenant by construction and cannot be protected by RLS. (<em>Corrected in review</em>: this
+paragraph named <code>bin/admin.js</code> as the second enforcement point. That file is 79 lines and does not
+contain the string <code>slug</code>; the shipping comments use "bin/admin.js" as shorthand for the admin
+plane, and this programme has been bitten three times by a stale file reference, so the real path
+is named here.)</p>
+<p>Then, per collection, in one transaction per batch with the tenant bound:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>SET LOCAL app.current_tenant_id = '&lt;uuid&gt;';
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>INSERT INTO &lt;collection&gt; (tenant_id, doc) VALUES ($1, $2::jsonb)   -- batched
+</code></pre></div>
+<p>Notes that are not optional:</p>
+<ul>
+<li><strong>Connect as a role that is <code>NOSUPERUSER NOBYPASSRLS</code>.</strong> RLS is silently not enforced for a
+  superuser; a load that ran as one has verified none of its isolation. T2.5 records that an
+  earlier measurement in this programme nearly published two false findings for exactly this
+  reason.</li>
+<li><strong>Do not go through <code>bulkUpsert</code></strong> until BF-21 is fixed (§3.2). Until then the loader's own
+  idempotence is a merge.</li>
+<li><strong><code>insertMany</code> throws by name</strong> on the PostgreSQL adapter, so a seam-mediated loader issues one
+  statement per document, or goes below the seam and issues <code>COPY</code>/multi-row <code>INSERT</code> directly.
+  Going below the seam is defensible for a bulk load — the seam exists so <em>application</em> callers
+  do not see driver objects — but it means the loader is a second writer of the storage shape and
+  must be kept in step with the emitted DDL. <code>make schema-vendor-drift</code> is the precedent for how
+  that is policed.</li>
+<li><strong>Generated columns are computed by PostgreSQL</strong>, not supplied. A loader that writes them is
+  rejected, which is the correct failure.</li>
+</ul>
+<h3 id="45-verify--differential-not-counted">4.5 Verify — differential, not counted<a class="headerlink" href="#45-verify--differential-not-counted" title="Permanent link">&para;</a></h3>
+<p><strong>Row counts are worthless here and it is worth being blunt about why.</strong> Every divergence in §3
+returns HTTP 200 with a wrong answer and a right count. BF-19 reorders, BF-21 keeps a field,
+BF-22 relocates a key, BF-20 changes a type, the EJSON case in §4.3 nulls a column. Not one of
+them changes how many rows exist.</p>
+<p>The programme already has the instrument. Reuse it as follows.</p>
+<table>
+<thead>
+<tr>
+<th>harness</th>
+<th>what it already does</th>
+<th>how the migration uses it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tools/qc/three-arm.js</code></td>
+<td>randomised filter ASTs across <strong>mingo / real mongod / real PostgreSQL</strong>, all three pairwise comparisons; validates the <strong>oracle</strong> as well as the claim</td>
+<td>point <code>FILTER_MODULE</code> at the shipping <code>lib/storage/filter.js</code>, <code>MONGO_URL</code> at the <strong>source tenant's</strong> database and <code>PG_URL</code> at the <strong>loaded tenant</strong> (bound). Randomised filters over the tenant's <em>real</em> shapes is the only cheap way to reach predicates nobody wrote a probe for. Run <code>WITH_RE=1</code> only after <code>re-arms.js</code> has said which regex constructs are comparable — mingo, PCRE2 and POSIX ARE are three languages.</td>
+</tr>
+<tr>
+<td><code>tools/qc/pg-backend-arm.js</code></td>
+<td>the same questions against the <strong>shipping</strong> modules and the <strong>shipping emitted DDL</strong>, through <code>store.storageCollection(...).findFiltered(ast, opts)</code>; sections 1-6, non-vacuity built in</td>
+<td>the primary migration acceptance harness. Its <strong>§6a</strong> is BF-19's detector — it puts identical values in <code>sgv</code> (which has a generated column) and <code>noise</code> (which does not) and compares the two orders against <code>mongod</code>, so the only variable is the accelerator. Its <strong>§1</strong> (filter classes A-D) is the answer differential, and its <strong>§3</strong> is a <em>different</em> ordering defect, BF-13's missing <code>_id</code> tiebreak — run it too, because a migration that reorders ties is as unverifiable as one that reorders values. Both arms are constructed by their own store, so a divergence it reports is one a caller above the seam would see.</td>
+</tr>
+<tr>
+<td><code>tools/qc/order-arm.js</code> + <code>tools/qc/typeguard-arm.js</code></td>
+<td>ordering and pagination; the fifth (shipped) <code>ORDER BY</code> translation</td>
+<td>run per sortable field the tenant's clients actually use, <strong>before</strong> cutover. If BF-19 is unfixed these will be red and that is the gate, not a note.</td>
+</tr>
+<tr>
+<td><code>tools/qc/shape-arm.js</code></td>
+<td><code>limit</code> and <code>projection</code></td>
+<td><code>limit: 0</code> is an unbounded read on one backend and an empty one on the other — v1's <code>?count=</code> reaches it. Run it because reports paginate.</td>
+</tr>
+<tr>
+<td><code>tools/qc/write-arm.js</code></td>
+<td>the write path: return value <strong>and</strong> stored state, per probe</td>
+<td>run it against the loaded tenant before opening writes. It is the harness that found BF-21, BF-22 and BF-23, and it is the one that will notice if the loader itself wrote something the application would not have.</td>
+</tr>
+<tr>
+<td><code>tools/qc/readoptions-arm.js</code></td>
+<td><code>batchSize</code> and materialisation</td>
+<td>lowest priority for correctness; relevant because the PostgreSQL read path materialises and a migrated tenant's largest report is the first thing to find that out.</td>
+</tr>
+<tr>
+<td><code>tools/seam/validate.js</code></td>
+<td>mingo ≡ PostgreSQL over randomised filters</td>
+<td>the regression check; cheaper than <code>three-arm.js</code> and does <strong>not</strong> substitute for it, because a mingo/PostgreSQL agreement is evidence about the AST, not about MongoDB.</td>
+</tr>
+</tbody>
+</table>
+<p>Every one of these compares <strong>answers</strong>. That is the property that makes them the right tool and
+a count the wrong one.</p>
+<hr />
+<h2 id="5-cutover">5. Cutover<a class="headerlink" href="#5-cutover" title="Permanent link">&para;</a></h2>
+<h3 id="51-the-two-candidates">5.1 The two candidates<a class="headerlink" href="#51-the-two-candidates" title="Permanent link">&para;</a></h3>
+<p><strong>Read-only window.</strong> Freeze writes at the source, drain in-flight uploads, export, transform,
+load, verify, flip DNS/routing to the hosted tenant, open writes there.</p>
+<p><strong>Dual-write.</strong> Run both stores, write to both, backfill history behind the live edge, compare,
+cut reads over when they agree.</p>
+<h3 id="52-recommendation-read-only-window-and-dual-write-should-not-be-attempted-on-this-code">5.2 Recommendation: <strong>read-only window</strong>, and dual-write should not be attempted on this code<a class="headerlink" href="#52-recommendation-read-only-window-and-dual-write-should-not-be-attempted-on-this-code" title="Permanent link">&para;</a></h3>
+<p>The argument is not about effort. It is that <strong>BF-21 makes dual-write divergent by construction</strong>.
+A dual-write scheme's entire premise is that the two stores converge; with <code>bulkUpsert</code> silently
+merging on PostgreSQL, a field deleted on MongoDB survives on PostgreSQL, forever, and the
+divergence is monotonic — every write widens it. The comparison step that is supposed to say "safe
+to cut over" would report a growing set of differences it cannot attribute, and the natural
+response to that report is to tune the comparator rather than to fix the backend. This programme
+has a name for that shape.</p>
+<p>Even with BF-21 fixed, dual-write needs one more thing this system does not have: an ordering
+guarantee across two stores for a client that writes the same document twice in quick succession.
+<code>lib/storage/tenant-scope.js</code> says plainly that the interface <strong>does not promise atomicity across
+operations on both backends</strong> and will not until something says so explicitly. Dual-write is that
+something, and it is not written.</p>
+<p>The read-only window is also the only option that is honest to the person whose data it is: there
+is a stated moment when their site is not accepting new data, and it is on a calendar, rather than
+an indefinite period during which their data is in two places and nobody can say which one is
+right.</p>
+<h3 id="53-what-the-window-actually-costs-and-what-a-tenants-clients-do-in-it">5.3 What the window actually costs, and what a tenant's clients do in it<a class="headerlink" href="#53-what-the-window-actually-costs-and-what-a-tenants-clients-do-in-it" title="Permanent link">&para;</a></h3>
+<p>Sizing from §4.1: ~107 MB of JSON and ~131,000 documents for an <strong>average</strong> corpus site
+(the three sized collections' totals ÷ 11 — an arithmetic mean; the census reports no per-site
+median, and "median" is what this sentence said before review), dominated by <code>devicestatus</code>.
+The export and load are both streaming and neither is obviously the bottleneck;
+<strong>the verification is</strong>, because <code>three-arm.js</code> and <code>pg-backend-arm.js</code> are randomised differentials
+and their cost is a choice about how many iterations buy enough confidence. <strong>This has not been
+timed end-to-end and I am not going to invent a number</strong> — see Open Question 3.</p>
+<p>The cutover can be shortened honestly by splitting it: <strong>bulk-load the cold history days ahead</strong>,
+then take a short window for only the tail. That works because the tail is small and because
+<code>_id</code>-ordered resumption makes "everything since <code>&lt;_id&gt;</code>" a cheap query. It requires BF-21 fixed,
+because the tail load is an upsert over a store that already has rows.</p>
+<p><strong>What the tenant's clients do during the window</strong> — and this is the part that has to be written
+for a non-developer before it is implemented:</p>
+<ul>
+<li><strong>Uploaders (phone apps, bridges, <code>nightscout-connect</code>)</strong> keep collecting locally and retry.
+  They will retry into a site that is refusing writes. <code>nightscout-connect</code> v0.0.14's backoff is
+  the relevant behaviour and it is now bounded: <code>lib/builder.js</code> supplies
+  <code>max_interval_ms = expected_data_interval_ms * 6</code>, so the ceiling is 30 minutes, with <code>'equal'</code>
+  jitter spreading the delay over [15 min, 30 min]. <strong>The old behaviour was a 256 ms retry with
+  jitter forced off</strong> (BF-34), which meant a pool of uploaders hitting a read-only site would have
+  retried in lockstep, 586× too fast (585.94× = 150000/256 exactly, at every attempt below the
+  ceiling). A migration window is precisely the burst BF-34 was worst at, so <strong>v0.0.14 should be
+  in place before any migration window is opened</strong>. <strong>Added in review:</strong> v0.0.14 is prepared
+  locally and <strong>has not been released</strong> — the tag and the branch are unpushed, and
+  <code>cgm-remote-monitor</code>'s <code>dev</code> still pins the commit tarball <code>234d47c8</code>, which carries the
+  debug-logging narrowing but none of the three log-redaction commits. So this prerequisite is a
+  release that has to happen first, not a version an operator can install today.</li>
+<li><strong>Viewers</strong> see data up to the freeze and then nothing new. They should see a message that says
+  so, not a stale graph that looks current. A stale graph on a glucose display is a safety problem,
+  not a cosmetic one.</li>
+<li><strong>Alarms</strong> are the thing to be most careful about. Alarms are <strong>off</strong> under <code>TENANCY_MODE=multi</code>
+  by design (T3.5 withholds emissions outside tenant scope), so <strong>a tenant arriving at the hosted
+  service is arriving somewhere alarms do not yet fire.</strong> That is not a migration defect but it is
+  a migration <em>disclosure</em>, and it belongs in what the tenant agrees to, in plain language, before
+  anything moves — see the consent paragraph at the end of §7.2. (<em>Corrected in review</em>: this
+  pointed at "§7.3", which does not exist.)</li>
+</ul>
+<h3 id="54-credentials-do-not-migrate">5.4 Credentials do not migrate<a class="headerlink" href="#54-credentials-do-not-migrate" title="Permanent link">&para;</a></h3>
+<p><code>auth_subjects.accessToken</code> is a bearer credential. The tenant's root credential is its own under
+D13 — there is no deployment-wide secret under <code>TENANCY_MODE=multi</code>, on any interface — and D14
+gives each tenant its own JWT signing key, resolved before any credential is examined. So
+<strong>every token the tenant's clients hold must be reissued</strong>, and every uploader reconfigured. This
+is the most visible part of the migration for the person doing it and it is not a data-movement
+problem; it is a checklist, and it is the reason the window is a scheduled event rather than a
+background job.</p>
+<hr />
+<h2 id="6-verification-that-the-migration-was-correct">6. Verification that the migration was <em>correct</em><a class="headerlink" href="#6-verification-that-the-migration-was-correct" title="Permanent link">&para;</a></h2>
+<p>A migration that completes and is wrong is this project's characteristic failure mode. Each check
+below is specified with <strong>the break that proves it is not vacuous</strong> — because a check that has
+never failed is not yet evidence, and there are two ways it goes vacuous: the corpus never
+exercises the property, or the code never distinguishes the branches. Only breaking it tells you
+which.</p>
+<p>Checks C1-C3 were <strong>run</strong>, on synthetic fixtures, in throwaway containers created and removed for
+this document. C4-C7 are <strong>specified, not run</strong>.</p>
+<h3 id="c1--canonical-document-checksum--run-non-vacuous">C1 — Canonical document checksum · <strong>run, non-vacuous</strong><a class="headerlink" href="#c1--canonical-document-checksum--run-non-vacuous" title="Permanent link">&para;</a></h3>
+<p>Serialise every document on both sides with recursively sorted keys, apply <code>scalarizeDoc</code> to the
+MongoDB side, order by <code>_id</code>, hash. Equal hashes or the migration is not accepted.</p>
+<p>Key sorting is not a detail: jsonb does not preserve key order and the driver does not promise
+insertion order, so an unsorted comparator reports a faithful load as a changed one. <strong>My first
+version did exactly that</strong> — the control arm came back RED on a correct load, which is a
+comparator that cannot go green and is worth as little as one that cannot go red.</p>
+<p>Measured, four deliberate breaks, one document altered per break:</p>
+<table>
+<thead>
+<tr>
+<th>break</th>
+<th>C1</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>control: faithful load</td>
+<td><strong>green</strong></td>
+</tr>
+<tr>
+<td>drop one <code>sgv</code> value</td>
+<td><strong>RED</strong></td>
+</tr>
+<tr>
+<td>shift one <code>date</code> by 1 ms</td>
+<td><strong>RED</strong></td>
+</tr>
+<tr>
+<td><code>sgv</code> 120 → <code>"120"</code> (string)</td>
+<td><strong>RED</strong></td>
+</tr>
+<tr>
+<td>explicit <code>null</code> → absent</td>
+<td><strong>RED</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Its limit, stated because it is easy to over-trust.</strong> C1 hashes the <em>post-transform</em> document on
+both sides, so it verifies the <strong>load</strong>, not the <strong>transform</strong>. A transform bug is invisible to
+it: if <code>scalarizeDoc</code> did the wrong thing, C1 compares two copies of the wrong thing and goes
+green. C2 and C3 are what cover that, and neither fully does. <strong>§4.3's correction block is a
+worked example of exactly this</strong>: a <code>Decimal128</code> mangled identically on both sides by
+<code>scalarizeDoc</code> produces two identical hashes and a green C1. <strong>C4 is the only check in this list
+that can see it</strong>, which is why §6.1 puts C4 before the load and not after it.</p>
+<h3 id="c2--answer-differential--run-non-vacuous-and-weaker-than-it-looks">C2 — Answer differential · <strong>run, non-vacuous, and weaker than it looks</strong><a class="headerlink" href="#c2--answer-differential--run-non-vacuous-and-weaker-than-it-looks" title="Permanent link">&para;</a></h3>
+<p>Same predicates against both sides through the shipping modules, comparing <strong>answers</strong>. Using the
+same four breaks and five hand-written probes:</p>
+<table>
+<thead>
+<tr>
+<th>break</th>
+<th>C2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>control: faithful load</td>
+<td>green</td>
+</tr>
+<tr>
+<td>drop one <code>sgv</code> value</td>
+<td><strong>RED</strong> (<code>sgv exists</code>: mongo=7 pg=6)</td>
+</tr>
+<tr>
+<td>shift one <code>date</code> by 1 ms</td>
+<td><strong>green — missed</strong></td>
+</tr>
+<tr>
+<td><code>sgv</code> 120 → <code>"120"</code></td>
+<td><strong>green — missed</strong></td>
+</tr>
+<tr>
+<td>explicit <code>null</code> → absent</td>
+<td><strong>RED</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Two of four missed.</strong> That is the measurement, and it is the argument for the whole section: a
+hand-written probe set catches what its author thought of. The 1 ms shift and the type flip were
+both invisible because no probe's bound fell between the altered value and its neighbour. This is
+why C2 must be <strong><code>tools/qc/three-arm.js</code> and <code>tools/qc/pg-backend-arm.js</code> with randomised filters
+over the tenant's own document shapes</strong>, not a hand-written list — and why C1 is not optional even
+though C2 sounds stronger.</p>
+<h3 id="c3--ordering-equivalence--run-currently-red-and-that-is-the-gate">C3 — Ordering equivalence · <strong>run, currently RED, and that is the gate</strong><a class="headerlink" href="#c3--ordering-equivalence--run-currently-red-and-that-is-the-gate" title="Permanent link">&para;</a></h3>
+<p>For every field a client can reach through v3 <code>?sort=</code>, compare the returned <strong>order</strong> with
+<code>mongod</code>. Measured in §3.1: column branch ≠ mongod, jsonb branch ≠ mongod, and the two branches ≠
+each other. <strong>Non-vacuity is inherent</strong>: the check is already failing on the shipped code, which
+is the strongest possible evidence that it can go red. The break that proves it can go <em>green</em> is
+the interesting one and it is not available until BF-19 is fixed — so C3 is written now and
+<strong>re-run as the acceptance test for BF-19's fix</strong>.</p>
+<h3 id="c4--bson-type-census-on-the-source--specified-not-run--run-this-before-anything-else">C4 — BSON type census on the source · <strong>specified, not run</strong> · run this before anything else<a class="headerlink" href="#c4--bson-type-census-on-the-source--specified-not-run--run-this-before-anything-else" title="Permanent link">&para;</a></h3>
+<p>Read the source database <strong>through the driver</strong> and count, per collection and per path, the BSON
+type actually stored. This is the measurement the corpus cannot make (§3.4), and it is the one
+that says whether the <code>scalarizeDoc</code> transform is a no-op for this tenant or a silent type change
+to thousands of documents.</p>
+<p><em>Non-vacuity</em>: seed a scratch database with one document per BSON type of interest (<code>Date</code>,
+<code>Long</code>, <code>Double</code>, <code>Decimal128</code>, <code>ObjectId</code> in a non-<code>_id</code> position) and confirm the census names
+each. A census that reports only <code>string</code> and <code>number</code> over a corpus that contains a <code>Date</code> has
+measured the driver's JSON serialiser, not the database — which is exactly the mistake the
+REST-derived corpus makes structurally.</p>
+<h3 id="c5--field-set-closure--specified-not-run--bf-21s-detector">C5 — Field-set closure · <strong>specified, not run</strong> · BF-21's detector<a class="headerlink" href="#c5--field-set-closure--specified-not-run--bf-21s-detector" title="Permanent link">&para;</a></h3>
+<p>For every <code>_id</code>, assert the <strong>key set</strong> of the PostgreSQL document equals the key set of the
+MongoDB document — not the values, the keys. This is the check that catches a survived field, and
+it is the check that a re-run of an idempotent loader must still pass.</p>
+<p><em>Non-vacuity</em>: after a clean load, <code>updateOne</code> the same document on both sides through the seam
+with a field removed, then re-run the loader's upsert path. With BF-21 unfixed the PostgreSQL
+document keeps the key and C5 goes red. <strong>That red is the acceptance criterion for BF-21's fix</strong>,
+and it is also the proof that C5 is not vacuous, because it distinguishes the merge branch from
+the replace branch in the code rather than in the fixture.</p>
+<h3 id="c6--dotted-key-audit--specified-not-run--bf-22s-detector">C6 — Dotted-key audit · <strong>specified, not run</strong> · BF-22's detector<a class="headerlink" href="#c6--dotted-key-audit--specified-not-run--bf-22s-detector" title="Permanent link">&para;</a></h3>
+<p>Assert that no migrated document contains a top-level key matching <code>/\./</code>, and that every nested
+path present on MongoDB resolves on PostgreSQL via <code>doc #&gt; '{a,b}'</code>.</p>
+<p><em>Non-vacuity</em>: write <code>{'nested.leaf': 7}</code> through <code>updateOne</code> on both backends and confirm the
+audit flags the PostgreSQL row and not the MongoDB one. The write-path report already measured
+that the two backends produce different documents here, so the break is known to be reachable.</p>
+<h3 id="c7--rls-isolation--specified-not-run--the-check-that-must-not-be-run-as-superuser">C7 — RLS isolation · <strong>specified, not run</strong> · the check that must not be run as superuser<a class="headerlink" href="#c7--rls-isolation--specified-not-run--the-check-that-must-not-be-run-as-superuser" title="Permanent link">&para;</a></h3>
+<p>With a second tenant loaded, assert that a connection bound to tenant A returns zero rows from
+tenant B's documents, and that an <strong>unbound</strong> connection returns zero rows from either. Assert
+also that a connection returned to the pool carries <strong>no</strong> binding.</p>
+<p><em>Non-vacuity</em>, and this one has a recorded false negative in the programme: T2.5 broke
+<code>set_config(…, is_local =&gt; true)</code> to <code>false</code> and got <strong>0 failures</strong>, because the adapter binds
+every operation anyway, so nothing in the run distinguished a transaction-local binding from a
+session-local one. <strong>The entire argument for <code>is_local</code> was unmeasured.</strong> The check that is not
+vacuous is <code>store.pooledTenantBinding()</code> over a pool of one — a <em>question</em>, not a query hatch —
+and the break that proves it is flipping <code>is_local</code> to <code>false</code> and seeing it go red. Run C7 as a
+role that is <code>NOSUPERUSER NOBYPASSRLS</code>, or it has verified nothing.</p>
+<h3 id="c8--the-completeness-trailer--specified-not-run">C8 — The completeness trailer · <strong>specified, not run</strong><a class="headerlink" href="#c8--the-completeness-trailer--specified-not-run" title="Permanent link">&para;</a></h3>
+<p>The export must declare what it covered before any row, and the load must assert it received
+exactly that. <code>exportTenant</code> already does the outbound half for the reason stated in its own
+comment: a truncated export is otherwise indistinguishable from a complete one, "and this is the
+file someone deletes a tenant on the strength of". The inbound half does not exist.</p>
+<p><em>Non-vacuity</em>: kill the exporter mid-collection and confirm the loader refuses rather than
+reporting a successful partial load.</p>
+<h3 id="61-the-order-these-run-in">6.1 The order these run in<a class="headerlink" href="#61-the-order-these-run-in" title="Permanent link">&para;</a></h3>
+<p>C4 (before deciding anything) → load → C1 → C5 → C6 → C2 → C3 → C7 → C8. C1 before C2 because a
+cheap total check should fail before an expensive sampled one. C3 last among the correctness
+checks because until BF-19 is fixed it is a known red and running it earlier trains people to
+ignore it.</p>
+<p><strong>And one thing that runs afterwards, because C1-C8 all stop at the moment writes open.</strong> The
+failure this migration produces is silent, so the hosted side needs something watching for it
+after the window closes. <code>tenants.last_reading_at</code> already exists for this
+(<code>lib/admin/platform.sql</code>: "Signal-loss detection. The INGEST path updates this"), and the admin
+plane's health endpoint is where it surfaces. <strong>A migrated tenant whose <code>last_reading_at</code> stops
+advancing is the operator-visible form of "their uploader was never reconfigured", and it must be
+alerted on rather than looked at.</strong> Nothing in this document currently specifies that alert; it is
+work the loader's author inherits, and §7.2's "how to tell if something went wrong" list is the
+tenant-facing half of the same problem.</p>
+<hr />
+<h2 id="7-what-this-means-for-a-self-hoster">7. What this means for a self-hoster<a class="headerlink" href="#7-what-this-means-for-a-self-hoster" title="Permanent link">&para;</a></h2>
+<p><em>This section is for people managing their own or a family member's diabetes, not for developers.
+It avoids jargon on purpose. It is not medical advice.</em></p>
+<h3 id="71-if-you-run-your-own-nightscout-nothing-changes-nothing">7.1 If you run your own Nightscout: nothing changes. Nothing.<a class="headerlink" href="#71-if-you-run-your-own-nightscout-nothing-changes-nothing" title="Permanent link">&para;</a></h3>
+<p><strong>You will never run this migration.</strong> Your Nightscout keeps using MongoDB — the database it has
+always used — and that is a permanent decision, not a temporary one. It is written down as
+decision D4 and it is not under review.</p>
+<p>You do not need to move to PostgreSQL. There will not be a version that requires it. Running your
+own site will not become a second-class way to use Nightscout: keeping it first-class is
+decision D1, and it applies for as long as the project exists.</p>
+<p>The reason a second database exists at all is narrow. If somebody offers to <em>host</em> Nightscout for
+many different families on shared computers, they need a way for the computer itself to enforce
+that one family's data can never be returned to another family — not by being careful in the code,
+but as a rule the database refuses to break. PostgreSQL has that feature. MongoDB does not have an
+equivalent one for writes. That is the entire reason, and it does not apply to a site that has one
+family on it.</p>
+<h3 id="72-if-you-choose-to-move-to-a-hosted-nightscout">7.2 If you <em>choose</em> to move to a hosted Nightscout<a class="headerlink" href="#72-if-you-choose-to-move-to-a-hosted-nightscout" title="Permanent link">&para;</a></h3>
+<p>Your data is yours, and moving it is something you ask for. It is never done to you and it does
+not happen automatically.</p>
+<p><strong>What you get</strong></p>
+<ul>
+<li>Somebody else runs the server, applies updates, and is responsible for it staying up.</li>
+<li>Your data is kept separate from every other family's by the database itself, not only by the
+  program.</li>
+<li>You can ask for a complete copy of your data back at any time. The hosted service can already
+  produce one, and it tells you which parts of your data it included, so a copy that got cut off
+  halfway is not mistaken for a complete one. <strong>One honest detail:</strong> today only the people running
+  the service can press that button — there is no "download my data" link for you to press
+  yourself. That is planned, not built. Ask how quickly they will answer such a request, and get
+  the answer in writing.</li>
+</ul>
+<p><strong>What you give up, and this list is the honest one</strong></p>
+<ul>
+<li><strong>Alarms do not work on the hosted service yet.</strong> They are switched off there deliberately while
+  the code that keeps one family's alerts from reaching another family is still being built. If
+  you rely on Nightscout alarms, do not move yet. <strong>Ask, and get a plain answer, before you
+  agree.</strong> Your insulin pump's and CGM app's own alarms are unaffected — those come from your own
+  devices — but any alert you get from Nightscout itself will not.</li>
+<li><strong>One feature is genuinely missing</strong>: searching your treatment records by an individual food item
+  inside a bolus calculation. This comes back later. <em>Everything else the reports do is expected to
+  work, but "expected" is the right word</em> — the checks that would prove it for food and activity
+  records have not been run yet (Open Question 4). Ask whether they have been run for your site
+  before you agree a date.</li>
+<li><strong>You have to set your devices up again.</strong> Every phone app, uploader and bridge that sends data
+  to your site needs a new access code, because the old ones do not travel with the data. Plan for
+  an afternoon, not five minutes.</li>
+<li><strong>There is a planned quiet period.</strong> While your data is being copied, your site stops accepting
+  new readings, on a date you agree in advance. Your phone and pump keep working normally and keep
+  their own records; it is Nightscout that pauses. Your apps will catch up afterwards.
+  <strong>Nobody has measured yet how long the pause is</strong> — an earlier draft of this document said
+  "likely hours", and that number was not measured by anyone. Do not accept a date until somebody
+  gives you a figure they have actually timed, and a plan for what happens if it runs long.</li>
+<li><strong>During that quiet period, do not treat your Nightscout screen as current.</strong> It should tell you
+  it is paused. If it does not, and you see a graph that stops, assume it is out of date and use
+  your own CGM app. Making a treatment decision from a Nightscout screen that has silently stopped
+  updating is the specific risk of this window.</li>
+<li><strong>Going back is possible for a while, and then it stops being simple.</strong> For a stated period
+  after the move your old database is kept, switched to read-only, so going back means switching
+  the site over and copying across what arrived in between. After that period, some things cannot
+  be put back the way they were — §8 lists them, and the person offering to host you should be
+  able to say which period they are offering and what happens at the end of it. Ask before you
+  move, not after.</li>
+</ul>
+<p><strong>How to tell if something went wrong — this is the part that fails quietly.</strong> Nothing in this
+migration announces itself by breaking. The way it goes wrong is that a page loads, a number looks
+plausible, and something is missing. So, in the first few days after the move, check these and
+report anything that does not match:</p>
+<ul>
+<li><strong>Your history goes back as far as it used to.</strong> Scroll or run a report to a date you remember
+  well — a month ago, six months ago — and check the readings are there.</li>
+<li><strong>A day you know well looks the way you remember it.</strong> Pick a day with a big meal or a site
+  change on it and compare what the reports say now with what you remember or wrote down.</li>
+<li><strong>Your treatments are still there</strong> — boluses, carbs, site and sensor changes — and the totals
+  for a day match what you would expect.</li>
+<li><strong>New readings are arriving.</strong> After you have reconfigured your uploaders, watch that the newest
+  reading stays recent rather than quietly stopping an hour later.</li>
+<li><strong>Your profile is right.</strong> Check your basal rates, correction factor and carb ratio on the
+  hosted site against what you had before, value by value, before you rely on anything Nightscout
+  calculates from them. <strong>If they do not match, stop and say so</strong> — do not adjust anything to
+  compensate, and talk to your care team.</li>
+</ul>
+<p>If any of these looks wrong, say so immediately and ask for your old site to be brought back
+rather than working around it. A gap that is noticed in the first week is recoverable; the same
+gap noticed in six months may not be.</p>
+<p><strong>Your consent.</strong> Nobody should move your data on the strength of a support ticket. What you are
+agreeing to is: which collections move, that your access codes are replaced, that alarms are off,
+the date of the quiet period, and what happens if it goes wrong. That should be written down and
+shown to you in words like these ones.</p>
+<p><strong>None of this is medical advice</strong>, and nothing here tells you anything about doses. How you
+monitor your glucose, whether it is safe for you to be without Nightscout alarms for a period, and
+what to do during the quiet period, are conversations for you and your care team. Keep whatever
+backup you normally use for when Nightscout is unavailable, and use it during the quiet period.</p>
+<hr />
+<h2 id="8-rollback-and-the-one-way-doors">8. Rollback, and the one-way doors<a class="headerlink" href="#8-rollback-and-the-one-way-doors" title="Permanent link">&para;</a></h2>
+<h3 id="81-before-the-tenant-writes-to-postgresql-rollback-is-free">8.1 Before the tenant writes to PostgreSQL: rollback is free<a class="headerlink" href="#81-before-the-tenant-writes-to-postgresql-rollback-is-free" title="Permanent link">&para;</a></h3>
+<p>Up to the moment writes are opened on the hosted tenant, the source MongoDB is untouched and
+authoritative. Rollback is: do not flip routing, or flip it back. Delete the loaded rows. <strong>Keep
+the source database read-only but intact until §6's checks have passed and a person has looked at
+the result</strong> — not until the loader exited zero.</p>
+<h3 id="82-after-the-tenant-writes-to-postgresql-it-is-a-one-way-door-and-here-is-exactly-why">8.2 After the tenant writes to PostgreSQL: it is a one-way door, and here is exactly why<a class="headerlink" href="#82-after-the-tenant-writes-to-postgresql-it-is-a-one-way-door-and-here-is-exactly-why" title="Permanent link">&para;</a></h3>
+<p>Going back means exporting from PostgreSQL and loading into MongoDB, and <strong>that reverse path does
+not exist either</strong> — <code>exportTenant</code> produces the rows, and nothing consumes them into MongoDB. But
+the missing code is the easy part. These are the things that do not come back:</p>
+<ol>
+<li><strong>Type information that <code>scalarizeDoc</code> flattened.</strong> A BSON <code>Date</code> became an ISO string on the
+   way in. On the way back it is a string, and there is no record of which strings used to be
+   Dates. Any MongoDB query that compared against a <code>Date</code> — and BF-20 says such a query matches
+   nothing on MongoDB when the stored value is a string — is now silently answering differently.
+   <strong>This is the sharpest one-way door and it is invisible.</strong> C4 is what tells you, before you
+   move, whether this tenant has any of them; if C4 says zero, this door does not exist for that
+   tenant and it is worth knowing which case you are in.</li>
+<li><strong><code>_id</code> identity, if any document arrived without one.</strong> <code>mintId()</code> reproduces ObjectId's
+   layout — 4 bytes of seconds then 8 random — but a minted id is not the id a client would have
+   received from MongoDB. Documents created on the hosted service have hosted-service ids.</li>
+<li><strong>Fields that BF-21 preserved and should not have.</strong> Until BF-21 is fixed, every field any
+   client deleted while the tenant was hosted is still on the PostgreSQL row. Rolling back
+   <em>reintroduces those fields into MongoDB</em>. The rollback does not merely fail to restore the
+   original state; it writes a state that never existed.</li>
+<li><strong>Dotted keys BF-22 created.</strong> A PATCH with a dotted field left a key no path lookup finds.
+   Loaded back into MongoDB it is a key MongoDB will also not find by path, and <code>$set</code> semantics
+   will not reconstruct the nesting.</li>
+<li><strong>Everything the hosted service holds that has no MongoDB home.</strong> Durable ack/snooze state
+   (<code>lib/storage/ack-store.js</code>, <code>alarm-ack.sql</code>) and the <code>tenants</code> / <code>tenant_members</code> rows are
+   PostgreSQL-only by construction. The admin plane is PostgreSQL-only with, by design, no export
+   for a MongoDB target. Rolling back loses the tenant's acknowledgement history.</li>
+<li><strong>Time.</strong> Everything written between cutover and rollback is on PostgreSQL only, so a rollback
+   is either a second migration in the other direction or an accepted data loss window. There is
+   no third option.</li>
+</ol>
+<h3 id="83-what-to-do-about-it">8.3 What to do about it<a class="headerlink" href="#83-what-to-do-about-it" title="Permanent link">&para;</a></h3>
+<p><strong>Keep the source MongoDB, read-only and intact, for a stated period</strong> — long enough that a
+problem found in normal use is still recoverable, and stated to the tenant rather than assumed.
+During that period, rollback is "stop writing to PostgreSQL, replay the hosted period's writes
+into MongoDB, flip back", and the replay is bounded and auditable rather than a full reverse
+migration. After it, rollback means accepting §8.2's list.</p>
+<p><strong>Write the reverse loader before the forward one is used in anger.</strong> Not because it will be run,
+but because writing it is what discovers which of §8.2's items are real for this schema, and
+discovering that during an incident is the wrong time.</p>
+<p><strong>There is prior art in this repository for the shape of that rehearsal</strong>, found in review:
+<code>tools/rehearse-database-upgrade.py</code> rehearses MongoDB 5→6→7→8 upgrades <em>and a backup-restore
+rollback</em> on UUID-named throwaway volumes, refusing by construction to be pointed at a real
+deployment URI, container, volume or database. That refusal, and the expected-state file it writes
+before it starts, are the two properties a Mongo↔PostgreSQL rehearsal needs and the reason it is
+worth copying rather than starting from scratch.</p>
+<hr />
+<h2 id="9-corrections-to-existing-documents">9. Corrections to existing documents<a class="headerlink" href="#9-corrections-to-existing-documents" title="Permanent link">&para;</a></h2>
+<p>I have not edited any of these; per the brief they go to the reconciliation agent.</p>
+<ol>
+<li>
+<p><strong><code>nightscout-backfix-register.md</code> (BF-19 and BF-21 detail sections) and three research
+   reports</strong> pin the exposure of BF-19 and BF-21 to "<strong>T2.6</strong>". The execution plan defines no
+   T2.6 — Phase 2 is T2.0-T2.5 plus T2.1a, and T2.5 is <code>entries</code> only. A deadline attached to a
+   task that does not exist cannot be scheduled or checked. Either add T2.6 (the remaining
+   collections on PostgreSQL) to the plan, or repoint the deadline at a task that exists.
+   Verified 2026-09-15: <code>grep -n 'T2\.6'</code> finds the register at lines 214 and 260, three reports
+   under <code>docs/60-research/</code>, and the new <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b362302b/docs/30-design/post-phase0-roadmap-2026-09-15.md">post-phase0-roadmap-2026-09-15.md</a>, which also gates
+   work on T2.6 while calling it "unscheduled" — five documents scheduling against a task that
+   no document defines. <code>grep -oE 'T2\.[0-9a-z]+'</code> on the execution plan returns only T2.0-T2.5
+   and T2.1a.</p>
+</li>
+<li>
+<p><strong><code>tools/nsschema/emit/postgres_emit.py</code>, "WHAT THIS DOES NOT DO"</strong> says <code>food</code>, <code>activity</code>,
+   <code>settings</code> and <code>auth_*</code> "have no model yet (plan T2.2)". <strong>T2.2 is DONE (2026-09-14) and
+   <code>specs/nsschema/</code> carries a model for all ten collections.</strong> What is missing is an entry in the
+   emitter's own hand-transcribed <code>INDEXED_FIELDS</code> dict — and the index declarations already exist
+   as data in <code>specs/nsschema/server-indexes.json</code>, which covers eight collections including
+   <code>food</code> and <code>activity</code>. The comment sends the next reader to write models that exist.</p>
+</li>
+<li>
+<p><strong><code>nightscout-backfix-register.md</code> BF-21's proposed fix</strong> says "give the PostgreSQL
+   <code>bulkUpsert</code> the same <code>(ops, options)</code> signature <strong>and implement <code>'replace'</code></strong>". Replace is
+   already implemented: <code>write(ast, doc, 'replace')</code> at <code>pgCollection/index.js:220-229</code> emits
+   <code>$N::jsonb || jsonb_build_object('_id', doc -&gt; '_id')</code>, and <code>replaceOne</code> uses it. The fix is to
+   thread the mode through. Worth correcting because the entry makes the fix sound larger than it
+   is, and its size is an argument for doing it before a migration.</p>
+</li>
+<li>
+<p><strong><code>postgres_emit.py</code>'s "182 nodes"</strong> for <code>devicestatus</code> is unexplained. Measured: the model has
+   <strong>184</strong> descendant nodes; 182 excludes the two <code>code_supplemented_fields</code> (<code>NSCLIENT_ID</code>,
+   <code>date</code>). Not an error — but a reader who counts gets a different number and has no way to know
+   which is meant.</p>
+</li>
+<li>
+<p><strong>The execution plan §2.3</strong> lists per-tenant export among "<strong>Endpoints (proposed, to be
+   argued)</strong>". It is <strong>implemented</strong> — <code>lib/admin/platform-store.js:386</code> <code>exportTenant</code>, a
+   streaming server-side cursor inside one repeatable-read transaction, emitting the covered-table
+   list before any row. There is <strong>no import counterpart anywhere</strong>, which is the more useful
+   thing for the plan to say.</p>
+</li>
+<li>
+<p><strong><code>nightscout-backfix-register.md</code> BF-20's location column</strong> says
+   <code>lib/api3/storage/pgCollection/utils.js</code>. <code>scalarize()</code> is in
+   <strong><code>lib/api3/storage/pgCollection/sql.js:27</code></strong>, and <code>utils.js</code> contains no <code>scalarize</code> at all
+   (<code>grep -n scalarize .../utils.js</code> returns nothing). The register sends a reader to the wrong
+   file for a defect whose whole content is one function. This is the same class of stale
+   reference the register audit found for BF-05 and BF-09.</p>
+</li>
+<li>
+<p><strong><code>nightscout-backfix-register.md</code> BF-21's summary</strong> says "the <code>{mode:'replace'}</code> <strong>every</strong>
+   shipping caller sends is silently ignored". Measured: nine <code>bulkUpsert</code> call sites, eight send
+   <code>'replace'</code> and <code>lib/server/entries.js:168</code> sends <code>'merge'</code> deliberately, above a comment
+   explaining that the two are not interchangeable. The correction matters because "every caller
+   wants replace" makes "always replace" look like a safe fix, and it is not — it would make
+   <code>entries.js</code> delete stored fields. The mode must be threaded. §3.2 carries the full census.
+   <em>Note for the reconciliation agent:</em> BF-21's own detail section names only three call sites
+   (<code>activity.js:61</code>, <code>:102</code>, <code>treatments.js:31</code>), so the entry undercounts the blast radius twice
+   over — it misses <code>food</code>, <code>profile</code> and <code>lib/authorization/storage.js</code> as well as misstating the
+   intent.</p>
+</li>
+<li>
+<p><strong><code>nightscout-backfix-register.md</code> BF-22's reachability caveat can be lifted.</strong> The entry says
+   the PATCH path is reachable "subject to a validation layer that was not audited". Audited
+   2026-09-15 on <code>crm-seam</code> 81a1f6ce: between <code>req.body</code> and <code>updateOne</code> there is
+   <code>lib/api3/shared/writePurifier.js</code> → <code>lib/server/purifier.js</code> <code>purifyObject</code>, which rewrites
+   string <strong>values</strong> only and never a key (lines 165-191), and <code>lib/api3/generic/update/validate.js</code>,
+   which checks an immutable-field list then <code>validateCommon</code>'s <code>date</code>/<code>utcOffset</code>/<code>app</code> type tests,
+   all of which are skipped for a field absent from the patch. Nothing inspects key names. The
+   caveat can be replaced with "audited; no layer inspects key names", which raises BF-22's
+   confidence without changing its grade.</p>
+</li>
+<li>
+<p><strong>A proposed new register entry, with NO id allocated (rule 3): <code>scalarizeDoc</code> converts only
+   <code>ObjectId</code> and <code>Date</code>, and turns every other BSON wrapper into a jsonb object.</strong> Measured in
+   review; the full table, the reachability analysis and the consequence for the generated columns
+   are in §4.3's correction block. It is filed here rather than as a correction because it is a
+   defect in shipping code (<code>lib/api3/storage/pgCollection/sql.js:27-61</code>), not a documentation
+   error, and because D4 forbids deferring it on the grounds that the seam will be revisited.</p>
+</li>
+</ol>
+<hr />
+<h2 id="10-open-questions">10. Open questions<a class="headerlink" href="#10-open-questions" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>BF-22's transform half: faithful or normalising?</strong> If a source document already contains a
+   literal dotted key, does the migration reproduce it or nest it? The two loaders produce
+   different documents and the register entry only addresses the PATCH path. <strong>The maintainer must
+   decide</strong>, and it should be written down before a loader is written, not discovered by one.</li>
+<li><strong>Does any real Nightscout database store BSON <code>Date</code>, <code>Long</code> or <code>Decimal128</code> in the fields the
+   generated columns read?</strong> The corpus is structurally incapable of answering (§3.4) and this is
+   the single measurement that most changes the migration's risk. <strong>C4 answers it, per tenant,
+   and it needs a real database and that tenant's consent to look.</strong></li>
+<li><strong>How long is the read-only window actually?</strong> Unmeasured. §4.1 sizes the data but nothing here
+   has timed an export, a transform, a load or — the likely bottleneck — the differential
+   verification, end to end. <strong>Whoever writes the loader must measure it before a date is offered
+   to anybody.</strong></li>
+<li><strong><code>food.hidden</code> and <code>food.position</code> are both AMBIGUOUS</strong>, so the <code>food</code> table would carry no
+   columns for them and BF-16's <code>{$nin: [true, 'true']}</code> fix would run against the jsonb path.
+   Does it give the same answer there? <strong>Unmeasured</strong> — nobody has run a food differential, and
+   <code>food</code> has no table to run it against.</li>
+<li><strong>Should alarms-off be a blocker on hosting a tenant at all, rather than a disclosure?</strong> §5.3
+   and §7.2 treat it as something a tenant consents to. A reviewer may reasonably say that a
+   glucose monitoring service that cannot alarm should not accept a migration from one that can.
+   <strong>That is a maintainer and clinical-reviewer decision, not a technical one</strong>, and this document
+   should not be read as having settled it.</li>
+<li>
+<p><strong>Does <code>scalarizeDoc</code> need to handle the remaining BSON types, or must the loader refuse them?</strong>
+   §4.3's correction block shows it converts only <code>ObjectId</code> and <code>Date</code>. <code>Decimal128</code>, <code>Binary</code>,
+   <code>Timestamp</code> and an out-of-53-bit <code>Long</code> become jsonb objects that null the generated column
+   without erroring. Two answers are defensible — extend the transform with a declared
+   representation per type, or refuse the document and make the tenant's source data the thing that
+   changes — and they are <strong>different stored documents</strong>, so this is the same class of decision as
+   Open Question 1 and belongs to the maintainer, not to whoever writes the loader.</p>
+</li>
+<li>
+<p><strong>Who is the hosting operator, legally?</strong> Everything above assumes a hosting entity exists that
+   can hold a consent record and a data-retention commitment. <strong>That is outside this document and
+   needs qualified legal review</strong> — it is a data-protection question about health data, not an
+   engineering one.</p>
+</li>
+</ol>
+<hr />
+<h2 id="11-reproduction">11. Reproduction<a class="headerlink" href="#11-reproduction" title="Permanent link">&para;</a></h2>
+<p>Everything measured for this document:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a># DDL and mapping (main repo, HEAD 08753474)
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>PYTHONPATH=tools python3 -m nsschema.emit.postgres_emit --report
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>#   -&gt; entries 9 cols/9 idx/0 flagged; treatments 13/14/2;
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>#      devicestatus 4/3/1; profile 3/4/1. Output byte-identical to the
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>#      committed specs/generated/postgres/*.sql (git status clean afterwards).
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a># Sizing: file bytes / document count per collection, 2026-04-01 snapshot.
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>#   No document content was read or printed. Site identities are the
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>#   single-letter pseudonyms the collection pass assigned.
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a># bulkUpsert caller census (§3.2), in the seam worktree at 81a1f6ce:
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>grep -rn -A2 'bulkUpsert(' lib/server/*.js lib/authorization/*.js
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>#   -&gt; 9 call sites / 6 files; 8 pass {mode:'replace'},
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>#      entries.js:168 passes {mode:'merge'} with an explanatory comment.
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a># Corpus sizing cross-check (§4.1), file bytes and array lengths only:
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>#   -&gt; devicestatus 75.4% of bytes over the three sized collections.
+<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>
+<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a># Fidelity, answer differential, ordering and the non-vacuity breaks (§3.1, §4.3, §6):
+<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a>docker run -d --name mig-pg-$$   -e POSTGRES_PASSWORD="$PGPASSWORD" -p 15501:5432 postgres:16-alpine
+<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a>docker run -d --name mig-mongo-$$ --ulimit nofile=64000:64000        -p 27201:27017 mongo:7
+<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a>node &lt;scratchpad&gt;/fidelity.js
+<a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a>docker rm -f mig-pg-$$ mig-mongo-$$
+</code></pre></div>
+<p>Both containers were created for this document and removed afterwards. <strong>No worktree was created,
+modified, repointed or deleted; no branch was checked out, committed to, pushed or tagged; no
+other session's database was touched.</strong> The fixtures in <code>fidelity.js</code> are eight <code>entries</code>
+documents invented for the purpose, with <code>_id</code> values <code>aaaa…</code>/<code>bbbb…</code>/… and a device name of
+<code>synthetic-cgm</code>.</p>
+<p><strong>This document is a draft. It must be reviewed before it is relied upon.</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

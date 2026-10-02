@@ -1,0 +1,4550 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/mapping/diable/data-models.html">
+      
+      
+        <link rel="prev" href="cgm-transmitters.html">
+      
+      
+        <link rel="next" href="nightscout-sync.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>DiaBLE Data Models - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#diable-data-models" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              DiaBLE Data Models
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../docs/00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../docs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    mapping/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../_template.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mapping: [Project] - [Scenario/Concept]
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../aaps/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    aaps/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../cgm-remote-monitor/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../cross-project/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cross-project/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_6" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    diable/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_6" id="__nav_6_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    diable/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-transmitters.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DiaBLE CGM Transmitter Support
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DiaBLE Data Models
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="data-models.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DiaBLE Data Models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#glucose-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Glucose Models
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Glucose Models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#glucosereading-struct" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GlucoseReading Struct
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dataquality-enum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DataQuality Enum
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trendarrow-enum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TrendArrow Enum
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#history-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        History Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#calibration-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Calibration Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sensor-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sensor Model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Sensor Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sensor-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sensor Class
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sensortype-enum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SensorType Enum
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sensorfamily-enum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SensorFamily Enum
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sensorstate-enum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SensorState Enum
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sensorregion-enum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SensorRegion Enum
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#device-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Device Model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Device Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#device-base-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Device Base Class
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#devicetype-enum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DeviceType Enum
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transmitter-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Transmitter Class
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#device-subclass-hierarchy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Device Subclass Hierarchy
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#application-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Application State
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Application State">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#appstate-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AppState Class
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#maindelegate-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MainDelegate Class
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#settings-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Settings Class
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-flow-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Flow Diagram
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Flow Diagram">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#from-sensor-to-display" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From Sensor to Display
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fram-memory-layout-libre-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FRAM Memory Layout (Libre 1/2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related Documentation
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-sync.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DiaBLE Nightscout Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../loop/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    loop/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../loopcaregiver/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    loopcaregiver/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../loopfollow/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    loopfollow/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightguard/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightguard/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-connect/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-connect/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-librelink-up/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-librelink-up/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-reporter/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-reporter/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-roles-gateway/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-roles-gateway/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nocturne/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nocturne/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../openaps/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    openaps/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../oref0/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    oref0/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../share2nightscout-bridge/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    share2nightscout-bridge/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tconnectsync/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tconnectsync/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../trio/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    trio/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../xdrip/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../xdrip-android/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip-android/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../xdrip-js/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip-js/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../xdrip4ios/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip4ios/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#glucose-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Glucose Models
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Glucose Models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#glucosereading-struct" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GlucoseReading Struct
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dataquality-enum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DataQuality Enum
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trendarrow-enum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TrendArrow Enum
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#history-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        History Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#calibration-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Calibration Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sensor-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sensor Model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Sensor Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sensor-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sensor Class
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sensortype-enum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SensorType Enum
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sensorfamily-enum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SensorFamily Enum
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sensorstate-enum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SensorState Enum
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sensorregion-enum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SensorRegion Enum
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#device-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Device Model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Device Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#device-base-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Device Base Class
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#devicetype-enum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DeviceType Enum
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transmitter-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Transmitter Class
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#device-subclass-hierarchy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Device Subclass Hierarchy
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#application-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Application State
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Application State">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#appstate-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AppState Class
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#maindelegate-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MainDelegate Class
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#settings-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Settings Class
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-flow-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Flow Diagram
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Flow Diagram">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#from-sensor-to-display" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From Sensor to Display
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fram-memory-layout-libre-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FRAM Memory Layout (Libre 1/2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related Documentation
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="diable-data-models">DiaBLE Data Models<a class="headerlink" href="#diable-data-models" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-01-17 at <code>bbaa04fc</code>.</em></p>
+<p>This document describes the core data structures used in DiaBLE for representing glucose readings, sensors, devices, and application state.</p>
+<h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="#glucose-models">Glucose Models</a></li>
+<li><a href="#sensor-model">Sensor Model</a></li>
+<li><a href="#device-model">Device Model</a></li>
+<li><a href="#application-state">Application State</a></li>
+<li><a href="#data-flow-diagram">Data Flow Diagram</a></li>
+</ul>
+<hr />
+<h2 id="glucose-models">Glucose Models<a class="headerlink" href="#glucose-models" title="Permanent link">&para;</a></h2>
+<h3 id="glucosereading-struct">GlucoseReading Struct<a class="headerlink" href="#glucosereading-struct" title="Permanent link">&para;</a></h3>
+<p>The base structure for a single glucose measurement.</p>
+<p><strong>File</strong>: <code>Glucose.swift</code> (512 lines)</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kd">struct</span><span class="w"> </span><span class="nc">Glucose</span><span class="p">:</span><span class="w"> </span><span class="n">Identifiable</span><span class="p">,</span><span class="w"> </span><span class="n">Codable</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">id</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="w">               </span><span class="c1">// Unique reading ID</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">date</span><span class="p">:</span><span class="w"> </span><span class="n">Date</span><span class="w">            </span><span class="c1">// Timestamp of reading</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">rawValue</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="w">         </span><span class="c1">// Raw sensor value (uncalibrated)</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">rawTemperature</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="w">   </span><span class="c1">// Temperature ADC value</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">temperatureAdjustment</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">hasError</span><span class="p">:</span><span class="w"> </span><span class="nb">Bool</span><span class="w">        </span><span class="c1">// Data quality flag</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">dataQuality</span><span class="p">:</span><span class="w"> </span><span class="n">DataQuality</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">dataQualityFlags</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">    </span><span class="c1">// Derived values</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">value</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="w">            </span><span class="c1">// Calibrated glucose mg/dL</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">temperature</span><span class="p">:</span><span class="w"> </span><span class="nb">Double</span><span class="w">   </span><span class="c1">// Converted temperature</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">trendRate</span><span class="p">:</span><span class="w"> </span><span class="nb">Double</span><span class="p">?</span><span class="w">    </span><span class="c1">// Rate of change mg/dL/min</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">trendArrow</span><span class="p">:</span><span class="w"> </span><span class="n">TrendArrow</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="dataquality-enum">DataQuality Enum<a class="headerlink" href="#dataquality-enum" title="Permanent link">&para;</a></h3>
+<p>Indicates the quality/reliability of a glucose reading.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kd">enum</span><span class="w"> </span><span class="nc">DataQuality</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="p">,</span><span class="w"> </span><span class="n">CustomStringConvertible</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">OK</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">0</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">SD14_FIFO_OVERFLOW</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">1</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">FILTER_DELTA</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">2</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">WORK_VOLTAGE</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">4</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">PEAK_DELTA_EXCEEDED</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">8</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">AVG_DELTA_EXCEEDED</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">16</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">RF</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">32</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">REF_R</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">64</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">SIGNAL_SATURATED</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">128</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">SENSOR_SIGNAL_LOW</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">256</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">THERMISTOR_OUT_OF_RANGE</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">2048</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">TEMP_HIGH</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">8192</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">TEMP_LOW</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">16384</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">INVALID_DATA</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">32768</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="trendarrow-enum">TrendArrow Enum<a class="headerlink" href="#trendarrow-enum" title="Permanent link">&para;</a></h3>
+<p>Direction and rate of glucose change.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kd">enum</span><span class="w"> </span><span class="nc">TrendArrow</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="p">,</span><span class="w"> </span><span class="n">CustomStringConvertible</span><span class="p">,</span><span class="w"> </span><span class="n">CaseIterable</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">unknown</span><span class="w">       </span><span class="p">=</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">notDetermined</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">0</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">fallingQuickly</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">1</span><span class="w">   </span><span class="c1">// ↓↓ (&gt; -2 mg/dL/min)</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">falling</span><span class="w">       </span><span class="p">=</span><span class="w"> </span><span class="mi">2</span><span class="w">    </span><span class="c1">// ↓  (-1 to -2 mg/dL/min)</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">stable</span><span class="w">        </span><span class="p">=</span><span class="w"> </span><span class="mi">3</span><span class="w">    </span><span class="c1">// → (-1 to +1 mg/dL/min)</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">rising</span><span class="w">        </span><span class="p">=</span><span class="w"> </span><span class="mi">4</span><span class="w">    </span><span class="c1">// ↑  (+1 to +2 mg/dL/min)</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">risingQuickly</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">5</span><span class="w">    </span><span class="c1">// ↑↑ (&gt; +2 mg/dL/min)</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">symbol</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">        </span><span class="k">switch</span><span class="w"> </span><span class="kc">self</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="p">.</span><span class="n">fallingQuickly</span><span class="p">:</span><span class="w"> </span><span class="s">"↓↓"</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="p">.</span><span class="n">falling</span><span class="p">:</span><span class="w">        </span><span class="s">"↓"</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="p">.</span><span class="n">stable</span><span class="p">:</span><span class="w">         </span><span class="s">"→"</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="p">.</span><span class="n">rising</span><span class="p">:</span><span class="w">         </span><span class="s">"↑"</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="p">.</span><span class="n">risingQuickly</span><span class="p">:</span><span class="w">  </span><span class="s">"↑↑"</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">        </span><span class="k">default</span><span class="p">:</span><span class="w">              </span><span class="s">"?"</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="w">        </span><span class="p">}</span>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="history-structure">History Structure<a class="headerlink" href="#history-structure" title="Permanent link">&para;</a></h3>
+<p>Container for glucose history with current and trend data.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kd">struct</span><span class="w"> </span><span class="nc">History</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">values</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="n">Glucose</span><span class="p">]</span><span class="w">          </span><span class="c1">// All historical readings</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">factoryValues</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="n">Glucose</span><span class="p">]</span><span class="w">   </span><span class="c1">// Factory-calibrated readings</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">rawValues</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="n">Glucose</span><span class="p">]</span><span class="w">       </span><span class="c1">// Raw uncalibrated readings</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">factoryTrend</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="n">Glucose</span><span class="p">]</span><span class="w">    </span><span class="c1">// Last 16 readings (1-min intervals)</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">rawTrend</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="n">Glucose</span><span class="p">]</span><span class="w">        </span><span class="c1">// Raw trend data</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">calibratedValues</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="n">Glucose</span><span class="p">]</span><span class="w"> </span><span class="c1">// User-calibrated readings</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">calibratedTrend</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="n">Glucose</span><span class="p">]</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">storedValues</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="n">Glucose</span><span class="p">]</span><span class="w">    </span><span class="c1">// Persisted readings</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">nightscoutValues</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="n">Glucose</span><span class="p">]</span><span class="w"> </span><span class="c1">// Downloaded from NS</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="calibration-structure">Calibration Structure<a class="headerlink" href="#calibration-structure" title="Permanent link">&para;</a></h3>
+<p>Linear calibration parameters for converting raw to calibrated values.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kd">struct</span><span class="w"> </span><span class="nc">Calibration</span><span class="p">:</span><span class="w"> </span><span class="n">Codable</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">slope</span><span class="p">:</span><span class="w"> </span><span class="nb">Double</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mf">1.0</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">intercept</span><span class="p">:</span><span class="w"> </span><span class="nb">Double</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mf">0.0</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">    </span><span class="kd">func</span><span class="w"> </span><span class="nf">calibrate</span><span class="p">(</span><span class="kc">_</span><span class="w"> </span><span class="n">value</span><span class="p">:</span><span class="w"> </span><span class="nb">Double</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">Double</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">slope</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">intercept</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="p">}</span>
+</code></pre></div>
+<hr />
+<h2 id="sensor-model">Sensor Model<a class="headerlink" href="#sensor-model" title="Permanent link">&para;</a></h2>
+<h3 id="sensor-class">Sensor Class<a class="headerlink" href="#sensor-class" title="Permanent link">&para;</a></h3>
+<p>Represents a CGM sensor with its metadata and state.</p>
+<p><strong>File</strong>: <code>Sensor.swift</code> (151 lines)</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kd">class</span><span class="w"> </span><span class="nc">Sensor</span><span class="p">:</span><span class="w"> </span><span class="n">ObservableObject</span><span class="p">,</span><span class="w"> </span><span class="n">Codable</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="c1">// Identification</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">uid</span><span class="p">:</span><span class="w"> </span><span class="n">Data</span><span class="w">                    </span><span class="c1">// 8-byte NFC UID</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">patchInfo</span><span class="p">:</span><span class="w"> </span><span class="n">Data</span><span class="w">              </span><span class="c1">// Sensor patch info bytes</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">serial</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="w">               </span><span class="c1">// Human-readable serial (e.g., "0M00000XXXX")</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">    </span><span class="c1">// Type information</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">type</span><span class="p">:</span><span class="w"> </span><span class="n">SensorType</span><span class="w">             </span><span class="c1">// Libre 1, Libre 2, etc.</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">family</span><span class="p">:</span><span class="w"> </span><span class="n">SensorFamily</span><span class="w">         </span><span class="c1">// Abbott, Dexcom</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">region</span><span class="p">:</span><span class="w"> </span><span class="n">SensorRegion</span><span class="w">         </span><span class="c1">// US, EU, etc.</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="w">    </span><span class="c1">// Lifecycle</span>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">state</span><span class="p">:</span><span class="w"> </span><span class="n">SensorState</span><span class="w">           </span><span class="c1">// .notYetStarted, .starting, .ready, .expired, .shutdown, .failure</span>
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">age</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="w">                     </span><span class="c1">// Minutes since activation</span>
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">maxLife</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="w">                 </span><span class="c1">// Maximum sensor life in minutes</span>
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">lifetime</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="w">                </span><span class="c1">// Remaining lifetime</span>
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>
+<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="w">    </span><span class="c1">// Firmware</span>
+<a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">firmware</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span>
+<a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">securityGeneration</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="w">      </span><span class="c1">// 0=Gen1, 1=Gen2 (for Libre 2)</span>
+<a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a>
+<a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a><span class="w">    </span><span class="c1">// FRAM Data</span>
+<a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">fram</span><span class="p">:</span><span class="w"> </span><span class="n">Data</span><span class="w">                   </span><span class="c1">// Raw FRAM bytes (344 bytes typical)</span>
+<a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">encryptedFram</span><span class="p">:</span><span class="w"> </span><span class="n">Data</span><span class="w">          </span><span class="c1">// Encrypted FRAM (Libre 2/3)</span>
+<a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">trend</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="n">Glucose</span><span class="p">]</span><span class="w">             </span><span class="c1">// Last 16 minutes of readings</span>
+<a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">history</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="n">Glucose</span><span class="p">]</span><span class="w">           </span><span class="c1">// Last 8 hours of readings (every 15 min)</span>
+<a id="__codelineno-5-27" name="__codelineno-5-27" href="#__codelineno-5-27"></a>
+<a id="__codelineno-5-28" name="__codelineno-5-28" href="#__codelineno-5-28"></a><span class="w">    </span><span class="c1">// Streaming (Libre 2/3)</span>
+<a id="__codelineno-5-29" name="__codelineno-5-29" href="#__codelineno-5-29"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">streamingUnlockCode</span><span class="p">:</span><span class="w"> </span><span class="nb">UInt32</span>
+<a id="__codelineno-5-30" name="__codelineno-5-30" href="#__codelineno-5-30"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">streamingUnlockCount</span><span class="p">:</span><span class="w"> </span><span class="nb">UInt16</span>
+<a id="__codelineno-5-31" name="__codelineno-5-31" href="#__codelineno-5-31"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">lastReadingDate</span><span class="p">:</span><span class="w"> </span><span class="n">Date</span>
+<a id="__codelineno-5-32" name="__codelineno-5-32" href="#__codelineno-5-32"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="sensortype-enum">SensorType Enum<a class="headerlink" href="#sensortype-enum" title="Permanent link">&para;</a></h3>
+<p>All supported sensor models.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kd">enum</span><span class="w"> </span><span class="nc">SensorType</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="p">,</span><span class="w"> </span><span class="n">CaseIterable</span><span class="p">,</span><span class="w"> </span><span class="n">Codable</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="kr">none</span><span class="w">          </span><span class="p">=</span><span class="w"> </span><span class="s">"none"</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">libre1</span><span class="w">        </span><span class="p">=</span><span class="w"> </span><span class="s">"Libre 1"</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">libreUS14day</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="s">"Libre US 14-day"</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">libreProH</span><span class="w">     </span><span class="p">=</span><span class="w"> </span><span class="s">"Libre Pro/H"</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">libre2</span><span class="w">        </span><span class="p">=</span><span class="w"> </span><span class="s">"Libre 2"</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">libre2US</span><span class="w">      </span><span class="p">=</span><span class="w"> </span><span class="s">"Libre 2 US"</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">libre2CA</span><span class="w">      </span><span class="p">=</span><span class="w"> </span><span class="s">"Libre 2 CA"</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">libre3</span><span class="w">        </span><span class="p">=</span><span class="w"> </span><span class="s">"Libre 3"</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">libreSelect</span><span class="w">   </span><span class="p">=</span><span class="w"> </span><span class="s">"Libre Select"</span>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">libreX</span><span class="w">        </span><span class="p">=</span><span class="w"> </span><span class="s">"Libre X"</span>
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">lingo</span><span class="w">         </span><span class="p">=</span><span class="w"> </span><span class="s">"Lingo"</span>
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">dexcomG5</span><span class="w">      </span><span class="p">=</span><span class="w"> </span><span class="s">"Dexcom G5"</span>
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">dexcomG6</span><span class="w">      </span><span class="p">=</span><span class="w"> </span><span class="s">"Dexcom G6"</span>
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">dexcomONE</span><span class="w">     </span><span class="p">=</span><span class="w"> </span><span class="s">"Dexcom ONE"</span>
+<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">dexcomG7</span><span class="w">      </span><span class="p">=</span><span class="w"> </span><span class="s">"Dexcom G7"</span>
+<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">dexcomONEPlus</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"Dexcom ONE+"</span>
+<a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">stelo</span><span class="w">         </span><span class="p">=</span><span class="w"> </span><span class="s">"Stelo"</span>
+<a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="sensorfamily-enum">SensorFamily Enum<a class="headerlink" href="#sensorfamily-enum" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kd">enum</span><span class="w"> </span><span class="nc">SensorFamily</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="p">,</span><span class="w"> </span><span class="n">CaseIterable</span><span class="p">,</span><span class="w"> </span><span class="n">Codable</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="kr">none</span><span class="w">    </span><span class="p">=</span><span class="w"> </span><span class="s">"none"</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">libre</span><span class="w">   </span><span class="p">=</span><span class="w"> </span><span class="s">"Libre"</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">dexcom</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="s">"Dexcom"</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="sensorstate-enum">SensorState Enum<a class="headerlink" href="#sensorstate-enum" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kd">enum</span><span class="w"> </span><span class="nc">SensorState</span><span class="p">:</span><span class="w"> </span><span class="nb">UInt8</span><span class="p">,</span><span class="w"> </span><span class="n">CustomStringConvertible</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">unknown</span><span class="w">        </span><span class="p">=</span><span class="w"> </span><span class="mh">0x00</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">notYetStarted</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="mh">0x01</span><span class="w">  </span><span class="c1">// Sensor not activated</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">starting</span><span class="w">       </span><span class="p">=</span><span class="w"> </span><span class="mh">0x02</span><span class="w">  </span><span class="c1">// Warmup period</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">ready</span><span class="w">          </span><span class="p">=</span><span class="w"> </span><span class="mh">0x03</span><span class="w">  </span><span class="c1">// Normal operation</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">expired</span><span class="w">        </span><span class="p">=</span><span class="w"> </span><span class="mh">0x04</span><span class="w">  </span><span class="c1">// Past max lifetime</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">shutdown</span><span class="w">       </span><span class="p">=</span><span class="w"> </span><span class="mh">0x05</span><span class="w">  </span><span class="c1">// Manually stopped</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">failure</span><span class="w">        </span><span class="p">=</span><span class="w"> </span><span class="mh">0x06</span><span class="w">  </span><span class="c1">// Sensor malfunction</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">description</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="w">        </span><span class="k">switch</span><span class="w"> </span><span class="kc">self</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="p">.</span><span class="n">notYetStarted</span><span class="p">:</span><span class="w"> </span><span class="s">"Not yet started"</span>
+<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="p">.</span><span class="n">starting</span><span class="p">:</span><span class="w">      </span><span class="s">"Starting (warmup)"</span>
+<a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="p">.</span><span class="n">ready</span><span class="p">:</span><span class="w">         </span><span class="s">"Ready"</span>
+<a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="p">.</span><span class="n">expired</span><span class="p">:</span><span class="w">       </span><span class="s">"Expired"</span>
+<a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="p">.</span><span class="n">shutdown</span><span class="p">:</span><span class="w">      </span><span class="s">"Shutdown"</span>
+<a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="p">.</span><span class="n">failure</span><span class="p">:</span><span class="w">       </span><span class="s">"Failure"</span>
+<a id="__codelineno-8-18" name="__codelineno-8-18" href="#__codelineno-8-18"></a><span class="w">        </span><span class="k">default</span><span class="p">:</span><span class="w">             </span><span class="s">"Unknown"</span>
+<a id="__codelineno-8-19" name="__codelineno-8-19" href="#__codelineno-8-19"></a><span class="w">        </span><span class="p">}</span>
+<a id="__codelineno-8-20" name="__codelineno-8-20" href="#__codelineno-8-20"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-8-21" name="__codelineno-8-21" href="#__codelineno-8-21"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="sensorregion-enum">SensorRegion Enum<a class="headerlink" href="#sensorregion-enum" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kd">enum</span><span class="w"> </span><span class="nc">SensorRegion</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="p">,</span><span class="w"> </span><span class="n">CaseIterable</span><span class="p">,</span><span class="w"> </span><span class="n">Codable</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">unknown</span><span class="w">        </span><span class="p">=</span><span class="w"> </span><span class="mi">0</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">european</span><span class="w">       </span><span class="p">=</span><span class="w"> </span><span class="mi">1</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">usa</span><span class="w">            </span><span class="p">=</span><span class="w"> </span><span class="mi">2</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">australian</span><span class="w">     </span><span class="p">=</span><span class="w"> </span><span class="mi">4</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">easternROW</span><span class="w">     </span><span class="p">=</span><span class="w"> </span><span class="mi">8</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">japan</span><span class="w">          </span><span class="p">=</span><span class="w"> </span><span class="mi">9</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="p">}</span>
+</code></pre></div>
+<hr />
+<h2 id="device-model">Device Model<a class="headerlink" href="#device-model" title="Permanent link">&para;</a></h2>
+<h3 id="device-base-class">Device Base Class<a class="headerlink" href="#device-base-class" title="Permanent link">&para;</a></h3>
+<p>Abstract base class for all BLE devices (sensors and bridges).</p>
+<p><strong>File</strong>: <code>Device.swift</code> (183 lines)</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kd">class</span><span class="w"> </span><span class="nc">Device</span><span class="p">:</span><span class="w"> </span><span class="n">ObservableObject</span><span class="p">,</span><span class="w"> </span><span class="n">Identifiable</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">    </span><span class="c1">// CoreBluetooth references</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">peripheral</span><span class="p">:</span><span class="w"> </span><span class="bp">CBPeripheral</span><span class="p">?</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">characteristics</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="bp">CBUUID</span><span class="p">:</span><span class="w"> </span><span class="bp">CBCharacteristic</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[:]</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">    </span><span class="c1">// Device info</span>
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">type</span><span class="p">:</span><span class="w"> </span><span class="n">DeviceType</span>
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">name</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span>
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">serial</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span>
+<a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">firmware</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span>
+<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">hardware</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span>
+<a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">manufacturer</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span>
+<a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">macAddress</span><span class="p">:</span><span class="w"> </span><span class="n">Data</span>
+<a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">rssi</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="w">                    </span><span class="c1">// Signal strength</span>
+<a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">battery</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="w">                 </span><span class="c1">// Battery percentage</span>
+<a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a>
+<a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a><span class="w">    </span><span class="c1">// Connection state</span>
+<a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">state</span><span class="p">:</span><span class="w"> </span><span class="n">CBPeripheralState</span>
+<a id="__codelineno-10-19" name="__codelineno-10-19" href="#__codelineno-10-19"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">lastConnectionDate</span><span class="p">:</span><span class="w"> </span><span class="n">Date</span><span class="p">?</span>
+<a id="__codelineno-10-20" name="__codelineno-10-20" href="#__codelineno-10-20"></a>
+<a id="__codelineno-10-21" name="__codelineno-10-21" href="#__codelineno-10-21"></a><span class="w">    </span><span class="c1">// Abstract methods (overridden by subclasses)</span>
+<a id="__codelineno-10-22" name="__codelineno-10-22" href="#__codelineno-10-22"></a><span class="w">    </span><span class="kd">func</span><span class="w"> </span><span class="nf">readValue</span><span class="p">(</span><span class="k">for</span><span class="w"> </span><span class="n">characteristic</span><span class="p">:</span><span class="w"> </span><span class="bp">CBCharacteristic</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-10-23" name="__codelineno-10-23" href="#__codelineno-10-23"></a><span class="w">    </span><span class="kd">func</span><span class="w"> </span><span class="nf">writeValue</span><span class="p">(</span><span class="kc">_</span><span class="w"> </span><span class="n">data</span><span class="p">:</span><span class="w"> </span><span class="n">Data</span><span class="p">,</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">characteristic</span><span class="p">:</span><span class="w"> </span><span class="bp">CBCharacteristic</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-10-24" name="__codelineno-10-24" href="#__codelineno-10-24"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="devicetype-enum">DeviceType Enum<a class="headerlink" href="#devicetype-enum" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="kd">enum</span><span class="w"> </span><span class="nc">DeviceType</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="p">,</span><span class="w"> </span><span class="n">CaseIterable</span><span class="p">,</span><span class="w"> </span><span class="n">Codable</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="kr">none</span><span class="w">         </span><span class="p">=</span><span class="w"> </span><span class="s">"none"</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">    </span><span class="c1">// Transmitters (attached to sensors)</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">transmitter</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="s">"Transmitter"</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">libre3</span><span class="w">       </span><span class="p">=</span><span class="w"> </span><span class="s">"Libre 3"</span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">dexcom</span><span class="w">       </span><span class="p">=</span><span class="w"> </span><span class="s">"Dexcom"</span>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">dexcomG7</span><span class="w">     </span><span class="p">=</span><span class="w"> </span><span class="s">"Dexcom G7"</span>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">    </span><span class="c1">// Bridge devices</span>
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">miaomiao</span><span class="w">     </span><span class="p">=</span><span class="w"> </span><span class="s">"MiaoMiao"</span>
+<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">bubble</span><span class="w">       </span><span class="p">=</span><span class="w"> </span><span class="s">"Bubble"</span>
+<a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">blucon</span><span class="w">       </span><span class="p">=</span><span class="w"> </span><span class="s">"BluCon"</span>
+<a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a>
+<a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a><span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="nv">allBridges</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="n">DeviceType</span><span class="p">]</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a><span class="w">        </span><span class="p">[.</span><span class="n">miaomiao</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">bubble</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">blucon</span><span class="p">]</span>
+<a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="transmitter-class">Transmitter Class<a class="headerlink" href="#transmitter-class" title="Permanent link">&para;</a></h3>
+<p>Represents a transmitter attached to a sensor.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="kd">class</span><span class="w"> </span><span class="nc">Transmitter</span><span class="p">:</span><span class="w"> </span><span class="n">Device</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">sensor</span><span class="p">:</span><span class="w"> </span><span class="n">Sensor</span><span class="p">?</span><span class="w">              </span><span class="c1">// Associated sensor</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">streamingEnabled</span><span class="p">:</span><span class="w"> </span><span class="nb">Bool</span><span class="w">       </span><span class="c1">// BLE streaming active</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">    </span><span class="c1">// BLE service/characteristic UUIDs (device-specific)</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="nv">dataServiceUUID</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="nv">dataReadCharacteristicUUID</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span>
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="nv">dataWriteCharacteristicUUID</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span>
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="device-subclass-hierarchy">Device Subclass Hierarchy<a class="headerlink" href="#device-subclass-hierarchy" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>Device (base)
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>├── Transmitter (sensor transmitters)
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>│   ├── Libre3 (Abbott Libre 3)
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>│   ├── Dexcom (G5/G6/ONE)
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>│   └── DexcomG7 (G7/ONE+/Stelo)
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>└── Bridge (third-party readers)
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>    ├── MiaoMiao
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>    ├── Bubble
+<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>    └── BluCon
+</code></pre></div>
+<hr />
+<h2 id="application-state">Application State<a class="headerlink" href="#application-state" title="Permanent link">&para;</a></h2>
+<h3 id="appstate-class">AppState Class<a class="headerlink" href="#appstate-class" title="Permanent link">&para;</a></h3>
+<p>The central observable state container for the app.</p>
+<p><strong>File</strong>: <code>App.swift</code> (301 lines)</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="p">@</span><span class="n">Observable</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="kd">class</span><span class="w"> </span><span class="nc">AppState</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">    </span><span class="c1">// Delegates</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">app</span><span class="p">:</span><span class="w"> </span><span class="n">MainDelegate</span><span class="p">!</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w">    </span><span class="c1">// Connected hardware</span>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">device</span><span class="p">:</span><span class="w"> </span><span class="n">Device</span><span class="p">?</span><span class="w">              </span><span class="c1">// Current connected device</span>
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">sensor</span><span class="p">:</span><span class="w"> </span><span class="n">Sensor</span><span class="p">?</span><span class="w">              </span><span class="c1">// Current sensor</span>
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">transmitter</span><span class="p">:</span><span class="w"> </span><span class="n">Transmitter</span><span class="p">?</span><span class="w">    </span><span class="c1">// Current transmitter</span>
+<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>
+<a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="w">    </span><span class="c1">// Current readings</span>
+<a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">currentGlucose</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">0</span><span class="w">      </span><span class="c1">// Latest glucose mg/dL</span>
+<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">lastReadingDate</span><span class="p">:</span><span class="w"> </span><span class="n">Date</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Date</span><span class="p">.</span><span class="n">distantPast</span>
+<a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">trendArrow</span><span class="p">:</span><span class="w"> </span><span class="n">TrendArrow</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">.</span><span class="n">unknown</span>
+<a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">trendDelta</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">0</span>
+<a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a>
+<a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a><span class="w">    </span><span class="c1">// History</span>
+<a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">history</span><span class="p">:</span><span class="w"> </span><span class="n">History</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">History</span><span class="p">()</span>
+<a id="__codelineno-14-19" name="__codelineno-14-19" href="#__codelineno-14-19"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">calibration</span><span class="p">:</span><span class="w"> </span><span class="n">Calibration</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Calibration</span><span class="p">()</span>
+<a id="__codelineno-14-20" name="__codelineno-14-20" href="#__codelineno-14-20"></a>
+<a id="__codelineno-14-21" name="__codelineno-14-21" href="#__codelineno-14-21"></a><span class="w">    </span><span class="c1">// Status</span>
+<a id="__codelineno-14-22" name="__codelineno-14-22" href="#__codelineno-14-22"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">status</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"Welcome"</span>
+<a id="__codelineno-14-23" name="__codelineno-14-23" href="#__codelineno-14-23"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">deviceState</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">""</span>
+<a id="__codelineno-14-24" name="__codelineno-14-24" href="#__codelineno-14-24"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">lastConnectionDate</span><span class="p">:</span><span class="w"> </span><span class="n">Date</span><span class="p">?</span>
+<a id="__codelineno-14-25" name="__codelineno-14-25" href="#__codelineno-14-25"></a>
+<a id="__codelineno-14-26" name="__codelineno-14-26" href="#__codelineno-14-26"></a><span class="w">    </span><span class="c1">// Settings reference</span>
+<a id="__codelineno-14-27" name="__codelineno-14-27" href="#__codelineno-14-27"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">settings</span><span class="p">:</span><span class="w"> </span><span class="n">Settings</span>
+<a id="__codelineno-14-28" name="__codelineno-14-28" href="#__codelineno-14-28"></a>
+<a id="__codelineno-14-29" name="__codelineno-14-29" href="#__codelineno-14-29"></a><span class="w">    </span><span class="c1">// Debug</span>
+<a id="__codelineno-14-30" name="__codelineno-14-30" href="#__codelineno-14-30"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">log</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">""</span>
+<a id="__codelineno-14-31" name="__codelineno-14-31" href="#__codelineno-14-31"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="maindelegate-class">MainDelegate Class<a class="headerlink" href="#maindelegate-class" title="Permanent link">&para;</a></h3>
+<p>Core coordinator handling NFC, BLE, and data processing.</p>
+<p><strong>File</strong>: <code>MainDelegate.swift</code> (492 lines)</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="kd">class</span><span class="w"> </span><span class="nc">MainDelegate</span><span class="p">:</span><span class="w"> </span><span class="bp">NSObject</span><span class="p">,</span><span class="w"> </span><span class="n">WKApplicationDelegate</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="w">                    </span><span class="bp">CBCentralManagerDelegate</span><span class="p">,</span><span class="w"> </span><span class="bp">CBPeripheralDelegate</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="w">    </span><span class="c1">// Hardware interfaces</span>
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">centralManager</span><span class="p">:</span><span class="w"> </span><span class="bp">CBCentralManager</span><span class="p">!</span>
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">nfc</span><span class="p">:</span><span class="w"> </span><span class="n">NFC</span><span class="p">?</span>
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>
+<a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a><span class="w">    </span><span class="c1">// Integrations</span>
+<a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">healthKit</span><span class="p">:</span><span class="w"> </span><span class="n">HealthKit</span><span class="p">?</span>
+<a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">nightscout</span><span class="p">:</span><span class="w"> </span><span class="n">Nightscout</span><span class="p">?</span>
+<a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a>
+<a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a><span class="w">    </span><span class="c1">// Device management</span>
+<a id="__codelineno-15-12" name="__codelineno-15-12" href="#__codelineno-15-12"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">knownDevices</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="n">Device</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[]</span>
+<a id="__codelineno-15-13" name="__codelineno-15-13" href="#__codelineno-15-13"></a>
+<a id="__codelineno-15-14" name="__codelineno-15-14" href="#__codelineno-15-14"></a><span class="w">    </span><span class="c1">// Key methods</span>
+<a id="__codelineno-15-15" name="__codelineno-15-15" href="#__codelineno-15-15"></a><span class="w">    </span><span class="kd">func</span><span class="w"> </span><span class="nf">scan</span><span class="p">()</span><span class="w">                              </span><span class="c1">// Start BLE scanning</span>
+<a id="__codelineno-15-16" name="__codelineno-15-16" href="#__codelineno-15-16"></a><span class="w">    </span><span class="kd">func</span><span class="w"> </span><span class="nf">connect</span><span class="p">(</span><span class="kc">_</span><span class="w"> </span><span class="n">device</span><span class="p">:</span><span class="w"> </span><span class="n">Device</span><span class="p">)</span><span class="w">           </span><span class="c1">// Connect to device</span>
+<a id="__codelineno-15-17" name="__codelineno-15-17" href="#__codelineno-15-17"></a><span class="w">    </span><span class="kd">func</span><span class="w"> </span><span class="nf">disconnect</span><span class="p">()</span><span class="w">                        </span><span class="c1">// Disconnect current device</span>
+<a id="__codelineno-15-18" name="__codelineno-15-18" href="#__codelineno-15-18"></a><span class="w">    </span><span class="kd">func</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="kc">_</span><span class="w"> </span><span class="n">sensor</span><span class="p">:</span><span class="w"> </span><span class="n">Sensor</span><span class="p">)</span><span class="w">              </span><span class="c1">// NFC read sensor</span>
+<a id="__codelineno-15-19" name="__codelineno-15-19" href="#__codelineno-15-19"></a><span class="w">    </span><span class="kd">func</span><span class="w"> </span><span class="nf">parseSensorData</span><span class="p">(</span><span class="kc">_</span><span class="w"> </span><span class="n">data</span><span class="p">:</span><span class="w"> </span><span class="n">Data</span><span class="p">)</span><span class="w">       </span><span class="c1">// Decode sensor FRAM</span>
+<a id="__codelineno-15-20" name="__codelineno-15-20" href="#__codelineno-15-20"></a><span class="w">    </span><span class="kd">func</span><span class="w"> </span><span class="nf">didParseSensor</span><span class="p">(</span><span class="kc">_</span><span class="w"> </span><span class="n">sensor</span><span class="p">:</span><span class="w"> </span><span class="n">Sensor</span><span class="p">)</span><span class="w">    </span><span class="c1">// Process readings, upload</span>
+<a id="__codelineno-15-21" name="__codelineno-15-21" href="#__codelineno-15-21"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="settings-class">Settings Class<a class="headerlink" href="#settings-class" title="Permanent link">&para;</a></h3>
+<p>User preferences and persistent configuration.</p>
+<p><strong>File</strong>: <code>Settings.swift</code> (339 lines)</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="kd">class</span><span class="w"> </span><span class="nc">Settings</span><span class="p">:</span><span class="w"> </span><span class="n">ObservableObject</span><span class="p">,</span><span class="w"> </span><span class="n">Codable</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="w">    </span><span class="c1">// Units</span>
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">displayingMillimoles</span><span class="p">:</span><span class="w"> </span><span class="nb">Bool</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="kc">false</span><span class="w">   </span><span class="c1">// mmol/L vs mg/dL</span>
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="w">    </span><span class="c1">// Thresholds</span>
+<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">targetLow</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">70</span>
+<a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">targetHigh</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">180</span>
+<a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">alarmLow</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">55</span>
+<a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">alarmHigh</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">250</span>
+<a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a>
+<a id="__codelineno-16-11" name="__codelineno-16-11" href="#__codelineno-16-11"></a><span class="w">    </span><span class="c1">// Nightscout</span>
+<a id="__codelineno-16-12" name="__codelineno-16-12" href="#__codelineno-16-12"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">nightscoutSite</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">""</span>
+<a id="__codelineno-16-13" name="__codelineno-16-13" href="#__codelineno-16-13"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">nightscoutToken</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">""</span>
+<a id="__codelineno-16-14" name="__codelineno-16-14" href="#__codelineno-16-14"></a>
+<a id="__codelineno-16-15" name="__codelineno-16-15" href="#__codelineno-16-15"></a><span class="w">    </span><span class="c1">// Calibration</span>
+<a id="__codelineno-16-16" name="__codelineno-16-16" href="#__codelineno-16-16"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">calibrating</span><span class="p">:</span><span class="w"> </span><span class="nb">Bool</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="kc">false</span>
+<a id="__codelineno-16-17" name="__codelineno-16-17" href="#__codelineno-16-17"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">usingOOP</span><span class="p">:</span><span class="w"> </span><span class="nb">Bool</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="kc">true</span><span class="w">                </span><span class="c1">// Use LibreOOP</span>
+<a id="__codelineno-16-18" name="__codelineno-16-18" href="#__codelineno-16-18"></a>
+<a id="__codelineno-16-19" name="__codelineno-16-19" href="#__codelineno-16-19"></a><span class="w">    </span><span class="c1">// Device preferences</span>
+<a id="__codelineno-16-20" name="__codelineno-16-20" href="#__codelineno-16-20"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">preferredDevicePattern</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">""</span>
+<a id="__codelineno-16-21" name="__codelineno-16-21" href="#__codelineno-16-21"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">preferredTransmitterSerial</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">""</span>
+<a id="__codelineno-16-22" name="__codelineno-16-22" href="#__codelineno-16-22"></a>
+<a id="__codelineno-16-23" name="__codelineno-16-23" href="#__codelineno-16-23"></a><span class="w">    </span><span class="c1">// Reading intervals</span>
+<a id="__codelineno-16-24" name="__codelineno-16-24" href="#__codelineno-16-24"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">readingInterval</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">5</span><span class="w">             </span><span class="c1">// Minutes</span>
+<a id="__codelineno-16-25" name="__codelineno-16-25" href="#__codelineno-16-25"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">mutedAudio</span><span class="p">:</span><span class="w"> </span><span class="nb">Bool</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="kc">false</span>
+<a id="__codelineno-16-26" name="__codelineno-16-26" href="#__codelineno-16-26"></a><span class="p">}</span>
+</code></pre></div>
+<hr />
+<h2 id="data-flow-diagram">Data Flow Diagram<a class="headerlink" href="#data-flow-diagram" title="Permanent link">&para;</a></h2>
+<h3 id="from-sensor-to-display">From Sensor to Display<a class="headerlink" href="#from-sensor-to-display" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>┌─────────────────────────────────────────────────────────────────────────────┐
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>│                        Sensor → Display Data Flow                            │
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>└─────────────────────────────────────────────────────────────────────────────┘
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>
+<a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>┌───────────────┐
+<a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>│  CGM Sensor   │
+<a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a>│  (Hardware)   │
+<a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a>└───────┬───────┘
+<a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a>        │
+<a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a>        │ NFC Read (Libre 1/2/3)    BLE Stream (Libre 2/3, Dexcom)
+<a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a>        │ or                        or
+<a id="__codelineno-17-12" name="__codelineno-17-12" href="#__codelineno-17-12"></a>        │ Bridge Read (MiaoMiao)    Direct BLE (Dexcom G6/G7)
+<a id="__codelineno-17-13" name="__codelineno-17-13" href="#__codelineno-17-13"></a>        │
+<a id="__codelineno-17-14" name="__codelineno-17-14" href="#__codelineno-17-14"></a>        ▼
+<a id="__codelineno-17-15" name="__codelineno-17-15" href="#__codelineno-17-15"></a>┌───────────────────────────────────────────────────────────────────────────┐
+<a id="__codelineno-17-16" name="__codelineno-17-16" href="#__codelineno-17-16"></a>│                           Raw Data Reception                               │
+<a id="__codelineno-17-17" name="__codelineno-17-17" href="#__codelineno-17-17"></a>│  ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐        │
+<a id="__codelineno-17-18" name="__codelineno-17-18" href="#__codelineno-17-18"></a>│  │   NFC.swift     │    │ BluetoothDel.   │    │  Bridge.swift   │        │
+<a id="__codelineno-17-19" name="__codelineno-17-19" href="#__codelineno-17-19"></a>│  │  (CoreNFC)      │    │ (CoreBluetooth) │    │ (MiaoMiao, etc) │        │
+<a id="__codelineno-17-20" name="__codelineno-17-20" href="#__codelineno-17-20"></a>│  └────────┬────────┘    └────────┬────────┘    └────────┬────────┘        │
+<a id="__codelineno-17-21" name="__codelineno-17-21" href="#__codelineno-17-21"></a>│           │                      │                      │                  │
+<a id="__codelineno-17-22" name="__codelineno-17-22" href="#__codelineno-17-22"></a>│           └──────────────────────┴──────────────────────┘                  │
+<a id="__codelineno-17-23" name="__codelineno-17-23" href="#__codelineno-17-23"></a>│                                  │                                         │
+<a id="__codelineno-17-24" name="__codelineno-17-24" href="#__codelineno-17-24"></a>│                                  ▼                                         │
+<a id="__codelineno-17-25" name="__codelineno-17-25" href="#__codelineno-17-25"></a>│  ┌───────────────────────────────────────────────────────────────────────┐│
+<a id="__codelineno-17-26" name="__codelineno-17-26" href="#__codelineno-17-26"></a>│  │                    Sensor.fram (Raw bytes: 344 bytes)                  ││
+<a id="__codelineno-17-27" name="__codelineno-17-27" href="#__codelineno-17-27"></a>│  │  ┌──────────┬──────────┬──────────┬──────────┬──────────────────────┐ ││
+<a id="__codelineno-17-28" name="__codelineno-17-28" href="#__codelineno-17-28"></a>│  │  │ Header   │ Trend    │ History  │ Footer   │ Libre 2/3: Encrypted │ ││
+<a id="__codelineno-17-29" name="__codelineno-17-29" href="#__codelineno-17-29"></a>│  │  │ 24 bytes │ 96 bytes │ 192 bytes│ 32 bytes │ (requires decryption)│ ││
+<a id="__codelineno-17-30" name="__codelineno-17-30" href="#__codelineno-17-30"></a>│  │  └──────────┴──────────┴──────────┴──────────┴──────────────────────┘ ││
+<a id="__codelineno-17-31" name="__codelineno-17-31" href="#__codelineno-17-31"></a>│  └───────────────────────────────────────────────────────────────────────┘│
+<a id="__codelineno-17-32" name="__codelineno-17-32" href="#__codelineno-17-32"></a>└───────────────────────────────────────────────────────────────────────────┘
+<a id="__codelineno-17-33" name="__codelineno-17-33" href="#__codelineno-17-33"></a>        │
+<a id="__codelineno-17-34" name="__codelineno-17-34" href="#__codelineno-17-34"></a>        ▼
+<a id="__codelineno-17-35" name="__codelineno-17-35" href="#__codelineno-17-35"></a>┌───────────────────────────────────────────────────────────────────────────┐
+<a id="__codelineno-17-36" name="__codelineno-17-36" href="#__codelineno-17-36"></a>│                            Decryption Layer                                │
+<a id="__codelineno-17-37" name="__codelineno-17-37" href="#__codelineno-17-37"></a>│  (For Libre 2/3 encrypted sensors)                                        │
+<a id="__codelineno-17-38" name="__codelineno-17-38" href="#__codelineno-17-38"></a>│                                                                            │
+<a id="__codelineno-17-39" name="__codelineno-17-39" href="#__codelineno-17-39"></a>│  Libre2.processCrypto(data:uid:patchInfo:)                                │
+<a id="__codelineno-17-40" name="__codelineno-17-40" href="#__codelineno-17-40"></a>│  └── Uses AES encryption with usefulFunction() for key derivation         │
+<a id="__codelineno-17-41" name="__codelineno-17-41" href="#__codelineno-17-41"></a>│                                                                            │
+<a id="__codelineno-17-42" name="__codelineno-17-42" href="#__codelineno-17-42"></a>│  Libre3.decrypt(data:)                                                     │
+<a id="__codelineno-17-43" name="__codelineno-17-43" href="#__codelineno-17-43"></a>│  └── Uses AES-CCM mode with sensor-specific keys                          │
+<a id="__codelineno-17-44" name="__codelineno-17-44" href="#__codelineno-17-44"></a>└───────────────────────────────────────────────────────────────────────────┘
+<a id="__codelineno-17-45" name="__codelineno-17-45" href="#__codelineno-17-45"></a>        │
+<a id="__codelineno-17-46" name="__codelineno-17-46" href="#__codelineno-17-46"></a>        ▼
+<a id="__codelineno-17-47" name="__codelineno-17-47" href="#__codelineno-17-47"></a>┌───────────────────────────────────────────────────────────────────────────┐
+<a id="__codelineno-17-48" name="__codelineno-17-48" href="#__codelineno-17-48"></a>│                           Parsing Layer                                    │
+<a id="__codelineno-17-49" name="__codelineno-17-49" href="#__codelineno-17-49"></a>│                                                                            │
+<a id="__codelineno-17-50" name="__codelineno-17-50" href="#__codelineno-17-50"></a>│  Libre.parseFRAM()           Dexcom.parse()           Bridge.parse()      │
+<a id="__codelineno-17-51" name="__codelineno-17-51" href="#__codelineno-17-51"></a>│  ├── Extract header          ├── Parse opcode         ├── Extract FRAM    │
+<a id="__codelineno-17-52" name="__codelineno-17-52" href="#__codelineno-17-52"></a>│  ├── Parse trend buffer      ├── Extract glucose      ├── Forward to      │
+<a id="__codelineno-17-53" name="__codelineno-17-53" href="#__codelineno-17-53"></a>│  ├── Parse history buffer    ├── Extract trend        │   Libre parser    │
+<a id="__codelineno-17-54" name="__codelineno-17-54" href="#__codelineno-17-54"></a>│  └── Validate checksums      └── Extract status       └──────────────────  │
+<a id="__codelineno-17-55" name="__codelineno-17-55" href="#__codelineno-17-55"></a>│                                                                            │
+<a id="__codelineno-17-56" name="__codelineno-17-56" href="#__codelineno-17-56"></a>│  Output: [Glucose] array with raw values, temperatures, quality flags      │
+<a id="__codelineno-17-57" name="__codelineno-17-57" href="#__codelineno-17-57"></a>└───────────────────────────────────────────────────────────────────────────┘
+<a id="__codelineno-17-58" name="__codelineno-17-58" href="#__codelineno-17-58"></a>        │
+<a id="__codelineno-17-59" name="__codelineno-17-59" href="#__codelineno-17-59"></a>        ▼
+<a id="__codelineno-17-60" name="__codelineno-17-60" href="#__codelineno-17-60"></a>┌───────────────────────────────────────────────────────────────────────────┐
+<a id="__codelineno-17-61" name="__codelineno-17-61" href="#__codelineno-17-61"></a>│                          Calibration Layer                                 │
+<a id="__codelineno-17-62" name="__codelineno-17-62" href="#__codelineno-17-62"></a>│                                                                            │
+<a id="__codelineno-17-63" name="__codelineno-17-63" href="#__codelineno-17-63"></a>│  Option A: Factory Calibration (from sensor FRAM)                          │
+<a id="__codelineno-17-64" name="__codelineno-17-64" href="#__codelineno-17-64"></a>│  └── Uses i1, i2, i3, i4, i5, i6 parameters from patch info               │
+<a id="__codelineno-17-65" name="__codelineno-17-65" href="#__codelineno-17-65"></a>│                                                                            │
+<a id="__codelineno-17-66" name="__codelineno-17-66" href="#__codelineno-17-66"></a>│  Option B: LibreOOP (Online Processing)                                    │
+<a id="__codelineno-17-67" name="__codelineno-17-67" href="#__codelineno-17-67"></a>│  └── Sends raw data to remote server for calibration                       │
+<a id="__codelineno-17-68" name="__codelineno-17-68" href="#__codelineno-17-68"></a>│                                                                            │
+<a id="__codelineno-17-69" name="__codelineno-17-69" href="#__codelineno-17-69"></a>│  Option C: User Calibration                                                │
+<a id="__codelineno-17-70" name="__codelineno-17-70" href="#__codelineno-17-70"></a>│  └── Linear calibration: value = slope * rawValue + intercept             │
+<a id="__codelineno-17-71" name="__codelineno-17-71" href="#__codelineno-17-71"></a>│                                                                            │
+<a id="__codelineno-17-72" name="__codelineno-17-72" href="#__codelineno-17-72"></a>│  Output: Calibrated glucose values in mg/dL                                │
+<a id="__codelineno-17-73" name="__codelineno-17-73" href="#__codelineno-17-73"></a>└───────────────────────────────────────────────────────────────────────────┘
+<a id="__codelineno-17-74" name="__codelineno-17-74" href="#__codelineno-17-74"></a>        │
+<a id="__codelineno-17-75" name="__codelineno-17-75" href="#__codelineno-17-75"></a>        ▼
+<a id="__codelineno-17-76" name="__codelineno-17-76" href="#__codelineno-17-76"></a>┌───────────────────────────────────────────────────────────────────────────┐
+<a id="__codelineno-17-77" name="__codelineno-17-77" href="#__codelineno-17-77"></a>│                          Storage &amp; Display                                 │
+<a id="__codelineno-17-78" name="__codelineno-17-78" href="#__codelineno-17-78"></a>│                                                                            │
+<a id="__codelineno-17-79" name="__codelineno-17-79" href="#__codelineno-17-79"></a>│  AppState.history.values       AppState.currentGlucose                    │
+<a id="__codelineno-17-80" name="__codelineno-17-80" href="#__codelineno-17-80"></a>│  └── Historical array          └── Latest reading                          │
+<a id="__codelineno-17-81" name="__codelineno-17-81" href="#__codelineno-17-81"></a>│                                                                            │
+<a id="__codelineno-17-82" name="__codelineno-17-82" href="#__codelineno-17-82"></a>│  HealthKit.save()              Nightscout.post()                          │
+<a id="__codelineno-17-83" name="__codelineno-17-83" href="#__codelineno-17-83"></a>│  └── Apple Health              └── Remote sync                             │
+<a id="__codelineno-17-84" name="__codelineno-17-84" href="#__codelineno-17-84"></a>│                                                                            │
+<a id="__codelineno-17-85" name="__codelineno-17-85" href="#__codelineno-17-85"></a>│  Monitor.swift (UI)                                                        │
+<a id="__codelineno-17-86" name="__codelineno-17-86" href="#__codelineno-17-86"></a>│  └── Graph + Current Value + Trend Arrow                                   │
+<a id="__codelineno-17-87" name="__codelineno-17-87" href="#__codelineno-17-87"></a>└───────────────────────────────────────────────────────────────────────────┘
+</code></pre></div>
+<h3 id="fram-memory-layout-libre-12">FRAM Memory Layout (Libre 1/2)<a class="headerlink" href="#fram-memory-layout-libre-12" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>Offset   Size   Content
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>──────────────────────────────────────────────────
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>0x00     24     Header (sensor state, age, calibration params)
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>0x18     96     Trend buffer (16 readings × 6 bytes each)
+<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>0x78     192    History buffer (32 readings × 6 bytes each)
+<a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a>0x138    32     Footer (manufacturing data)
+<a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a>──────────────────────────────────────────────────
+<a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a>Total:   344 bytes
+<a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a>
+<a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a>Each 6-byte glucose reading:
+<a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a>  Bytes 0-1: Raw glucose value (little-endian)
+<a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a>  Bytes 2-3: Quality flags
+<a id="__codelineno-18-13" name="__codelineno-18-13" href="#__codelineno-18-13"></a>  Bytes 4-5: Temperature
+</code></pre></div>
+<hr />
+<h2 id="related-documentation">Related Documentation<a class="headerlink" href="#related-documentation" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="cgm-transmitters.html">cgm-transmitters.md</a> - Device-specific parsing and communication</li>
+<li><a href="nightscout-sync.html">nightscout-sync.md</a> - How glucose data is uploaded to Nightscout</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

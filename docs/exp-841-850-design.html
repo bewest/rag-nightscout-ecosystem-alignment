@@ -1,0 +1,4856 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/exp-841-850-design.html">
+      
+      
+        <link rel="prev" href="cgm-remote-monitor-analysis-2026-01-18.html">
+      
+      
+        <link rel="next" href="progress-update-confirmation.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>EXP-841–850: Error Anatomy & Information Budget - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#exp-841850-error-anatomy--information-budget" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              EXP-841–850: Error Anatomy &amp; Information Budget
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="exp-841-850-design.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#exp-841-residual-context-fingerprinting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EXP-841: Residual Context Fingerprinting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exp-842-patient-h-forensic-diagnostic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EXP-842: Patient-h Forensic Diagnostic
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exp-843-conformal-prediction-intervals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EXP-843: Conformal Prediction Intervals
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exp-844-metabolic-regime-segmentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EXP-844: Metabolic Regime Segmentation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exp-845-bias-variance-noise-decomposition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EXP-845: Bias-Variance-Noise Decomposition
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exp-846-contextual-error-attribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EXP-846: Contextual Error Attribution
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exp-847-mutual-information-feature-ceiling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EXP-847: Mutual Information Feature Ceiling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exp-848-sensor-noise-floor-estimation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EXP-848: Sensor Noise Floor Estimation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exp-849-error-temporal-autocorrelation--persistence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EXP-849: Error Temporal Autocorrelation &amp; Persistence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exp-850-grand-error-budget" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EXP-850: Grand Error Budget
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dependency-graph" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependency Graph
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation Notes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation Notes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#shared-helpers-to-add-in-exp_autoresearch_841py" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shared helpers to add in exp_autoresearch_841.py:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#risk-register" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Risk Register
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary Table
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="30-design/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="60-research/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#exp-841-residual-context-fingerprinting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EXP-841: Residual Context Fingerprinting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exp-842-patient-h-forensic-diagnostic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EXP-842: Patient-h Forensic Diagnostic
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exp-843-conformal-prediction-intervals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EXP-843: Conformal Prediction Intervals
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exp-844-metabolic-regime-segmentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EXP-844: Metabolic Regime Segmentation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exp-845-bias-variance-noise-decomposition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EXP-845: Bias-Variance-Noise Decomposition
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exp-846-contextual-error-attribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EXP-846: Contextual Error Attribution
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exp-847-mutual-information-feature-ceiling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EXP-847: Mutual Information Feature Ceiling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exp-848-sensor-noise-floor-estimation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EXP-848: Sensor Noise Floor Estimation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exp-849-error-temporal-autocorrelation--persistence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EXP-849: Error Temporal Autocorrelation &amp; Persistence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exp-850-grand-error-budget" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EXP-850: Grand Error Budget
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dependency-graph" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependency Graph
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation Notes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation Notes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#shared-helpers-to-add-in-exp_autoresearch_841py" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shared helpers to add in exp_autoresearch_841.py:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#risk-register" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Risk Register
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary Table
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="exp-841850-error-anatomy--information-budget">EXP-841–850: Error Anatomy &amp; Information Budget<a class="headerlink" href="#exp-841850-error-anatomy--information-budget" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-04-08 at <code>fb9a7d7c</code>.</em></p>
+<p><strong>Wave theme:</strong> The model class is exhausted (linear R²=0.534, nonlinear +0.002).
+The remaining 0.466 gap is <strong>information deficit</strong>, not model deficit.
+This wave dissects the error to understand WHERE, WHY, and HOW MUCH
+of the gap is reducible — and what new information sources could close it.</p>
+<p><strong>Prior art summary:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Result</th>
+<th>Value</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Linear SOTA (60 min)</td>
+<td>R² = 0.534</td>
+<td>EXP-830: 16-feature ridge</td>
+</tr>
+<tr>
+<td>Nonlinear best</td>
+<td>R² = 0.536</td>
+<td>EXP-831: kernel ridge (+0.002)</td>
+</tr>
+<tr>
+<td>Linear oracle ceiling</td>
+<td>R² = 0.613</td>
+<td>Requires future BG velocity</td>
+</tr>
+<tr>
+<td>Worst patient (h)</td>
+<td>R² = 0.153</td>
+<td>3.5× below mean</td>
+</tr>
+<tr>
+<td>Population mean</td>
+<td>R² = 0.509</td>
+<td>Across 11 patients</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Infrastructure reuse from EXP-801:</strong>
+<code>_build_features_base()</code>, <code>_build_enhanced_features()</code>, <code>_ridge_predict()</code>,
+<code>_r2()</code>, <code>_get_hours()</code>, <code>_compute_flux()</code>, <code>load_patients()</code>, <code>compute_supply_demand()</code></p>
+<p><strong>Run command:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nv">PYTHONPATH</span><span class="o">=</span>tools<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>cgmencode.exp_autoresearch_841<span class="w"> </span>--detail<span class="w"> </span>--save<span class="w"> </span>--max-patients<span class="w"> </span><span class="m">11</span>
+</code></pre></div></p>
+<hr />
+<h2 id="exp-841-residual-context-fingerprinting">EXP-841: Residual Context Fingerprinting<a class="headerlink" href="#exp-841-residual-context-fingerprinting" title="Permanent link">&para;</a></h2>
+<p><strong>Description:</strong> Partition prediction residuals by physiological context
+(BG range × metabolic state × time-of-day) to build an error heatmap
+showing exactly where the model fails.</p>
+<p><strong>What it tests:</strong> Is the R² = 0.466 error gap uniformly distributed, or
+concentrated in specific physiological contexts? If concentrated, those
+contexts define the information frontier.</p>
+<p><strong>Method:</strong>
+1. Run 16-feature ridge at 60 min on all patients (70/30 split).
+2. Compute signed residuals <code>ε = y_pred − y_actual</code> on validation set.
+3. Bin each residual into a 3D context grid:
+   - <strong>BG range:</strong> hypo (&lt;70), low-normal (70–100), normal (100–140),
+     elevated (140–180), high (180–250), very-high (&gt;250) → 6 bins
+   - <strong>Metabolic state:</strong> fasting (COB&lt;5 &amp; IOB&lt;0.5), post-meal (COB≥5),
+     correction (IOB≥0.5 &amp; COB&lt;5), active (COB≥5 &amp; IOB≥0.5) → 4 bins
+   - <strong>Circadian phase:</strong> overnight (00–06), dawn (06–10), midday (10–14),
+     afternoon (14–18), evening (18–22), late (22–00) → 6 bins
+4. For each cell: compute count, mean |ε|, mean ε (bias), std(ε), local R².
+5. Rank cells by total error contribution (count × mean |ε|²).</p>
+<p><strong>Output schema:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>  <span class="s2">"per_patient"</span><span class="p">:</span> <span class="p">[{</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="s2">"patient"</span><span class="p">:</span> <span class="s2">"a"</span><span class="p">,</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="s2">"r2_overall"</span><span class="p">:</span> <span class="mf">0.55</span><span class="p">,</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="s2">"top_5_error_cells"</span><span class="p">:</span> <span class="p">[</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>      <span class="p">{</span><span class="s2">"bg_bin"</span><span class="p">:</span> <span class="s2">"high"</span><span class="p">,</span> <span class="s2">"state"</span><span class="p">:</span> <span class="s2">"post_meal"</span><span class="p">,</span> <span class="s2">"phase"</span><span class="p">:</span> <span class="s2">"midday"</span><span class="p">,</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>       <span class="s2">"n"</span><span class="p">:</span> <span class="mi">342</span><span class="p">,</span> <span class="s2">"mae"</span><span class="p">:</span> <span class="mf">28.4</span><span class="p">,</span> <span class="s2">"bias"</span><span class="p">:</span> <span class="o">-</span><span class="mf">12.1</span><span class="p">,</span> <span class="s2">"std"</span><span class="p">:</span> <span class="mf">22.3</span><span class="p">,</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>       <span class="s2">"pct_of_total_error"</span><span class="p">:</span> <span class="mf">18.2</span><span class="p">}</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="p">],</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    <span class="s2">"error_heatmap"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"hypo|fasting|overnight"</span><span class="p">:</span> <span class="p">{</span><span class="o">...</span><span class="p">},</span> <span class="o">...</span><span class="p">}</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>  <span class="p">}],</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>  <span class="s2">"population_top_10_cells"</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span><span class="p">],</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>  <span class="s2">"error_concentration_gini"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span>  <span class="o">//</span> <span class="mf">1.0</span> <span class="o">=</span> <span class="nb">all</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">one</span> <span class="n">cell</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Expected outcome:</strong> Error is NOT uniform — post-meal + high BG contexts
+likely contribute 40–60% of total error despite being 15–20% of timesteps.
+This proves meals are the dominant information gap.</p>
+<p><strong>Leakage risk:</strong> ✅ None. Residuals computed on held-out validation set.
+Context bins use only current/past values.</p>
+<hr />
+<h2 id="exp-842-patient-h-forensic-diagnostic">EXP-842: Patient-h Forensic Diagnostic<a class="headerlink" href="#exp-842-patient-h-forensic-diagnostic" title="Permanent link">&para;</a></h2>
+<p><strong>Description:</strong> Deep forensic analysis of patient h (R² = 0.153) to
+determine whether the failure is due to data quality, physiology, or
+missing information.</p>
+<p><strong>What it tests:</strong> Is patient h's poor performance caused by (a) sensor
+noise / data artifacts, (b) extreme or unusual physiology, (c) missing
+treatment data (unlogged meals/corrections), or (d) the model simply
+being wrong for this patient's dynamics?</p>
+<p><strong>Method:</strong>
+1. Compute summary statistics for patient h vs population:
+   - BG volatility: std(BG), std(ΔBG/Δt), % readings &gt;250 or &lt;70
+   - Treatment density: meals/day, boluses/day, mean IOB, mean COB
+   - Data quality: % missing, consecutive-gap lengths, flat-line segments
+   - Sensor noise: high-frequency power (FFT &gt; 1/30min), spike rate
+2. Feature correlation analysis:
+   - Pearson/Spearman correlation of each feature with target for h vs all
+   - Are supply/demand features predictive at all for patient h?
+3. Sliding-window R² profile:
+   - Compute R² in rolling 7-day windows across patient h's data
+   - Identify if there are GOOD periods (R² &gt; 0.4) and BAD periods (R² &lt; 0.1)
+4. Oracle test:
+   - Fit ridge with actual future BG as a feature (oracle ceiling for h alone)
+   - If oracle R² is also low → data quality issue; if high → information gap
+5. Cross-patient transfer:
+   - Train on patients a–g,i–k, predict h → measures population fit
+   - Train on h alone → measures personalization ceiling</p>
+<p><strong>Output schema:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">{</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>  <span class="s2">"patient_h_profile"</span><span class="p">:</span> <span class="p">{</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="s2">"bg_std"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"bg_std_population_rank"</span><span class="p">:</span> <span class="s2">"11/11"</span><span class="p">,</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="s2">"delta_bg_std"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"meals_per_day"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="s2">"pct_missing"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"spike_rate_per_day"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="s2">"flat_segments_gt_30min"</span><span class="p">:</span> <span class="n">XX</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>  <span class="p">},</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>  <span class="s2">"feature_correlations"</span><span class="p">:</span> <span class="p">{</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    <span class="s2">"h"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"bg"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span><span class="p">,</span> <span class="s2">"supply"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span><span class="p">,</span> <span class="o">...</span><span class="p">},</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    <span class="s2">"population_mean"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"bg"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span><span class="p">,</span> <span class="o">...</span><span class="p">}</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>  <span class="p">},</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>  <span class="s2">"rolling_r2"</span><span class="p">:</span> <span class="p">{</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>    <span class="s2">"windows"</span><span class="p">:</span> <span class="p">[{</span><span class="s2">"start"</span><span class="p">:</span> <span class="s2">"day_1"</span><span class="p">,</span> <span class="s2">"end"</span><span class="p">:</span> <span class="s2">"day_7"</span><span class="p">,</span> <span class="s2">"r2"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span><span class="p">},</span> <span class="o">...</span><span class="p">],</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>    <span class="s2">"pct_windows_above_0.4"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>    <span class="s2">"best_window_r2"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"worst_window_r2"</span><span class="p">:</span> <span class="n">XX</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>  <span class="p">},</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>  <span class="s2">"oracle_r2_h"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span><span class="p">,</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>  <span class="s2">"cross_patient_r2"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span><span class="p">,</span>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>  <span class="s2">"self_trained_r2"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span><span class="p">,</span>
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>  <span class="s2">"diagnosis"</span><span class="p">:</span> <span class="s2">"data_quality | physiology | missing_info | model_mismatch"</span>
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Expected outcome:</strong> Patient h likely has either (a) much higher BG
+volatility with unlogged meals, or (b) significant sensor noise / data
+gaps. The rolling-window analysis will reveal if h has intermittent good
+periods (suggesting missing data) or consistently poor fit (suggesting
+different physiology).</p>
+<p><strong>Leakage risk:</strong> ✅ None, except the oracle test which is explicitly
+labeled as an oracle upper bound, not a real model.</p>
+<hr />
+<h2 id="exp-843-conformal-prediction-intervals">EXP-843: Conformal Prediction Intervals<a class="headerlink" href="#exp-843-conformal-prediction-intervals" title="Permanent link">&para;</a></h2>
+<p><strong>Description:</strong> Construct distribution-free prediction intervals using
+split conformal prediction, providing guaranteed coverage without
+distributional assumptions.</p>
+<p><strong>What it tests:</strong> Can we produce calibrated uncertainty estimates that
+tell the user WHEN the model is likely wrong? And do the interval widths
+correlate with the error-context cells from EXP-841?</p>
+<p><strong>Method:</strong>
+1. Three-way split: train (60%), calibration (15%), test (25%).
+2. Fit 16-feature ridge on train set.
+3. <strong>Calibration step:</strong> Compute nonconformity scores on calibration set:
+   <code>s_i = |y_actual_i − y_pred_i|</code>
+4. For coverage level α ∈ {0.80, 0.90, 0.95}:
+   - <code>q_α = quantile(s_calibration, α)</code>
+   - Prediction interval: <code>[ŷ − q_α, ŷ + q_α]</code>
+5. <strong>Adaptive conformal:</strong> Use local nonconformity (condition on BG range):
+   - Separate q_α per BG bin from EXP-841
+   - Produces tighter intervals when model is confident, wider when not
+6. Evaluate on test set:
+   - Empirical coverage: % of test points inside interval
+   - Mean interval width (mg/dL)
+   - Interval width ratio: adaptive / global
+   - Sharpness: correlation between interval width and actual |error|</p>
+<p><strong>Output schema:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">{</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>  <span class="s2">"per_patient"</span><span class="p">:</span> <span class="p">[{</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    <span class="s2">"patient"</span><span class="p">:</span> <span class="s2">"a"</span><span class="p">,</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    <span class="s2">"global_coverage_90"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span><span class="p">,</span> <span class="s2">"global_width_90"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    <span class="s2">"adaptive_coverage_90"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span><span class="p">,</span> <span class="s2">"adaptive_width_90"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>    <span class="s2">"sharpness_corr"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span><span class="p">,</span>  <span class="o">//</span> <span class="n">corr</span><span class="p">(</span><span class="n">interval_width</span><span class="p">,</span> <span class="o">|</span><span class="n">error</span><span class="o">|</span><span class="p">)</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    <span class="s2">"narrowest_context"</span><span class="p">:</span> <span class="s2">"normal|fasting|overnight"</span><span class="p">,</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>    <span class="s2">"widest_context"</span><span class="p">:</span> <span class="s2">"high|post_meal|midday"</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>  <span class="p">}],</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>  <span class="s2">"mean_coverage_90"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span><span class="p">,</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>  <span class="s2">"mean_global_width_90"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>  <span class="s2">"mean_adaptive_width_90"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>  <span class="s2">"coverage_guaranteed"</span><span class="p">:</span> <span class="n">true</span>  <span class="o">//</span> <span class="n">by</span> <span class="n">conformal</span> <span class="n">theory</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Expected outcome:</strong> Global 90% intervals will be ~40–60 mg/dL wide
+(clinically marginal). Adaptive intervals will be ~25 mg/dL in overnight/
+fasting and ~70 mg/dL post-meal — proving the model "knows when it
+doesn't know." Coverage guarantee holds by construction.</p>
+<p><strong>Leakage risk:</strong> ✅ None. Three-way split ensures calibration scores are
+computed on data not seen during training. Test set is held out from both.</p>
+<hr />
+<h2 id="exp-844-metabolic-regime-segmentation">EXP-844: Metabolic Regime Segmentation<a class="headerlink" href="#exp-844-metabolic-regime-segmentation" title="Permanent link">&para;</a></h2>
+<p><strong>Description:</strong> Use unsupervised clustering on metabolic features to
+discover natural physiological regimes, then measure per-regime R²
+to identify which regimes are predictable vs unpredictable.</p>
+<p><strong>What it tests:</strong> Are there fundamentally different metabolic operating
+modes? If the model performs R² = 0.7 in regime A but R² = 0.2 in
+regime B, then the aggregate R² = 0.534 is misleading — the model is
+good in some modes and fundamentally limited in others.</p>
+<p><strong>Method:</strong>
+1. For each timestep, compute a 6D context vector:
+   <code>[BG, ΔBG/Δt, IOB, COB, metabolic_activity, hour_sin]</code>
+2. Standardize and apply k-means with k ∈ {3, 4, 5, 6}.
+3. Select k by silhouette score.
+4. Label each regime by its centroid characteristics (e.g., "fasting-
+   stable", "post-meal-rising", "correction-falling", "overnight-flat",
+   "high-volatile").
+5. Fit separate ridge models per regime (using only timesteps in that
+   regime for train/val).
+6. Compare:
+   - Per-regime R² vs global R² (0.534)
+   - Within-regime R² weighted sum vs global R²
+   - Regime transition boundaries: are errors higher at transitions?</p>
+<p><strong>Output schema:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="p">{</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>  <span class="s2">"best_k"</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>  <span class="s2">"regimes"</span><span class="p">:</span> <span class="p">[</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    <span class="p">{</span><span class="s2">"id"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"fasting_stable"</span><span class="p">,</span> <span class="s2">"pct_timesteps"</span><span class="p">:</span> <span class="mf">35.2</span><span class="p">,</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>     <span class="s2">"centroid"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"bg"</span><span class="p">:</span> <span class="mi">112</span><span class="p">,</span> <span class="s2">"dbg"</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="s2">"iob"</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span> <span class="s2">"cob"</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>     <span class="s2">"r2_within"</span><span class="p">:</span> <span class="mf">0.72</span><span class="p">,</span> <span class="s2">"mae_within"</span><span class="p">:</span> <span class="mf">8.1</span><span class="p">},</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>    <span class="p">{</span><span class="s2">"id"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"post_meal_rising"</span><span class="p">,</span> <span class="s2">"pct_timesteps"</span><span class="p">:</span> <span class="mf">18.4</span><span class="p">,</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>     <span class="s2">"centroid"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"bg"</span><span class="p">:</span> <span class="mi">168</span><span class="p">,</span> <span class="s2">"dbg"</span><span class="p">:</span> <span class="mf">2.1</span><span class="p">,</span> <span class="s2">"iob"</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s2">"cob"</span><span class="p">:</span> <span class="mi">32</span><span class="p">},</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>     <span class="s2">"r2_within"</span><span class="p">:</span> <span class="mf">0.31</span><span class="p">,</span> <span class="s2">"mae_within"</span><span class="p">:</span> <span class="mf">29.7</span><span class="p">},</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>    <span class="o">...</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>  <span class="p">],</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>  <span class="s2">"global_r2"</span><span class="p">:</span> <span class="mf">0.534</span><span class="p">,</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>  <span class="s2">"weighted_regime_r2"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span><span class="p">,</span>  <span class="o">//</span> <span class="n">Σ</span><span class="p">(</span><span class="n">pct_i</span> <span class="err">×</span> <span class="n">r2_i</span><span class="p">)</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>  <span class="s2">"transition_error_premium"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span><span class="p">,</span>  <span class="o">//</span> <span class="n">extra</span> <span class="n">MAE</span> <span class="n">at</span> <span class="n">regime</span> <span class="n">boundaries</span>
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>  <span class="s2">"per_patient"</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Expected outcome:</strong> 3–4 natural regimes will emerge. "Fasting/stable"
+regime R² ≈ 0.7+ (highly predictable). "Post-meal" regime R² ≈ 0.25–0.35
+(poorly predictable). This proves the R² gap is dominated by meal
+uncertainty, not model inadequacy.</p>
+<p><strong>Leakage risk:</strong> ✅ None. Clustering uses only current/past features.
+Per-regime models still use proper train/val splits within each regime.</p>
+<hr />
+<h2 id="exp-845-bias-variance-noise-decomposition">EXP-845: Bias-Variance-Noise Decomposition<a class="headerlink" href="#exp-845-bias-variance-noise-decomposition" title="Permanent link">&para;</a></h2>
+<p><strong>Description:</strong> Decompose total prediction error into bias², variance,
+and irreducible noise using bootstrap resampling, establishing what
+fraction of error is fixable vs fundamental.</p>
+<p><strong>What it tests:</strong> Of the MSE = (1 − 0.534) × Var(y), how much is:
+- <strong>Bias²</strong> — systematic under/over-prediction (fixable with better features)
+- <strong>Variance</strong> — instability across training sets (fixable with more data or regularization)
+- <strong>Noise</strong> — irreducible (sensor error + unobserved inputs like stress, exercise)</p>
+<p><strong>Method:</strong>
+1. For each patient, create B=50 bootstrap training sets (sample with
+   replacement from training portion).
+2. Fit 16-feature ridge on each bootstrap sample.
+3. Predict on the fixed validation set → matrix of predictions (B × N_val).
+4. At each validation point i:
+   - <code>ŷ_mean_i = mean over B bootstraps</code>
+   - <code>bias²_i = (ŷ_mean_i − y_actual_i)²</code>
+   - <code>variance_i = var over B bootstraps of ŷ_b_i</code>
+   - <code>noise_i = MSE_i − bias²_i − variance_i</code> (residual)
+5. Aggregate:
+   - <code>E[bias²]</code>, <code>E[variance]</code>, <code>E[noise]</code> across all validation points
+   - Fraction of MSE from each component
+6. Stratify by BG range: does bias dominate at extremes, variance in the
+   middle?</p>
+<p><strong>Output schema:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="p">{</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>  <span class="s2">"per_patient"</span><span class="p">:</span> <span class="p">[{</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    <span class="s2">"patient"</span><span class="p">:</span> <span class="s2">"a"</span><span class="p">,</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>    <span class="s2">"total_mse"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    <span class="s2">"bias_sq"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"bias_pct"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>    <span class="s2">"variance"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"variance_pct"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>    <span class="s2">"noise"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"noise_pct"</span><span class="p">:</span> <span class="n">XX</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>  <span class="p">}],</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>  <span class="s2">"population_mean"</span><span class="p">:</span> <span class="p">{</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>    <span class="s2">"bias_pct"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"variance_pct"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"noise_pct"</span><span class="p">:</span> <span class="n">XX</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>  <span class="p">},</span>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>  <span class="s2">"by_bg_range"</span><span class="p">:</span> <span class="p">{</span>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>    <span class="s2">"hypo"</span><span class="p">:</span>    <span class="p">{</span><span class="s2">"bias_pct"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"variance_pct"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"noise_pct"</span><span class="p">:</span> <span class="n">XX</span><span class="p">},</span>
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>    <span class="s2">"normal"</span><span class="p">:</span>  <span class="p">{</span><span class="o">...</span><span class="p">},</span>
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>    <span class="s2">"high"</span><span class="p">:</span>    <span class="p">{</span><span class="o">...</span><span class="p">}</span>
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>  <span class="p">}</span>
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Expected outcome:</strong> Variance will be very small (ridge is stable,
+λ-regularized). Bias² will be moderate (~20–30% of MSE) — the model
+systematically underpredicts excursions. Noise will dominate (~50–70%) —
+confirming the information deficit hypothesis: most error comes from
+inputs the model simply cannot observe.</p>
+<p><strong>Leakage risk:</strong> ✅ None. Bootstrap resamples from training data only.
+Validation set is fixed and never seen during training.</p>
+<hr />
+<h2 id="exp-846-contextual-error-attribution">EXP-846: Contextual Error Attribution<a class="headerlink" href="#exp-846-contextual-error-attribution" title="Permanent link">&para;</a></h2>
+<p><strong>Description:</strong> Attribute prediction error to specific causal contexts
+(meals, corrections, basal drift, sensor noise, dawn phenomenon) using
+counterfactual analysis.</p>
+<p><strong>What it tests:</strong> What percentage of total error is "caused by" each
+context? This answers the practical question: if we had perfect meal
+information, how much would R² improve?</p>
+<p><strong>Method:</strong>
+1. Classify each validation timestep into overlapping event windows:
+   - <strong>Post-meal:</strong> within 4h of carb entry &gt; 5g
+   - <strong>Post-correction:</strong> within 3h of bolus without carbs
+   - <strong>Dawn phenomenon:</strong> 04:00–09:00 AND BG rising &gt; 1 mg/dL per 5min
+   - <strong>Basal-only:</strong> no meals or boluses within 4h
+   - <strong>Sensor-suspect:</strong> |ΔBG| &gt; 15 mg/dL in single 5min step (noise)
+2. For each context c:
+   - <code>MSE_c = mean(ε² for timesteps in context c)</code>
+   - <code>MSE_not_c = mean(ε² for timesteps NOT in context c)</code>
+   - <code>N_c = count of timesteps in context c</code>
+   - <code>error_share_c = (N_c × MSE_c) / Σ(N_j × MSE_j)</code>
+   - <code>R²_without_c</code>: R² if we exclude context c from evaluation
+3. Compute mutual information I(ε²; context) to validate.
+4. <strong>Counterfactual test:</strong> For post-meal windows, add perfect carb timing
+   (exact carb onset ± 0) as a feature. Does R² improve? This estimates
+   the "meal information value."</p>
+<p><strong>Output schema:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="p">{</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>  <span class="s2">"per_patient"</span><span class="p">:</span> <span class="p">[{</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>    <span class="s2">"patient"</span><span class="p">:</span> <span class="s2">"a"</span><span class="p">,</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>    <span class="s2">"contexts"</span><span class="p">:</span> <span class="p">{</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>      <span class="s2">"post_meal"</span><span class="p">:</span>       <span class="p">{</span><span class="s2">"pct_time"</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span> <span class="s2">"mse"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"error_share"</span><span class="p">:</span> <span class="mf">0.48</span><span class="p">,</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>                          <span class="s2">"r2_if_excluded"</span><span class="p">:</span> <span class="mf">0.68</span><span class="p">},</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>      <span class="s2">"post_correction"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"pct_time"</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="s2">"mse"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"error_share"</span><span class="p">:</span> <span class="mf">0.18</span><span class="p">,</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>                          <span class="s2">"r2_if_excluded"</span><span class="p">:</span> <span class="mf">0.59</span><span class="p">},</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>      <span class="s2">"dawn"</span><span class="p">:</span>            <span class="p">{</span><span class="s2">"pct_time"</span><span class="p">:</span>  <span class="mi">8</span><span class="p">,</span> <span class="s2">"mse"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"error_share"</span><span class="p">:</span> <span class="mf">0.07</span><span class="p">,</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>                          <span class="s2">"r2_if_excluded"</span><span class="p">:</span> <span class="mf">0.55</span><span class="p">},</span>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>      <span class="s2">"basal_only"</span><span class="p">:</span>      <span class="p">{</span><span class="s2">"pct_time"</span><span class="p">:</span> <span class="mi">38</span><span class="p">,</span> <span class="s2">"mse"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"error_share"</span><span class="p">:</span> <span class="mf">0.15</span><span class="p">,</span>
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>                          <span class="s2">"r2_if_excluded"</span><span class="p">:</span> <span class="mf">0.54</span><span class="p">},</span>
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>      <span class="s2">"sensor_suspect"</span><span class="p">:</span>  <span class="p">{</span><span class="s2">"pct_time"</span><span class="p">:</span>  <span class="mi">3</span><span class="p">,</span> <span class="s2">"mse"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"error_share"</span><span class="p">:</span> <span class="mf">0.12</span><span class="p">,</span>
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>                          <span class="s2">"r2_if_excluded"</span><span class="p">:</span> <span class="mf">0.57</span><span class="p">}</span>
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>    <span class="p">}</span>
+<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a>  <span class="p">}],</span>
+<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a>  <span class="s2">"population_error_budget"</span><span class="p">:</span> <span class="p">{</span>
+<a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a>    <span class="s2">"meals"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span><span class="p">,</span> <span class="s2">"corrections"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span><span class="p">,</span> <span class="s2">"dawn"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span><span class="p">,</span>
+<a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a>    <span class="s2">"basal"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span><span class="p">,</span> <span class="s2">"sensor"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span>
+<a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a>  <span class="p">},</span>
+<a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a>  <span class="s2">"meal_counterfactual_r2_gain"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span>
+<a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a><span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Expected outcome:</strong> Post-meal contexts contribute ~45–55% of total error
+despite being ~30% of timesteps. Perfect meal timing as a counterfactual
+feature yields R² gain of ~0.03–0.06 — meaningful but not transformative,
+because even with timing, absorption rate varies. Sensor-suspect steps
+contribute ~10% of error from ~3% of timesteps — disproportionate.</p>
+<p><strong>Leakage risk:</strong> ⚠️ <strong>Mild risk in counterfactual test only.</strong> The
+counterfactual adds "exact carb onset time" which is derived from
+treatment data already in the feature set. This is labeled as an oracle
+estimate, not a deployable feature. All other analyses are leakage-free.</p>
+<hr />
+<h2 id="exp-847-mutual-information-feature-ceiling">EXP-847: Mutual Information Feature Ceiling<a class="headerlink" href="#exp-847-mutual-information-feature-ceiling" title="Permanent link">&para;</a></h2>
+<p><strong>Description:</strong> Compute mutual information between each feature and the
+prediction target to establish the information-theoretic ceiling of the
+current feature set.</p>
+<p><strong>What it tests:</strong> How much predictive information do the 16 features
+collectively carry about BG(t+60)? Is ridge regression extracting all
+available information, or is there nonlinear information being left on
+the table?</p>
+<p><strong>Method:</strong>
+1. Estimate mutual information I(X_i; y) for each of 16 features using
+   k-nearest-neighbor estimator (Kraskov et al.):
+   - KSG estimator with k=5 neighbors (bias-corrected, works for
+     continuous variables)
+2. Estimate joint MI I(X_1,...,X_16; y):
+   - Use concatenated feature vector → KSG in 16D
+   - Compare to sum of individual MIs (redundancy measure)
+3. Compute conditional MI I(X_i; y | X_j) for top feature pairs:
+   - Does feature i add information beyond feature j?
+4. Compute <strong>information utilization ratio</strong>:
+   - Ridge R² converted to bits: <code>H(y) × R² ≈ bits explained</code>
+   - Joint MI I(X; y) = total bits available
+   - Ratio = bits_explained / bits_available
+5. Synthetic ceiling: add Gaussian noise with known MI and verify
+   estimator accuracy.</p>
+<p><strong>Output schema:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="p">{</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>  <span class="s2">"per_feature_mi"</span><span class="p">:</span> <span class="p">{</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>    <span class="s2">"bg"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"mi_bits"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"rank"</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>    <span class="s2">"supply_sum"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"mi_bits"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"rank"</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>    <span class="o">...</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>  <span class="p">},</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>  <span class="s2">"joint_mi_bits"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>  <span class="s2">"sum_individual_mi_bits"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>  <span class="s2">"redundancy_ratio"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span>  <span class="o">//</span> <span class="n">joint</span> <span class="o">/</span> <span class="nb">sum</span> <span class="p">(</span><span class="o">&lt;</span> <span class="mi">1</span> <span class="n">means</span> <span class="n">redundancy</span><span class="p">)</span>
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>  <span class="s2">"ridge_bits_explained"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span>
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>  <span class="s2">"information_utilization"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span>  <span class="o">//</span> <span class="n">ratio</span> <span class="n">of</span> <span class="n">bits</span> <span class="n">used</span> <span class="o">/</span> <span class="n">available</span>
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>  <span class="s2">"nonlinear_info_gap"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span>  <span class="o">//</span> <span class="n">joint_MI</span> <span class="o">-</span> <span class="n">ridge_bits</span> <span class="p">(</span><span class="n">unexploited</span> <span class="n">info</span><span class="p">)</span>
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>  <span class="s2">"per_patient"</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>
+<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a><span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Expected outcome:</strong> Individual features are highly redundant (BG
+dominates, supply/demand correlate with BG). Joint MI ≈ 0.55–0.70 bits
+(in R²-equivalent terms). Information utilization ≈ 85–95%, confirming
+that ridge extracts nearly all <strong>linear</strong> information. The nonlinear
+gap (joint MI − ridge R²) ≈ 0.02–0.05 R² equivalent — consistent with
+EXP-831's kernel ridge finding of +0.002.</p>
+<p><strong>Leakage risk:</strong> ✅ None. MI is estimated on training data and describes
+feature informativeness, not prediction performance.</p>
+<hr />
+<h2 id="exp-848-sensor-noise-floor-estimation">EXP-848: Sensor Noise Floor Estimation<a class="headerlink" href="#exp-848-sensor-noise-floor-estimation" title="Permanent link">&para;</a></h2>
+<p><strong>Description:</strong> Estimate the irreducible prediction error contributed by
+CGM sensor noise using Allan deviation and consecutive-difference analysis.</p>
+<p><strong>What it tests:</strong> CGM sensors have ±10–15 mg/dL noise (MARD ~9–11%).
+At 60-min horizon, how much of the MSE is simply sensor measurement
+error that NO model could overcome?</p>
+<p><strong>Method:</strong>
+1. <strong>Allan deviation analysis:</strong>
+   - Compute overlapping Allan deviation σ_A(τ) for τ = 5, 10, 15, ...,
+     120 min on raw BG traces.
+   - At τ = 60 min, σ_A gives the expected BG uncertainty from sensor
+     noise alone.
+2. <strong>Consecutive-difference estimator:</strong>
+   - For stable periods (|ΔBG_5min| &lt; 2 mg/dL for 30+ min), estimate
+     sensor noise as σ_sensor = std(ΔBG) / √2.
+3. <strong>Flat-line detection:</strong>
+   - Periods where BG is identical for 3+ readings → sensor is likely
+     interpolating internally → count these as "sensor-limited" periods.
+4. <strong>Noise floor in MSE terms:</strong>
+   - <code>MSE_noise = 2 × σ_sensor² × (1 − autocorr(noise, lag=12))</code>
+     (both prediction and target carry independent sensor noise)
+   - <code>R²_ceiling_noise = 1 − MSE_noise / Var(y)</code>
+5. Compare across patients — does patient h have worse sensor noise?</p>
+<p><strong>Output schema:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="p">{</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>  <span class="s2">"per_patient"</span><span class="p">:</span> <span class="p">[{</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>    <span class="s2">"patient"</span><span class="p">:</span> <span class="s2">"a"</span><span class="p">,</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>    <span class="s2">"allan_dev_60min"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>    <span class="s2">"sensor_noise_std"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span>  <span class="o">//</span> <span class="n">mg</span><span class="o">/</span><span class="n">dL</span><span class="p">,</span> <span class="kn">from</span><span class="w"> </span><span class="nn">consecutive</span><span class="o">-</span><span class="n">difference</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>    <span class="s2">"flat_line_pct"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>    <span class="s2">"mse_from_noise"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>    <span class="s2">"r2_ceiling_from_noise"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span><span class="p">,</span>  <span class="o">//</span> <span class="nb">max</span> <span class="n">R</span><span class="err">²</span> <span class="n">given</span> <span class="n">sensor</span> <span class="n">noise</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>    <span class="s2">"current_r2"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span><span class="p">,</span>
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>    <span class="s2">"gap_to_noise_ceiling"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span>  <span class="o">//</span> <span class="n">ceiling</span> <span class="o">-</span> <span class="n">current</span>
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>  <span class="p">}],</span>
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>  <span class="s2">"population_mean_noise_std"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span>
+<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>  <span class="s2">"population_r2_noise_ceiling"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span><span class="p">,</span>
+<a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>  <span class="s2">"population_current_r2"</span><span class="p">:</span> <span class="mf">0.534</span><span class="p">,</span>
+<a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a>  <span class="s2">"noise_explains_pct_of_gap"</span><span class="p">:</span> <span class="n">XX</span>  <span class="o">//</span> <span class="o">%</span> <span class="n">of</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="mf">0.534</span><span class="p">)</span> <span class="n">due</span> <span class="n">to</span> <span class="n">noise</span>
+<a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a><span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Expected outcome:</strong> Sensor noise σ ≈ 8–12 mg/dL. At 60-min horizon,
+noise-induced MSE ≈ 150–250 (mg/dL)². This accounts for ~15–25% of
+total MSE, setting a hard R² ceiling of ~0.62–0.68. The remaining
+gap between 0.534 and 0.62 (~0.08 R²) is the "accessible improvement
+frontier" — achievable with better information but not a different model.</p>
+<p><strong>Leakage risk:</strong> ✅ None. Uses only raw BG time series properties.</p>
+<hr />
+<h2 id="exp-849-error-temporal-autocorrelation--persistence">EXP-849: Error Temporal Autocorrelation &amp; Persistence<a class="headerlink" href="#exp-849-error-temporal-autocorrelation--persistence" title="Permanent link">&para;</a></h2>
+<p><strong>Description:</strong> Analyze the temporal structure of prediction errors to
+determine if errors are transient (random) or persistent (systematic
+episodes the model consistently gets wrong).</p>
+<p><strong>What it tests:</strong> If errors are IID, the model is doing its best and
+failures are random. If errors are autocorrelated and cluster into
+"error episodes," there are systematic failure modes that could
+potentially be detected and flagged in real-time.</p>
+<p><strong>Method:</strong>
+1. Compute error time series ε(t) on validation set.
+2. <strong>Autocorrelation function:</strong> ACF(ε², lag) for lag = 1...72 (6 hours).
+3. <strong>Error episode detection:</strong>
+   - Define "error episode" as consecutive run where |ε| &gt; 1.5 × median(|ε|).
+   - Measure: episode count, mean duration, max duration.
+   - What triggers episodes? (Correlate onset with meals, corrections, etc.)
+4. <strong>Stationarity test:</strong>
+   - Augmented Dickey-Fuller test on ε(t) — are errors stationary?
+   - Rolling mean/std of |ε| in 24h windows — does error level change
+     over the 180-day period?
+5. <strong>Transition matrix:</strong>
+   - Discretize errors into {small, medium, large} by tertiles.
+   - Compute 3×3 transition matrix P(error_size_{t+1} | error_size_t).
+   - If diagonal-dominant → errors are persistent.
+6. <strong>Real-time error predictor:</strong>
+   - Can recent error magnitude predict next-step error magnitude?
+   - Fit AR(3) on |ε(t)| → if R² &gt; 0.3, error episodes are predictable.</p>
+<p><strong>Output schema:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="p">{</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>  <span class="s2">"per_patient"</span><span class="p">:</span> <span class="p">[{</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>    <span class="s2">"patient"</span><span class="p">:</span> <span class="s2">"a"</span><span class="p">,</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>    <span class="s2">"acf_lag1"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span><span class="p">,</span> <span class="s2">"acf_lag6"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span><span class="p">,</span> <span class="s2">"acf_lag12"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span><span class="p">,</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>    <span class="s2">"acf_half_life_steps"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span>  <span class="o">//</span> <span class="n">lag</span> <span class="n">where</span> <span class="n">ACF</span> <span class="n">drops</span> <span class="n">to</span> <span class="mf">0.5</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>    <span class="s2">"n_error_episodes"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>    <span class="s2">"mean_episode_duration_min"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>    <span class="s2">"max_episode_duration_min"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span>
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>    <span class="s2">"episode_triggers"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"meal"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"correction"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"unknown"</span><span class="p">:</span> <span class="n">XX</span><span class="p">},</span>
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>    <span class="s2">"error_stationarity_p"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span><span class="p">,</span>
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>    <span class="s2">"transition_matrix"</span><span class="p">:</span> <span class="p">[[</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span> <span class="o">...</span><span class="p">],</span>
+<a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>    <span class="s2">"error_ar3_r2"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span>  <span class="o">//</span> <span class="n">predictability</span> <span class="n">of</span> <span class="n">error</span> <span class="n">magnitude</span>
+<a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a>  <span class="p">}],</span>
+<a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a>  <span class="s2">"population_mean_acf_lag1"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span><span class="p">,</span>
+<a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a>  <span class="s2">"population_mean_episode_duration_min"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span>
+<a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a>  <span class="s2">"error_predictable"</span><span class="p">:</span> <span class="n">true</span>  <span class="o">//</span> <span class="k">if</span> <span class="n">mean</span> <span class="n">AR3</span> <span class="n">R</span><span class="err">²</span> <span class="o">&gt;</span> <span class="mf">0.3</span>
+<a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a><span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Expected outcome:</strong> Errors are strongly autocorrelated (ACF lag-1 ≈
+0.85+) with half-life of ~30–60 min. Error episodes last 1–3 hours on
+average, triggered primarily by meals (60%) and corrections (25%).
+The error-magnitude AR(3) achieves R² ≈ 0.4–0.6, meaning we can
+PREDICT when the model is unreliable — enabling adaptive uncertainty
+bands (feeds back to EXP-843).</p>
+<p><strong>Leakage risk:</strong> ✅ None. All analysis on validation-set residuals.
+The AR(3) error predictor uses only past errors, not future.</p>
+<hr />
+<h2 id="exp-850-grand-error-budget">EXP-850: Grand Error Budget<a class="headerlink" href="#exp-850-grand-error-budget" title="Permanent link">&para;</a></h2>
+<p><strong>Description:</strong> Synthesize findings from EXP-841–849 into a single
+quantitative error budget that accounts for every component of the
+R² = 0.466 unexplained variance.</p>
+<p><strong>What it tests:</strong> Can we fully account for all prediction error?
+This experiment produces no new models — it combines the decompositions
+from this wave into a coherent error attribution that answers: "What
+would it take to reach R² = 0.7? 0.8? 0.9?"</p>
+<p><strong>Method:</strong>
+1. Pull results from EXP-841–849 (or recompute if not available).
+2. Construct layered error budget:
+   - <strong>Layer 1 — Sensor noise floor</strong> (from EXP-848):
+     MSE_sensor → R² ceiling from hardware alone
+   - <strong>Layer 2 — Model bias</strong> (from EXP-845):
+     MSE_bias → systematic errors (e.g., underpredicting excursions)
+   - <strong>Layer 3 — Model variance</strong> (from EXP-845):
+     MSE_variance → training instability (likely small)
+   - <strong>Layer 4 — Meal uncertainty</strong> (from EXP-846):
+     MSE_meal → error from meal-related contexts
+   - <strong>Layer 5 — Correction uncertainty</strong> (from EXP-846):
+     MSE_correction → error from insulin correction contexts
+   - <strong>Layer 6 — Physiological variability</strong> (from EXP-844):
+     MSE_regime → error from regime transitions and rare states
+   - <strong>Layer 7 — Temporal error clustering</strong> (from EXP-849):
+     MSE_episode → error concentrated in predictable episodes
+3. Cross-validate: do layers sum to total MSE? Adjust for overlap.
+4. <strong>Improvement roadmap:</strong> For each layer, estimate achievable R² gain:
+   - Better sensor: reduces Layer 1 → +0.03–0.05 R²
+   - Meal announcement: reduces Layer 4 → +0.04–0.08 R²
+   - Adaptive uncertainty: doesn't reduce MSE but flags Layer 7
+   - Patient-h intervention: reduces outlier drag → +0.02 R² on mean
+5. <strong>Theoretical R² ceiling</strong> with all improvements combined.</p>
+<p><strong>Output schema:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="p">{</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>  <span class="s2">"total_mse"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>  <span class="s2">"total_unexplained_r2"</span><span class="p">:</span> <span class="mf">0.466</span><span class="p">,</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>  <span class="s2">"error_budget"</span><span class="p">:</span> <span class="p">{</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>    <span class="s2">"sensor_noise"</span><span class="p">:</span>       <span class="p">{</span><span class="s2">"mse"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"pct"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"reducible"</span><span class="p">:</span> <span class="n">false</span><span class="p">},</span>
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>    <span class="s2">"model_bias"</span><span class="p">:</span>         <span class="p">{</span><span class="s2">"mse"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"pct"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"reducible"</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>                           <span class="s2">"how"</span><span class="p">:</span> <span class="s2">"better features or nonlinear"</span><span class="p">},</span>
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>    <span class="s2">"model_variance"</span><span class="p">:</span>     <span class="p">{</span><span class="s2">"mse"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"pct"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"reducible"</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>                           <span class="s2">"how"</span><span class="p">:</span> <span class="s2">"more data"</span><span class="p">},</span>
+<a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>    <span class="s2">"meal_uncertainty"</span><span class="p">:</span>   <span class="p">{</span><span class="s2">"mse"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"pct"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"reducible"</span><span class="p">:</span> <span class="s2">"partially"</span><span class="p">,</span>
+<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a>                           <span class="s2">"how"</span><span class="p">:</span> <span class="s2">"meal announcement, absorption modeling"</span><span class="p">},</span>
+<a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a>    <span class="s2">"correction_uncertainty"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"mse"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"pct"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"reducible"</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+<a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a>                           <span class="s2">"how"</span><span class="p">:</span> <span class="s2">"better insulin PK model"</span><span class="p">},</span>
+<a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a>    <span class="s2">"regime_transitions"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"mse"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"pct"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"reducible"</span><span class="p">:</span> <span class="s2">"partially"</span><span class="p">,</span>
+<a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a>                           <span class="s2">"how"</span><span class="p">:</span> <span class="s2">"regime detection + switching"</span><span class="p">},</span>
+<a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a>    <span class="s2">"unexplained"</span><span class="p">:</span>        <span class="p">{</span><span class="s2">"mse"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"pct"</span><span class="p">:</span> <span class="n">XX</span><span class="p">,</span> <span class="s2">"reducible"</span><span class="p">:</span> <span class="s2">"unknown"</span><span class="p">}</span>
+<a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a>  <span class="p">},</span>
+<a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a>  <span class="s2">"improvement_roadmap"</span><span class="p">:</span> <span class="p">[</span>
+<a id="__codelineno-10-19" name="__codelineno-10-19" href="#__codelineno-10-19"></a>    <span class="p">{</span><span class="s2">"intervention"</span><span class="p">:</span> <span class="s2">"meal_announcement"</span><span class="p">,</span> <span class="s2">"r2_gain"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span><span class="p">,</span> <span class="s2">"effort"</span><span class="p">:</span> <span class="s2">"low"</span><span class="p">},</span>
+<a id="__codelineno-10-20" name="__codelineno-10-20" href="#__codelineno-10-20"></a>    <span class="p">{</span><span class="s2">"intervention"</span><span class="p">:</span> <span class="s2">"better_sensor"</span><span class="p">,</span> <span class="s2">"r2_gain"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span><span class="p">,</span> <span class="s2">"effort"</span><span class="p">:</span> <span class="s2">"hardware"</span><span class="p">},</span>
+<a id="__codelineno-10-21" name="__codelineno-10-21" href="#__codelineno-10-21"></a>    <span class="p">{</span><span class="s2">"intervention"</span><span class="p">:</span> <span class="s2">"patient_h_fix"</span><span class="p">,</span> <span class="s2">"r2_gain"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span><span class="p">,</span> <span class="s2">"effort"</span><span class="p">:</span> <span class="s2">"low"</span><span class="p">},</span>
+<a id="__codelineno-10-22" name="__codelineno-10-22" href="#__codelineno-10-22"></a>    <span class="p">{</span><span class="s2">"intervention"</span><span class="p">:</span> <span class="s2">"regime_switching"</span><span class="p">,</span> <span class="s2">"r2_gain"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span><span class="p">,</span> <span class="s2">"effort"</span><span class="p">:</span> <span class="s2">"medium"</span><span class="p">}</span>
+<a id="__codelineno-10-23" name="__codelineno-10-23" href="#__codelineno-10-23"></a>  <span class="p">],</span>
+<a id="__codelineno-10-24" name="__codelineno-10-24" href="#__codelineno-10-24"></a>  <span class="s2">"theoretical_ceiling_all_improvements"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span><span class="p">,</span>
+<a id="__codelineno-10-25" name="__codelineno-10-25" href="#__codelineno-10-25"></a>  <span class="s2">"patient_h_impact_on_population_mean"</span><span class="p">:</span> <span class="mf">0.</span><span class="n">XX</span>
+<a id="__codelineno-10-26" name="__codelineno-10-26" href="#__codelineno-10-26"></a><span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Expected outcome:</strong> The budget will show:
+- ~20% sensor noise (irreducible without better hardware)
+- ~40–50% meal/correction uncertainty (partially reducible with announcements)
+- ~5–10% model bias (small, confirms model class is adequate)
+- ~2–3% model variance (negligible, ridge is stable)
+- ~15–20% physiological variability + unknown
+- Theoretical ceiling with all feasible improvements: R² ≈ 0.65–0.72
+- This establishes that R² ≈ 0.70 is the practical ceiling for
+  60-min prediction from retrospective CGM data.</p>
+<p><strong>Leakage risk:</strong> ✅ None. This is a synthesis experiment — no new models,
+only aggregation of prior results.</p>
+<hr />
+<h2 id="dependency-graph">Dependency Graph<a class="headerlink" href="#dependency-graph" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>EXP-841 (Residual Context)  ──────────┐
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>EXP-842 (Patient h Forensic)          │
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>EXP-843 (Conformal Intervals) ◄──────┤
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>EXP-844 (Regime Segmentation) ◄──────┤
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>EXP-845 (Bias-Variance-Noise) ◄──────┤──► EXP-850 (Grand Error Budget)
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>EXP-846 (Error Attribution)   ◄──────┤
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>EXP-847 (Mutual Information)          │
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>EXP-848 (Sensor Noise Floor)  ────────┤
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>EXP-849 (Error Persistence)   ────────┘
+</code></pre></div>
+<p>All experiments 841–849 are independent and can run in parallel.
+EXP-850 synthesizes all results and should run last.</p>
+<hr />
+<h2 id="implementation-notes">Implementation Notes<a class="headerlink" href="#implementation-notes" title="Permanent link">&para;</a></h2>
+<h3 id="shared-helpers-to-add-in-exp_autoresearch_841py">Shared helpers to add in <code>exp_autoresearch_841.py</code>:<a class="headerlink" href="#shared-helpers-to-add-in-exp_autoresearch_841py" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">_classify_context</span><span class="p">(</span><span class="n">bg</span><span class="p">,</span> <span class="n">iob</span><span class="p">,</span> <span class="n">cob</span><span class="p">,</span> <span class="n">hour</span><span class="p">):</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">    </span><span class="sd">"""Return (bg_bin, metabolic_state, circadian_phase) tuple."""</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>    <span class="o">...</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="k">def</span><span class="w"> </span><span class="nf">_ksg_mutual_information</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">    </span><span class="sd">"""KSG mutual information estimator for continuous variables."""</span>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>    <span class="o">...</span>
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="k">def</span><span class="w"> </span><span class="nf">_allan_deviation</span><span class="p">(</span><span class="n">bg_series</span><span class="p">,</span> <span class="n">tau_steps</span><span class="p">):</span>
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a><span class="w">    </span><span class="sd">"""Overlapping Allan deviation at given tau."""</span>
+<a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a>    <span class="o">...</span>
+<a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a>
+<a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a><span class="k">def</span><span class="w"> </span><span class="nf">_conformal_quantile</span><span class="p">(</span><span class="n">residuals</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+<a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a><span class="w">    </span><span class="sd">"""Split conformal prediction quantile."""</span>
+<a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a>    <span class="o">...</span>
+</code></pre></div>
+<h3 id="risk-register">Risk Register<a class="headerlink" href="#risk-register" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Exp</th>
+<th>Risk</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>841</td>
+<td>Sparse cells in 3D grid</td>
+<td>Collapse low-count cells; require n≥30</td>
+</tr>
+<tr>
+<td>842</td>
+<td>Patient h may have legitimate different physiology</td>
+<td>Include cross-patient baseline for comparison</td>
+</tr>
+<tr>
+<td>843</td>
+<td>Three-way split reduces training data</td>
+<td>Use 60/15/25 to preserve most training data</td>
+</tr>
+<tr>
+<td>844</td>
+<td>k-means sensitive to initialization</td>
+<td>Run 10 restarts, report silhouette stability</td>
+</tr>
+<tr>
+<td>845</td>
+<td>Bootstrap variance estimate noisy for small B</td>
+<td>Use B=50, report confidence intervals on decomposition</td>
+</tr>
+<tr>
+<td>846</td>
+<td>Context windows overlap (post-meal + post-correction)</td>
+<td>Allow overlap, report both exclusive and inclusive attribution</td>
+</tr>
+<tr>
+<td>847</td>
+<td>KSG estimator unreliable in 16D</td>
+<td>Also report 2D pairwise MI as sanity check</td>
+</tr>
+<tr>
+<td>848</td>
+<td>Sensor noise varies with BG level (heteroscedastic)</td>
+<td>Stratify noise estimation by BG range</td>
+</tr>
+<tr>
+<td>849</td>
+<td>Validation set may be too short for ACF at long lags</td>
+<td>Limit ACF to lag ≤ 72 (6h), require n&gt;500 for stationarity test</td>
+</tr>
+<tr>
+<td>850</td>
+<td>Error components may not be additive</td>
+<td>Report overlap-adjusted budget + raw sum for transparency</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="summary-table">Summary Table<a class="headerlink" href="#summary-table" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Exp</th>
+<th>Name</th>
+<th>Question</th>
+<th>Key Metric</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>841</td>
+<td>Residual Context Fingerprinting</td>
+<td>WHERE does the model fail?</td>
+<td>Error concentration Gini coefficient</td>
+</tr>
+<tr>
+<td>842</td>
+<td>Patient-h Forensic Diagnostic</td>
+<td>WHY does patient h fail?</td>
+<td>Diagnosis category</td>
+</tr>
+<tr>
+<td>843</td>
+<td>Conformal Prediction Intervals</td>
+<td>WHEN is the model uncertain?</td>
+<td>Coverage &amp; interval width</td>
+</tr>
+<tr>
+<td>844</td>
+<td>Metabolic Regime Segmentation</td>
+<td>WHAT physiological modes exist?</td>
+<td>Per-regime R² spread</td>
+</tr>
+<tr>
+<td>845</td>
+<td>Bias-Variance-Noise Decomposition</td>
+<td>HOW MUCH error is fixable?</td>
+<td>Noise % of total MSE</td>
+</tr>
+<tr>
+<td>846</td>
+<td>Contextual Error Attribution</td>
+<td>WHAT CAUSES the error?</td>
+<td>Per-context error share</td>
+</tr>
+<tr>
+<td>847</td>
+<td>Mutual Information Feature Ceiling</td>
+<td>HOW MUCH info do features carry?</td>
+<td>Information utilization ratio</td>
+</tr>
+<tr>
+<td>848</td>
+<td>Sensor Noise Floor Estimation</td>
+<td>WHAT is the hardware limit?</td>
+<td>R² ceiling from noise</td>
+</tr>
+<tr>
+<td>849</td>
+<td>Error Persistence &amp; Autocorrelation</td>
+<td>ARE errors predictable?</td>
+<td>Error AR(3) R²</td>
+</tr>
+<tr>
+<td>850</td>
+<td>Grand Error Budget</td>
+<td>WHAT would it take to improve?</td>
+<td>Layered MSE attribution</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

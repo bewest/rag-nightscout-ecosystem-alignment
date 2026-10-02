@@ -1,0 +1,7804 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/60-research/programme/stack-census-2026-09-30/cloud-layer.html">
+      
+      
+        <link rel="prev" href="index.html">
+      
+      
+        <link rel="next" href="device-layer.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>The cloud layer: connectors, documented routes, and what quality control would need - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#the-cloud-layer-connectors-documented-routes-and-what-quality-control-would-need" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              The cloud layer: connectors, documented routes, and what quality control would need
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../30-design/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_27" id="__nav_5_27_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_27_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_27">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    60-research/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../exp-2844-phenotype-drilldown-report-2026-04-22.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-0001 to 2869
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../exp-2870-envelope-crossover-report-2026-04-22.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2870 to 2909
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../exp-2910-eight-dim-regrade-2026-04-23.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2910 to 2949
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../exp-2950-uniform-action-curve-2026-04-23.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2950 to 2999
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../exp-3000-3003-cf-replay-maturation-2026-04-25.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-3000 and later
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../AUTORESEARCH-SESSION-2026-04-26.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Programme, closeouts and syntheses
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../accuracy-validation-2026-04-05.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Productionization and pipelines
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../capability-report-clinical-decision-support.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Capability reports
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../circadian-therapy-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Therapy
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../aid-aware-settings-report-2026-04-09.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings and profiles
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../natural-experiment-deconfounding-2026-04-09.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Natural experiments
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../bilateral-deconfounding-report-2026-04-19.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EGP, supply-demand and deconfounding
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../autotune-uam-characterization-report.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Meals and carbohydrates
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../causal-pk-leakage-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Insulin, ISF and pharmacokinetics
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../acceleration-clinical-utility-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clinical, safety and hypoglycaemia
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../aid-author-recommendations-report-2026-04-20.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AID controllers, cohorts and waves
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../centering-dynamics-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forecasting, prediction and classification
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../advanced-architectures-benchmark-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ML methods and architectures
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../canonical/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    canonical/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../collaboration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    collaboration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../external-inventories/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    external-inventories/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../modernization/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    modernization/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27_24" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    programme/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_27_24" id="__nav_5_27_24_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_27_24_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_27_24">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    programme/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../paving-the-cowpaths-2026-09-27.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Paving the cowpaths: the 15.0.9 release candidate as a quality record
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stack-census-2026-09-30.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The ecosystem stack, measured — 2026-09-30
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stakeholder-priority-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stakeholder Priority Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workflow-completeness-critique-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Completeness critique — what this workflow is missing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27_24_6" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    stack-census-2026-09-30/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_27_24_6" id="__nav_5_27_24_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_27_24_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_27_24_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    stack-census-2026-09-30/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The cloud layer: connectors, documented routes, and what quality control would need
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="cloud-layer.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The cloud layer: connectors, documented routes, and what quality control would need
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-cloud-connectors-in-the-corpus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Cloud connectors in the corpus
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Cloud connectors in the corpus">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-per-connector" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Per connector
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-independent-implementations-per-vendor-cloud" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Independent implementations per vendor cloud
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-vendor-driven-changes-2023-09-30-to-2026-09-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Vendor-driven changes, 2023-09-30 to 2026-09-30
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-documented-routes-out-of-the-vendor-clouds-and-the-rules-around-them" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Documented routes out of the vendor clouds, and the rules around them
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Documented routes out of the vendor clouds, and the rules around them">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-vendor-and-platform-routes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Vendor and platform routes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-data-rights-law-and-regulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Data-rights law and regulation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-wearables-and-other-data-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Wearables and other data sources
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Wearables and other data sources">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-in-the-ecosystem-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 In the ecosystem code
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-what-the-vendors-offer-read-2026-09-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 What the vendors offer (read 2026-09-30)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-what-quality-control-at-the-cloud-layer-would-need" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. What quality control at the cloud layer would need
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. What quality control at the cloud layer would need">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-what-exists-today" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 What exists today
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-the-pieces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 The pieces
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-constraints-to-carry-into-any-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Constraints to carry into any design
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-how-the-pieces-relate-to-data-sovereignty" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 How the pieces relate to data sovereignty
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="device-layer.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Device layer: drivers, simulators, protocol work, and V&amp;V
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="histories.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quality management, histories, funders and consensus methods: research notes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../remedial/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    remedial/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../tenancy/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenancy/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-cloud-connectors-in-the-corpus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Cloud connectors in the corpus
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Cloud connectors in the corpus">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-per-connector" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Per connector
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-independent-implementations-per-vendor-cloud" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Independent implementations per vendor cloud
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-vendor-driven-changes-2023-09-30-to-2026-09-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Vendor-driven changes, 2023-09-30 to 2026-09-30
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-documented-routes-out-of-the-vendor-clouds-and-the-rules-around-them" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Documented routes out of the vendor clouds, and the rules around them
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Documented routes out of the vendor clouds, and the rules around them">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-vendor-and-platform-routes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Vendor and platform routes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-data-rights-law-and-regulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Data-rights law and regulation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-wearables-and-other-data-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Wearables and other data sources
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Wearables and other data sources">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-in-the-ecosystem-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 In the ecosystem code
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-what-the-vendors-offer-read-2026-09-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 What the vendors offer (read 2026-09-30)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-what-quality-control-at-the-cloud-layer-would-need" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. What quality control at the cloud layer would need
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. What quality control at the cloud layer would need">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-what-exists-today" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 What exists today
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-the-pieces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 The pieces
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-constraints-to-carry-into-any-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Constraints to carry into any design
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-how-the-pieces-relate-to-data-sovereignty" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 How the pieces relate to data sovereignty
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="the-cloud-layer-connectors-documented-routes-and-what-quality-control-would-need">The cloud layer: connectors, documented routes, and what quality control would need<a class="headerlink" href="#the-cloud-layer-connectors-documented-routes-and-what-quality-control-would-need" title="Permanent link">&para;</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Record</p>
+<p>Record as of 2026-09-30. A point-in-time document; it is not kept up to date.</p>
+</div>
+<p><em>Contributor-facing. Annex to the <a href="../stack-census-2026-09-30.html">stack census record of 2026-09-30</a>; a snapshot, not rewritten as the world moves. Prepared by research agents from the clones and pages named in it, and checked by the session that wrote the record.</em></p>
+<p><em>Research note for the Nightscout Foundation, 2026-09-30. Draft; the legal and regulatory
+items in §2.2 are for review by counsel and a regulatory professional before anything relies
+on them, and the effort figures in §4 are estimates. Every external fact carries its URL and
+was read on 2026-09-30. Commit shas are short shas from the clones under
+<code>externals/stack/</code>. This note does not repeat the vendor-change table in the sponsored-team
+proposal §6a, the vendor calendar in COLLABORATION-MODEL §3, <code>docs/DIGITAL-RIGHTS.md</code> or
+<code>docs/state-of-diabetes-2026.md</code> Part III; it adds to them. The <code>mapping/</code> entries for
+nightscout-connect, nightscout-librelink-up, share2nightscout-bridge, tconnectsync and
+nocturne date from 2026-01-29 and list eight Nocturne connectors; the current tree has
+fourteen (§1.1).</em></p>
+<p><em>Scope of "data sovereignty" here: the data holder (the person with diabetes or their
+caregiver) being able to get their data out of vendor clouds, in a form they can compute on,
+and to hand that job to tools and helpers they choose. The five rights used in §4 are the
+ones in <code>docs/state-of-diabetes-2026.md</code> Part III: access, export, share, delegate, audit.</em></p>
+<h2 id="1-cloud-connectors-in-the-corpus">1. Cloud connectors in the corpus<a class="headerlink" href="#1-cloud-connectors-in-the-corpus" title="Permanent link">&para;</a></h2>
+<p>Clones under <code>externals/stack/&lt;owner&gt;__&lt;repo&gt;</code>, fetched for the stack census
+(<code>tools/programme/stack-census/repos.tsv</code>), read 2026-09-30. Commit and author figures are in the census table
+(<code>tools/programme/stack-census/results/census-2026-09-30.md</code>), not here. Test counts are <code>test(</code>/<code>it(</code>, <code>def test_</code>,
+<code>func test</code>, <code>@Test</code>, <code>[Fact]</code>/<code>[Theory]</code> or Ginkgo <code>It(</code> occurrences, so they count cases as
+written, not parameterised expansions. "Official" and "unofficial" are what each project says
+about itself; where it says nothing, the entry says so.</p>
+<h3 id="11-per-connector">1.1 Per connector<a class="headerlink" href="#11-per-connector" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>connector (HEAD)</th>
+<th>vendor clouds reached</th>
+<th>API status as the project states it</th>
+<th>tests</th>
+<th>CI</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>nightscout/nightscout-connect (<code>4dde1ecd</code> main = v0.1.0, 2026-09-24; dev <code>04102f9</code> starts 0.1.1)</td>
+<td>LibreLinkUp (<code>lib/sources/librelinkup.js</code>), Dexcom Share (<code>dexcomshare.js</code>), Glooko (<code>lib/sources/glooko/</code>), Medtronic CareLink (<code>lib/sources/minimedcarelink/</code>, README roadmap strikes "Medtronic" through), Nightscout-to-Nightscout</td>
+<td>Glooko: "not an official supported Glooko API contract" (<code>docs/glooko-sync.md</code>); no statement for the others</td>
+<td>34 files in <code>test/</code>, 258 cases; synthetic responses written in the tests, one JSON fixture (<code>test/fixtures/nightscout-full-sync.json</code>); a LibreLinkUp lab (<code>scripts/librelinkup-lab/fixture.js</code>) replaces the vendor transport with a synthetic one; live probes (<code>scripts/glooko-live-probe.js</code>, LibreLinkUp regional lab) refuse to run without an explicit flag and are not in CI (<code>test/glooko-live-probe.test.js</code>)</td>
+<td>GitHub Actions <code>test.yml</code>: Node 22 and 24, LibreLinkUp tests under three host time zones, and a job that builds cgm-remote-monitor at a pinned commit and runs the synthetic source against real Nightscout storage</td>
+</tr>
+<tr>
+<td>timoschlueter/nightscout-librelink-up (<code>bff2317f</code>, 2026-03-04)</td>
+<td>LibreLinkUp, 13 regions listed in README (<code>LINK_UP_REGION</code>)</td>
+<td>no statement found; README says the app-version value "may need to be updated"</td>
+<td>2 files, 10 cases (jest); recorded-shape JSON in <code>tests/data/</code> (login, login-failed, connections, graph, entries)</td>
+<td>tests run inside the Docker build (<code>Dockerfile</code> "Run tests"), triggered by <code>docker-image.yml</code></td>
+</tr>
+<tr>
+<td>nightscout/share2nightscout-bridge (<code>518c85c4</code>, 2026-03-03)</td>
+<td>Dexcom Share</td>
+<td>none; README: "DEPRECATED ... will be archived on 2026-03-31", migrate to nightscout-connect</td>
+<td>3 files, 6 cases (mocha)</td>
+<td><code>wercker.yml</code> only; no GitHub Actions</td>
+</tr>
+<tr>
+<td>nightscout/minimed-connect-to-nightscout (<code>57bb042c</code>, 2026-03-03)</td>
+<td>Medtronic CareLink (US and EU servers)</td>
+<td>none; README: deprecated, migrate to nightscout-connect. The cgm-remote-monitor maintainer reports that it no longer works; not measured here</td>
+<td>8 files, 24 cases; <code>_fixtures.js</code>/<code>_samples.js</code> hold sample payloads; <code>connectEu.js</code>/<code>connectUs.js</code> were added as live "connection test for EU and US server" (<code>bc1e47a</code>)</td>
+<td>CircleCI <code>config.yml</code></td>
+</tr>
+<tr>
+<td>jwoglom/tconnectsync (<code>7c4b2f4d</code> = v3.0.1, 2026-07-21)</td>
+<td>Tandem Source (US and EU; t:connect retired)</td>
+<td>README: "querying Tandem's undocumented APIs"</td>
+<td>54 files, 463 cases (pytest); parser and processor tests "from real captured pump-log data" (<code>9d8ab28</code>, <code>cb04579</code>, <code>6f98798</code>); fake API and fake Nightscout (<code>tests/api/fake.py</code>, <code>tests/nightscout_fake.py</code>); EU integration tests (<code>4655e31</code>)</td>
+<td>GitHub Actions <code>python-package.yml</code>, Python 3.8-3.11</td>
+</tr>
+<tr>
+<td>LoopKit/TidepoolService (<code>99ac3544</code>, dev, 2026-09-26)</td>
+<td>Tidepool (upload), through TidepoolKit</td>
+<td>Tidepool's own client library; Tidepool publishes its API (see §2)</td>
+<td><code>TidepoolServiceKitTests</code>, 61 cases</td>
+<td>no CI configuration in the repository</td>
+</tr>
+<tr>
+<td>LoopKit/dexcom-share-client-swift (<code>ff0d7143</code>, dev, 2026-09-26)</td>
+<td>Dexcom Share (US, worldwide, Japan/APAC hosts)</td>
+<td>none (no README)</td>
+<td>0 cases</td>
+<td><code>.travis.yml</code> only</td>
+</tr>
+<tr>
+<td>tidepool-org/uploader (<code>22f53325</code>, develop, 2026-09-22)</td>
+<td>none for data; reads devices over USB/BLE (<code>lib/drivers/</code>: abbott, dexcom, insulet, medtronic, medtronic600, tandem, roche and others) and parses a user-exported LibreView CSV (<code>lib/drivers/abbott/libreViewDriver.js</code>); a CareLink option is being phased out (<code>app/components/Upload.js</code>)</td>
+<td>device protocols; export file</td>
+<td>30 files, 994 cases (jest)</td>
+<td>CircleCI</td>
+</tr>
+<tr>
+<td>tidepool-org/platform (<code>ea099262</code>, 2026-09-24)</td>
+<td>Dexcom developer API through OAuth (<code>dexcom/</code>, metrics <code>tidepool_dexcom_api_*</code> in README); Abbott through a private plugin (<code>.gitmodules</code>: <code>private/plugin/abbott</code>, <code>update = none</code>; the public tree holds a stub <code>plugin/abbott/</code>); Oura partner API with webhooks (<code>oura/</code>); twiist (<code>twiist/</code>)</td>
+<td>partner integrations (OAuth provider sessions, <code>oauth/</code>, <code>provider/</code>)</td>
+<td>625 <code>_test.go</code> files; <code>dexcom/</code> alone 69 files, 466 cases; generated test data (<code>dexcom/test/</code>)</td>
+<td><code>.travis.yml</code></td>
+</tr>
+<tr>
+<td>nightscout/nocturne (<code>f9c1f889</code>, 2026-09-30) in-tree <code>src/Connectors/</code></td>
+<td>Dexcom Share, LibreLinkUp (<code>FreeStyle</code>, 10 regional hosts, an app-version value in the installer), CareLink, Tandem Source, Glooko, Eversense, twiist, mylife (Ypsomed), Gluroo, MyFitnessPal, Tidepool (read), Nightscout, Home Assistant, Nocturne-to-Nocturne</td>
+<td>Tandem: derived from tconnectsync, "which reverse-engineered" the API (<code>TandemConstants.cs</code>); twiist: "Reverse-engineered from the Twiist Insight iOS app" (<code>TwiistConstants.cs</code>); others: no statement</td>
+<td>one xUnit project per connector; cases: CareLink 86, Dexcom 15, Eversense 23, FreeStyle 6, Glooko 222, MyFitnessPal 45, MyLife 45, Tandem 69, Tidepool 18, Twiist 26, Nightscout 106, Core 190; HTTP mocked in code, no recorded data files</td>
+<td>GitHub Actions <code>tests.yml</code> (<code>dotnet test --filter "Category!=Integration"</code>) and CodeQL</td>
+</tr>
+</tbody>
+</table>
+<p>Followers and controllers with cloud clients in-tree:</p>
+<table>
+<thead>
+<tr>
+<th>app (HEAD)</th>
+<th>vendor clouds reached</th>
+<th>tests on those clients</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NightscoutFoundation/xDrip (<code>9898cb8e</code>, 2026-09-25)</td>
+<td>Dexcom Share (<code>cgm/sharefollow</code>), CareLink (<code>cgm/carelinkfollow</code>), Tidepool upload (<code>tidepool/</code>), "WebFollow" (<code>cgm/webfollow</code>), a "Community script template loader" whose target service is defined by a downloaded template, not in app code; Health Connect</td>
+<td>carelinkfollow 12, sharefollow 13, webfollow 6 (<code>@Test</code>); CI <code>unit_test.yml</code></td>
+</tr>
+<tr>
+<td>JohanDegraeve/xdripswift (<code>c268542e</code>, 2026-09-22)</td>
+<td>LibreLinkUp, Dexcom Share (follow and upload), CareLink (follower mode added 2026-08-08, <code>48c9905d</code>), Medtrum EasyView (added 2025-12-16, <code>bc7f4534</code>); HealthKit</td>
+<td><code>CareLinkTests.swift</code> 107 cases; no LibreLinkUp, Dexcom Share or Medtrum tests found; CI builds only</td>
+</tr>
+<tr>
+<td>gui-dos/DiaBLE (<code>e6a909c8</code>, 2026-07-30)</td>
+<td>LibreLinkUp and LibreView (<code>DiaBLE/LibreLink.swift</code>)</td>
+<td>none found</td>
+</tr>
+<tr>
+<td>j-kaltes/Juggluco (<code>db70dc14</code>, 2026-09-30)</td>
+<td>uploads to LibreView (<code>tk.glucodata.Libreview</code>); Health Connect (glucose only)</td>
+<td>none found</td>
+</tr>
+<tr>
+<td>loopandlearn/LoopFollow (<code>4a74b781</code>, 2026-09-20)</td>
+<td>Dexcom Share through a vendored copy of ShareClient (<code>Pods/ShareClient/</code>)</td>
+<td>none found for ShareClient</td>
+</tr>
+<tr>
+<td>Loop and Trio</td>
+<td>Dexcom Share and Tidepool through the loopandlearn forks of dexcom-share-client-swift and TidepoolService (Trio <code>.gitmodules</code>)</td>
+<td>as the upstream packages</td>
+</tr>
+<tr>
+<td>nightscout/AndroidAPS</td>
+<td>Tidepool upload (<code>plugins/sync/.../tidepool/comm/TidepoolUploader.kt</code>); <code>medtrum.com</code> hits are licence headers in the pump driver, not a cloud client</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>Outside the census but present in the workspace (<code>externals/</code>): four more Glooko clients,
+lsandini/glooko2nightscout (<code>9ab8c608</code>, 2025-09-01), itconor/glooko-nightscout-eu
+(<code>2b7fbc45</code>, 2026-06-25), spamsch/glooko-reader (<code>22837f6c</code>, 2026-03-30) and
+nightscout/GlookoServiceKit (<code>8e2cad1c</code>, 2026-06-27). They were not examined further.</p>
+<h3 id="12-independent-implementations-per-vendor-cloud">1.2 Independent implementations per vendor cloud<a class="headerlink" href="#12-independent-implementations-per-vendor-cloud" title="Permanent link">&para;</a></h3>
+<p>Counted as separate code bases that log in to the vendor cloud themselves. A vendored copy
+(LoopFollow's ShareClient) or a fork used by Loop and Trio is not counted again. A port that
+says it follows another project (Nocturne's Tandem connector, "following tconnectsync v3.0.0",
+<code>e671a00e</code>) is counted but marked.</p>
+<table>
+<thead>
+<tr>
+<th>vendor cloud</th>
+<th>kind of access</th>
+<th>implementations in the corpus</th>
+<th style="text-align: right;">count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Abbott LibreLinkUp (follower service)</td>
+<td>unofficial</td>
+<td>nightscout-librelink-up, nightscout-connect, xdripswift, DiaBLE, Nocturne FreeStyle; xDrip+ WebFollow possibly (template-defined)</td>
+<td style="text-align: right;">5 (+1)</td>
+</tr>
+<tr>
+<td>Abbott LibreView</td>
+<td>upload (Juggluco); CSV export parser (Tidepool uploader); partner route (Tidepool private plugin)</td>
+<td>Juggluco, Tidepool uploader, Tidepool platform</td>
+<td style="text-align: right;">3, each a different route</td>
+</tr>
+<tr>
+<td>Dexcom Share (follower service)</td>
+<td>unofficial</td>
+<td>nightscout-connect, share2nightscout-bridge (deprecated), dexcom-share-client-swift (also used by Loop, Trio, LoopFollow), xDrip+, xdripswift, Nocturne</td>
+<td style="text-align: right;">6 (5 once the bridge is archived)</td>
+</tr>
+<tr>
+<td>Dexcom developer API</td>
+<td>official, OAuth</td>
+<td>Tidepool platform</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>Medtronic CareLink</td>
+<td>unofficial</td>
+<td>minimed-connect-to-nightscout (deprecated, reported not working), nightscout-connect, xDrip+, xdripswift, Nocturne</td>
+<td style="text-align: right;">5 (4 current)</td>
+</tr>
+<tr>
+<td>Tandem Source</td>
+<td>unofficial ("undocumented APIs")</td>
+<td>tconnectsync; Nocturne Tandem (derived)</td>
+<td style="text-align: right;">1 + 1 derived</td>
+</tr>
+<tr>
+<td>Glooko</td>
+<td>unofficial per nightscout-connect</td>
+<td>nightscout-connect, Nocturne; four more outside the census</td>
+<td style="text-align: right;">2 (+4)</td>
+</tr>
+<tr>
+<td>Tidepool</td>
+<td>published API</td>
+<td>TidepoolService/TidepoolKit, xDrip+, AndroidAPS (upload); Nocturne (read)</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr>
+<td>Eversense cloud</td>
+<td>no statement</td>
+<td>Nocturne</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>twiist</td>
+<td>Nocturne "reverse-engineered"; Tidepool platform partner provider</td>
+<td>Nocturne, Tidepool platform</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td>Medtrum EasyView</td>
+<td>no statement</td>
+<td>xdripswift</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>mylife (Ypsomed), Gluroo</td>
+<td>no statement</td>
+<td>Nocturne</td>
+<td style="text-align: right;">1 each</td>
+</tr>
+<tr>
+<td>MyFitnessPal</td>
+<td>no statement</td>
+<td>Nocturne</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>Oura</td>
+<td>partner API</td>
+<td>Tidepool platform</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+<p>Every one of these implementations meets the same vendor change separately. The widest
+fan-out is Dexcom Share (six code bases, four languages) and LibreLinkUp (five or six).</p>
+<h3 id="13-vendor-driven-changes-2023-09-30-to-2026-09-30">1.3 Vendor-driven changes, 2023-09-30 to 2026-09-30<a class="headerlink" href="#13-vendor-driven-changes-2023-09-30-to-2026-09-30" title="Permanent link">&para;</a></h3>
+<p>Method: <code>git log</code> subjects matching login, token, OAuth/SSO, header, app-version, region,
+endpoint, response shape, WAF/Cloudflare, API-version terms, read one by one; only commits
+whose subject says the vendor side changed (or that a new vendor region or service
+generation had to be supported) are counted. Author dates. Counts are events (one vendor
+change may take several commits), with commits in brackets. This is read from commit
+subjects, not reproduced against the vendors; subjects can overstate or understate cause.</p>
+<table>
+<thead>
+<tr>
+<th>connector</th>
+<th>vendor</th>
+<th style="text-align: right;">events (commits)</th>
+<th>examples</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>timoschlueter/nightscout-librelink-up</td>
+<td>LibreLinkUp</td>
+<td style="text-align: right;">6 (10)</td>
+<td>requests blocked, 2024-04-02 <code>8d173e8</code>, app version and user agent 2024-04-05 <code>f5310f6</code>; endpoints and LA region 2024-06-27/07-09 <code>64a89a8</code> <code>13b46f9</code>; "connection errors starting November 2024" <code>420b340</code>, an app-version value <code>e406ae4</code>, RU endpoint <code>b77fd4e</code> (2024-11-15); account id from the login response 2025-01-03 <code>9bd2a9d</code>; CN region 2025-03-05 <code>1b13082</code>; an app-version value 2025-10-02 <code>1dadafe</code></td>
+</tr>
+<tr>
+<td>xdripswift</td>
+<td>LibreLinkUp</td>
+<td style="text-align: right;">7 (7)</td>
+<td>GB accounts (eu2) 2023-12-28 <code>3b083376</code>; account header "required by" a newer app version 2024-07-12 <code>13e4a1e7</code>, LA subdomain <code>132b14a3</code>; app version 2024-10-04 <code>09995b25</code>; Russia 2025-03-10 <code>7347cc5f</code>; an app-version value 2025-10-02 <code>512c0b16</code>; an app-version value 2025-12-04 <code>b69dc490</code></td>
+</tr>
+<tr>
+<td>nightscout-connect</td>
+<td>LibreLinkUp</td>
+<td style="text-align: right;">3 (4)</td>
+<td>"Fixing librelinkup failure" 2024-01-11 <code>0e8cf6e</code>; "October 2025 changes", authored 2025-10-21, landed 2026-09-22 <code>f52d929</code>; v4 login and response shape 2026-09-22 <code>370d9f4</code> <code>3dbd1a6</code></td>
+</tr>
+<tr>
+<td>DiaBLE</td>
+<td>LibreLinkUp</td>
+<td style="text-align: right;">1 (3)</td>
+<td>a newer LibreLinkUp generation ("LLU 5") whose graph data the project describes as encrypted and signed, 2026-04-25 <code>ad597a6</code> <code>a26a9d3</code> <code>c24b234</code></td>
+</tr>
+<tr>
+<td>Nocturne FreeStyle</td>
+<td>LibreLinkUp</td>
+<td style="text-align: right;">1-2 (2)</td>
+<td>"Fix Freestyle API integration" 2026-01-13 <code>4b371634</code> (cause not stated); LibreLinkUp terms prompts reported as refusals 2026-09-27 <code>828b25ce</code></td>
+</tr>
+<tr>
+<td>nightscout-connect</td>
+<td>Dexcom Share</td>
+<td style="text-align: right;">1 (1)</td>
+<td>"handle modern response shape" 2026-06-29 <code>980c8a5</code></td>
+</tr>
+<tr>
+<td>xdripswift</td>
+<td>Dexcom Share</td>
+<td style="text-align: right;">1 (1)</td>
+<td>two-step login and Japan region 2025-11-03 <code>f6942117</code></td>
+</tr>
+<tr>
+<td>dexcom-share-client-swift</td>
+<td>Dexcom Share</td>
+<td style="text-align: right;">1 (1)</td>
+<td>Japan and APAC 2024-04-07 <code>21d8657</code></td>
+</tr>
+<tr>
+<td>share2nightscout-bridge</td>
+<td>Dexcom Share</td>
+<td style="text-align: right;">0</td>
+<td>last one 2021-11-30 (trend as string, <code>62b7d2a</code>), already in the sponsored-team proposal §6a</td>
+</tr>
+<tr>
+<td>Tidepool platform</td>
+<td>Dexcom developer API</td>
+<td style="text-align: right;">1 (1)</td>
+<td>"Do not specify last sync time for Dexcom data range API, per Dexcom" and response "oddities", 2026-07-24 <code>e62f6b58</code>; other Dexcom commits in the window are additive (G7 15-day, 2025-12-05 <code>51a79a53</code>) or error handling (<code>902f3051</code>)</td>
+</tr>
+<tr>
+<td>xDrip+</td>
+<td>CareLink</td>
+<td style="text-align: right;">7 (9)</td>
+<td>reCAPTCHA and token refresh 2023-10-07 <code>a5b9af49</code>; care-partner app login 2023-11-26 <code>84efa6a6</code>; discovery URL 2024-11-16 <code>79ac7a12</code>; "v11 cloud data endpoint" EU 2025-01-18 <code>2baa087d</code>, US 2025-02-09 <code>f70d8470</code>; standalone sensors "migrated from legacy servers to cloud servers" 2025-03-12 <code>400d6968</code>; discovery URL and SSO configuration 2026-01-03 <code>bbcbb39e</code> <code>ddbca756</code>; app version 3.8.0 2026-08-25 <code>1f9c66d6</code></td>
+</tr>
+<tr>
+<td>xdripswift</td>
+<td>CareLink</td>
+<td style="text-align: right;">0-1</td>
+<td>follower written 2026-08; "Use CarePartner OAuth" 2026-08-21 <code>7415ede3</code> is a design choice in a new client</td>
+</tr>
+<tr>
+<td>Nocturne CareLink</td>
+<td>CareLink</td>
+<td style="text-align: right;">0-1 (1)</td>
+<td>a WAF answering requests without a user agent with 403, 2026-07-30 <code>5b7fad9e</code> (the commit lists it with two local faults)</td>
+</tr>
+<tr>
+<td>minimed-connect-to-nightscout</td>
+<td>CareLink</td>
+<td style="text-align: right;">0</td>
+<td>last one 2023-06-07 (<code>54b61fe</code>, just before the window)</td>
+</tr>
+<tr>
+<td>nightscout-connect</td>
+<td>CareLink</td>
+<td style="text-align: right;">0</td>
+<td>source disabled 2023-10-11 (<code>2fb8d21</code>), later kept in-tree with contract and logging fixes</td>
+</tr>
+<tr>
+<td>tconnectsync</td>
+<td>Tandem</td>
+<td style="text-align: right;">5 (7)</td>
+<td>web login broke and WAF block 2024-09-08 <code>c9f6362</code> <code>c60b19d</code>; move to Tandem Source 2024-09-18 <code>a77ebb5</code> (README: t:connect shut down in the US from 2024-09-30); EU region 2025-06-07 <code>4888426</code>; WAF 403 2026-06-30 <code>e5195b2</code>; new client id and new Source APIs 2026-07-01 <code>d568a5b</code> <code>afbc990</code> (v3.0.0)</td>
+</tr>
+<tr>
+<td>Nocturne Tandem</td>
+<td>Tandem</td>
+<td style="text-align: right;">1 (1)</td>
+<td>the vendor "retired the reportsfacade endpoints on June 30th"; ported from tconnectsync 2026-07-04 <code>e671a00e</code></td>
+</tr>
+<tr>
+<td>nightscout-connect</td>
+<td>Glooko</td>
+<td style="text-align: right;">1 (2)</td>
+<td>web login and v3 graph fallback 2026-07-07 <code>c06c037</code> <code>2d733c9</code></td>
+</tr>
+</tbody>
+</table>
+<p>Readings from the table:</p>
+<ul>
+<li><strong>LibreLinkUp changes arrive about twice a year and reach every client.</strong> Across the five
+  clients there are 18 to 19 dated events in three years. The same change lands on different days:
+  account-id handling appears in xdripswift on 2024-07-12 and in nightscout-librelink-up on
+  2024-11-15 (its diff adds it; <code>420b340</code>); the same app-version change lands in both on 2025-10-02; nightscout-connect's fix for the
+  October 2025 change was written on 2025-10-21 and reached a release on 2026-09-24
+  (v0.1.0). No shared notice channel between the clients appears in the repositories.</li>
+<li><strong>CareLink changes were at least as frequent</strong> in xDrip+ (7 events), and two of four current
+  clients started in 2026.</li>
+<li><strong>Tandem's move to Tandem Source and its June 2026 endpoint retirement</strong> were absorbed by
+  tconnectsync; the second implementation (Nocturne) followed it four days later.</li>
+<li><strong>The one official-API client in the corpus</strong> (Tidepool's Dexcom integration) shows vendor
+  guidance and additive device support in the same window, and no login or header changes in
+  its commit subjects. One client is too few to generalise from.</li>
+</ul>
+<p>These counts extend, and do not repeat, the table in
+sponsored-team proposal §6a (<code>docs/00-overview/SPONSORED-TEAM-PROPOSAL.md</code>)
+and the "no date" row of COLLABORATION-MODEL §3 (<code>docs/00-overview/COLLABORATION-MODEL.md</code>)
+("about two connector changes a year").</p>
+<h2 id="2-documented-routes-out-of-the-vendor-clouds-and-the-rules-around-them">2. Documented routes out of the vendor clouds, and the rules around them<a class="headerlink" href="#2-documented-routes-out-of-the-vendor-clouds-and-the-rules-around-them" title="Permanent link">&para;</a></h2>
+<p>All pages read 2026-09-30. Quotes are short and verbatim. Where a page was blocked, the entry
+says so and names what was read instead. EUR-Lex returned a bot challenge, so the EU texts
+were read from the EU Publications Office copy of the Official Journal
+(<code>http://publications.europa.eu/resource/celex/&lt;CELEX&gt;</code>); hhs.gov returned 403, so HIPAA was
+read from eCFR (Title 45, current to 2026-09-28). Several vendor help centres returned 403;
+those items are marked "snippet only" and need a person to open the page.</p>
+<h3 id="21-vendor-and-platform-routes">2.1 Vendor and platform routes<a class="headerlink" href="#21-vendor-and-platform-routes" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>route</th>
+<th>what the vendor documents</th>
+<th>source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dexcom developer API (v3)</td>
+<td>six endpoints (alerts, calibrations, dataRange, devices, egvs, events) for G6, G7, G7 15-day, ONE and ONE+; data "with a one-hour delay in the United States and with a three-hour delay outside the United States"; OAuth 2.0, and "Users ... can revoke the access at any time"; a sandbox with simulated data; free registration under a "Registered Developer Agreement"; an "Individual" path to "Limited Access", which "allows you to authenticate up to 5 users"; commercial apps "must submit a request for a commercial partnership"; scopes are all or nothing</td>
+<td>https://developer.dexcom.com/docs/dexcomv3/endpoint-overview/ , /docs/dexcom/authentication/ , /docs/dexcom/sandbox-data/ , /docs/dexcom/scopes-access/ , /docs/dexcom/getting-started/</td>
+</tr>
+<tr>
+<td>Abbott LibreView</td>
+<td>personal CSV download: "select 'Download Glucose Data'" (<strong>snippet only</strong>, page 403); Abbott publishes a partner-integrations table (MiniMed 780G, NovoPen 6, mylife Loop/CamAPS FX, Omnipod 5) and an EHR agreement with Epic (2025-04-29); no public self-service developer API found</td>
+<td>https://www.support.freestyle.abbott/hc/en-us/articles/14806679954199 ; https://www.diabetescare.abbott/partnerships/integrations/en.html ; https://abbott.mediaroom.com/2025-04-29-Abbott-Integrates-Libres-Data-with-Epics-Electronic-Health-Record-System,-Providing-Healthcare-Professionals-Seamless-Glucose-Monitoring-Information</td>
+</tr>
+<tr>
+<td>Medtronic CareLink</td>
+<td>clinic edition: "Click Data Export (CSV)", maximum 90 days (guide dated 2019); CareLink Personal FAQ describes reports ("Generate Reports"), not CSV. <strong>Gap:</strong> no current Medtronic page read here confirms CSV export for individuals</td>
+<td>https://www.medtronicdiabetes.com/sites/default/files/library/download-library/workbooks/CareLink-System-User-Guide.pdf ; https://carelink.minimed.eu/media/en/ca/faq.pdf</td>
+</tr>
+<tr>
+<td>Tandem Source</td>
+<td>t:connect "officially retired as of September 2024"; personal guide: "click Export CSV to export the report contents to a CSV" from the Daily Timeline; Glooko states (2026-06-29) that linked Tandem Source accounts "synchronize automatically and continuously" to Glooko</td>
+<td>https://www.tandemdiabetes.com/hc/en-us/articles/26484399231511-Retirement-of-t-connect-Platforms ; https://www.tandemdiabetes.com/docs/default-source/user-guide/user-guide-tandem-source-personal-mgdl-aw1014831.pdf ; https://glooko.com/glooko-platform-adds-tandem-cloud-connectivity/</td>
+</tr>
+<tr>
+<td>Tidepool</td>
+<td>"APIs not marked Internal ... are available to everyone"; a client identifier must be requested; separate integration and production environments; export to "Excel (XLSX) or JSON" (<strong>snippet only</strong>)</td>
+<td>https://tidepool.redocly.app/ ; https://developer.tidepool.org/ ; https://support.tidepool.org/hc/en-us/articles/360044350552-Exporting-Tidepool-data</td>
+</tr>
+<tr>
+<td>Glooko</td>
+<td>personal "Export to CSV" on the web, "not accessible via the Glooko Mobile App" (<strong>snippet only</strong>); an "API and EHR Integration Portal" aimed at clinics and partners (JavaScript-only page, not read further)</td>
+<td>https://support.glooko.com/hc/en-us/articles/4460340377875 ; https://developers.glooko.com/</td>
+</tr>
+<tr>
+<td>Apple HealthKit (on-device hub)</td>
+<td><code>bloodGlucose</code> (iOS 8) and <code>insulinDelivery</code> in IU (iOS 11) with a delivery-reason key; App Review 5.1.3: health data may not be used "for advertising, marketing, or other use-based data mining purposes other than improving health management" and apps "must not write false or inaccurate data into HealthKit"</td>
+<td>https://developer.apple.com/documentation/healthkit/hkquantitytypeidentifier/bloodglucose ; .../insulindelivery ; https://developer.apple.com/app-store/review/guidelines/</td>
+</tr>
+<tr>
+<td>Android Health Connect (on-device hub)</td>
+<td><code>BloodGlucoseRecord</code> (connect-client 1.1.0); the records package lists 41 types and none for insulin; "a database that's stored on your device"; Google Fit APIs "will be deprecated in 2026", closed to new developers since 2024-05-01, "supported until the end of 2026"</td>
+<td>https://developer.android.com/reference/kotlin/androidx/health/connect/client/records/package-summary ; https://support.google.com/android/answer/13770320 ; https://developers.google.com/fit ; https://developer.android.com/health-and-fitness/guides/health-connect/migrate/comparison-guide</td>
+</tr>
+</tbody>
+</table>
+<p>In the corpus, the documented routes are used as follows: the Dexcom developer API by
+Tidepool platform only; the LibreView CSV by Tidepool uploader; Tidepool's API by
+TidepoolService, xDrip+, AndroidAPS and Nocturne; HealthKit by Loop, Trio, iAPS, xdripswift,
+LoopFollow, LoopCaregiver, nightguard and DiaBLE; Health Connect by xDrip+ and Juggluco (§3).
+None of the Nightscout-side connectors (nightscout-connect, Nocturne, tconnectsync) uses a
+documented vendor route for real-time data. The documented routes differ from the follower
+routes in timing (Dexcom's one-to-three-hour delay; export files on demand) and in who may
+register (Dexcom's five-user Limited Access, partnership for commercial apps).</p>
+<h3 id="22-data-rights-law-and-regulation">2.2 Data-rights law and regulation<a class="headerlink" href="#22-data-rights-law-and-regulation" title="Permanent link">&para;</a></h3>
+<p>Every item below is <strong>for counsel review</strong>. This section reports what the texts and the
+regulators' own pages say; it draws no conclusion about how they apply to any vendor, to the
+foundation or to a person.</p>
+<table>
+<thead>
+<tr>
+<th>instrument</th>
+<th>what the text says (short quotes)</th>
+<th>source</th>
+<th>for counsel to verify</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GDPR Art. 15</td>
+<td>right to "confirmation as to whether or not personal data ... are being processed, and ... access"; "The controller shall provide a copy", for electronic requests "in a commonly used electronic form"; Art. 12(3): "within one month", extendable "by two further months"</td>
+<td>http://publications.europa.eu/resource/celex/32016R0679</td>
+<td>whether a CGM or pump vendor cloud is the controller for the data it holds; timing in practice</td>
+</tr>
+<tr>
+<td>GDPR Art. 20</td>
+<td>data "which he or she has provided", where processing is based on consent or contract and automated, "in a structured, commonly used and machine-readable format", with direct transmission "where technically feasible"</td>
+<td>same</td>
+<td>whether sensor readings are data "provided by" the data subject; Art. 9 bases for health data</td>
+</tr>
+<tr>
+<td>EU Data Act, Regulation (EU) 2023/2854</td>
+<td>"It shall apply from 12 September 2025"; the Art. 3(1) design obligation applies to products "placed on the market after 12 September 2026"; Art. 2(5) connected product; Art. 3(1) data "by default, easily, securely, free of charge, in a comprehensive, structured, commonly used and machine-readable format"; Art. 4(1) access "where relevant and technically feasible, continuously and in real-time"; Recital 14 names "medical and health devices"; Recital 15 excludes information "inferred or derived ... by means of proprietary, complex algorithms"; Recital 16 excludes "content"</td>
+<td>http://publications.europa.eu/resource/celex/32023R2854</td>
+<td>whether CGM and pump raw data is in scope and which outputs count as derived; who the "data holder" is for a vendor cloud; the trade-secret and safety limits from Art. 4(2)</td>
+</tr>
+<tr>
+<td>Data Act, Commission FAQ v1.4 (2026-01-22)</td>
+<td>"applies to all connected products, including those that are subject to specific type approval or conformity assessment regimes (e.g. motor vehicles, aircraft, and medical devices)"; in scope "raw data and pre-processed data", out of scope "inferred or derived data"; the FAQ says it "should not be considered as representative of the European Commission's official position"</td>
+<td>https://digital-strategy.ec.europa.eu/en/library/commission-publishes-frequently-asked-questions-about-data-act</td>
+<td>weight of the FAQ; effect of the Commission's "digital omnibus" proposal (https://digital-strategy.ec.europa.eu/en/faqs/digital-package), whose status was not checked</td>
+</tr>
+<tr>
+<td>EHDS, Regulation (EU) 2025/327 (new detail beyond ECOSYSTEM-PROGRAMME)</td>
+<td>"shall apply from 26 March 2027"; access rights and EHR-system rules from 26 March 2029 (patient summaries, prescriptions) and 26 March 2031 (images, results, discharge reports); defines "wellness application"; Art. 47 labelling "Where a manufacturer of a wellness application claims interoperability with an EHR system"; Art. 51(1)(h) lists data "automatically generated through medical devices" for secondary use</td>
+<td>http://publications.europa.eu/resource/celex/32025R0327</td>
+<td>whether self-built open-source software has a "manufacturer" in the EHDS sense</td>
+</tr>
+<tr>
+<td>US HIPAA right of access, 45 CFR 164.524</td>
+<td>binds covered entities: "(1) A health plan. (2) A health care clearinghouse. (3) A health care provider who transmits any health information in electronic form" (45 CFR 160.103); action "no later than 30 days", one extension "by no more than 30 days"; "in the form and format requested by the individual, if it is readily producible"</td>
+<td>https://www.ecfr.gov/current/title-45/section-164.524 ; https://www.ecfr.gov/current/title-45/section-160.103</td>
+<td>whether a device-maker cloud is a covered entity or business associate in any arrangement; pending rule changes (not checked)</td>
+</tr>
+<tr>
+<td>US information blocking (Cures Act), 45 CFR 171</td>
+<td>"Actor means a health care provider, health IT developer of certified health IT, health information network or health information exchange"; a developer is an actor if it has "one or more Health IT Modules certified"; ASTP/ONC names the same three groups and does not name device manufacturers as a separate category</td>
+<td>https://www.ecfr.gov/current/title-45/section-171.102 ; https://www.healthit.gov/topic/information-blocking</td>
+<td>actor status of any particular company</td>
+</tr>
+<tr>
+<td>FDA MDDS guidance (September 2022)</td>
+<td>software "solely intended to transfer, store, convert formats, or display medical device data and results ... are not devices"; functions "intended for active patient monitoring" are outside that, with "a device used to actively monitor diabetes for time-sensitive intervention" as an example</td>
+<td>https://www.fda.gov/regulatory-information/search-fda-guidance-documents/medical-device-data-systems-medical-image-storage-devices-and-medical-image-communications-devices ; https://www.fda.gov/media/88572/download</td>
+<td>how the carve-out applies to any display or alarm feature</td>
+</tr>
+<tr>
+<td>21 CFR 862.1350</td>
+<td>now "Continuous glucose monitor secondary alarm system"; special controls include "measures to protect against unauthorized access to data"; required warning "Dosing decisions should not be made based on this device"; Dexcom Share was DEN140038, "continuous glucose monitor secondary display", granted 2015-01-23</td>
+<td>https://www.ecfr.gov/current/title-21/section-862.1350 ; https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/denovo.cfm?id=DEN140038</td>
+<td>regulatory: which features of a follower app fall under this classification</td>
+</tr>
+<tr>
+<td>21 CFR 862.1355 iCGM</td>
+<td>"designed to reliably and securely transmit glucose measurement data to digitally connected devices"; no "clinically significant gaps in sensor data availability"; a "strategy to ensure secure and reliable means of iCGM data transmission"</td>
+<td>https://www.ecfr.gov/current/title-21/section-862.1355</td>
+<td>—</td>
+</tr>
+<tr>
+<td>21 CFR 862.1356 iAGC</td>
+<td>"validated interface specifications for digitally connected devices", including "Secure authentication (pairing)", "Sharing of necessary state information" and "A detailed process and procedures for sharing the controller's interface specification with connected devices and for validating the correct implementation"; a "record of critical events"; inputs only from 862.1355 devices and commands only to 880.5730 pumps unless FDA determines otherwise</td>
+<td>https://www.ecfr.gov/current/title-21/section-862.1356</td>
+<td>whether the "sharing" controls imply any publication to parties other than the manufacturer's partners (the text does not say)</td>
+</tr>
+<tr>
+<td>21 CFR 880.5730 ACE pump</td>
+<td>"designed to reliably and securely communicate with external devices"; the same interface-specification list, including "sharing the pump interface specification with digitally connected devices"; safe fallback on loss of communication; critical-events record</td>
+<td>https://www.ecfr.gov/current/title-21/section-880.5730</td>
+<td>as above</td>
+</tr>
+</tbody>
+</table>
+<p>First classifications (accessdata.fda.gov, read 2026-09-30): DEN170088 Dexcom G6 iCGM,
+2018-03-27; DEN180058 t:slim X2 ACE pump, 2019-02-14; DEN190034 Control-IQ iAGC,
+2019-12-13. These rules are about device-to-device interfaces, not cloud data export; they
+are the regulated route by which interoperability between manufacturers is specified.</p>
+<h2 id="3-wearables-and-other-data-sources">3. Wearables and other data sources<a class="headerlink" href="#3-wearables-and-other-data-sources" title="Permanent link">&para;</a></h2>
+<h3 id="31-in-the-ecosystem-code">3.1 In the ecosystem code<a class="headerlink" href="#31-in-the-ecosystem-code" title="Permanent link">&para;</a></h3>
+<p>Search over the clones for Oura, WHOOP, Garmin, Fitbit, Strava, MyFitnessPal, Cronometer,
+Nutritionix, Google Fit, Polar, Withings, Health Connect and HealthKit types, read
+2026-09-30.</p>
+<table>
+<thead>
+<tr>
+<th>source</th>
+<th>integration found</th>
+<th>where</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Android Health Connect</td>
+<td>xDrip+ reads and writes glucose, heart rate, steps, exercise, sleep and nutrition records (<code>healthconnect/HealthGamut.java</code>, connect-client 1.1.0-alpha06); Juggluco writes glucose only (<code>BloodGlucoseRecord</code>, connect-client 1.1.0-rc03)</td>
+<td>NightscoutFoundation/xDrip, j-kaltes/Juggluco</td>
+</tr>
+<tr>
+<td>Apple HealthKit</td>
+<td>blood glucose, insulin delivery and carbohydrates, in Loop/LoopKit, Trio, iAPS, xdripswift, LoopFollow, LoopCaregiver, nightguard, DiaBLE, TidepoolService</td>
+<td>those repositories</td>
+</tr>
+<tr>
+<td>Oura</td>
+<td>Tidepool platform partner integration with webhooks, raw-data ingestion and a consent flow (<code>oura/</code>, commits <code>a1c71d35</code>, <code>772b47b6</code>, 2026-05-16); Nocturne lists Oura only as a sleep-data source label (<code>SleepEnums.cs</code>)</td>
+<td>tidepool-org/platform; nightscout/nocturne</td>
+</tr>
+<tr>
+<td>Garmin</td>
+<td>watch-face and watch-app links, not the Garmin cloud: AndroidAPS, Trio, iAPS, Juggluco</td>
+<td>those repositories</td>
+</tr>
+<tr>
+<td>Fitbit</td>
+<td>sulkaharo/nsfitbit is a Fitbit watch face that reads Nightscout; Nocturne lists Fitbit as a sleep source label</td>
+<td>sulkaharo/nsfitbit; nightscout/nocturne</td>
+</tr>
+<tr>
+<td>MyFitnessPal</td>
+<td>Nocturne connector for food diary entries "for meal matching" (<code>src/Connectors/Nocturne.Connectors.MyFitnessPal</code>, 45 test cases)</td>
+<td>nightscout/nocturne</td>
+</tr>
+<tr>
+<td>Glooko heart rate and body weight</td>
+<td>imported by Nocturne's Glooko connector (mapper tests)</td>
+<td>nightscout/nocturne</td>
+</tr>
+<tr>
+<td>WHOOP, Strava, Cronometer, Google Fit</td>
+<td>no integration found (one Strava string in a Tidepool uploader test)</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="32-what-the-vendors-offer-read-2026-09-30">3.2 What the vendors offer (read 2026-09-30)<a class="headerlink" href="#32-what-the-vendors-offer-read-2026-09-30" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>vendor</th>
+<th>offering, short quotes</th>
+<th>source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Oura</td>
+<td>API v2 with OAuth 2.0 only; "personal access tokens were deprecated in December 2025"; access lapses when "The user's Oura membership has expired"; sleep, activity, readiness, heart rate, workouts; webhooks</td>
+<td>https://cloud.ouraring.com/v2/docs</td>
+</tr>
+<tr>
+<td>WHOOP</td>
+<td>OAuth 2.0; "Every new app starts on the Sandbox tier, which allows up to 10 WHOOP members to connect"; higher tiers on request</td>
+<td>https://developer.whoop.com/docs/developing/app-approval/ ; https://developer.whoop.com/docs/developing/getting-started</td>
+</tr>
+<tr>
+<td>Garmin</td>
+<td>Health, Activity and other APIs; "no licensing or maintenance fees ... but it is only for business use"; applications reviewed "within two business days"</td>
+<td>https://developer.garmin.com/gc-developer-program/program-faq/</td>
+</tr>
+<tr>
+<td>Fitbit / Google Health API</td>
+<td>"Support for the legacy Fitbit Web API ends on September 30, 2026" and it will be "turned off" on 2026-10-30; the Google Health API includes "blood-glucose" but "we are not onboarding new projects at this time"</td>
+<td>https://dev.fitbit.com/build/reference/web-api/ ; https://developers.google.com/health ; https://developers.google.com/health/data-types</td>
+</tr>
+<tr>
+<td>Strava</td>
+<td>terms effective 2026-06-01: a user's data "can only be displayed or disclosed in your Developer Application to that user"; policy §5.3 bars use "in connection with the development, training, evaluation, or operation of any AI Application"; new apps start in "single-player mode"; "A Strava subscription is a prerequisite for creating an app" (counsel: verify how §5.3 applies to a self-hosted tool)</td>
+<td>https://www.strava.com/legal/api ; https://www.strava.com/legal/api_policy ; https://developers.strava.com/docs/getting-started/</td>
+</tr>
+<tr>
+<td>MyFitnessPal</td>
+<td>"We are not accepting requests for API access at this time."</td>
+<td>https://www.myfitnesspal.com/api</td>
+</tr>
+<tr>
+<td>Nutritionix</td>
+<td>API for "registered partners"; site "temporarily offline while we roll out major upgrades"</td>
+<td>https://www.nutritionix.com/business/api</td>
+</tr>
+<tr>
+<td>Cronometer</td>
+<td>no public developer page found; CSV export and Health Connect / Apple Health sync mentioned (<strong>snippet only</strong>)</td>
+<td>https://cronometer.com/developer/ (empty shell)</td>
+</tr>
+</tbody>
+</table>
+<p>Two dates fall inside the next month: the Fitbit Web API support ends on the read date and the
+API is turned off on 2026-10-30, and Google Fit support ends at the end of 2026. No corpus
+repository calls either, so neither reaches the ecosystem code directly; both push data toward
+the on-device hubs. Health Connect has no insulin record type, so on Android insulin data
+still has no shared on-device home.</p>
+<h2 id="4-what-quality-control-at-the-cloud-layer-would-need">4. What quality control at the cloud layer would need<a class="headerlink" href="#4-what-quality-control-at-the-cloud-layer-would-need" title="Permanent link">&para;</a></h2>
+<h3 id="41-what-exists-today">4.1 What exists today<a class="headerlink" href="#41-what-exists-today" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Synthetic or mocked vendor responses in unit tests</strong> in every active connector:
+  nightscout-connect (258 cases), tconnectsync (463, including parsers tested on captured
+  pump-log data), Nocturne (about 880 connector cases including the shared core, HTTP mocked in code), xDrip+ and
+  xdripswift (CareLink, Dexcom Share), nightscout-librelink-up (10 cases on five JSON
+  response files), Tidepool platform (466 cases in <code>dexcom/</code>).</li>
+<li><strong>One lab that runs a connector against real Nightscout storage in CI</strong>:
+  nightscout-connect's LibreLinkUp job (<code>.github/workflows/test.yml</code>), with a synthetic vendor
+  transport.</li>
+<li><strong>Opt-in live probes</strong> that refuse to contact the vendor without an explicit flag
+  (nightscout-connect Glooko and LibreLinkUp regional lab), and a credential and record scan
+  of connector logs (<code>test/privacy-canary.test.js</code> there; <code>tools/lab/connector-soak/canary.py</code>,
+  <code>7264d184</code>, in this repository, for Nightscout-to-Nightscout).</li>
+<li><strong>No shared fixture format, no shared contract description per vendor, and no scheduled
+  check that notices a vendor change before users do.</strong> Each project's fixtures describe the
+  vendor as that project last saw it, in its own language and shape; none of them are shared.</li>
+</ul>
+<h3 id="42-the-pieces">4.2 The pieces<a class="headerlink" href="#42-the-pieces" title="Permanent link">&para;</a></h3>
+<p>Effort figures are <strong>estimates</strong> in person-weeks for one experienced engineer, assuming:
+volunteers with their own accounts consent to record their own sessions and to de-identify
+them before anything is kept; six vendor clouds in the first round (LibreLinkUp, Dexcom
+Share, CareLink, Tandem Source, Glooko, Dexcom developer API sandbox); five implementations
+adopt the shared suites (nightscout-connect, Nocturne, tconnectsync, xDrip+, xdripswift); the
+maintainers of those projects review and accept the adapters. They do not include counsel's
+time on vendor terms (4.3).</p>
+<table>
+<thead>
+<tr>
+<th>piece</th>
+<th>what it is</th>
+<th>initial effort (estimate)</th>
+<th>ongoing (estimate)</th>
+<th>holder's rights it supports</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vendor contract notes</td>
+<td>per vendor cloud: the data it returns, the fields each implementation reads, regions, refusal and lockout cases, and the dated history of changes (the §1.3 table, kept current). Mechanism level only; no request recipes</td>
+<td>0.5-1 per vendor, 3-6</td>
+<td>0.25 per vendor change</td>
+<td>access, export: the holder can see what data the route carries and what it drops</td>
+</tr>
+<tr>
+<td>Shared recorded-fixture suites</td>
+<td>de-identified, synthetic-where-possible response sets per vendor and region, in one language-neutral format (for example a HAR-like JSON with a manifest of what each case covers), plus the refusal cases (bad password, terms prompt, lockout, WAF block, rate limit)</td>
+<td>format and replay harness 3-5; 2-4 per vendor, 12-24</td>
+<td>0.5-1 per vendor change, to add the new shape</td>
+<td>access, export; delegate: the helper tool's behaviour on refusal is tested, so a stalled account is reported rather than silent</td>
+</tr>
+<tr>
+<td>Adapters per implementation</td>
+<td>replay the shared fixtures through each project's own test runner (node:test, xUnit, pytest, XCTest, JUnit)</td>
+<td>1-2 per implementation, 5-10</td>
+<td>small, with each fixture addition</td>
+<td>share: every server and follower the holder chooses behaves the same on the same input</td>
+</tr>
+<tr>
+<td>Change canary</td>
+<td>scheduled, read-only, low-frequency probes with consenting test accounts, per region where an account exists, that compare response shape and login outcome with the contract and alert the maintainers of every implementation at once</td>
+<td>4-8</td>
+<td>0.1-0.2 FTE to triage alerts and keep accounts and regions alive</td>
+<td>access: the gap between a vendor change and a fix shrinks; audit: a dated record of when each change was seen</td>
+</tr>
+<tr>
+<td>Per-release connector report</td>
+<td>a generated page per implementation release: which vendor contracts and fixture versions passed, which live probes last passed and when, what is untested (regions without an account)</td>
+<td>2-4, plus 1 per implementation</td>
+<td>near zero once generated in CI</td>
+<td>audit: the holder or their helper can see what was tested before trusting a release with their data</td>
+</tr>
+<tr>
+<td>Shared connector lab</td>
+<td>containers for the supported Nightscout versions and Nocturne, a fixture-replay vendor stand-in, and the credential and record log scan, generalising nightscout-connect's LibreLinkUp lab and this repository's connector-soak lab</td>
+<td>6-10</td>
+<td>0.1-0.2 FTE</td>
+<td>delegate, audit: credentials a holder gives a connector are shown not to reach logs; export: end-to-end fidelity from vendor shape to stored record</td>
+</tr>
+</tbody>
+</table>
+<p>Sum of the initial ranges: about 40-72 person-weeks for the first round, then about
+0.3-0.5 FTE ongoing plus 1-2 person-weeks per vendor change event. At the §1.3 rate
+(LibreLinkUp alone about two events a year, CareLink similar, Tandem and others less often)
+that is roughly 6-15 vendor change events a year across the six clouds. These are estimates
+from the sizes of the existing suites and labs, not from a measured project, and the
+reviewer should check them against the maintainers' own experience.</p>
+<h3 id="43-constraints-to-carry-into-any-design">4.3 Constraints to carry into any design<a class="headerlink" href="#43-constraints-to-carry-into-any-design" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Fixtures are health data until shown otherwise.</strong> Recorded sessions carry glucose,
+  treatments, device serials and account identifiers. The suites need a consent and
+  de-identification step before anything is committed, and synthetic generation wherever a
+  synthetic response exercises the same code. The public repositories must never hold a
+  captured credential, token, account identifier or real trace.</li>
+<li><strong>Probes against unofficial routes raise vendor-terms questions.</strong> Whether scheduled probes
+  with volunteer accounts are consistent with each vendor's terms of use is for counsel, not
+  for this note. The official routes in §2 (Dexcom developer API sandbox, documented export
+  files, Tidepool's published API, HealthKit and Health Connect) can be probed and replayed
+  without that question.</li>
+<li><strong>A shared suite is a description of vendor behaviour, not a way around vendor
+  protections.</strong> It should describe mechanisms at the level of this note and stay out of
+  anything that would help defeat a vendor's access controls.</li>
+<li><strong>Region coverage is limited by volunteer accounts.</strong> LibreLinkUp lists 13 regions; a
+  canary covers only the regions where someone has consented to run an account, and the
+  report must say which ones are uncovered.</li>
+</ul>
+<h3 id="44-how-the-pieces-relate-to-data-sovereignty">4.4 How the pieces relate to data sovereignty<a class="headerlink" href="#44-how-the-pieces-relate-to-data-sovereignty" title="Permanent link">&para;</a></h3>
+<p>The five rights in <code>docs/state-of-diabetes-2026.md</code> Part III (access, export, share,
+delegate, audit) depend at the cloud layer on the connector working on the day the holder
+needs it. For most holders in the corpus the connector is the route by which their own data
+leaves the vendor cloud in a form they can compute on. The routes the vendors document
+(§2) are narrower: the Dexcom developer API has one client in the corpus, and the export
+files are periodic rather than real-time. Until more of the data is reachable through
+documented routes, shared tests and an early-warning canary are what keep the holder's
+chosen tools and helpers working across every implementation at once.</p>
+<h2 id="5-summary">5. Summary<a class="headerlink" href="#5-summary" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Fourteen code bases in the corpus log in to vendor clouds; Nocturne alone has fourteen connectors, up from eight in the January mapping.</li>
+<li>Dexcom Share has six independent clients in four languages; LibreLinkUp five (six with xDrip+ WebFollow); CareLink four current plus one deprecated; Tandem Source one plus a derived port.</li>
+<li>Only one corpus project, Tidepool platform, uses the Dexcom developer API. Most Nightscout-side real-time data goes through unofficial follower routes. tconnectsync says it uses "undocumented APIs"; Nocturne calls its twiist connector "reverse-engineered", and says the same of the Tandem API it took from tconnectsync.</li>
+<li>Commit subjects show 18-19 LibreLinkUp change events across five clients, 7 CareLink events in xDrip+, and 5 Tandem events in tconnectsync, 2023-09 to 2026-09 (e.g. <code>420b340</code>, <code>2baa087d</code>, <code>afbc990</code>).</li>
+<li>Each client absorbs the same change on its own schedule: one LibreLinkUp change was fixed on 2025-10-21 and released on 2026-09-24; the account-id change landed four months apart in two clients.</li>
+<li>Tests are mostly synthetic or mocked per project. Only tconnectsync tests on captured vendor data, and only nightscout-connect runs a connector against real Nightscout storage in CI. No fixture format is shared and no canary exists.</li>
+<li>The documented routes exist but are narrower: Dexcom API (delay of one to three hours, five-user Limited Access), CSV exports (LibreView, Tandem Source, Glooko; CareLink Personal not confirmed), Tidepool API, HealthKit, and Health Connect (no insulin type).</li>
+<li>For counsel: the texts on GDPR Arts. 15 and 20, the Data Act (applies 2025-09-12; the design duty from 2026-09-12; the FAQ names medical devices), HIPAA access and information blocking (device makers are named only as certified-IT developers), and the FDA rules (MDDS, 862.1350/1355/1356, 880.5730).</li>
+<li>Wearables: the ecosystem uses Health Connect (xDrip+, Juggluco) and HealthKit widely, Oura only through Tidepool, and MyFitnessPal only through Nocturne. The Fitbit Web API shuts off on 2026-10-30 and Google Fit support ends in 2026.</li>
+<li>A shared cloud-layer QC set (contract notes, fixture suites, adapters, change canary, release reports, lab) is estimated at 40-72 person-weeks, then 0.3-0.5 FTE. It supports all five holder rights, subject to consent, de-identification and counsel's view of vendor terms.</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

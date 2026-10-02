@@ -1,0 +1,5424 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/mapping/loopfollow/alarm-system.html">
+      
+      
+        <link rel="prev" href="index.html">
+      
+      
+        <link rel="next" href="remote-commands.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>LoopFollow Alarm System Deep Dive - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#loopfollow-alarm-system-deep-dive" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              LoopFollow Alarm System Deep Dive
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../docs/00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../docs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    mapping/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../_template.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mapping: [Project] - [Scenario/Concept]
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../aaps/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    aaps/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../cgm-remote-monitor/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../cross-project/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cross-project/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../diable/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    diable/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../loop/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    loop/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../loopcaregiver/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    loopcaregiver/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_9" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    loopfollow/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_9" id="__nav_6_9_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_9_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    loopfollow/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LoopFollow Alarm System Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="alarm-system.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LoopFollow Alarm System Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executive Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#source-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source Files
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alarm-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alarm Types
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Alarm Types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#complete-enumeration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complete Enumeration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alarm-type-groups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alarm Type Groups
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alarm-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alarm Model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Alarm Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#daynight-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Day/Night Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alarm-condition-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alarm Condition Details
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Alarm Condition Details">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-low-bg-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Low BG Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-high-bg-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. High BG Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-fast-drop-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Fast Drop Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-fast-rise-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Fast Rise Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-missed-reading-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Missed Reading Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-not-looping-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Not Looping Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-iob-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. IOB Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-cob-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. COB Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-missed-bolus-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Missed Bolus Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#10-recommended-bolus-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Recommended Bolus Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#11-battery-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Battery Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-battery-drop-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Battery Drop Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-pump-volume-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Pump Volume Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-sensor-change-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. Sensor Change Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-pump-change-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15. Pump Change Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-build-expire-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        16. Build Expire Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#17-20-event-conditions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        17-20. Event Conditions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#21-temporary-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        21. Temporary Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alarm-data-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alarm Data Structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#global-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Global Configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evaluation-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evaluation Flow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Evaluation Flow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#alarmmanagercheckalarms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AlarmManager.checkAlarms()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alarmconditionshouldfire" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AlarmCondition.shouldFire()
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#snooze-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Snooze Behavior
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Snooze Behavior">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#per-alarm-snooze" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-Alarm Snooze
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#snooze-time-units" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Snooze Time Units
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sound-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sound Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Sound Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#alarm-trigger-sound-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alarm Trigger Sound Logic
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#comparison-with-loopcaregiver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparison with LoopCaregiver
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cross-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross-References
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gaps-identified" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gaps Identified
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#revision-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Revision History
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="remote-commands.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LoopFollow Remote Commands Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightguard/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightguard/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-connect/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-connect/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-librelink-up/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-librelink-up/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-reporter/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-reporter/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-roles-gateway/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-roles-gateway/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nocturne/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nocturne/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../openaps/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    openaps/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../oref0/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    oref0/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../share2nightscout-bridge/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    share2nightscout-bridge/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tconnectsync/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tconnectsync/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../trio/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    trio/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../xdrip/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../xdrip-android/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip-android/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../xdrip-js/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip-js/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../xdrip4ios/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdrip4ios/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executive Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#source-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source Files
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alarm-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alarm Types
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Alarm Types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#complete-enumeration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complete Enumeration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alarm-type-groups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alarm Type Groups
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alarm-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alarm Model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Alarm Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#daynight-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Day/Night Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alarm-condition-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alarm Condition Details
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Alarm Condition Details">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-low-bg-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Low BG Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-high-bg-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. High BG Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-fast-drop-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Fast Drop Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-fast-rise-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Fast Rise Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-missed-reading-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Missed Reading Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-not-looping-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Not Looping Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-iob-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. IOB Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-cob-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. COB Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-missed-bolus-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Missed Bolus Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#10-recommended-bolus-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Recommended Bolus Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#11-battery-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Battery Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-battery-drop-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Battery Drop Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-pump-volume-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Pump Volume Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-sensor-change-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. Sensor Change Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-pump-change-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15. Pump Change Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-build-expire-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        16. Build Expire Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#17-20-event-conditions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        17-20. Event Conditions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#21-temporary-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        21. Temporary Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alarm-data-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alarm Data Structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#global-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Global Configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evaluation-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evaluation Flow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Evaluation Flow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#alarmmanagercheckalarms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AlarmManager.checkAlarms()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alarmconditionshouldfire" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AlarmCondition.shouldFire()
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#snooze-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Snooze Behavior
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Snooze Behavior">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#per-alarm-snooze" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-Alarm Snooze
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#snooze-time-units" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Snooze Time Units
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sound-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sound Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Sound Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#alarm-trigger-sound-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alarm Trigger Sound Logic
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#comparison-with-loopcaregiver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparison with LoopCaregiver
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cross-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross-References
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gaps-identified" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gaps Identified
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#revision-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Revision History
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="loopfollow-alarm-system-deep-dive">LoopFollow Alarm System Deep Dive<a class="headerlink" href="#loopfollow-alarm-system-deep-dive" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-01-17 at <code>edf0ec0c</code>.</em></p>
+<p>This document provides comprehensive documentation of LoopFollow's alarm system, covering all 20 alarm types, condition evaluation logic, day/night scheduling, and snooze behavior.</p>
+<hr />
+<h2 id="executive-summary">Executive Summary<a class="headerlink" href="#executive-summary" title="Permanent link">&para;</a></h2>
+<p>LoopFollow implements a sophisticated alarm system designed for caregivers monitoring T1D patients using AID systems. The system supports 20 distinct alarm types with configurable conditions, predictive triggering, persistence requirements, and day/night scheduling.</p>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Alarm Types</strong></td>
+<td>20 distinct types</td>
+</tr>
+<tr>
+<td><strong>Evaluation Interval</strong></td>
+<td>Every 60 seconds (default)</td>
+</tr>
+<tr>
+<td><strong>Priority System</strong></td>
+<td>Ordered by type priority</td>
+</tr>
+<tr>
+<td><strong>Snooze Support</strong></td>
+<td>Per-alarm and global snooze</td>
+</tr>
+<tr>
+<td><strong>Day/Night Modes</strong></td>
+<td>Configurable sound and activation schedules</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="source-files">Source Files<a class="headerlink" href="#source-files" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>LoopFollow/Alarm/Alarm.swift</code></td>
+<td>Core alarm model and trigger logic</td>
+</tr>
+<tr>
+<td><code>LoopFollow/Alarm/AlarmType/AlarmType.swift</code></td>
+<td>Alarm type enumeration</td>
+</tr>
+<tr>
+<td><code>LoopFollow/Alarm/AlarmManager.swift</code></td>
+<td>Singleton manager for alarm evaluation</td>
+</tr>
+<tr>
+<td><code>LoopFollow/Alarm/AlarmCondition/AlarmCondition.swift</code></td>
+<td>Base protocol for conditions</td>
+</tr>
+<tr>
+<td><code>LoopFollow/Alarm/AlarmCondition/*.swift</code></td>
+<td>Individual condition implementations</td>
+</tr>
+<tr>
+<td><code>LoopFollow/Alarm/AlarmConfiguration.swift</code></td>
+<td>Global alarm settings</td>
+</tr>
+<tr>
+<td><code>LoopFollow/Alarm/AlarmData.swift</code></td>
+<td>Data structure for evaluation</td>
+</tr>
+<tr>
+<td><code>LoopFollow/Task/AlarmTask.swift</code></td>
+<td>Scheduled alarm check task</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="architecture-overview">Architecture Overview<a class="headerlink" href="#architecture-overview" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>┌─────────────────────────────────────────────────────────────────────────────┐
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>│                         LoopFollow Alarm Architecture                        │
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>├─────────────────────────────────────────────────────────────────────────────┤
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>│                                                                              │
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>│  ┌─────────────────────────────────────────────────────────────────────────┐│
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>│  │                         TaskScheduler                                    ││
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>│  │  • Runs AlarmTask every 60 seconds                                      ││
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>│  │  • Builds AlarmData from current state                                  ││
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>│  │  • Calls AlarmManager.checkAlarms(data:)                                ││
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>│  └─────────────────────────────────────────────────────────────────────────┘│
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>│                                    ↓                                         │
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>│  ┌─────────────────────────────────────────────────────────────────────────┐│
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>│  │                        AlarmManager (Singleton)                          ││
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>│  │                                                                          ││
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>│  │  • Maintains evaluators: [AlarmType: AlarmCondition]                    ││
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>│  │  • Sorts alarms by priority                                             ││
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>│  │  • Applies global snooze                                                ││
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>│  │  • Evaluates each alarm via shouldFire()                                ││
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>│  │  • Triggers first matching alarm (one per tick)                         ││
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>│  └─────────────────────────────────────────────────────────────────────────┘│
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>│                                    ↓                                         │
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>│  ┌─────────────────────────────────────────────────────────────────────────┐│
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>│  │                        AlarmCondition Protocol                           ││
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>│  │                                                                          ││
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>│  │  shouldFire(alarm, data, now, config) → Bool                            ││
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>│  │    1. Check alarm.isEnabled                                             ││
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>│  │    2. Check per-alarm snooze                                            ││
+<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>│  │    3. Check BG limits via passesBGLimits()                              ││
+<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>│  │    4. Check day/night activeOption                                      ││
+<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>│  │    5. Call type-specific evaluate() method                              ││
+<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>│  └─────────────────────────────────────────────────────────────────────────┘│
+<a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>│                                    ↓                                         │
+<a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>│  ┌─────────────────────────────────────────────────────────────────────────┐│
+<a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a>│  │                        Alarm.trigger()                                   ││
+<a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a>│  │                                                                          ││
+<a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a>│  │  1. Check global mute                                                   ││
+<a id="__codelineno-0-37" name="__codelineno-0-37" href="#__codelineno-0-37"></a>│  │  2. Check mute during calls                                             ││
+<a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a>│  │  3. Apply day/night sound rules                                         ││
+<a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a>│  │  4. Send notification via UNUserNotificationCenter                      ││
+<a id="__codelineno-0-40" name="__codelineno-0-40" href="#__codelineno-0-40"></a>│  │  5. Play sound with optional repeat and delay                           ││
+<a id="__codelineno-0-41" name="__codelineno-0-41" href="#__codelineno-0-41"></a>│  └─────────────────────────────────────────────────────────────────────────┘│
+<a id="__codelineno-0-42" name="__codelineno-0-42" href="#__codelineno-0-42"></a>│                                                                              │
+<a id="__codelineno-0-43" name="__codelineno-0-43" href="#__codelineno-0-43"></a>└─────────────────────────────────────────────────────────────────────────────┘
+</code></pre></div>
+<hr />
+<h2 id="alarm-types">Alarm Types<a class="headerlink" href="#alarm-types" title="Permanent link">&para;</a></h2>
+<h3 id="complete-enumeration">Complete Enumeration<a class="headerlink" href="#complete-enumeration" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">// loopfollow:LoopFollow/Alarm/AlarmType/AlarmType.swift#L8-L30</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kd">enum</span><span class="w"> </span><span class="nc">AlarmType</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="p">,</span><span class="w"> </span><span class="n">CaseIterable</span><span class="p">,</span><span class="w"> </span><span class="n">Codable</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">temporary</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"Temporary Alert"</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">iob</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"IOB Alert"</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">cob</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"COB Alert"</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">low</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"Low BG Alert"</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">high</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"High BG Alert"</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">fastDrop</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"Fast Drop Alert"</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">fastRise</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"Fast Rise Alert"</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">missedReading</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"Missed Reading Alert"</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">notLooping</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"Not Looping Alert"</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">missedBolus</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"Missed Bolus Alert"</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">sensorChange</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"Sensor Change Alert"</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">pumpChange</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"Pump Change Alert"</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">pump</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"Pump Insulin Alert"</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">battery</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"Low Battery"</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">batteryDrop</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"Battery Drop"</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">recBolus</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"Rec. Bolus"</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">overrideStart</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"Override Started"</span>
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">overrideEnd</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"Override Ended"</span>
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">tempTargetStart</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"Temp Target Started"</span>
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">tempTargetEnd</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"Temp Target Ended"</span>
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">buildExpire</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"Looping app expiration"</span>
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="alarm-type-groups">Alarm Type Groups<a class="headerlink" href="#alarm-type-groups" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Group</th>
+<th>Alarm Types</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Glucose</strong></td>
+<td>low, high, fastDrop, fastRise, missedReading, temporary</td>
+</tr>
+<tr>
+<td><strong>Insulin / Food</strong></td>
+<td>iob, cob, missedBolus, recBolus</td>
+</tr>
+<tr>
+<td><strong>Device / System</strong></td>
+<td>battery, batteryDrop, pump, pumpChange, sensorChange, notLooping, buildExpire</td>
+</tr>
+<tr>
+<td><strong>Override / Target</strong></td>
+<td>overrideStart, overrideEnd, tempTargetStart, tempTargetEnd</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="alarm-model">Alarm Model<a class="headerlink" href="#alarm-model" title="Permanent link">&para;</a></h2>
+<h3 id="core-structure">Core Structure<a class="headerlink" href="#core-structure" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1">// loopfollow:LoopFollow/Alarm/Alarm.swift#L50-L97</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kd">struct</span><span class="w"> </span><span class="nc">Alarm</span><span class="p">:</span><span class="w"> </span><span class="n">Identifiable</span><span class="p">,</span><span class="w"> </span><span class="n">Codable</span><span class="p">,</span><span class="w"> </span><span class="nb">Equatable</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">id</span><span class="p">:</span><span class="w"> </span><span class="n">UUID</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">.</span><span class="kd">init</span><span class="p">()</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">type</span><span class="p">:</span><span class="w"> </span><span class="n">AlarmType</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">name</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">isEnabled</span><span class="p">:</span><span class="w"> </span><span class="nb">Bool</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="kc">true</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">snoozedUntil</span><span class="p">:</span><span class="w"> </span><span class="n">Date</span><span class="p">?</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">    </span><span class="c1">// BG thresholds</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">aboveBG</span><span class="p">:</span><span class="w"> </span><span class="nb">Double</span><span class="p">?</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">belowBG</span><span class="p">:</span><span class="w"> </span><span class="nb">Double</span><span class="p">?</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">    </span><span class="c1">// Generic threshold (days, units, percentage)</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">threshold</span><span class="p">:</span><span class="w"> </span><span class="nb">Double</span><span class="p">?</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">    </span><span class="c1">// Predictive look-ahead (minutes)</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">predictiveMinutes</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="p">?</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="w">    </span><span class="c1">// Delta value (mg/dL change or units)</span>
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">delta</span><span class="p">:</span><span class="w"> </span><span class="nb">Double</span><span class="p">?</span>
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a><span class="w">    </span><span class="c1">// Persistence requirement (minutes)</span>
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">persistentMinutes</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="p">?</span>
+<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>
+<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a><span class="w">    </span><span class="c1">// Monitoring window (readings or minutes)</span>
+<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">monitoringWindow</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="p">?</span>
+<a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a>
+<a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a><span class="w">    </span><span class="c1">// Sound settings</span>
+<a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">soundFile</span><span class="p">:</span><span class="w"> </span><span class="n">SoundFile</span>
+<a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">snoozeDuration</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">5</span>
+<a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">playSoundOption</span><span class="p">:</span><span class="w"> </span><span class="n">PlaySoundOption</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">.</span><span class="n">always</span>
+<a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">repeatSoundOption</span><span class="p">:</span><span class="w"> </span><span class="n">RepeatSoundOption</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">.</span><span class="n">always</span>
+<a id="__codelineno-2-33" name="__codelineno-2-33" href="#__codelineno-2-33"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">soundDelay</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">0</span>
+<a id="__codelineno-2-34" name="__codelineno-2-34" href="#__codelineno-2-34"></a>
+<a id="__codelineno-2-35" name="__codelineno-2-35" href="#__codelineno-2-35"></a><span class="w">    </span><span class="c1">// Time-of-day activation</span>
+<a id="__codelineno-2-36" name="__codelineno-2-36" href="#__codelineno-2-36"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">activeOption</span><span class="p">:</span><span class="w"> </span><span class="n">ActiveOption</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">.</span><span class="n">always</span>
+<a id="__codelineno-2-37" name="__codelineno-2-37" href="#__codelineno-2-37"></a>
+<a id="__codelineno-2-38" name="__codelineno-2-38" href="#__codelineno-2-38"></a><span class="w">    </span><span class="c1">// Missed bolus specific</span>
+<a id="__codelineno-2-39" name="__codelineno-2-39" href="#__codelineno-2-39"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">missedBolusPrebolusWindow</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="p">?</span>
+<a id="__codelineno-2-40" name="__codelineno-2-40" href="#__codelineno-2-40"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">missedBolusIgnoreSmallBolusUnits</span><span class="p">:</span><span class="w"> </span><span class="nb">Double</span><span class="p">?</span>
+<a id="__codelineno-2-41" name="__codelineno-2-41" href="#__codelineno-2-41"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">missedBolusIgnoreUnderGrams</span><span class="p">:</span><span class="w"> </span><span class="nb">Double</span><span class="p">?</span>
+<a id="__codelineno-2-42" name="__codelineno-2-42" href="#__codelineno-2-42"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">missedBolusIgnoreUnderBG</span><span class="p">:</span><span class="w"> </span><span class="nb">Double</span><span class="p">?</span>
+<a id="__codelineno-2-43" name="__codelineno-2-43" href="#__codelineno-2-43"></a>
+<a id="__codelineno-2-44" name="__codelineno-2-44" href="#__codelineno-2-44"></a><span class="w">    </span><span class="c1">// Bolus count tracking</span>
+<a id="__codelineno-2-45" name="__codelineno-2-45" href="#__codelineno-2-45"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">bolusCountThreshold</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="p">?</span>
+<a id="__codelineno-2-46" name="__codelineno-2-46" href="#__codelineno-2-46"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">bolusWindowMinutes</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="p">?</span>
+<a id="__codelineno-2-47" name="__codelineno-2-47" href="#__codelineno-2-47"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="daynight-options">Day/Night Options<a class="headerlink" href="#daynight-options" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kd">enum</span><span class="w"> </span><span class="nc">PlaySoundOption</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="p">,</span><span class="w"> </span><span class="n">CaseIterable</span><span class="p">,</span><span class="w"> </span><span class="n">Codable</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">always</span><span class="p">,</span><span class="w"> </span><span class="n">day</span><span class="p">,</span><span class="w"> </span><span class="n">night</span><span class="p">,</span><span class="w"> </span><span class="n">never</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="p">}</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="kd">enum</span><span class="w"> </span><span class="nc">RepeatSoundOption</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="p">,</span><span class="w"> </span><span class="n">CaseIterable</span><span class="p">,</span><span class="w"> </span><span class="n">Codable</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">always</span><span class="p">,</span><span class="w"> </span><span class="n">day</span><span class="p">,</span><span class="w"> </span><span class="n">night</span><span class="p">,</span><span class="w"> </span><span class="n">never</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="p">}</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="kd">enum</span><span class="w"> </span><span class="nc">ActiveOption</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="p">,</span><span class="w"> </span><span class="n">CaseIterable</span><span class="p">,</span><span class="w"> </span><span class="n">Codable</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">always</span><span class="p">,</span><span class="w"> </span><span class="n">day</span><span class="p">,</span><span class="w"> </span><span class="n">night</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="p">}</span>
+</code></pre></div>
+<hr />
+<h2 id="alarm-condition-details">Alarm Condition Details<a class="headerlink" href="#alarm-condition-details" title="Permanent link">&para;</a></h2>
+<h3 id="1-low-bg-condition">1. Low BG Condition<a class="headerlink" href="#1-low-bg-condition" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>LoopFollow/Alarm/AlarmCondition/LowBGCondition.swift</code></p>
+<p><strong>Trigger Logic</strong>:
+- Latest BG ≤ <code>belowBG</code> threshold
+- OR any predicted BG within <code>predictiveMinutes</code> is ≤ threshold
+- AND all BG readings in <code>persistentMinutes</code> window are ≤ threshold (if configured)</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Threshold</td>
+<td><code>belowBG</code></td>
+<td>BG value in mg/dL</td>
+</tr>
+<tr>
+<td>Predictive</td>
+<td><code>predictiveMinutes</code></td>
+<td>Look-ahead minutes for predictions</td>
+</tr>
+<tr>
+<td>Persistent</td>
+<td><code>persistentMinutes</code></td>
+<td>Duration BG must stay low</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1">// Predictive check example</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="kd">let</span><span class="w"> </span><span class="nv">lookAhead</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="bp">min</span><span class="p">(</span><span class="n">predictionData</span><span class="p">.</span><span class="bp">count</span><span class="p">,</span><span class="w"> </span><span class="n">ceil</span><span class="p">(</span><span class="n">predictiveMinutes</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">5.0</span><span class="p">))</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="k">for</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="mf">0.</span><span class="p">.&lt;</span><span class="n">lookAhead</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">isLow</span><span class="p">(</span><span class="n">predictionData</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">    </span><span class="n">predictiveTrigger</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="kc">true</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">    </span><span class="k">break</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="2-high-bg-condition">2. High BG Condition<a class="headerlink" href="#2-high-bg-condition" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>LoopFollow/Alarm/AlarmCondition/HighBGCondition.swift</code></p>
+<p><strong>Trigger Logic</strong>:
+- Latest BG ≥ <code>aboveBG</code> threshold
+- AND all BG readings in <code>persistentMinutes</code> window are ≥ threshold (if configured)</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Threshold</td>
+<td><code>aboveBG</code></td>
+<td>BG value in mg/dL</td>
+</tr>
+<tr>
+<td>Persistent</td>
+<td><code>persistentMinutes</code></td>
+<td>Duration BG must stay high</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-fast-drop-condition">3. Fast Drop Condition<a class="headerlink" href="#3-fast-drop-condition" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>LoopFollow/Alarm/AlarmCondition/FastDropCondition.swift</code></p>
+<p><strong>Trigger Logic</strong>:
+- Each of the last <code>monitoringWindow</code> readings dropped by ≥ <code>delta</code> mg/dL</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Drop Amount</td>
+<td><code>delta</code></td>
+<td>Required drop per reading (mg/dL)</td>
+</tr>
+<tr>
+<td>Readings</td>
+<td><code>monitoringWindow</code></td>
+<td>Number of consecutive drops needed</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Default</strong>: 18 mg/dL drop over 2 readings</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">for</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="mf">1.</span><span class="p">..</span><span class="n">dropsNeeded</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">delta</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">Double</span><span class="p">(</span><span class="n">readings</span><span class="p">[</span><span class="n">i</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">].</span><span class="n">sgv</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">readings</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">sgv</span><span class="p">)</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">delta</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">dropPerReading</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="p">}</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="k">return</span><span class="w"> </span><span class="kc">true</span>
+</code></pre></div>
+<h3 id="4-fast-rise-condition">4. Fast Rise Condition<a class="headerlink" href="#4-fast-rise-condition" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>LoopFollow/Alarm/AlarmCondition/FastRiseCondition.swift</code></p>
+<p><strong>Trigger Logic</strong>: Mirror of Fast Drop but for increases</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rise Amount</td>
+<td><code>delta</code></td>
+<td>Required rise per reading (mg/dL)</td>
+</tr>
+<tr>
+<td>Readings</td>
+<td><code>monitoringWindow</code></td>
+<td>Number of consecutive rises needed</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Default</strong>: 10 mg/dL rise over 3 readings</p>
+<h3 id="5-missed-reading-condition">5. Missed Reading Condition<a class="headerlink" href="#5-missed-reading-condition" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>LoopFollow/Alarm/AlarmCondition/MissedReadingCondition.swift</code></p>
+<p><strong>Trigger Logic</strong>:
+- No BG reading received for ≥ <code>threshold</code> minutes</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Minutes</td>
+<td><code>threshold</code></td>
+<td>Minutes without a reading</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Default</strong>: 16 minutes</p>
+<h3 id="6-not-looping-condition">6. Not Looping Condition<a class="headerlink" href="#6-not-looping-condition" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>LoopFollow/Alarm/AlarmCondition/NotLoopingCondition.swift</code></p>
+<p><strong>Trigger Logic</strong>:
+- Time since last loop run ≥ <code>threshold</code> minutes
+- AND last looping check was within 6 minutes (data freshness guard)</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Minutes</td>
+<td><code>threshold</code></td>
+<td>Minutes since last loop</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Default</strong>: 31 minutes</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kd">let</span><span class="w"> </span><span class="nv">elapsedSecs</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Date</span><span class="p">().</span><span class="n">timeIntervalSince1970</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">lastLoopTime</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="kd">let</span><span class="w"> </span><span class="nv">limitSecs</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">thresholdMinutes</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">60</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="k">return</span><span class="w"> </span><span class="n">elapsedSecs</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">limitSecs</span>
+</code></pre></div>
+<h3 id="7-iob-condition">7. IOB Condition<a class="headerlink" href="#7-iob-condition" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>LoopFollow/Alarm/AlarmCondition/IOBCondition.swift</code></p>
+<p><strong>Trigger Logic</strong> (any of):
+1. Latest IOB ≥ <code>threshold</code> units
+2. Within <code>predictiveMinutes</code>, count of boluses ≥ <code>monitoringWindow</code> where each ≥ <code>delta</code> units
+3. Within same window, sum of boluses ≥ <code>threshold</code></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IOB Max</td>
+<td><code>threshold</code></td>
+<td>Maximum IOB in units</td>
+</tr>
+<tr>
+<td>Min Bolus</td>
+<td><code>delta</code></td>
+<td>Minimum bolus size to count</td>
+</tr>
+<tr>
+<td>Bolus Count</td>
+<td><code>monitoringWindow</code></td>
+<td>Number of boluses needed</td>
+</tr>
+<tr>
+<td>Lookback</td>
+<td><code>predictiveMinutes</code></td>
+<td>Window for bolus counting</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Default</strong>: 6U threshold, 1U min bolus, 2 boluses in 30 minutes</p>
+<h3 id="8-cob-condition">8. COB Condition<a class="headerlink" href="#8-cob-condition" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>LoopFollow/Alarm/AlarmCondition/COBCondition.swift</code></p>
+<p><strong>Trigger Logic</strong>:
+- Current COB ≥ <code>threshold</code> grams</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>COB Max</td>
+<td><code>threshold</code></td>
+<td>Maximum COB in grams</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Default</strong>: 20 grams</p>
+<h3 id="9-missed-bolus-condition">9. Missed Bolus Condition<a class="headerlink" href="#9-missed-bolus-condition" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>LoopFollow/Alarm/AlarmCondition/MissedBolusCondition.swift</code></p>
+<p><strong>Trigger Logic</strong>:
+- Carb entry logged &gt; <code>delayMin</code> minutes ago (but within 60 min)
+- AND carbs &gt; <code>minCarbGr</code> grams
+- AND current BG &gt; <code>minBG</code>
+- AND no bolus ≥ <code>minBolusU</code> within prebolus window
+- AND not already alerted for this carb entry</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Delay</td>
+<td><code>monitoringWindow</code></td>
+<td>Minutes after carbs to check</td>
+</tr>
+<tr>
+<td>Prebolus</td>
+<td><code>predictiveMinutes</code></td>
+<td>Window before carbs for prebolus</td>
+</tr>
+<tr>
+<td>Min Bolus</td>
+<td><code>delta</code></td>
+<td>Ignore boluses smaller than this</td>
+</tr>
+<tr>
+<td>Min Carbs</td>
+<td><code>threshold</code></td>
+<td>Ignore carb entries smaller</td>
+</tr>
+<tr>
+<td>Min BG</td>
+<td><code>aboveBG</code></td>
+<td>Ignore when BG is below this</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Default</strong>: 15 min delay, 15 min prebolus, 0.1U min bolus, 4g min carbs</p>
+<h3 id="10-recommended-bolus-condition">10. Recommended Bolus Condition<a class="headerlink" href="#10-recommended-bolus-condition" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>LoopFollow/Alarm/AlarmCondition/RecBolusCondition.swift</code></p>
+<p><strong>Trigger Logic</strong>:
+- Recommended bolus ≥ <code>threshold</code> units
+- AND either first time above threshold OR increased by &gt;5%</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Min Rec</td>
+<td><code>threshold</code></td>
+<td>Minimum recommended bolus</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Default</strong>: 1 unit</p>
+<h3 id="11-battery-condition">11. Battery Condition<a class="headerlink" href="#11-battery-condition" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>LoopFollow/Alarm/AlarmCondition/BatteryCondition.swift</code></p>
+<p><strong>Trigger Logic</strong>:
+- Phone battery level ≤ <code>threshold</code> percent</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Min Level</td>
+<td><code>threshold</code></td>
+<td>Battery percentage</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Default</strong>: 20%</p>
+<h3 id="12-battery-drop-condition">12. Battery Drop Condition<a class="headerlink" href="#12-battery-drop-condition" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>LoopFollow/Alarm/AlarmCondition/BatteryDropCondition.swift</code></p>
+<p><strong>Trigger Logic</strong>:
+- Battery dropped by ≥ <code>delta</code> percent within <code>monitoringWindow</code> minutes
+- Ignores drop from 100% (charger unplugged)</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Drop</td>
+<td><code>delta</code></td>
+<td>Percentage drop</td>
+</tr>
+<tr>
+<td>Window</td>
+<td><code>monitoringWindow</code></td>
+<td>Minutes to observe</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Default</strong>: 10% drop in 15 minutes</p>
+<h3 id="13-pump-volume-condition">13. Pump Volume Condition<a class="headerlink" href="#13-pump-volume-condition" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>LoopFollow/Alarm/AlarmCondition/PumpVolumeCondition.swift</code></p>
+<p><strong>Trigger Logic</strong>:
+- Reservoir level ≤ <code>threshold</code> units</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Min Units</td>
+<td><code>threshold</code></td>
+<td>Reservoir units remaining</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Default</strong>: 20 units</p>
+<h3 id="14-sensor-change-condition">14. Sensor Change Condition<a class="headerlink" href="#14-sensor-change-condition" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>LoopFollow/Alarm/AlarmCondition/SensorAgeCondition.swift</code></p>
+<p><strong>Trigger Logic</strong>:
+- Days since sensor insertion ≥ <code>threshold</code></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Days</td>
+<td><code>threshold</code></td>
+<td>Sensor age in days</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Default</strong>: 12 days</p>
+<h3 id="15-pump-change-condition">15. Pump Change Condition<a class="headerlink" href="#15-pump-change-condition" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>LoopFollow/Alarm/AlarmCondition/PumpChangeCondition.swift</code></p>
+<p><strong>Trigger Logic</strong>:
+- Days since pump/cannula insertion ≥ <code>threshold</code></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Days</td>
+<td><code>threshold</code></td>
+<td>Pump site age in days</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Default</strong>: 12 days (for pod expiration)</p>
+<h3 id="16-build-expire-condition">16. Build Expire Condition<a class="headerlink" href="#16-build-expire-condition" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>LoopFollow/Alarm/AlarmCondition/BuildExpireCondition.swift</code></p>
+<p><strong>Trigger Logic</strong>:
+- Days until Loop app build expires ≤ <code>threshold</code></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Days</td>
+<td><code>threshold</code></td>
+<td>Days before expiration</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Default</strong>: 7 days</p>
+<h3 id="17-20-event-conditions">17-20. Event Conditions<a class="headerlink" href="#17-20-event-conditions" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Condition</th>
+<th>Trigger</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Override Start</strong></td>
+<td>Override just activated</td>
+</tr>
+<tr>
+<td><strong>Override End</strong></td>
+<td>Override just ended</td>
+</tr>
+<tr>
+<td><strong>Temp Target Start</strong></td>
+<td>Temp target just activated</td>
+</tr>
+<tr>
+<td><strong>Temp Target End</strong></td>
+<td>Temp target just ended</td>
+</tr>
+</tbody>
+</table>
+<p>These track the latest event timestamp and fire once per event.</p>
+<h3 id="21-temporary-condition">21. Temporary Condition<a class="headerlink" href="#21-temporary-condition" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>LoopFollow/Alarm/AlarmCondition/TemporaryCondition.swift</code></p>
+<p><strong>Trigger Logic</strong>:
+- Single-fire alarm when BG passes configured limits
+- Auto-disables after triggering</p>
+<hr />
+<h2 id="alarm-data-structure">Alarm Data Structure<a class="headerlink" href="#alarm-data-structure" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1">// loopfollow:LoopFollow/Alarm/AlarmData.swift#L6-L25</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="kd">struct</span><span class="w"> </span><span class="nc">AlarmData</span><span class="p">:</span><span class="w"> </span><span class="n">Codable</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">bgReadings</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="n">GlucoseValue</span><span class="p">]</span><span class="w">         </span><span class="c1">// Last 24 readings (oldest → newest)</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">predictionData</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="n">GlucoseValue</span><span class="p">]</span><span class="w">     </span><span class="c1">// Next 12 predictions</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">expireDate</span><span class="p">:</span><span class="w"> </span><span class="n">Date</span><span class="p">?</span><span class="w">                  </span><span class="c1">// App build expiration</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">lastLoopTime</span><span class="p">:</span><span class="w"> </span><span class="n">TimeInterval</span><span class="p">?</span><span class="w">        </span><span class="c1">// Last loop run timestamp</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">latestOverrideStart</span><span class="p">:</span><span class="w"> </span><span class="n">TimeInterval</span><span class="p">?</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">latestOverrideEnd</span><span class="p">:</span><span class="w"> </span><span class="n">TimeInterval</span><span class="p">?</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">latestTempTargetStart</span><span class="p">:</span><span class="w"> </span><span class="n">TimeInterval</span><span class="p">?</span>
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">latestTempTargetEnd</span><span class="p">:</span><span class="w"> </span><span class="n">TimeInterval</span><span class="p">?</span>
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">recBolus</span><span class="p">:</span><span class="w"> </span><span class="nb">Double</span><span class="p">?</span><span class="w">                  </span><span class="c1">// Recommended bolus</span>
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">COB</span><span class="p">:</span><span class="w"> </span><span class="nb">Double</span><span class="p">?</span><span class="w">                       </span><span class="c1">// Carbs on board</span>
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">sageInsertTime</span><span class="p">:</span><span class="w"> </span><span class="n">TimeInterval</span><span class="p">?</span><span class="w">      </span><span class="c1">// Sensor insertion time</span>
+<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">pumpInsertTime</span><span class="p">:</span><span class="w"> </span><span class="n">TimeInterval</span><span class="p">?</span><span class="w">      </span><span class="c1">// Pump site insertion time</span>
+<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">latestPumpVolume</span><span class="p">:</span><span class="w"> </span><span class="nb">Double</span><span class="p">?</span><span class="w">          </span><span class="c1">// Reservoir level</span>
+<a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">IOB</span><span class="p">:</span><span class="w"> </span><span class="nb">Double</span><span class="p">?</span><span class="w">                       </span><span class="c1">// Insulin on board</span>
+<a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">recentBoluses</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="n">BolusEntry</span><span class="p">]</span><span class="w">        </span><span class="c1">// Recent bolus entries</span>
+<a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">latestBattery</span><span class="p">:</span><span class="w"> </span><span class="nb">Double</span><span class="p">?</span><span class="w">             </span><span class="c1">// Phone battery level</span>
+<a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">batteryHistory</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="n">batteryStruct</span><span class="p">]</span><span class="w">    </span><span class="c1">// Battery readings over time</span>
+<a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">recentCarbs</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="n">CarbSample</span><span class="p">]</span><span class="w">          </span><span class="c1">// Recent carb entries</span>
+<a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a><span class="p">}</span>
+</code></pre></div>
+<hr />
+<h2 id="global-configuration">Global Configuration<a class="headerlink" href="#global-configuration" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1">// loopfollow:LoopFollow/Alarm/AlarmConfiguration.swift#L6-L33</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="kd">struct</span><span class="w"> </span><span class="nc">AlarmConfiguration</span><span class="p">:</span><span class="w"> </span><span class="n">Codable</span><span class="p">,</span><span class="w"> </span><span class="nb">Equatable</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">snoozeUntil</span><span class="p">:</span><span class="w"> </span><span class="n">Date</span><span class="p">?</span><span class="w">              </span><span class="c1">// Global snooze all alarms</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">muteUntil</span><span class="p">:</span><span class="w"> </span><span class="n">Date</span><span class="p">?</span><span class="w">                </span><span class="c1">// Global mute sounds</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">dayStart</span><span class="p">:</span><span class="w"> </span><span class="n">TimeOfDay</span><span class="w">             </span><span class="c1">// Default: 6:00 AM</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">nightStart</span><span class="p">:</span><span class="w"> </span><span class="n">TimeOfDay</span><span class="w">           </span><span class="c1">// Default: 10:00 PM</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">overrideSystemOutputVolume</span><span class="p">:</span><span class="w"> </span><span class="nb">Bool</span><span class="w"> </span><span class="c1">// Override device volume</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">forcedOutputVolume</span><span class="p">:</span><span class="w"> </span><span class="nb">Float</span><span class="w">        </span><span class="c1">// 0.0 to 1.0</span>
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">audioDuringCalls</span><span class="p">:</span><span class="w"> </span><span class="nb">Bool</span><span class="w">           </span><span class="c1">// Play during phone calls</span>
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">ignoreZeroBG</span><span class="p">:</span><span class="w"> </span><span class="nb">Bool</span><span class="w">               </span><span class="c1">// Ignore zero BG readings</span>
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">autoSnoozeCGMStart</span><span class="p">:</span><span class="w"> </span><span class="nb">Bool</span><span class="w">         </span><span class="c1">// Snooze during CGM warmup</span>
+<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">enableVolumeButtonSnooze</span><span class="p">:</span><span class="w"> </span><span class="nb">Bool</span><span class="w">   </span><span class="c1">// Use volume buttons to snooze</span>
+<a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a><span class="p">}</span>
+</code></pre></div>
+<hr />
+<h2 id="evaluation-flow">Evaluation Flow<a class="headerlink" href="#evaluation-flow" title="Permanent link">&para;</a></h2>
+<h3 id="alarmmanagercheckalarms">AlarmManager.checkAlarms()<a class="headerlink" href="#alarmmanagercheckalarms" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1">// loopfollow:LoopFollow/Alarm/AlarmManager.swift#L42-L153</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="kd">func</span><span class="w"> </span><span class="nf">checkAlarms</span><span class="p">(</span><span class="n">data</span><span class="p">:</span><span class="w"> </span><span class="n">AlarmData</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">    </span><span class="c1">// 1. Check global snooze</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nv">snoozeUntil</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">config</span><span class="p">.</span><span class="n">snoozeUntil</span><span class="p">,</span><span class="w"> </span><span class="n">snoozeUntil</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">        </span><span class="n">stopAlarm</span><span class="p">()</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">        </span><span class="k">return</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="w">    </span><span class="c1">// 2. Sort alarms by priority</span>
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">sorted</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">alarms</span><span class="p">.</span><span class="bp">sorted</span><span class="p">(</span><span class="n">by</span><span class="p">:</span><span class="w"> </span><span class="n">Alarm</span><span class="p">.</span><span class="n">byPriorityThenSpec</span><span class="p">)</span>
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>
+<a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a><span class="w">    </span><span class="c1">// 3. Iterate through alarms</span>
+<a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="n">alarm</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="bp">sorted</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a><span class="w">        </span><span class="c1">// Skip if same type as snoozed alarm</span>
+<a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">alarm</span><span class="p">.</span><span class="n">type</span><span class="w"> </span><span class="p">==</span><span class="w"> </span><span class="n">skipType</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">continue</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a>
+<a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a><span class="w">        </span><span class="c1">// Skip BG-based alarms without recent data (except missedReading)</span>
+<a id="__codelineno-9-18" name="__codelineno-9-18" href="#__codelineno-9-18"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">alarm</span><span class="p">.</span><span class="n">type</span><span class="p">.</span><span class="n">isBGBased</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">isLatestReadingRecent</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">continue</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-9-19" name="__codelineno-9-19" href="#__codelineno-9-19"></a>
+<a id="__codelineno-9-20" name="__codelineno-9-20" href="#__codelineno-9-20"></a><span class="w">        </span><span class="c1">// Skip if already handled this BG reading</span>
+<a id="__codelineno-9-21" name="__codelineno-9-21" href="#__codelineno-9-21"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">alarm</span><span class="p">.</span><span class="n">type</span><span class="p">.</span><span class="n">isBGBased</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">latestDate</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">lastHandled</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">continue</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-9-22" name="__codelineno-9-22" href="#__codelineno-9-22"></a>
+<a id="__codelineno-9-23" name="__codelineno-9-23" href="#__codelineno-9-23"></a><span class="w">        </span><span class="c1">// Skip if per-alarm snoozed</span>
+<a id="__codelineno-9-24" name="__codelineno-9-24" href="#__codelineno-9-24"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nv">until</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">alarm</span><span class="p">.</span><span class="n">snoozedUntil</span><span class="p">,</span><span class="w"> </span><span class="n">until</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-9-25" name="__codelineno-9-25" href="#__codelineno-9-25"></a><span class="w">            </span><span class="n">skipType</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">alarm</span><span class="p">.</span><span class="n">type</span>
+<a id="__codelineno-9-26" name="__codelineno-9-26" href="#__codelineno-9-26"></a><span class="w">            </span><span class="k">continue</span>
+<a id="__codelineno-9-27" name="__codelineno-9-27" href="#__codelineno-9-27"></a><span class="w">        </span><span class="p">}</span>
+<a id="__codelineno-9-28" name="__codelineno-9-28" href="#__codelineno-9-28"></a>
+<a id="__codelineno-9-29" name="__codelineno-9-29" href="#__codelineno-9-29"></a><span class="w">        </span><span class="c1">// Evaluate condition</span>
+<a id="__codelineno-9-30" name="__codelineno-9-30" href="#__codelineno-9-30"></a><span class="w">        </span><span class="k">guard</span><span class="w"> </span><span class="n">checker</span><span class="p">.</span><span class="n">shouldFire</span><span class="p">(</span><span class="n">alarm</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">now</span><span class="p">,</span><span class="w"> </span><span class="n">config</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-9-31" name="__codelineno-9-31" href="#__codelineno-9-31"></a><span class="w">            </span><span class="c1">// Stop if currently active but no longer meets requirements</span>
+<a id="__codelineno-9-32" name="__codelineno-9-32" href="#__codelineno-9-32"></a><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">currentAlarm</span><span class="w"> </span><span class="p">==</span><span class="w"> </span><span class="n">alarm</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">stopAlarm</span><span class="p">()</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-9-33" name="__codelineno-9-33" href="#__codelineno-9-33"></a><span class="w">            </span><span class="k">continue</span>
+<a id="__codelineno-9-34" name="__codelineno-9-34" href="#__codelineno-9-34"></a><span class="w">        </span><span class="p">}</span>
+<a id="__codelineno-9-35" name="__codelineno-9-35" href="#__codelineno-9-35"></a>
+<a id="__codelineno-9-36" name="__codelineno-9-36" href="#__codelineno-9-36"></a><span class="w">        </span><span class="c1">// If already active, keep it</span>
+<a id="__codelineno-9-37" name="__codelineno-9-37" href="#__codelineno-9-37"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">currentAlarm</span><span class="w"> </span><span class="p">==</span><span class="w"> </span><span class="n">alarm</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">break</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-9-38" name="__codelineno-9-38" href="#__codelineno-9-38"></a>
+<a id="__codelineno-9-39" name="__codelineno-9-39" href="#__codelineno-9-39"></a><span class="w">        </span><span class="c1">// Fire the alarm</span>
+<a id="__codelineno-9-40" name="__codelineno-9-40" href="#__codelineno-9-40"></a><span class="w">        </span><span class="n">currentAlarm</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">alarm</span><span class="p">.</span><span class="n">id</span>
+<a id="__codelineno-9-41" name="__codelineno-9-41" href="#__codelineno-9-41"></a><span class="w">        </span><span class="n">alarm</span><span class="p">.</span><span class="n">trigger</span><span class="p">(</span><span class="n">config</span><span class="p">,</span><span class="w"> </span><span class="n">now</span><span class="p">)</span>
+<a id="__codelineno-9-42" name="__codelineno-9-42" href="#__codelineno-9-42"></a>
+<a id="__codelineno-9-43" name="__codelineno-9-43" href="#__codelineno-9-43"></a><span class="w">        </span><span class="c1">// Track handled BG time</span>
+<a id="__codelineno-9-44" name="__codelineno-9-44" href="#__codelineno-9-44"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">alarm</span><span class="p">.</span><span class="n">type</span><span class="p">.</span><span class="n">isBGBased</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">lastBGAlarmTime</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">latestDate</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-9-45" name="__codelineno-9-45" href="#__codelineno-9-45"></a>
+<a id="__codelineno-9-46" name="__codelineno-9-46" href="#__codelineno-9-46"></a><span class="w">        </span><span class="c1">// Auto-disable temporary alarms</span>
+<a id="__codelineno-9-47" name="__codelineno-9-47" href="#__codelineno-9-47"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">alarm</span><span class="p">.</span><span class="n">type</span><span class="w"> </span><span class="p">==</span><span class="w"> </span><span class="p">.</span><span class="n">temporary</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">alarm</span><span class="p">.</span><span class="n">isEnabled</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-9-48" name="__codelineno-9-48" href="#__codelineno-9-48"></a>
+<a id="__codelineno-9-49" name="__codelineno-9-49" href="#__codelineno-9-49"></a><span class="w">        </span><span class="k">break</span><span class="w">  </span><span class="c1">// Only one alarm per tick</span>
+<a id="__codelineno-9-50" name="__codelineno-9-50" href="#__codelineno-9-50"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-9-51" name="__codelineno-9-51" href="#__codelineno-9-51"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="alarmconditionshouldfire">AlarmCondition.shouldFire()<a class="headerlink" href="#alarmconditionshouldfire" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1">// loopfollow:LoopFollow/Alarm/AlarmCondition/AlarmCondition.swift#L53-L81</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="kd">func</span><span class="w"> </span><span class="nf">shouldFire</span><span class="p">(</span><span class="n">alarm</span><span class="p">:</span><span class="w"> </span><span class="n">Alarm</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">:</span><span class="w"> </span><span class="n">AlarmData</span><span class="p">,</span><span class="w"> </span><span class="n">now</span><span class="p">:</span><span class="w"> </span><span class="n">Date</span><span class="p">,</span><span class="w"> </span><span class="n">config</span><span class="p">:</span><span class="w"> </span><span class="n">AlarmConfiguration</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">Bool</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">    </span><span class="c1">// 1. Check enabled</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">    </span><span class="k">guard</span><span class="w"> </span><span class="n">alarm</span><span class="p">.</span><span class="n">isEnabled</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">    </span><span class="c1">// 2. Check per-alarm snooze</span>
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nv">snooze</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">alarm</span><span class="p">.</span><span class="n">snoozedUntil</span><span class="p">,</span><span class="w"> </span><span class="n">snooze</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="w">    </span><span class="c1">// 3. Check BG limits</span>
+<a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">!</span><span class="n">passesBGLimits</span><span class="p">(</span><span class="n">alarm</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a>
+<a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a><span class="w">    </span><span class="c1">// 4. Check time-of-day</span>
+<a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">isNight</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">(</span><span class="n">nowMin</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">dayStart</span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="p">(</span><span class="n">nowMin</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">nightStart</span><span class="p">)</span>
+<a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a><span class="w">    </span><span class="k">switch</span><span class="w"> </span><span class="n">alarm</span><span class="p">.</span><span class="n">activeOption</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="p">.</span><span class="n">always</span><span class="p">:</span><span class="w"> </span><span class="k">break</span>
+<a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="p">.</span><span class="n">day</span><span class="p">:</span><span class="w"> </span><span class="k">guard</span><span class="w"> </span><span class="o">!</span><span class="n">isNight</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="p">.</span><span class="n">night</span><span class="p">:</span><span class="w"> </span><span class="k">guard</span><span class="w"> </span><span class="n">isNight</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-10-19" name="__codelineno-10-19" href="#__codelineno-10-19"></a>
+<a id="__codelineno-10-20" name="__codelineno-10-20" href="#__codelineno-10-20"></a><span class="w">    </span><span class="c1">// 5. Run type-specific logic</span>
+<a id="__codelineno-10-21" name="__codelineno-10-21" href="#__codelineno-10-21"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">evaluate</span><span class="p">(</span><span class="n">alarm</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">now</span><span class="p">)</span>
+<a id="__codelineno-10-22" name="__codelineno-10-22" href="#__codelineno-10-22"></a><span class="p">}</span>
+</code></pre></div>
+<hr />
+<h2 id="snooze-behavior">Snooze Behavior<a class="headerlink" href="#snooze-behavior" title="Permanent link">&para;</a></h2>
+<h3 id="per-alarm-snooze">Per-Alarm Snooze<a class="headerlink" href="#per-alarm-snooze" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1">// loopfollow:LoopFollow/Alarm/AlarmManager.swift#L155-L169</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="kd">func</span><span class="w"> </span><span class="nf">performSnooze</span><span class="p">(</span><span class="kc">_</span><span class="w"> </span><span class="n">snoozeUnits</span><span class="p">:</span><span class="w"> </span><span class="nb">Int</span><span class="p">?</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="kc">nil</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">units</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">snoozeUnits</span><span class="w"> </span><span class="p">??</span><span class="w"> </span><span class="n">alarm</span><span class="p">.</span><span class="n">snoozeDuration</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">units</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="nv">snoozeSeconds</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">Double</span><span class="p">(</span><span class="n">units</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">alarm</span><span class="p">.</span><span class="n">type</span><span class="p">.</span><span class="n">snoozeTimeUnit</span><span class="p">.</span><span class="n">seconds</span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">        </span><span class="n">alarm</span><span class="p">.</span><span class="n">snoozedUntil</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Date</span><span class="p">().</span><span class="n">addingTimeInterval</span><span class="p">(</span><span class="n">snoozeSeconds</span><span class="p">)</span>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">    </span><span class="n">stopAlarm</span><span class="p">()</span>
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="snooze-time-units">Snooze Time Units<a class="headerlink" href="#snooze-time-units" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Alarm Type</th>
+<th>Snooze Unit</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BG alarms</td>
+<td>Minutes</td>
+<td>5 → 5 minutes</td>
+</tr>
+<tr>
+<td>Device alarms</td>
+<td>Hours</td>
+<td>1 → 1 hour</td>
+</tr>
+<tr>
+<td>Build expire</td>
+<td>Days</td>
+<td>1 → 1 day</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="sound-configuration">Sound Configuration<a class="headerlink" href="#sound-configuration" title="Permanent link">&para;</a></h2>
+<h3 id="alarm-trigger-sound-logic">Alarm Trigger Sound Logic<a class="headerlink" href="#alarm-trigger-sound-logic" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1">// loopfollow:LoopFollow/Alarm/Alarm.swift#L196-L261</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="kd">func</span><span class="w"> </span><span class="nf">trigger</span><span class="p">(</span><span class="n">config</span><span class="p">:</span><span class="w"> </span><span class="n">AlarmConfiguration</span><span class="p">,</span><span class="w"> </span><span class="n">now</span><span class="p">:</span><span class="w"> </span><span class="n">Date</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">playSound</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="kc">true</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">    </span><span class="c1">// Global mute check</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nv">until</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">config</span><span class="p">.</span><span class="n">muteUntil</span><span class="p">,</span><span class="w"> </span><span class="n">until</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">playSound</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="w">    </span><span class="c1">// Mute during calls check</span>
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">!</span><span class="n">config</span><span class="p">.</span><span class="n">audioDuringCalls</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">isOnPhoneCall</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">playSound</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>
+<a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="w">    </span><span class="c1">// Day/night sound check</span>
+<a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">isNight</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">...</span>
+<a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a><span class="w">    </span><span class="k">switch</span><span class="w"> </span><span class="n">playSoundOption</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="p">.</span><span class="n">always</span><span class="p">:</span><span class="w"> </span><span class="k">break</span>
+<a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="p">.</span><span class="n">never</span><span class="p">:</span><span class="w"> </span><span class="n">playSound</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="kc">false</span>
+<a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="p">.</span><span class="n">day</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="o">!</span><span class="n">isDay</span><span class="p">:</span><span class="w"> </span><span class="n">playSound</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="kc">false</span>
+<a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="p">.</span><span class="n">night</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="o">!</span><span class="n">isNight</span><span class="p">:</span><span class="w"> </span><span class="n">playSound</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="kc">false</span>
+<a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-12-19" name="__codelineno-12-19" href="#__codelineno-12-19"></a>
+<a id="__codelineno-12-20" name="__codelineno-12-20" href="#__codelineno-12-20"></a><span class="w">    </span><span class="c1">// Repeat setting</span>
+<a id="__codelineno-12-21" name="__codelineno-12-21" href="#__codelineno-12-21"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nv">shouldRepeat</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">repeatSoundOption</span><span class="w"> </span><span class="n">matches</span><span class="w"> </span><span class="n">time</span><span class="o">-</span><span class="n">of</span><span class="o">-</span><span class="n">day</span>
+<a id="__codelineno-12-22" name="__codelineno-12-22" href="#__codelineno-12-22"></a>
+<a id="__codelineno-12-23" name="__codelineno-12-23" href="#__codelineno-12-23"></a><span class="w">    </span><span class="c1">// Send notification</span>
+<a id="__codelineno-12-24" name="__codelineno-12-24" href="#__codelineno-12-24"></a><span class="w">    </span><span class="n">AlarmManager</span><span class="p">.</span><span class="n">shared</span><span class="p">.</span><span class="n">sendNotification</span><span class="p">(</span><span class="n">title</span><span class="p">:</span><span class="w"> </span><span class="n">type</span><span class="p">.</span><span class="n">rawValue</span><span class="p">,</span><span class="w"> </span><span class="n">actionTitle</span><span class="p">:</span><span class="w"> </span><span class="s">"Snooze"</span><span class="p">)</span>
+<a id="__codelineno-12-25" name="__codelineno-12-25" href="#__codelineno-12-25"></a>
+<a id="__codelineno-12-26" name="__codelineno-12-26" href="#__codelineno-12-26"></a><span class="w">    </span><span class="c1">// Play sound</span>
+<a id="__codelineno-12-27" name="__codelineno-12-27" href="#__codelineno-12-27"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">playSound</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-12-28" name="__codelineno-12-28" href="#__codelineno-12-28"></a><span class="w">        </span><span class="n">AlarmSound</span><span class="p">.</span><span class="n">setSoundFile</span><span class="p">(</span><span class="n">str</span><span class="p">:</span><span class="w"> </span><span class="n">soundFile</span><span class="p">.</span><span class="n">rawValue</span><span class="p">)</span>
+<a id="__codelineno-12-29" name="__codelineno-12-29" href="#__codelineno-12-29"></a><span class="w">        </span><span class="n">AlarmSound</span><span class="p">.</span><span class="n">play</span><span class="p">(</span><span class="n">repeating</span><span class="p">:</span><span class="w"> </span><span class="n">shouldRepeat</span><span class="p">,</span><span class="w"> </span><span class="n">delay</span><span class="p">:</span><span class="w"> </span><span class="n">soundDelay</span><span class="p">)</span>
+<a id="__codelineno-12-30" name="__codelineno-12-30" href="#__codelineno-12-30"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-12-31" name="__codelineno-12-31" href="#__codelineno-12-31"></a><span class="p">}</span>
+</code></pre></div>
+<hr />
+<h2 id="comparison-with-loopcaregiver">Comparison with LoopCaregiver<a class="headerlink" href="#comparison-with-loopcaregiver" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>LoopFollow</th>
+<th>LoopCaregiver</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Alarm Types</strong></td>
+<td>20</td>
+<td>~5 (basic)</td>
+</tr>
+<tr>
+<td><strong>Predictive Alarms</strong></td>
+<td>Yes (low BG)</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Persistent Alarms</strong></td>
+<td>Yes (N minutes)</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Delta Alarms</strong></td>
+<td>Yes (fast rise/drop)</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Day/Night Scheduling</strong></td>
+<td>Yes (sound + active)</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Custom Sounds</strong></td>
+<td>Yes (20+ sounds)</td>
+<td>System sounds</td>
+</tr>
+<tr>
+<td><strong>Missed Bolus</strong></td>
+<td>Yes (sophisticated)</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Build Expiration</strong></td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Snooze Options</strong></td>
+<td>Per-alarm + global</td>
+<td>Basic</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="cross-references">Cross-References<a class="headerlink" href="#cross-references" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../loopcaregiver/authentication.html">LoopCaregiver Authentication</a> - Compare alarm vs command focus</li>
+<li><a href="../loopcaregiver/remote-commands.html">LoopCaregiver Remote Commands</a> - Remote control comparison</li>
+<li><a href="../../docs/10-domain/nightscout-data-model.html">Nightscout Data Model</a> - Data sources for alarms</li>
+</ul>
+<hr />
+<h2 id="gaps-identified">Gaps Identified<a class="headerlink" href="#gaps-identified" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Gap ID</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GAP-LF-001</td>
+<td>Alarm configuration not synced to Nightscout (local only)</td>
+</tr>
+<tr>
+<td>GAP-LF-002</td>
+<td>No alarm history or audit log</td>
+</tr>
+<tr>
+<td>GAP-LF-003</td>
+<td>Prediction data not available for Trio (only Loop)</td>
+</tr>
+<tr>
+<td>GAP-LF-004</td>
+<td>No multi-user alarm acknowledgment (caregiver coordination)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="revision-history">Revision History<a class="headerlink" href="#revision-history" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Date</th>
+<th>Author</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-01-17</td>
+<td>Agent</td>
+<td>Initial deep dive documentation</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

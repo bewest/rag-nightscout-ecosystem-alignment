@@ -1,0 +1,9154 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/60-research/remedial/github-triage-2026-09-25.html">
+      
+      
+        <link rel="prev" href="ghsa-xss-pair-verification-2026-09-21.html">
+      
+      
+        <link rel="next" href="gt1-branch-inventory-2026-09-15.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>GitHub triage of cgm-remote-monitor and nightscout-connect - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#github-triage-of-cgm-remote-monitor-and-nightscout-connect" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              GitHub triage of cgm-remote-monitor and nightscout-connect
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../30-design/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_27" id="__nav_5_27_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_27_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_27">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    60-research/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-2844-phenotype-drilldown-report-2026-04-22.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-0001 to 2869
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-2870-envelope-crossover-report-2026-04-22.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2870 to 2909
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-2910-eight-dim-regrade-2026-04-23.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2910 to 2949
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-2950-uniform-action-curve-2026-04-23.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2950 to 2999
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-3000-3003-cf-replay-maturation-2026-04-25.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-3000 and later
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../AUTORESEARCH-SESSION-2026-04-26.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Programme, closeouts and syntheses
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../accuracy-validation-2026-04-05.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Productionization and pipelines
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../capability-report-clinical-decision-support.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Capability reports
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../circadian-therapy-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Therapy
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../aid-aware-settings-report-2026-04-09.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings and profiles
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../natural-experiment-deconfounding-2026-04-09.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Natural experiments
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../bilateral-deconfounding-report-2026-04-19.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EGP, supply-demand and deconfounding
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../autotune-uam-characterization-report.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Meals and carbohydrates
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../causal-pk-leakage-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Insulin, ISF and pharmacokinetics
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../acceleration-clinical-utility-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clinical, safety and hypoglycaemia
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../aid-author-recommendations-report-2026-04-20.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AID controllers, cohorts and waves
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../centering-dynamics-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forecasting, prediction and classification
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../advanced-architectures-benchmark-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ML methods and architectures
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../canonical/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    canonical/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../collaboration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    collaboration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../external-inventories/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    external-inventories/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../modernization/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    modernization/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../programme/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    programme/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27_25" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    remedial/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_27_25" id="__nav_5_27_25_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_27_25_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_27_25">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    remedial/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf01-13-14-15-read-defects-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BF-01, BF-05, BF-13, BF-14, BF-15 — five read defects that answer 200 with the wrong thing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf09-dedup-zero-measurement-2026-09-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BF-09 — what socket dedup does with a zero, and whether treating zero as real would bring back the AAPS temp-basal display problem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf103-split-drag-time.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BF-103: a split treatment drag stores the old time, so IOB and COB ignore the move
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf17-bf30-auth-defects-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BF-17 and BF-30 — two authentication defects in shipping cgm-remote-monitor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf28-29-31-alarm-delivery-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Three alarm-delivery defects, fixed: one alarm that could never fire, one that could be off
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf41-future-reading-2026-09-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BF-41 — a future-dated reading does not silence the stale-data alarm through the real sandbox
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf52-age-push-once-2026-09-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BF-52 — an age reminder whose 20-minute window passed without a check was never sent
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf69-quickpick-rebuild-2026-09-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BF-69: the Bolus Wizard quick-pick chooser is built once, from nothing — reproduction, fix and browser evidence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf90-alarm-no-reading-2026-09-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BF-90: an alarm at a page with no reading — reproduction, fix and browser evidence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="connector-0.1.0-dev.2-soak-2026-09-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-connect 0.1.0-dev.2 — Nightscout-to-Nightscout lab soak
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="connector-profile-sync.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-connect: profile sync from a Nightscout source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="consumer-impact-15.0.9-2026-09-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What 15.0.9 changes for the apps that talk to Nightscout
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="crud-by-id-matrix-2026-09-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CRUD by _id: a matrix over every collection, stored _id form, API v1, API v3 and the websocket
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="e3-gate-vacuity-audit-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    E3 — gate vacuity audit of the work queue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="e4-queue-register-reconciliation-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    E4 — closing the gap between the work queue and the backfix register
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ghsa-xss-pair-verification-2026-09-21.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GHSA-5mrq-gpqw-q5v5 and GHSA-mjp4-84fw-gj4v — verification against v15.0.7, v15.0.8 and dev
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GitHub triage of cgm-remote-monitor and nightscout-connect
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="github-triage-2026-09-25.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GitHub triage of cgm-remote-monitor and nightscout-connect
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-decisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Decisions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-update-when-1509-ships" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Update when 15.0.9 ships
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-answer-and-close" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Answer and close
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-open-prs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Open PRs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Open PRs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-credit-no-null-merge-is-warranted" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Credit: no null merge is warranted
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-the-carried-prs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 The carried PRs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-8522" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 #8522
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-mis-targeted-prs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Mis-targeted PRs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-other-drafts-that-need-a-maintainer-call" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 Other drafts that need a maintainer call
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-defects-to-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Defects to file
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-open-issues-by-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Open issues by status
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Open issues by status">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-cgm-remote-monitor-102-newest-activity-first" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 cgm-remote-monitor (102), newest activity first
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-nightscout-connect-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 nightscout-connect (12)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-method-and-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Method and limits
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="gt1-branch-inventory-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GT1 — branch, worktree and commit inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="gt3-register-truth-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GT3 — register truth and a contradiction sweep across the planning documents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="journey-lab-15.0.9-2026-09-25.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Journey lab, scripted walk on the 15.0.9 candidate
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="journey-lab-browser-15.0.9-2026-09-26.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Journey lab, browser hand checks on the 15.0.9 candidate
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="journey-map-15.0.9.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout user journey map (15.0.9)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="manual-lab-15.0.9-rc-2026-09-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Manual browser checks on the 15.0.9 combined rc
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modernization-backport-triage-2026-09-22.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modernization-only security commits: which fix a defect on dev
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="object-id-other-collections-2026-09-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A 24-hex _id stored as a string: devicestatus, food, activity, treatments, entries and API v3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="profile-object-id-2026-09-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A profile posted with its own _id is stored with a string _id
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="query-coercion-drift-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The query-coercion table, emitted — and the 158 places the shipping walkers disagree
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="t02-t03-cache-clone-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    T0.2 and T0.3 — what the runtime cache's defensive clone actually costs, and how much of it is safe to take
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="t05-schema-driven-coercion-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    T0.5 — schema-driven query type coercion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tenancy/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenancy/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-decisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Decisions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-update-when-1509-ships" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Update when 15.0.9 ships
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-answer-and-close" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Answer and close
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-open-prs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Open PRs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Open PRs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-credit-no-null-merge-is-warranted" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Credit: no null merge is warranted
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-the-carried-prs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 The carried PRs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-8522" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 #8522
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-mis-targeted-prs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Mis-targeted PRs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-other-drafts-that-need-a-maintainer-call" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 Other drafts that need a maintainer call
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-defects-to-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Defects to file
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-open-issues-by-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Open issues by status
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Open issues by status">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-cgm-remote-monitor-102-newest-activity-first" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 cgm-remote-monitor (102), newest activity first
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-nightscout-connect-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 nightscout-connect (12)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-method-and-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Method and limits
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="github-triage-of-cgm-remote-monitor-and-nightscout-connect">GitHub triage of cgm-remote-monitor and nightscout-connect<a class="headerlink" href="#github-triage-of-cgm-remote-monitor-and-nightscout-connect" title="Permanent link">&para;</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Record</p>
+<p>Record as of 2026-09-25. A point-in-time document; it is not kept up to date.</p>
+</div>
+<p><em>Snapshot, 2026-09-25, against cgm-remote-monitor official/dev 4f705217 (15.0.8 = 92d08342), #8758 head ab7b22d6, nightscout-connect v0.1.0 4dde1ec. Contributor-facing. Nothing here has been posted to GitHub. Item state lives in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a79d969c34632122b787927642e8b5cfc4514c6c/queue/work-queue.yaml">queue/work-queue.yaml</a>, and defect facts in the <a href="../../30-design/remedial/nightscout-backfix-register.html">backfix register</a>.</em></p>
+<p>Every open pull request and every open issue in both repositories was triaged on 2026-09-25:
+<strong>42 PRs</strong> (39 in cgm-remote-monitor, 3 in nightscout-connect) and <strong>114 issues</strong> (102 and 12).
+Each PR head was fetched, trial-merged against <code>dev</code> and against #8758, and checked against the
+register and the queue. Its own tests were run on <code>dev</code> with the PR merged where §8 says so. Each
+issue was classified against both refs. Where a defect claim is marked <strong>reproduced</strong>, it was run on
+both trees with a control; the rest are <strong>read-derived</strong>. The outcome: 3 PRs are carried into
+15.0.9, 1 is refused, 11 defects are to be filed in the register, 9 issues get an update when
+15.0.9 ships and 7 can be answered and closed. No open issue matches a withheld register entry. Not
+medical advice.</p>
+<h2 id="1-decisions">1. Decisions<a class="headerlink" href="#1-decisions" title="Permanent link">&para;</a></h2>
+<p>Made by the maintainer on 2026-09-25.</p>
+<table>
+<thead>
+<tr>
+<th>decision</th>
+<th>items</th>
+<th>tracked</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Carry into 15.0.9</strong></td>
+<td>#8568 (lejcey): an AAPS open-ended loop disable keeps the loop and pump alerts off after the loop is back on. The contributor is asked to also match the AAPS-dev shape and add an alert-level test</td>
+<td>register BF-114, queue <code>BFQ-114</code></td>
+</tr>
+<tr>
+<td></td>
+<td>#8419 (je-l): tests for Loop push notifications and websockets</td>
+<td>queue <code>RT-PR-8419</code></td>
+</tr>
+<tr>
+<td></td>
+<td>#8530 (alanshurafa): a 48-hour option in the focus range selector</td>
+<td>queue <code>RT-PR-8530</code></td>
+</tr>
+<tr>
+<td></td>
+<td>#8730 (Crowdin, opened by sulkaharo): translation updates, 32 files; merges cleanly with <code>dev</code> <code>4f705217</code> and #8758</td>
+<td>queue <code>RT-PR-8730</code></td>
+</tr>
+<tr>
+<td><strong>Do not carry</strong></td>
+<td>#8522 (stevoh6): with it merged, 13 existing tests fail on <code>dev</code> (§5.4)</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>File in the register</strong></td>
+<td>the 11 confirmed defects in §6: #5622, #7036, #7110, #8104, #6220, #5940, #7377, #7729, #7771, #8185, #8244. Filed 2026-09-25 as BF-118 to BF-128, each reproduced on 15.0.8 and dev with a control (probes in <code>tools/lab/triage-2026-09/</code>, except #7110's, held outside the repository)</td>
+<td>register</td>
+</tr>
+<tr>
+<td><strong>Direction</strong></td>
+<td>these defects continue the backfix effort, methodically and completely, one at a time</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-update-when-1509-ships">2. Update when 15.0.9 ships<a class="headerlink" href="#2-update-when-1509-ships" title="Permanent link">&para;</a></h2>
+<p>No merged 15.0.9 PR uses a closing keyword, so none of these issues closes automatically. Each
+comment below is written to be posted on the day 15.0.9 is released.</p>
+<table>
+<thead>
+<tr>
+<th>issue</th>
+<th>fixed by</th>
+<th>status</th>
+<th>keep open?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#8714 debug log volume after 15.0.8</td>
+<td>#8726 (debug logging opt-in); connector 0.1.0 pin, #8762</td>
+<td>merged</td>
+<td>close after posting</td>
+</tr>
+<tr>
+<td>#8584 Reports basal graph stops at the switch hour</td>
+<td>#8701 (profile-switch schedule preprocessing)</td>
+<td>merged; link to the report is probable, not confirmed</td>
+<td>until the reporter confirms</td>
+</tr>
+<tr>
+<td>#6066 Treatments report cannot be limited by event type</td>
+<td>#8590 (row filter, day-filter labels)</td>
+<td>merged; not measured here</td>
+<td>close after posting</td>
+</tr>
+<tr>
+<td>#8315 Bolus Wizard quick pick shows only (none)</td>
+<td>#8756, #8735</td>
+<td>merged</td>
+<td>close after posting</td>
+</tr>
+<tr>
+<td>#7324 insulin age pill never turns red</td>
+<td>#8739, #8732</td>
+<td>merged</td>
+<td>close after posting</td>
+</tr>
+<tr>
+<td>#8072 report readability (event-type filter part)</td>
+<td>#8590</td>
+<td>merged</td>
+<td>yes: readability requests remain</td>
+</tr>
+<tr>
+<td>#8328 Node and dependency tracking</td>
+<td>#8573 (D3 7.9.0), #8749 (qs 6.16.0), others in <a href="../../../releases/cgm-remote-monitor-15.0.9/contents.html">contents.md</a></td>
+<td>merged</td>
+<td>yes: tracking issue</td>
+</tr>
+<tr>
+<td>connector #14 European Glooko accounts</td>
+<td>connector #71, in 0.1.0, pinned by #8762</td>
+<td>merged</td>
+<td>until reporters confirm</td>
+</tr>
+<tr>
+<td>connector #21 CareLink "no reading" stored as 0</td>
+<td>connector 0.1.0 (drops <code>sg</code> 0), pinned by #8762</td>
+<td>merged; read-derived, not reproduced</td>
+<td>close after posting</td>
+</tr>
+</tbody>
+</table>
+<p><strong>#8714.</strong> DRAFT:</p>
+<blockquote>
+<p>Thank you for the detailed log comparison. Nightscout 15.0.9 turns routine debug output off by default, for the server and for the built-in Nightscout Connect data source. If you need the detailed output again while troubleshooting, set <code>DEBUG_LOGGING=true</code> (server) or <code>CONNECT_DEBUG=true</code> (Nightscout Connect), and turn it off afterwards. Please let us know if your log usage stays high after upgrading to 15.0.9.</p>
+</blockquote>
+<p><strong>#8584.</strong> DRAFT:</p>
+<blockquote>
+<p>Thank you for the report and the profile details. Nightscout 15.0.9 fixes a problem with profiles carried inside Profile Switch treatments, where a schedule could produce missing basal values after the switch time. We think this is the cause of the basal graph stopping at 09:00, but we have not confirmed it against your data. After upgrading to 15.0.9, could you check the affected dates in Reports and tell us whether the full 24-hour basal graph is back?</p>
+</blockquote>
+<p><strong>#6066.</strong> DRAFT:</p>
+<blockquote>
+<p>Thanks for reporting this. In Nightscout 15.0.9 the Treatments report has a new filter above the table that shows only the rows with the event type you choose. The existing filters at the top of the Reports page select which days are included, and they are now labelled that way (for example, "Days with event type"). Please reopen if this doesn't cover what you needed.</p>
+</blockquote>
+<p><strong>#8315.</strong> DRAFT:</p>
+<blockquote>
+<p>Thank you for reporting this. Nightscout 15.0.9 fixes the Bolus Wizard quick pick list: it is now rebuilt from your food database each time you open the Bolus Wizard, and hidden quick picks stay hidden. One limitation remains: if you add or change quick picks in another tab, reload the page to see them in the Bolus Wizard.</p>
+</blockquote>
+<p><strong>#7324.</strong> DRAFT:</p>
+<blockquote>
+<p>Thank you for reporting this and for the comparison with the other age pills. Nightscout 15.0.9 fixes the insulin age pill so that it turns red once the insulin age reaches your urgent setting (<code>IAGE_URGENT</code>, 72 hours by default). If you also use insulin age alerts (<code>IAGE_ENABLE_ALERTS=true</code>), the urgent alert now fires as well.</p>
+</blockquote>
+<p><strong>#8072.</strong> DRAFT:</p>
+<blockquote>
+<p>Part of this is addressed in Nightscout 15.0.9: the Treatments report has a new filter above the table that shows only the rows with a chosen event type, and the filters at the top of the Reports page are now labelled as selecting days (for example, "Days with event type"). The readability suggestions here, such as the exercise bar text and temporary target captions, are still open as feature requests, so we'll keep this issue open for them.</p>
+</blockquote>
+<p><strong>#8328.</strong> DRAFT:</p>
+<blockquote>
+<p>An update for this tracking issue: Nightscout 15.0.9 includes part of this work, among them D3 7.9.0, qs 6.16.0, and updates to axios, socket.io, express and body-parser. The full list is in the 15.0.9 release notes. The wider runtime and dependency modernisation in #8605 is not part of 15.0.9 and continues there, so we'll keep this issue open.</p>
+</blockquote>
+<p><strong>connector #14.</strong> DRAFT:</p>
+<blockquote>
+<p>Nightscout Connect 0.1.0 is now included with Nightscout 15.0.9. It adds explicit EU and DE/FR region selection, alternative login methods and a fallback for CGM readings. If you had trouble with a European Glooko account, please try again after upgrading and let us know whether it works, including which region setting you used. Please do not post your email address or password here.</p>
+</blockquote>
+<p><strong>connector #21.</strong> DRAFT:</p>
+<blockquote>
+<p>Thank you for reporting this. Nightscout Connect 0.1.0 no longer stores CareLink's "no reading" placeholder as a glucose value of 0. It is included with Nightscout 15.0.9. Readings of 0 that were already stored stay in your database; you can remove them if they affect your reports.</p>
+</blockquote>
+<h2 id="3-answer-and-close">3. Answer and close<a class="headerlink" href="#3-answer-and-close" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>issue</th>
+<th>status</th>
+<th>basis</th>
+<th>provenance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#8075 profile.json ignores find</td>
+<td>not a defect</td>
+<td><code>/profile</code> ignores <code>find</code> by design; <code>/profiles</code> honours it with a default <code>startDate</code> window</td>
+<td>measured</td>
+</tr>
+<tr>
+<td>#8105 ALARM_*_MINS and Pushover/IFTTT repeats</td>
+<td>not a defect</td>
+<td>the lists are snooze lengths; the repeat interval is fixed at 15 min</td>
+<td>read-derived</td>
+</tr>
+<tr>
+<td>#8167 Azure Cosmos DB and API v3</td>
+<td>not a defect</td>
+<td>unsupported backend (missing index requirements); the reported path is caught on 15.0.8</td>
+<td>read-derived</td>
+</tr>
+<tr>
+<td>#8097 AAPS full sync missing data</td>
+<td>stale</td>
+<td>the client path is gone: current AndroidAPS uses API v3 only, and no client in the corpus sends the socket update</td>
+<td>static analysis</td>
+</tr>
+<tr>
+<td>#8279 FerretDB compatibility</td>
+<td>question</td>
+<td>MongoDB only; FerretDB is not tested</td>
+<td>—</td>
+</tr>
+<tr>
+<td>#8074 TypeScript migration interest</td>
+<td>question</td>
+<td>discussion, not planned work</td>
+<td>—</td>
+</tr>
+<tr>
+<td>connector #24 CareLink polls on five-minute marks</td>
+<td>not a defect</td>
+<td>since v0.0.10 the poll is scheduled from the last reading time plus 68 s and up to 18 s of jitter</td>
+<td>read-derived</td>
+</tr>
+</tbody>
+</table>
+<p><strong>#8075.</strong> DRAFT:</p>
+<blockquote>
+<p>Thanks for the question. <code>/api/v1/profile.json</code> returns the most recent profiles and does not apply <code>find</code> parameters; that is by design. To search profiles by date, use <code>/api/v1/profiles.json</code> with a <code>find[startDate]</code> range, for example <code>find[startDate][$gte]=2011-11-25&amp;find[startDate][$lte]=2012-03-20</code>. Note that <code>/api/v1/profiles</code> applies a default <code>startDate</code> window, so a filter on <code>created_at</code> alone can return nothing for old profiles. Closing as answered; please reopen if that doesn't work for you.</p>
+</blockquote>
+<p><strong>#8105.</strong> DRAFT:</p>
+<blockquote>
+<p>Thanks for the report. The <code>ALARM_*_MINS</code> settings set the snooze choices offered for each alarm, and the first value is the snooze applied when an alarm is acknowledged from Pushover. They don't change how often Pushover or IFTTT notifications repeat: that interval is fixed at 15 minutes. Closing as answered; we'll look at making the documentation clearer on this.</p>
+</blockquote>
+<p><strong>#8167.</strong> DRAFT:</p>
+<blockquote>
+<p>Thanks for the report. Azure Cosmos DB is not a supported database for Nightscout. Its MongoDB API needs indexes for sorted queries that Nightscout does not create, which is what causes these errors. Current versions answer that failure with an error instead of stopping the server, but API v3 queries will still fail on Cosmos DB. Please use MongoDB. Closing as an unsupported setup.</p>
+</blockquote>
+<p><strong>#8097.</strong> DRAFT:</p>
+<blockquote>
+<p>Thanks for the report. Current versions of AndroidAPS sync with Nightscout through API v3, and the update path described here is no longer used by AndroidAPS or any other uploader we know of. Closing as stale. If you see missing data after a full sync with current versions of AndroidAPS and Nightscout, please open a new issue with the versions you are using.</p>
+</blockquote>
+<p><strong>#8279.</strong> DRAFT:</p>
+<blockquote>
+<p>Thanks for asking. Nightscout supports MongoDB only, and its tests run against MongoDB 4.4, 5.0 and 6.0. FerretDB is not tested, so we can't say whether it works. Closing as answered; if you try it, notes on what worked and what didn't are welcome in a new discussion.</p>
+</blockquote>
+<p><strong>#8074.</strong> DRAFT:</p>
+<blockquote>
+<p>Thanks for raising this. We're closing it as a discussion item rather than tracking it as planned work. Current modernisation work is tracked in #8328 and #8605. If you'd like to propose a concrete, incremental approach, a new issue is welcome.</p>
+</blockquote>
+<p><strong>connector #24.</strong> DRAFT:</p>
+<blockquote>
+<p>Thanks for the report. Since version 0.0.10, the CareLink source schedules its next poll from the time of the last reading plus about 68 seconds and a small random delay, not on fixed five-minute marks. Polls that line up with :00 and :05 most likely follow the timestamps CareLink gives its readings. Closing for now; if you still see this with Nightscout Connect 0.1.0 (included with Nightscout 15.0.9), please reopen with the times you observe.</p>
+</blockquote>
+<h2 id="4-open-prs">4. Open PRs<a class="headerlink" href="#4-open-prs" title="Permanent link">&para;</a></h2>
+<p>Relation: <strong>a</strong> superseded or addressed by merged or open 15.0.9 work; <strong>b</strong> overlaps open
+programme work; <strong>c</strong> independent. File overlap with #8605 alone is not counted as a relation.</p>
+<table>
+<thead>
+<tr>
+<th>PR</th>
+<th>title</th>
+<th>author</th>
+<th>rel.</th>
+<th>recommendation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#8758</td>
+<td>a record's own _id finds, edits and deletes it</td>
+<td>bewest</td>
+<td>b</td>
+<td>leave: the open 15.0.9 PR</td>
+</tr>
+<tr>
+<td>#8730</td>
+<td>Crowdin updates</td>
+<td>sulkaharo (Crowdin)</td>
+<td>b</td>
+<td>carry into 15.0.9 (decided 2026-09-25); no draft needed</td>
+</tr>
+<tr>
+<td>#8605</td>
+<td>modernize runtime, dependencies, memory</td>
+<td>AndyLow91</td>
+<td>b</td>
+<td>leave: programme vehicle</td>
+</tr>
+<tr>
+<td>#8598</td>
+<td>new dev branch post 15.0.8 release</td>
+<td>AndyLow91</td>
+<td>b</td>
+<td>leave: dev → master release PR</td>
+</tr>
+<tr>
+<td><strong>#8568</strong></td>
+<td>fix loop status timeline</td>
+<td>lejcey</td>
+<td>c</td>
+<td><strong>carried into 15.0.9</strong> (decided)</td>
+</tr>
+<tr>
+<td>#8580</td>
+<td>configurable custom notification webhooks</td>
+<td>joshi-rushikesh</td>
+<td>c</td>
+<td>consider for a cut (15.1); security review</td>
+</tr>
+<tr>
+<td>#8564</td>
+<td>telemetry emitter (WIP)</td>
+<td>bewest</td>
+<td>c</td>
+<td>maintainer's own WIP</td>
+</tr>
+<tr>
+<td>#8560</td>
+<td>fullscreen toggle</td>
+<td>earldouglas</td>
+<td>c</td>
+<td>consider for a cut; retarget to dev</td>
+</tr>
+<tr>
+<td>#8555</td>
+<td>seconds on dashboard clock</td>
+<td>samuelpert</td>
+<td>c</td>
+<td>consider for a cut</td>
+</tr>
+<tr>
+<td>#8542</td>
+<td>AGP summary and charts (draft)</td>
+<td>tim2000s</td>
+<td>c</td>
+<td>consider for a cut; retarget</td>
+</tr>
+<tr>
+<td>#8541</td>
+<td>modern browser targets, websocket</td>
+<td>tim2000s</td>
+<td>c</td>
+<td>needs maintainer judgement (support policy); retarget</td>
+</tr>
+<tr>
+<td>#8540</td>
+<td>Trio dark theme, TIR widget, a11y</td>
+<td>tim2000s</td>
+<td>c</td>
+<td>consider for a cut; retarget</td>
+</tr>
+<tr>
+<td>#8537</td>
+<td>clock page fields</td>
+<td>tynbendad</td>
+<td>c</td>
+<td>consider for a cut; retarget</td>
+</tr>
+<tr>
+<td>#8533</td>
+<td>mg vs mmol when displaying treatments</td>
+<td>stevoh6</td>
+<td>c</td>
+<td>needs maintainer judgement (unit guessing)</td>
+</tr>
+<tr>
+<td>#8531</td>
+<td>smooth glucose line</td>
+<td>alanshurafa</td>
+<td>c</td>
+<td>consider for a cut</td>
+</tr>
+<tr>
+<td><strong>#8530</strong></td>
+<td>48-hour focus range</td>
+<td>alanshurafa</td>
+<td>c</td>
+<td><strong>carried into 15.0.9</strong> (decided)</td>
+</tr>
+<tr>
+<td>#8526</td>
+<td>configurable Y-axis range</td>
+<td>alanshurafa</td>
+<td>c</td>
+<td>consider for a cut</td>
+</tr>
+<tr>
+<td><strong>#8522</strong></td>
+<td>mmol vs mg/dL in BWP and profile editor</td>
+<td>stevoh6</td>
+<td>c</td>
+<td><strong>not carried</strong> (decided)</td>
+</tr>
+<tr>
+<td>#8501</td>
+<td>alarm snooze state in MongoDB</td>
+<td>quarktwain</td>
+<td>b</td>
+<td>consider for a cut, after the tenancy ack design</td>
+</tr>
+<tr>
+<td>#8498</td>
+<td>[master] backport CVE-2021-36755</td>
+<td>vulgraph</td>
+<td>a</td>
+<td>close as addressed (in 15.0.8)</td>
+</tr>
+<tr>
+<td>#8493</td>
+<td>tests for week-to-week dates</td>
+<td>bniels707</td>
+<td>c</td>
+<td>needs maintainer judgement (tests fail per author)</td>
+</tr>
+<tr>
+<td><strong>#8419</strong></td>
+<td>tests for Loop push and websockets</td>
+<td>je-l</td>
+<td>c</td>
+<td><strong>carried into 15.0.9</strong> (decided)</td>
+</tr>
+<tr>
+<td>#8405</td>
+<td>show device timezone</td>
+<td>ryceg</td>
+<td>c</td>
+<td>consider for a cut; retarget from <code>wip/next-release</code></td>
+</tr>
+<tr>
+<td>#8402</td>
+<td>CSV exports</td>
+<td>kelseyhuss</td>
+<td>c</td>
+<td>consider for a cut (review points open)</td>
+</tr>
+<tr>
+<td>#8392</td>
+<td>show seconds</td>
+<td>KelvinKramp</td>
+<td>c</td>
+<td>close as a duplicate of #8555</td>
+</tr>
+<tr>
+<td>#8385</td>
+<td>wake-lock toggle</td>
+<td>earldouglas</td>
+<td>c</td>
+<td>consider for a cut</td>
+</tr>
+<tr>
+<td>#8381</td>
+<td>Swagger: missing v1 endpoints</td>
+<td>arfaomar</td>
+<td>c</td>
+<td>consider for a cut (review points open)</td>
+</tr>
+<tr>
+<td>#8366</td>
+<td>2025 reports</td>
+<td>dburren</td>
+<td>c</td>
+<td>consider for a cut</td>
+</tr>
+<tr>
+<td>#8348</td>
+<td>remove Moment</td>
+<td>ryceg</td>
+<td>b</td>
+<td>needs maintainer judgement: post the Moment verdict</td>
+</tr>
+<tr>
+<td>#8261</td>
+<td>multi-insulin API</td>
+<td>gruoner</td>
+<td>c</td>
+<td>consider for a cut; ask for tests</td>
+</tr>
+<tr>
+<td>#8236</td>
+<td>clock view colour option</td>
+<td>JaredDRobbins</td>
+<td>c</td>
+<td>consider for a cut, or close as stale</td>
+</tr>
+<tr>
+<td>#8084</td>
+<td>replace Google Fonts</td>
+<td>gardenrobot</td>
+<td>c</td>
+<td>consider for a cut</td>
+</tr>
+<tr>
+<td>#8083</td>
+<td>heart-rate storage</td>
+<td>buessow</td>
+<td>c</td>
+<td>consider for a cut, with AAPS</td>
+</tr>
+<tr>
+<td>#7887</td>
+<td>clock views: date, plugins, weather</td>
+<td>tynbendad</td>
+<td>c</td>
+<td>close as superseded by #8537</td>
+</tr>
+<tr>
+<td>#7875</td>
+<td>Playwright and webpack experiments</td>
+<td>bewest</td>
+<td>b</td>
+<td>close as superseded by #8605's Playwright suite</td>
+</tr>
+<tr>
+<td>#7791</td>
+<td>remote commands (draft)</td>
+<td>gestrich</td>
+<td>c</td>
+<td>needs maintainer judgement (Loop coordination)</td>
+</tr>
+<tr>
+<td>#7656</td>
+<td>deploy to Azure button</td>
+<td>charris-msft</td>
+<td>c</td>
+<td>close as stale</td>
+</tr>
+<tr>
+<td>#7342</td>
+<td>glucose pentagon plugin</td>
+<td>jgr-lab</td>
+<td>c</td>
+<td>close as stale, or consider for a cut</td>
+</tr>
+<tr>
+<td>#7221</td>
+<td>disable Pushover emergency priority</td>
+<td>hanoii</td>
+<td>c</td>
+<td>consider for a cut; retarget; default stays on</td>
+</tr>
+<tr>
+<td>connect #81</td>
+<td>start 0.1.1 development</td>
+<td>bewest</td>
+<td>b</td>
+<td>leave: standing dev → main PR</td>
+</tr>
+<tr>
+<td>connect #52</td>
+<td>API v3 for the nightscout source</td>
+<td>psonnera</td>
+<td>a (partial) + c</td>
+<td>needs maintainer judgement; ask for a v3-only PR</td>
+</tr>
+<tr>
+<td>connect #54</td>
+<td>MiniMed OAuth2 PKCE, Mongo tokens</td>
+<td>LeFrenchGuy</td>
+<td>c</td>
+<td>needs maintainer judgement (token storage)</td>
+</tr>
+</tbody>
+</table>
+<p>Counts: cgm-remote-monitor a 1, b 7, c 31; nightscout-connect a (partial) 1, b 1, c 1. Merge
+results against <code>dev</code> and #8758 were identical for every PR.</p>
+<h3 id="41-credit-no-null-merge-is-warranted">4.1 Credit: no null merge is warranted<a class="headerlink" href="#41-credit-no-null-merge-is-warranted" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>#8498</strong> is a cherry-pick of the maintainer's own unmerged 2021 commit, opened by an automated
+  backport account. The escaping it adds reached 15.0.8 by another route (<code>textAsHtml</code> in
+  <code>lib/client/adminnotifiesclient.js</code>, from #8591/#8592), so there is no outside author to
+  credit. It also targets <code>master</code>, so a null merge into <code>dev</code> would not show as merged until the
+  release merge.</li>
+<li><strong>connector #52</strong> still carries API v3 reads from the Nightscout source, the bridge-variable
+  compatibility layer, the Docker/dotenv changes, failed-session propagation and the LibreLinkUp
+  rework, none of which is on connector <code>dev</code>. A null merge would mark those as merged. Three of
+  its fixes are on <code>dev</code> by other routes (the aligned-delay guard, devicestatus from a Nightscout
+  source, opt-in debug logging). Whether the aligned-delay guard (connector <code>bbb73c6</code>) drew on #52
+  could not be told from the code; if it did, a <code>Co-authored-by</code> on a future commit or a
+  release-notes acknowledgement is the credit available.</li>
+<li>The three carried PRs are credited by a normal merge.</li>
+</ul>
+<h3 id="42-the-carried-prs">4.2 The carried PRs<a class="headerlink" href="#42-the-carried-prs" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>#8568</strong>: 0 behind <code>dev</code>, CI green, merges cleanly with <code>dev</code> and #8758; 20 new tests, 79
+  passing in the wider set. It clears the marker for the released AAPS shape (2147483647 min) and
+  not the AAPS-dev shape (10-year duration, <code>originalDuration</code> 0). The day-to-day report draws the
+  bar from <code>duration</code> directly and is not covered. Defect facts:
+  <a href="../../30-design/remedial/nightscout-backfix-register.html#bf-114--an-aaps-open-ended-loop-disable-keeps-alerts-off-after-the-loop-is-back-on">BF-114</a>.</li>
+<li><strong>#8419</strong>: tests only; merges cleanly; <code>loopnotifications.test.js</code> 9 passing on <code>dev</code> with it merged.</li>
+<li><strong>#8530</strong>: one line in <code>views/index.html</code>; merges cleanly; the client keeps about two days of
+  entries, so a 48-hour focus shows the whole window. No tests.</li>
+</ul>
+<p><strong>#8568.</strong> DRAFT:</p>
+<blockquote>
+<p>Thank you for this, and for the thorough tests. We confirmed the behaviour: when AAPS turns the loop off with no end time and then back on, Nightscout keeps treating the loop as offline, and that also holds back the "not looping" and pump alerts until the old record ages out. Your change fixes that for current AAPS releases. The next AAPS version sends an open-ended disable as a ten-year duration with <code>originalDuration: 0</code>, which this check doesn't catch yet. Would you be willing to extend <code>isInfiniteDisabledLoop</code> to cover that shape, and add a test that the OpenAPS alert level comes back after re-enabling? We'd like to include this in the next patch release.</p>
+</blockquote>
+<p><strong>#8419.</strong> DRAFT:</p>
+<blockquote>
+<p>Thanks for your patience and for folding the two APNs test files together. The suite passes against current <code>dev</code>, and we'll include it in the next patch release.</p>
+</blockquote>
+<p><strong>#8530.</strong> DRAFT:</p>
+<blockquote>
+<p>Thanks. This is small and self-contained, and we've brought it up to date with <code>dev</code>. We'll include it in the next patch release.</p>
+</blockquote>
+<h3 id="43-8522">4.3 #8522<a class="headerlink" href="#43-8522" title="Permanent link">&para;</a></h3>
+<p>The PR wraps every profile read in the Bolus Wizard Preview and profile editor in a mg/dL → display
+conversion. Profiles keep their own <code>units</code>, and Loop and AAPS upload mmol profiles, so an mmol
+profile is converted a second time. Measured on <code>dev</code> with it merged: <code>boluswizardpreview.test.js</code>
+2 failures (both mmol low cases), <code>profileeditor*.test.js</code> 11; 16 passing and 13 failing against 29
+passing on <code>dev</code> alone. A mg/dL profile shown on an mmol site may still be a real problem; a fix
+would have to follow the profile's <code>units</code>.</p>
+<p><strong>#8522.</strong> DRAFT:</p>
+<blockquote>
+<p>Thank you for looking into this. Unit handling here matters. Profiles in Nightscout keep their own <code>units</code>, and many are stored in mmol/L, so converting every profile value from mg/dL changes the results for those sites: with this change, two existing bolus-wizard mmol tests and several profile-editor tests fail. If you saw wrong values, could you share the profile <code>units</code> and the display setting you were using? A fix that respects the profile's own units would be very welcome.</p>
+</blockquote>
+<h3 id="44-mis-targeted-prs">4.4 Mis-targeted PRs<a class="headerlink" href="#44-mis-targeted-prs" title="Permanent link">&para;</a></h3>
+<p><code>master</code> receives only the <code>dev</code> → <code>master</code> release merge, and <code>wip/next-release</code> is no longer used
+(last commit 2026-05-07), so none of these can merge as filed.</p>
+<table>
+<thead>
+<tr>
+<th>base</th>
+<th>PRs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>master</code></td>
+<td>#8560, #8542, #8541, #8540, #8537, #8498, #7887, #7656, #7221 (besides the release PR #8598)</td>
+</tr>
+<tr>
+<td><code>wip/next-release</code></td>
+<td>#8405</td>
+</tr>
+</tbody>
+</table>
+<p>Their drafts ask for a retarget to <code>dev</code> (appendix A, and §4.5 for #8541, #8498, #7887, #7656).</p>
+<h3 id="45-other-drafts-that-need-a-maintainer-call">4.5 Other drafts that need a maintainer call<a class="headerlink" href="#45-other-drafts-that-need-a-maintainer-call" title="Permanent link">&para;</a></h3>
+<p><strong>#8498.</strong> DRAFT:</p>
+<blockquote>
+<p>Thanks for flagging this. The admin-notification escaping this backport adds is already in 15.0.8 by a different route: title, message and the additional-info line all go through a text escaper, and the "readable by world" notice no longer carries HTML. Closing as already addressed.</p>
+</blockquote>
+<p><strong>connector #52.</strong> DRAFT:</p>
+<blockquote>
+<p>Thank you for all the work here. Since your last update, several of the same fixes have landed on <code>dev</code> by other routes: the aligned-delay guard, reading devicestatus from a Nightscout source, and opt-in debug logging. What's left and new is API v3 support for the Nightscout source, plus the bridge-variable compatibility layer. Would you be open to splitting those into smaller PRs on top of current <code>dev</code>? That would make them much easier to review and test.</p>
+</blockquote>
+<p><strong>connector #54.</strong> DRAFT:</p>
+<blockquote>
+<p>Thank you. MiniMed login is an area we know needs attention. <code>dev</code> has moved on a lot (logging in particular), so this needs a rebase. We'd also like to talk through where tokens are stored before merging. Could you rebase onto current <code>dev</code>?</p>
+</blockquote>
+<p><strong>#8348.</strong> DRAFT:</p>
+<blockquote>
+<p>Thank you for the work here and your patience. For now we've decided to keep a trimmed-down Moment, and to look again at replacing it when the runtime modernisation reaches that stage. At that point Temporal will be considered alongside Day.js. This PR can't merge in its current form after that work lands, so we'll close it for now. Your comparison has shaped that decision, and we'll link it from the plan.</p>
+</blockquote>
+<p><strong>#8541.</strong> DRAFT:</p>
+<blockquote>
+<p>Thanks for isolating these. Dropping older browsers and changing the client transport are policy decisions we'd like to make deliberately for a minor release. Could you retarget to <code>dev</code>?</p>
+</blockquote>
+<p><strong>#8533.</strong> DRAFT:</p>
+<blockquote>
+<p>Thanks. This needs a rebase on <code>dev</code>, since <code>treatmenttocurve.js</code> has changed. We'd also like to understand which uploaders send glucose without <code>units</code>. Guessing a unit from the value is a behaviour change we want to scope carefully, so examples, with identifying details removed, would help.</p>
+</blockquote>
+<p><strong>#8493.</strong> DRAFT:</p>
+<blockquote>
+<p>Thanks for these tests. You mentioned they fail because of how the request range uses the profile timezone. That sounds like it may be a real bug. Could you rebase on <code>dev</code> and note which cases fail? We'd like to look at that separately.</p>
+</blockquote>
+<p><strong>#7791.</strong> DRAFT:</p>
+<blockquote>
+<p>Thanks for this design. The push library upgrade discussed here has since been done, and <code>lib/server/loop.js</code> changed in the upcoming release. Is this still something you, or the Loop team, want to pursue? If so, a rebase on <code>dev</code> would be the next step.</p>
+</blockquote>
+<p><strong>#8392.</strong> DRAFT:</p>
+<blockquote>
+<p>Thank you for starting on this. #8555 builds on your approach for the same issue and is current with <code>dev</code>, so we'll carry the feature there and close this one. Your earlier work is appreciated.</p>
+</blockquote>
+<p><strong>#7887.</strong> DRAFT:</p>
+<blockquote>
+<p>Closing in favour of your newer #8537, which carries this work forward for v15. Thank you!</p>
+</blockquote>
+<p><strong>#7875.</strong> DRAFT:</p>
+<blockquote>
+<p>Closing: a working Playwright browser suite is now part of the modernization work in #8605.</p>
+</blockquote>
+<p><strong>#7656.</strong> DRAFT:</p>
+<blockquote>
+<p>Thanks. This has drifted from the current README and deploy files, and targets <code>master</code>. If you're still interested, please open a fresh PR against <code>dev</code>. Closing for now.</p>
+</blockquote>
+<p><strong>#7342.</strong> DRAFT:</p>
+<blockquote>
+<p>Thank you for this. It has been open a long time without review, and the same metric is available in Nightscout Reporter. If you'd still like it in Nightscout, a rebase with tests would help it along.</p>
+</blockquote>
+<h2 id="5-defects-to-file">5. Defects to file<a class="headerlink" href="#5-defects-to-file" title="Permanent link">&para;</a></h2>
+<p>Placeholders are substituted with register ids from BF-118 up when each entry is filed. Every
+entry below is <code>open</code> on both 15.0.8 <code>92d08342</code> and <code>dev</code> <code>4f705217</code>.</p>
+<table>
+<thead>
+<tr>
+<th>issue</th>
+<th>id</th>
+<th>class</th>
+<th>mechanism</th>
+<th>provenance</th>
+<th>checkable with</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#5622</td>
+<td>BF-119</td>
+<td>safety: alarm</td>
+<td><code>PUMP_WARN_ON_SUSPEND</code> never raises a warning: <code>updateStatus</code> reads the preference from the wrong object and writes <code>result.status.level</code> before <code>result.status</code> exists (<code>lib/plugins/pump.js:286-298</code>); both must be fixed together</td>
+<td>reproduced 2026-09-25</td>
+<td><code>tests/pump.test.js</code> pattern; small</td>
+</tr>
+<tr>
+<td>#7036</td>
+<td>BF-120</td>
+<td>safety: stale data shown as current</td>
+<td>the clock view recomputes reading age and stale styling only after a successful fetch, so offline it keeps showing the last value and its last age (<code>lib/client/clock-client.js</code>)</td>
+<td>reproduced 2026-09-25</td>
+<td><code>tests/clock-client.test.js</code> with fake timers and a failing fetch; small</td>
+</tr>
+<tr>
+<td>#8185</td>
+<td>BF-121</td>
+<td>safety-relevant data loss (carbs)</td>
+<td>a v1 treatment upsert keys on <code>created_at</code> + <code>eventType</code> unless <code>identifier</code> or <code>_id</code> is present, so two carb entries at the same minute collapse; Loop sends <code>syncIdentifier</code>, not <code>identifier</code> (<code>lib/server/treatments.js:352-377</code>)</td>
+<td>reproduced 2026-09-25</td>
+<td><code>tests/api.treatments*</code> pattern; medium (API semantics)</td>
+</tr>
+<tr>
+<td>#8244</td>
+<td>BF-122</td>
+<td>dosing-relevant data sync</td>
+<td>v1 writes store no <code>srvModified</code>, so API v3 history, which AAPS polls after its first load, never returns them; v1 writes also emit no v3 storage-socket events</td>
+<td>reproduced 2026-09-25</td>
+<td>API v3 history test; medium</td>
+</tr>
+<tr>
+<td>#7771</td>
+<td>BF-123</td>
+<td>dosing-relevant display</td>
+<td>a Profile Switch <code>percentage</code> is applied only with <code>CircadianPercentageProfile</code>, which AAPS never sends; AAPS uploads an unscaled <code>profileJson</code>, so the displayed scheduled basal ignores the percentage (<code>lib/profilefunctions.js:124-133</code>)</td>
+<td>reproduced 2026-09-25</td>
+<td><code>profilefunctions</code> unit test; small-medium</td>
+</tr>
+<tr>
+<td>#5940</td>
+<td>BF-124</td>
+<td>dosing-relevant display</td>
+<td>the treatment tooltip converts BG by the profile's units, ignoring the treatment's own <code>units</code>, so an mmol entry on a mg/dL-profile site is divided by 18 again (<code>lib/client/renderer.js:641-647</code>); chart position is correct</td>
+<td>reproduced 2026-09-25</td>
+<td>client tooltip test; small</td>
+</tr>
+<tr>
+<td>#8104</td>
+<td>BF-125</td>
+<td>alarm delivery</td>
+<td>IFTTT event names use the translated level label, so applets keyed on the English names never fire in other languages; a failed maker call keeps a 30 s repeat key instead of 15 min (<code>lib/server/pushnotify.js:126-145</code>)</td>
+<td>reproduced 2026-09-25</td>
+<td><code>tests/maker.test.js</code> / <code>tests/pushnotify.test.js</code> with a language set; small</td>
+</tr>
+<tr>
+<td>#7110</td>
+<td>BF-126</td>
+<td>availability</td>
+<td>a subject stored without a <code>name</code> ends the process when subjects reload, and at every boot until the row is removed (<code>lib/authorization/storage.js:256</code>); a role without <code>name</code> would fail the same way (read)</td>
+<td>reproduced 2026-09-25</td>
+<td><code>tests/authsubjects.test.js</code> pattern; small</td>
+</tr>
+<tr>
+<td>#7377</td>
+<td>BF-127</td>
+<td>follower view empty</td>
+<td>clock views read a token only from their own URL and the Clock menu links carry none, so under <code>denied</code> the clock draws nothing</td>
+<td>reproduced 2026-09-25</td>
+<td>clock client test; small</td>
+</tr>
+<tr>
+<td>#6220</td>
+<td>BF-128</td>
+<td>watch display correctness</td>
+<td><code>/pebble</code> forces mmol when asked but never forces mg/dL, so on an mmol site a mg/dL request gets its delta in mmol (<code>lib/server/pebble.js:143-148</code>)</td>
+<td>reproduced 2026-09-25</td>
+<td>pebble API test; tiny</td>
+</tr>
+<tr>
+<td>#7729</td>
+<td>BF-118</td>
+<td>safety: alarm</td>
+<td>threshold conversion from mmol is keyed on <code>BG_HIGH &lt; 50</code> alone (<code>lib/settings.js:291</code>), so an mmol target pair with default <code>BG_HIGH</code>/<code>BG_LOW</code> is kept as mg/dL and <code>BG_LOW</code> is rewritten to 2.9 mg/dL: no low alarm can fire, and every reading, 45 mg/dL included, raises "Warning HIGH"</td>
+<td>reproduced 2026-09-25</td>
+<td><code>tests/settings.test.js</code> or the threshold-rewrite gate with a partial-mmol set; small, but the same decision as BF-67/BF-86</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Register matches.</strong></p>
+<table>
+<thead>
+<tr>
+<th>issue</th>
+<th>register entry</th>
+<th>relation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#7729</td>
+<td><a href="../../30-design/remedial/nightscout-backfix-register.html#bf-67--an-alarm-threshold-is-quietly-changed-and-only-the-server-log-says-so">BF-67</a>, <a href="../../30-design/remedial/nightscout-backfix-register.html#bf-86--an-mmoll-low-threshold-on-a-mgdl-site-is-kept-as-is-so-the-low-alarm-never-fires">BF-86</a></td>
+<td>same family, new variant (the <code>BG_HIGH</code>-only trigger is in neither entry)</td>
+</tr>
+<tr>
+<td>#8238, #8147</td>
+<td><a href="../../30-design/remedial/nightscout-backfix-register.html#bf-94--a-kept-profile-instance-can-return-a-temp-basal-that-has-been-replaced">BF-94</a></td>
+<td>public reports of the symptom; probable, since the browser was not measured</td>
+</tr>
+<tr>
+<td>#7540</td>
+<td>CAP-01 (sub-path mounting)</td>
+<td>the same capability gap</td>
+</tr>
+</tbody>
+</table>
+<h2 id="6-open-issues-by-status">6. Open issues by status<a class="headerlink" href="#6-open-issues-by-status" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>status</th>
+<th style="text-align: right;">cgm-remote-monitor</th>
+<th style="text-align: right;">nightscout-connect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>fixed in <code>dev</code> (merged, ships with 15.0.9)</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td>matches the register</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>not addressed</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>needs info</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr>
+<td>not a defect</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>stale</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>question / support</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>feature</td>
+<td style="text-align: right;">53</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr>
+<td>tracking</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><strong>total</strong></td>
+<td style="text-align: right;"><strong>102</strong></td>
+<td style="text-align: right;"><strong>12</strong></td>
+</tr>
+</tbody>
+</table>
+<p>No open issue is fixed only by #8758.</p>
+<h3 id="61-cgm-remote-monitor-102-newest-activity-first">6.1 cgm-remote-monitor (102), newest activity first<a class="headerlink" href="#61-cgm-remote-monitor-102-newest-activity-first" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>problem</th>
+<th>status</th>
+<th>recommendation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#8714</td>
+<td>debug output fills hosted log quotas after 15.0.8</td>
+<td>fixed in dev</td>
+<td>§2</td>
+</tr>
+<tr>
+<td>#8328</td>
+<td>Node and dependency tracking</td>
+<td>tracking</td>
+<td>§2; keep open</td>
+</tr>
+<tr>
+<td>#8584</td>
+<td>Reports basal graph cut off after a switch hour</td>
+<td>fixed in dev</td>
+<td>§2</td>
+</tr>
+<tr>
+<td>#7051</td>
+<td>Loop pill hover details in Day to Day</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#8192</td>
+<td>food editor list not scrollable on phones</td>
+<td>not addressed</td>
+<td>later cut; not verified</td>
+</tr>
+<tr>
+<td>#8079</td>
+<td>self-host fonts instead of Google Fonts</td>
+<td>feature</td>
+<td>review #8084</td>
+</tr>
+<tr>
+<td>#8420</td>
+<td>activity collection in API v3</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#8048</td>
+<td>clock view option to show seconds</td>
+<td>feature</td>
+<td>keep open (#8555)</td>
+</tr>
+<tr>
+<td>#5742</td>
+<td>custom webhook for alarm events</td>
+<td>feature</td>
+<td>keep open (#8580)</td>
+</tr>
+<tr>
+<td>#8535</td>
+<td>weekly/monthly insulin report</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#7729</td>
+<td>mmol target lines without BG_HIGH/BG_LOW read as mg/dL</td>
+<td>matches register</td>
+<td>§5</td>
+</tr>
+<tr>
+<td>#6236</td>
+<td>Loopalyzer gaps</td>
+<td>not addressed</td>
+<td>later cut; reporter reproduced, not here</td>
+</tr>
+<tr>
+<td>#8368</td>
+<td>unauthenticated health-check endpoint</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#8370</td>
+<td>store and report HbA1c</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#8371</td>
+<td>bulk operations in API v3</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#5622</td>
+<td>suspended-pump warning never raised</td>
+<td>not addressed</td>
+<td>§5</td>
+</tr>
+<tr>
+<td>#6916</td>
+<td>extra OpenAPS/AAPS pill details</td>
+<td>feature</td>
+<td>keep open, or close as done for COB</td>
+</tr>
+<tr>
+<td>#8194</td>
+<td>snooze does not hold</td>
+<td>not a defect</td>
+<td>explain single-instance requirement; ask hosting setup</td>
+</tr>
+<tr>
+<td>#6717</td>
+<td>metric for daily manual interventions</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#8403</td>
+<td>main clock in the uploader's time zone</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#8147</td>
+<td>temp basal history vanishes until restart</td>
+<td>matches register</td>
+<td>§5 (BF-94)</td>
+</tr>
+<tr>
+<td>#8279</td>
+<td>FerretDB compatibility</td>
+<td>question</td>
+<td>§3</td>
+</tr>
+<tr>
+<td>#7540</td>
+<td>BASE_URL sub-path</td>
+<td>matches register</td>
+<td>CAP-01</td>
+</tr>
+<tr>
+<td>#7999</td>
+<td>larger glucose value and dots</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#8167</td>
+<td>Cosmos DB errors on API v3</td>
+<td>not a defect</td>
+<td>§3</td>
+</tr>
+<tr>
+<td>#8072</td>
+<td>report readability</td>
+<td>feature</td>
+<td>§2; keep open</td>
+</tr>
+<tr>
+<td>#8060</td>
+<td>Alexa routines</td>
+<td>feature</td>
+<td>keep open or close</td>
+</tr>
+<tr>
+<td>#7638</td>
+<td>custom range colours</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#8129</td>
+<td>OpenAPS pill disappears between readings</td>
+<td>needs info</td>
+<td>reproduction on 15.0.8+</td>
+</tr>
+<tr>
+<td>#8087</td>
+<td>temp basal net insulin in IOB</td>
+<td>feature</td>
+<td>keep open or close</td>
+</tr>
+<tr>
+<td>#8097</td>
+<td>AAPS full sync writes partial data</td>
+<td>stale</td>
+<td>§3</td>
+</tr>
+<tr>
+<td>#8105</td>
+<td>ALARM_*_MINS and IFTTT repeats</td>
+<td>not a defect</td>
+<td>§3</td>
+</tr>
+<tr>
+<td>#8130</td>
+<td>pump pill reservoir jumps</td>
+<td>needs info</td>
+<td>devicestatus sample</td>
+</tr>
+<tr>
+<td>#8174</td>
+<td>CVGA report</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#8156</td>
+<td>Loopalyzer blank until cache cleared</td>
+<td>not addressed</td>
+<td>needs info / later cut</td>
+</tr>
+<tr>
+<td>#7110</td>
+<td>subject without a name crashes every boot</td>
+<td>not addressed</td>
+<td>§5</td>
+</tr>
+<tr>
+<td>#5668</td>
+<td>fill temp basal rate from percent</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#5573</td>
+<td>target band in Day to Day</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#7199</td>
+<td>admin tool for duplicate readings</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#5830</td>
+<td>database export from the web UI</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#6061</td>
+<td>Grafana endpoints</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#5940</td>
+<td>mmol BG in tooltip divided by 18</td>
+<td>not addressed</td>
+<td>§5</td>
+</tr>
+<tr>
+<td>#6486</td>
+<td>glucose value overlaps menu on small phones</td>
+<td>not addressed</td>
+<td>later cut; not verified</td>
+</tr>
+<tr>
+<td>#6868</td>
+<td>long title pushes menu icons off screen</td>
+<td>not addressed</td>
+<td>later cut; not verified</td>
+</tr>
+<tr>
+<td>#6870</td>
+<td>more Loop profile fields in Profile report</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#7036</td>
+<td>clock view shows an old reading as fresh</td>
+<td>not addressed</td>
+<td>§5</td>
+</tr>
+<tr>
+<td>#7096</td>
+<td>CGP diagram in reports</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#7071</td>
+<td>string-shaped <code>find</code> answers 500 instead of 400</td>
+<td>not addressed</td>
+<td>later cut; reproduced</td>
+</tr>
+<tr>
+<td>#7282</td>
+<td>IOB scale in Day to Day</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#7278</td>
+<td>more report date presets</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#7279</td>
+<td>responsive report graphs</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#7280</td>
+<td>prediction colours in Day to Day</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#7053</td>
+<td>five-band time in range</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#7040</td>
+<td>sanity limits on implausible treatments</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#7191</td>
+<td>LibreView data source</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#7064</td>
+<td>CGM accuracy report</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#7305</td>
+<td>COB missing from Day to Day</td>
+<td>needs info</td>
+<td>uploader and sample on 15.0.8+</td>
+</tr>
+<tr>
+<td>#7377</td>
+<td>clock views blank with a URL token</td>
+<td>not addressed</td>
+<td>§5</td>
+</tr>
+<tr>
+<td>#7391</td>
+<td>5-minute data for Libre 3</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#7458</td>
+<td>duplicate records from AAPS 3.0</td>
+<td>needs info</td>
+<td>close if no current reproduction</td>
+</tr>
+<tr>
+<td>#7068</td>
+<td>QR pairing with Loop</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#7195</td>
+<td>kcal on carb treatments</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#6066</td>
+<td>Treatments report cannot filter by event type</td>
+<td>fixed in dev</td>
+<td>§2</td>
+</tr>
+<tr>
+<td>#8238</td>
+<td>basal pill keeps a cancelled zero temp</td>
+<td>matches register</td>
+<td>§5 (BF-94)</td>
+</tr>
+<tr>
+<td>#8315</td>
+<td>Bolus Wizard quick pick shows only (none)</td>
+<td>fixed in dev</td>
+<td>§2</td>
+</tr>
+<tr>
+<td>#7649</td>
+<td>pluggable storage / SQLite</td>
+<td>question</td>
+<td>discussion or close</td>
+</tr>
+<tr>
+<td>#7698</td>
+<td>prediction-lines checkbox ignores server setting</td>
+<td>not addressed</td>
+<td>later cut; not verified</td>
+</tr>
+<tr>
+<td>#7669</td>
+<td>Day to Day labels shifted by a day</td>
+<td>needs info</td>
+<td>profile time zone</td>
+</tr>
+<tr>
+<td>#7659</td>
+<td>reading counts differ by one between reports</td>
+<td>needs info</td>
+<td>re-test on 15.0.9 (#8588)</td>
+</tr>
+<tr>
+<td>#7771</td>
+<td>displayed basal ignores AAPS switch percentage</td>
+<td>not addressed</td>
+<td>§5</td>
+</tr>
+<tr>
+<td>#7847</td>
+<td>remove noisy CGM readings</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#8104</td>
+<td>IFTTT event names translated, repeat every minute</td>
+<td>not addressed</td>
+<td>§5</td>
+</tr>
+<tr>
+<td>#8185</td>
+<td>same-time carb entries collapse</td>
+<td>not addressed</td>
+<td>§5</td>
+</tr>
+<tr>
+<td>#8223</td>
+<td>duration events clipped at midnight in Day to Day</td>
+<td>not addressed</td>
+<td>later cut; not verified</td>
+</tr>
+<tr>
+<td>#8358</td>
+<td>browser support targets</td>
+<td>question</td>
+<td>decide with the modernisation cuts</td>
+</tr>
+<tr>
+<td>#7324</td>
+<td>insulin age pill never red</td>
+<td>fixed in dev</td>
+<td>§2</td>
+</tr>
+<tr>
+<td>#7161</td>
+<td>in-range IFTTT event</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#7350</td>
+<td>carbs with duration</td>
+<td>needs info</td>
+<td>current AAPS shape</td>
+</tr>
+<tr>
+<td>#6774</td>
+<td>xDrip injection types</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#6882</td>
+<td>cleaner report charts</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#5635</td>
+<td>exercise, heart rate and sleep data</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#6220</td>
+<td>/pebble delta units</td>
+<td>not addressed</td>
+<td>§5</td>
+</tr>
+<tr>
+<td>#7824</td>
+<td>structured logging</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#7506</td>
+<td>exclude days by event type in reports</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#7852</td>
+<td>IFTTT triggers on both crossings</td>
+<td>question</td>
+<td>answer; keep as feature</td>
+</tr>
+<tr>
+<td>#7868</td>
+<td>TDD statistics</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#7879</td>
+<td>basal injection logging</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#8074</td>
+<td>TypeScript migration interest</td>
+<td>question</td>
+<td>§3</td>
+</tr>
+<tr>
+<td>#8106</td>
+<td>PNG/JPG image API</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#7835</td>
+<td>weight and blood pressure events</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#8186</td>
+<td>clock view reading age out of sync</td>
+<td>needs info</td>
+<td>console output; may share #7036's mechanism</td>
+</tr>
+<tr>
+<td>#8088</td>
+<td>xDrip predictive simulation</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#8244</td>
+<td>v1 writes absent from v3 history</td>
+<td>not addressed</td>
+<td>§5</td>
+</tr>
+<tr>
+<td>#8225</td>
+<td>crash at start after the database was recreated</td>
+<td>needs info</td>
+<td>crash log from a current version</td>
+</tr>
+<tr>
+<td>#6676</td>
+<td>horizontal scroll with mouse wheel</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#8177</td>
+<td>remove a calibration from the UI</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#8075</td>
+<td>profile.json ignores find</td>
+<td>not a defect</td>
+<td>§3</td>
+</tr>
+<tr>
+<td>#7895</td>
+<td>upper and lower graph disagree</td>
+<td>needs info</td>
+<td>current reproduction</td>
+</tr>
+<tr>
+<td>#7275</td>
+<td>honour NO_COLOR in logs</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#6807</td>
+<td>hourly insulin distribution</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#6028</td>
+<td>Loopalyzer IOB missing some days</td>
+<td>not addressed</td>
+<td>needs info</td>
+</tr>
+<tr>
+<td>#6191</td>
+<td>IFTTT events for low battery</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+</tbody>
+</table>
+<h3 id="62-nightscout-connect-12">6.2 nightscout-connect (12)<a class="headerlink" href="#62-nightscout-connect-12" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>problem</th>
+<th>status</th>
+<th>recommendation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#14</td>
+<td>Glooko EU accounts cannot log in</td>
+<td>fixed in dev (0.1.0)</td>
+<td>§2; keep open pending reporters</td>
+</tr>
+<tr>
+<td>#11</td>
+<td>Glooko meal bolus imported as two records</td>
+<td>not addressed</td>
+<td>keep open (needs a source identity rule)</td>
+</tr>
+<tr>
+<td>#45</td>
+<td>more Omnipod 5 data from Glooko</td>
+<td>feature</td>
+<td>keep open (partly delivered by #71)</td>
+</tr>
+<tr>
+<td>#43</td>
+<td>Dexcom follower with two profiles returns one</td>
+<td>needs info</td>
+<td>re-test on 0.1.0</td>
+</tr>
+<tr>
+<td>#7</td>
+<td>vendor account status to followers</td>
+<td>feature</td>
+<td>keep open</td>
+</tr>
+<tr>
+<td>#33</td>
+<td>EU Dexcom Share returns no data</td>
+<td>needs info</td>
+<td>re-test on 0.1.0</td>
+</tr>
+<tr>
+<td>#42</td>
+<td>official Dexcom API</td>
+<td>question</td>
+<td>keep as discussion</td>
+</tr>
+<tr>
+<td>#41</td>
+<td>CareLink configured, no data</td>
+<td>needs info</td>
+<td>logs on 0.1.0</td>
+</tr>
+<tr>
+<td>#40</td>
+<td>Dexcom Japan server</td>
+<td>feature</td>
+<td>later (small; <code>CONNECT_SHARE_SERVER</code> works)</td>
+</tr>
+<tr>
+<td>#25</td>
+<td>CareLink follower login blocked by reCAPTCHA</td>
+<td>needs info</td>
+<td>not verified on 0.1.0</td>
+</tr>
+<tr>
+<td>#24</td>
+<td>CareLink polls on five-minute marks</td>
+<td>not a defect</td>
+<td>§3</td>
+</tr>
+<tr>
+<td>#21</td>
+<td>CareLink "no reading" stored as 0</td>
+<td>fixed in dev (0.1.0)</td>
+<td>§2</td>
+</tr>
+</tbody>
+</table>
+<h2 id="7-method-and-limits">7. Method and limits<a class="headerlink" href="#7-method-and-limits" title="Permanent link">&para;</a></h2>
+<p><strong>PRs.</strong> Every head was fetched from <code>pull/N/head</code> (39 of 39 and 3 of 3). Files were listed against
+the PR's merge-base with <code>dev</code>; conflicts come from <code>git merge-tree --write-tree</code> against <code>dev</code> and
+against #8758; history from <code>git log</code> over <code>master..dev</code> and <code>-S</code>; programme relations from a grep
+of the register, the 15.0.9 contents, the queue and the 2026-09-14 readiness document. Tests were
+run in scratch worktrees on <code>dev</code> with the PR merged, against a fresh MongoDB 7 container, only for</p>
+<h1 id="8568-8522-8501-8419-8580-8555-and-8526-every-other-pr-was-not-run-the-aaps-wire-shapes">8568, #8522, #8501, #8419, #8580, #8555 and #8526; every other PR was not run. The AAPS wire shapes<a class="headerlink" href="#8568-8522-8501-8419-8580-8555-and-8526-every-other-pr-was-not-run-the-aaps-wire-shapes" title="Permanent link">&para;</a></h1>
+<p>for #8568 come from the AndroidAPS corpus at <code>7e1d537d49</code> (2026-09-23).</p>
+<p><strong>Issues.</strong> Lists came from <code>gh issue list --state open</code> on 2026-09-25. <strong>Reproduced</strong> means run on
+both refs in scratch worktrees, either against a booted server with a throwaway MongoDB 7.0 or in
+an in-process mocha harness with a positive control, with the same result on both unless stated.
+<strong>Read-derived</strong> means from the code only; <strong>static analysis</strong> means a grep of the client corpora.
+"Fixed in dev" rows cite the merge and, where stated, a <code>dev</code> test that fails when copied onto the
+15.0.8 tree; the reasons those copied tests fail on 15.0.8 were not inspected one by one.</p>
+<p><strong>Limits.</strong></p>
+<ul>
+<li>Nothing was written to GitHub: no comments, labels, closes, merges or pushes.</li>
+<li>Every read-derived claim is a hypothesis until reproduced, including the mechanisms and fixes for
+  #7036, #5940, #8104, #7377, #6220 and #7771.</li>
+<li>The BF-94 matches (#8238, #8147) are probable: the browser was not measured.</li>
+<li>
+<h1 id="8584s-link-to-8701-is-probable-not-confirmed-against-the-reporters-data-6066s-fix-was-not">8584's link to #8701 is probable, not confirmed against the reporter's data. #6066's fix was not<a class="headerlink" href="#8584s-link-to-8701-is-probable-not-confirmed-against-the-reporters-data-6066s-fix-was-not" title="Permanent link">&para;</a></h1>
+  measured here. Connector #21's fix was read, not reproduced.</li>
+<li>For #8244 the AAPS side was not run.</li>
+<li>Issue bodies were read for mechanism only; no names, addresses, site URLs or readings from them
+  appear here.</li>
+</ul>
+<h2 id="appendix-a-drafts-for-prs-to-consider-for-a-cut">Appendix A. Drafts for PRs to consider for a cut<a class="headerlink" href="#appendix-a-drafts-for-prs-to-consider-for-a-cut" title="Permanent link">&para;</a></h2>
+<p><strong>#8580.</strong> DRAFT:</p>
+<blockquote>
+<p>Thank you, and welcome! This is a feature rather than a fix, so it won't be in the upcoming patch release. We'll review it for the following minor release. Outbound webhooks also need a security review of how destinations are configured.</p>
+</blockquote>
+<p><strong>#8501.</strong> DRAFT:</p>
+<blockquote>
+<p>Thank you. The multi-instance diagnosis is right, and the tests are appreciated. Alarm acknowledgement is being redesigned alongside some wider changes to how alarms are evaluated, so we'd like to land this in a later release rather than the upcoming patch, and make sure the two designs agree. We'll follow up here when that work is ready for comparison.</p>
+</blockquote>
+<p><strong>#8560.</strong> DRAFT:</p>
+<blockquote>
+<p>Thanks! Could you retarget this to <code>dev</code>? <code>master</code> only receives release merges. It's a feature, so it's queued for the next minor release rather than the patch.</p>
+</blockquote>
+<p><strong>#8385.</strong> DRAFT:</p>
+<blockquote>
+<p>Thanks for updating the icon. This is queued for review in the next minor release.</p>
+</blockquote>
+<p><strong>#8555.</strong> DRAFT:</p>
+<blockquote>
+<p>Thanks! This is queued for the next minor release.</p>
+</blockquote>
+<p><strong>#8542.</strong> DRAFT:</p>
+<blockquote>
+<p>Thanks. The D3 7 upgrade this depended on has since landed in <code>dev</code> by another route, so this can be rebased onto <code>dev</code> (not <code>master</code>) whenever you're ready. It would then come in a minor release.</p>
+</blockquote>
+<p><strong>#8540.</strong> DRAFT:</p>
+<blockquote>
+<p>Thanks! Please retarget to <code>dev</code>. This is queued for the next minor release.</p>
+</blockquote>
+<p><strong>#8537.</strong> DRAFT:</p>
+<blockquote>
+<p>Thanks for refactoring this. Could you rebase onto <code>dev</code> (not <code>master</code>)? <code>clock-client.js</code> has a recent fix you'll need to merge around.</p>
+</blockquote>
+<p><strong>#8236.</strong> DRAFT:</p>
+<blockquote>
+<p>Thanks. This needs a rebase on <code>dev</code>, since the clock files have changed. Are you still interested in carrying it forward?</p>
+</blockquote>
+<p><strong>#8531.</strong> DRAFT:</p>
+<blockquote>
+<p>Thanks. The chart code moved to D3 7 recently, so this needs a rebase (renderer tests conflict). It's queued for a minor release.</p>
+</blockquote>
+<p><strong>#8526.</strong> DRAFT:</p>
+<blockquote>
+<p>Thanks. This is queued for the next minor release.</p>
+</blockquote>
+<p><strong>#8405.</strong> DRAFT:</p>
+<blockquote>
+<p>Thanks. <code>wip/next-release</code> is no longer used. Could you retarget to <code>dev</code> and rebase? <code>clock-client.js</code> has changed.</p>
+</blockquote>
+<p><strong>#8402.</strong> DRAFT:</p>
+<blockquote>
+<p>Thanks. The v1 API files this touches changed in the upcoming release, so it will need a rebase on <code>dev</code>, plus the review points from May, before it can be considered for a minor release.</p>
+</blockquote>
+<p><strong>#8381.</strong> DRAFT:</p>
+<blockquote>
+<p>Thanks. Both swagger files have changed on <code>dev</code>, so this needs a rebase and the fixes from the May review.</p>
+</blockquote>
+<p><strong>#8366.</strong> DRAFT:</p>
+<blockquote>
+<p>Thanks. We'd like to review this for a minor release after a rebase on <code>dev</code>.</p>
+</blockquote>
+<p><strong>#8261.</strong> DRAFT:</p>
+<blockquote>
+<p>Thanks. Could you add API tests and point us at the client builds that use this endpoint?</p>
+</blockquote>
+<p><strong>#8084.</strong> DRAFT:</p>
+<blockquote>
+<p>Thanks, and sorry for the long wait. Several people have asked for this for privacy reasons. It needs a rebase on <code>dev</code> (the CSP in <code>app.js</code> changed). We'd like to consider it for the next minor release.</p>
+</blockquote>
+<p><strong>#8083.</strong> DRAFT:</p>
+<blockquote>
+<p>Thanks. This needs a rebase on <code>dev</code>. We'd like to coordinate with AAPS on the upload side before merging.</p>
+</blockquote>
+<p><strong>#7221.</strong> DRAFT:</p>
+<blockquote>
+<p>Thanks. This is still relevant, since WARN and URGENT still go out as emergency priority. Could you retarget to <code>dev</code>? Pushover delivery is being reworked, so this may need a small rebase. We'd consider it for a minor release with the default unchanged.</p>
+</blockquote>
+<p>No draft: #8758, #8605, #8598, connector #81 (leave), #8730 (bot PR), #8564 (maintainer's own WIP).</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

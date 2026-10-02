@@ -1,0 +1,5168 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/traceability/aid-algorithms-requirements.html">
+      
+      
+        <link rel="prev" href="aid-algorithms-gaps.html">
+      
+      
+        <link rel="next" href="cgm-remote-monitor-docs-inventory.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Aid Algorithms Requirements - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#aid-algorithms-requirements" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Aid Algorithms Requirements
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../docs/00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../docs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    traceability/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="aid-algorithms-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Aid Algorithms Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Aid Algorithms Requirements
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="aid-algorithms-requirements.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Aid Algorithms Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#req-alg-001-cross-project-test-vector-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-ALG-001: Cross-Project Test Vector Format
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#req-alg-002-semantic-equivalence-assertions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-ALG-002: Semantic Equivalence Assertions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#req-alg-003-safety-limit-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-ALG-003: Safety Limit Validation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#req-alg-004-baseline-regression-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-ALG-004: Baseline Regression Detection
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-layer-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API Layer Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API Layer Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-carb-001-cob-model-type-annotation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CARB-001: COB Model Type Annotation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-carb-002-minimum-carb-impact-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CARB-002: Minimum Carb Impact Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-carb-003-absorption-model-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CARB-003: Absorption Model Selection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vendor-interop-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vendor Interop Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Vendor Interop Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-carb-004-carb-sensitivity-factor-calculation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CARB-004: Carb Sensitivity Factor Calculation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-carb-005-per-entry-absorption-time-where-supported" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CARB-005: Per-Entry Absorption Time (Where Supported)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-carb-006-cob-maximum-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CARB-006: COB Maximum Limits
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#libre-cgm-protocol-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Libre CGM Protocol Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Libre CGM Protocol Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-degrade-001-automation-disable-on-cgm-loss" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-DEGRADE-001: Automation Disable on CGM Loss
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-degrade-002-pump-communication-timeout-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-DEGRADE-002: Pump Communication Timeout Handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-degrade-003-remote-control-fallback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-DEGRADE-003: Remote Control Fallback
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-degrade-004-layer-transition-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-DEGRADE-004: Layer Transition Logging
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-degrade-005-safe-state-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-DEGRADE-005: Safe State Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-degrade-006-delegate-agent-fallback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-DEGRADE-006: Delegate Agent Fallback
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#batch-operation-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Batch Operation Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Batch Operation Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-ins-001-consistent-exponential-model-across-systems" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-INS-001: Consistent Exponential Model Across Systems
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ins-002-dia-minimum-enforcement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-INS-002: DIA Minimum Enforcement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ins-003-peak-time-configuration-bounds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-INS-003: Peak Time Configuration Bounds
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ins-004-activity-calculation-for-bgi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-INS-004: Activity Calculation for BGI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ins-005-insulin-model-metadata-in-treatments-proposed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-INS-005: Insulin Model Metadata in Treatments (Proposed)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ble-protocol-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BLE Protocol Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BLE Protocol Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-pr-001-heart-rate-collection-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PR-001: Heart Rate Collection Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-pr-002-multi-insulin-api-standardization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PR-002: Multi-Insulin API Standardization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-pr-003-remote-command-queue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PR-003: Remote Command Queue
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-pr-004-consistent-timezone-display" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PR-004: Consistent Timezone Display
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#statistics-api-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Statistics API Requirements
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#profile-schema-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Profile Schema Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Profile Schema Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-prof-001-standard-time-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PROF-001: Standard Time Format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-prof-002-safety-limits-in-profile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PROF-002: Safety Limits in Profile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-prof-003-override-presets-sync" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PROF-003: Override Presets Sync
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-prof-004-insulin-model-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PROF-004: Insulin Model Mapping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-prof-005-basal-time-format-conversion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PROF-005: Basal Time Format Conversion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-prof-006-basal-rate-precision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PROF-006: Basal Rate Precision
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-prof-007-total-daily-basal-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PROF-007: Total Daily Basal Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bolus-wizard-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bolus Wizard Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bolus Wizard Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-bolus-001-document-calculation-approach" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-BOLUS-001: Document Calculation Approach
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-bolus-002-iob-subtraction-transparency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-BOLUS-002: IOB Subtraction Transparency
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-bolus-003-nightscout-wizard-sync" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-BOLUS-003: Nightscout Wizard Sync
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sensitivity-adjustment-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sensitivity Adjustment Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Sensitivity Adjustment Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-sens-001-document-sensitivity-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-SENS-001: Document Sensitivity Method
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-sens-002-sensitivity-visibility-in-nightscout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-SENS-002: Sensitivity Visibility in Nightscout
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-sens-003-document-detection-windows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-SENS-003: Document Detection Windows
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-sens-004-validate-adaptive-tuning-against-controller-aware-outcomes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-SENS-004: Validate Adaptive Tuning Against Controller-Aware Outcomes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#carb-absorption-display-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Carb Absorption Display Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Carb Absorption Display Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-carb-007-cob-display-source-attribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CARB-007: COB Display Source Attribution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-carb-008-min_5m_carbimpact-configuration-exposure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CARB-008: min_5m_carbimpact Configuration Exposure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-carb-009-absorption-model-type-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CARB-009: Absorption Model Type Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prediction-curve-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prediction Curve Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Prediction Curve Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-pred-001-prediction-structure-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PRED-001: Prediction Structure Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-pred-002-prediction-curve-labeling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PRED-002: Prediction Curve Labeling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-pred-003-multi-curve-display-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PRED-003: Multi-Curve Display Option
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dosing-mechanism-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dosing Mechanism Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Dosing Mechanism Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-dose-001-dosing-mechanism-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-DOSE-001: Dosing Mechanism Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-dose-002-safety-net-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-DOSE-002: Safety Net Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-dose-003-enable-condition-transparency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-DOSE-003: Enable Condition Transparency
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#insulin-model-display-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Insulin Model Display Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Insulin Model Display Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-ins-006-exponential-formula-consistency-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-INS-006: Exponential Formula Consistency Verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ins-007-dia-range-validation-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-INS-007: DIA Range Validation UI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ins-008-peak-time-preset-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-INS-008: Peak Time Preset Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#target-range-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Target Range Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Target Range Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-tgt-001-target-range-format-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TGT-001: Target Range Format Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-tgt-002-target-calculation-transparency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TGT-002: Target Calculation Transparency
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-tgt-003-temp-target-side-effects-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TGT-003: Temp Target Side Effects Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trio-oref-integration-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trio oref Integration Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Trio oref Integration Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-oref-001-document-trio_custom_variables-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-OREF-001: Document trio_custom_variables Interface
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-oref-002-track-upstream-oref0-version" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-OREF-002: Track Upstream oref0 Version
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-oref-003-evaluate-breaking-oref0-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-OREF-003: Evaluate Breaking oref0 Changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-effect-001-effect-bundles-must-include-validity-window" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-EFFECT-001: Effect Bundles Must Include Validity Window
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-effect-002-privacy-tiers-must-prevent-personal-context-sync" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-EFFECT-002: Privacy Tiers Must Prevent Personal Context Sync
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-effect-003-effects-must-be-bounded-by-safety-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-EFFECT-003: Effects Must Be Bounded by Safety Limits
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-effect-004-agents-should-declare-privacy-tier" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-EFFECT-004: Agents Should Declare Privacy Tier
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-effect-005-reconciliation-must-cap-external-influence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-EFFECT-005: Reconciliation Must Cap External Influence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-remote-monitor-docs-inventory.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Documentation Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-sources-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cgm Sources Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-sources-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cgm Sources Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="connectors-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Connectors Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="connectors-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Connectors Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cross-validation-log.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-Validation Assessment Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="gap-discovery.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gap discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ml-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ML Pipeline Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-api-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Api Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-api-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Api Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="orphan-artifact-priorities.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Orphan Artifact Priority Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="pumps-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pumps Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="pumps-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pumps Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sync-identity-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sync Identity Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sync-identity-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sync Identity Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="telemetry-observability-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry and Observability Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="telemetry-observability-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry and Observability Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tool-validation-2026-01-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tool validation 2026 01 23
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="traceability-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requirements Traceability Matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="treatments-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Treatments Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="treatments-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Treatments Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="domain-matrices/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    domain-matrices/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="stpa/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    stpa/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#req-alg-001-cross-project-test-vector-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-ALG-001: Cross-Project Test Vector Format
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#req-alg-002-semantic-equivalence-assertions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-ALG-002: Semantic Equivalence Assertions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#req-alg-003-safety-limit-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-ALG-003: Safety Limit Validation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#req-alg-004-baseline-regression-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-ALG-004: Baseline Regression Detection
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-layer-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API Layer Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API Layer Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-carb-001-cob-model-type-annotation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CARB-001: COB Model Type Annotation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-carb-002-minimum-carb-impact-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CARB-002: Minimum Carb Impact Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-carb-003-absorption-model-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CARB-003: Absorption Model Selection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vendor-interop-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vendor Interop Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Vendor Interop Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-carb-004-carb-sensitivity-factor-calculation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CARB-004: Carb Sensitivity Factor Calculation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-carb-005-per-entry-absorption-time-where-supported" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CARB-005: Per-Entry Absorption Time (Where Supported)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-carb-006-cob-maximum-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CARB-006: COB Maximum Limits
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#libre-cgm-protocol-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Libre CGM Protocol Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Libre CGM Protocol Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-degrade-001-automation-disable-on-cgm-loss" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-DEGRADE-001: Automation Disable on CGM Loss
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-degrade-002-pump-communication-timeout-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-DEGRADE-002: Pump Communication Timeout Handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-degrade-003-remote-control-fallback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-DEGRADE-003: Remote Control Fallback
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-degrade-004-layer-transition-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-DEGRADE-004: Layer Transition Logging
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-degrade-005-safe-state-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-DEGRADE-005: Safe State Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-degrade-006-delegate-agent-fallback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-DEGRADE-006: Delegate Agent Fallback
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#batch-operation-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Batch Operation Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Batch Operation Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-ins-001-consistent-exponential-model-across-systems" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-INS-001: Consistent Exponential Model Across Systems
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ins-002-dia-minimum-enforcement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-INS-002: DIA Minimum Enforcement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ins-003-peak-time-configuration-bounds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-INS-003: Peak Time Configuration Bounds
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ins-004-activity-calculation-for-bgi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-INS-004: Activity Calculation for BGI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ins-005-insulin-model-metadata-in-treatments-proposed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-INS-005: Insulin Model Metadata in Treatments (Proposed)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ble-protocol-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BLE Protocol Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BLE Protocol Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-pr-001-heart-rate-collection-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PR-001: Heart Rate Collection Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-pr-002-multi-insulin-api-standardization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PR-002: Multi-Insulin API Standardization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-pr-003-remote-command-queue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PR-003: Remote Command Queue
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-pr-004-consistent-timezone-display" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PR-004: Consistent Timezone Display
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#statistics-api-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Statistics API Requirements
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#profile-schema-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Profile Schema Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Profile Schema Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-prof-001-standard-time-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PROF-001: Standard Time Format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-prof-002-safety-limits-in-profile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PROF-002: Safety Limits in Profile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-prof-003-override-presets-sync" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PROF-003: Override Presets Sync
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-prof-004-insulin-model-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PROF-004: Insulin Model Mapping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-prof-005-basal-time-format-conversion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PROF-005: Basal Time Format Conversion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-prof-006-basal-rate-precision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PROF-006: Basal Rate Precision
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-prof-007-total-daily-basal-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PROF-007: Total Daily Basal Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bolus-wizard-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bolus Wizard Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bolus Wizard Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-bolus-001-document-calculation-approach" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-BOLUS-001: Document Calculation Approach
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-bolus-002-iob-subtraction-transparency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-BOLUS-002: IOB Subtraction Transparency
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-bolus-003-nightscout-wizard-sync" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-BOLUS-003: Nightscout Wizard Sync
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sensitivity-adjustment-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sensitivity Adjustment Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Sensitivity Adjustment Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-sens-001-document-sensitivity-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-SENS-001: Document Sensitivity Method
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-sens-002-sensitivity-visibility-in-nightscout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-SENS-002: Sensitivity Visibility in Nightscout
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-sens-003-document-detection-windows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-SENS-003: Document Detection Windows
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-sens-004-validate-adaptive-tuning-against-controller-aware-outcomes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-SENS-004: Validate Adaptive Tuning Against Controller-Aware Outcomes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#carb-absorption-display-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Carb Absorption Display Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Carb Absorption Display Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-carb-007-cob-display-source-attribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CARB-007: COB Display Source Attribution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-carb-008-min_5m_carbimpact-configuration-exposure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CARB-008: min_5m_carbimpact Configuration Exposure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-carb-009-absorption-model-type-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-CARB-009: Absorption Model Type Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prediction-curve-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prediction Curve Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Prediction Curve Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-pred-001-prediction-structure-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PRED-001: Prediction Structure Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-pred-002-prediction-curve-labeling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PRED-002: Prediction Curve Labeling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-pred-003-multi-curve-display-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PRED-003: Multi-Curve Display Option
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dosing-mechanism-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dosing Mechanism Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Dosing Mechanism Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-dose-001-dosing-mechanism-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-DOSE-001: Dosing Mechanism Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-dose-002-safety-net-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-DOSE-002: Safety Net Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-dose-003-enable-condition-transparency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-DOSE-003: Enable Condition Transparency
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#insulin-model-display-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Insulin Model Display Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Insulin Model Display Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-ins-006-exponential-formula-consistency-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-INS-006: Exponential Formula Consistency Verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ins-007-dia-range-validation-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-INS-007: DIA Range Validation UI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ins-008-peak-time-preset-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-INS-008: Peak Time Preset Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#target-range-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Target Range Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Target Range Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-tgt-001-target-range-format-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TGT-001: Target Range Format Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-tgt-002-target-calculation-transparency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TGT-002: Target Calculation Transparency
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-tgt-003-temp-target-side-effects-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TGT-003: Temp Target Side Effects Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trio-oref-integration-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trio oref Integration Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Trio oref Integration Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-oref-001-document-trio_custom_variables-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-OREF-001: Document trio_custom_variables Interface
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-oref-002-track-upstream-oref0-version" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-OREF-002: Track Upstream oref0 Version
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-oref-003-evaluate-breaking-oref0-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-OREF-003: Evaluate Breaking oref0 Changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-effect-001-effect-bundles-must-include-validity-window" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-EFFECT-001: Effect Bundles Must Include Validity Window
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-effect-002-privacy-tiers-must-prevent-personal-context-sync" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-EFFECT-002: Privacy Tiers Must Prevent Personal Context Sync
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-effect-003-effects-must-be-bounded-by-safety-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-EFFECT-003: Effects Must Be Bounded by Safety Limits
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-effect-004-agents-should-declare-privacy-tier" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-EFFECT-004: Agents Should Declare Privacy Tier
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-effect-005-reconciliation-must-cap-external-influence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-EFFECT-005: Reconciliation Must Cap External Influence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="aid-algorithms-requirements">Aid Algorithms Requirements<a class="headerlink" href="#aid-algorithms-requirements" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-06-27 at <code>5a4bc4eb</code>.</em></p>
+<p>Domain-specific requirements extracted from requirements.md.
+See <a href="requirements.html">requirements.md</a> for the index.</p>
+<hr />
+<h3 id="req-alg-001-cross-project-test-vector-format">REQ-ALG-001: Cross-Project Test Vector Format<a class="headerlink" href="#req-alg-001-cross-project-test-vector-format" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The ecosystem MUST define a unified JSON schema for algorithm test vectors that can be executed by any AID implementation.</p>
+<p><strong>Rationale</strong>: Enables automated detection of behavioral differences across oref0, AAPS, Loop, and Trio algorithm implementations.</p>
+<p><strong>Scenarios</strong>:
+- Algorithm Conformance Testing
+- Cross-Project Regression Detection
+- New Implementation Validation</p>
+<p><strong>Verification</strong>:
+- ✅ Schema validates all extracted test vectors
+- ✅ At least 50 vectors covering all categories (85 extracted)
+- 🔄 Runners exist for oref0, AAPS, and Loop (oref0 complete, others pending)</p>
+<p><strong>Status</strong>: oref0 runner complete
+- <code>conformance/schemas/conformance-vector-v1.json</code> - Schema complete
+- <code>conformance/vectors/</code> - 85 vectors extracted from AAPS
+- <code>tools/extract_vectors.py</code> - Extraction tooling complete
+- <code>conformance/runners/oref0-runner.js</code> - oref0 runner complete (26/85 pass)</p>
+<p><strong>Gap Reference</strong>: GAP-ALG-001</p>
+<hr />
+<hr />
+<h3 id="req-alg-002-semantic-equivalence-assertions">REQ-ALG-002: Semantic Equivalence Assertions<a class="headerlink" href="#req-alg-002-semantic-equivalence-assertions" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The conformance suite MUST support semantic assertions (e.g., "rate increased", "no SMB") rather than only exact value matching.</p>
+<p><strong>Rationale</strong>: Different algorithm architectures (Loop combined curve vs oref 4-curve) produce different numerical values for equivalent clinical decisions.</p>
+<p><strong>Scenarios</strong>:
+- Loop vs oref Comparison
+- Algorithm Migration Validation</p>
+<p><strong>Verification</strong>:
+- ✅ Assertion types include: rate_increased, rate_decreased, no_smb, eventual_in_range
+- ✅ Baseline field allows relative assertions
+- ✅ oref0-runner validates assertions (runner complete)</p>
+<p><strong>Status</strong>: Implementation complete for oref0</p>
+<p><strong>Gap Reference</strong>: GAP-ALG-003</p>
+<hr />
+<hr />
+<h3 id="req-alg-003-safety-limit-validation">REQ-ALG-003: Safety Limit Validation<a class="headerlink" href="#req-alg-003-safety-limit-validation" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The conformance suite MUST include test vectors that verify safety limits (max IOB, max basal) are enforced.</p>
+<p><strong>Rationale</strong>: Safety-critical limits must be validated across all implementations to prevent overdosing.</p>
+<p><strong>Scenarios</strong>:
+- Max IOB Enforcement
+- Max Basal Rate Enforcement
+- Low Glucose Suspend</p>
+<p><strong>Verification</strong>:
+- Test vectors exist for each safety category
+- All implementations pass safety limit tests
+- Failures are treated as critical</p>
+<p><strong>Gap Reference</strong>: GAP-ALG-001</p>
+<hr />
+<hr />
+<h3 id="req-alg-004-baseline-regression-detection">REQ-ALG-004: Baseline Regression Detection<a class="headerlink" href="#req-alg-004-baseline-regression-detection" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The conformance suite SHOULD detect when an implementation's behavior drifts from a known baseline.</p>
+<p><strong>Rationale</strong>: Algorithm updates should be intentional; accidental behavioral changes could affect patient safety.</p>
+<p><strong>Scenarios</strong>:
+- oref0 Upstream Update
+- AAPS Kotlin Migration
+- Version Upgrade Validation</p>
+<p><strong>Verification</strong>:
+- Baseline results stored per implementation
+- CI detects changes from baseline
+- Drift report generated with affected vectors</p>
+<p><strong>Gap Reference</strong>: GAP-ALG-002</p>
+<hr />
+<h2 id="api-layer-requirements">API Layer Requirements<a class="headerlink" href="#api-layer-requirements" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="req-carb-001-cob-model-type-annotation">REQ-CARB-001: COB Model Type Annotation<a class="headerlink" href="#req-carb-001-cob-model-type-annotation" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Nightscout devicestatus uploads SHOULD include carb absorption model type annotation with COB values.</p>
+<p><strong>Rationale</strong>: COB values from different models (predictive vs reactive) are not comparable and should be labeled.</p>
+<p><strong>Scenarios</strong>:
+- Multi-controller households
+- User switching between systems
+- Historical data analysis</p>
+<p><strong>Verification</strong>:
+- devicestatus.cob includes model field
+- UI displays model type when available
+- Reports group by model type</p>
+<p><strong>Gap Reference</strong>: GAP-CARB-001</p>
+<hr />
+<hr />
+<h3 id="req-carb-002-minimum-carb-impact-documentation">REQ-CARB-002: Minimum Carb Impact Documentation<a class="headerlink" href="#req-carb-002-minimum-carb-impact-documentation" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: AID systems MUST document their minimum carb impact floor and its effect on COB decay.</p>
+<p><strong>Rationale</strong>: The min_5m_carbimpact parameter significantly affects how quickly COB decays and should be understood by users.</p>
+<p><strong>Scenarios</strong>:
+- Configuring absorption settings
+- Troubleshooting "stuck" COB
+- Comparing system behavior</p>
+<p><strong>Verification</strong>:
+- min_5m_carbimpact documented in user guide
+- Effect on COB decay explained
+- Comparison with other systems provided</p>
+<p><strong>Gap Reference</strong>: GAP-CARB-003</p>
+<hr />
+<hr />
+<h3 id="req-carb-003-absorption-model-selection">REQ-CARB-003: Absorption Model Selection<a class="headerlink" href="#req-carb-003-absorption-model-selection" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: AID systems supporting multiple absorption models SHOULD allow user selection with clear documentation of differences.</p>
+<p><strong>Rationale</strong>: Different absorption patterns (fast vs slow carbs) benefit from different models.</p>
+<p><strong>Scenarios</strong>:
+- High-fat meals (slower absorption)
+- Simple carbs (faster absorption)
+- Mixed meals</p>
+<p><strong>Verification</strong>:
+- Model selection available in settings
+- Each model's characteristics documented
+- Guidance on when to use each model</p>
+<p><strong>Implementation Reference</strong>: Loop CarbMath.swift supports Linear, Parabolic, PiecewiseLinear</p>
+<hr />
+<h2 id="vendor-interop-requirements">Vendor Interop Requirements<a class="headerlink" href="#vendor-interop-requirements" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="req-carb-004-carb-sensitivity-factor-calculation">REQ-CARB-004: Carb Sensitivity Factor Calculation<a class="headerlink" href="#req-carb-004-carb-sensitivity-factor-calculation" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: CSF (Carb Sensitivity Factor) calculation MUST use the formula: <code>CSF = ISF / CR</code> (mg/dL per gram of carbs).</p>
+<p><strong>Rationale</strong>: Consistent CSF calculation ensures glucose effects from carbs are comparable across systems.</p>
+<p><strong>Scenarios</strong>:
+- Glucose Prediction
+- Bolus Calculation</p>
+<p><strong>Verification</strong>:
+- Calculate CSF in multiple systems with same ISF/CR
+- Verify results match
+- Test with varying ISF and CR schedules</p>
+<hr />
+<hr />
+<h3 id="req-carb-005-per-entry-absorption-time-where-supported">REQ-CARB-005: Per-Entry Absorption Time (Where Supported)<a class="headerlink" href="#req-carb-005-per-entry-absorption-time-where-supported" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Systems that support per-entry absorption time (Loop, Trio) SHOULD preserve this field during sync. Systems using profile-based absorption (oref0, AAPS) MAY ignore this field.</p>
+<p><strong>Rationale</strong>: Different foods absorb at different rates. Loop/Trio support per-entry <code>absorptionTime</code>; oref0/AAPS use profile-based defaults and do not accept per-entry overrides.</p>
+<p><strong>Scenarios</strong>:
+- Mixed Meal Entry (Loop/Trio)
+- Cross-Platform Sync</p>
+<p><strong>Verification</strong>:
+- Create carb entry with custom absorption time in Loop/Trio
+- Verify COB decay follows specified time
+- Sync to Nightscout and verify <code>absorptionTime</code> field preserved
+- Note that oref0/AAPS will use profile-based absorption regardless</p>
+<hr />
+<hr />
+<h3 id="req-carb-006-cob-maximum-limits">REQ-CARB-006: COB Maximum Limits<a class="headerlink" href="#req-carb-006-cob-maximum-limits" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: COB hard limits SHOULD be configurable and MUST be clearly documented per system.</p>
+<p><strong>Rationale</strong>: Different limits (e.g., oref0's 120g cap vs Loop's no cap) can cause confusion and unexpected behavior.</p>
+<p><strong>Scenarios</strong>:
+- Large Meal Entry
+- COB Display</p>
+<p><strong>Verification</strong>:
+- Enter carbs exceeding maxCOB limit
+- Verify COB is capped at documented maximum
+- Confirm limit is surfaced in UI or logs</p>
+<hr />
+<h2 id="libre-cgm-protocol-requirements">Libre CGM Protocol Requirements<a class="headerlink" href="#libre-cgm-protocol-requirements" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="req-degrade-001-automation-disable-on-cgm-loss">REQ-DEGRADE-001: Automation Disable on CGM Loss<a class="headerlink" href="#req-degrade-001-automation-disable-on-cgm-loss" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: AID controllers MUST automatically disable closed-loop automation when CGM data becomes stale or unreliable, falling back to scheduled basal delivery.</p>
+<p><strong>Rationale</strong>: Automation decisions require current glucose evidence. Without reliable CGM, the system should degrade to a known-safe state (scheduled basal) rather than continue making decisions on stale data.</p>
+<p><strong>Scenarios</strong>:
+- CGM Signal Loss
+- Sensor Warmup Period
+- Compression Low Detection</p>
+<p><strong>Verification</strong>:
+- Simulate CGM data gap exceeding staleness threshold
+- Verify automation suspends and basal schedule resumes
+- Verify clear notification to user about fallback state</p>
+<hr />
+<hr />
+<h3 id="req-degrade-002-pump-communication-timeout-handling">REQ-DEGRADE-002: Pump Communication Timeout Handling<a class="headerlink" href="#req-degrade-002-pump-communication-timeout-handling" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: AID controllers MUST enter a safe fallback state when pump communication fails, with clear indication to the user about current therapy status.</p>
+<p><strong>Rationale</strong>: Pump command failures create uncertainty about actual delivery. The system should inform the user and await confirmation rather than silently failing or retrying indefinitely.</p>
+<p><strong>Scenarios</strong>:
+- Pump Out of Range
+- Bluetooth Disconnection
+- Pod/Pump Occlusion</p>
+<p><strong>Verification</strong>:
+- Simulate pump communication timeout
+- Verify system enters fallback state
+- Verify user notification includes actionable guidance</p>
+<hr />
+<hr />
+<h3 id="req-degrade-003-remote-control-fallback">REQ-DEGRADE-003: Remote Control Fallback<a class="headerlink" href="#req-degrade-003-remote-control-fallback" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: When remote control channels are unavailable, caregiver apps SHOULD continue to provide remote visibility (following) and SHOULD offer out-of-band communication guidance.</p>
+<p><strong>Rationale</strong>: Network failures should not leave caregivers without any visibility. Read-only monitoring should remain available longer than write commands.</p>
+<p><strong>Scenarios</strong>:
+- Nightscout Connectivity Loss
+- Push Notification Failure
+- API Token Expiration</p>
+<p><strong>Verification</strong>:
+- Simulate command channel failure
+- Verify following/monitoring continues
+- Verify UI guidance for alternative communication</p>
+<hr />
+<hr />
+<h3 id="req-degrade-004-layer-transition-logging">REQ-DEGRADE-004: Layer Transition Logging<a class="headerlink" href="#req-degrade-004-layer-transition-logging" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: AID systems MUST log layer transitions (e.g., closed-loop to open-loop, automation to manual) with reason codes and timestamps.</p>
+<p><strong>Rationale</strong>: Understanding why the system changed modes is critical for retrospective analysis, debugging, and user trust.</p>
+<p><strong>Scenarios</strong>:
+- Automation Pause
+- Safety Limit Breach
+- Component Failure</p>
+<p><strong>Verification</strong>:
+- Trigger layer transition (e.g., pause automation)
+- Verify log entry includes reason code
+- Verify log entry includes precise timestamp</p>
+<hr />
+<hr />
+<h3 id="req-degrade-005-safe-state-documentation">REQ-DEGRADE-005: Safe State Documentation<a class="headerlink" href="#req-degrade-005-safe-state-documentation" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Each AID system SHOULD document its safe states and the conditions that trigger transitions to those states.</p>
+<p><strong>Rationale</strong>: Users, caregivers, and developers need to understand what happens when components fail. This enables appropriate planning and reduces panic during degraded operation.</p>
+<p><strong>Scenarios</strong>:
+- System Documentation
+- User Onboarding
+- Incident Response</p>
+<p><strong>Verification</strong>:
+- Review system documentation for safe state definitions
+- Verify safe states are discoverable in UI/settings
+- Verify safe state behavior matches documentation</p>
+<hr />
+<hr />
+<h3 id="req-degrade-006-delegate-agent-fallback">REQ-DEGRADE-006: Delegate Agent Fallback<a class="headerlink" href="#req-degrade-006-delegate-agent-fallback" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Delegate agents (L9) MUST fall back to human confirmation when confidence is low, context signals are unavailable, or out-of-band data is stale.</p>
+<p><strong>Rationale</strong>: Agents operating with incomplete information should not make autonomous decisions. Graceful degradation means reverting to "propose only" mode.</p>
+<p><strong>Scenarios</strong>:
+- Context Signal Loss
+- Low Confidence Decision
+- Stale Wearable Data</p>
+<p><strong>Verification</strong>:
+- Simulate loss of out-of-band signal
+- Verify agent reverts to propose-only mode
+- Verify agent requests human confirmation</p>
+<hr />
+<h2 id="batch-operation-requirements">Batch Operation Requirements<a class="headerlink" href="#batch-operation-requirements" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="req-ins-001-consistent-exponential-model-across-systems">REQ-INS-001: Consistent Exponential Model Across Systems<a class="headerlink" href="#req-ins-001-consistent-exponential-model-across-systems" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: AID systems using the exponential insulin model MUST use the same mathematical formula to ensure IOB calculations are comparable.</p>
+<p><strong>Rationale</strong>: Different formulas produce different IOB decay curves, leading to inconsistent dosing decisions when comparing systems or switching between them.</p>
+<p><strong>Scenarios</strong>:
+- IOB Comparison (to be created)</p>
+<p><strong>Verification</strong>:
+- Given identical bolus history and DIA settings
+- Calculate IOB using Loop, oref0, AAPS, and Trio
+- Verify IOB values match within 0.01U precision</p>
+<p><strong>Cross-System Status</strong>:
+- Loop: ✅ Original exponential formula
+- oref0: ✅ Copied from Loop (explicitly credited)
+- AAPS: ✅ Port of oref0
+- Trio: ✅ Uses oref0 JavaScript</p>
+<p><strong>Source Reference</strong>: <code>oref0:lib/iob/calculate.js#L125</code> cites Loop as formula source.</p>
+<hr />
+<hr />
+<h3 id="req-ins-002-dia-minimum-enforcement">REQ-INS-002: DIA Minimum Enforcement<a class="headerlink" href="#req-ins-002-dia-minimum-enforcement" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: AID systems MUST enforce a minimum DIA of 5 hours for exponential insulin models to prevent dangerously fast IOB decay.</p>
+<p><strong>Rationale</strong>: DIA values below 5 hours cause insulin to "disappear" from IOB calculations before it finishes acting, leading to insulin stacking and hypoglycemia.</p>
+<p><strong>Scenarios</strong>:
+- DIA Validation (to be created)</p>
+<p><strong>Verification</strong>:
+- Attempt to set DIA = 3 hours with exponential model → Verify rejection or auto-correction to 5 hours
+- Verify user notification when DIA is adjusted</p>
+<p><strong>Cross-System Status</strong>:
+- Loop: ✅ Fixed DIA per model preset (5-6 hours)
+- oref0: ✅ <code>requireLongDia</code> flag enforces 5h minimum
+- AAPS: ✅ <code>hardLimits.minDia()</code> returns 5.0
+- Trio: ✅ Via oref0 enforcement</p>
+<hr />
+<hr />
+<h3 id="req-ins-003-peak-time-configuration-bounds">REQ-INS-003: Peak Time Configuration Bounds<a class="headerlink" href="#req-ins-003-peak-time-configuration-bounds" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: When custom peak time is enabled, AID systems MUST clamp the value to valid ranges to prevent unrealistic insulin curves.</p>
+<p><strong>Rationale</strong>: Peak times outside physiological ranges produce unrealistic insulin activity curves that lead to dangerous predictions.</p>
+<p><strong>Scenarios</strong>:
+- Peak Time Validation (to be created)</p>
+<p><strong>Verification</strong>:
+- Rapid-acting: Verify peak clamped to 50-120 min range
+- Ultra-rapid: Verify peak clamped to 35-100 min range
+- Verify user notification when peak is adjusted</p>
+<p><strong>Cross-System Status</strong>:
+- oref0: ✅ Explicit min/max checks in <code>iobCalcExponential()</code>
+- AAPS: ✅ Free Peak plugin with hard limits
+- Trio: ✅ Via oref0 enforcement
+- Loop: ✅ Fixed peaks per preset (no custom)</p>
+<hr />
+<hr />
+<h3 id="req-ins-004-activity-calculation-for-bgi">REQ-INS-004: Activity Calculation for BGI<a class="headerlink" href="#req-ins-004-activity-calculation-for-bgi" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: AID systems MUST calculate insulin activity (rate of action) alongside IOB to enable Blood Glucose Impact (BGI) predictions.</p>
+<p><strong>Rationale</strong>: BGI = -activity × ISF × 5 is used to predict how much glucose will drop in the next 5 minutes. Without activity, predictions are incomplete.</p>
+<p><strong>Scenarios</strong>:
+- BGI Calculation (to be created)</p>
+<p><strong>Verification</strong>:
+- Calculate activity from insulin curve formula
+- Compute BGI = -activity × ISF × 5
+- Verify BGI matches observed glucose change (within noise)</p>
+<p><strong>Cross-System Status</strong>:
+- Loop: ✅ Via <code>percentEffectRemaining</code> derivative
+- oref0: ✅ <code>activityContrib</code> calculated alongside <code>iobContrib</code>
+- AAPS: ✅ <code>result.activityContrib</code> in <code>iobCalcForTreatment()</code>
+- Trio: ✅ Via oref0</p>
+<hr />
+<hr />
+<h3 id="req-ins-005-insulin-model-metadata-in-treatments-proposed">REQ-INS-005: Insulin Model Metadata in Treatments (Proposed)<a class="headerlink" href="#req-ins-005-insulin-model-metadata-in-treatments-proposed" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Treatments uploaded to Nightscout SHOULD include insulin model metadata (curve type, peak time, DIA) to enable historical IOB reconstruction.</p>
+<p><strong>Rationale</strong>: Without model metadata, historical IOB values cannot be reproduced, limiting retrospective analysis and debugging.</p>
+<p><strong>Scenarios</strong>:
+- Treatment Upload Validation (to be created)</p>
+<p><strong>Verification</strong>:
+- Upload bolus treatment
+- Verify presence of <code>insulinModel</code>, <code>insulinPeak</code>, <code>insulinDIA</code> fields
+- Download treatment and verify metadata preserved</p>
+<p><strong>Cross-System Status</strong>:
+- Loop: ❌ Not implemented (gap)
+- oref0: ❌ Not implemented (gap)
+- AAPS: ⚠️ Partial via <code>insulinConfiguration</code> in database
+- Trio: ❌ Not implemented (gap)</p>
+<p><strong>Gap Reference</strong>: GAP-INS-001</p>
+<hr />
+<h2 id="ble-protocol-requirements">BLE Protocol Requirements<a class="headerlink" href="#ble-protocol-requirements" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="req-pr-001-heart-rate-collection-support">REQ-PR-001: Heart Rate Collection Support<a class="headerlink" href="#req-pr-001-heart-rate-collection-support" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Nightscout SHOULD provide a standardized HeartRate collection in APIv3 for biometric data storage.</p>
+<p><strong>Rationale</strong>: AAPS and other systems collect heart rate data that should be stored alongside CGM data for holistic analysis.</p>
+<p><strong>Scenarios</strong>:
+- AAPS uploads HR from connected devices
+- Correlation analysis between HR and glucose
+- Exercise detection and dosing adjustment</p>
+<p><strong>Verification</strong>:
+- POST to /api/v3/heartrate succeeds
+- GET returns stored HR data with timestamps
+- AAPS uploader successfully syncs HR</p>
+<p><strong>Specification</strong>: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a79d969c34632122b787927642e8b5cfc4514c6c/specs/openapi/aid-heartrate-2025.yaml"><code>specs/openapi/aid-heartrate-2025.yaml</code></a></p>
+<p><strong>Gap Reference</strong>: GAP-API-HR</p>
+<hr />
+<hr />
+<h3 id="req-pr-002-multi-insulin-api-standardization">REQ-PR-002: Multi-Insulin API Standardization<a class="headerlink" href="#req-pr-002-multi-insulin-api-standardization" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Nightscout SHOULD provide an insulin entity collection for storing multiple insulin profiles with curves and display properties.</p>
+<p><strong>Rationale</strong>: Users often use multiple insulins (rapid, long-acting) and need consistent profiles across xDrip+, nightscout-reporter, and Nightscout.</p>
+<p><strong>Scenarios</strong>:
+- Define insulin curves for IOB calculations
+- Share insulin definitions across devices
+- Color-code treatments by insulin type</p>
+<p><strong>Verification</strong>:
+- POST to /api/v3/insulin succeeds
+- GET returns insulin profiles with curves
+- xDrip+ and nightscout-reporter compatible</p>
+<p><strong>Gap Reference</strong>: GAP-INSULIN-001</p>
+<hr />
+<hr />
+<h3 id="req-pr-003-remote-command-queue">REQ-PR-003: Remote Command Queue<a class="headerlink" href="#req-pr-003-remote-command-queue" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Nightscout SHOULD provide a command queue for remote AID control with delivery status tracking.</p>
+<p><strong>Rationale</strong>: Loop caregivers need reliable remote bolus/carb delivery with confirmation.</p>
+<p><strong>Scenarios</strong>:
+- Caregiver sends remote bolus
+- Command delivery confirmed or failed
+- Expired commands cleaned up</p>
+<p><strong>Verification</strong>:
+- POST command to queue
+- Query command status
+- Receive push confirmation</p>
+<p><strong>Gap Reference</strong>: GAP-REMOTE-CMD</p>
+<hr />
+<hr />
+<h3 id="req-pr-004-consistent-timezone-display">REQ-PR-004: Consistent Timezone Display<a class="headerlink" href="#req-pr-004-consistent-timezone-display" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Nightscout SHOULD display device timezone from profile rather than browser local time, with dual display when timezones differ.</p>
+<p><strong>Rationale</strong>: Cross-timezone caregivers need to see times in the looper's timezone.</p>
+<p><strong>Scenarios</strong>:
+- Caregiver in different timezone
+- Historical data review
+- Careportal entry creation</p>
+<p><strong>Verification</strong>:
+- Clock shows device timezone
+- Both times shown when offsets differ
+- Profile timezone used as source</p>
+<p><strong>Gap Reference</strong>: GAP-TZ-001</p>
+<hr />
+<h2 id="statistics-api-requirements">Statistics API Requirements<a class="headerlink" href="#statistics-api-requirements" title="Permanent link">&para;</a></h2>
+<hr />
+<h2 id="profile-schema-requirements">Profile Schema Requirements<a class="headerlink" href="#profile-schema-requirements" title="Permanent link">&para;</a></h2>
+<h3 id="req-prof-001-standard-time-format">REQ-PROF-001: Standard Time Format<a class="headerlink" href="#req-prof-001-standard-time-format" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Profile schedules SHOULD use seconds from midnight for time representation.</p>
+<p><strong>Rationale</strong>: Nightscout uses "HH:MM" strings while Loop/AAPS use integers. Standardization prevents conversion errors.</p>
+<p><strong>Scenarios</strong>:
+- Profile sync from Loop to Nightscout
+- Profile import in AAPS from Nightscout</p>
+<p><strong>Verification</strong>:
+- Time values consistently parse to same minute-of-day
+- No off-by-one errors at midnight boundary</p>
+<p><strong>Gap</strong>: GAP-PROF-001</p>
+<p><strong>Source</strong>: <code>docs/10-domain/profile-schema-alignment.md</code></p>
+<hr />
+<h3 id="req-prof-002-safety-limits-in-profile">REQ-PROF-002: Safety Limits in Profile<a class="headerlink" href="#req-prof-002-safety-limits-in-profile" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Nightscout profile collection SHOULD support optional safety limit fields.</p>
+<p><strong>Rationale</strong>: Loop has maxBasal, maxBolus, suspendThreshold that don't sync to Nightscout.</p>
+<p><strong>Scenarios</strong>:
+- View all therapy settings in Nightscout
+- Restore safety limits to new device</p>
+<p><strong>Verification</strong>:
+- Profile includes optional safety limit fields
+- Controllers can read/write these values</p>
+<p><strong>Conformance</strong>: <code>conformance/assertions/profile-structure.yaml</code> (max-iob-present, max-basal-present, max-bolus-present)</p>
+<p><strong>Gap</strong>: GAP-PROF-002</p>
+<p><strong>Source</strong>: <code>docs/10-domain/profile-schema-alignment.md</code></p>
+<hr />
+<h3 id="req-prof-003-override-presets-sync">REQ-PROF-003: Override Presets Sync<a class="headerlink" href="#req-prof-003-override-presets-sync" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Nightscout profile SHOULD support override preset configurations.</p>
+<p><strong>Rationale</strong>: Loop's named overrides (Exercise, Pre-Meal) don't sync to Nightscout.</p>
+<p><strong>Scenarios</strong>:
+- View override presets in Nightscout
+- Share override configs between devices</p>
+<p><strong>Verification</strong>:
+- Profile includes override presets array
+- Presets include name, target range, duration</p>
+<p><strong>Conformance</strong>: <code>conformance/assertions/profile-structure.yaml</code> (override-presets-array, override-preset-structure)</p>
+<p><strong>Gap</strong>: GAP-PROF-003</p>
+<p><strong>Source</strong>: <code>docs/10-domain/profile-schema-alignment.md</code></p>
+<hr />
+<h3 id="req-prof-004-insulin-model-mapping">REQ-PROF-004: Insulin Model Mapping<a class="headerlink" href="#req-prof-004-insulin-model-mapping" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Controllers SHOULD document mapping between insulin model presets and equivalent DIA values.</p>
+<p><strong>Rationale</strong>: Loop uses curve-based models while Nightscout/AAPS use scalar DIA.</p>
+<p><strong>Scenarios</strong>:
+- Display equivalent DIA for Loop users
+- Convert between systems</p>
+<p><strong>Verification</strong>:
+- Documented mapping table exists
+- Round-trip conversion preserves behavior</p>
+<p><strong>Conformance</strong>: <code>conformance/assertions/profile-structure.yaml</code> (insulin-model-present, dia-duration-present)</p>
+<p><strong>Gap</strong>: GAP-PROF-005</p>
+<p><strong>Source</strong>: <code>docs/10-domain/profile-schema-alignment.md</code></p>
+<h3 id="req-prof-005-basal-time-format-conversion">REQ-PROF-005: Basal Time Format Conversion<a class="headerlink" href="#req-prof-005-basal-time-format-conversion" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Controllers MUST convert Nightscout "HH:MM" time strings to numeric seconds-from-midnight using profile timezone.</p>
+<p><strong>Rationale</strong>: Nightscout uses string format while all controllers use numeric offsets. Consistent conversion prevents parsing errors.</p>
+<p><strong>Scenarios</strong>:
+- Loop reads basal schedule from Nightscout profile
+- AAPS uploads profile changes back to Nightscout
+- Trio initializes from fetched profile</p>
+<p><strong>Verification</strong>:
+- Unit tests with edge cases (midnight, noon, DST transitions)
+- Round-trip test: upload → download → compare</p>
+<p><strong>Gap</strong>: GAP-PROF-006</p>
+<p><strong>Source</strong>: <code>docs/10-domain/basal-schedule-comparison.md</code></p>
+<hr />
+<h3 id="req-prof-006-basal-rate-precision">REQ-PROF-006: Basal Rate Precision<a class="headerlink" href="#req-prof-006-basal-rate-precision" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Controllers SHOULD preserve basal rate precision to at least 0.01 U/hr during sync operations.</p>
+<p><strong>Rationale</strong>: Common pump step size is 0.01 U/hr; truncating precision may affect insulin delivery.</p>
+<p><strong>Scenarios</strong>:
+- Profile sync between systems
+- Rate display in UI</p>
+<p><strong>Verification</strong>:
+- Round-trip test: export → import → compare rates
+- Precision check against pump basalStep</p>
+<p><strong>Conformance</strong>: <code>conformance/assertions/profile-structure.yaml</code> (basal-rate-precision, basal-24h-coverage)</p>
+<p><strong>Gap</strong>: GAP-PROF-008</p>
+<p><strong>Source</strong>: <code>docs/10-domain/basal-schedule-comparison.md</code></p>
+<hr />
+<h3 id="req-prof-007-total-daily-basal-validation">REQ-PROF-007: Total Daily Basal Validation<a class="headerlink" href="#req-prof-007-total-daily-basal-validation" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Controllers SHOULD validate that total daily basal equals sum of (segment_duration × rate) for all 24 hours.</p>
+<p><strong>Rationale</strong>: Catches incomplete or malformed basal profiles before use.</p>
+<p><strong>Scenarios</strong>:
+- Profile import validation
+- UI profile editor save</p>
+<p><strong>Verification</strong>:
+- Calculate TDD from schedule segments
+- Compare to expected 24h coverage</p>
+<p><strong>Gap</strong>: N/A (best practice)</p>
+<p><strong>Source</strong>: <code>docs/10-domain/basal-schedule-comparison.md</code></p>
+<hr />
+<h2 id="bolus-wizard-requirements">Bolus Wizard Requirements<a class="headerlink" href="#bolus-wizard-requirements" title="Permanent link">&para;</a></h2>
+<h3 id="req-bolus-001-document-calculation-approach">REQ-BOLUS-001: Document Calculation Approach<a class="headerlink" href="#req-bolus-001-document-calculation-approach" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Each controller SHOULD document its bolus calculation approach clearly.</p>
+<p><strong>Rationale</strong>: Loop uses prediction-based calculation while AAPS uses traditional arithmetic. Users need to understand expected differences.</p>
+<p><strong>Scenarios</strong>:
+- User switches from AAPS to Loop
+- Comparing recommendations between systems</p>
+<p><strong>Verification</strong>:
+- Documentation describes formula used
+- Examples show calculation steps</p>
+<p><strong>Gap</strong>: GAP-BOLUS-001</p>
+<p><strong>Source</strong>: <code>docs/10-domain/bolus-wizard-formula-comparison.md</code></p>
+<hr />
+<h3 id="req-bolus-002-iob-subtraction-transparency">REQ-BOLUS-002: IOB Subtraction Transparency<a class="headerlink" href="#req-bolus-002-iob-subtraction-transparency" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Controllers SHOULD clearly indicate what IOB components are subtracted.</p>
+<p><strong>Rationale</strong>: AAPS allows toggling basal/bolus IOB separately; Loop combines them.</p>
+<p><strong>Scenarios</strong>:
+- User wants to exclude basal IOB
+- Debugging unexpected recommendations</p>
+<p><strong>Verification</strong>:
+- UI shows IOB breakdown
+- Documentation explains IOB handling</p>
+<p><strong>Gap</strong>: GAP-BOLUS-002</p>
+<p><strong>Source</strong>: <code>docs/10-domain/bolus-wizard-formula-comparison.md</code></p>
+<hr />
+<h3 id="req-bolus-003-nightscout-wizard-sync">REQ-BOLUS-003: Nightscout Wizard Sync<a class="headerlink" href="#req-bolus-003-nightscout-wizard-sync" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Bolus wizard inputs SHOULD sync to Nightscout for retrospective analysis.</p>
+<p><strong>Rationale</strong>: AAPS sends full BolusCalculatorResult; Loop sends limited data.</p>
+<p><strong>Scenarios</strong>:
+- Retrospective review of bolus decisions
+- Endo/CDE reviewing patient data</p>
+<p><strong>Verification</strong>:
+- Wizard inputs visible in Nightscout reports
+- BCR data available via API</p>
+<p><strong>Gap</strong>: Related to treatment sync</p>
+<p><strong>Source</strong>: <code>docs/10-domain/bolus-wizard-formula-comparison.md</code></p>
+<h2 id="sensitivity-adjustment-requirements">Sensitivity Adjustment Requirements<a class="headerlink" href="#sensitivity-adjustment-requirements" title="Permanent link">&para;</a></h2>
+<h3 id="req-sens-001-document-sensitivity-method">REQ-SENS-001: Document Sensitivity Method<a class="headerlink" href="#req-sens-001-document-sensitivity-method" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Each controller SHOULD document its sensitivity adjustment algorithm.</p>
+<p><strong>Rationale</strong>: Autosens (ratio multiplier) vs Loop RC (prediction effect) work differently.</p>
+<p><strong>Scenarios</strong>:
+- User switches from AAPS to Loop
+- Comparing algorithm behaviors</p>
+<p><strong>Verification</strong>:
+- Documentation describes method clearly
+- Expected behavior documented</p>
+<p><strong>Gap</strong>: GAP-SENS-001</p>
+<p><strong>Source</strong>: <code>docs/10-domain/autosens-dynamic-isf-comparison.md</code></p>
+<hr />
+<h3 id="req-sens-002-sensitivity-visibility-in-nightscout">REQ-SENS-002: Sensitivity Visibility in Nightscout<a class="headerlink" href="#req-sens-002-sensitivity-visibility-in-nightscout" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Sensitivity adjustments SHOULD be visible in Nightscout devicestatus.</p>
+<p><strong>Rationale</strong>: AAPS reports sensitivityRatio; Loop RC effect not itemized.</p>
+<p><strong>Scenarios</strong>:
+- Retrospective analysis of sensitivity changes
+- Debugging algorithm behavior</p>
+<p><strong>Verification</strong>:
+- devicestatus includes sensitivity data
+- Reports can chart sensitivity over time</p>
+<p><strong>Gap</strong>: GAP-SENS-001</p>
+<p><strong>Source</strong>: <code>docs/10-domain/autosens-dynamic-isf-comparison.md</code></p>
+<hr />
+<h3 id="req-sens-003-document-detection-windows">REQ-SENS-003: Document Detection Windows<a class="headerlink" href="#req-sens-003-document-detection-windows" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Controllers SHOULD document their sensitivity detection time windows.</p>
+<p><strong>Rationale</strong>: Autosens 8-24h vs Loop RC 30-180 min affects response time.</p>
+<p><strong>Scenarios</strong>:
+- Understanding lag in sensitivity detection
+- Debugging unexpected behavior</p>
+<p><strong>Verification</strong>:
+- Documentation states window duration
+- Behavior matches documented windows</p>
+<p><strong>Gap</strong>: GAP-SENS-002</p>
+<p><strong>Source</strong>: <code>docs/10-domain/autosens-dynamic-isf-comparison.md</code></p>
+<hr />
+<h3 id="req-sens-004-validate-adaptive-tuning-against-controller-aware-outcomes">REQ-SENS-004: Validate Adaptive Tuning Against Controller-Aware Outcomes<a class="headerlink" href="#req-sens-004-validate-adaptive-tuning-against-controller-aware-outcomes" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Systems that adapt ISF, basal, or carb-ratio parameters from observational data SHOULD evaluate those adaptations against controller-aware safety or causal validation, not only internal fit or deviation reduction.</p>
+<p><strong>Rationale</strong>: Autosens and autotune can improve apparent fit while still encoding controller feedback, meal-announcement artifacts, or bounded heuristic assumptions that do not generalize across groups.</p>
+<p><strong>Scenarios</strong>:
+- Comparing autosens/autotune behavior across patient cohorts
+- Using extracted settings for decision support
+- Determining whether tuned parameters reflect operating behavior or physiology</p>
+<p><strong>Verification</strong>:
+- Recommendations are reviewed against held-out safety outcomes or controller-aware audits
+- Meal-dependent tuning outputs are marked provisional when meals are unlogged
+- Validation is stratified by controller-response mode where feasible</p>
+<p><strong>Gap</strong>: GAP-SENS-005</p>
+<p><strong>Source</strong>: <code>docs/10-domain/autosens-dynamic-isf-comparison.md</code></p>
+<h2 id="carb-absorption-display-requirements">Carb Absorption Display Requirements<a class="headerlink" href="#carb-absorption-display-requirements" title="Permanent link">&para;</a></h2>
+<h3 id="req-carb-007-cob-display-source-attribution">REQ-CARB-007: COB Display Source Attribution<a class="headerlink" href="#req-carb-007-cob-display-source-attribution" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Systems displaying COB MUST indicate which algorithm calculated it.</p>
+<p><strong>Rationale</strong>: Loop and oref0 COB values are not directly comparable due to different calculation methods.</p>
+<p><strong>Verification</strong>: Check UI for source indicator.</p>
+<h3 id="req-carb-008-min_5m_carbimpact-configuration-exposure">REQ-CARB-008: min_5m_carbimpact Configuration Exposure<a class="headerlink" href="#req-carb-008-min_5m_carbimpact-configuration-exposure" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: oref0-based systems SHOULD expose min_5m_carbimpact as a configurable setting.</p>
+<p><strong>Rationale</strong>: Critical tuning parameter affecting carb absorption rate floor (default: AMA=3, SMB=8 mg/dL/5m).</p>
+<p><strong>Verification</strong>: Settings UI audit.</p>
+<h3 id="req-carb-009-absorption-model-type-documentation">REQ-CARB-009: Absorption Model Type Documentation<a class="headerlink" href="#req-carb-009-absorption-model-type-documentation" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: AID systems MUST document their carb absorption model type and key parameters.</p>
+<p><strong>Rationale</strong>: Users need to understand how COB is calculated for accurate meal management.</p>
+<p><strong>Verification</strong>: Documentation review.</p>
+<h2 id="prediction-curve-requirements">Prediction Curve Requirements<a class="headerlink" href="#prediction-curve-requirements" title="Permanent link">&para;</a></h2>
+<h3 id="req-pred-001-prediction-structure-documentation">REQ-PRED-001: Prediction Structure Documentation<a class="headerlink" href="#req-pred-001-prediction-structure-documentation" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: AID systems MUST document their prediction curve structure and interpretation.</p>
+<p><strong>Rationale</strong>: Users and developers need to understand single vs multi-curve predictions.</p>
+<p><strong>Verification</strong>: Documentation review.</p>
+<h3 id="req-pred-002-prediction-curve-labeling">REQ-PRED-002: Prediction Curve Labeling<a class="headerlink" href="#req-pred-002-prediction-curve-labeling" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Systems displaying predictions SHOULD label the curve type (Loop, IOB, COB, UAM, ZT).</p>
+<p><strong>Rationale</strong>: Different curves represent different scenarios with different implications.</p>
+<p><strong>Verification</strong>: UI audit for prediction labels.</p>
+<h3 id="req-pred-003-multi-curve-display-option">REQ-PRED-003: Multi-Curve Display Option<a class="headerlink" href="#req-pred-003-multi-curve-display-option" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Nightscout SHOULD provide option to display all oref0 prediction curves.</p>
+<p><strong>Rationale</strong>: ZT curve is important for safety; users benefit from seeing all scenarios.</p>
+<p><strong>Verification</strong>: Settings UI check.</p>
+<h2 id="dosing-mechanism-requirements">Dosing Mechanism Requirements<a class="headerlink" href="#dosing-mechanism-requirements" title="Permanent link">&para;</a></h2>
+<h3 id="req-dose-001-dosing-mechanism-documentation">REQ-DOSE-001: Dosing Mechanism Documentation<a class="headerlink" href="#req-dose-001-dosing-mechanism-documentation" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: AID systems MUST document their primary automatic dosing mechanism (temp basal, SMB, or auto bolus).</p>
+<p><strong>Rationale</strong>: Users need to understand how insulin is delivered automatically.</p>
+<p><strong>Verification</strong>: Documentation review.</p>
+<h3 id="req-dose-002-safety-net-documentation">REQ-DOSE-002: Safety Net Documentation<a class="headerlink" href="#req-dose-002-safety-net-documentation" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Systems using automatic boluses MUST document safety mechanisms (zero temp, IOB limits).</p>
+<p><strong>Rationale</strong>: Users need to understand fallback behavior if pump disconnects.</p>
+<p><strong>Verification</strong>: Safety documentation audit.</p>
+<h3 id="req-dose-003-enable-condition-transparency">REQ-DOSE-003: Enable Condition Transparency<a class="headerlink" href="#req-dose-003-enable-condition-transparency" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Systems with conditional SMB/auto-bolus SHOULD clearly display which conditions are active.</p>
+<p><strong>Rationale</strong>: Users need to know when and why automatic boluses are enabled.</p>
+<p><strong>Verification</strong>: UI review for condition display.</p>
+<hr />
+<h2 id="insulin-model-display-requirements">Insulin Model Display Requirements<a class="headerlink" href="#insulin-model-display-requirements" title="Permanent link">&para;</a></h2>
+<h3 id="req-ins-006-exponential-formula-consistency-verification">REQ-INS-006: Exponential Formula Consistency Verification<a class="headerlink" href="#req-ins-006-exponential-formula-consistency-verification" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Systems using exponential insulin model MUST use compatible formula (tau/a/S parameters from Loop issue #388).</p>
+<p><strong>Rationale</strong>: Loop and oref0 share the same formula source, ensuring IOB calculations match.</p>
+<p><strong>Verification</strong>: Compare IOB output for same insulin dose and time inputs.</p>
+<h3 id="req-ins-007-dia-range-validation-ui">REQ-INS-007: DIA Range Validation UI<a class="headerlink" href="#req-ins-007-dia-range-validation-ui" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Systems MUST validate DIA is within safe bounds (typically 3-8 hours).</p>
+<p><strong>Rationale</strong>: Extreme DIA values can cause unsafe dosing calculations.</p>
+<p><strong>Verification</strong>: Test boundary values in profile settings.</p>
+<h3 id="req-ins-008-peak-time-preset-documentation">REQ-INS-008: Peak Time Preset Documentation<a class="headerlink" href="#req-ins-008-peak-time-preset-documentation" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Systems SHOULD document peak time values for each insulin preset (Humalog, Fiasp, etc.).</p>
+<p><strong>Rationale</strong>: Users need to understand how insulin curve timing affects dosing.</p>
+<p><strong>Verification</strong>: Documentation review for all insulin presets.</p>
+<hr />
+<h2 id="target-range-requirements">Target Range Requirements<a class="headerlink" href="#target-range-requirements" title="Permanent link">&para;</a></h2>
+<h3 id="req-tgt-001-target-range-format-documentation">REQ-TGT-001: Target Range Format Documentation<a class="headerlink" href="#req-tgt-001-target-range-format-documentation" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Systems MUST document whether target range is stored as min/max pair or single value.</p>
+<p><strong>Rationale</strong>: Different formats (Loop's ClosedRange vs oref0's min_bg/max_bg) can cause sync/import issues.</p>
+<p><strong>Verification</strong>: Schema review for target representation.</p>
+<h3 id="req-tgt-002-target-calculation-transparency">REQ-TGT-002: Target Calculation Transparency<a class="headerlink" href="#req-tgt-002-target-calculation-transparency" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Systems SHOULD document how the algorithm uses target ranges (midpoint, dynamic, etc.).</p>
+<p><strong>Rationale</strong>: Users need to understand correction behavior - Loop uses dynamic targeting while oref0 uses static midpoint.</p>
+<p><strong>Verification</strong>: Algorithm documentation review.</p>
+<h3 id="req-tgt-003-temp-target-side-effects-documentation">REQ-TGT-003: Temp Target Side Effects Documentation<a class="headerlink" href="#req-tgt-003-temp-target-side-effects-documentation" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Systems MUST document any side effects of temp targets (sensitivity adjustment, SMB enable).</p>
+<p><strong>Rationale</strong>: oref0 ties SMB enable and sensitivity ratio to temp targets; users may expect simple target changes.</p>
+<p><strong>Verification</strong>: Documentation audit for temp target behavior.</p>
+<hr />
+<h2 id="trio-oref-integration-requirements">Trio oref Integration Requirements<a class="headerlink" href="#trio-oref-integration-requirements" title="Permanent link">&para;</a></h2>
+<h3 id="req-oref-001-document-trio_custom_variables-interface">REQ-OREF-001: Document trio_custom_variables Interface<a class="headerlink" href="#req-oref-001-document-trio_custom_variables-interface" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Trio SHOULD provide formal documentation for trio_custom_variables object.</p>
+<p><strong>Rationale</strong>: Developers need to understand integration points. Undocumented interfaces cause bugs.</p>
+<p><strong>Scenarios</strong>: New feature development, testing, external tool integration.</p>
+<p><strong>Verification</strong>: TypeScript interface or JSON schema exists in Trio repo.</p>
+<p><strong>Source</strong>: <code>docs/10-domain/trio-oref-integration-mapping.md</code></p>
+<hr />
+<h3 id="req-oref-002-track-upstream-oref0-version">REQ-OREF-002: Track Upstream oref0 Version<a class="headerlink" href="#req-oref-002-track-upstream-oref0-version" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Trio SHOULD track which upstream oref0 commit it is based on.</p>
+<p><strong>Rationale</strong>: Enables understanding of what bug fixes/features are included.</p>
+<p><strong>Scenarios</strong>: Bug triage, feature comparison, sync decisions.</p>
+<p><strong>Verification</strong>: README or file in trio-oref/ notes oref0 commit hash.</p>
+<p><strong>Source</strong>: <code>docs/10-domain/trio-oref-integration-mapping.md</code></p>
+<hr />
+<h3 id="req-oref-003-evaluate-breaking-oref0-changes">REQ-OREF-003: Evaluate Breaking oref0 Changes<a class="headerlink" href="#req-oref-003-evaluate-breaking-oref0-changes" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Breaking changes in upstream oref0 MUST be evaluated before merging into Trio.</p>
+<p><strong>Rationale</strong>: Trio has additional features that could conflict with upstream changes.</p>
+<p><strong>Scenarios</strong>: oref0 release, algorithm update, safety constraint change.</p>
+<p><strong>Verification</strong>: PR review process for oref0 merges.</p>
+<p><strong>Source</strong>: <code>docs/10-domain/trio-oref-integration-mapping.md</code></p>
+<hr />
+<hr />
+<h3 id="req-effect-001-effect-bundles-must-include-validity-window">REQ-EFFECT-001: Effect Bundles Must Include Validity Window<a class="headerlink" href="#req-effect-001-effect-bundles-must-include-validity-window" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Effect bundles MUST include <code>validFrom</code> and <code>validUntil</code> timestamps with maximum duration of 24 hours.</p>
+<p><strong>Rationale</strong>: Effects are time-bounded algorithm adjustments. Without validity windows, stale effects could persist indefinitely.</p>
+<p><strong>Scenarios</strong>: 
+- Exercise effect expires after activity ends
+- Meal absorption effect limited to digestion period
+- Agent crash leaves orphaned effect</p>
+<p><strong>Verification</strong>: 
+- Schema validation rejects missing timestamps
+- Effects past <code>validUntil</code> ignored by algorithm
+- Maximum 24h duration enforced</p>
+<p><strong>Source</strong>: <code>docs/10-domain/effect-bundle-architecture-deep-dive.md</code></p>
+<p><strong>Related</strong>: GAP-EFFECT-001</p>
+<hr />
+<h3 id="req-effect-002-privacy-tiers-must-prevent-personal-context-sync">REQ-EFFECT-002: Privacy Tiers Must Prevent Personal Context Sync<a class="headerlink" href="#req-effect-002-privacy-tiers-must-prevent-personal-context-sync" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Personal context data (cycle phase, heart rate, stress) MUST NOT sync to Nightscout regardless of user settings.</p>
+<p><strong>Rationale</strong>: Certain personal health data is too sensitive for cloud storage. Privacy tiers must enforce on-device-only storage for this category.</p>
+<p><strong>Scenarios</strong>:
+- MenstrualCycle agent stores phase locally only
+- Stress indicator never appears in Nightscout
+- Heart rate used for effect calculation but not synced</p>
+<p><strong>Verification</strong>:
+- <code>onDeviceOnly</code> tier has no sync code path
+- Personal context fields have no API mapping
+- Privacy audit confirms no leakage</p>
+<p><strong>Source</strong>: <code>docs/10-domain/effect-bundle-architecture-deep-dive.md</code></p>
+<p><strong>Related</strong>: GAP-EFFECT-002</p>
+<hr />
+<h3 id="req-effect-003-effects-must-be-bounded-by-safety-limits">REQ-EFFECT-003: Effects Must Be Bounded by Safety Limits<a class="headerlink" href="#req-effect-003-effects-must-be-bounded-by-safety-limits" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: All effect values MUST be constrained to safety bounds: sensitivity 0.2-2.0, glucose ±50 mg/dL, absorption 0.2-3.0.</p>
+<p><strong>Rationale</strong>: Unconstrained effects could cause dangerous dosing. Safety bounds prevent extreme algorithm modifications.</p>
+<p><strong>Scenarios</strong>:
+- Malformed effect with sensitivity 10x rejected
+- Glucose prediction delta capped at ±50
+- Absorption multiplier 0.1 rejected as too aggressive</p>
+<p><strong>Verification</strong>:
+- Schema validation enforces min/max
+- Runtime validation in algorithm
+- Test vectors for boundary conditions</p>
+<p><strong>Source</strong>: <code>docs/10-domain/effect-bundle-architecture-deep-dive.md</code></p>
+<p><strong>Related</strong>: GAP-EFFECT-001</p>
+<hr />
+<h3 id="req-effect-004-agents-should-declare-privacy-tier">REQ-EFFECT-004: Agents Should Declare Privacy Tier<a class="headerlink" href="#req-effect-004-agents-should-declare-privacy-tier" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Agents SHOULD declare their privacy tier at registration time.</p>
+<p><strong>Rationale</strong>: Users need to understand what data each agent will sync before enabling it.</p>
+<p><strong>Scenarios</strong>:
+- BreakfastBoost declares <code>transparent</code>
+- ActivityMode declares <code>privacyPreserving</code>
+- MenstrualCycle declares <code>onDeviceOnly</code></p>
+<p><strong>Verification</strong>:
+- Agent registration requires tier declaration
+- UI displays tier in agent settings
+- Tier affects sync behavior</p>
+<p><strong>Source</strong>: <code>docs/10-domain/effect-bundle-architecture-deep-dive.md</code></p>
+<p><strong>Related</strong>: GAP-EFFECT-003</p>
+<hr />
+<h3 id="req-effect-005-reconciliation-must-cap-external-influence">REQ-EFFECT-005: Reconciliation Must Cap External Influence<a class="headerlink" href="#req-effect-005-reconciliation-must-cap-external-influence" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: When reconciling algorithm-computed effects with external effects, external influence MUST be capped at 50% weight.</p>
+<p><strong>Rationale</strong>: Algorithm remains authoritative source of dosing decisions. External agents provide hints, not commands.</p>
+<p><strong>Scenarios</strong>:
+- Agent suggests 30% sensitivity reduction → algorithm applies max 15%
+- Multiple agents suggest changes → confidence-weighted average capped
+- Algorithm safety checks override any external suggestion</p>
+<p><strong>Verification</strong>:
+- Blending formula uses min(confidence, 0.5)
+- Test vectors verify cap behavior
+- No code path bypasses cap</p>
+<p><strong>Source</strong>: <code>docs/10-domain/effect-bundle-architecture-deep-dive.md</code></p>
+<p><strong>Related</strong>: GAP-EFFECT-004</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

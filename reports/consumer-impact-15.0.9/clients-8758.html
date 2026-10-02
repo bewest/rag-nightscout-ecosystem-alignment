@@ -1,0 +1,5701 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/consumer-impact-15.0.9/clients-8758.html">
+      
+      
+        <link rel="prev" href="change-inventory.html">
+      
+      
+        <link rel="next" href="lab-results.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Clients × #8758 (ab7b22d6): how each client uses _id / identifier - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#clients--8758-ab7b22d6-how-each-client-uses-_id--identifier" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Clients × #8758 (ab7b22d6): how each client uses _id / identifier
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../docs/00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../docs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    reports/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../c-analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    c-analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../connector-pr-bodies/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    connector-pr-bodies/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    consumer-impact-15.0.9/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7_4" id="__nav_7_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    consumer-impact-15.0.9/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="change-inventory-8758.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    #8758 at ab7b22d6: consumer-visible _id changes (C68–C81)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="change-inventory.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor 15.0.8 → 15.0.9 candidate: inventory of consumer-visible changes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clients × #8758 (ab7b22d6): how each client uses _id / identifier
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="clients-8758.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clients × #8758 (ab7b22d6): how each client uses _id / identifier
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#answers-to-the-four-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Answers to the four questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mismatches-against-this-programmes-inputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mismatches against this programme's inputs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Matrix
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#candidate-defects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Candidate defects
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#replays-2026-09-25" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Replays (2026-09-25)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Replays (2026-09-25)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#client-shape-probes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Client-shape probes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-object-id-lab-toolslabobject-idprobesjs-at-ab7b22d6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The object-id lab (tools/lab/object-id/probes.js) at ab7b22d6
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="lab-results.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Consumer-replay lab: results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="clients/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    clients/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-3022b/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    exp-3022b/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../patient-c-analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    patient-c-analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../phase0-pr-bodies/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    phase0-pr-bodies/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../reviewer-packets/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reviewer-packets/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#answers-to-the-four-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Answers to the four questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mismatches-against-this-programmes-inputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mismatches against this programme's inputs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Matrix
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#candidate-defects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Candidate defects
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#replays-2026-09-25" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Replays (2026-09-25)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Replays (2026-09-25)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#client-shape-probes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Client-shape probes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-object-id-lab-toolslabobject-idprobesjs-at-ab7b22d6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The object-id lab (tools/lab/object-id/probes.js) at ab7b22d6
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="clients--8758-ab7b22d6-how-each-client-uses-_id--identifier">Clients × #8758 (<code>ab7b22d6</code>): how each client uses <code>_id</code> / <code>identifier</code><a class="headerlink" href="#clients--8758-ab7b22d6-how-each-client-uses-_id--identifier" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-09-25 at <code>35350a21</code>.</em></p>
+<p><strong>Contributor-facing working document (DRAFT).</strong> Extends the 2026-09-23 consumer-impact survey
+(<a href="clients/index.html">clients/</a>, <a href="change-inventory.html">change-inventory.md</a>) with the <code>_id</code> changes of PR #8758
+at <code>ab7b22d6</code>, listed as C68–C81 in <a href="change-inventory-8758.html">change-inventory-8758.md</a>. Synthetic
+data only. Not medical advice.</p>
+<ul>
+<li><strong>Server refs (2026-09-25):</strong> 15.0.8 <code>92d08342</code>; <code>origin/dev</code> <code>4f705217</code>; #8758 head <code>ab7b22d6</code>.</li>
+<li><strong>Client refs:</strong> each repo's local HEAD as found on 2026-09-25, read with <code>git show</code> / <code>git grep</code>
+  (no checkout, fetch or pull). <code>git diff --cached</code> and <code>git status --porcelain</code> were empty in every
+  client repo. Where the HEAD differs from the ref the 2026-09-23 survey read, the section says so.</li>
+<li><strong>Evidence:</strong> every client claim is <strong>read-derived</strong> unless it cites a replay cell. Replay cells
+  (<code>Q…</code>, <code>P-ID-…</code>) are <strong>measured</strong>, §Replays.</li>
+<li><strong>Classes:</strong> unaffected; better (the behaviour changes and is better); could be worse; cannot tell.</li>
+</ul>
+<h2 id="answers-to-the-four-questions">Answers to the four questions<a class="headerlink" href="#answers-to-the-four-questions" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Can #8758 refuse or de-duplicate a new devicestatus or a new CGM entry from an uploader in the
+   corpus?</strong> No, read-derived for every uploader and measured for the shapes they send. The only
+   devicestatus shape #8758 turns from stored into refused is a re-post carrying a
+   <strong>server-assigned</strong> <code>_id</code> (C69, C78); no uploader in the corpus sends one (AndroidAPS, Loop,
+   Trio, xDrip, xDrip4iOS, oref0, the connector and the bridges send devicestatus without <code>_id</code>;
+   the connector drops devicestatus not newer than the newest stored). For entries the change runs
+   the other way: the connector's copy shape that answered 500 and lost the readings after it on
+   15.0.8 is stored in full on <code>ab7b22d6</code> (Q8). AndroidAPS 3.x socket uploads are identical on both
+   builds (Q9).</li>
+<li><strong>Can a delete now remove more than before?</strong> Only copies of the ids the client names: both
+   halves of a twin (C74; Loop, xDrip, xDrip4iOS, tconnectsync, measured Q4/Q12/P-ID-7), and the
+   string copies inside a <code>find[_id][$in]</code> list (C73; no client in the corpus sends one over HTTP).
+   No delete reaches a record with a different id (Q4: the unlisted record is kept on both builds).</li>
+<li><strong>AndroidAPS v3 identifiers and NSClient sync with <code>_id</code> now an ObjectId.</strong> Unaffected, and
+   better for v1 records stored with a string <code>_id</code>: AAPS sends no <code>_id</code> or <code>identifier</code> on create,
+   keeps ids as the strings the server serialises (an ObjectId serialises as the same lower-case
+   hex), and PATCH/DELETE by identifier of a string-<code>_id</code> record answers 200 where 15.0.8 answered
+   404 (P-ID-2). A twin deleted through v3 keeps one valid copy on both builds (Q10b, CANDIDATE-3).</li>
+<li><strong>Classes found:</strong> no client is "could be worse" for a shape it sends. CANDIDATE-2 and
+   CANDIDATE-3 below are server behaviours reached by no corpus client, or equally on both builds.</li>
+</ol>
+<h2 id="mismatches-against-this-programmes-inputs">Mismatches against this programme's inputs<a class="headerlink" href="#mismatches-against-this-programmes-inputs" title="Permanent link">&para;</a></h2>
+<ul>
+<li>The 2026-09-23 survey's candidate already included #8758 (at <code>6d120fa2</code>, C42 and C49–C59). This
+  document covers the five commits since then (<code>a2c7eb39</code>, <code>1c2d1afd</code>, <code>d2fd9ff6</code>, <code>dd2cf8f1</code>,
+  <code>ab7b22d6</code>) and restates the whole contract at <code>ab7b22d6</code>.</li>
+<li><code>tools/lab/object-id/README.md</code> P-ID-1 describes Loop re-POSTing a dose with its cached ObjectId.
+  At NightscoutService <code>fe075ef0</code> the dose <code>_id</code> argument is commented out
+  (<code>NightscoutServiceKit/Extensions/DoseEntry.swift:30,61</code>); Loop uses the cached id only for a
+  carb PUT and for DELETE by id. The server shape P-ID-1 tests is still valid.</li>
+<li>AndroidAPS local HEAD is <code>7e1d537d49</code> (<code>origin/dev</code>); the 2026-09-23 map recorded local HEAD =
+  <code>origin/master</code>. xdrip-js HEAD is <code>e30127358f</code> (was <code>0cd1c55</code>). xdripswift HEAD is <code>c268542e64</code>,
+  now equal to <code>origin/master</code>. nightscout-connect HEAD is <code>04102f9d26</code> (<code>dev</code>, 0.1.1 development);
+  <code>lib/</code> is identical to <code>v0.1.0</code> (<code>4dde1ecd</code>) and to <code>977da8a</code> read by the survey.</li>
+<li>The uploader pass graded oref0's <code>ns-dedupe-treatments</code> as "could be worse" on twins from lab
+  cell P-ID-7 (the DELETE step alone). Run through the tool's own request sequence, its listing
+  step does not complete on either build, so it deletes nothing on either (details with the parent,
+  disclosure rule). The C74 effect applies to the DELETE step if the listing is fixed.</li>
+</ul>
+<h2 id="matrix">Matrix<a class="headerlink" href="#matrix" title="Permanent link">&para;</a></h2>
+<p><code>–</code> unaffected or not reached; <strong>B</strong> better; <strong>W</strong> could be worse; <strong>?</strong> cannot tell. All read-derived;
+a cell marked with a replay id was measured.</p>
+<table>
+<thead>
+<tr>
+<th>client (HEAD)</th>
+<th>C68</th>
+<th>C69</th>
+<th>C70</th>
+<th>C71</th>
+<th>C72</th>
+<th>C73</th>
+<th>C74</th>
+<th>C75</th>
+<th>C76</th>
+<th>C77</th>
+<th>C78</th>
+<th>C79</th>
+<th>C80</th>
+<th>C81</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AndroidAPS master <code>598e2eb39c</code> (v1 socket + v3)</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>B (P-ID-2)</td>
+<td>B (P-ID-4)</td>
+<td>– (Q9)</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>AndroidAPS dev <code>7e1d537d49</code> (v3)</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>B (P-ID-2)</td>
+<td>n/a</td>
+<td>n/a</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>xDrip <code>1ed760048a</code></td>
+<td>–</td>
+<td>B</td>
+<td>–</td>
+<td>B</td>
+<td>B</td>
+<td>–</td>
+<td>B</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>xdrip-js <code>e30127358f</code></td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>Loop (LoopWorkspace <code>f8412858c5</code>, NightscoutService <code>fe075ef0</code>, NightscoutKit <code>4ec9fd12a1</code>)</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>B (Q12)</td>
+<td>–</td>
+<td>B (Q12)</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>Trio <code>e41c9db37f</code></td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>xDrip4iOS <code>c268542e64</code></td>
+<td>–</td>
+<td>– (P-ID-1)</td>
+<td>–</td>
+<td>–</td>
+<td>B (Q14)</td>
+<td>–</td>
+<td>B</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>LoopFollow <code>4a74b781ad</code></td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>LoopCaregiver <code>230571838c</code></td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>nightguard <code>75404bd204</code></td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>DiaBLE <code>e6a909c88f</code></td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>GlookoServiceKit <code>8e2cad1cdf</code></td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>nightscout-connect <code>04102f9d26</code></td>
+<td>B (P-ID-5/6)</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>B (P-ID-5)</td>
+<td>–</td>
+<td>B</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>B (Q8)</td>
+</tr>
+<tr>
+<td>oref0 <code>d219baf955</code></td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>B</td>
+<td>–</td>
+<td>see mismatches</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>tconnectsync <code>7c4b2f4ddb</code></td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>B</td>
+<td>–</td>
+<td>B</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>share2nightscout-bridge <code>518c85c4e5</code>, nightscout-librelink-up <code>bff2317f5c</code>, minimed-connect-to-nightscout <code>57bb042c43</code>, glooko-nightscout-eu <code>2b7fbc45b8</code>, cgmsim-lib <code>c09f9c0390</code></td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>glooko2nightscout <code>9ab8c6080b</code>, openaps <code>bd9a831887</code> (no Nightscout requests of their own)</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>GlycemicGPT <code>d1a9adb73e</code></td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>– (Q6)</td>
+<td>–</td>
+<td>B</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>nightscout-reporter <code>518d61fb1d</code></td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>B</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>oref-digital-twin <code>a2e8610d5f</code>, nightscout-cgm-skill <code>91a53ea167</code>, GluPredKit <code>e5bd6357a6</code>, nightscout-roles-gateway <code>90840acee1</code></td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>– (Q7)</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>babelbetes <code>07a7f07278</code>, osaid-keymanager <code>e9c3b738aa</code>, trio-telemetry <code>681ea86752</code> (no Nightscout requests)</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>nocturne <code>42275c812d</code> (server reimplementation)</td>
+<td>n/a</td>
+<td>n/a</td>
+<td>n/a</td>
+<td>?</td>
+<td>parity differs</td>
+<td>n/a</td>
+<td>n/a</td>
+<td>n/a</td>
+<td>n/a</td>
+<td>n/a</td>
+<td>n/a</td>
+<td>n/a</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+</tbody>
+</table>
+<h2 id="candidate-defects">Candidate defects<a class="headerlink" href="#candidate-defects" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>CANDIDATE-2 (C78, #8758 only, reached by no corpus client).</strong> A devicestatus POST whose first
+  item re-posts a record under its server-assigned <code>_id</code> answers 500 and the new statuses after it
+  in the same POST are not stored; 15.0.8, and <code>ab7b22d6</code> with dev's <code>lib/server/devicestatus.js</code>, answer 200, store a string
+  duplicate and store the new statuses. Measured Q2b; the ablation (dev's <code>lib/server/devicestatus.js</code> on <code>ab7b22d6</code>)
+  restores the 15.0.8 cells exactly. Reproduction: create a devicestatus without <code>_id</code>, take the
+  <code>_id</code> from the reply, POST <code>[{that _id, same fields}, {a new status}]</code>, count the new status. A
+  restore-from-export tool or a client that echoes read-back records would lose loop status this
+  way. Read with C55's "200 + duplicate → 500", which the 2026-09-23 inventory already names.</li>
+<li><strong>CANDIDATE-3 (C75, same on 15.0.8 and <code>ab7b22d6</code>).</strong> An API v3 DELETE by identifier on a twin
+  marks one half <code>isValid:false</code> and leaves the other valid; the valid half is returned by v1
+  time-window reads and v3 search on both builds (Q10b), so a treatment AndroidAPS deleted through
+  v3 remains visible. On <code>ab7b22d6</code> v1 DELETE and websocket <code>dbRemove</code> remove both halves (C74,
+  BF-110) while v3 does not, and a v3 GET answers 410 while v1 <code>find[_id]</code> returns the valid half
+  (Q10). Twins exist only where a ≤15.0.8 edit met a record stored by ≤15.0.6.</li>
+<li>One further pre-existing defect on 15.0.8, found by an <code>_id</code> replay and unchanged by #8758, is
+  reported to the parent separately under the disclosure rule.</li>
+</ul>
+<h2 id="replays-2026-09-25">Replays (2026-09-25)<a class="headerlink" href="#replays-2026-09-25" title="Permanent link">&para;</a></h2>
+<p>Measured 2026-09-25. Builds: 15.0.8 <code>92d08342</code> (worktree <code>externals/work/crm-6a-corpus-1508</code>) and
+<code>ab7b22d6</code> (<code>crm-6a-corpus-cand</code>), each <code>npm ci</code> under Node 22.23.2, one MongoDB 7.0.43 container
+(<code>serverInfo().version</code> read into every run), one database per build (<code>corpustest_*</code>),
+<code>AUTH_DEFAULT_ROLES=readable</code>. Ablation build <code>abl</code> = <code>ab7b22d6</code> with only <code>lib/server/devicestatus.js</code>
+from dev <code>4f705217</code>. Every run checked <code>GET /api/v1/status.json</code> = 200 before and after. Records that
+stand for data older releases left behind (string <code>_id</code>s, twins) are written straight to mongo;
+everything else goes through each build's own API. Stored forms and counts are read from mongo.
+The probe script is kept outside version control because one replay exercises a defect live on
+15.0.8.</p>
+<h3 id="client-shape-probes">Client-shape probes<a class="headerlink" href="#client-shape-probes" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>cell</th>
+<th>15.0.8 <code>92d08342</code></th>
+<th><code>ab7b22d6</code></th>
+<th>ablation <code>abl</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Q1 new, no _id</td>
+<td>200 / reply has _id</td>
+<td>200 / reply has _id</td>
+<td>200 / reply has _id</td>
+</tr>
+<tr>
+<td>Q1 new, lower hex _id</td>
+<td>200 / string</td>
+<td>200 / OID</td>
+<td>200 / string</td>
+</tr>
+<tr>
+<td>Q1 new, UPPER hex _id</td>
+<td>200 / string / reply _id as sent</td>
+<td>200 / OID / reply _id lower</td>
+<td>200 / string / reply _id as sent</td>
+</tr>
+<tr>
+<td>Q2 read back by find[_id]</td>
+<td>n=1</td>
+<td>n=1</td>
+<td></td>
+</tr>
+<tr>
+<td>Q2 re-send alone</td>
+<td>200 / stored string,OID</td>
+<td>500 / stored OID</td>
+<td></td>
+</tr>
+<tr>
+<td>Q2 batch [re-sent string-stored, NEW]</td>
+<td>500 / stored string / NEW stored n=0</td>
+<td>500 / stored string / NEW stored n=0</td>
+<td></td>
+</tr>
+<tr>
+<td>Q2 own hex id POST then retry</td>
+<td>200 / 500 / stored string</td>
+<td>200 / 500 / stored OID</td>
+<td></td>
+</tr>
+<tr>
+<td>Q2b fresh OID record: batch [re-sent, NEW]</td>
+<td>200 / stored string,OID / NEW n=1</td>
+<td>500 / stored OID / NEW n=0</td>
+<td>200 / stored string,OID / NEW n=1</td>
+</tr>
+<tr>
+<td>Q2b fresh OID record: batch [NEW, re-sent]</td>
+<td>200 / stored string,OID / NEW n=1</td>
+<td>500 / stored OID / NEW n=1</td>
+<td>200 / stored string,OID / NEW n=1</td>
+</tr>
+<tr>
+<td>Q2b fresh OID record: re-sent in UPPER</td>
+<td>200 / stored string,OID</td>
+<td>500 / stored OID</td>
+<td>200 / stored string,OID</td>
+</tr>
+<tr>
+<td>Q3 new with hex _id</td>
+<td>200 / OID:101</td>
+<td>200 / OID:101</td>
+<td></td>
+</tr>
+<tr>
+<td>Q3 batch [re-sent same id, NEW]</td>
+<td>200 / OID:102 / NEW OID:103</td>
+<td>200 / OID:102 / NEW OID:103</td>
+<td></td>
+</tr>
+<tr>
+<td>Q3 batch [NEW time reusing stored _id, NEW]</td>
+<td>500 / at t3 n=0 / at t4 n=0</td>
+<td>500 / at t3 n=0 / at t4 n=0</td>
+<td></td>
+</tr>
+<tr>
+<td>Q4 GET $in [twin, string-only]</td>
+<td>n=1</td>
+<td>n=3</td>
+<td></td>
+</tr>
+<tr>
+<td>Q4 GET $nin [twin] over the 4</td>
+<td>keep,string-only,twin-string</td>
+<td>keep,string-only</td>
+<td></td>
+</tr>
+<tr>
+<td>Q4 DELETE $in [twin, string-only]</td>
+<td>200 / twin n=1 / other n=1 / keep n=1</td>
+<td>200 / twin n=0 / other n=0 / keep n=1</td>
+<td></td>
+</tr>
+<tr>
+<td>Q4 GET $gt 0 hex (cursor)</td>
+<td>keep</td>
+<td>keep</td>
+<td></td>
+</tr>
+<tr>
+<td>Q4 entries DELETE /entries/<hex> twin</td>
+<td>200 / n=1</td>
+<td>200 / n=0</td>
+<td></td>
+</tr>
+<tr>
+<td>Q5 ws dbAdd devicestatus id of OID record, new time</td>
+<td>ack=sent / n=2</td>
+<td>[] / n=1</td>
+<td></td>
+</tr>
+<tr>
+<td>Q5 ws dbAdd devicestatus fresh hex</td>
+<td>ack=sent / string</td>
+<td>ack=sent / OID</td>
+<td></td>
+</tr>
+<tr>
+<td>Q5 ws dbAdd devicestatus AAPS v1 shape (no _id)</td>
+<td>ack has _id / n=1</td>
+<td>ack has _id / n=1</td>
+<td></td>
+</tr>
+<tr>
+<td>Q5 ws dbAdd treatment fresh hex</td>
+<td>ack=sent / string</td>
+<td>ack=sent / OID</td>
+<td></td>
+</tr>
+<tr>
+<td>Q6 cursor $gt over [OID A, string C, OID B]</td>
+<td>111,113</td>
+<td>111,113</td>
+<td></td>
+</tr>
+<tr>
+<td>Q6 find[_id]=string C (control)</td>
+<td>n=0</td>
+<td>n=1</td>
+<td></td>
+</tr>
+<tr>
+<td>Q7 twin: GET, PUT, GET</td>
+<td>n=2 / 200 / n=2</td>
+<td>n=2 / 200 / n=1</td>
+<td></td>
+</tr>
+<tr>
+<td>Q8 connector copy [T other _id, T+5 new]</td>
+<td>500 / at T n=1 OID=first / T+5 n=0</td>
+<td>200 / at T n=1 OID=first / T+5 n=1</td>
+<td></td>
+</tr>
+<tr>
+<td>Q9 AAPS v1 dbAdd devicestatus x2</td>
+<td>n=1 / n=1 / same _id / stored n=1</td>
+<td>n=1 / n=1 / same _id / stored n=1</td>
+<td></td>
+</tr>
+<tr>
+<td>Q9 AAPS v1 dbAdd sgv entry</td>
+<td>n=1 / stored n=1</td>
+<td>n=1 / stored n=1</td>
+<td></td>
+</tr>
+<tr>
+<td>Q10 v3 soft DELETE twin</td>
+<td>200 / OID:invalid,string:valid / v3 GET 410 / v1 find none-valid</td>
+<td>200 / OID:valid,string:invalid / v3 GET 410 / v1 find tw-o</td>
+<td></td>
+</tr>
+<tr>
+<td>Q10b v3 soft DELETE twin, then window reads</td>
+<td>200 / v1 window tw-o(invalid),tw-s / v3 search tw-s</td>
+<td>200 / v1 window tw-o,tw-s(invalid) / v3 search tw-o</td>
+<td></td>
+</tr>
+<tr>
+<td>Q11 UPPER string: PUT, stored, v3 history</td>
+<td>200 / string(UPPER):upper,OID:upper-edit / history  n=0</td>
+<td>200 / OID:upper-edit / history  n=0</td>
+<td></td>
+</tr>
+<tr>
+<td>Q12 Loop carbs POST/PUT/find/DELETE</td>
+<td>200 / 200 / n=1 / 200 / left n=0</td>
+<td>200 / 200 / n=1 / 200 / left n=0</td>
+<td></td>
+</tr>
+<tr>
+<td>Q12 Loop DELETE by hex on twin</td>
+<td>200 / left n=1</td>
+<td>200 / left n=0</td>
+<td></td>
+</tr>
+<tr>
+<td>Q14 find[_id] string / OID / absent</td>
+<td>n=0 / n=1 / n=0</td>
+<td>n=1 / n=1 / n=0</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Cell notes: Q4 twin = a string copy and an ObjectId copy of one hex; "string-only" = a record stored
+only as the string; "keep" = an unlisted ObjectId record. Q10 "OID:valid,string:invalid" = which half
+carries <code>isValid:false</code>. Q8 "OID=first" = the reading at T kept the <code>_id</code> it was first stored with.</p>
+<h3 id="the-object-id-lab-toolslabobject-idprobesjs-at-ab7b22d6">The object-id lab (<code>tools/lab/object-id/probes.js</code>) at <code>ab7b22d6</code><a class="headerlink" href="#the-object-id-lab-toolslabobject-idprobesjs-at-ab7b22d6" title="Permanent link">&para;</a></h3>
+<p>Same builds and mongod, databases <code>oidlab_test1508</code> / <code>oidlab_testcand</code>, run with
+<code>OID_STATE=&lt;scratch&gt; OID_MONGO_PORT=27521 node tools/lab/object-id/probes.js &lt;name&gt; &lt;worktree&gt; &lt;port&gt;</code>.
+Only the cells that differ are listed; every other cell is equal on both builds.</p>
+<table>
+<thead>
+<tr>
+<th>cell</th>
+<th>15.0.8 <code>92d08342</code></th>
+<th><code>ab7b22d6</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P-ID-1 loop cached id onto string record</td>
+<td>200 / string:0.5,OID:0.8</td>
+<td>200 / OID:0.8</td>
+</tr>
+<tr>
+<td>P-ID-2 GET string record</td>
+<td>404</td>
+<td>200</td>
+</tr>
+<tr>
+<td>P-ID-2 PATCH string record</td>
+<td>404 / string:legacy</td>
+<td>200 / string:v3-patch</td>
+</tr>
+<tr>
+<td>P-ID-2 DELETE string record</td>
+<td>404 / string:undefined</td>
+<td>200 / string:false</td>
+</tr>
+<tr>
+<td>P-ID-2 PATCH UUID-string record</td>
+<td>404 / docs at that time n=1</td>
+<td>200 / docs at that time n=1</td>
+</tr>
+<tr>
+<td>P-ID-3 re-send without _id</td>
+<td>200 / reply no _id</td>
+<td>200 / reply = stored</td>
+</tr>
+<tr>
+<td>P-ID-3 re-send with a different hex _id</td>
+<td>500 / no reply body / stored:sgv111</td>
+<td>200 / reply = stored / stored:sgv113</td>
+</tr>
+<tr>
+<td>P-ID-3 re-send onto a string record</td>
+<td>500 / string:120</td>
+<td>200 / string:121</td>
+</tr>
+<tr>
+<td>P-ID-3 GET /entries/<UPPER></td>
+<td>n=0</td>
+<td>n=1</td>
+</tr>
+<tr>
+<td>P-ID-4 dbUpdate string record</td>
+<td>{"result":"success"} / string:orig</td>
+<td>{"result":"success"} / string:ws-edit</td>
+</tr>
+<tr>
+<td>P-ID-4 dbRemove string record</td>
+<td>{"result":"success"} / n=1</td>
+<td>{"result":"success"} / n=0</td>
+</tr>
+<tr>
+<td>P-ID-4 dbAdd with hex _id</td>
+<td>ack = sent / string</td>
+<td>ack = sent / OID</td>
+</tr>
+<tr>
+<td>P-ID-4 dbUpdate after dbAdd</td>
+<td>string:add</td>
+<td>OID:add-edit</td>
+</tr>
+<tr>
+<td>P-ID-4 dbAdd food with hex _id</td>
+<td>string</td>
+<td>OID</td>
+</tr>
+<tr>
+<td>P-ID-5 profile copied with its _id</td>
+<td>200 / string</td>
+<td>200 / OID</td>
+</tr>
+<tr>
+<td>P-ID-5 connector guard find[_id]</td>
+<td>n=0</td>
+<td>n=1</td>
+</tr>
+<tr>
+<td>P-ID-5 connector update PUT</td>
+<td>skipped (connector logs NOT_REPLACED)</td>
+<td>200 / n=1</td>
+</tr>
+<tr>
+<td>P-ID-6 profile re-POST</td>
+<td>500 / string</td>
+<td>500 / OID</td>
+</tr>
+<tr>
+<td>P-ID-6 devicestatus POST, re-POST, find, DELETE</td>
+<td>200:string / 500:string / find n=0 / DELETE 200 n=1</td>
+<td>200:OID / 500:OID / find n=1 / DELETE 200 n=0</td>
+</tr>
+<tr>
+<td>P-ID-6 food POST, re-POST, find, DELETE</td>
+<td>200:string / 200:string / find n/a / DELETE 200 n=1</td>
+<td>200:OID / 200:OID / find n/a / DELETE 200 n=0</td>
+</tr>
+<tr>
+<td>P-ID-6 activity POST, re-POST, find, DELETE</td>
+<td>200:string / 200:string / find n=0 / DELETE 200 n=1</td>
+<td>200:OID / 200:OID / find n=1 / DELETE 200 n=0</td>
+</tr>
+<tr>
+<td>P-ID-7 find[_id] on a twin</td>
+<td>n=1</td>
+<td>n=2</td>
+</tr>
+<tr>
+<td>P-ID-7 v1 DELETE /treatments/<hex> (careportal, oref0 dedupe)</td>
+<td>200 / n=1</td>
+<td>200 / n=0</td>
+</tr>
+<tr>
+<td>P-ID-7 websocket dbRemove (web UI Remove)</td>
+<td>{"result":"success"} / n=1</td>
+<td>{"result":"success"} / n=0</td>
+</tr>
+<tr>
+<td>P-ID-11 GET find[_id][$in] [string, OID]</td>
+<td>n=1</td>
+<td>n=2</td>
+</tr>
+<tr>
+<td>P-ID-11 DELETE find[_id][$in] [string, OID]</td>
+<td>200 / string n=1 / OID n=0</td>
+<td>200 / string n=0 / OID n=0</td>
+</tr>
+<tr>
+<td>P-ID-12 subject POST with hex _id</td>
+<td>200 / string</td>
+<td>200 / none</td>
+</tr>
+<tr>
+<td>P-ID-12 subject DELETE by that hex</td>
+<td>200 / n=1</td>
+<td>200 / n=0</td>
+</tr>
+</tbody>
+</table>
+<p>Equal on both builds: <code>P-ID-0 liveness before</code>, <code>P-ID-1 loop cached id onto OID record (control)</code>, <code>P-ID-1 xdripswift sensor start retried</code>, <code>P-ID-2 GET OID record (control)</code>, <code>P-ID-3 POST without _id</code>, <code>P-ID-3 GET /entries/&lt;lower&gt; (control)</code>, <code>P-ID-4 AAPS 3.x add then update (control)</code>, <code>P-ID-7 v3 permanent DELETE</code>, <code>P-ID-10 hex GET returns</code>, <code>P-ID-10 hex DELETE, then GET</code>, <code>P-ID-10 hex PUT</code>, <code>P-ID-10 non-hex GET returns</code>, <code>P-ID-10 non-hex DELETE, then GET</code>, <code>P-ID-10 non-hex PUT</code>, <code>P-ID-0 liveness after</code>.</p>
+<h1 id="per-client-sections">Per-client sections<a class="headerlink" href="#per-client-sections" title="Permanent link">&para;</a></h1>
+<h2 id="android">Android<a class="headerlink" href="#android" title="Permanent link">&para;</a></h2>
+<h3 id="androidaps">AndroidAPS<a class="headerlink" href="#androidaps" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>externals/AndroidAPS</code></td>
+</tr>
+<tr>
+<td>local HEAD</td>
+<td><code>7e1d537d49</code> (= <code>origin/dev</code>, 2026-09-23, <code>4.0.0-dev-c</code>), detached</td>
+</tr>
+<tr>
+<td>also read</td>
+<td><code>origin/master</code> <code>598e2eb39c</code> (2026-08-02, 3.4.2.6), via <code>git show</code>/<code>git grep</code> on the ref</td>
+</tr>
+<tr>
+<td>staged index / dirty</td>
+<td><code>git diff --cached</code> empty; <code>git status --porcelain</code> empty</td>
+</tr>
+<tr>
+<td>clients</td>
+<td>master: NSClient v1 (socket.io main namespace, <code>dbAdd</code>/<code>dbUpdate</code>) and NSClient v3 (REST <code>/api/v3</code>). dev: v3 only (<code>git grep '"dbAdd"\|"dbUpdate"\|"dbRemove"\|api/v1' HEAD -- '*.kt'</code> finds only test comments)</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>use</th>
+<th>what the client does</th>
+<th>anchor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(a) id on create</td>
+<td><strong>v1 (master):</strong> <code>nsAdd</code> runs only when <code>ids.nightscoutId == null</code>; every <code>toJson(isAdd=true)</code> adds <code>_id</code> only if <code>nightscoutId != null</code>, so <code>dbAdd</code> never carries <code>_id</code>. Devicestatus JSON has no <code>_id</code> and no <code>NSCLIENT_ID</code> (<code>created_at</code>, <code>device</code>, <code>pump</code>, <code>openaps</code>, <code>uploaderBattery</code>, <code>isCharging</code>, <code>configuration</code>). Profile store JSON is built fresh (<code>defaultProfile</code>, <code>startDate</code>, <code>store</code>, <code>date</code>), no <code>_id</code>. <strong>v3 (both):</strong> create bodies have <code>identifier: String? = null</code>, and the serializer omits nulls (dev <code>explicitNulls = false</code>), so no <code>identifier</code> and no <code>_id</code> is sent; the server computes the v5 UUID identifier.</td>
+<td>master <code>nsclient/DataSyncSelectorV1.kt:184-202</code> (same pattern per type), <code>:507-529</code> (devicestatus), <code>:786-805</code> (profile); <code>nsclient/extensions/BolusExtension.kt:26</code>; <code>DeviceStatusExtension.kt:8-22</code>; <code>plugins/main/.../ProfilePlugin.kt:398-422</code>; dev <code>core/nssdk/.../NsSdkJson.kt:58-61</code>, <code>remotemodel/RemoteTreatment.kt:24-25</code>, <code>NSAndroidClientImpl.kt:183-219,353,374</code></td>
+</tr>
+<tr>
+<td>(b) <code>find[_id]</code> / operators</td>
+<td><strong>None</strong> on either ref (no v1 REST). v3 reads use <code>date$gt</code>, <code>created_at$gt</code>, <code>/history/{srvModified}</code>.</td>
+<td>prior map S2; dev <code>networking/NightscoutApi.kt:107-155</code></td>
+</tr>
+<tr>
+<td>(c) PUT/DELETE by id</td>
+<td><strong>v3 (both):</strong> edit = <code>PATCH /api/v3/treatments/{identifier}</code> (and entries); <code>isValid=false</code> = <code>DELETE /api/v3/treatments/{identifier}</code> without <code>permanent</code> (soft). 404 is treated as done; dev retries a 404 on a real UPDATE up to 5 times per id, then advances. The identifier is whatever the server listed: a v3 UUID, or for a v1 record without one, its <code>_id</code> string.</td>
+<td>master <code>networking/NightscoutRemoteService.kt:68,71</code>, <code>NSAndroidClientImpl.kt:330</code>; dev <code>NightscoutApi.kt:134,139,167,172</code>, <code>NSAndroidClientImpl.kt:411-437</code>, <code>nsclientV3/NSClientV3Plugin.kt:701-720</code></td>
+</tr>
+<tr>
+<td>(d) websocket</td>
+<td><strong>master v1:</strong> <code>dbAdd {collection, data}</code> and <code>dbUpdate {collection, _id: nightscoutId, data}</code>; no <code>dbRemove</code>, no <code>dbUpdateUnset</code> (deletes are <code>dbUpdate</code> <code>isValid:false</code>). <code>nightscoutId</code> = the <code>_id</code> from the <code>dbAdd</code> ack (<code>responseArray[0].getString("_id")</code>), or on import <code>identifier ?: _id</code>. <strong>An empty <code>[]</code> ack leaves <code>id = null</code> but still runs <code>processAddAck</code>; the worker sets <code>nightscoutId = null</code> and <code>confirmed = true</code></strong>, so the record is counted uploaded. dev: <code>/storage</code> and <code>/alarm</code> only (no db events).</td>
+<td>master <code>nsclient/services/NSClientService.kt:595-625</code>; <code>acks/NSAddAck.kt:31-38</code>; <code>workers/NSClientAddAckWorker.kt:55-90</code>; <code>NSClientPlugin.kt:194-251</code>; <code>BolusExtension.kt:38-40</code></td>
+</tr>
+<tr>
+<td>(e) re-send same record</td>
+<td>v1: an unacked <code>dbAdd</code> (60 s) stops the queue and is re-sent on the next resend, still without <code>_id</code>; the server's dedup (treatments <code>NSCLIENT_ID</code> or <code>created_at</code>+<code>eventType</code>; devicestatus <code>created_at</code>; profile <code>startDate</code>) answers the stored record. v3: devicestatus is created once per record; re-creates dedup on the server's identifier / fallback fields. No re-send carries <code>_id</code>.</td>
+<td>master <code>DataSyncSelectorV1.kt:192-196,522-525</code>; prior map S15</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>C-id</th>
+<th>AndroidAPS master (v1 + v3)</th>
+<th>AndroidAPS dev (v3)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C68 hex <code>_id</code> stored as ObjectId</td>
+<td>unaffected (never sends <code>_id</code>)</td>
+<td>unaffected</td>
+</tr>
+<tr>
+<td>C69 re-POST same <code>_id</code></td>
+<td>unaffected</td>
+<td>unaffected</td>
+</tr>
+<tr>
+<td>C70 entries reply <code>_id</code></td>
+<td>unaffected (no v1 REST)</td>
+<td>unaffected</td>
+</tr>
+<tr>
+<td>C71 upper-case hex</td>
+<td>unaffected in what it sends; see probe A3 for records other clients stored as an upper-case string</td>
+<td>same</td>
+</tr>
+<tr>
+<td>C72 <code>find[_id]</code> either form</td>
+<td>unaffected</td>
+<td>unaffected</td>
+</tr>
+<tr>
+<td>C73 <code>$in</code>/<code>$nin</code> both forms</td>
+<td>unaffected</td>
+<td>unaffected</td>
+</tr>
+<tr>
+<td>C74 delete removes every form</td>
+<td>unaffected (no v1 DELETE, no <code>dbRemove</code>)</td>
+<td>unaffected</td>
+</tr>
+<tr>
+<td>C75 v3 identifier reaches string <code>_id</code></td>
+<td><strong>better</strong>: PATCH/DELETE of a v1 record stored with a string <code>_id</code> answers 200 and applies, where 15.0.8 answered 404 and the client dropped (master) or retried 5 times then dropped (dev) the change. Twin case: see probe A2</td>
+<td><strong>better</strong>, same</td>
+</tr>
+<tr>
+<td>C76 ws <code>dbUpdate</code> either form, many</td>
+<td><strong>better</strong>: a <code>dbUpdate</code> (edit or soft delete) by a 24-hex <code>nightscoutId</code> now reaches a string-stored record and both halves of a twin; a UUID <code>nightscoutId</code> (from a v3-created record) is matched exactly, as before</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>C77 ws <code>dbAdd</code> conversion / <code>[]</code> on collision</td>
+<td>unaffected: the new pre-insert lookup runs only for a 24-hex <code>data._id</code>, which AAPS never sends; its devicestatus/treatment/profile dedup queries are unchanged</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>C78 devicestatus resend guard</td>
+<td>unaffected (v1 socket path, no <code>_id</code>)</td>
+<td>unaffected (v3 path, no <code>_id</code>)</td>
+</tr>
+<tr>
+<td>C79 auth subject remove</td>
+<td>unaffected (no subject writes)</td>
+<td>unaffected</td>
+</tr>
+<tr>
+<td>C80 profile PUT 12-char id</td>
+<td>unaffected</td>
+<td>unaffected</td>
+</tr>
+<tr>
+<td>C81 entries <code>$setOnInsert</code> <code>_id</code></td>
+<td>unaffected</td>
+<td>unaffected</td>
+</tr>
+</tbody>
+</table>
+<p>Safety questions (read-derived): no AAPS devicestatus, glucose value or treatment upload carries a
+24-hex <code>_id</code> or a client <code>identifier</code>, so #8758's create, re-send and collision paths are not
+reached and none of them can refuse or deduplicate a new loop status or CGM value. No AAPS path
+deletes by <code>_id</code>. AAPS stores ids as the strings the server serialises; an ObjectId serialises as
+lower-case hex on every build, so a record whose storage form changes from lower-case string to
+ObjectId keeps the same <code>nightscoutId</code> / <code>identifier</code>.</p>
+<p>Pre-existing, not changed by #8758, worth knowing for C77: on master v1 an empty <code>dbAdd</code> ack marks
+the record uploaded with <code>nightscoutId = null</code> (<code>NSAddAck.kt:31-38</code>, <code>NSClientAddAckWorker.kt:55-90</code>).
+Any server path that answers <code>[]</code> therefore loses that record from Nightscout silently. #8758 adds
+<code>[]</code> answers only for a <code>dbAdd</code> carrying a 24-hex <code>_id</code>, which AAPS does not send.</p>
+<h4 id="candidate-probes-androidaps-with-results">Candidate probes (AndroidAPS), with results<a class="headerlink" href="#candidate-probes-androidaps-with-results" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>A1 (control, should be identical on all builds)</strong> — v1 socket, master shapes. Connect <code>/</code>,
+  <code>authorize {client:"Android_AAPS", history:48, status:true, from:0, secret:&lt;sha1(API_SECRET)&gt;}</code>;
+  <code>dbAdd {collection:"devicestatus", data:{created_at:"2026-09-25T10:00:00.000Z", device:"openaps://synthetic", openaps:{suggested:{bg:120,COB:0,IOB:0.5,timestamp:"2026-09-25T10:00:00.000Z"}}, uploaderBattery:80}}</code>
+  → expect <code>[doc]</code> with a 24-hex <code>_id</code>; repeat the same <code>dbAdd</code> → expect the same <code>_id</code> (created_at
+  dedup); then <code>dbAdd {collection:"entries", data:{type:"sgv", sgv:120, date:1790330400000, dateString:"2026-09-25T10:00:00.000Z", device:"AndroidAPS-synthetic"}}</code> → <code>[doc]</code>. Record stored count and <code>_id</code> BSON type from mongo. Purpose: prove no <code>[]</code> for AAPS shapes.
+  <strong>Measured Q9:</strong> identical on both builds: <code>[doc]</code> twice, the same <code>_id</code>, one stored status; the sgv <code>dbAdd</code> <code>[doc]</code>, one stored.</li>
+<li><strong>A2 (cannot tell)</strong> — v3 soft DELETE on a twin. Seed in mongo: treatment <code>{_id:"&lt;H&gt;" (string), created_at:"2026-09-25T09:00:00.000Z", eventType:"Correction Bolus", insulin:1.0}</code> plus <code>{_id:ObjectId("&lt;H&gt;"), same fields}</code>. <code>DELETE /api/v3/treatments/&lt;H&gt;</code> (no <code>permanent</code>), then <code>GET /api/v3/treatments/&lt;H&gt;</code> and <code>GET /api/v1/treatments.json?find[_id]=&lt;H&gt;</code>. Record which half got <code>isValid:false</code> and whether v1 still lists a valid copy. Compare 15.0.8 and candidate.
+  <strong>Measured Q10, Q10b:</strong> both builds mark one half invalid and leave the other valid (15.0.8 the string half valid, <code>ab7b22d6</code> the ObjectId half valid); the valid half is returned by v1 time-window reads and v3 search on both. Same effect on both builds; CANDIDATE-3.</li>
+<li><strong>A3 (cannot tell, edge)</strong> — upper-case string <code>_id</code> changing spelling. Seed a treatment with <code>_id:"&lt;H-UPPER&gt;"</code> (string). Another client <code>PUT /api/v1/treatments {_id:"&lt;H-UPPER&gt;", created_at:…, eventType:"Note", notes:"edit"}</code>. Then <code>GET /api/v3/treatments/history/0</code> and <code>GET /api/v1/treatments.json?find[created_at][$gte]=…</code>: record the identifiers listed before and after. On the candidate the record is expected to reappear under the lower-case hex with the upper-case string removed (no deletion marker in v3 history), which an AAPS follower would see as a new record beside its old one.
+  <strong>Measured Q11:</strong> 15.0.8 keeps the upper-case string and adds an ObjectId copy; <code>ab7b22d6</code> leaves one ObjectId record. <code>/api/v3/treatments/history</code> lists neither change on either build (a v1 PUT sets no <code>srvModified</code>). Not worse than 15.0.8: on both builds a v3 follower misses the edit.</li>
+</ul>
+<h3 id="xdrip-android">xDrip+ (Android)<a class="headerlink" href="#xdrip-android" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>externals/xDrip</code></td>
+</tr>
+<tr>
+<td>local HEAD</td>
+<td><code>1ed760048a</code> (2026-09-18), detached; the prior map read <code>origin/master</code> = this sha</td>
+</tr>
+<tr>
+<td>staged index / dirty</td>
+<td><code>git diff --cached</code> empty; <code>git status --porcelain</code> empty</td>
+</tr>
+<tr>
+<td>API</td>
+<td>v1 REST only (Retrofit); no socket, no v3</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>use</th>
+<th>what the client does</th>
+<th>anchor (<code>xDrip@1ed760048a</code>, <code>app/src/main/java/com/eveningoutpost/dexdrip/utilitymodels/NightscoutUploader.java</code> unless named)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(a) id on create</td>
+<td><strong>Treatments:</strong> inserts and updates both go out as <code>PUT /api/v1/treatments</code>, one per request, with <code>_id = uuid_to_id(uuid)</code> and <code>uuid</code> in the body. <code>uuid_to_id</code>: contains <code>:</code> or shorter than 24 → first 24 hex of MD5 (lower case); exactly 24 → used as is; otherwise dashes removed and the first 24 characters kept (lower-case hex for a Java <code>UUID</code>). <strong>Entries</strong> (sgv, mbg, cal), <strong>devicestatus</strong> and <strong>activity</strong> are POSTed with no <code>_id</code>.</td>
+<td><code>:245-256</code>, <code>:880-900</code>; POST routes <code>:130-140,161</code></td>
+</tr>
+<tr>
+<td>(b) <code>find[_id]</code> / operators</td>
+<td>None. Lookup is <code>GET treatments.json?find[uuid]=&lt;uuid&gt;</code> and reads <code>[0]._id</code>.</td>
+<td><code>:155-156</code>, <code>:816-834</code></td>
+</tr>
+<tr>
+<td>(c) PUT/DELETE by id</td>
+<td><code>PUT /api/v1/treatments</code> (above). <code>DELETE /api/v1/treatments/&lt;id&gt;</code> where <code>&lt;id&gt;</code> is the queue's 24-char <code>reference_uuid</code> or the <code>_id</code> from the uuid lookup; a lookup that finds nothing marks the delete done.</td>
+<td><code>:158-159</code>, <code>:810-848</code></td>
+</tr>
+<tr>
+<td>(d) websocket</td>
+<td>None.</td>
+<td>prior map S6</td>
+</tr>
+<tr>
+<td>(e) re-send same record</td>
+<td>Treatments: a failed PUT stays queued and is re-sent with the same derived <code>_id</code> (upsert by <code>_id</code>). Entries: the whole batch is re-POSTed without <code>_id</code> on any non-2xx; the response body is not read. Devicestatus is posted after entries succeed, without <code>_id</code>, errors ignored. Downloaded treatments without <code>uuid</code> take the Nightscout <code>_id</code> as their uuid, so a later local edit PUTs back with that same <code>_id</code>.</td>
+<td><code>:576-586</code>, <code>:887-900</code>; <code>NightscoutTreatments.java:39-47</code></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>C-id</th>
+<th>xDrip</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C68</td>
+<td>unaffected (treatments already converted since 15.0.7; entries/devicestatus/activity carry no <code>_id</code>)</td>
+</tr>
+<tr>
+<td>C69</td>
+<td><strong>better</strong>: a PUT re-send over a treatment stored with the string <code>_id</code> (15.0.6 or earlier, or a downloaded record keyed by it) leaves one record instead of adding an ObjectId copy</td>
+</tr>
+<tr>
+<td>C70</td>
+<td>unaffected (entries response not read)</td>
+</tr>
+<tr>
+<td>C71</td>
+<td><strong>better</strong> in one edge: a downloaded treatment whose Nightscout <code>_id</code> is an upper-case string is PUT back with that spelling; the candidate converts it and removes the string form</td>
+</tr>
+<tr>
+<td>C72</td>
+<td><strong>better</strong>: <code>DELETE /treatments/&lt;id&gt;</code> reaches a string-stored treatment</td>
+</tr>
+<tr>
+<td>C73</td>
+<td>unaffected</td>
+</tr>
+<tr>
+<td>C74</td>
+<td><strong>better</strong> (intended, BF-110): a delete by id removes both halves of a twin; 15.0.8 left the string half, which re-downloads as a live treatment</td>
+</tr>
+<tr>
+<td>C75</td>
+<td>unaffected</td>
+</tr>
+<tr>
+<td>C76, C77</td>
+<td>unaffected (no socket)</td>
+</tr>
+<tr>
+<td>C78</td>
+<td>unaffected (devicestatus has no <code>_id</code>)</td>
+</tr>
+<tr>
+<td>C79, C80</td>
+<td>unaffected</td>
+</tr>
+<tr>
+<td>C81</td>
+<td>unaffected (entries carry no <code>_id</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>Safety questions (read-derived): no xDrip entries or devicestatus upload carries <code>_id</code>, so none
+reaches the resend guard or the entries <code>$setOnInsert</code> path; glucose uploads are unaffected. Deletes
+can remove more than on 15.0.8 only where a twin exists for that id, and then only the copy of the
+same record. The optional direct-MongoDB uploader bypasses the API and is not covered.</p>
+<h4 id="candidate-probes-xdrip">Candidate probes (xDrip)<a class="headerlink" href="#candidate-probes-xdrip" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>X1 (control, should improve)</strong> — covered by lab P-ID-7 and P-ID-1 shapes; the xDrip-specific
+  body: seed a string-<code>_id</code> treatment <code>{_id:"0123456789abcdef01234567", uuid:"01234567-89ab-cdef-0123-456789abcdef", created_at:"2026-09-25T09:00:00.000Z", eventType:"Carb Correction", carbs:10}</code>; <code>PUT /api/v1/treatments</code> with the same <code>_id</code> and <code>uuid</code>, <code>carbs:12</code>, <code>timestamp:1790326800000</code>, <code>sysTime:"2026-09-25T09:00:00.000Z"</code>; count documents with that hex in either form (expect 2 on 15.0.8, 1 on the candidate); then <code>GET /api/v1/treatments.json?find[uuid]=01234567-89ab-cdef-0123-456789abcdef</code> → <code>DELETE /api/v1/treatments/&lt;[0]._id&gt;</code> → count (expect 0 on the candidate, 1 on 15.0.8).
+  <strong>Measured (same server shapes):</strong> P-ID-1 (PUT/POST by <code>_id</code> onto a string record: 15.0.8 string + ObjectId copy, <code>ab7b22d6</code> one ObjectId record) and Q12/P-ID-7 (DELETE by hex on a twin: 1 left → 0 left). The xDrip <code>find[uuid]</code> step itself was not replayed.</li>
+</ul>
+<h3 id="xdrip-js">xdrip-js<a class="headerlink" href="#xdrip-js" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>externals/xdrip-js</code></td>
+</tr>
+<tr>
+<td>local HEAD</td>
+<td><code>e30127358f</code> (= the <code>origin/dev</code> the prior map grepped), detached; the prior map's local HEAD was <code>0cd1c55</code></td>
+</tr>
+<tr>
+<td>staged index / dirty</td>
+<td><code>git diff --cached</code> empty; <code>git status --porcelain</code> empty</td>
+</tr>
+</tbody>
+</table>
+<p>No Nightscout requests: <code>git grep -n -i -E 'api/v[123]|nightscout|_id|axios|request\(|fetch\(|socket.io' HEAD -- . ':!*.md' ':!package-lock.json'</code>
+hits only BLE constants (<code>lib/bluetooth-manager.js:114-115</code>, <code>lib/keks_plugin/ble-packet.js:73-76</code>),
+which is also the positive control that the grep reaches the code. Every C-id: unaffected.</p>
+<h2 id="ios">iOS<a class="headerlink" href="#ios" title="Permanent link">&para;</a></h2>
+<h3 id="loop-loopworkspace--nightscoutservice--nightscoutkit">Loop (LoopWorkspace + NightscoutService + NightscoutKit)<a class="headerlink" href="#loop-loopworkspace--nightscoutservice--nightscoutkit" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repos</td>
+<td><code>externals/LoopWorkspace</code>, submodules <code>NightscoutService</code>, <code>NightscoutRemoteCGM</code>, <code>Loop</code>, <code>LoopKit</code>; <code>externals/NightscoutKit</code> (SPM, pinned <code>branch: main</code> in LoopWorkspace's <code>Package.resolved</code>)</td>
+</tr>
+<tr>
+<td>HEAD</td>
+<td>LoopWorkspace <code>f8412858c5</code>; NightscoutService <code>fe075ef0</code>; NightscoutRemoteCGM <code>e2230e33</code>; Loop <code>c2fddb76</code>; LoopKit <code>325bd820</code>; NightscoutKit <code>4ec9fd12a1</code> (branch <code>main</code>)</td>
+</tr>
+<tr>
+<td>staged index</td>
+<td>empty in LoopWorkspace, NightscoutService, NightscoutRemoteCGM, Loop, LoopKit, NightscoutKit; working trees clean</td>
+</tr>
+<tr>
+<td>Nightscout code</td>
+<td>NightscoutKit <code>Sources/NightscoutKit/NightscoutClient.swift</code> (all HTTP); NightscoutService <code>NightscoutServiceKit/NightscoutService.swift</code>, <code>Extensions/*.swift</code>, <code>ObjectIdCache.swift</code>. Loop, LoopKit: no Nightscout HTTP (<code>git grep '"_id"\|api/v1/\|api/v3\|dbAdd\|socket\.io'</code> → 0 hits; control: <code>Loop/Managers/DeviceDataManager.swift:408</code> builds <code>RemoteDataServicesManager</code>). NightscoutRemoteCGM reads through <code>NightscoutClient.fetchGlucose</code> (<code>NightscoutRemoteCGM/NightscoutFetcher.swift:25,30</code>)</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>item</th>
+<th>what the client does</th>
+<th>anchor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(a) <code>_id</code> on create</td>
+<td><strong>Overrides:</strong> <code>POST /api/v1/treatments</code> with <code>_id</code> = <code>override.syncIdentifier.uuidString</code> (upper-case UUID, non-hex). <strong>Carbs, doses (bolus, temp basal, suspend), pump/CGM events, remote-command treatments:</strong> no <code>_id</code>. <strong>Entries:</strong> no <code>_id</code> (<code>GlucoseEntry.id</code> is nil for Loop's samples; <code>representation["_id"] = nil</code> sets no key). <strong>Devicestatus:</strong> no <code>_id</code>, optional <code>identifier</code> field only if set, and Loop does not set it. <strong>Profile:</strong> no <code>_id</code> (<code>ProfileSet.dictionaryRepresentation</code> has none).</td>
+<td>NightscoutService <code>Extensions/OverrideTreament.swift:59</code>; <code>Extensions/DoseEntry.swift:30,61</code> (commented out); <code>Extensions/SyncCarbObject.swift:16-21</code> (<code>objectId</code> nil on create, <code>NightscoutUploader.swift:20</code>); <code>Extensions/StoredGlucoseSample.swift:34-42</code>; <code>Extensions/StoredDosingDecision.swift:148-160</code>; NightscoutKit <code>Models/GlucoseEntry.swift:108</code>, <code>Models/DeviceStatus.swift:60-62</code>, <code>Models/ProfileSet.swift:143-164</code>, <code>Models/Treatments/NightscoutTreatment.swift:111</code></td>
+</tr>
+<tr>
+<td>(b) <code>_id</code> queries</td>
+<td>None. No <code>find[_id]</code>, no <code>$in</code>. Reads filter only <code>dateString</code>, <code>created_at</code>, <code>startDate</code>.</td>
+<td>NightscoutKit <code>NightscoutClient.swift:188-189,226-227,264-265,302-303</code></td>
+</tr>
+<tr>
+<td>(c) PUT/DELETE by id</td>
+<td><strong>Carbs edit:</strong> <code>PUT /api/v1/treatments</code> with <code>_id</code> = the 24-hex id cached from the POST reply (<code>ObjectIdCache</code>, 24 h). <strong>Carbs and dose delete:</strong> <code>DELETE /api/v1/treatments/&lt;24-hex from cache&gt;</code>. <strong>Override delete:</strong> <code>DELETE /api/v1/treatments/&lt;UPPER-CASE UUID&gt;</code>, then re-POST under the same UUID. <code>updateProfile</code> (PUT profile with a caller <code>_id</code>) exists in NightscoutKit but Loop has no call site. No v3.</td>
+<td>NightscoutService <code>NightscoutUploader.swift:30-43,52-66,149-163</code>; <code>NightscoutService.swift:160-185,207-227,246-265</code>; NightscoutKit <code>NightscoutClient.swift:74-100,130-155,410-419,430-455</code></td>
+</tr>
+<tr>
+<td>(d) websocket</td>
+<td>None (no socket library in <code>Package.resolved</code>).</td>
+<td>LoopWorkspace <code>LoopWorkspace.xcworkspace/xcshareddata/swiftpm/Package.resolved</code></td>
+</tr>
+<tr>
+<td>(e) re-send</td>
+<td>A failed batch is re-sent whole on the next trigger. Entries and devicestatus are re-sent <strong>without</strong> <code>_id</code>: entries upsert on <code>sysTime</code>+<code>type</code>; devicestatus inserts again (a second copy, same on every build). NightscoutKit's <code>flushEntries</code> requeues on failure. The carbs id cache is filled from the treatments POST reply (<code>postToNS</code> requires one reply item per request item).</td>
+<td>NightscoutKit <code>NightscoutClient.swift:481-510,650-667</code>; NightscoutService <code>NightscoutService.swift:207-213,250-256,304</code></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>C-id</th>
+<th>class</th>
+<th>why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C68 hex <code>_id</code> stored as ObjectId</td>
+<td>n/a</td>
+<td>no hex <code>_id</code> sent on create in any collection</td>
+</tr>
+<tr>
+<td>C69 re-POST same <code>_id</code></td>
+<td>n/a</td>
+<td>devicestatus/profile re-sends carry no <code>_id</code>; override re-POST carries a UUID (non-hex path, unchanged)</td>
+</tr>
+<tr>
+<td>C70 entries reply <code>_id</code> = stored</td>
+<td>U</td>
+<td><code>uploadEntries</code> maps the reply to <code>Bool</code>; entry ids are not kept</td>
+</tr>
+<tr>
+<td>C71 upper-case hex</td>
+<td>n/a</td>
+<td>the only upper-case id is a UUID (non-hex); cached hex ids are the server's lower-case</td>
+</tr>
+<tr>
+<td>C72 <code>find[_id]</code> / DELETE by id either form</td>
+<td>B</td>
+<td><code>DELETE /treatments/&lt;hex&gt;</code> for carbs and doses now also reaches a string-stored copy</td>
+</tr>
+<tr>
+<td>C73 <code>$in</code>/<code>$nin</code> both forms</td>
+<td>n/a</td>
+<td>not sent</td>
+</tr>
+<tr>
+<td>C74 delete removes every form</td>
+<td>B</td>
+<td>a carb whose edit left an ObjectId copy beside a ≤15.0.6 string record is removed completely (both halves are the same carb)</td>
+</tr>
+<tr>
+<td>C75 v3</td>
+<td>n/a</td>
+<td>no v3</td>
+</tr>
+<tr>
+<td>C76, C77 websocket</td>
+<td>n/a</td>
+<td>no socket</td>
+</tr>
+<tr>
+<td>C78 devicestatus resend guard</td>
+<td>n/a</td>
+<td>devicestatus has no <code>_id</code></td>
+</tr>
+<tr>
+<td>C79 subjects</td>
+<td>n/a</td>
+<td>no subject calls</td>
+</tr>
+<tr>
+<td>C80 profile PUT 12-char id</td>
+<td>n/a</td>
+<td>no profile PUT call site</td>
+</tr>
+<tr>
+<td>C81 entries <code>_id</code> on insert only</td>
+<td>n/a</td>
+<td>entries carry no <code>_id</code></td>
+</tr>
+<tr>
+<td>treatments PUT by hex over string record (C72 family, treatments <code>staleFormsFor</code>)</td>
+<td>B</td>
+<td>a carb edit leaves one record instead of adding a copy</td>
+</tr>
+</tbody>
+</table>
+<p>Safety questions: no Loop devicestatus or CGM entry carries a hex <code>_id</code>, so no #8758 path can refuse or
+dedupe one. Deletes reach more only where two copies of the same carb/dose exist.</p>
+<h3 id="trio">Trio<a class="headerlink" href="#trio" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>externals/Trio</code></td>
+</tr>
+<tr>
+<td>HEAD</td>
+<td><code>e41c9db37f</code> (detached; = <code>origin/dev</code> as recorded by the 2026-09-23 survey)</td>
+</tr>
+<tr>
+<td>staged index</td>
+<td>empty; working tree clean</td>
+</tr>
+<tr>
+<td>Nightscout code</td>
+<td><code>Trio/Sources/Services/Network/Nightscout/NightscoutAPI.swift</code>, <code>NightscoutManager.swift</code>; models in <code>Trio/Sources/Models/</code></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>item</th>
+<th>what the client does</th>
+<th>anchor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(a) <code>_id</code> on create</td>
+<td><strong>Never sends <code>_id</code>.</strong> Uploads are <code>[NightscoutTreatment]</code>, <code>[BloodGlucose]</code>, <code>NightscoutStatus</code>, <code>NightscoutProfileStore</code>, <code>[NightscoutExercise]</code>. <code>NightscoutTreatment</code> codes a plain <code>id</code>; <code>BloodGlucose</code> encodes <code>_id</code> only from <code>legacyId</code>, which is nil for every locally built reading (<code>id</code> = upper-case <code>UUID().uuidString</code> in a plain <code>id</code> field). No <code>_id</code> in <code>NightscoutStatus.swift</code>, <code>NightscoutTreatment.swift</code>, <code>NightscoutExercise.swift</code>. (<code>CarbsEntry</code> and <code>TempTarget</code> map <code>id</code>↔<code>_id</code>, but they are decode models for reads; uploads use <code>NightscoutTreatment</code>.)</td>
+<td><code>NightscoutAPI.swift:298,338,477</code> (upload signatures); <code>Models/NightscoutTreatment.swift:62</code>; <code>Models/BloodGlucose.swift:61,81-85,157</code>; <code>APS/Storage/GlucoseStorage.swift:531-532,565-575</code> (<code>id: glucose.id?.uuidString ?? UUID().uuidString</code>, no <code>legacyId</code>)</td>
+</tr>
+<tr>
+<td>(b) <code>_id</code> queries</td>
+<td>None. Deletes filter the plain <code>id</code> field: <code>DELETE /api/v1/treatments.json?find[id][$eq]=&lt;UUID&gt;</code> (carbs, insulin), <code>DELETE /api/v1/entries.json?find[$or][0][id][$eq]=&lt;UUID&gt;&amp;find[$or][1][dateString][$eq]=&lt;ISO&gt;</code> (glucose).</td>
+<td><code>NightscoutAPI.swift:160-186,188-222,224-250</code></td>
+</tr>
+<tr>
+<td>(c) PUT/DELETE by id</td>
+<td>No PUT. No <code>/…/&lt;_id&gt;</code> path. Override edit = <code>DELETE …treatments.json?find[created_at][$eq]=&lt;ISO&gt;&amp;find[eventType][$eq]=Exercise</code>, then POST. No v3.</td>
+<td><code>NightscoutAPI.swift:445-475</code></td>
+</tr>
+<tr>
+<td>(d) websocket</td>
+<td>None.</td>
+<td><code>Trio.xcworkspace/xcshareddata/swiftpm/Package.resolved</code> (no socket entry)</td>
+</tr>
+<tr>
+<td>(e) re-send</td>
+<td>Failed chunks (100) are re-POSTed without <code>_id</code>; devicestatus re-sends insert again (unchanged on every build).</td>
+<td><code>NightscoutManager.swift:692</code>; survey <code>clients/ios/Trio.md</code> S15</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>C-id</th>
+<th>class</th>
+<th>why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C68, C69, C71, C78, C81</td>
+<td>n/a</td>
+<td>no <code>_id</code> on any write</td>
+</tr>
+<tr>
+<td>C70 entries reply <code>_id</code></td>
+<td>U</td>
+<td>the POST reply body is discarded</td>
+</tr>
+<tr>
+<td>C72, C73, C74</td>
+<td>n/a</td>
+<td><code>_id</code> never queried or deleted by; <code>find[id]</code> is a different field, untouched by #8758</td>
+</tr>
+<tr>
+<td>C75, C76, C77, C79, C80</td>
+<td>n/a</td>
+<td>no v3, no socket, no subjects, no profile PUT</td>
+</tr>
+</tbody>
+</table>
+<p>Safety questions: nothing Trio sends reaches any #8758 code path.</p>
+<h3 id="xdrip4ios-xdripswift">xDrip4iOS (xdripswift)<a class="headerlink" href="#xdrip4ios-xdripswift" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>externals/xdripswift</code></td>
+</tr>
+<tr>
+<td>HEAD</td>
+<td><code>c268542e64</code> (detached), <strong>equal to <code>origin/master</code> and <code>origin/develop</code></strong> (<code>git rev-parse</code>), 2026-09-22 "version 7.1.1 - build 4233". The 2026-09-23 survey read the same commit through <code>git show</code> while the checkout was elsewhere; HEAD is now that commit.</td>
+</tr>
+<tr>
+<td>staged index</td>
+<td>empty; working tree clean (<code>git status --porcelain</code> = 0 lines)</td>
+</tr>
+<tr>
+<td>Nightscout code</td>
+<td><code>xDrip/Managers/Nightscout/NightscoutSyncManager.swift</code>, <code>BgReading+Nightscout.swift</code>, <code>Calibration+Nightscout.swift</code>, <code>NightscoutImportService.swift</code>; <code>xDrip/Core Data/classes/TreatmentEntry+CoreDataClass.swift</code>; <code>xDrip/Utilities/UniqueId.swift</code></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>item</th>
+<th>what the client does</th>
+<th>anchor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(a) <code>_id</code> on create</td>
+<td><strong>Entries (sgv), calibrations (<code>cal</code>, <code>mbg</code>):</strong> <code>_id</code> = <code>UniqueId.createEventId()</code>, 24 random characters from <code>[a-zA-Z0-9]</code>, so almost never 24-hex (chance a random id is all hex ≈ (22/62)^24 ≈ 2×10⁻¹¹). The server treats it as a non-hex string (stripped, or moved to <code>identifier</code> with <code>UUID_HANDLING</code>), with the same regex on every build. <strong>Master-mode Sensor Start</strong> treatment: <code>_id</code> = <code>sensor.id</code> (same generator, non-hex). <strong>LibreLinkUp follower Sensor Start:</strong> <code>_id</code> = <code>"6c6c75000000" + 12 hex digits of the start ms</code> — <strong>24-hex lower-case</strong>, deterministic so a retry is idempotent. <strong>Treatments created locally:</strong> no <code>_id</code> until uploaded (<code>EmptyId</code>). <strong>Devicestatus:</strong> no <code>_id</code> (uploader battery only).</td>
+<td><code>Utilities/UniqueId.swift:18-26</code>; <code>Nightscout/BgReading+Nightscout.swift:9</code>; <code>Nightscout/Calibration+Nightscout.swift:17,36</code>; <code>NightscoutSyncManager.swift:1427-1432,1448-1468,1476-1482,1393-1411</code>; <code>TreatmentEntry+CoreDataClass.swift:183-186</code></td>
+</tr>
+<tr>
+<td>(b) <code>_id</code> queries</td>
+<td><strong>Remote-deletion reconciliation:</strong> for each local treatment missing from the bulk download, <code>GET /api/v1/treatments?find[_id]=&lt;remoteID&gt;&amp;count=1</code>; an empty answer marks the local treatment deleted. <code>remoteID</code> is the server's lower-case hex. No <code>find[_id][$in]</code>. The only list is <code>find[date][$in][]</code> (timestamps, entries delete, ≤50 per request), not <code>_id</code>.</td>
+<td><code>NightscoutSyncManager.swift:1214-1226,795-806</code></td>
+</tr>
+<tr>
+<td>(c) PUT/DELETE by id</td>
+<td><strong>Edit:</strong> <code>PUT /api/v1/treatments</code> with <code>_id</code> = the id before the first <code>-</code> (server hex) and all parts of a multi-part treatment. <strong>Delete last part:</strong> <code>DELETE /api/v1/treatments/&lt;hex&gt;</code>. <strong>Entries replace:</strong> re-POST with <code>_id</code> removed (server <code>sysTime</code>+<code>type</code> upsert). No v3.</td>
+<td><code>NightscoutSyncManager.swift:1882-1920,1935-1996</code> (DELETE at <code>:1990</code>); <code>:419-425</code></td>
+</tr>
+<tr>
+<td>(d) websocket</td>
+<td>None.</td>
+<td><code>xdrip.xcodeproj/project.pbxproj</code> (no package references)</td>
+</tr>
+<tr>
+<td>(e) re-send</td>
+<td>Entries: the batch is re-sent until 2xx, same random <code>_id</code>; a 500 whose body has <code>description.code == 66</code> counts as success. LibreLinkUp Sensor Start retried with the same hex <code>_id</code> until 2xx.</td>
+<td>survey <code>clients/ios/xdripswift.md</code> S15; <code>NightscoutSyncManager.swift:1452-1468</code></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>C-id</th>
+<th>class</th>
+<th>why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C68</td>
+<td>U</td>
+<td>the one hex <code>_id</code> on create is a treatment; treatments already stored hex as ObjectId since 15.0.7</td>
+</tr>
+<tr>
+<td>C69 re-POST same <code>_id</code></td>
+<td>U</td>
+<td>Sensor Start retry: treatments upsert by <code>_id</code> replaces on every build (the 2026-09-24 lab cell P-ID-1 "xdripswift sensor start retried": 200 / 200 / OID on 15.0.8, dev and <code>6d120fa2</code>)</td>
+</tr>
+<tr>
+<td>C70 entries reply <code>_id</code></td>
+<td>U</td>
+<td>entries POST reply is not used for ids</td>
+</tr>
+<tr>
+<td>C71 upper-case hex</td>
+<td>n/a</td>
+<td>all hex ids it sends are server-issued lower case or its own lower-case Sensor Start id</td>
+</tr>
+<tr>
+<td>C72 <code>find[_id]</code> either form</td>
+<td>B</td>
+<td>reconciliation now finds a treatment stored with a string <code>_id</code>, so fewer local treatments are wrongly marked deleted; no new matches for other ids (the widening is limited to forms of the same id)</td>
+</tr>
+<tr>
+<td>C73 <code>$in</code>/<code>$nin</code></td>
+<td>n/a</td>
+<td>its <code>$in</code> is on <code>date</code>, not <code>_id</code></td>
+</tr>
+<tr>
+<td>C74 delete removes every form</td>
+<td>B</td>
+<td><code>DELETE /treatments/&lt;hex&gt;</code> removes both halves of a twin of the same treatment</td>
+</tr>
+<tr>
+<td>treatments PUT over string record</td>
+<td>B</td>
+<td>an edit leaves one record, not a copy</td>
+</tr>
+<tr>
+<td>C75–C80</td>
+<td>n/a</td>
+<td>no v3, socket, subjects or profile writes</td>
+</tr>
+<tr>
+<td>C81 entries <code>_id</code> on insert only</td>
+<td>U</td>
+<td>entries <code>_id</code> is non-hex and stripped before this code; the <code>code 66</code> workaround is for the 500 that C81 removes, and remains harmless</td>
+</tr>
+</tbody>
+</table>
+<p>Safety questions: its CGM entries carry a non-hex <code>_id</code>, so C68/C81 do not act on them; no devicestatus
+<code>_id</code>. Deletes reach more only for twins of one treatment.</p>
+<h3 id="loopfollow">LoopFollow<a class="headerlink" href="#loopfollow" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>externals/LoopFollow</code></td>
+</tr>
+<tr>
+<td>HEAD</td>
+<td><code>4a74b781ad</code> (detached; = the <code>origin/main</code> the survey read)</td>
+</tr>
+<tr>
+<td>staged index</td>
+<td>empty; working tree clean</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>item</th>
+<th>what the client does</th>
+<th>anchor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(a) <code>_id</code> on create</td>
+<td>Writes no data records. Creates one auth subject: <code>POST /api/v2/authorization/subjects</code> <code>{name, roles:["readable"]}</code>, <strong>no <code>_id</code></strong>, then derives the access token locally from the returned <code>_id</code> (decodes array or bare object). Reuses an existing subject by name first.</td>
+<td><code>LoopFollow/Helpers/NightscoutUtils.swift:443-461,503-532</code></td>
+</tr>
+<tr>
+<td>(b) <code>_id</code> queries</td>
+<td>None. Reads <code>_id</code> from treatments only as a display key.</td>
+<td><code>Treatments/TreatmentsView.swift:1163</code></td>
+</tr>
+<tr>
+<td>(c) PUT/DELETE by id</td>
+<td>None. <code>executePostRequest</code> (two overloads) has <strong>no call sites</strong>. No subject delete.</td>
+<td><code>NightscoutUtils.swift:348,378</code> (<code>git grep executePostRequest</code> → only the definitions)</td>
+</tr>
+<tr>
+<td>(d) websocket</td>
+<td>socket.io <code>authorize</code> + <code>dataUpdate</code> only; no <code>dbAdd</code>/<code>dbUpdate</code>/<code>dbRemove</code>.</td>
+<td>survey <code>clients/ios/LoopFollow.md</code> S6</td>
+</tr>
+<tr>
+<td>(e) re-send</td>
+<td>n/a (no writes besides the subject).</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>C-id</th>
+<th>class</th>
+<th>why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C79 subject remove either form</td>
+<td>n/a</td>
+<td>never deletes a subject; create sends no <code>_id</code>, and #8758 at <code>ab7b22d6</code> leaves subject create as dev has it</td>
+</tr>
+<tr>
+<td>all others</td>
+<td>n/a</td>
+<td>no data writes, no <code>_id</code> queries, no data socket writes</td>
+</tr>
+</tbody>
+</table>
+<h3 id="loopcaregiver">LoopCaregiver<a class="headerlink" href="#loopcaregiver" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>externals/LoopCaregiver</code></td>
+</tr>
+<tr>
+<td>HEAD</td>
+<td><code>230571838c</code> (detached; = the <code>origin/dev</code> the survey read)</td>
+</tr>
+<tr>
+<td>staged index</td>
+<td>empty; working tree clean</td>
+</tr>
+<tr>
+<td>dependency</td>
+<td><code>gestrich/NightscoutKit</code> branch <code>feature/2023-07/bg/remote-commands</code> revision <code>d63fb737…</code> (<code>LoopCaregiver.xcworkspace/xcshareddata/swiftpm/Package.resolved:31-36</code>). <strong>That revision is not in the corpus</strong> (<code>git -C externals/NightscoutKit cat-file -t d63fb737…</code> → no such object), so the fork's anchors in the 2026-09-23 file could not be re-verified here.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>item</th>
+<th>what the client does</th>
+<th>anchor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(a)–(c)</td>
+<td>LoopCaregiver itself calls no treatment upload, update or delete, and no profile update (<code>git grep uploadTreatments\|deleteTreatment\|updateProfile\|postToNS\|upload(</code> → none). Remote commands are Loop push notifications. The only delete is <code>deleteRemoteCommands()</code> → <code>/api/v2/remotecommands</code> (not a Nightscout endpoint; pre-existing).</td>
+<td><code>LoopCaregiverKit/Sources/LoopCaregiverKit/Nightscout/NightscoutDataSource.swift:214</code>; <code>Models/RemoteDataServiceManager.swift:79,167</code></td>
+</tr>
+<tr>
+<td>(d) websocket</td>
+<td>None.</td>
+<td>survey file S6</td>
+</tr>
+<tr>
+<td>(e) re-send</td>
+<td>n/a.</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>C-id</th>
+<th>class</th>
+<th>why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>all</td>
+<td>n/a</td>
+<td>no <code>_id</code> sent, queried, or deleted by at the recorded HEAD. The fork's unused <code>updateProfile</code>/<code>postToNS</code> would matter only if a call site is added</td>
+</tr>
+</tbody>
+</table>
+<h3 id="nightguard">nightguard<a class="headerlink" href="#nightguard" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>externals/nightguard</code></td>
+</tr>
+<tr>
+<td>HEAD</td>
+<td><code>75404bd204</code> (detached; = the <code>origin/master</code> the survey read)</td>
+</tr>
+<tr>
+<td>staged index</td>
+<td>empty; working tree clean</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>item</th>
+<th>what the client does</th>
+<th>anchor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(a) <code>_id</code> on create</td>
+<td>Treatments (Temporary Target, cancel = new target with <code>duration: 0</code>, Carb Correction, site/sensor/battery change) are POSTed to <code>/api/v3/treatments</code>, with <code>/api/v1/treatments</code> as fallback, <strong>without <code>_id</code> or <code>identifier</code></strong>. The server computes the v3 identifier.</td>
+<td><code>nightguard/external/NightscoutService.swift:1868-1955</code> (v3 path <code>:1950</code>, v1 fallback <code>:1953</code>)</td>
+</tr>
+<tr>
+<td>(b) <code>_id</code> queries</td>
+<td>None. Reads <code>identifier</code> and <code>_id</code> as local keys, <code>identifier</code> first.</td>
+<td><code>nightguard/domain/treatment/TreatmentsStream.swift:107</code>; <code>NightscoutService.swift:929-930</code></td>
+</tr>
+<tr>
+<td>(c) PUT/DELETE by id</td>
+<td>None (no PUT, PATCH, DELETE).</td>
+<td>survey file S7/S8</td>
+</tr>
+<tr>
+<td>(d) websocket</td>
+<td>None.</td>
+<td>survey file S6</td>
+</tr>
+<tr>
+<td>(e) re-send</td>
+<td>No retry loop.</td>
+<td>survey file S15</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>C-id</th>
+<th>class</th>
+<th>why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C75 v3 identifier</td>
+<td>U</td>
+<td>v3 create's dedup filter gains a branch for a v1 record whose <code>_id</code> equals the (server-computed, non-hex) identifier; no such v1 record exists for a nightguard treatment. No v3 read/PATCH/DELETE by identifier</td>
+</tr>
+<tr>
+<td>all others</td>
+<td>n/a</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="diable">DiaBLE<a class="headerlink" href="#diable" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>externals/DiaBLE</code></td>
+</tr>
+<tr>
+<td>HEAD</td>
+<td><code>e6a909c88f</code> (detached; = the <code>origin/main</code> the survey read)</td>
+</tr>
+<tr>
+<td>staged index</td>
+<td>empty; working tree clean</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>item</th>
+<th>what the client does</th>
+<th>anchor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(a) <code>_id</code> on create</td>
+<td><code>POST /api/v1/entries</code> items <code>{type:"sgv", dateString, date, sgv, device}</code>, <strong>no <code>_id</code></strong>.</td>
+<td><code>DiaBLE/Nightscout.swift:155-167</code></td>
+</tr>
+<tr>
+<td>(b)–(d)</td>
+<td>None. The <code>delete()</code> helper (<code>DELETE</code>, free-form query) has no caller (<code>git grep '\.delete('</code> in <code>DiaBLE/*.swift</code> → none). No socket.</td>
+<td><code>DiaBLE/Nightscout.swift:170-199</code></td>
+</tr>
+<tr>
+<td>(e) re-send</td>
+<td>Each cycle re-POSTs readings newer than the newest <code>date</code> it read; the server upserts on <code>sysTime</code>+<code>type</code>.</td>
+<td><code>DiaBLE/MainDelegate.swift:432-439</code></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>C-id</th>
+<th>class</th>
+<th>why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C70 entries reply <code>_id</code></td>
+<td>U</td>
+<td>reply not read for ids</td>
+</tr>
+<tr>
+<td>all others</td>
+<td>n/a</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="glookoservicekit">GlookoServiceKit<a class="headerlink" href="#glookoservicekit" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>externals/GlookoServiceKit</code></td>
+</tr>
+<tr>
+<td>HEAD</td>
+<td><code>8e2cad1cdf</code> (branch <code>main</code>)</td>
+</tr>
+<tr>
+<td>staged index</td>
+<td>empty; working tree clean</td>
+</tr>
+</tbody>
+</table>
+<p>Uploads Loop/Trio data <strong>to Glooko</strong>; makes no Nightscout request. Its <code>/api/v3/…</code> paths and <code>put</code>
+calls are Glooko's (<code>GlookoServiceKit/Data/Classic/GlookoClassicAPI.swift:110,125,168</code>;
+<code>GlookoClassicBackend.swift:37,83,99-100</code>). Every C-id: n/a.</p>
+<h3 id="candidate-replay-probes-ios-with-results">Candidate replay probes (iOS), with results<a class="headerlink" href="#candidate-replay-probes-ios-with-results" title="Permanent link">&para;</a></h3>
+<p>No client in this group has a <strong>W</strong> or <strong>?</strong> cell. The probes below are regression controls for the
+three shapes these clients do send into #8758 code, cheap enough to run beside any other probe.
+Synthetic values; <code>S</code> = the API secret's SHA-1 in the <code>api-secret</code> header.</p>
+<ol>
+<li><strong>Loop carbs edit/delete by cached id (C72/C74, treatments PUT).</strong>
+   <code>POST /api/v1/treatments</code> <code>[{"eventType":"Carb Correction","carbs":20,"created_at":"2026-09-25T10:00:00Z","timestamp":"2026-09-25T10:00:00Z","enteredBy":"loop://probe"}]</code> → keep reply <code>[0]._id</code> as <code>H</code>;
+   <code>PUT /api/v1/treatments</code> <code>{"_id":"H","eventType":"Carb Correction","carbs":25,"created_at":"2026-09-25T10:00:00Z","timestamp":"2026-09-25T10:00:00Z","enteredBy":"loop://probe"}</code>;
+   <code>GET /api/v1/treatments.json?find[_id]=H</code> → expect 1 record, carbs 25, on all builds;
+   <code>DELETE /api/v1/treatments/H</code> → expect 0 left. Variant with a string twin seeded in mongo
+   (<code>{_id:"H"}</code> string plus ObjectId <code>H</code>): 15.0.8 leaves the string copy; <code>ab7b22d6</code> leaves none.
+   <strong>Measured Q12:</strong> POST 200, PUT 200, find n=1, DELETE 200, 0 left, on both builds; twin variant 1 left → 0 left.</li>
+<li><strong>Loop override delete-then-repost (non-hex path, unchanged).</strong>
+   <code>POST /api/v1/treatments</code> <code>[{"_id":"0F1E2D3C-4B5A-6978-8796-A5B4C3D2E1F0","eventType":"Temporary Override","created_at":"2026-09-25T11:00:00Z","timestamp":"2026-09-25T11:00:00Z","duration":60,"reason":"probe","enteredBy":"loop://probe"}]</code>;
+   <code>DELETE /api/v1/treatments/0F1E2D3C-4B5A-6978-8796-A5B4C3D2E1F0</code> → expect deleted (with <code>UUID_HANDLING</code> unset/true);
+   re-POST the same body → expect exactly 1 record. Expect identical results on 15.0.8 and <code>ab7b22d6</code>.
+   Not replayed in this pass; the 2026-09-23 lab (survey §4) measured this delete as 200 and deleted on every build with <code>UUID_HANDLING</code> unset or true.</li>
+<li><strong>xDrip4iOS reconciliation (C72).</strong> Seed one treatment stored with string <code>_id</code> <code>"5f0c0ffee0ddba11c0ffee01"</code> and one with ObjectId <code>5f0c0ffee0ddba11c0ffee02</code>;
+   <code>GET /api/v1/treatments?find[_id]=5f0c0ffee0ddba11c0ffee01&amp;count=1</code> and <code>…02…</code> → 15.0.8: <code>[]</code>, 1; <code>ab7b22d6</code>: 1, 1.
+   Negative control: <code>find[_id]=5f0c0ffee0ddba11c0ffee03</code> (absent) → <code>[]</code> on both.
+   <strong>Measured Q14:</strong> string record n=0 → n=1; ObjectId record n=1 on both; absent n=0 on both.</li>
+<li><strong>xDrip4iOS LibreLinkUp Sensor Start retry (C69 treatments).</strong>
+   <code>POST /api/v1/treatments</code> <code>{"_id":"6c6c7500000001925a3b4c00","eventType":"Sensor Start","created_at":"2026-09-25T09:00:00.000Z","enteredBy":"xDrip4iOS"}</code> twice → 200, 200, one record stored as ObjectId, on both builds.
+   <strong>Measured P-ID-1 "xdripswift sensor start retried":</strong> 200 / 200 / OID on both builds.</li>
+</ol>
+<h2 id="uploaders">Uploaders<a class="headerlink" href="#uploaders" title="Permanent link">&para;</a></h2>
+<p>Sink paths and the in-process connector are described in the nightscout-connect section.</p>
+<h3 id="nightscout-connect">nightscout-connect<a class="headerlink" href="#nightscout-connect" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>externals/nightscout-connect</code></td>
+</tr>
+<tr>
+<td>HEAD</td>
+<td><code>04102f9d26</code> (branch <code>dev</code>, "start 0.1.1 development"), <code>git describe</code> = <code>v0.1.0-1-g04102f9</code>, <code>package.json</code> version <code>0.1.1</code></td>
+</tr>
+<tr>
+<td>release</td>
+<td>tag <code>v0.1.0</code> = <code>4dde1ecd</code>; <code>git diff --stat v0.1.0 HEAD</code> changes only <code>package.json</code> and <code>package-lock.json</code></td>
+</tr>
+<tr>
+<td>prior survey ref</td>
+<td><code>977da8a</code> (<code>0.1.0-dev.3</code>); <code>git diff --stat 977da8a HEAD -- lib</code> is empty, so every <code>lib/</code> anchor below holds for <code>0.1.0-dev.3</code>, <code>v0.1.0</code> and HEAD</td>
+</tr>
+<tr>
+<td>staged / dirty</td>
+<td>0 / 0</td>
+</tr>
+<tr>
+<td>server wiring</td>
+<td><code>ab7b22d6:lib/server/bootevent.js:384</code> <code>ctx.nightscoutConnect = require('nightscout-connect')(env, ctx)</code>; <code>ab7b22d6:package.json:140</code> pins <code>"nightscout-connect": "0.1.0"</code></td>
+</tr>
+</tbody>
+</table>
+<p>Sink paths. In-process (built into Nightscout) the output is <code>lib/outputs/internal.js</code>, which
+calls the server's storage modules directly, bypassing the v1 routes and their <code>_id</code> validation:
+<code>ctx.entries.create</code>, <code>ctx.treatments.create</code>, <code>ctx.devicestatus.create</code>, <code>ctx.profile.create</code>
+(<code>internal.js:37-42</code>, <code>:158-163</code>), <code>ctx.profile.list_query</code> + <code>ctx.profile.save</code> for profile
+replace (<code>:73-91</code>), <code>ctx.treatments.remove</code> and <code>ctx.devicestatus.remove</code> for Glooko bookkeeping
+(<code>:164-170</code>). Standalone, <code>lib/outputs/nightscout.js</code> sends the same records over HTTP:
+<code>POST /api/v1/entries.json</code> (<code>:63</code>), <code>POST /api/v1/treatments.json</code> (<code>:109</code>),
+<code>POST /api/v1/devicestatus.json</code> (<code>:161</code>, <code>:298</code>), <code>POST</code>/<code>PUT /api/v1/profile.json</code> (<code>:222</code>, <code>:194</code>),
+<code>GET /api/v1/profiles.json?find[_id]=</code> (<code>:187</code>), <code>DELETE /api/v1/treatments.json</code> and
+<code>DELETE /api/v1/devicestatus.json</code> by filter (<code>:294</code>, <code>:299</code>).</p>
+<table>
+<thead>
+<tr>
+<th>surface</th>
+<th>what it does</th>
+<th>anchor (nightscout-connect@04102f9d26)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(a) <code>_id</code> on create</td>
+<td>The Nightscout source hands records to the sink unchanged, so entries, treatments, devicestatus and profiles carry the <strong>source site's <code>_id</code></strong>, a 24-hex lower-case string after JSON (the source's ObjectId), or whatever non-hex string the source stored. Source reads: <code>find[&lt;field&gt;][$gt]=&lt;since&gt;</code> with <code>count: sourceMaxCount</code> (default 1000), one GET per collection. Profiles are deduplicated by <code>String(_id)</code> within a poll. Glooko and LibreLinkUp sources create records without <code>_id</code> (Glooko treatments carry <code>identifier: 'glooko:…'</code>). Glooko checkpoints are devicestatus rows without <code>_id</code>.</td>
+<td><code>lib/sources/nightscout.js:54-60</code>, <code>:104-112</code>; <code>lib/outputs/glooko-checkpoint.js:40-46</code></td>
+</tr>
+<tr>
+<td>(b) <code>_id</code> operators</td>
+<td>Profile replace guard: <code>find[_id]=String(id)</code> with <code>count: 10</code> (in-process <code>list_query</code>; HTTP <code>/api/v1/profiles.json</code> via <code>qs.stringify</code>). Glooko checkpoint cleanup: <code>find[_id][$in]=&lt;obsolete ids&gt;</code> plus <code>device</code>, <code>created_at $gte epoch</code>, <code>glookoSyncState.owner</code> (in-process the ids are the stored <code>_id</code> values, ObjectId instances; over HTTP they are hex strings, indices form).</td>
+<td><code>internal.js:73-79</code>; <code>nightscout.js:186-188</code>; <code>glooko-checkpoint.js:48-51</code>; <code>nightscout.js:39-40</code>, <code>:299</code></td>
+</tr>
+<tr>
+<td>(c) PUT/DELETE by id</td>
+<td>Profile replace: <code>ctx.profile.save(p)</code> / <code>PUT /api/v1/profile.json</code> with the source <code>_id</code>, only when the <code>find[_id]</code> guard returns the profile. No v1 DELETE by path id. No v3.</td>
+<td><code>internal.js:80-91</code>; <code>nightscout.js:190-201</code></td>
+</tr>
+<tr>
+<td>(d) websocket</td>
+<td>None.</td>
+<td>(absence: <code>git grep -n "dbAdd\|socket.io" HEAD -- lib</code> has no hit)</td>
+</tr>
+<tr>
+<td>(e) re-send, same <code>_id</code></td>
+<td><strong>Entries</strong>: every cycle re-reads from the sink bookmark (<code>known.entries</code> from the newest stored <code>dateString</code>), so the newest source reading is normally re-sent with the same <code>_id</code>; the sink upserts on <code>sysTime</code>+<code>type</code>. <strong>Treatments</strong>: re-sent likewise; the sink upserts by <code>identifier</code>, else <code>_id</code>, else <code>created_at</code>+<code>eventType</code>. <strong>Devicestatus</strong>: before writing, the sink drops every row whose <code>created_at</code> is not strictly newer than the newest stored devicestatus of any device (Nightscout source) or of its own device (Glooko, LibreLinkUp), so a stored devicestatus is not re-sent in steady state. <strong>Profiles</strong>: <code>sync.plan</code> creates only profiles whose <code>_id</code>/<code>identifier</code> is not among the stored profiles read (<code>ctx.profile.list(…, 1000)</code>); a known <code>_id</code> with changed content goes to replace. A failed write fails the whole persist and the bookmark does not move, so the same window is re-sent next cycle.</td>
+<td><code>internal.js:133-157</code>, <code>:158-163</code>, <code>:171-181</code>, <code>:92-112</code>, <code>:207-217</code>; <code>lib/outputs/profile-sync.js:53-66</code>; <code>nightscout.js:117-169</code>, <code>:205-234</code></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>C-id</th>
+<th>class</th>
+<th>why (read-derived unless a lab cell is named)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C68</td>
+<td>B</td>
+<td>A copied devicestatus or profile with its source hex <code>_id</code> is stored as the ObjectId (15.0.8: the string). Lab P-ID-5 (profile) and P-ID-6 (devicestatus) show the stored form flip to OID. Entries/treatments already converted on 15.0.8.</td>
+</tr>
+<tr>
+<td>C69 / C78</td>
+<td>U</td>
+<td>Re-sent devicestatus collides on every build (string- or OID-stored), and the connector's <code>created_at</code> filter keeps stored devicestatus out of the batch. The one case #8758 turns from 200 into a refusal (hex <code>_id</code> equal to an <strong>ObjectId-stored</strong> devicestatus) needs a devicestatus already stored under that <code>_id</code> with a <code>created_at</code> newer than the sink's newest, which cannot exist. A copied profile already stored is routed to replace, not create, while it is among the 1000 profiles read; beyond 1000 stored profiles a re-create collides on every build.</td>
+</tr>
+<tr>
+<td>C70 / C81</td>
+<td>B</td>
+<td>A copied entry whose <code>sysTime</code>+<code>type</code> matches a reading the sink already holds under another <code>_id</code> (the same reading uploaded directly to the sink by xDrip, Loop or a bridge, or a string-<code>_id</code> reading from ≤15.0.6): on 15.0.8 the <code>_id</code> in <code>$set</code> makes MongoDB refuse the ordered bulk write, the entries write fails, the whole persist fails, and every cycle re-sends and fails again; readings after the refused one in that batch are not stored by the connector. On #8758 the write answers 200, the stored reading keeps its <code>_id</code>. Lab P-ID-3 "re-send with a different hex _id": 500 → 200. The connector uses <code>dateString</code>, not the reply <code>_id</code>, for its bookmark (<code>internal.js:171-181</code>; <code>nightscout.js:63-66</code>), so C70's reply change is invisible to it. Tail-of-batch effect measured: Q8.</td>
+</tr>
+<tr>
+<td>C72</td>
+<td>B</td>
+<td>Profile replace guard <code>find[_id]</code> finds a string-stored copy, so a changed source profile is replaced instead of skipped with <code>NOT_REPLACED</code>. Lab P-ID-5: guard n=0 → n=1, PUT 200 / n=1.</td>
+</tr>
+<tr>
+<td>C73</td>
+<td>U</td>
+<td>Checkpoint cleanup <code>_id $in</code>: rows are created without <code>_id</code>, so all are ObjectId-stored and match on every build.</td>
+</tr>
+<tr>
+<td>C74</td>
+<td>B</td>
+<td>Profile save over a string-stored copy leaves one profile (<code>ab7b22d6:lib/server/profile.js</code> <code>save</code> deletes the string forms).</td>
+</tr>
+<tr>
+<td>C80</td>
+<td>U</td>
+<td>The source <code>_id</code> is always 24-hex (or absent).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="oref0">oref0<a class="headerlink" href="#oref0" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>externals/oref0</code> (openaps/oref0)</td>
+</tr>
+<tr>
+<td>HEAD</td>
+<td><code>d219baf955</code> (detached; the prior survey's <code>dev</code> ref)</td>
+</tr>
+<tr>
+<td>staged / dirty</td>
+<td>0 / 0</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>surface</th>
+<th>what it does</th>
+<th>anchor (oref0@d219baf955)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(a) <code>_id</code> on create</td>
+<td>None. Devicestatus (<code>ns-status.js</code>), treatments and entries are built without <code>_id</code>. <code>oref0-upload-profile.js</code> deletes <code>_id</code> before <code>POST /api/v1/profile</code>.</td>
+<td><code>bin/oref0-upload-profile.js:267</code>; <code>git grep -n "_id" HEAD -- lib bin/*.js</code> has only that line</td>
+</tr>
+<tr>
+<td>(b) <code>_id</code> operators</td>
+<td>None.</td>
+<td>(absence, same grep)</td>
+</tr>
+<tr>
+<td>(c) PUT/DELETE by id</td>
+<td><code>ns-dedupe-treatments delete &lt;host&gt;</code> (operator-run by hand, not part of the loop): lists treatments, counts rows per <code>created_at</code>, then <code>DELETE /api/v1/treatments/&lt;_id&gt;</code> for each. Its listing request does not complete on either build (reported to the parent; disclosure rule), so the tool deletes nothing on either.</td>
+<td><code>bin/ns-dedupe-treatments.sh:64-71</code>, <code>:76-96</code>; <code>package.json:32</code></td>
+</tr>
+<tr>
+<td>(d) websocket</td>
+<td>None (<code>oref0-shared-node.js</code> is a local Unix socket).</td>
+<td><code>bin/oref0-shared-node.js:36-46</code></td>
+</tr>
+<tr>
+<td>(e) re-send</td>
+<td>Treatments re-sent as a 24 h batch when the latest-treatment lookup fails (survey §2.1); no <code>_id</code>, upsert on <code>created_at</code>+<code>eventType</code>. Devicestatus is POSTed once and the queued file is removed whatever the HTTP status.</td>
+<td>prior survey <code>clients/uploaders/oref0.md</code> S15</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>C-id</th>
+<th>class</th>
+<th>why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C72</td>
+<td>B</td>
+<td><code>DELETE /api/v1/treatments/&lt;hex&gt;</code> now reaches a treatment stored with the string <code>_id</code>.</td>
+</tr>
+<tr>
+<td>C74</td>
+<td>– through the tool; B/W for the DELETE step alone</td>
+<td>Through the tool's own sequence nothing is deleted on either build (listing step, above). The DELETE step alone on a twin (a string copy plus an ObjectId copy of one hex) leaves 1 on 15.0.8 and 0 on <code>ab7b22d6</code> (P-ID-7); both halves are the same treatment, so the tool's intent (remove a duplicate) would then remove the treatment. BF-110 behaviour, kept by decision.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tconnectsync">tconnectsync<a class="headerlink" href="#tconnectsync" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>externals/tconnectsync</code></td>
+</tr>
+<tr>
+<td>HEAD</td>
+<td><code>7c4b2f4ddb</code> (detached)</td>
+</tr>
+<tr>
+<td>staged / dirty</td>
+<td>0 / 0</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>surface</th>
+<th>what it does</th>
+<th>anchor (tconnectsync@7c4b2f4ddb)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(a) <code>_id</code> on create</td>
+<td>None on POST. Records carry <code>pump_event_id</code>; add-mode profile upload deletes <code>_id</code>.</td>
+<td><code>tconnectsync/sync/tandemsource/update_profiles.py:209-217</code>; <code>tconnectsync/nightscout.py:47-54</code></td>
+</tr>
+<tr>
+<td>(b) <code>_id</code> operators</td>
+<td>None.</td>
+<td>(absence)</td>
+</tr>
+<tr>
+<td>(c) PUT/DELETE by id</td>
+<td><strong>Profile replace</strong> (<code>NIGHTSCOUT_PROFILE_UPLOAD_MODE=replace</code>): <code>GET /api/v1/profile/current</code>, merge pump settings, <code>PUT /api/v1/profile</code> with the same document, <strong>including its <code>_id</code></strong>. <strong>Sleep/Exercise update</strong>: <code>last_uploaded_entry</code> (<code>GET /api/v1/treatments?count=1&amp;find[enteredBy]=…&amp;find[eventType]=…</code>), then <code>DELETE /api/v1/treatments/&lt;_id&gt;</code>, then POST a replacement with the original <code>created_at</code>. Non-200 raises.</td>
+<td><code>update_profiles.py:56-83</code>; <code>nightscout.py:65-72</code>, <code>:169-177</code>; <code>process_user_mode.py:223-260</code>; <code>nightscout.py:56-63</code>, <code>:74-87</code></td>
+</tr>
+<tr>
+<td>(d) websocket</td>
+<td>None.</td>
+<td>(absence)</td>
+</tr>
+<tr>
+<td>(e) re-send</td>
+<td>No <code>_id</code>; server upsert and client watermarks.</td>
+<td>prior survey S15</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>C-id</th>
+<th>class</th>
+<th>why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C72 / C74</td>
+<td>B</td>
+<td>The profile PUT over a string-stored current profile leaves one profile (15.0.8: a second profile beside it). Lab P-ID-5 "connector update PUT" is the same request shape: 200 / n=1. <code>DELETE /treatments/&lt;_id&gt;</code> reaches a string-stored or twin Sleep/Exercise record; the client POSTs the replacement right after, so removing both halves of a twin loses nothing.</td>
+</tr>
+<tr>
+<td>C80</td>
+<td>U</td>
+<td>The PUT <code>_id</code> comes from the server's own reply (24-hex).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="share2nightscout-bridge">share2nightscout-bridge<a class="headerlink" href="#share2nightscout-bridge" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo / HEAD</td>
+<td><code>externals/share2nightscout-bridge</code> <code>518c85c4e5</code>, staged 0 / dirty 0</td>
+</tr>
+</tbody>
+</table>
+<p>(a)–(e): none. <code>POST /api/v1/entries.json</code> and <code>/api/v1/devicestatus.json</code> without <code>_id</code>
+(<code>index.js:51-52</code>); <code>git grep</code> for <code>_id</code>, <code>identifier</code>, <code>dbAdd</code>, <code>api/v3</code>, PUT/DELETE finds nothing.
+All C-ids U. C70 (reply names the stored <code>_id</code> for a matched reading) is not read by the bridge.</p>
+<h3 id="nightscout-librelink-up">nightscout-librelink-up<a class="headerlink" href="#nightscout-librelink-up" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo / HEAD</td>
+<td><code>externals/nightscout-librelink-up</code> <code>bff2317f5c</code>, staged 0 / dirty 0</td>
+</tr>
+</tbody>
+</table>
+<p>(a) none: v1 <code>POST /api/v1/entries</code> and v3 <code>POST /api/v3/entries</code> bodies carry <code>type, sgv,
+direction, device, date</code> only (<code>src/nightscout/apiv1.ts:38</code>; <code>src/nightscout/apiv3.ts:83-110</code>).
+v3 then computes a UUID <code>identifier</code> (<code>ab7b22d6:lib/api3/generic/create/operation.js:36</code>
+<code>resolveIdentifier</code>), which is non-hex, so the new <code>identifyingFilter</code> branch matches only a v1
+record whose <code>_id</code> is that exact UUID string (<code>ab7b22d6:lib/api3/storage/mongoCollection/utils.js:149-152</code>).
+(b)–(e) none. All C-ids U (C75 U: the added branch cannot match its own records).</p>
+<h3 id="minimed-connect-to-nightscout">minimed-connect-to-nightscout<a class="headerlink" href="#minimed-connect-to-nightscout" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo / HEAD</td>
+<td><code>externals/minimed-connect-to-nightscout</code> <code>57bb042c43</code>, staged 0 / dirty 0</td>
+</tr>
+</tbody>
+</table>
+<p>(a)–(e): none. <code>POST</code> entries and devicestatus without <code>_id</code> (<code>run.js:50-51</code>). All C-ids U.</p>
+<h3 id="glooko2nightscout">glooko2nightscout<a class="headerlink" href="#glooko2nightscout" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo / HEAD</td>
+<td><code>externals/glooko2nightscout</code> <code>9ab8c6080b</code> (<code>main</code>), staged 0 / dirty 0</td>
+</tr>
+</tbody>
+</table>
+<p>No Nightscout requests: its HTTP calls go to Glooko (<code>glooko-cgm-reader.js:240</code>, <code>:389</code>); it only
+shapes Nightscout-style objects (<code>:648-663</code>). All C-ids U.</p>
+<h3 id="glooko-nightscout-eu">glooko-nightscout-eu<a class="headerlink" href="#glooko-nightscout-eu" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo / HEAD</td>
+<td><code>externals/glooko-nightscout-eu</code> <code>2b7fbc45b8</code> (<code>main</code>), staged 0 / dirty 0</td>
+</tr>
+</tbody>
+</table>
+<p>(a)–(e): none. <code>POST /api/v1/treatments</code> of <code>[t]</code> without <code>_id</code>, dedup by <code>glookoGuid</code> on the
+client (<code>glooko_uploader.py:75</code>). All C-ids U.</p>
+<h3 id="cgmsim-lib">cgmsim-lib<a class="headerlink" href="#cgmsim-lib" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo / HEAD</td>
+<td><code>externals/cgmsim-lib</code> <code>c09f9c0390</code>, staged 0 / dirty 0</td>
+</tr>
+</tbody>
+</table>
+<p>(a) none (prior survey S7). (c) the only DELETE is by date:
+<code>DELETE /api/v1/devicestatus/?find[created_at][$lte]=&lt;YYYY-MM-DD&gt;</code> (<code>src/delete.ts:24-37</code>,
+<code>src/utils.ts:198-213</code>), no <code>_id</code>. (b), (d), (e) none. All C-ids U.</p>
+<h3 id="openaps">openaps<a class="headerlink" href="#openaps" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo / HEAD</td>
+<td><code>externals/openaps</code> <code>bd9a831887</code>, staged 0 / dirty 0</td>
+</tr>
+</tbody>
+</table>
+<p>No Nightscout HTTP of its own: <code>git grep -nE "api/v1/[a-z]+"</code> finds nothing; Nightscout uploads in
+an openaps rig go through oref0's <code>ns-upload</code> (<code>bin/openaps-import:33</code> names the <code>ns-upload</code>
+device). <code>openaps/vendors/dexcom.py:446-541</code> only formats dates. All C-ids U.</p>
+<h3 id="candidate-probes">Candidate probes<a class="headerlink" href="#candidate-probes" title="Permanent link">&para;</a></h3>
+<p><strong>U-1 (nightscout-connect, entries collision, tail of batch).</strong> Improvement expected; confirms the
+safety-visible part (readings after a refused one).
+1. <code>POST /api/v1/entries.json</code> <code>[{"type":"sgv","sgv":120,"date":T,"dateString":"&lt;ISO T&gt;","device":"xDrip-synthetic"}]</code> (T = now − 10 min, ms).
+2. <code>POST /api/v1/entries.json</code> <code>[{"_id":"64b0c0ffee0000000000a001","type":"sgv","sgv":120,"date":T,"dateString":"&lt;ISO T&gt;","device":"nightscout-connect"},{"_id":"64b0c0ffee0000000000a002","type":"sgv","sgv":125,"date":T+300000,"dateString":"&lt;ISO T+5m&gt;","device":"nightscout-connect"}]</code>.
+3. Read mongo: count of entries at T and at T+5m, <code>_id</code> BSON type of each.
+Expected read-derived: 15.0.8 step 2 → 500, reading at T+5m <strong>absent</strong>; #8758 → 200, both present,
+the T reading keeps its step-1 <code>_id</code>. <strong>Measured Q8 (HTTP):</strong> 15.0.8 500, the T+5 min reading absent; <code>ab7b22d6</code> 200, both stored, the T reading keeps its first <code>_id</code>. The in-process call was not replayed. In-process equivalent: <code>ctx.entries.create(&lt;step-2 array&gt;, cb)</code>
+→ 15.0.8 <code>cb(err)</code>, #8758 <code>cb(null, docs)</code>.</p>
+<p><strong>U-2 (oref0 <code>ns-dedupe-treatments delete</code>, twin).</strong> Replayed through the tool's own request sequence: the listing step fails on both builds before any DELETE (details with the parent). The DELETE step alone is P-ID-7: 1 left → 0 left.</p>
+<p><strong>U-3 (nightscout-connect, devicestatus re-send over an ObjectId-stored copy).</strong> Control for the
+C69/C78 "U" verdict: shows what would happen if the connector's <code>created_at</code> filter ever let a
+stored devicestatus through.
+1. <code>POST /api/v1/devicestatus.json</code> <code>[{"_id":"64b0c0ffee0000000000b001","device":"loop://synthetic","created_at":"&lt;ISO T&gt;","loop":{"iob":{"iob":0.5}}}]</code>.
+2. Repeat step 1.
+3. <code>POST /api/v1/devicestatus.json</code> <code>[{"_id":"64b0c0ffee0000000000b001",…same…},{"_id":"64b0c0ffee0000000000b002","device":"loop://synthetic","created_at":"&lt;ISO T+5m&gt;","loop":{"iob":{"iob":0.6}}}]</code>.
+4. Count stored <code>b001</code> (either form) and <code>b002</code>.
+Expected read-derived: 15.0.8 step 1 stores a string, step 2 → 500, step 3 → 500 and <code>b002</code>
+absent; #8758 step 1 stores OID, step 2 → 500, step 3 → 500 and <code>b002</code> absent. Same outcome on
+both; lab P-ID-6 has steps 1-2. The ObjectId-stored 200 → 500 case needs a devicestatus first
+stored <strong>without</strong> <code>_id</code> and re-posted with its returned <code>_id</code>, which the connector does not do.
+<strong>Measured Q2:</strong> own hex id POST then retry: 200 / 500 on both (15.0.8 string, <code>ab7b22d6</code> OID); a batch starting with a re-sent string-stored status: 500 and the new status not stored, on both. The ObjectId-stored case is Q2b (CANDIDATE-2).</p>
+<h3 id="notes-outside-this-pass">Notes outside this pass<a class="headerlink" href="#notes-outside-this-pass" title="Permanent link">&para;</a></h3>
+<ul>
+<li>The in-process <code>_id $in</code> cleanup passes ObjectId instances; on #8758 <code>updateIdQuery</code> keeps
+  them as given and stops <code>traverse</code> from walking into them (<code>ab7b22d6:lib/server/query.js:129-143</code>).
+  What 15.0.8's <code>traverse</code> does to an ObjectId instance inside <code>$in</code> was not checked; the rows are
+  the connector's own checkpoints.</li>
+</ul>
+<h2 id="readers">Readers<a class="headerlink" href="#readers" title="Permanent link">&para;</a></h2>
+<p>Server fact used throughout (read at <code>ab7b22d6:lib/server/query.js:111-158</code> against
+<code>92d08342:lib/server/query.js:95-123</code>): <code>updateIdQuery</code> widens only <code>$in</code> and <code>$nin</code> lists (C73).
+A <code>find[_id][$gt|$gte|$lt|$lte]=&lt;hex&gt;</code> bound is converted to an ObjectId by the same traverse walk
+on both refs, and <code>matchEitherForm</code> does not touch it (it acts only when <code>query._id</code> is itself an
+ObjectId, <code>ab7b22d6:lib/server/object-id-forms.js:83-88</code>). MongoDB compares across BSON types by
+type order, so a range bound on an ObjectId never matches a string <code>_id</code>, on any build.</p>
+<h3 id="glycemicgpt">GlycemicGPT<a class="headerlink" href="#glycemicgpt" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>externals/GlycemicGPT</code></td>
+</tr>
+<tr>
+<td>HEAD</td>
+<td><code>d1a9adb73e</code> (detached), staged 0, dirty 0</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>what it does</th>
+<th>anchor (GlycemicGPT@d1a9adb73e)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(a)</td>
+<td>none: read-only sync into its own database</td>
+<td>no POST/PUT/DELETE in <code>apps/api/src/services/integrations/nightscout/client.py</code></td>
+</tr>
+<tr>
+<td>(b)</td>
+<td>Entries cursor <code>GET &lt;entries&gt; ?count=&lt;n&gt;&amp;find[_id][$gt]=&lt;24-hex&gt;</code>; the cursor is validated as 24 hex characters, either case</td>
+<td><code>client.py:707-747</code> (params <code>:734-737</code>), <code>_is_valid_object_id</code> <code>:756-769</code></td>
+</tr>
+<tr>
+<td>(b)</td>
+<td>The cursor advances to <code>entries[0]._id</code> of the reply when it is a 24-character string</td>
+<td><code>sync.py:246-248</code></td>
+</tr>
+<tr>
+<td>(b)</td>
+<td>Local rows keyed <code>(source, ns_id)</code>, <code>ns_id</code> = the record's <code>_id</code> as JSON text</td>
+<td><code>_glucose_mapper.py:137,180</code>; <code>_pump_events_mapper.py:164,199-200</code>; <code>_devicestatus_mapper.py:10-11,70</code></td>
+</tr>
+<tr>
+<td>(c) (d) (e)</td>
+<td>none</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>C-id</th>
+<th>class</th>
+<th>reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C72, C73</td>
+<td>unaffected</td>
+<td>it sends neither plain <code>find[_id]</code> nor a list</td>
+</tr>
+<tr>
+<td><code>$gt</code> cursor</td>
+<td>unaffected</td>
+<td>the bound is an ObjectId on 15.0.8 and on <code>ab7b22d6</code>; string-stored entries (≤15.0.6) are outside the cursor on both. #8758 does not change that</td>
+</tr>
+<tr>
+<td>C70, C81</td>
+<td>unaffected</td>
+<td>a re-sent entry now updates the stored entry in place (200) where 15.0.8 answered 500; either way no new <code>_id</code> is inserted, so the cursor sees nothing new, and the <code>(source, ns_id)</code> row already held stays as first imported</td>
+</tr>
+<tr>
+<td>C74 (twins removed)</td>
+<td>better</td>
+<td>a twin left by a ≤15.0.8 edit is collapsed by the next edit; the reader then holds one <code>ns_id</code> for it instead of two rows with the same text</td>
+</tr>
+<tr>
+<td>others</td>
+<td>unaffected</td>
+<td>no writes, no socket, no v3 by identifier</td>
+</tr>
+</tbody>
+</table>
+<p>Probe (control, confirms "unchanged"): see R-1.</p>
+<h3 id="oref-digital-twin">oref-digital-twin<a class="headerlink" href="#oref-digital-twin" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>externals/oref-digital-twin</code></td>
+</tr>
+<tr>
+<td>HEAD</td>
+<td><code>a2e8610d5f</code> (<code>main</code>), staged 0, dirty 0</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>what it does</th>
+<th>anchor (oref-digital-twin@a2e8610d5f)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(a) (c) (d) (e)</td>
+<td>none (read-only; Python ingestion and a browser page)</td>
+<td><code>ingestion/client.py:48</code> is the only request call</td>
+</tr>
+<tr>
+<td>(b)</td>
+<td>No <code>_id</code> filter. Windowed reads <code>find[&lt;time&gt;][$gte]</code>/<code>[$lte]</code>; results de-duplicated across windows by <code>_id</code>, falling back to <code>(time, device, sgv)</code></td>
+<td><code>ingestion/client.py:107-133</code> (key <code>:128</code>); browser <code>web/app.js:47-48</code></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>C-id</th>
+<th>class</th>
+<th>reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>all</td>
+<td>unaffected</td>
+<td>no id filter or write. A twin whose string copy is lower-case hex serialises to the same <code>_id</code> text as its ObjectId copy, so the <code>_id</code> key already folds it to one; an upper-case string twin gives two keys on every build. #8758 creates no twins</td>
+</tr>
+</tbody>
+</table>
+<h3 id="nightscout-cgm-skill">nightscout-cgm-skill<a class="headerlink" href="#nightscout-cgm-skill" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>externals/nightscout-cgm-skill</code></td>
+</tr>
+<tr>
+<td>HEAD</td>
+<td><code>91a53ea167</code> (<code>master</code>), staged 0, dirty 0</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>what it does</th>
+<th>anchor (nightscout-cgm-skill@91a53ea167)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(a) (c) (d) (e)</td>
+<td>none (read-only)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>(b)</td>
+<td>No <code>_id</code> filter. Pages entries back with <code>count=10000</code> and <code>find[date][$lte]</code>; stores each sgv under SQLite <code>id TEXT PRIMARY KEY</code> = the entry <code>_id</code>, skipping ids already held</td>
+<td><code>scripts/cgm.py:399</code>, <code>:488-516</code></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>C-id</th>
+<th>class</th>
+<th>reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>all</td>
+<td>unaffected</td>
+<td>as oref-digital-twin. A re-sent entry updated in place (C81) keeps its <code>_id</code>, so the skill keeps its first copy of the value, as on 15.0.8 for any in-place update</td>
+</tr>
+</tbody>
+</table>
+<h3 id="glupredkit">GluPredKit<a class="headerlink" href="#glupredkit" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>externals/GluPredKit</code></td>
+</tr>
+<tr>
+<td>HEAD</td>
+<td><code>e5bd6357a6</code> (detached), staged 0, dirty 0</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>what it does</th>
+<th>anchor (GluPredKit@e5bd6357a6)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(a) (c) (d) (e)</td>
+<td>none (read-only)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>(b)</td>
+<td>No <code>_id</code> filter: <code>find[created_at]</code> / <code>find[dateString]</code> windows; profile GET through <code>requests</code></td>
+<td><code>glupredkit/parsers/nightscout.py:69-70,74,80-81,88-89</code></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>C-id</th>
+<th>class</th>
+<th>reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>all</td>
+<td>unaffected</td>
+<td>no <code>_id</code> surface. Entries and treatments go through <code>python-nightscout</code>, which is not in the corpus</td>
+</tr>
+</tbody>
+</table>
+<h3 id="nightscout-reporter-angulardart-retired">nightscout-reporter (AngularDart, retired)<a class="headerlink" href="#nightscout-reporter-angulardart-retired" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>externals/nightscout-reporter</code></td>
+</tr>
+<tr>
+<td>HEAD</td>
+<td><code>518d61fb1d</code> (detached), staged 0, dirty 0</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>what it does</th>
+<th>anchor (nightscout-reporter@518d61fb1d)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(a) (c) (d) (e)</td>
+<td>none to Nightscout. The one POST helper is used for Google sign-in</td>
+<td><code>lib/src/globals.dart:1324-1331</code>; <code>lib/src/controls/signin/signin_component.dart:95</code></td>
+</tr>
+<tr>
+<td>(b)</td>
+<td>No <code>_id</code> filter, no <code>$in</code>. Reads <code>_id</code> as an opaque id</td>
+<td><code>lib/src/json_data.dart:1121,1317,1572</code>; <code>lib/src/start_component.dart:1125</code></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>C-id</th>
+<th>class</th>
+<th>reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C74</td>
+<td>better</td>
+<td>fewer duplicate treatments on sites whose twins are collapsed by later edits (it sums treatments)</td>
+</tr>
+<tr>
+<td>others</td>
+<td>unaffected</td>
+<td>read-only; the maintained Angular successor is not in the corpus (cannot tell for it)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="nocturne-server-reimplementation-parity-note">nocturne (server reimplementation: parity note)<a class="headerlink" href="#nocturne-server-reimplementation-parity-note" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>externals/nocturne</code></td>
+</tr>
+<tr>
+<td>HEAD</td>
+<td><code>42275c812d</code> (detached), staged 0, dirty 0</td>
+</tr>
+</tbody>
+</table>
+<p>nocturne keeps a Nightscout id as one text column, <code>LegacyId</code>, beside its own GUID. There is no
+second BSON form, so the string-versus-ObjectId twins #8758 handles cannot arise there.</p>
+<table>
+<thead>
+<tr>
+<th>#8758 rule</th>
+<th>candidate <code>ab7b22d6</code></th>
+<th>nocturne</th>
+<th>anchor (nocturne@42275c812d)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id forms accepted on v1</td>
+<td>24-hex, either case</td>
+<td>24-hex and 32-hex (UUID v7 without dashes), case-insensitive regex</td>
+<td><code>EntriesController.cs:171-175,963-966,1036-1039</code>; <code>ProfileController.cs:333-336</code></td>
+</tr>
+<tr>
+<td>lookup by id (C71, C72)</td>
+<td>ObjectId in any case; string in lower case or the spelling asked</td>
+<td>GUID parse, then exact <code>LegacyId == id</code>, no lower-casing found</td>
+<td><code>Services/Entries/EntryReadService.cs:163-175,419-431</code>; <code>Repositories/V4/V4RepositoryBase.cs:219-222</code></td>
+</tr>
+<tr>
+<td>delete by id (C74)</td>
+<td>every stored form</td>
+<td>one <code>LegacyId</code> match</td>
+<td><code>V4RepositoryBase.cs:476</code></td>
+</tr>
+<tr>
+<td>websocket <code>dbAdd</code>/<code>dbUpdate</code>/<code>dbRemove</code> (C76, C77)</td>
+<td>either form</td>
+<td>not implemented</td>
+<td>(prior map, S6)</td>
+</tr>
+<tr>
+<td><code>find[_id][$in]</code> (C73)</td>
+<td>both forms per id</td>
+<td>generic <code>$in</code> over the stored value</td>
+<td><code>FindQuery.cs</code> (prior map, S2)</td>
+</tr>
+</tbody>
+</table>
+<p>Differences a nocturne user could see after the parity suite moves to 15.0.9: an upper-case
+24-hex id asked of an ObjectId-stored record is found by the candidate; in nocturne it depends on
+whether <code>LegacyId</code> was stored in that case (cannot tell from reading). Probe R-3.</p>
+<h3 id="nightscout-roles-gateway">nightscout-roles-gateway<a class="headerlink" href="#nightscout-roles-gateway" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td><code>externals/nightscout-roles-gateway</code></td>
+</tr>
+<tr>
+<td>HEAD</td>
+<td><code>90840acee1</code> (detached), staged 0, dirty 0</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>what it does</th>
+<th>anchor (nightscout-roles-gateway@90840acee1)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(a)–(e)</td>
+<td>none for data. Auth subjects are <strong>read</strong> only: <code>GET /api/v2/authorization/subjects</code> with <code>API-SECRET</code>; roles listed</td>
+<td><code>lib/tokens/index.js:17-22,40</code>; <code>lib/criteria/core.js:45-47</code></td>
+</tr>
+<tr>
+<td>subject create/delete</td>
+<td>not implemented. The docs describe a proposed <code>POST /api/v2/authorization/subjects</code></td>
+<td><code>docs/token-management.md:280-282</code> ("PROPOSED")</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>C-id</th>
+<th>class</th>
+<th>reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C79</td>
+<td>unaffected</td>
+<td>it never deletes a subject; if the proposed create lands, a subject posted without <code>_id</code> gets an ObjectId on every build</td>
+</tr>
+<tr>
+<td>others</td>
+<td>unaffected</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="babelbetes-osaid-keymanager-trio-telemetry">babelbetes, osaid-keymanager, trio-telemetry<a class="headerlink" href="#babelbetes-osaid-keymanager-trio-telemetry" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>repo</th>
+<th>HEAD</th>
+<th>finding</th>
+<th>anchor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>babelbetes</td>
+<td><code>07a7f07278</code> (<code>develop</code>), staged 0, dirty 0</td>
+<td>no Nightscout requests; one notebook reads archived exports from files</td>
+<td><code>notebooks/understand-dana-dataset/2024-05-15 - LoadingLoopDataFromNightScout.ipynb</code> (loader cells)</td>
+</tr>
+<tr>
+<td>osaid-keymanager</td>
+<td><code>e9c3b738aa</code> (<code>main</code>), staged 0, dirty 0</td>
+<td>no Nightscout requests, no subjects or roles (its ids are App Attest key ids)</td>
+<td><code>app/attest/verify.py:82-187</code> (positive control: the search reaches its code)</td>
+</tr>
+<tr>
+<td>trio-telemetry</td>
+<td><code>681ea86752</code> (<code>master</code>), staged 0, dirty 0</td>
+<td>no Nightscout requests; <code>nightscoutPaired</code> is a boolean the Trio app reports</td>
+<td>prior map <code>trio-telemetry.md:18</code></td>
+</tr>
+</tbody>
+</table>
+<p>All C-ids: unaffected.</p>
+<h3 id="readers-matrix-read-derived">Readers matrix (read-derived)<a class="headerlink" href="#readers-matrix-read-derived" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>client</th>
+<th>C68</th>
+<th>C69</th>
+<th>C70</th>
+<th>C71</th>
+<th>C72</th>
+<th>C73</th>
+<th>C74</th>
+<th>C75</th>
+<th>C76</th>
+<th>C77</th>
+<th>C78</th>
+<th>C79</th>
+<th>C80</th>
+<th>C81</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GlycemicGPT</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>better</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>oref-digital-twin</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>nightscout-cgm-skill</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>GluPredKit</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>nightscout-reporter</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>better</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>nocturne (parity)</td>
+<td>n/a</td>
+<td>n/a</td>
+<td>n/a</td>
+<td>cannot tell</td>
+<td>parity differs by design</td>
+<td>n/a</td>
+<td>n/a</td>
+<td>n/a</td>
+<td>n/a</td>
+<td>n/a</td>
+<td>n/a</td>
+<td>n/a</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>nightscout-roles-gateway</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>babelbetes, osaid-keymanager, trio-telemetry</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+</tbody>
+</table>
+<p><code>–</code> = unaffected. No reader is in "could be worse".</p>
+<h3 id="candidate-probes_1">Candidate probes<a class="headerlink" href="#candidate-probes_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>R-1 (GlycemicGPT cursor, control for "unchanged").</strong> Seed three sgv entries in one test
+  database through mongo: A with ObjectId <code>_id</code> <code>650000000000000000000001</code>, B with ObjectId
+  <code>650000000000000000000003</code>, C with the <strong>string</strong> <code>_id</code> <code>"650000000000000000000002"</code>, all dated
+  within the last hour. Then
+  <code>GET /api/v1/entries.json?count=100&amp;find[_id][$gt]=650000000000000000000000</code> with the api-secret
+  header. Expected on 15.0.8 and <code>ab7b22d6</code> alike: A and B, not C. Positive control:
+  <code>find[_id]=650000000000000000000002</code> returns C on <code>ab7b22d6</code> only (C72).
+  <strong>Measured Q6:</strong> cursor returns A and B on both builds; <code>find[_id]=&lt;C&gt;</code> n=0 → n=1.</li>
+<li><strong>R-2 (dedupe-by-<code>_id</code> readers, twin).</strong> Seed a treatment twin: string <code>_id</code>
+  <code>"650000000000000000000010"</code> and ObjectId <code>650000000000000000000010</code>, same <code>created_at</code>. Then
+  <code>GET /api/v1/treatments.json?find[created_at][$gte]=&lt;1h ago ISO&gt;&amp;count=100</code> on both builds.
+  Expected: two records with identical <code>_id</code> text on both builds (readers fold them). Then
+  <code>PUT /api/v1/treatments</code> with <code>_id: "650000000000000000000010"</code> and re-run the GET: 15.0.8 still
+  two, <code>ab7b22d6</code> one.
+  <strong>Measured Q7:</strong> GET 2 / PUT 200 / GET 2 on 15.0.8; GET 2 / PUT 200 / GET 1 on <code>ab7b22d6</code>.</li>
+<li><strong>R-3 (nocturne parity, upper-case id).</strong> Only if a nocturne instance is available:
+  <code>POST /api/v1/entries</code> <code>[{type:'sgv', sgv:100, date:&lt;now&gt;, _id:'650000000000000000000abc'}]</code>, then
+  <code>GET /api/v1/entries/650000000000000000000ABC</code> on nocturne and on <code>ab7b22d6</code>. Expected on the
+  candidate: 1 entry. nocturne: cannot tell from reading. Not replayed (no nocturne instance in this pass).</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

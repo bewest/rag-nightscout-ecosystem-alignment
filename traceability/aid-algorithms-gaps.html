@@ -1,0 +1,5819 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/traceability/aid-algorithms-gaps.html">
+      
+      
+        <link rel="prev" href="index.html">
+      
+      
+        <link rel="next" href="aid-algorithms-requirements.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Aid Algorithms Gaps - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#aid-algorithms-gaps" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Aid Algorithms Gaps
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../docs/00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../docs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    traceability/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Aid Algorithms Gaps
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="aid-algorithms-gaps.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Aid Algorithms Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#gap-alg-001-no-cross-project-algorithm-test-vectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-ALG-001: No cross-project algorithm test vectors
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gap-alg-002-oref0-vs-aaps-behavioral-drift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-ALG-002: oref0 vs AAPS behavioral drift
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gap-alg-003-loop-algorithm-incomparable-to-oref" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-ALG-003: Loop algorithm incomparable to oref
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-layer-gaps-2026-01-29-audit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API Layer Gaps (2026-01-29 Audit)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API Layer Gaps (2026-01-29 Audit)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-carb-001-incompatible-cob-semantics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CARB-001: Incompatible COB Semantics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-carb-002-no-standard-carb-absorption-data-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CARB-002: No Standard Carb Absorption Data Format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-carb-003-uam-detection-variance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CARB-003: UAM Detection Variance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-carb-004-min_5m_carbimpact-variance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CARB-004: min_5m_carbimpact Variance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-carb-005-cob-maximum-limits-differ" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CARB-005: COB Maximum Limits Differ
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#libre-cgm-protocol-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Libre CGM Protocol Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Libre CGM Protocol Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-ins-001-insulin-model-metadata-not-synced-to-nightscout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-INS-001: Insulin Model Metadata Not Synced to Nightscout
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-ins-002-no-standardized-multi-insulin-representation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-INS-002: No Standardized Multi-Insulin Representation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-ins-003-peak-time-customization-not-captured-in-treatments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-INS-003: Peak Time Customization Not Captured in Treatments
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-ins-004-xdrip-linear-trapezoid-model-incompatible-with-aid-exponential" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-INS-004: xDrip+ Linear Trapezoid Model Incompatible with AID Exponential
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pump-communication-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pump Communication Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pump Communication Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-insulin-001-multi-insulin-api-not-standardized" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-INSULIN-001: Multi-Insulin API Not Standardized
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-oref-001-no-oref0-package-published-to-npm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-OREF-001: No oref0 Package Published to npm
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-oref-002-openaps-python-package-unmaintained" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-OREF-002: openaps Python Package Unmaintained
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-oref-003-oref0-vs-oref1-distinction-unclear" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-OREF-003: oref0 vs oref1 Distinction Unclear
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tconnectsync-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tconnectsync Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="tconnectsync Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-pred-001-prediction-array-truncation-behavior-undocumented" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-PRED-001: Prediction Array Truncation Behavior Undocumented
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-pred-002-loop-single-prediction-incompatible-with-oref-multi-curve-display" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-PRED-002: Loop Single Prediction Incompatible with oref Multi-Curve Display
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-pred-003-prediction-interval-not-standardized" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-PRED-003: Prediction Interval Not Standardized
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-pred-004-no-prediction-confidence-or-uncertainty" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-PRED-004: No Prediction Confidence or Uncertainty
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#openapsoref0-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OpenAPS/oref0 Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="OpenAPS/oref0 Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-alg-009-dynamicisf-not-present-in-oref0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-ALG-009: DynamicISF Not Present in oref0
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-alg-010-autoisf-not-present-in-oref0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-ALG-010: AutoISF Not Present in oref0
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-alg-011-lgs-duration-differences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-ALG-011: LGS Duration Differences
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-alg-012-dia-minimum-enforcement-differences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-ALG-012: DIA Minimum Enforcement Differences
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loop-algorithm-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Loop Algorithm Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Loop Algorithm Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-alg-013-loop-has-no-autosens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-ALG-013: Loop Has No Autosens
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-alg-014-loop-prediction-is-single-curve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-ALG-014: Loop Prediction Is Single Curve
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-alg-015-loop-does-not-expose-uam-curve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-ALG-015: Loop Does Not Expose UAM Curve
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-alg-016-different-iobcob-calculation-timing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-ALG-016: Different IOB/COB Calculation Timing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#profile-schema-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Profile Schema Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Profile Schema Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-prof-001-time-format-incompatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-PROF-001: Time Format Incompatibility
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-prof-002-missing-safety-limits-in-nightscout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-PROF-002: Missing Safety Limits in Nightscout
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-prof-003-no-override-presets-in-nightscout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-PROF-003: No Override Presets in Nightscout
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-prof-004-profile-switching-features-aaps-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-PROF-004: Profile Switching Features (AAPS-only)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-prof-005-dia-vs-insulin-model-mismatch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-PROF-005: DIA vs Insulin Model Mismatch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-prof-006-basal-schedule-time-format-inconsistency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-PROF-006: Basal Schedule Time Format Inconsistency
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-prof-007-30-minute-basal-rate-granularity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-PROF-007: 30-Minute Basal Rate Granularity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-prof-008-basal-rate-precision-varies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-PROF-008: Basal Rate Precision Varies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-sync-020-basal-schedule-change-events" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-SYNC-020: Basal Schedule Change Events
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bolus-wizard-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bolus Wizard Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bolus Wizard Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-bolus-001-prediction-based-vs-arithmetic-formula" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-BOLUS-001: Prediction-Based vs Arithmetic Formula
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-bolus-002-iob-handling-mismatch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-BOLUS-002: IOB Handling Mismatch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-bolus-003-superbolus-not-portable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-BOLUS-003: SuperBolus Not Portable
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-bolus-004-trend-correction-differences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-BOLUS-004: Trend Correction Differences
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sensitivity-adjustment-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sensitivity Adjustment Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Sensitivity Adjustment Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-sens-001-different-output-representations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-SENS-001: Different Output Representations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-sens-002-detection-window-mismatch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-SENS-002: Detection Window Mismatch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-sens-003-no-autosens-equivalent-in-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-SENS-003: No Autosens Equivalent in Loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-sens-004-dynamic-isf-not-standardized" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-SENS-004: Dynamic ISF Not Standardized
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-sens-005-autosens-and-autotune-lack-controller-aware-cohort-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-SENS-005: Autosens and Autotune Lack Controller-Aware Cohort Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dosing-mechanism-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dosing Mechanism Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Dosing Mechanism Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-dose-001-smb-not-available-in-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-DOSE-001: SMB Not Available in Loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-dose-002-different-safety-mechanisms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-DOSE-002: Different Safety Mechanisms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-dose-003-smb-enable-conditions-mismatch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-DOSE-003: SMB Enable Conditions Mismatch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-dose-004-dosing-frequency-difference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-DOSE-004: Dosing Frequency Difference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#insulin-model-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Insulin Model Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Insulin Model Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-ins-005-bilinear-model-not-supported-in-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-INS-005: Bilinear Model Not Supported in Loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-ins-006-delay-parameter-handling-differs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-INS-006: Delay Parameter Handling Differs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-ins-007-custom-peak-time-ux-differs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-INS-007: Custom Peak Time UX Differs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-ins-008-identical-exponential-formula-verified" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-INS-008: Identical Exponential Formula Verified
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#target-range-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Target Range Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Target Range Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-tgt-001-different-algorithm-targeting-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TGT-001: Different Algorithm Targeting Behavior
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-tgt-002-autosens-target-adjustment-not-in-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TGT-002: Autosens Target Adjustment Not in Loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-tgt-003-temp-target-sensitivity-adjustment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TGT-003: Temp Target Sensitivity Adjustment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-tgt-004-smb-enable-tied-to-target-in-oref0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TGT-004: SMB Enable Tied to Target in oref0
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trio-bridge-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trio Bridge Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Trio Bridge Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-trio-bridge-001-no-type-safety-across-bridge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TRIO-BRIDGE-001: No Type Safety Across Bridge
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-trio-bridge-002-synchronous-js-execution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TRIO-BRIDGE-002: Synchronous JS Execution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-trio-bridge-003-middleware-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TRIO-BRIDGE-003: Middleware Security
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-trio-oref-001-oref-bundle-version-tracking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TRIO-OREF-001: oref Bundle Version Tracking
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-trio-swift-001-js-vs-swift-parity-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TRIO-SWIFT-001: JS vs Swift Parity Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-trio-swift-002-sigmoid-formula-edge-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TRIO-SWIFT-002: Sigmoid Formula Edge Cases
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trio-oref-integration-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trio oref Integration Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Trio oref Integration Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-trio-001-trio_custom_variables-undocumented" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TRIO-001: trio_custom_variables Undocumented
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-trio-002-dynamic-isf-not-in-upstream-oref0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TRIO-002: Dynamic ISF Not in Upstream oref0
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-trio-003-no-automated-triooref0-sync" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TRIO-003: No Automated Trio↔oref0 Sync
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-effect-001-no-standard-effect-format-across-aid-systems" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-EFFECT-001: No Standard Effect Format Across AID Systems
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-effect-002-privacy-tier-not-defined-in-existing-apis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-EFFECT-002: Privacy Tier Not Defined in Existing APIs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-effect-003-no-agent-registration-mechanism" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-EFFECT-003: No Agent Registration Mechanism
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-effect-004-reconciliation-undefined-for-multiple-agents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-EFFECT-004: Reconciliation Undefined for Multiple Agents
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-effect-005-no-nightscout-collection-for-effects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-EFFECT-005: No Nightscout Collection for Effects
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cross-implementation-divergence-gaps-aaps-vs-oref0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross-Implementation Divergence Gaps (AAPS vs oref0)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cross-Implementation Divergence Gaps (AAPS vs oref0)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-alg-017-aaps-round_basal-is-identity-function" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-ALG-017: AAPS round_basal Is Identity Function
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-alg-018-aaps-adds-acobpredbgs-prediction-curve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-ALG-018: AAPS Adds aCOBpredBGs Prediction Curve
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-alg-019-aaps-removes-high_bg-smb-feature" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-ALG-019: AAPS Removes high_bg SMB Feature
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-alg-020-aaps-flatbgsdetected-externalized-parameter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-ALG-020: AAPS flatBGsDetected Externalized Parameter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-alg-021-three-independent-swift-oref0-ports--no-shared-validation-infrastructure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-ALG-021: Three Independent Swift oref0 Ports — No Shared Validation Infrastructure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="aid-algorithms-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Aid Algorithms Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-remote-monitor-docs-inventory.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Documentation Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-sources-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cgm Sources Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-sources-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cgm Sources Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="connectors-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Connectors Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="connectors-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Connectors Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cross-validation-log.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-Validation Assessment Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="gap-discovery.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gap discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ml-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ML Pipeline Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-api-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Api Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-api-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Api Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="orphan-artifact-priorities.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Orphan Artifact Priority Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="pumps-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pumps Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="pumps-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pumps Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sync-identity-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sync Identity Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sync-identity-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sync Identity Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="telemetry-observability-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry and Observability Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="telemetry-observability-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry and Observability Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tool-validation-2026-01-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tool validation 2026 01 23
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="traceability-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requirements Traceability Matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="treatments-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Treatments Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="treatments-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Treatments Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="domain-matrices/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    domain-matrices/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="stpa/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    stpa/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#gap-alg-001-no-cross-project-algorithm-test-vectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-ALG-001: No cross-project algorithm test vectors
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gap-alg-002-oref0-vs-aaps-behavioral-drift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-ALG-002: oref0 vs AAPS behavioral drift
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gap-alg-003-loop-algorithm-incomparable-to-oref" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-ALG-003: Loop algorithm incomparable to oref
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-layer-gaps-2026-01-29-audit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API Layer Gaps (2026-01-29 Audit)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API Layer Gaps (2026-01-29 Audit)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-carb-001-incompatible-cob-semantics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CARB-001: Incompatible COB Semantics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-carb-002-no-standard-carb-absorption-data-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CARB-002: No Standard Carb Absorption Data Format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-carb-003-uam-detection-variance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CARB-003: UAM Detection Variance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-carb-004-min_5m_carbimpact-variance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CARB-004: min_5m_carbimpact Variance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-carb-005-cob-maximum-limits-differ" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-CARB-005: COB Maximum Limits Differ
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#libre-cgm-protocol-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Libre CGM Protocol Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Libre CGM Protocol Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-ins-001-insulin-model-metadata-not-synced-to-nightscout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-INS-001: Insulin Model Metadata Not Synced to Nightscout
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-ins-002-no-standardized-multi-insulin-representation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-INS-002: No Standardized Multi-Insulin Representation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-ins-003-peak-time-customization-not-captured-in-treatments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-INS-003: Peak Time Customization Not Captured in Treatments
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-ins-004-xdrip-linear-trapezoid-model-incompatible-with-aid-exponential" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-INS-004: xDrip+ Linear Trapezoid Model Incompatible with AID Exponential
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pump-communication-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pump Communication Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pump Communication Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-insulin-001-multi-insulin-api-not-standardized" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-INSULIN-001: Multi-Insulin API Not Standardized
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-oref-001-no-oref0-package-published-to-npm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-OREF-001: No oref0 Package Published to npm
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-oref-002-openaps-python-package-unmaintained" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-OREF-002: openaps Python Package Unmaintained
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-oref-003-oref0-vs-oref1-distinction-unclear" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-OREF-003: oref0 vs oref1 Distinction Unclear
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tconnectsync-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tconnectsync Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="tconnectsync Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-pred-001-prediction-array-truncation-behavior-undocumented" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-PRED-001: Prediction Array Truncation Behavior Undocumented
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-pred-002-loop-single-prediction-incompatible-with-oref-multi-curve-display" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-PRED-002: Loop Single Prediction Incompatible with oref Multi-Curve Display
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-pred-003-prediction-interval-not-standardized" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-PRED-003: Prediction Interval Not Standardized
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-pred-004-no-prediction-confidence-or-uncertainty" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-PRED-004: No Prediction Confidence or Uncertainty
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#openapsoref0-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OpenAPS/oref0 Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="OpenAPS/oref0 Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-alg-009-dynamicisf-not-present-in-oref0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-ALG-009: DynamicISF Not Present in oref0
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-alg-010-autoisf-not-present-in-oref0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-ALG-010: AutoISF Not Present in oref0
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-alg-011-lgs-duration-differences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-ALG-011: LGS Duration Differences
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-alg-012-dia-minimum-enforcement-differences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-ALG-012: DIA Minimum Enforcement Differences
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loop-algorithm-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Loop Algorithm Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Loop Algorithm Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-alg-013-loop-has-no-autosens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-ALG-013: Loop Has No Autosens
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-alg-014-loop-prediction-is-single-curve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-ALG-014: Loop Prediction Is Single Curve
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-alg-015-loop-does-not-expose-uam-curve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-ALG-015: Loop Does Not Expose UAM Curve
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-alg-016-different-iobcob-calculation-timing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-ALG-016: Different IOB/COB Calculation Timing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#profile-schema-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Profile Schema Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Profile Schema Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-prof-001-time-format-incompatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-PROF-001: Time Format Incompatibility
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-prof-002-missing-safety-limits-in-nightscout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-PROF-002: Missing Safety Limits in Nightscout
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-prof-003-no-override-presets-in-nightscout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-PROF-003: No Override Presets in Nightscout
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-prof-004-profile-switching-features-aaps-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-PROF-004: Profile Switching Features (AAPS-only)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-prof-005-dia-vs-insulin-model-mismatch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-PROF-005: DIA vs Insulin Model Mismatch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-prof-006-basal-schedule-time-format-inconsistency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-PROF-006: Basal Schedule Time Format Inconsistency
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-prof-007-30-minute-basal-rate-granularity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-PROF-007: 30-Minute Basal Rate Granularity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-prof-008-basal-rate-precision-varies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-PROF-008: Basal Rate Precision Varies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-sync-020-basal-schedule-change-events" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-SYNC-020: Basal Schedule Change Events
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bolus-wizard-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bolus Wizard Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bolus Wizard Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-bolus-001-prediction-based-vs-arithmetic-formula" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-BOLUS-001: Prediction-Based vs Arithmetic Formula
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-bolus-002-iob-handling-mismatch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-BOLUS-002: IOB Handling Mismatch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-bolus-003-superbolus-not-portable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-BOLUS-003: SuperBolus Not Portable
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-bolus-004-trend-correction-differences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-BOLUS-004: Trend Correction Differences
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sensitivity-adjustment-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sensitivity Adjustment Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Sensitivity Adjustment Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-sens-001-different-output-representations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-SENS-001: Different Output Representations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-sens-002-detection-window-mismatch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-SENS-002: Detection Window Mismatch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-sens-003-no-autosens-equivalent-in-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-SENS-003: No Autosens Equivalent in Loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-sens-004-dynamic-isf-not-standardized" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-SENS-004: Dynamic ISF Not Standardized
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-sens-005-autosens-and-autotune-lack-controller-aware-cohort-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-SENS-005: Autosens and Autotune Lack Controller-Aware Cohort Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dosing-mechanism-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dosing Mechanism Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Dosing Mechanism Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-dose-001-smb-not-available-in-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-DOSE-001: SMB Not Available in Loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-dose-002-different-safety-mechanisms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-DOSE-002: Different Safety Mechanisms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-dose-003-smb-enable-conditions-mismatch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-DOSE-003: SMB Enable Conditions Mismatch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-dose-004-dosing-frequency-difference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-DOSE-004: Dosing Frequency Difference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#insulin-model-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Insulin Model Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Insulin Model Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-ins-005-bilinear-model-not-supported-in-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-INS-005: Bilinear Model Not Supported in Loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-ins-006-delay-parameter-handling-differs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-INS-006: Delay Parameter Handling Differs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-ins-007-custom-peak-time-ux-differs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-INS-007: Custom Peak Time UX Differs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-ins-008-identical-exponential-formula-verified" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-INS-008: Identical Exponential Formula Verified
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#target-range-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Target Range Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Target Range Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-tgt-001-different-algorithm-targeting-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TGT-001: Different Algorithm Targeting Behavior
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-tgt-002-autosens-target-adjustment-not-in-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TGT-002: Autosens Target Adjustment Not in Loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-tgt-003-temp-target-sensitivity-adjustment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TGT-003: Temp Target Sensitivity Adjustment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-tgt-004-smb-enable-tied-to-target-in-oref0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TGT-004: SMB Enable Tied to Target in oref0
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trio-bridge-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trio Bridge Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Trio Bridge Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-trio-bridge-001-no-type-safety-across-bridge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TRIO-BRIDGE-001: No Type Safety Across Bridge
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-trio-bridge-002-synchronous-js-execution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TRIO-BRIDGE-002: Synchronous JS Execution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-trio-bridge-003-middleware-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TRIO-BRIDGE-003: Middleware Security
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-trio-oref-001-oref-bundle-version-tracking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TRIO-OREF-001: oref Bundle Version Tracking
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-trio-swift-001-js-vs-swift-parity-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TRIO-SWIFT-001: JS vs Swift Parity Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-trio-swift-002-sigmoid-formula-edge-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TRIO-SWIFT-002: Sigmoid Formula Edge Cases
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trio-oref-integration-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trio oref Integration Gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Trio oref Integration Gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-trio-001-trio_custom_variables-undocumented" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TRIO-001: trio_custom_variables Undocumented
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-trio-002-dynamic-isf-not-in-upstream-oref0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TRIO-002: Dynamic ISF Not in Upstream oref0
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-trio-003-no-automated-triooref0-sync" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-TRIO-003: No Automated Trio↔oref0 Sync
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-effect-001-no-standard-effect-format-across-aid-systems" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-EFFECT-001: No Standard Effect Format Across AID Systems
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-effect-002-privacy-tier-not-defined-in-existing-apis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-EFFECT-002: Privacy Tier Not Defined in Existing APIs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-effect-003-no-agent-registration-mechanism" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-EFFECT-003: No Agent Registration Mechanism
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-effect-004-reconciliation-undefined-for-multiple-agents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-EFFECT-004: Reconciliation Undefined for Multiple Agents
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-effect-005-no-nightscout-collection-for-effects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-EFFECT-005: No Nightscout Collection for Effects
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cross-implementation-divergence-gaps-aaps-vs-oref0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross-Implementation Divergence Gaps (AAPS vs oref0)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cross-Implementation Divergence Gaps (AAPS vs oref0)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gap-alg-017-aaps-round_basal-is-identity-function" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-ALG-017: AAPS round_basal Is Identity Function
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-alg-018-aaps-adds-acobpredbgs-prediction-curve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-ALG-018: AAPS Adds aCOBpredBGs Prediction Curve
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-alg-019-aaps-removes-high_bg-smb-feature" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-ALG-019: AAPS Removes high_bg SMB Feature
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-alg-020-aaps-flatbgsdetected-externalized-parameter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-ALG-020: AAPS flatBGsDetected Externalized Parameter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-alg-021-three-independent-swift-oref0-ports--no-shared-validation-infrastructure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GAP-ALG-021: Three Independent Swift oref0 Ports — No Shared Validation Infrastructure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="aid-algorithms-gaps">Aid Algorithms Gaps<a class="headerlink" href="#aid-algorithms-gaps" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-06-27 at <code>5a4bc4eb</code>.</em></p>
+<p>Domain-specific gaps extracted from gaps.md.
+See <a href="gaps.html">gaps.md</a> for the index.</p>
+<hr />
+<h3 id="gap-alg-001-no-cross-project-algorithm-test-vectors">GAP-ALG-001: No cross-project algorithm test vectors<a class="headerlink" href="#gap-alg-001-no-cross-project-algorithm-test-vectors" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Algorithm validation across implementations</p>
+<p><strong>Description</strong>: Each AID project (oref0, AAPS, Loop, Trio) maintains isolated test fixtures with incompatible formats. No mechanism exists to validate behavioral consistency across implementations.</p>
+<p><strong>Evidence</strong>:
+- oref0: <code>tests/determine-basal.test.js</code> with inline fixtures
+- AAPS: <code>app/src/androidTest/assets/results/*.json</code> (~85 files)
+- Loop: <code>LoopKitTests/Fixtures/</code> scattered JSON files</p>
+<p><strong>Impact</strong>:
+- Algorithm differences may cause dosing inconsistencies for users switching between apps
+- No automated regression detection for cross-project behavioral drift
+- Safety-critical algorithm changes may go unvalidated</p>
+<p><strong>Possible Solutions</strong>:
+1. ✅ Implement conformance vector format (DONE: <code>conformance-vector-v1.json</code>)
+2. ✅ Extract vectors from AAPS (DONE: 85 vectors extracted)
+3. ✅ oref0 runner complete (DONE: 26/85 pass, reveals AAPS drift)
+4. 🔄 AAPS Kotlin runner (IN PROGRESS)
+5. Loop Swift runner (TODO)
+6. CI integration to detect behavioral drift</p>
+<p><strong>Status</strong>: Substantially addressed - oref0 runner reveals 69% divergence from AAPS</p>
+<p><strong>Related Requirements</strong>: REQ-ALG-003, REQ-PLUGIN-003</p>
+<p><strong>Related</strong>:
+- <a href="../docs/sdqctl-proposals/algorithm-conformance-suite.html">Algorithm Conformance Suite Proposal</a>
+- <code>conformance/schemas/conformance-vector-v1.json</code>
+- <code>conformance/runners/oref0-runner.js</code>
+- <code>conformance/results/oref0-results.json</code></p>
+<hr />
+<hr />
+<h3 id="gap-alg-002-oref0-vs-aaps-behavioral-drift">GAP-ALG-002: oref0 vs AAPS behavioral drift<a class="headerlink" href="#gap-alg-002-oref0-vs-aaps-behavioral-drift" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: AAPS Kotlin vs upstream oref0 JavaScript</p>
+<p><strong>Description</strong>: AAPS Kotlin implementation has diverged from upstream oref0 JavaScript. The ReplayApsResultsTest compares JS vs KT within AAPS but not against upstream oref0.</p>
+<p><strong>Evidence</strong>:
+- oref0-runner.js: 26/85 AAPS vectors pass against upstream oref0 (31%)
+- Key differences:
+  - eventualBG calculation differs significantly (e.g., 146 vs 80 in TV-017)
+  - AAPS iob_data includes iobWithZeroTemp projections; oref0 logs "Problem with iobArray"
+  - AAPS modifies IOB array handling for SMB prediction</p>
+<p><strong>Impact</strong>:
+- AAPS users experience different dosing than OpenAPS rig users with identical settings
+- 69% of test scenarios produce different outputs
+- No clear compatibility guarantees between implementations</p>
+<p><strong>Possible Solutions</strong>:
+1. ✅ Create shared test vectors (DONE: 85 vectors)
+2. ✅ Run AAPS vectors against upstream oref0 (DONE: 26/85 pass)
+3. 🔄 Document specific behavioral differences
+4. Propose harmonization where clinically appropriate</p>
+<p><strong>Status</strong>: Quantified - 69% divergence measured</p>
+<p><strong>Related</strong>:
+- <a href="../docs/sdqctl-proposals/algorithm-conformance-suite.html">Algorithm Conformance Suite Proposal</a>
+- <code>conformance/results/oref0-results.json</code> - detailed failure analysis</p>
+<hr />
+<hr />
+<h3 id="gap-alg-003-loop-algorithm-incomparable-to-oref">GAP-ALG-003: Loop algorithm incomparable to oref<a class="headerlink" href="#gap-alg-003-loop-algorithm-incomparable-to-oref" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Loop vs oref dosing comparison</p>
+<p><strong>Description</strong>: Loop uses fundamentally different prediction model (single combined curve vs 4 separate curves). Direct output comparison is not meaningful without semantic mapping.</p>
+<p><strong>Evidence</strong>:
+- oref0: 4 curves (IOB, COB, UAM, ZT) with min() logic
+- Loop: Combined prediction curve with retrospective correction
+- Different insulin models (exponential vs Walsh options)</p>
+<p><strong>Impact</strong>:
+- Users cannot expect identical dosing behavior when switching between Loop and oref-based systems
+- No mechanism to validate "equivalent safety" across models</p>
+<p><strong>Possible Solutions</strong>:
+1. Define semantic equivalence criteria ("both recommend increased basal")
+2. Create scenario-based assertions rather than exact value matching
+3. Document expected behavioral differences for users</p>
+<p><strong>Status</strong>: Proposal created</p>
+<p><strong>Related Requirements</strong>: REQ-ALG-002</p>
+<p><strong>Related</strong>:
+- <a href="../docs/sdqctl-proposals/algorithm-conformance-suite.html">Algorithm Conformance Suite Proposal</a>
+- <a href="../docs/10-domain/prediction-arrays-comparison.html">Prediction Arrays Comparison</a></p>
+<hr />
+<h2 id="api-layer-gaps-2026-01-29-audit">API Layer Gaps (2026-01-29 Audit)<a class="headerlink" href="#api-layer-gaps-2026-01-29-audit" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="gap-carb-001-incompatible-cob-semantics">GAP-CARB-001: Incompatible COB Semantics<a class="headerlink" href="#gap-carb-001-incompatible-cob-semantics" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Loop's predictive curve-based COB differs fundamentally from oref0's deviation-inferred COB, making cross-system comparisons invalid.</p>
+<p><strong>Affected Systems</strong>: Loop, AAPS, Trio, oref0, Nightscout</p>
+<p><strong>Impact</strong>:
+- Nightscout displays COB without model context
+- Users switching systems see different COB values for same meal
+- Reports aggregate incompatible metrics
+- Cannot compare algorithm performance across systems</p>
+<p><strong>Example</strong>:
+- Same meal: Loop COB = 45g (curve projection), oref0 COB = 38g (deviation-inferred)</p>
+<p><strong>Remediation</strong>: Nightscout should store and display COB with model type annotation in devicestatus schema.</p>
+<hr />
+<hr />
+<h3 id="gap-carb-002-no-standard-carb-absorption-data-format">GAP-CARB-002: No Standard Carb Absorption Data Format<a class="headerlink" href="#gap-carb-002-no-standard-carb-absorption-data-format" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Each AID system stores carb absorption data in incompatible formats, preventing data interchange and replay.</p>
+<p><strong>Affected Systems</strong>: Loop, AAPS, Trio, oref0</p>
+<p><strong>Storage Formats</strong>:
+| System | Format |
+|--------|--------|
+| Loop | Per-entry absorption timeline array |
+| oref0 | Aggregate mealCOB scalar |
+| AAPS | autosensData.cob with 5-min deltas |
+| Trio | meal_data.mealCOB scalar |</p>
+<p><strong>Impact</strong>:
+- Cannot replay absorption data across systems
+- No standard for test vectors
+- Limits algorithm conformance testing</p>
+<p><strong>Remediation</strong>: Define standard absorption event format with timeline, model type, and per-entry tracking.</p>
+<hr />
+<hr />
+<h3 id="gap-carb-003-uam-detection-variance">GAP-CARB-003: UAM Detection Variance<a class="headerlink" href="#gap-carb-003-uam-detection-variance" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Unannounced Meal (UAM) detection algorithms differ significantly across systems, causing inconsistent dosing behavior.</p>
+<p><strong>Affected Systems</strong>: Loop, AAPS, Trio, oref0</p>
+<p><strong>Detection Methods</strong>:
+| System | UAM Approach |
+|--------|--------------|
+| Loop | Retrospective correction (implicit via observed absorption) |
+| oref0 | Explicit deviation slope analysis with 60m delay |
+| AAPS | enableUAM constraint check |
+| Trio | enableUAM setting (oref0-derived) |</p>
+<p><strong>Impact</strong>:
+- Users experience different dosing behavior with same settings
+- UAM sensitivity not portable across systems
+- Documentation doesn't explain behavioral differences</p>
+<p><strong>Remediation</strong>: Document UAM behavior differences prominently in user guides and Nightscout UI.</p>
+<hr />
+<hr />
+<h3 id="gap-carb-004-min_5m_carbimpact-variance">GAP-CARB-004: min_5m_carbimpact Variance<a class="headerlink" href="#gap-carb-004-min_5m_carbimpact-variance" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: COB Decay Rate Comparison</p>
+<p><strong>Description</strong>: The <code>min_5m_carbimpact</code> parameter in oref0/AAPS defaults to 3 mg/dL/5m for normal diets but 8 mg/dL/5m for low-carb diets. This significantly affects how quickly COB decays when no absorption is detected.</p>
+<p><strong>Source</strong>: <a href="https://github.com/openaps/oref0/blob/d219baf9559d62a8bb0bd42014192a2d7c0839ef/lib/determine-basal/cob.js">oref0 cob.js#L189-L194</a></p>
+<p><strong>Impact</strong>:
+- Same carb entry produces different COB timelines with different min_5m_carbimpact settings
+- "Zombie carbs" (COB that never depletes) behavior differs
+- Cross-user comparison invalid without knowing this setting</p>
+<p><strong>Possible Solutions</strong>:
+1. Include <code>min_5m_carbimpact</code> in devicestatus
+2. Standardize on a single default across configurations
+3. Document as critical comparison caveat</p>
+<p><strong>Status</strong>: Under discussion</p>
+<hr />
+<hr />
+<h3 id="gap-carb-005-cob-maximum-limits-differ">GAP-CARB-005: COB Maximum Limits Differ<a class="headerlink" href="#gap-carb-005-cob-maximum-limits-differ" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Large Meal Handling</p>
+<p><strong>Description</strong>: oref0/AAPS enforce a hard <code>maxCOB</code> cap (default 120g), while Loop has no such limit. This means the same large meal (e.g., 150g carbs) produces different COB values.</p>
+<p><strong>Source</strong>: 
+- <a href="https://github.com/openaps/oref0/blob/d219baf9559d62a8bb0bd42014192a2d7c0839ef/lib/meal/total.js">oref0 total.js#L108</a>
+- Loop has no equivalent cap</p>
+<p><strong>Impact</strong>:
+- Large carb entries produce different COB in different systems
+- Safety implications for high-carb meals
+- Users unaware of capping may be confused by COB discrepancies</p>
+<p><strong>Possible Solutions</strong>:
+1. Loop adds configurable maxCOB option
+2. oref0 makes maxCOB configurable with no-limit option
+3. Document as known difference with safety implications</p>
+<p><strong>Status</strong>: Under discussion</p>
+<hr />
+<h2 id="libre-cgm-protocol-gaps">Libre CGM Protocol Gaps<a class="headerlink" href="#libre-cgm-protocol-gaps" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="gap-ins-001-insulin-model-metadata-not-synced-to-nightscout">GAP-INS-001: Insulin Model Metadata Not Synced to Nightscout<a class="headerlink" href="#gap-ins-001-insulin-model-metadata-not-synced-to-nightscout" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Historical IOB reconstruction, algorithm debugging</p>
+<p><strong>Description</strong>: When treatments are uploaded to Nightscout, no metadata about the insulin model used for IOB calculation is included. Specifically missing:
+- Curve type (exponential, bilinear, linear trapezoid)
+- Peak time parameter
+- DIA setting at time of calculation
+- Insulin brand/type</p>
+<p><strong>Source Evidence</strong>:
+- Loop uploads bolus with <code>insulinType?.brandName</code> but not curve parameters
+- oref0/Trio upload bolus without any model metadata
+- AAPS stores <code>insulinConfiguration</code> locally but doesn't upload to Nightscout</p>
+<p><strong>Impact</strong>:
+- Cannot reproduce historical IOB calculations
+- Cannot determine why predictions differed from outcomes
+- Algorithm debugging requires access to device settings
+- Research use cases blocked</p>
+<p><strong>Possible Solutions</strong>:
+1. Add <code>insulinModel</code> object to treatment schema: <code>{curve, peak, dia}</code>
+2. Include model metadata in devicestatus uploads
+3. Create separate <code>algorithmSettings</code> collection</p>
+<p><strong>Status</strong>: Under discussion</p>
+<p><strong>Related</strong>:
+- <a href="../docs/10-domain/insulin-curves-deep-dive.html">Insulin Curves Deep Dive</a>
+- REQ-INS-005</p>
+<hr />
+<hr />
+<h3 id="gap-ins-002-no-standardized-multi-insulin-representation">GAP-INS-002: No Standardized Multi-Insulin Representation<a class="headerlink" href="#gap-ins-002-no-standardized-multi-insulin-representation" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: MDI users tracking multiple insulin types, smart pen integration</p>
+<p><strong>Description</strong>: xDrip+ uniquely supports tracking multiple insulin types per treatment via <code>insulinJSON</code> field containing an array of <code>InsulinInjection</code> objects. This format is xDrip+-specific and not recognized by other systems or Nightscout.</p>
+<p><strong>Source Evidence</strong>:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1">// xDrip+ Treatments.java</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nd">@Column</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"insulinJSON"</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">insulinJSON</span><span class="p">;</span><span class="w">  </span><span class="c1">// JSON array of {profileName, units}</span>
+</code></pre></div></p>
+<p>Nightscout treatments only support single <code>insulin</code> field.</p>
+<p><strong>Impact</strong>:
+- MDI users cannot track rapid + basal insulin in standard format
+- Smart pen data (InPen, NovoPen) loses insulin type on upload
+- IOB calculations must fall back to single insulin model
+- Cross-system data correlation loses insulin type breakdown</p>
+<p><strong>Possible Solutions</strong>:
+1. Add Nightscout schema support for multi-insulin treatments
+2. Standardize xDrip+ <code>insulinJSON</code> format for adoption
+3. Use separate treatment entries per insulin type</p>
+<p><strong>Status</strong>: Under discussion</p>
+<p><strong>Related</strong>:
+- <a href="../mapping/xdrip-android/insulin-management.html">xDrip+ Insulin Management</a></p>
+<hr />
+<hr />
+<h3 id="gap-ins-003-peak-time-customization-not-captured-in-treatments">GAP-INS-003: Peak Time Customization Not Captured in Treatments<a class="headerlink" href="#gap-ins-003-peak-time-customization-not-captured-in-treatments" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Custom insulin tuning, historical analysis</p>
+<p><strong>Description</strong>: oref0 and AAPS support custom peak times via <code>useCustomPeakTime</code> and <code>insulinPeakTime</code> profile settings. However, when treatments are recorded, the peak time used for IOB calculation is not captured.</p>
+<p><strong>Source Evidence</strong>:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">// oref0:lib/iob/calculate.js</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">profile</span><span class="p">.</span><span class="nx">useCustomPeakTime</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">profile</span><span class="p">.</span><span class="nx">insulinPeakTime</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="kc">undefined</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="nx">peak</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">profile</span><span class="p">.</span><span class="nx">insulinPeakTime</span><span class="p">;</span><span class="w">  </span><span class="c1">// Custom peak, but not stored in treatment</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Impact</strong>:
+- Cannot reconstruct IOB with correct curve shape
+- Profile changes retroactively affect historical analysis
+- Custom tuning decisions not documented</p>
+<p><strong>Possible Solutions</strong>:
+1. Include <code>insulinPeakAtDose</code> in treatment metadata
+2. Capture profile snapshot at treatment time
+3. Store peak time in devicestatus algorithm output</p>
+<p><strong>Status</strong>: Under discussion</p>
+<p><strong>Related</strong>:
+- REQ-INS-003
+- <a href="../mapping/oref0/insulin-math.html">oref0 Insulin Math</a></p>
+<hr />
+<hr />
+<h3 id="gap-ins-004-xdrip-linear-trapezoid-model-incompatible-with-aid-exponential">GAP-INS-004: xDrip+ Linear Trapezoid Model Incompatible with AID Exponential<a class="headerlink" href="#gap-ins-004-xdrip-linear-trapezoid-model-incompatible-with-aid-exponential" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Cross-system IOB comparison, data portability</p>
+<p><strong>Description</strong>: xDrip+ uses a linear trapezoid model for insulin activity, while all AID systems (Loop, oref0, AAPS, Trio) use the exponential model. These models produce different IOB decay curves from identical dose history.</p>
+<p><strong>Source Evidence</strong>:
+- xDrip+: <code>LinearTrapezoidInsulin.java</code> uses onset/peak/duration with linear segments
+- AID systems: Exponential decay with <code>tau</code>, <code>a</code>, <code>S</code> parameters from shared formula</p>
+<p><strong>Impact</strong>:
+- xDrip+ IOB values differ from AAPS IOB for same user
+- Smart pen data imported to AID system uses different curve
+- Cannot directly compare IOB across CGM app vs AID controller</p>
+<p><strong>Possible Solutions</strong>:
+1. xDrip+ adds exponential model option for AID compatibility
+2. Document conversion factors between models
+3. Accept limitation and document for users</p>
+<p><strong>Status</strong>: Under discussion (architectural difference, likely won't converge)</p>
+<p><strong>Related</strong>:
+- <a href="../docs/10-domain/insulin-curves-deep-dive.html">Insulin Curves Deep Dive</a>
+- <a href="../mapping/xdrip-android/insulin-management.html">xDrip+ Insulin Management</a></p>
+<hr />
+<h2 id="pump-communication-gaps">Pump Communication Gaps<a class="headerlink" href="#pump-communication-gaps" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="gap-insulin-001-multi-insulin-api-not-standardized">GAP-INSULIN-001: Multi-Insulin API Not Standardized<a class="headerlink" href="#gap-insulin-001-multi-insulin-api-not-standardized" title="Permanent link">&para;</a></h3>
+<p><strong>Status</strong>: ✅ Addressed in specification</p>
+<p><strong>Description</strong>: Multiple insulin profile support (names, curves, colors) exists in PR#8261 and is already used by xDrip+ and nightscout-reporter, but not merged into Nightscout core.</p>
+<p><strong>Affected Systems</strong>: xDrip+, nightscout-reporter, Loop, Trio, AAPS</p>
+<p><strong>Impact</strong>:
+- No standard API for insulin model definitions
+- IOB calculations cannot reference user-defined curves
+- Insulin type not synchronized across systems</p>
+<p><strong>Remediation</strong>: ✅ OpenAPI spec created: <code>specs/openapi/aid-insulin-2025.yaml</code> (576 lines)</p>
+<p><strong>Specification Coverage</strong>:
+- 5 endpoints: CRUD + bolus/basal active
+- Insulin schema with DIA, peak, curve, concentration
+- Cross-project field mapping table
+- 4 conformance scenarios
+- Bug noted: PR#8261 /basal endpoint calls bolus() function</p>
+<hr />
+<hr />
+<h3 id="gap-oref-001-no-oref0-package-published-to-npm">GAP-OREF-001: No oref0 Package Published to npm<a class="headerlink" href="#gap-oref-001-no-oref0-package-published-to-npm" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Integrating oref0 algorithm into other Node.js projects</p>
+<p><strong>Description</strong>: oref0 is not published as an npm package. Users must clone the repo and run from source. There's no <code>npm install oref0</code>.</p>
+<p><strong>Source</strong>: <code>externals/oref0/package.json</code> - not published to npm registry</p>
+<p><strong>Impact</strong>:
+- Makes integration with other Node.js projects difficult
+- Each project (AAPS, Trio) re-implements in native language
+- No versioned releases for dependency management</p>
+<p><strong>Status</strong>: Design choice - algorithm evolved into native ports</p>
+<hr />
+<hr />
+<h3 id="gap-oref-002-openaps-python-package-unmaintained">GAP-OREF-002: openaps Python Package Unmaintained<a class="headerlink" href="#gap-oref-002-openaps-python-package-unmaintained" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Adding new pump or CGM support to openaps toolkit</p>
+<p><strong>Description</strong>: The openaps Python package hasn't been updated significantly; focus shifted to AndroidAPS and Loop ecosystems. New device support goes to AAPS/Loop first.</p>
+<p><strong>Source</strong>: <code>externals/openaps/</code> - limited recent commits</p>
+<p><strong>Impact</strong>:
+- New pump/CGM support goes to AAPS first
+- openaps/oref0 rig has limited device support
+- Legacy Medtronic-focused</p>
+<p><strong>Status</strong>: Expected - ecosystem evolved to mobile apps</p>
+<hr />
+<hr />
+<h3 id="gap-oref-003-oref0-vs-oref1-distinction-unclear">GAP-OREF-003: oref0 vs oref1 Distinction Unclear<a class="headerlink" href="#gap-oref-003-oref0-vs-oref1-distinction-unclear" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Understanding which features are oref0 vs oref1 when porting</p>
+<p><strong>Description</strong>: oref1 added SMB (Super Micro Bolus) support but the code is in the same repository with no clear versioning or feature flags to distinguish oref0 vs oref1 capabilities.</p>
+<p><strong>Source</strong>: <code>externals/oref0/lib/determine-basal/determine-basal.js</code> - SMB logic mixed with base algorithm</p>
+<p><strong>Impact</strong>:
+- Difficult to know which features are oref0 vs oref1
+- Porting to other systems requires understanding implicit feature sets
+- Documentation often conflates the two</p>
+<p><strong>Possible Solutions</strong>:
+1. Document oref0 vs oref1 feature matrix
+2. Add feature flags in algorithm</p>
+<p><strong>Status</strong>: Documentation gap</p>
+<hr />
+<h2 id="tconnectsync-gaps">tconnectsync Gaps<a class="headerlink" href="#tconnectsync-gaps" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="gap-pred-001-prediction-array-truncation-behavior-undocumented">GAP-PRED-001: Prediction Array Truncation Behavior Undocumented<a class="headerlink" href="#gap-pred-001-prediction-array-truncation-behavior-undocumented" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: OpenAPS/AAPS devicestatus uploads with large prediction arrays</p>
+<p><strong>Description</strong>: Nightscout may truncate prediction arrays based on <code>PREDICTIONS_MAX_SIZE</code> environment variable. This behavior is server-configurable and varies between installations. Clients have no way to know if their predictions were truncated.</p>
+<p><strong>Source</strong>: <code>cgm-remote-monitor:tests/api.partial-failures.test.js:402-550</code>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1">// SPEC: When PREDICTIONS_MAX_SIZE env var is set, prediction arrays</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="c1">// are truncated to that size</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1">// SPEC: Setting PREDICTIONS_MAX_SIZE=0 explicitly disables truncation</span>
+</code></pre></div></p>
+<p><strong>Impact</strong>:
+- Algorithm debugging may be impossible if predictions are truncated
+- Different Nightscout installations behave differently
+- No indication to clients that data was truncated
+- Research and audit use cases affected</p>
+<p><strong>Possible Solutions</strong>:
+1. Document <code>PREDICTIONS_MAX_SIZE</code> behavior in API spec
+2. Add response header indicating truncation occurred
+3. Standardize default behavior across installations
+4. Add <code>truncated: true</code> flag to devicestatus when applicable</p>
+<p><strong>Status</strong>: Under discussion</p>
+<p><strong>Related</strong>:
+- GAP-SYNC-002 (Effect timelines not uploaded)</p>
+<hr />
+<hr />
+<h3 id="gap-pred-002-loop-single-prediction-incompatible-with-oref-multi-curve-display">GAP-PRED-002: Loop Single Prediction Incompatible with oref Multi-Curve Display<a class="headerlink" href="#gap-pred-002-loop-single-prediction-incompatible-with-oref-multi-curve-display" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Viewing Loop predictions in Nightscout alongside AAPS/Trio users</p>
+<p><strong>Description</strong>: Loop uploads a single combined prediction curve (<code>loop.predicted.values</code>), while Nightscout's OpenAPS plugin expects separate <code>predBGs.IOB</code>, <code>predBGs.COB</code>, <code>predBGs.UAM</code>, <code>predBGs.ZT</code> arrays. Loop predictions cannot show IOB/COB/UAM/ZT toggle.</p>
+<p><strong>Source</strong>: <code>NightscoutServiceKit/Extensions/StoredDosingDecision.swift</code>, <code>cgm-remote-monitor/lib/plugins/openaps.js</code></p>
+<p><strong>Impact</strong>:
+- Loop predictions display as single line; AAPS/Trio show 4 toggleable curves
+- Different visualization experience between Loop and AAPS/Trio users
+- Harder to compare algorithm behavior across systems</p>
+<p><strong>Status</strong>: Design difference - document as expected behavior</p>
+<hr />
+<hr />
+<h3 id="gap-pred-003-prediction-interval-not-standardized">GAP-PRED-003: Prediction Interval Not Standardized<a class="headerlink" href="#gap-pred-003-prediction-interval-not-standardized" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Comparing prediction accuracy across systems</p>
+<p><strong>Description</strong>: AAPS/Trio use fixed 5-minute intervals for prediction arrays; Loop may use variable intervals based on algorithm timing and available glucose data.</p>
+<p><strong>Source</strong>: <code>LoopAlgorithm/GlucosePredictionAlgorithm.swift</code>, <code>app.aaps.core.interfaces.aps.Predictions</code></p>
+<p><strong>Impact</strong>:
+- Cannot directly compare prediction arrays between systems
+- Interpolation needed for cross-system accuracy analysis
+- Time alignment complexity for research</p>
+<p><strong>Status</strong>: Under investigation</p>
+<hr />
+<hr />
+<h3 id="gap-pred-004-no-prediction-confidence-or-uncertainty">GAP-PRED-004: No Prediction Confidence or Uncertainty<a class="headerlink" href="#gap-pred-004-no-prediction-confidence-or-uncertainty" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Assessing prediction reliability for algorithm tuning</p>
+<p><strong>Description</strong>: None of the AID systems upload prediction confidence intervals or uncertainty bounds. Only point estimates are available.</p>
+<p><strong>Source</strong>: All prediction implementations</p>
+<p><strong>Impact</strong>:
+- Cannot assess prediction reliability
+- Algorithm comparison limited to point estimates
+- No way to detect high-uncertainty situations</p>
+<p><strong>Possible Solutions</strong>:
+1. Add optional <code>confidenceBounds</code> field to prediction format
+2. Include standard deviation or percentile ranges</p>
+<p><strong>Status</strong>: Future enhancement consideration</p>
+<hr />
+<h2 id="openapsoref0-gaps">OpenAPS/oref0 Gaps<a class="headerlink" href="#openapsoref0-gaps" title="Permanent link">&para;</a></h2>
+<h3 id="gap-alg-009-dynamicisf-not-present-in-oref0">GAP-ALG-009: DynamicISF Not Present in oref0<a class="headerlink" href="#gap-alg-009-dynamicisf-not-present-in-oref0" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Running AAPS DynamicISF test vectors against vanilla oref0</p>
+<p><strong>Description</strong>: AAPS's DynamicISF algorithm calculates variable insulin sensitivity based on Total Daily Dose (TDD) using formula <code>1800 / (TDD × ln(BG/divisor + 1))</code>. This algorithm is not present in vanilla oref0, which uses static ISF from profile.</p>
+<p><strong>Source</strong>: Conformance testing (85 vectors, 44 DynamicISF, 18% pass rate)</p>
+<p><strong>Impact</strong>:
+- 52% of AAPS test vectors cannot pass oref0 validation
+- eventualBG calculations diverge significantly
+- Cross-system conformance testing requires algorithm-specific runners</p>
+<p><strong>Possible Solutions</strong>:
+1. Create separate conformance runner for DynamicISF
+2. Add DynamicISF calculation to conformance suite
+3. Filter test vectors to SMBPlugin-only for oref0 testing</p>
+<p><strong>Status</strong>: Documented</p>
+<hr />
+<h3 id="gap-alg-010-autoisf-not-present-in-oref0">GAP-ALG-010: AutoISF Not Present in oref0<a class="headerlink" href="#gap-alg-010-autoisf-not-present-in-oref0" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Running AAPS AutoISF test vectors against vanilla oref0</p>
+<p><strong>Description</strong>: AAPS's AutoISF algorithm uses sigmoid-based ISF adjustment considering BG level, time since last bolus, exercise activity, and accelerating/decelerating BG. This is entirely AAPS-specific and not present in oref0.</p>
+<p><strong>Source</strong>: Conformance testing (85 vectors, 22 AutoISF, 5% pass rate)</p>
+<p><strong>Impact</strong>:
+- 26% of AAPS test vectors virtually all fail oref0 validation
+- AutoISF produces significantly different dosing recommendations
+- Cross-system algorithm comparison requires algorithm-specific testing</p>
+<p><strong>Possible Solutions</strong>:
+1. Create AAPS Kotlin-based conformance runner
+2. Document AutoISF as AAPS-specific extension
+3. Separate conformance suites by algorithm variant</p>
+<p><strong>Status</strong>: Documented</p>
+<hr />
+<h3 id="gap-alg-011-lgs-duration-differences">GAP-ALG-011: LGS Duration Differences<a class="headerlink" href="#gap-alg-011-lgs-duration-differences" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Low Glucose Suspend temp basal duration comparison</p>
+<p><strong>Description</strong>: oref0 uses 30-minute temp basals by default; AAPS uses 120 minutes for Low Glucose Suspend situations. Both achieve same safety goal (zero insulin delivery) but duration differs.</p>
+<p><strong>Source</strong>: Conformance testing LGS category (6/8 failures on duration)</p>
+<p><strong>Impact</strong>:
+- LGS tests fail on duration even when rate is correct (0)
+- Different pump command frequency between systems
+- No functional difference in safety behavior</p>
+<p><strong>Possible Solutions</strong>:
+1. Update assertions to allow 30 OR 120 minute duration for LGS
+2. Document as expected behavioral difference
+3. Normalize duration expectations in test framework</p>
+<p><strong>Status</strong>: Documented</p>
+<hr />
+<h3 id="gap-alg-012-dia-minimum-enforcement-differences">GAP-ALG-012: DIA Minimum Enforcement Differences<a class="headerlink" href="#gap-alg-012-dia-minimum-enforcement-differences" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Profile with DIA &lt; 5 hours configured</p>
+<p><strong>Description</strong>: oref0 enforces minimum 5-hour DIA (Duration of Insulin Action); AAPS allows user-configured lower values. When profile has DIA=3, oref0 treats it as DIA=5, causing different IOB decay calculations.</p>
+<p><strong>Source</strong>: Test vector TV-017 (DIA=3, eventualBG 80 expected vs 146 actual)</p>
+<p><strong>Impact</strong>:
+- IOB calculations diverge when profile DIA &lt; 5 hours
+- eventualBG predictions differ
+- Safety: oref0's enforcement is more conservative</p>
+<p><strong>Possible Solutions</strong>:
+1. Document as expected behavior difference
+2. Add DIA normalization to test vector transform
+3. Warn when DIA &lt; 5 in input validation</p>
+<p><strong>Status</strong>: Documented</p>
+<hr />
+<h2 id="loop-algorithm-gaps">Loop Algorithm Gaps<a class="headerlink" href="#loop-algorithm-gaps" title="Permanent link">&para;</a></h2>
+<h3 id="gap-alg-013-loop-has-no-autosens">GAP-ALG-013: Loop Has No Autosens<a class="headerlink" href="#gap-alg-013-loop-has-no-autosens" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Cross-system sensitivity ratio comparison</p>
+<p><strong>Description</strong>: Loop does not implement Autosens sensitivity ratio. Uses RetrospectiveCorrection which adjusts predictions but not profile values (ISF, basal).</p>
+<p><strong>Source</strong>: <code>LoopAlgorithm.swift:120-126</code>, no Autosens equivalent</p>
+<p><strong>Impact</strong>:
+- Cannot compare <code>sensitivityRatio</code> output across systems
+- Loop users cannot get automated profile adjustments
+- Different sensitivity response than oref0-based systems</p>
+<p><strong>Possible Solutions</strong>:
+1. Document as architectural difference (not a bug)
+2. Consider adding Autosens as optional feature in Loop</p>
+<p><strong>Status</strong>: Documented</p>
+<hr />
+<h3 id="gap-alg-014-loop-prediction-is-single-curve">GAP-ALG-014: Loop Prediction Is Single Curve<a class="headerlink" href="#gap-alg-014-loop-prediction-is-single-curve" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Algorithm debugging and prediction component analysis</p>
+<p><strong>Description</strong>: Loop produces one combined prediction curve; oref0 produces 4 separate curves (IOB, COB, UAM, ZT). Loop effects are available but combined into single trajectory.</p>
+<p><strong>Source</strong>: <code>LoopAlgorithm.swift:168</code> - <code>LoopMath.predictGlucose()</code></p>
+<p><strong>Impact</strong>:
+- Cannot compare individual prediction components directly
+- Debugging requires examining effect arrays separately
+- Cross-system prediction comparison limited to final values</p>
+<p><strong>Possible Solutions</strong>:
+1. Add devicestatus output showing effect-isolated predictions
+2. Use Loop's <code>effects</code> struct for component analysis</p>
+<p><strong>Status</strong>: Documented</p>
+<hr />
+<h3 id="gap-alg-015-loop-does-not-expose-uam-curve">GAP-ALG-015: Loop Does Not Expose UAM Curve<a class="headerlink" href="#gap-alg-015-loop-does-not-expose-uam-curve" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Unannounced meal handling comparison</p>
+<p><strong>Description</strong>: Loop has no explicit UAM (Unannounced Meal) curve. Unexpected rises are handled via RetrospectiveCorrection which detects discrepancies but doesn't project continued absorption.</p>
+<p><strong>Source</strong>: Architectural difference - Loop uses RC, oref0 uses UAM curve</p>
+<p><strong>Impact</strong>:
+- Cannot validate UAM-specific behavior in Loop
+- Different response to unannounced carbs
+- Loop may be slower to respond to large unlogged meals</p>
+<p><strong>Possible Solutions</strong>:
+1. Document as design difference
+2. Evaluate if RC provides equivalent safety</p>
+<p><strong>Status</strong>: Documented</p>
+<hr />
+<h3 id="gap-alg-016-different-iobcob-calculation-timing">GAP-ALG-016: Different IOB/COB Calculation Timing<a class="headerlink" href="#gap-alg-016-different-iobcob-calculation-timing" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Algorithm conformance testing with pre-computed inputs</p>
+<p><strong>Description</strong>: oref0 expects pre-computed IOB/COB as input; Loop computes them from dose/carb history during prediction. Same raw data can produce different IOB values depending on calculation timing and method.</p>
+<p><strong>Source</strong>: <code>LoopAlgorithm.swift:95-103</code> vs <code>oref0/lib/iob/total.js</code></p>
+<p><strong>Impact</strong>:
+- oref0 test vectors cannot be directly used for Loop testing
+- Different IOB at same timestamp possible
+- Conformance testing requires raw history, not computed values</p>
+<p><strong>Possible Solutions</strong>:
+1. Create Loop-specific test vectors with raw dose history
+2. Use Loop's <code>live_capture_input.json</code> format for testing</p>
+<p><strong>Status</strong>: Documented</p>
+<hr />
+<h2 id="profile-schema-gaps">Profile Schema Gaps<a class="headerlink" href="#profile-schema-gaps" title="Permanent link">&para;</a></h2>
+<h3 id="gap-prof-001-time-format-incompatibility">GAP-PROF-001: Time Format Incompatibility<a class="headerlink" href="#gap-prof-001-time-format-incompatibility" title="Permanent link">&para;</a></h3>
+<p><strong>Description:</strong> Nightscout uses string "HH:MM" format while Loop/AAPS use integer seconds from midnight.</p>
+<p><strong>Source:</strong> 
+- <code>externals/cgm-remote-monitor/lib/profile/profileeditor.js:32</code>
+- <code>externals/AndroidAPS/core/interfaces/profile/Profile.kt:133</code></p>
+<p><strong>Impact:</strong> Profile sync requires format conversion; potential off-by-one errors at midnight boundary.</p>
+<p><strong>Remediation:</strong> Standardize on seconds from midnight with conversion utilities.</p>
+<h3 id="gap-prof-002-missing-safety-limits-in-nightscout">GAP-PROF-002: Missing Safety Limits in Nightscout<a class="headerlink" href="#gap-prof-002-missing-safety-limits-in-nightscout" title="Permanent link">&para;</a></h3>
+<p><strong>Description:</strong> Nightscout profile lacks <code>maximumBasalRatePerHour</code>, <code>maximumBolus</code>, and <code>suspendThreshold</code> found in Loop.</p>
+<p><strong>Source:</strong> <code>externals/LoopWorkspace/LoopKit/LoopKit/TherapySettings.swift:19-23</code></p>
+<p><strong>Impact:</strong> Safety limits not portable between systems; each controller must manage locally.</p>
+<p><strong>Remediation:</strong> Add optional safety limit fields to Nightscout profile schema.</p>
+<h3 id="gap-prof-003-no-override-presets-in-nightscout">GAP-PROF-003: No Override Presets in Nightscout<a class="headerlink" href="#gap-prof-003-no-override-presets-in-nightscout" title="Permanent link">&para;</a></h3>
+<p><strong>Description:</strong> Loop's <code>overridePresets</code> and <code>correctionRangeOverrides</code> have no Nightscout equivalent.</p>
+<p><strong>Source:</strong> <code>externals/LoopWorkspace/LoopKit/LoopKit/TherapySettings.swift:15-17</code></p>
+<p><strong>Impact:</strong> Override configurations not synced; must be configured separately on each device.</p>
+<p><strong>Remediation:</strong> Add override preset array to Nightscout profile collection.</p>
+<h3 id="gap-prof-004-profile-switching-features-aaps-only">GAP-PROF-004: Profile Switching Features (AAPS-only)<a class="headerlink" href="#gap-prof-004-profile-switching-features-aaps-only" title="Permanent link">&para;</a></h3>
+<p><strong>Description:</strong> AAPS supports <code>percentage</code> and <code>timeshift</code> for profile switching; not in Loop or Nightscout.</p>
+<p><strong>Source:</strong> <code>externals/AndroidAPS/core/interfaces/profile/Profile.kt:36-41</code></p>
+<p><strong>Impact:</strong> Profile switch events sync as treatments but actual percentages not in profile.</p>
+<p><strong>Remediation:</strong> Document as AAPS-specific feature; consider adding to Nightscout profile.</p>
+<h3 id="gap-prof-005-dia-vs-insulin-model-mismatch">GAP-PROF-005: DIA vs Insulin Model Mismatch<a class="headerlink" href="#gap-prof-005-dia-vs-insulin-model-mismatch" title="Permanent link">&para;</a></h3>
+<p><strong>Description:</strong> Nightscout/AAPS use scalar DIA hours while Loop uses exponential insulin model presets.</p>
+<p><strong>Source:</strong>
+- <code>externals/cgm-remote-monitor/lib/profile/profileeditor.js:30</code>
+- <code>externals/LoopWorkspace/LoopKit/LoopKit/TherapySettings.swift:31</code></p>
+<p><strong>Impact:</strong> Loop's curve-based insulin action doesn't map to simple DIA value.</p>
+<p><strong>Remediation:</strong> Define mapping between Loop model presets and equivalent DIA values.</p>
+<h3 id="gap-prof-006-basal-schedule-time-format-inconsistency">GAP-PROF-006: Basal Schedule Time Format Inconsistency<a class="headerlink" href="#gap-prof-006-basal-schedule-time-format-inconsistency" title="Permanent link">&para;</a></h3>
+<p><strong>Description:</strong> Nightscout uses "HH:MM" strings for basal schedule times while controllers use numeric offsets (seconds or minutes from midnight).</p>
+<p><strong>Source:</strong>
+- <code>externals/cgm-remote-monitor/lib/profile/profileeditor.js:146</code> - "time" as "HH:MM"
+- <code>externals/LoopWorkspace/LoopKit/LoopKit/DailyValueSchedule.swift:14</code> - startTime as TimeInterval (seconds)
+- <code>externals/oref0/lib/profile/basal.js:24</code> - minutes from midnight</p>
+<p><strong>Impact:</strong> Parsing errors, timezone confusion, potential off-by-one minute issues during conversion.</p>
+<p><strong>Remediation:</strong> Standardize on seconds-from-midnight with explicit timezone in profile.</p>
+<h3 id="gap-prof-007-30-minute-basal-rate-granularity">GAP-PROF-007: 30-Minute Basal Rate Granularity<a class="headerlink" href="#gap-prof-007-30-minute-basal-rate-granularity" title="Permanent link">&para;</a></h3>
+<p><strong>Description:</strong> AAPS supports 30-minute basal rate granularity (<code>is30minBasalRatesCapable</code>) but Nightscout profile schema assumes hourly boundaries.</p>
+<p><strong>Source:</strong>
+- <code>externals/AndroidAPS/core/data/src/main/kotlin/app/aaps/core/data/pump/defs/PumpDescription.kt:59</code> - <code>is30minBasalRatesCapable</code>
+- <code>externals/cgm-remote-monitor/lib/profile/profileeditor.js</code> - No 30-min validation</p>
+<p><strong>Impact:</strong> Pumps with 30-minute granularity may lose precision when syncing via Nightscout.</p>
+<p><strong>Remediation:</strong> Extend Nightscout profile to support sub-hourly time boundaries (validate any HH:MM, not just :00).</p>
+<h3 id="gap-prof-008-basal-rate-precision-varies">GAP-PROF-008: Basal Rate Precision Varies<a class="headerlink" href="#gap-prof-008-basal-rate-precision-varies" title="Permanent link">&para;</a></h3>
+<p><strong>Description:</strong> Different systems use different basal rate precision:
+- Loop: Double (full precision)
+- AAPS: Constrained by basalStep (e.g., 0.01 U/hr)
+- oref0: 3 decimal places
+- Nightscout: Arbitrary JS number</p>
+<p><strong>Source:</strong>
+- <code>externals/oref0/lib/profile/basal.js:29</code> - <code>Math.round(basalRate*1000)/1000</code>
+- <code>externals/AndroidAPS/core/data/src/main/kotlin/app/aaps/core/data/pump/defs/PumpDescription.kt:23</code> - <code>basalStep</code></p>
+<p><strong>Impact:</strong> Rounding differences when syncing basal profiles between systems.</p>
+<p><strong>Remediation:</strong> Document precision requirements; recommend 3 decimal places as minimum.</p>
+<h3 id="gap-sync-020-basal-schedule-change-events">GAP-SYNC-020: Basal Schedule Change Events<a class="headerlink" href="#gap-sync-020-basal-schedule-change-events" title="Permanent link">&para;</a></h3>
+<p><strong>Description:</strong> No standardized event type for "basal schedule was changed" across systems.</p>
+<p><strong>Source:</strong> No explicit event type in Nightscout treatments collection for profile schedule modifications.</p>
+<p><strong>Impact:</strong> Schedule changes may not propagate consistently; no audit trail for profile edits.</p>
+<p><strong>Remediation:</strong> Define profile change event type with before/after snapshots.</p>
+<h2 id="bolus-wizard-gaps">Bolus Wizard Gaps<a class="headerlink" href="#bolus-wizard-gaps" title="Permanent link">&para;</a></h2>
+<h3 id="gap-bolus-001-prediction-based-vs-arithmetic-formula">GAP-BOLUS-001: Prediction-Based vs Arithmetic Formula<a class="headerlink" href="#gap-bolus-001-prediction-based-vs-arithmetic-formula" title="Permanent link">&para;</a></h3>
+<p><strong>Description:</strong> Loop uses prediction-based bolus calculation while AAPS uses traditional arithmetic formula. Same inputs produce different recommendations.</p>
+<p><strong>Source:</strong> 
+- <code>externals/AndroidAPS/.../BolusWizard.kt:210-216</code>
+- <code>externals/LoopWorkspace/.../DoseMath.swift:275-332</code></p>
+<p><strong>Impact:</strong> Users switching between systems see different bolus recommendations for identical situations.</p>
+<p><strong>Remediation:</strong> Document expected differences; different approaches are intentional design choices.</p>
+<h3 id="gap-bolus-002-iob-handling-mismatch">GAP-BOLUS-002: IOB Handling Mismatch<a class="headerlink" href="#gap-bolus-002-iob-handling-mismatch" title="Permanent link">&para;</a></h3>
+<p><strong>Description:</strong> AAPS separates bolus/basal IOB with user toggles; Loop uses combined pending insulin.</p>
+<p><strong>Source:</strong> 
+- <code>externals/AndroidAPS/.../BolusWizard.kt:235-242</code>
+- <code>externals/LoopWorkspace/.../DoseMath.swift:546</code></p>
+<p><strong>Impact:</strong> Different IOB subtraction behavior; AAPS allows excluding basal IOB.</p>
+<p><strong>Remediation:</strong> Document as intentional design difference.</p>
+<h3 id="gap-bolus-003-superbolus-not-portable">GAP-BOLUS-003: SuperBolus Not Portable<a class="headerlink" href="#gap-bolus-003-superbolus-not-portable" title="Permanent link">&para;</a></h3>
+<p><strong>Description:</strong> AAPS SuperBolus feature (add 2h basal to bolus) has no Loop equivalent.</p>
+<p><strong>Source:</strong> <code>externals/AndroidAPS/.../BolusWizard.kt:248-253</code></p>
+<p><strong>Impact:</strong> Feature not available when switching to Loop.</p>
+<p><strong>Remediation:</strong> Document as AAPS-specific feature.</p>
+<h3 id="gap-bolus-004-trend-correction-differences">GAP-BOLUS-004: Trend Correction Differences<a class="headerlink" href="#gap-bolus-004-trend-correction-differences" title="Permanent link">&para;</a></h3>
+<p><strong>Description:</strong> AAPS has explicit trend correction toggle; Loop incorporates trend via prediction model.</p>
+<p><strong>Source:</strong> <code>externals/AndroidAPS/.../BolusWizard.kt:222-225</code></p>
+<p><strong>Impact:</strong> AAPS trend correction is linear extrapolation (15min × 3); Loop uses full prediction.</p>
+<p><strong>Remediation:</strong> Document different approaches to trend handling.</p>
+<h2 id="sensitivity-adjustment-gaps">Sensitivity Adjustment Gaps<a class="headerlink" href="#sensitivity-adjustment-gaps" title="Permanent link">&para;</a></h2>
+<h3 id="gap-sens-001-different-output-representations">GAP-SENS-001: Different Output Representations<a class="headerlink" href="#gap-sens-001-different-output-representations" title="Permanent link">&para;</a></h3>
+<p><strong>Description:</strong> Autosens outputs a ratio (0.7-1.3) that multiplies ISF/basal, while Loop RC outputs glucose effects added to prediction.</p>
+<p><strong>Source:</strong> 
+- <code>externals/oref0/lib/determine-basal/autosens.js</code>
+- <code>externals/LoopWorkspace/.../StandardRetrospectiveCorrection.swift</code></p>
+<p><strong>Impact:</strong> Cannot directly compare sensitivity adjustments between systems.</p>
+<p><strong>Remediation:</strong> Document equivalent effects; both achieve similar outcomes via different mechanisms.</p>
+<h3 id="gap-sens-002-detection-window-mismatch">GAP-SENS-002: Detection Window Mismatch<a class="headerlink" href="#gap-sens-002-detection-window-mismatch" title="Permanent link">&para;</a></h3>
+<p><strong>Description:</strong> Autosens uses 8-24h windows; Loop RC uses 30-180 min windows.</p>
+<p><strong>Source:</strong> 
+- <code>externals/AndroidAPS/.../SensitivityOref1Plugin.kt:86</code>
+- <code>externals/LoopWorkspace/.../StandardRetrospectiveCorrection.swift:18</code></p>
+<p><strong>Impact:</strong> Different response times to sensitivity changes.</p>
+<p><strong>Remediation:</strong> Document expected behavior differences for users.</p>
+<h3 id="gap-sens-003-no-autosens-equivalent-in-loop">GAP-SENS-003: No Autosens Equivalent in Loop<a class="headerlink" href="#gap-sens-003-no-autosens-equivalent-in-loop" title="Permanent link">&para;</a></h3>
+<p><strong>Description:</strong> Loop doesn't have direct ISF/basal multiplier like Autosens. Uses prediction adjustments instead.</p>
+<p><strong>Source:</strong> Loop architecture uses prediction adjustments, not parameter modification.</p>
+<p><strong>Impact:</strong> Users switching from AAPS to Loop may miss Autosens-like behavior.</p>
+<p><strong>Remediation:</strong> Explain that IRC provides similar long-term adaptation.</p>
+<h3 id="gap-sens-004-dynamic-isf-not-standardized">GAP-SENS-004: Dynamic ISF Not Standardized<a class="headerlink" href="#gap-sens-004-dynamic-isf-not-standardized" title="Permanent link">&para;</a></h3>
+<p><strong>Description:</strong> Dynamic ISF implementations vary between oref1 and Loop experimental features.</p>
+<p><strong>Source:</strong> 
+- oref1: <code>adjustmentFactor</code> config
+- Loop: <code>GlucoseBasedApplicationFactorSelectionView.swift</code></p>
+<p><strong>Impact:</strong> Different aggression at high BG levels between systems.</p>
+<p><strong>Remediation:</strong> Document formula differences and expected behaviors.</p>
+<h3 id="gap-sens-005-autosens-and-autotune-lack-controller-aware-cohort-validation">GAP-SENS-005: Autosens and Autotune Lack Controller-Aware Cohort Validation<a class="headerlink" href="#gap-sens-005-autosens-and-autotune-lack-controller-aware-cohort-validation" title="Permanent link">&para;</a></h3>
+<p><strong>Description:</strong> oref0-style autosens and autotune are built from exclusion heuristics and bounded profile adjustments, but the workspace has no shared validation showing that their recommendations remain accurate across heterogeneous cohorts once controller-mediated feedback is separated from disease-course effects.</p>
+<p><strong>Source:</strong>
+- <code>externals/oref0/bin/oref0-detect-sensitivity.js:46-50,113-130</code> (requires enough glucose data, compares 8h vs 24h non-excluded windows, keeps lowest ratio)
+- <code>externals/oref0/lib/determine-basal/autosens.js:67-83,130-138</code> (meal/UAM exclusions and autosens bounds)
+- <code>externals/oref0/lib/autotune/index.js:143-168,234-246,540-545</code> (CR uses meal-labeled windows, basal changes apply 20% heuristic updates, outputs bounded profile parameters)
+- <code>externals/AndroidAPS/plugins/aps/src/main/kotlin/app/aaps/plugins/aps/autotune/AutotuneCore.kt:44-47,127-157,193-247</code> (AAPS port preserves autosens bounds, meal-based CR aggregation, and capped basal adjustment logic)</p>
+<p><strong>Impact:</strong>
+- Group-level inconsistency can come from different amounts of surviving non-excluded data, not just from patient physiology.
+- Autosens/autotune outputs risk being interpreted as physiological truth when they are often controller-operating parameters.
+- Decision-support comparisons across cohorts can overstate confidence unless controller-state and meal-dependence are audited first.</p>
+<p><strong>Remediation:</strong>
+1. Validate autosens/autotune-derived recommendations against controller-aware safety endpoints, not only internal fit metrics.
+2. Stratify validation by controller-response mode (failed correction, fast return, persistent period mismatch).
+3. Treat meal-announcement-dependent CR adjustments as provisional until a meal-independent proxy exists.</p>
+<p><strong>Status:</strong> Basis established from source and workspace experiments; controller-aware cohort validation still missing.</p>
+<h2 id="dosing-mechanism-gaps">Dosing Mechanism Gaps<a class="headerlink" href="#dosing-mechanism-gaps" title="Permanent link">&para;</a></h2>
+<h3 id="gap-dose-001-smb-not-available-in-loop">GAP-DOSE-001: SMB Not Available in Loop<a class="headerlink" href="#gap-dose-001-smb-not-available-in-loop" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Loop does not have equivalent to oref0 SMB with 3-minute frequency and 50% insulinReq dosing.</p>
+<p><strong>Affected Systems</strong>: Loop vs oref0/AAPS/Trio</p>
+<p><strong>Evidence</strong>:
+- oref0: <code>determine-basal.js:1100</code> - <code>microBolus = Math.min(insulinReq/2, maxBolus)</code>
+- Loop: Uses <code>partialApplicationFactor</code> (40%) with 5-min cycles</p>
+<p><strong>Impact</strong>: Faster meal response possible with SMB.</p>
+<p><strong>Remediation</strong>: Loop Auto Bolus provides similar capability; document differences.</p>
+<h3 id="gap-dose-002-different-safety-mechanisms">GAP-DOSE-002: Different Safety Mechanisms<a class="headerlink" href="#gap-dose-002-different-safety-mechanisms" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: SMB pairs with zero temp for safety; Loop uses IOB limits and partial application.</p>
+<p><strong>Affected Systems</strong>: Loop vs oref0/AAPS</p>
+<p><strong>Evidence</strong>:
+- oref0: <code>determine-basal.js:1120</code> - <code>smbLowTempReq</code> calculation with zero temp
+- Loop: <code>DoseMath.swift:425-428</code> - <code>additionalActiveInsulinClamp</code></p>
+<p><strong>Impact</strong>: Different fallback behavior if pump disconnects or issues occur.</p>
+<p><strong>Remediation</strong>: Document safety models for each system.</p>
+<h3 id="gap-dose-003-smb-enable-conditions-mismatch">GAP-DOSE-003: SMB Enable Conditions Mismatch<a class="headerlink" href="#gap-dose-003-smb-enable-conditions-mismatch" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: oref0 has 6+ SMB enable conditions; Loop auto bolus is simpler on/off.</p>
+<p><strong>Affected Systems</strong>: Loop vs oref0/AAPS</p>
+<p><strong>Evidence</strong>:
+- oref0: <code>determine-basal.js:72-124</code> - <code>enableSMB_always</code>, <code>_with_COB</code>, <code>_after_carbs</code>, <code>_with_temptarget</code>, <code>_high_bg</code>
+- AAPS: <code>BooleanKey.kt:50-54</code> - 5 SMB enable settings
+- Loop: Single setting</p>
+<p><strong>Impact</strong>: Different automatic dosing behavior in different contexts.</p>
+<p><strong>Remediation</strong>: Document enable condition differences for users.</p>
+<h3 id="gap-dose-004-dosing-frequency-difference">GAP-DOSE-004: Dosing Frequency Difference<a class="headerlink" href="#gap-dose-004-dosing-frequency-difference" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: SMB can run every 3 min; Loop cycles every 5 min.</p>
+<p><strong>Affected Systems</strong>: Loop vs oref0/AAPS</p>
+<p><strong>Evidence</strong>:
+- oref0: <code>determine-basal.js:1133-1136</code> - <code>SMBInterval = 3</code> (configurable 1-10)
+- Loop: Fixed 5-minute loop cycle</p>
+<p><strong>Impact</strong>: SMB can deliver corrections faster.</p>
+<p><strong>Remediation</strong>: Design difference - document expected response times.</p>
+<hr />
+<h2 id="insulin-model-gaps">Insulin Model Gaps<a class="headerlink" href="#insulin-model-gaps" title="Permanent link">&para;</a></h2>
+<h3 id="gap-ins-005-bilinear-model-not-supported-in-loop">GAP-INS-005: Bilinear Model Not Supported in Loop<a class="headerlink" href="#gap-ins-005-bilinear-model-not-supported-in-loop" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Loop only supports exponential model; oref0 has legacy bilinear option.</p>
+<p><strong>Affected Systems</strong>: Loop vs oref0/AAPS</p>
+<p><strong>Evidence</strong>:
+- oref0: <code>calculate.js:24-28</code> - conditional bilinear/exponential selection
+- Loop: Only ExponentialInsulinModel.swift exists</p>
+<p><strong>Impact</strong>: Users preferring simpler bilinear model cannot use Loop. Minor - exponential is more accurate.</p>
+<p><strong>Remediation</strong>: Document as design choice; exponential is preferred.</p>
+<h3 id="gap-ins-006-delay-parameter-handling-differs">GAP-INS-006: Delay Parameter Handling Differs<a class="headerlink" href="#gap-ins-006-delay-parameter-handling-differs" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Loop has explicit delay parameter (default 10 min); oref0 bakes delay into peak time.</p>
+<p><strong>Affected Systems</strong>: Loop vs oref0</p>
+<p><strong>Evidence</strong>:
+- Loop: <code>ExponentialInsulinModel.swift:14</code> - <code>public let delay: TimeInterval</code>
+- oref0: No delay parameter in <code>calculate.js</code></p>
+<p><strong>Impact</strong>: Slightly different curve start behavior for same peak time setting.</p>
+<p><strong>Remediation</strong>: Document for users migrating between systems.</p>
+<h3 id="gap-ins-007-custom-peak-time-ux-differs">GAP-INS-007: Custom Peak Time UX Differs<a class="headerlink" href="#gap-ins-007-custom-peak-time-ux-differs" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Loop uses fixed presets; oref0 allows custom peak with validation bounds.</p>
+<p><strong>Affected Systems</strong>: Loop vs oref0/AAPS</p>
+<p><strong>Evidence</strong>:
+- oref0: <code>calculate.js:87-116</code> - peak bounds 50-120 (rapid) or 35-100 (ultra-rapid)
+- Loop: Fixed preset values per insulin type</p>
+<p><strong>Impact</strong>: oref0/AAPS users have more tuning flexibility.</p>
+<p><strong>Remediation</strong>: Consider adding custom peak to Loop presets.</p>
+<h3 id="gap-ins-008-identical-exponential-formula-verified">GAP-INS-008: Identical Exponential Formula Verified<a class="headerlink" href="#gap-ins-008-identical-exponential-formula-verified" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Both Loop and oref0 use identical exponential formula from Loop issue #388.</p>
+<p><strong>Affected Systems</strong>: Loop, oref0, AAPS, Trio</p>
+<p><strong>Evidence</strong>:
+- oref0: <code>calculate.js:125-136</code> explicitly cites Loop issue #388
+- Loop: <code>ExponentialInsulinModel.swift:32-34</code> - original source</p>
+<p><strong>Impact</strong>: Positive - formula consistency ensures IOB compatibility.</p>
+<p><strong>Status</strong>: Verified as aligned - no remediation needed.</p>
+<hr />
+<h2 id="target-range-gaps">Target Range Gaps<a class="headerlink" href="#target-range-gaps" title="Permanent link">&para;</a></h2>
+<h3 id="gap-tgt-001-different-algorithm-targeting-behavior">GAP-TGT-001: Different Algorithm Targeting Behavior<a class="headerlink" href="#gap-tgt-001-different-algorithm-targeting-behavior" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Loop uses dynamic targeting (suspend→midpoint over time); oref0 uses static midpoint.</p>
+<p><strong>Affected Systems</strong>: Loop vs oref0/AAPS</p>
+<p><strong>Evidence</strong>:
+- Loop: <code>DoseMath.swift:200-214</code> - <code>targetGlucoseValue()</code> blends over effect duration
+- oref0: <code>determine-basal.js:243</code> - Static <code>(min_bg + max_bg) / 2</code></p>
+<p><strong>Impact</strong>: Same target range settings produce different correction behavior.</p>
+<p><strong>Remediation</strong>: Document for users migrating between systems.</p>
+<h3 id="gap-tgt-002-autosens-target-adjustment-not-in-loop">GAP-TGT-002: Autosens Target Adjustment Not in Loop<a class="headerlink" href="#gap-tgt-002-autosens-target-adjustment-not-in-loop" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: oref0 adjusts targets based on autosens ratio; Loop does not.</p>
+<p><strong>Affected Systems</strong>: Loop vs oref0/AAPS</p>
+<p><strong>Evidence</strong>:
+- oref0: <code>determine-basal.js:296-311</code> - <code>sensitivity_raises_target</code>, <code>resistance_lowers_target</code>
+- Loop: No equivalent in DoseMath.swift</p>
+<p><strong>Impact</strong>: oref0 is more aggressive in adjusting for insulin resistance/sensitivity.</p>
+<p><strong>Remediation</strong>: Design difference - document expected behavior.</p>
+<h3 id="gap-tgt-003-temp-target-sensitivity-adjustment">GAP-TGT-003: Temp Target Sensitivity Adjustment<a class="headerlink" href="#gap-tgt-003-temp-target-sensitivity-adjustment" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: oref0 adjusts sensitivity ratio based on temp target magnitude; Loop overrides are simpler.</p>
+<p><strong>Affected Systems</strong>: Loop vs oref0/AAPS</p>
+<p><strong>Evidence</strong>:
+- oref0: <code>determine-basal.js:259-277</code> - Formula: <code>c/(c+target_bg-normalTarget)</code>
+- Loop: Override just replaces range, no sensitivity calculation</p>
+<p><strong>Impact</strong>: Exercise modes behave differently between systems.</p>
+<p><strong>Remediation</strong>: Document the formula for users expecting equivalent behavior.</p>
+<h3 id="gap-tgt-004-smb-enable-tied-to-target-in-oref0">GAP-TGT-004: SMB Enable Tied to Target in oref0<a class="headerlink" href="#gap-tgt-004-smb-enable-tied-to-target-in-oref0" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: oref0 enables/disables SMB based on target value; Loop has no such coupling.</p>
+<p><strong>Affected Systems</strong>: Loop vs oref0/AAPS</p>
+<p><strong>Evidence</strong>:
+- oref0: <code>determine-basal.js:63-64, 103-107</code> - <code>enableSMB_with_temptarget</code>, high target disables SMB
+- Loop: Auto bolus enable is independent of target</p>
+<p><strong>Impact</strong>: Temp targets have different side effects between systems.</p>
+<p><strong>Remediation</strong>: Document for users expecting similar behavior.</p>
+<hr />
+<h2 id="trio-bridge-gaps">Trio Bridge Gaps<a class="headerlink" href="#trio-bridge-gaps" title="Permanent link">&para;</a></h2>
+<h3 id="gap-trio-bridge-001-no-type-safety-across-bridge">GAP-TRIO-BRIDGE-001: No Type Safety Across Bridge<a class="headerlink" href="#gap-trio-bridge-001-no-type-safety-across-bridge" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: JSON serialization loses Swift type information; JS returns untyped objects.</p>
+<p><strong>Affected Systems</strong>: Trio</p>
+<p><strong>Evidence</strong>:
+- <code>OpenAPS.swift:617-625</code> - <code>worker.call()</code> returns <code>RawJSON</code> (String)
+- Codable parsing may fail silently with missing fields</p>
+<p><strong>Impact</strong>: Runtime errors possible if JS output doesn't match expected structure.</p>
+<p><strong>Remediation</strong>: Trio uses Codable with optional fields for graceful degradation.</p>
+<h3 id="gap-trio-bridge-002-synchronous-js-execution">GAP-TRIO-BRIDGE-002: Synchronous JS Execution<a class="headerlink" href="#gap-trio-bridge-002-synchronous-js-execution" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: JS calls block the context pool; long algorithm runs could exhaust pool.</p>
+<p><strong>Affected Systems</strong>: Trio</p>
+<p><strong>Evidence</strong>:
+- <code>JavaScriptWorker.swift:35</code> - Pool size of 5 contexts
+- Algorithm calls are synchronous within context</p>
+<p><strong>Impact</strong>: 5-context pool may bottleneck under heavy concurrent load.</p>
+<p><strong>Remediation</strong>: Pool size configurable; async/await prevents UI blocking.</p>
+<h3 id="gap-trio-bridge-003-middleware-security">GAP-TRIO-BRIDGE-003: Middleware Security<a class="headerlink" href="#gap-trio-bridge-003-middleware-security" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Custom middleware can modify algorithm behavior arbitrarily.</p>
+<p><strong>Affected Systems</strong>: Trio</p>
+<p><strong>Evidence</strong>:
+- <code>OpenAPS.swift:798-813</code> - <code>middlewareScript()</code> loads user JS
+- No validation or sandboxing of middleware code</p>
+<p><strong>Impact</strong>: User-installed scripts could produce dangerous dosing decisions.</p>
+<p><strong>Remediation</strong>: Trio requires explicit user action to enable middleware.</p>
+<hr />
+<h3 id="gap-trio-oref-001-oref-bundle-version-tracking">GAP-TRIO-OREF-001: oref Bundle Version Tracking<a class="headerlink" href="#gap-trio-oref-001-oref-bundle-version-tracking" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: No explicit version tracking of embedded oref JS bundles.</p>
+<p><strong>Affected Systems</strong>: Trio</p>
+<p><strong>Evidence</strong>:
+- <code>externals/Trio/trio-oref/</code> contains JS bundles without version file
+- <code>oref_source_file_info.txt</code> exists but may not track git commit</p>
+<p><strong>Impact</strong>: Difficult to trace algorithm behavior to specific oref version; complicates debugging dosing issues.</p>
+<p><strong>Remediation</strong>: Add VERSION file or commit hash to trio-oref/ directory; log version at algorithm startup.</p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h3 id="gap-trio-swift-001-js-vs-swift-parity-validation">GAP-TRIO-SWIFT-001: JS vs Swift Parity Validation<a class="headerlink" href="#gap-trio-swift-001-js-vs-swift-parity-validation" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: OpenAPSSwift is a parallel native Swift implementation of oref that requires ongoing validation against the JavaScript reference.</p>
+<p><strong>Affected Systems</strong>: Trio-dev</p>
+<p><strong>Evidence</strong>:
+- <code>externals/Trio-dev/Trio/Sources/APS/OpenAPSSwift/</code> - Complete Swift oref port
+- <code>OpenAPSSwift.swift</code> mirrors JS functions (makeProfile, determineBasal, iob, meal, autosense)
+- No automated cross-comparison test suite between JS and Swift outputs</p>
+<p><strong>Impact</strong>: Algorithm drift between JS and Swift implementations could produce different dosing decisions for identical inputs.</p>
+<p><strong>Remediation</strong>: 
+1. Implement automated regression testing comparing JS vs Swift outputs
+2. Add input capture (*Inputs structs already exist) for test replay
+3. Document expected differences vs bugs</p>
+<p><strong>Source</strong>: <code>docs/10-domain/trio-comprehensive-analysis.md</code> Section 1B</p>
+<p><strong>Status</strong>: In Progress - Test framework designed (<code>conformance/scenarios/openapsswift-parity/</code>), sample vectors created</p>
+<hr />
+<h3 id="gap-trio-swift-002-sigmoid-formula-edge-cases">GAP-TRIO-SWIFT-002: Sigmoid Formula Edge Cases<a class="headerlink" href="#gap-trio-swift-002-sigmoid-formula-edge-cases" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: The DynamicISF.swift sigmoid implementation has a documented bug around divide-by-zero handling when <code>maxLimit == 1</code>.</p>
+<p><strong>Affected Systems</strong>: Trio-dev</p>
+<p><strong>Evidence</strong>:
+- <code>DynamicISF.swift:88-89</code> - Fudge factor: <code>if maxLimit == 1 { maxMinusOne = maxLimit + 0.01 - 1 }</code>
+- Code comment: "BUG: Note this fudge factor... produces unintuitive (and incorrect) results"
+- Unit tests document this edge case behavior</p>
+<p><strong>Impact</strong>: Unintuitive/incorrect ISF calculations when autosensMax is set to 1.0 (edge configuration).</p>
+<p><strong>Remediation</strong>: 
+1. Fix the mathematical formula to handle maxLimit == 1 correctly
+2. Or document safe configuration ranges (require maxLimit &gt; 1.01)
+3. Add validation to prevent edge case configurations</p>
+<p><strong>Source</strong>: <code>docs/10-domain/trio-comprehensive-analysis.md</code> Section 1B.3</p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h2 id="trio-oref-integration-gaps">Trio oref Integration Gaps<a class="headerlink" href="#trio-oref-integration-gaps" title="Permanent link">&para;</a></h2>
+<h3 id="gap-trio-001-trio_custom_variables-undocumented">GAP-TRIO-001: trio_custom_variables Undocumented<a class="headerlink" href="#gap-trio-001-trio_custom_variables-undocumented" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Trio's <code>trio_custom_variables</code> parameter object is not formally documented.</p>
+<p><strong>Affected Systems</strong>: Trio, developers integrating with Trio</p>
+<p><strong>Evidence</strong>:
+- <code>trio-oref/lib/determine-basal/determine-basal.js:141</code> adds parameter
+- No schema or interface definition exists
+- ~20 fields used throughout code</p>
+<p><strong>Impact</strong>:
+- Hard for developers to understand integration
+- Risk of breaking changes without notice
+- Difficult to test edge cases</p>
+<p><strong>Remediation</strong>: Create TypeScript interface or JSON schema for trio_custom_variables.</p>
+<p><strong>Source</strong>: <code>docs/10-domain/trio-oref-integration-mapping.md</code></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h3 id="gap-trio-002-dynamic-isf-not-in-upstream-oref0">GAP-TRIO-002: Dynamic ISF Not in Upstream oref0<a class="headerlink" href="#gap-trio-002-dynamic-isf-not-in-upstream-oref0" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: Trio's dynamic ISF (logarithmic and sigmoid) formulas are not available in upstream oref0.</p>
+<p><strong>Affected Systems</strong>: oref0, AAPS (if it wants these features)</p>
+<p><strong>Evidence</strong>:
+- Trio lines 200-362: Dynamic ISF implementation
+- oref0: No equivalent code
+- Feature disparity between implementations</p>
+<p><strong>Impact</strong>:
+- Users must choose Trio for dynamic ISF
+- AAPS has own autosens, not compatible with Trio's approach
+- Fragmented algorithm implementations</p>
+<p><strong>Remediation</strong>: Consider upstreaming to oref0 or documenting as Trio-only.</p>
+<p><strong>Source</strong>: <code>docs/10-domain/trio-oref-integration-mapping.md</code></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<h3 id="gap-trio-003-no-automated-triooref0-sync">GAP-TRIO-003: No Automated Trio↔oref0 Sync<a class="headerlink" href="#gap-trio-003-no-automated-triooref0-sync" title="Permanent link">&para;</a></h3>
+<p><strong>Description</strong>: No automated process to merge oref0 bug fixes into Trio.</p>
+<p><strong>Affected Systems</strong>: Trio</p>
+<p><strong>Evidence</strong>:
+- trio-oref is a manual fork
+- No GitHub Actions for upstream sync
+- Manual merge required for updates</p>
+<p><strong>Impact</strong>:
+- oref0 bug fixes may be delayed in Trio
+- Risk of divergence over time
+- Maintenance burden</p>
+<p><strong>Remediation</strong>: Add CI job to detect oref0 changes, create sync PRs.</p>
+<p><strong>Source</strong>: <code>docs/10-domain/trio-oref-integration-mapping.md</code></p>
+<p><strong>Status</strong>: Open</p>
+<hr />
+<hr />
+<h3 id="gap-effect-001-no-standard-effect-format-across-aid-systems">GAP-EFFECT-001: No Standard Effect Format Across AID Systems<a class="headerlink" href="#gap-effect-001-no-standard-effect-format-across-aid-systems" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: External agent influence on algorithm behavior</p>
+<p><strong>Description</strong>: Each AID system (Loop, AAPS, Trio) implements proprietary override/preset mechanisms with incompatible formats. No standard exists for expressing algorithm adjustments from external agents.</p>
+<p><strong>Evidence</strong>:
+- Loop: <code>OverridePreset</code> in LoopKit with sensitivity target/delta
+- AAPS: <code>TempTarget</code> with different field names
+- Trio: <code>OverridePresets</code> array in preferences
+- xDrip+: No override mechanism</p>
+<p><strong>Affected Systems</strong>: Loop, AAPS, Trio, xDrip+, Nightscout</p>
+<p><strong>Impact</strong>:
+- External agents must implement per-platform integrations
+- No interoperability between systems for contextual adjustments
+- Cloud-based agents cannot influence multiple platforms</p>
+<p><strong>Remediation</strong>: Implement EffectBundle schema as standard format.</p>
+<p><strong>Source</strong>: <code>docs/10-domain/effect-bundle-architecture-deep-dive.md</code></p>
+<p><strong>Status</strong>: Open - Proposal created</p>
+<p><strong>Related</strong>: REQ-EFFECT-001, REQ-EFFECT-002</p>
+<hr />
+<h3 id="gap-effect-002-privacy-tier-not-defined-in-existing-apis">GAP-EFFECT-002: Privacy Tier Not Defined in Existing APIs<a class="headerlink" href="#gap-effect-002-privacy-tier-not-defined-in-existing-apis" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Personal context leaking through algorithm data</p>
+<p><strong>Description</strong>: Existing APIs (Nightscout v1/v3, Loop, AAPS) do not define privacy tiers for algorithm-related data. Personal context like menstrual cycle phase or stress indicators could leak through override reason fields.</p>
+<p><strong>Evidence</strong>:
+- Nightscout <code>treatments.notes</code> synced without filtering
+- Loop <code>OverrideContext</code> includes reason string
+- AAPS <code>TempTarget</code> reason synced to Nightscout
+- No mechanism to mark data as "on-device only"</p>
+<p><strong>Affected Systems</strong>: Nightscout, Loop, AAPS, Trio</p>
+<p><strong>Impact</strong>:
+- Sensitive personal data may sync to cloud
+- Users cannot use context-aware agents without privacy risk
+- GDPR/HIPAA compliance concerns</p>
+<p><strong>Remediation</strong>: Implement four privacy tiers: transparent, privacyPreserving, configurable, onDeviceOnly</p>
+<p><strong>Source</strong>: <code>docs/10-domain/effect-bundle-architecture-deep-dive.md</code></p>
+<p><strong>Status</strong>: Open - Architecture defined</p>
+<p><strong>Related</strong>: REQ-EFFECT-002</p>
+<hr />
+<h3 id="gap-effect-003-no-agent-registration-mechanism">GAP-EFFECT-003: No Agent Registration Mechanism<a class="headerlink" href="#gap-effect-003-no-agent-registration-mechanism" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Validating effect sources</p>
+<p><strong>Description</strong>: No standard mechanism exists for registering agents that produce algorithm effects. Any entity could submit effects with arbitrary agent names.</p>
+<p><strong>Evidence</strong>:
+- Nightscout treatments accept any <code>enteredBy</code> value
+- Loop has no external agent concept
+- AAPS NSClient accepts any source
+- No signature/verification for effects</p>
+<p><strong>Affected Systems</strong>: Nightscout, all AID systems</p>
+<p><strong>Impact</strong>:
+- Rogue effects could influence algorithm behavior
+- No audit trail for effect provenance
+- Difficult to debug algorithm behavior</p>
+<p><strong>Remediation</strong>: Implement agent registration with capability declaration and optional signing.</p>
+<p><strong>Source</strong>: <code>docs/10-domain/effect-bundle-architecture-deep-dive.md</code></p>
+<p><strong>Status</strong>: Open</p>
+<p><strong>Related</strong>: REQ-EFFECT-004</p>
+<hr />
+<h3 id="gap-effect-004-reconciliation-undefined-for-multiple-agents">GAP-EFFECT-004: Reconciliation Undefined for Multiple Agents<a class="headerlink" href="#gap-effect-004-reconciliation-undefined-for-multiple-agents" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Conflicting effects from multiple agents</p>
+<p><strong>Description</strong>: When multiple agents produce overlapping effects (e.g., both ActivityMode and BreakfastBoost active), no standard reconciliation strategy exists.</p>
+<p><strong>Evidence</strong>:
+- Loop: Overrides are mutually exclusive
+- AAPS: Only one temp target at a time
+- Trio: Single override active
+- No multi-agent reconciliation in any system</p>
+<p><strong>Affected Systems</strong>: All AID systems</p>
+<p><strong>Impact</strong>:
+- Agents may conflict without resolution
+- User must manually coordinate agents
+- Complex scenarios (exercise + meal) poorly handled</p>
+<p><strong>Remediation</strong>: Implement confidence-weighted averaging with 50% cap on external influence.</p>
+<p><strong>Source</strong>: <code>docs/10-domain/effect-bundle-architecture-deep-dive.md</code></p>
+<p><strong>Status</strong>: Open - Strategy defined</p>
+<p><strong>Related</strong>: REQ-EFFECT-005</p>
+<hr />
+<h3 id="gap-effect-005-no-nightscout-collection-for-effects">GAP-EFFECT-005: No Nightscout Collection for Effects<a class="headerlink" href="#gap-effect-005-no-nightscout-collection-for-effects" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Cloud sync of algorithm effects</p>
+<p><strong>Description</strong>: Nightscout has no native collection for algorithm effects. Effects must be embedded in other collections (treatments, devicestatus) with no schema validation.</p>
+<p><strong>Evidence</strong>:
+- Nightscout v1: entries, treatments, devicestatus, profile
+- Nightscout v3: Same collections + food, settings
+- No <code>effects</code> or <code>effectbundles</code> collection
+- Effects stored in <code>treatments</code> notes field or devicestatus blob</p>
+<p><strong>Affected Systems</strong>: Nightscout</p>
+<p><strong>Impact</strong>:
+- No schema validation for effects
+- No query API for active effects
+- Difficult to expire/revoke effects
+- No deduplication for effects</p>
+<p><strong>Remediation</strong>: Add <code>/api/v3/effectbundles</code> collection with dedicated schema.</p>
+<p><strong>Source</strong>: <code>docs/10-domain/effect-bundle-architecture-deep-dive.md</code></p>
+<p><strong>Status</strong>: Open - Proposal created</p>
+<p><strong>Related</strong>: GAP-API-*, proposals/effect-bundle-crd.yaml</p>
+<hr />
+<h2 id="cross-implementation-divergence-gaps-aaps-vs-oref0">Cross-Implementation Divergence Gaps (AAPS vs oref0)<a class="headerlink" href="#cross-implementation-divergence-gaps-aaps-vs-oref0" title="Permanent link">&para;</a></h2>
+<h3 id="gap-alg-017-aaps-round_basal-is-identity-function">GAP-ALG-017: AAPS round_basal Is Identity Function<a class="headerlink" href="#gap-alg-017-aaps-round_basal-is-identity-function" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: AAPS temp basal rate differs from upstream oref0 by ≤0.02 U/hr</p>
+<p><strong>Description</strong>: AAPS mocks <code>round_basal</code> as an identity function in both its
+Rhino JS execution path (<code>DetermineBasalAdapterSMBJS.kt:117</code>) and Kotlin native
+path (<code>DetermineBasalSMB.kt:37</code>). Upstream oref0 rounds to pump precision (0.05
+U/hr, or 0.025 for x23/x54 pumps at &lt;1 U/hr). This means AAPS delegates
+rounding to the pump driver layer rather than the algorithm.</p>
+<p><strong>Source</strong>:
+- <code>externals/AndroidAPS/plugins/aps/src/main/kotlin/app/aaps/plugins/aps/openAPSSMB/DetermineBasalAdapterSMBJS.kt:117</code>
+- <code>externals/AndroidAPS/plugins/aps/src/main/kotlin/app/aaps/plugins/aps/openAPSSMB/DetermineBasalSMB.kt:37</code>
+- <code>externals/oref0/lib/round-basal.js</code></p>
+<p><strong>Impact</strong>:
+- 19/100 vectors show rate differences ≤0.02 U/hr (all within ±0.5)
+- AAPS may deliver slightly different rates than upstream oref0 would suggest
+- Rate differences are clinically insignificant (&lt;0.03 U/hr max)</p>
+<p><strong>Affected Systems</strong>: AAPS</p>
+<p><strong>Status</strong>: Documented — by design (AAPS rounds at pump driver)</p>
+<hr />
+<h3 id="gap-alg-018-aaps-adds-acobpredbgs-prediction-curve">GAP-ALG-018: AAPS Adds aCOBpredBGs Prediction Curve<a class="headerlink" href="#gap-alg-018-aaps-adds-acobpredbgs-prediction-curve" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: AAPS predictions include an accelerated COB curve not in upstream oref0</p>
+<p><strong>Description</strong>: AAPS's modified <code>determine-basal.js</code> adds <code>aCOBpredBGs</code>, an
+accelerated carb-on-board prediction curve that projects faster carb absorption.
+This curve does not exist in upstream oref0. It is used in AAPS's
+<code>minGuardBG</code> calculation but does not change the core algorithm behavior for
+standard oref0 scenarios (only relevant with active carbs).</p>
+<p><strong>Source</strong>:
+- <code>externals/AndroidAPS/app/src/androidTest/assets/OpenAPSSMB/determine-basal.js</code></p>
+<p><strong>Impact</strong>:
+- Additional safety guard in AAPS for meal scenarios
+- May produce different rates during active carb absorption
+- Not triggered in current 100-vector test suite (no high-carb vectors)</p>
+<p><strong>Affected Systems</strong>: AAPS</p>
+<p><strong>Status</strong>: Documented — AAPS extension</p>
+<hr />
+<h3 id="gap-alg-019-aaps-removes-high_bg-smb-feature">GAP-ALG-019: AAPS Removes high_bg SMB Feature<a class="headerlink" href="#gap-alg-019-aaps-removes-high_bg-smb-feature" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: AAPS does not enable SMB based on high BG alone</p>
+<p><strong>Description</strong>: Upstream oref0 has a feature where SMB (Super Micro Bolus) can
+be enabled when BG is above the high target, even without explicit SMB
+enablement in the profile. AAPS removes this feature entirely from its modified
+determine-basal.js.</p>
+<p><strong>Source</strong>:
+- <code>externals/oref0/lib/determine-basal/determine-basal.js</code> (high_bg feature)
+- <code>externals/AndroidAPS/app/src/androidTest/assets/OpenAPSSMB/determine-basal.js</code> (removed)</p>
+<p><strong>Impact</strong>:
+- AAPS requires explicit SMB enablement for all SMB delivery
+- Users switching from oref0 to AAPS may lose implicit high-BG SMB behavior
+- Not triggered in current test vectors (SMB not widely enabled)</p>
+<p><strong>Affected Systems</strong>: AAPS</p>
+<p><strong>Status</strong>: Documented — intentional AAPS design choice</p>
+<hr />
+<h3 id="gap-alg-020-aaps-flatbgsdetected-externalized-parameter">GAP-ALG-020: AAPS flatBGsDetected Externalized Parameter<a class="headerlink" href="#gap-alg-020-aaps-flatbgsdetected-externalized-parameter" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: AAPS computes flat BG detection in Kotlin, not in JS</p>
+<p><strong>Description</strong>: Upstream oref0 computes <code>tooflat</code> inline in determine-basal.js
+by checking if recent BG deltas are all near-zero. AAPS instead computes
+<code>flatBGsDetected</code> in Kotlin (<code>DetermineBasalAdapterSMBJS.kt</code>) and passes it
+as an 11th parameter to the JS function. The logic is equivalent but the
+execution path differs.</p>
+<p><strong>Source</strong>:
+- <code>externals/AndroidAPS/plugins/aps/src/main/kotlin/app/aaps/plugins/aps/openAPSSMB/DetermineBasalAdapterSMBJS.kt</code>
+- <code>externals/oref0/lib/determine-basal/determine-basal.js</code> (inline tooflat)</p>
+<p><strong>Impact</strong>:
+- Equivalent behavior — no algorithmic difference
+- Different code path may diverge if flat BG detection logic changes
+- Cross-validation must pass <code>flatBGsDetected</code> explicitly to AAPS adapter</p>
+<p><strong>Affected Systems</strong>: AAPS</p>
+<p><strong>Status</strong>: Documented — structural difference only</p>
+<hr />
+<h3 id="gap-alg-021-three-independent-swift-oref0-ports--no-shared-validation-infrastructure">GAP-ALG-021: Three Independent Swift oref0 Ports — No Shared Validation Infrastructure<a class="headerlink" href="#gap-alg-021-three-independent-swift-oref0-ports--no-shared-validation-infrastructure" title="Permanent link">&para;</a></h3>
+<p><strong>Category</strong>: Algorithm Comparison / Implementation Parity</p>
+<p><strong>Description</strong>: Three independent Swift implementations of oref0 now exist:</p>
+<ol>
+<li><strong>t1pal-mobile-apex</strong> — Our port using Double arithmetic, adapter-protocol based,
+   100 static test vectors, cross-platform SPM package</li>
+<li><strong>Trio OpenAPSSwift</strong> — Trio's port using Decimal arithmetic, embedded in iOS app,
+   200k+ production replay vectors via HTTP, shadow mode + GCS logging</li>
+<li><strong>AAPS (JS variant)</strong> — Modified JS determine-basal run by Kotlin host, round_basal
+   is identity, flatBGsDetected passed as parameter</li>
+</ol>
+<p>Each implementation has its own test infrastructure with no shared vectors,
+no common comparison format, and no cross-port validation.</p>
+<p><strong>Key Divergence Risks</strong>:
+- <strong>Double vs Decimal</strong>: t1pal uses Double (matches JS), Trio uses Decimal (may diverge
+  from JS in subtle floating-point cases). Cross-validation would identify false positives.
+- <strong>Scope</strong>: Trio ports the full pipeline (Profile→IOB→Meal→Autosens→DetermineBasal),
+  t1pal focuses on DetermineBasal with pre-computed inputs. Different failure surfaces.
+- <strong>Convergence findings not shared</strong>: Our 7 iterations of divergence isolation
+  (minAvgDelta, ci passthrough, avgPredBG guard, sens rounding) are not yet
+  communicated to Trio's team despite being directly applicable.</p>
+<p><strong>Source</strong>:
+- <code>externals/Trio-dev</code> branch <code>origin/oref-swift</code>: 52 Swift files in <code>Trio/Sources/APS/OpenAPSSwift/</code>
+- <code>../t1pal-mobile-apex/packages/T1PalAlgorithm/Sources/T1PalAlgorithm/DetermineBasal.swift</code>
+- <code>externals/AndroidAPS/app/src/androidTest/assets/OpenAPSSMB/determine-basal.js</code></p>
+<p><strong>Remediation</strong>:
+1. Share TV-* vector format and our 100 vectors with Trio team
+2. Run three-way Swift comparison when Trio publishes as SPM
+3. Document Double vs Decimal divergence patterns
+4. Communicate Phase 2 convergence findings (minAvgDelta, ci passthrough, etc.)</p>
+<p><strong>Impact</strong>: High — Patient safety depends on algorithm equivalence across
+implementations. Without shared validation, each port may silently diverge.</p>
+<p><strong>Affected Systems</strong>: t1pal, Trio, (potentially) AAPS</p>
+<p><strong>Status</strong>: Open — collaboration opportunity identified</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

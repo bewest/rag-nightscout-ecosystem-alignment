@@ -1,0 +1,9091 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/60-research/tenancy/exp-mt-026-database-in-the-loop-2026-09-14.html">
+      
+      
+        <link rel="prev" href="auth-plane-ory-vs-inhouse-2026-09-16.html">
+      
+      
+        <link rel="next" href="multitenancy-k-and-residency-2026-09-14.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>EXP-MT-026: a real database in the loop - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#exp-mt-026-a-real-database-in-the-loop" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              EXP-MT-026: a real database in the loop
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../30-design/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_27" id="__nav_5_27_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_27_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_27">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    60-research/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-2844-phenotype-drilldown-report-2026-04-22.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-0001 to 2869
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-2870-envelope-crossover-report-2026-04-22.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2870 to 2909
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-2910-eight-dim-regrade-2026-04-23.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2910 to 2949
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-2950-uniform-action-curve-2026-04-23.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2950 to 2999
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-3000-3003-cf-replay-maturation-2026-04-25.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-3000 and later
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../AUTORESEARCH-SESSION-2026-04-26.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Programme, closeouts and syntheses
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../accuracy-validation-2026-04-05.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Productionization and pipelines
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../capability-report-clinical-decision-support.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Capability reports
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../circadian-therapy-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Therapy
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../aid-aware-settings-report-2026-04-09.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings and profiles
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../natural-experiment-deconfounding-2026-04-09.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Natural experiments
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../bilateral-deconfounding-report-2026-04-19.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EGP, supply-demand and deconfounding
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../autotune-uam-characterization-report.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Meals and carbohydrates
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../causal-pk-leakage-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Insulin, ISF and pharmacokinetics
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../acceleration-clinical-utility-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clinical, safety and hypoglycaemia
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../aid-author-recommendations-report-2026-04-20.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AID controllers, cohorts and waves
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../centering-dynamics-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forecasting, prediction and classification
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../advanced-architectures-benchmark-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ML methods and architectures
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../canonical/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    canonical/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../collaboration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    collaboration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../external-inventories/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    external-inventories/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../modernization/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    modernization/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../programme/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    programme/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../remedial/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    remedial/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27_26" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenancy/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_27_26" id="__nav_5_27_26_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_27_26_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_27_26">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    tenancy/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="alarm-critical-slice-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The alarm-critical slice, measured: 32.7 KB and 1.94 ms, not 852 KB and 27.5 ms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="auth-plane-ory-vs-inhouse-2026-09-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The auth plane: Ory Kratos/Hydra against building it ourselves
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-MT-026: a real database in the loop
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="exp-mt-026-database-in-the-loop-2026-09-14.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-MT-026: a real database in the loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executive summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-was-actually-stood-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What was actually stood up
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-per-query-cost-by-shape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Per-query cost by shape
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-finding-the-cost-model-depends-on-cpu-versus-wall-under-rtt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The finding the cost model depends on: CPU versus wall under RTT
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. The finding the cost model depends on: CPU versus wall under RTT">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-a-measurement-trap-worth-recording" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 A measurement trap worth recording
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-exp-mt-040b--mongodb-fatal-asserts-at-50-tenant-databases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. EXP-MT-040b — MongoDB fatal-asserts at 50 tenant databases
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. EXP-MT-040b — MongoDB fatal-asserts at 50 tenant databases">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-probing-it-deliberately-47-files-and-38-mb-of-rss-per-empty-tenant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Probing it deliberately: 47 files and ~3.8 MB of RSS per empty tenant
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-load-cycle-cold-wake-and-the-alarm-slice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Load cycle, cold wake, and the alarm slice
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-the-revised-cost-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. The revised cost model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-exp-mt-011b--one-logical-database-with-a-tenant-discriminator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. EXP-MT-011b — one logical database with a tenant discriminator
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. EXP-MT-011b — one logical database with a tenant discriminator">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-what-the-shared-shape-costs-instead-the-forgotten-filter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 What the shared shape costs instead: the forgotten filter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-what-this-does-to-67s-ladder" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 What this does to §6.7's ladder
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-exp-mt-057--how-the-evaluator-learns-on-postgres" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. EXP-MT-057 — how the evaluator learns, on Postgres
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. EXP-MT-057 — how the evaluator learns, on Postgres">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-a-methodology-correction-first-because-it-nearly-became-a-finding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 A methodology correction first, because it nearly became a finding
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-rls-on-nightscout-query-shapes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 RLS on Nightscout query shapes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-the-four-mechanisms-and-the-disconnect-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 The four mechanisms, and the disconnect test
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#84-the-poll-is-not-what-it-used-to-be" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.4 The poll is not what it used to be
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#85-the-recommendation-that-follows-a-spine-an-accelerator-and-a-backstop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.5 The recommendation that follows: a spine, an accelerator, and a backstop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#86-the-consequence-nobody-had-drawn-rls-cannot-protect-the-feed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.6 The consequence nobody had drawn: RLS cannot protect the feed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-exp-mt-058--the-last-hop-reaching-one-tenants-subscribers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. EXP-MT-058 — the last hop: reaching one tenant's subscribers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. EXP-MT-058 — the last hop: reaching one tenant&#39;s subscribers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91-fan-out-every-listener-gets-everything-and-no-affinity-is-needed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 Fan-out: every listener gets everything, and no affinity is needed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#92-postgres-will-do-the-per-tenant-routing-itself" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2 Postgres will do the per-tenant routing itself
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#93-a-real-delta-fits-in-the-payload" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.3 A real delta fits in the payload
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#94-the-hazard-and-the-design-change-it-argues-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4 The hazard, and the design change it argues for
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#95-the-assembled-answer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.5 The assembled answer
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-exp-mt-059--is-listennotify-built-for-this-or-would-kafka-be-better" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. EXP-MT-059 — is LISTEN/NOTIFY built for this, or would Kafka be better?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. EXP-MT-059 — is LISTEN/NOTIFY built for this, or would Kafka be better?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#101-the-axis-that-degrades-is-listener-count-not-message-rate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.1 The axis that degrades is listener count, not message rate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#102-why-the-design-survives-subscribers-are-not-listeners" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.2 Why the design survives: subscribers are not listeners
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#103-the-trap-listen-through-a-transaction-mode-pooler-fails-silently" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.3 The trap: LISTEN through a transaction-mode pooler fails silently
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#104-would-kafka-be-better" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.4 Would Kafka be better?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#l-limits--read-before-quoting-any-of-this" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L. Limits — read before quoting any of this
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reproduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reproduction
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="multitenancy-k-and-residency-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What sets K: residency, the load cycle, and two quadratics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ns-evaluator-spike-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ns-evaluator: what a per-tenant evaluation loop actually needs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="pgbouncer-tenant-binding-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    pgbouncer and the D3 tenant binding — isolation holds, and two of the three modes are usable
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="seam-filter-ast-three-arm-validation-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Three-arm validation of the storage seam's filter AST: closing §8.5
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="seam-filter-re-operator-validation-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    T2.3 — the nine operators in SQL, and what turning re on found
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="seam-limit-and-projection-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    limit and projection across the seam — and two live API defects
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="seam-ordering-and-pagination-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ordering across the seam — and a live pagination defect in API v3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="seam-readoptions-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    readOptions across the seam — a bound that stops holding exactly where it matters
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="seam-write-path-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The write path across the seam — three divergences, and a vacuity trap in my own harness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sort-key-typing-corpus-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Are sort keys really "one type in practice"? — measured against the corpus
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="t25-postgres-backend-verification-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Verifying the T2.5 PostgreSQL backend — four predictions, two of them wrong
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tenant-resolution-adversarial-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Attacking tenant resolution — the half of isolation that runs before the database
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tenant-shared-state-audit-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module-level shared state: what T3.3 has to fix before it can exist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="v1-operator-census-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What API v1 operators clients actually send — the census behind T2.4's allowlist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executive summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-was-actually-stood-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What was actually stood up
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-per-query-cost-by-shape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Per-query cost by shape
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-finding-the-cost-model-depends-on-cpu-versus-wall-under-rtt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The finding the cost model depends on: CPU versus wall under RTT
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. The finding the cost model depends on: CPU versus wall under RTT">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-a-measurement-trap-worth-recording" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 A measurement trap worth recording
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-exp-mt-040b--mongodb-fatal-asserts-at-50-tenant-databases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. EXP-MT-040b — MongoDB fatal-asserts at 50 tenant databases
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. EXP-MT-040b — MongoDB fatal-asserts at 50 tenant databases">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-probing-it-deliberately-47-files-and-38-mb-of-rss-per-empty-tenant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Probing it deliberately: 47 files and ~3.8 MB of RSS per empty tenant
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-load-cycle-cold-wake-and-the-alarm-slice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Load cycle, cold wake, and the alarm slice
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-the-revised-cost-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. The revised cost model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-exp-mt-011b--one-logical-database-with-a-tenant-discriminator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. EXP-MT-011b — one logical database with a tenant discriminator
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. EXP-MT-011b — one logical database with a tenant discriminator">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-what-the-shared-shape-costs-instead-the-forgotten-filter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 What the shared shape costs instead: the forgotten filter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-what-this-does-to-67s-ladder" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 What this does to §6.7's ladder
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-exp-mt-057--how-the-evaluator-learns-on-postgres" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. EXP-MT-057 — how the evaluator learns, on Postgres
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. EXP-MT-057 — how the evaluator learns, on Postgres">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-a-methodology-correction-first-because-it-nearly-became-a-finding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 A methodology correction first, because it nearly became a finding
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-rls-on-nightscout-query-shapes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 RLS on Nightscout query shapes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-the-four-mechanisms-and-the-disconnect-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 The four mechanisms, and the disconnect test
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#84-the-poll-is-not-what-it-used-to-be" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.4 The poll is not what it used to be
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#85-the-recommendation-that-follows-a-spine-an-accelerator-and-a-backstop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.5 The recommendation that follows: a spine, an accelerator, and a backstop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#86-the-consequence-nobody-had-drawn-rls-cannot-protect-the-feed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.6 The consequence nobody had drawn: RLS cannot protect the feed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-exp-mt-058--the-last-hop-reaching-one-tenants-subscribers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. EXP-MT-058 — the last hop: reaching one tenant's subscribers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. EXP-MT-058 — the last hop: reaching one tenant&#39;s subscribers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91-fan-out-every-listener-gets-everything-and-no-affinity-is-needed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 Fan-out: every listener gets everything, and no affinity is needed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#92-postgres-will-do-the-per-tenant-routing-itself" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2 Postgres will do the per-tenant routing itself
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#93-a-real-delta-fits-in-the-payload" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.3 A real delta fits in the payload
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#94-the-hazard-and-the-design-change-it-argues-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4 The hazard, and the design change it argues for
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#95-the-assembled-answer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.5 The assembled answer
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-exp-mt-059--is-listennotify-built-for-this-or-would-kafka-be-better" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. EXP-MT-059 — is LISTEN/NOTIFY built for this, or would Kafka be better?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. EXP-MT-059 — is LISTEN/NOTIFY built for this, or would Kafka be better?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#101-the-axis-that-degrades-is-listener-count-not-message-rate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.1 The axis that degrades is listener count, not message rate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#102-why-the-design-survives-subscribers-are-not-listeners" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.2 Why the design survives: subscribers are not listeners
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#103-the-trap-listen-through-a-transaction-mode-pooler-fails-silently" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.3 The trap: LISTEN through a transaction-mode pooler fails silently
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#104-would-kafka-be-better" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.4 Would Kafka be better?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#l-limits--read-before-quoting-any-of-this" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L. Limits — read before quoting any of this
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reproduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reproduction
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="exp-mt-026-a-real-database-in-the-loop">EXP-MT-026: a real database in the loop<a class="headerlink" href="#exp-mt-026-a-real-database-in-the-loop" title="Permanent link">&para;</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Record</p>
+<p>Record as of 2026-09-14. A point-in-time document; it is not kept up to date.</p>
+</div>
+<blockquote>
+<p><strong>Snapshot — research as of 2026-09-14, measured against MongoDB 7.0.43 with driver 5.9.2 and queries transcribed from <code>lib/data/dataloader.js</code> (the doc names no <code>cgm-remote-monitor</code> commit). Status: superseded in part — tenancy research, not on a shipping path; §8's feed-poll sweep bound was revised by T4.2 (2026-09-15, in place below) and pgbouncer is now measured in <a href="pgbouncer-tenant-binding-2026-09-15.html">pgbouncer and the D3 binding</a>. Current facts: <a href="../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan</a>.</strong></p>
+</blockquote>
+<p><em>Audience: contributors.</em></p>
+<p><strong>Experiments</strong>: EXP-MT-026 (query cost, load cycle, cold wake, event-loop behaviour under
+RTT), <strong>EXP-MT-040b</strong> (where database-per-tenant breaks), <strong>EXP-MT-011b</strong> (one logical
+database with a tenant discriminator), <strong>EXP-MT-057</strong> (RLS and the change feed, on Postgres),
+<strong>EXP-MT-058</strong> (fan-out to one tenant's subscribers), <strong>EXP-MT-059</strong> (does <code>NOTIFY</code> scale;
+Kafka comparison; pgbouncer conflict)
+<strong>Date</strong>: 2026-09-14
+<strong>Harness</strong>: <code>tools/mt-bench/{dbloop,nsfiles,shared-tenant,latency-proxy}.js</code> and
+<code>pgfeed/{pgfeed,fanout,notify-scale}.js</code>; raw results in <code>results/exp-mt-026*.json</code>, <code>exp-mt-040b.json</code>,
+<code>exp-mt-011b.json</code>, <code>exp-mt-057.json</code>, <code>exp-mt-058.json</code>, <code>exp-mt-059.json</code>
+<strong>Under test</strong>: MongoDB <strong>7.0.43</strong>, single-node replica set in Docker, <code>mongodb</code> driver
+5.9.2 (the version <code>cgm-remote-monitor</code> pins), real <code>indexedFields</code> index set, queries
+transcribed from <code>lib/data/dataloader.js</code>. Shapes: <strong>database-per-tenant</strong> (§6.7's A′ rung,
+§§1–6) and <strong>one logical database with a tenant discriminator</strong> (§6.6's B, §7).
+<strong>Environment</strong>: Linux, 16 cores, 62 GB, Node v24.15.0. <strong>A laptop.</strong> See §L before quoting
+anything.
+<strong>Confidence</strong>: <strong>measured</strong>, with the scope limits in §L. RTT arms use <code>tc netem</code> inside the
+database container — kernel-level delay, not a userspace shim.</p>
+<p>Decisions taken on the strength of this report are recorded in
+<a href="../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">the execution plan</a>.</p>
+<p>Answers the question every other experiment in this programme deferred: <strong>all of them ran
+with no database.</strong> That was tolerable while the question was how much CPU the resident path
+burns. It became the largest open risk the moment the recommendation moved to a stateless
+tier that trades resident memory for queries.</p>
+<hr />
+<h2 id="executive-summary">Executive summary<a class="headerlink" href="#executive-summary" title="Permanent link">&para;</a></h2>
+<p><strong>The recommendation survives, and the measured database numbers widen its margin rather than
+narrowing it.</strong> But two of the inputs it rested on were wrong, and one accident produced the
+most operationally important finding here.</p>
+<ol>
+<li><strong>The claim the cost model rests on is confirmed: RTT does not consume proportional
+   event-loop CPU.</strong> Going from loopback to 50 ms RTT multiplies wall time per operation by
+   ~75× and CPU per operation by <strong>2.5×</strong>. Event-loop delay p50 stays pinned at <strong>1.09–1.20 ms
+   at every RTT and every concurrency level tested.</strong> Process count is set by CPU and is
+   therefore RTT-insensitive; what RTT actually costs is <strong>connection-pool depth and
+   latency</strong>, not processes.</li>
+<li><strong><code>dbQueryCpu_ms = 0.15</code> was a good guess for the case that matters.</strong> Measured at
+   concurrency 256: <strong>0.151 ms loopback, 0.207 ms at 10 ms RTT, 0.379 ms at 50 ms RTT.</strong> The
+   <em>sequential</em> figure is 0.517 ms, but that over-attributes idle-loop overhead and is not the
+   number a loaded server experiences (§3.1).</li>
+<li><strong>The load cycle's database work costs 1.82 ms of CPU</strong>, 14 operations in parallel. Folded
+   in, one cycle is <strong>8.77 ms</strong>, not 6.27, and K falls from 239 to <strong>171</strong>.</li>
+<li><strong>Revised cost at 10,000 tenants</strong> — the real numbers move A and B against C:</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;">processes</th>
+<th style="text-align: right;">resident RAM</th>
+<th style="text-align: right;">DB ops/s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A · stateful, all resident</td>
+<td style="text-align: right;">13 → <strong>17</strong></td>
+<td style="text-align: right;">26.7 GB</td>
+<td style="text-align: right;">6,183</td>
+</tr>
+<tr>
+<td>B · stateful, tiered</td>
+<td style="text-align: right;">10 → <strong>13</strong></td>
+<td style="text-align: right;">5.3 GB</td>
+<td style="text-align: right;">4,285</td>
+</tr>
+<tr>
+<td><strong>C · stateless</strong></td>
+<td style="text-align: right;"><strong>5</strong> (unchanged)</td>
+<td style="text-align: right;"><strong>0.5 GB</strong></td>
+<td style="text-align: right;"><strong>633</strong></td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li><strong>The resident cache is 10× cheaper per read than a query</strong>, measured: 0.02 ms CPU for a
+   typed cache hit against 0.207 ms for the equivalent indexed query. That converts the
+   shared response cache in the component design from a prudent suggestion into a measured
+   requirement for the busiest endpoint.</li>
+<li><strong>MongoDB took a fatal assertion at 50 tenant databases.</strong> Not slow — a hard crash of the
+   whole server, in the middle of an unrelated benchmark, on a file-descriptor limit. §4.</li>
+<li><strong>And probing that deliberately found the more important number: <code>mongod</code> holds ~3.7 MB of
+   non-evictable RSS per tenant database containing <em>zero documents</em></strong> — more than the 2.65 MB
+   of app-side resident state that database-per-tenant is supposed to save, and unlike it,
+   impossible to evict. <strong>§6.7's A′ rung relocates per-tenant memory rather than deleting
+   it.</strong> §4.1.</li>
+<li><strong>But A′ was never the destination, and the destination has none of this.</strong> A maintainer
+   asked the obvious question this report had failed to ask: wouldn't a multitenant version
+   use one logical database with a tenant discriminator? Measured, §7: <strong>104 WiredTiger files
+   in total at 400 tenants — 0.26 per tenant, flat — against A′'s 47.0 per tenant</strong>, with the
+   planner examining <strong>10 index keys to return 10 documents at every tenant count</strong>. The
+   namespace ceiling, the RSS slope and the <code>fassert()</code> cliff are all properties of
+   database-per-tenant specifically. <strong>They are arguments for consolidating storage, not
+   against multitenancy</strong>, and §4's findings should be read that way.</li>
+</ol>
+<hr />
+<h2 id="1-what-was-actually-stood-up">1. What was actually stood up<a class="headerlink" href="#1-what-was-actually-stood-up" title="Permanent link">&para;</a></h2>
+<p>50 tenant databases, each carrying the real retention window — 576 entries (48 h), 600
+treatments (60 h), 576 devicestatus with 72-point Loop prediction arrays — and the real index
+set transcribed from <code>lib/server/{entries,treatments,devicestatus,profile,food,activity}.js</code>
+<code>indexedFields</code>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>per-tenant db: 0.9 MB data, 0.9 MB indexes, 41 indexes across 6 collections
+</code></pre></div>
+<p><strong>§6.7 predicted "roughly 9 collections and 41+ indexes" per tenant database from counting
+<code>indexedFields</code>. The server built 41 indexes across 6 collections.</strong> The count is confirmed;
+the collection estimate was high because <code>settings</code> and the <code>auth_*</code> collections were not
+created here.</p>
+<p>Note that <strong>indexes cost as much as data</strong> at this working-set size — 0.9 MB each. For a
+tenant whose entire clinical history is under a megabyte, half the storage is index.</p>
+<h2 id="2-per-query-cost-by-shape">2. Per-query cost by shape<a class="headerlink" href="#2-per-query-cost-by-shape" title="Permanent link">&para;</a></h2>
+<p>Sequential, round-robin across the 50 tenant databases, loopback. Wall is per call; CPU is
+process CPU across the batch divided by iterations (§3.1 explains why that matters).</p>
+<table>
+<thead>
+<tr>
+<th>Query, as <code>dataloader</code> issues it</th>
+<th style="text-align: right;">wall p50</th>
+<th style="text-align: right;">wall p99</th>
+<th style="text-align: right;">CPU/op</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>latest entry (<code>date</code> desc, limit 1)</td>
+<td style="text-align: right;">0.607 ms</td>
+<td style="text-align: right;">0.999 ms</td>
+<td style="text-align: right;">0.381 ms</td>
+</tr>
+<tr>
+<td><strong>entries <code>?count=10</code> — the v1 REST read</strong></td>
+<td style="text-align: right;"><strong>0.664 ms</strong></td>
+<td style="text-align: right;">1.345 ms</td>
+<td style="text-align: right;"><strong>0.517 ms</strong></td>
+</tr>
+<tr>
+<td>entries <code>?count=576</code> — full 48 h window</td>
+<td style="text-align: right;">0.414 ms</td>
+<td style="text-align: right;">4.552 ms</td>
+<td style="text-align: right;">0.925 ms</td>
+</tr>
+<tr>
+<td>entries incremental, 15 min window</td>
+<td style="text-align: right;">0.440 ms</td>
+<td style="text-align: right;">1.036 ms</td>
+<td style="text-align: right;">0.272 ms</td>
+</tr>
+<tr>
+<td>treatments 60 h window</td>
+<td style="text-align: right;">0.741 ms</td>
+<td style="text-align: right;">1.769 ms</td>
+<td style="text-align: right;">0.365 ms</td>
+</tr>
+<tr>
+<td><code>loadLatestSingle</code> (eventType, limit 1)</td>
+<td style="text-align: right;">0.769 ms</td>
+<td style="text-align: right;">1.398 ms</td>
+<td style="text-align: right;">0.438 ms</td>
+</tr>
+<tr>
+<td>devicestatus latest (72-pt prediction)</td>
+<td style="text-align: right;">0.538 ms</td>
+<td style="text-align: right;">1.336 ms</td>
+<td style="text-align: right;">0.335 ms</td>
+</tr>
+<tr>
+<td><strong>devicestatus 48 h window</strong></td>
+<td style="text-align: right;">0.405 ms</td>
+<td style="text-align: right;"><strong>8.158 ms</strong></td>
+<td style="text-align: right;"><strong>1.740 ms</strong></td>
+</tr>
+<tr>
+<td><code>profile.last()</code></td>
+<td style="text-align: right;">0.311 ms</td>
+<td style="text-align: right;">0.626 ms</td>
+<td style="text-align: right;">0.203 ms</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The devicestatus window is the expensive one</strong>, by 4–8×, and for the reason
+EXP-MT-055b found independently on the clone side: Loop's 72-float prediction array makes
+each document an order of magnitude larger than an entry. Every measurement in this
+programme that has touched devicestatus — the cache clone at 2.45 ms, the BSON decode at
+1.74 ms — has found the same thing. <strong>Devicestatus retention is the single most effective
+per-tenant cost knob a hoster has, and it is already a configurable
+(<code>DEVICESTATUS_DAYS</code>).</strong></p>
+<h2 id="3-the-finding-the-cost-model-depends-on-cpu-versus-wall-under-rtt">3. The finding the cost model depends on: CPU versus wall under RTT<a class="headerlink" href="#3-the-finding-the-cost-model-depends-on-cpu-versus-wall-under-rtt" title="Permanent link">&para;</a></h2>
+<p>A query costs two different things and the cost model only cares about one. Wall time
+determines latency and how many connections a pool needs. <strong>Event-loop CPU is the term that
+competes with the load cycle for the single thread, and therefore the only term that sets how
+many processes an operator runs.</strong></p>
+<p>Measured at three network conditions, <code>tc netem</code> applied to the database container's
+interface. Concurrency is the number of operations in flight; each round is a <code>?count=10</code>
+read against a different tenant database.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">concurrency</th>
+<th style="text-align: right;">loopback</th>
+<th style="text-align: right;"></th>
+<th style="text-align: right;">10 ms RTT</th>
+<th style="text-align: right;"></th>
+<th style="text-align: right;">50 ms RTT</th>
+<th style="text-align: right;"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">ops/s</td>
+<td style="text-align: right;">CPU/op</td>
+<td style="text-align: right;">ops/s</td>
+<td style="text-align: right;">CPU/op</td>
+<td style="text-align: right;">ops/s</td>
+<td style="text-align: right;">CPU/op</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2,552</td>
+<td style="text-align: right;">0.330</td>
+<td style="text-align: right;">144</td>
+<td style="text-align: right;">1.485</td>
+<td style="text-align: right;">37</td>
+<td style="text-align: right;">2.377</td>
+</tr>
+<tr>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">7,387</td>
+<td style="text-align: right;">0.166</td>
+<td style="text-align: right;">1,502</td>
+<td style="text-align: right;">0.390</td>
+<td style="text-align: right;">428</td>
+<td style="text-align: right;">0.585</td>
+</tr>
+<tr>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">6,901</td>
+<td style="text-align: right;">0.183</td>
+<td style="text-align: right;">2,694</td>
+<td style="text-align: right;">0.248</td>
+<td style="text-align: right;">637</td>
+<td style="text-align: right;">0.583</td>
+</tr>
+<tr>
+<td style="text-align: right;"><strong>256</strong></td>
+<td style="text-align: right;"><strong>7,866</strong></td>
+<td style="text-align: right;"><strong>0.151</strong></td>
+<td style="text-align: right;"><strong>5,435</strong></td>
+<td style="text-align: right;"><strong>0.207</strong></td>
+<td style="text-align: right;"><strong>1,457</strong></td>
+<td style="text-align: right;"><strong>0.379</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Event-loop delay, the same runs:</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">concurrency</th>
+<th>loopback p50/p99</th>
+<th>10 ms RTT p50/p99</th>
+<th>50 ms RTT p50/p99</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">1</td>
+<td>1.01 / 1.50 ms</td>
+<td>1.11 / 2.19 ms</td>
+<td>1.11 / 1.84 ms</td>
+</tr>
+<tr>
+<td style="text-align: right;">16</td>
+<td>1.23 / 2.32 ms</td>
+<td>1.13 / 4.56 ms</td>
+<td>1.10 / 5.37 ms</td>
+</tr>
+<tr>
+<td style="text-align: right;">64</td>
+<td>2.71 / 4.56 ms</td>
+<td>1.10 / 7.37 ms</td>
+<td>1.11 / 9.02 ms</td>
+</tr>
+<tr>
+<td style="text-align: right;">256</td>
+<td><strong>4.74</strong> / 11.55 ms</td>
+<td><strong>1.20</strong> / 10.39 ms</td>
+<td><strong>1.09</strong> / 9.96 ms</td>
+</tr>
+</tbody>
+</table>
+<p>Three things follow, and they are the load-bearing results of this experiment:</p>
+<p><strong>a. CPU per operation is sub-linear in RTT.</strong> Loopback → 50 ms RTT is an unbounded
+multiplication of wall time and a <strong>2.5× multiplication of CPU</strong>. The residual growth is real
+— more epoll wakeups, more partial reads, more timer activity per operation — but it is
+nothing like proportional. <strong>The stateless tier's process count survives a remote database.</strong></p>
+<p><strong>b. Event-loop delay does not grow with RTT — it <em>falls</em>.</strong> At concurrency 256, loop delay
+p50 is 4.74 ms on loopback and 1.20 ms at 10 ms RTT. That is not a paradox: on loopback the
+loop is genuinely saturated with work, and under RTT it spends most of its time idle waiting
+for the network. <strong>Waiting does not block the loop.</strong> This is the async-I/O assumption the
+whole cost model rests on, and it is now measured rather than asserted.</p>
+<p><strong>c. What RTT actually costs is concurrency.</strong> Throughput at concurrency 256 falls from 7,866
+to 1,457 ops/s across the range. To sustain the 533 req/s an api tier needs at 10,000
+tenants, a 50 ms-RTT deployment needs roughly 94 operations in flight. <strong>A pool of 100 is
+adequate and a default pool of 5–10 is not</strong> — which is a concrete, actionable configuration
+finding that no local benchmark could have produced.</p>
+<h3 id="31-a-measurement-trap-worth-recording">3.1 A measurement trap worth recording<a class="headerlink" href="#31-a-measurement-trap-worth-recording" title="Permanent link">&para;</a></h3>
+<p><code>process.cpuUsage()</code> attributes CPU for the whole process. In the <strong>sequential</strong> arms one
+operation is in flight at a time, so under RTT the loop sits idle for milliseconds per
+operation while driver heartbeats, timers and GC continue — and all of that lands in the
+per-operation average. That is why the sequential figure rises from 0.517 ms to 1.549 ms at
+10 ms RTT while the concurrent figure rises only from 0.151 to 0.207 ms.</p>
+<p><strong>The concurrent figures are the ones that describe a loaded server, and they are the ones the
+cost model uses.</strong> The sequential number is not evidence that RTT triples CPU cost; that rise
+is an artifact of the measurement method.</p>
+<h2 id="4-exp-mt-040b--mongodb-fatal-asserts-at-50-tenant-databases">4. EXP-MT-040b — MongoDB fatal-asserts at 50 tenant databases<a class="headerlink" href="#4-exp-mt-040b--mongodb-fatal-asserts-at-50-tenant-databases" title="Permanent link">&para;</a></h2>
+<p><strong>This was an accident.</strong> The first attempt at §2 crashed the server partway through:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>"msg":"WiredTiger error message" ... "__posix_open_file:815:
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>  /data/db/index-3896-74235283549191764.wt: handle-open: open",
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>  "error_str":"Too many open files","error_code":24
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>"msg":"Failed to open WiredTiger cursor. This may be due to data corruption"
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>"msg":"Fatal assertion","attr":{"msgid":50882, ...}
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>"msg":"\n\n***aborting after fassert() failure\n\n"
+</code></pre></div>
+<p>At the moment of the crash:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tenant databases</td>
+<td style="text-align: right;">50</td>
+</tr>
+<tr>
+<td>WiredTiger files in the data directory</td>
+<td style="text-align: right;"><strong>2,404</strong></td>
+</tr>
+<tr>
+<td><strong>files per tenant</strong></td>
+<td style="text-align: right;"><strong>48.1</strong></td>
+</tr>
+<tr>
+<td>container file-descriptor soft limit (Docker default)</td>
+<td style="text-align: right;"><strong>1,024</strong></td>
+</tr>
+</tbody>
+</table>
+<p>48.1 files per tenant is exactly 41 indexes + 6 collections + overhead. <strong>§6.7 stated the A′
+ceiling as a namespace count rather than a data volume, said "where A′ actually breaks is an
+experiment, not an opinion", guessed N* in the low thousands, and left it unrun. This is
+that experiment, run by accident, and the important result is not the number — it is the
+failure mode.</strong></p>
+<ul>
+<li><strong>It is not graceful degradation. It is <code>fassert()</code> — an immediate abort of the whole
+  <code>mongod</code> process.</strong> In database-per-tenant that takes down <em>every</em> tenant on the cluster,
+  not the one being added.</li>
+<li><strong>The trigger is a per-process resource limit, which an operator controls.</strong> Raising the
+  container to MongoDB's own recommended production value of <code>nofile 64000</code> let the same
+  workload run without incident. At 48.1 files/tenant, <strong>64,000 descriptors is ~1,330 tenant
+  databases</strong>, and 10,000 tenants would need ~481,000 — above most default hard limits and
+  well into territory where WiredTiger's per-file cache metadata is the next wall.</li>
+<li><strong>The 0.9 MB of data per tenant is irrelevant to this.</strong> The crash is driven entirely by
+  namespace count. A hoster whose tenants are mostly idle hits it at exactly the same place as
+  one whose tenants are all busy.</li>
+</ul>
+<h3 id="41-probing-it-deliberately-47-files-and-38-mb-of-rss-per-empty-tenant">4.1 Probing it deliberately: 47 files and ~3.8 MB of RSS per <em>empty</em> tenant<a class="headerlink" href="#41-probing-it-deliberately-47-files-and-38-mb-of-rss-per-empty-tenant" title="Permanent link">&para;</a></h3>
+<p>Having found the cliff by accident, <code>nsfiles.js</code> walks up to it on purpose — creating tenant
+databases with the full index set and <strong>no documents at all</strong>, which isolates namespace cost
+from data cost.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">tenants</th>
+<th style="text-align: right;">WT files</th>
+<th style="text-align: right;">files/tenant</th>
+<th style="text-align: right;">mongod RSS</th>
+<th style="text-align: right;">open fds</th>
+<th style="text-align: right;">read p50</th>
+<th style="text-align: right;">read p99</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;"><em>(baseline, empty server)</em></td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">168.8 MB</td>
+<td style="text-align: right;">121</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">2,401</td>
+<td style="text-align: right;">47.0</td>
+<td style="text-align: right;">339.7 MB</td>
+<td style="text-align: right;">2,471</td>
+<td style="text-align: right;">0.923 ms</td>
+<td style="text-align: right;">5.081 ms</td>
+</tr>
+<tr>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">4,751</td>
+<td style="text-align: right;">47.0</td>
+<td style="text-align: right;">547.0 MB</td>
+<td style="text-align: right;">4,818</td>
+<td style="text-align: right;">1.112 ms</td>
+<td style="text-align: right;">2.090 ms</td>
+</tr>
+<tr>
+<td style="text-align: right;">150</td>
+<td style="text-align: right;">7,101</td>
+<td style="text-align: right;">47.0</td>
+<td style="text-align: right;">714.8 MB</td>
+<td style="text-align: right;">7,168</td>
+<td style="text-align: right;">1.218 ms</td>
+<td style="text-align: right;">1.507 ms</td>
+</tr>
+<tr>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">9,451</td>
+<td style="text-align: right;"><strong>47.0</strong></td>
+<td style="text-align: right;"><strong>909.7 MB</strong></td>
+<td style="text-align: right;">9,518</td>
+<td style="text-align: right;">1.108 ms</td>
+<td style="text-align: right;">1.901 ms</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Exactly 47 files per tenant at every step</strong> — 6 collections plus 41 indexes, no rounding.
+The count is not an estimate; it is what the index set arithmetically requires.</p>
+<p><strong>The result worth the experiment is the memory slope: (909.7 − 168.8) MB ÷ 200 = ~3.7 MB of
+<code>mongod</code> resident memory per tenant database containing zero documents.</strong> This run capped WiredTiger's cache at 1 GB
+specifically to test whether that growth was evictable cache; <strong>it is not</strong> — an uncapped run
+on the same machine gave 4.0 MB/tenant and a 1 GB-capped run gave 3.8 MB/tenant. The cost is
+per-namespace overhead outside the cache (dhandles, session cursor caches, index metadata),
+and a cache limit does not reclaim it.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;">per tenant</th>
+<th style="text-align: right;">at 10,000 tenants</th>
+<th>evictable?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>app-side resident <code>ddata</code> + <code>ctx.cache</code> (EXP-MT-035c)</td>
+<td style="text-align: right;">2.65 MB</td>
+<td style="text-align: right;">26.5 GB</td>
+<td><strong>yes</strong> — that is what residency tiering is for</td>
+</tr>
+<tr>
+<td><strong><code>mongod</code> RSS per empty tenant database</strong></td>
+<td style="text-align: right;"><strong>~3.8 MB</strong></td>
+<td style="text-align: right;"><strong>~37 GB</strong></td>
+<td><strong>no</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>This is a serious correction to §6.7's A′ rung, and it runs against the recommendation.</strong>
+A′ was presented as buying "the entire measured 10–20× density win with no engine migration
+and no schema change". That is true <em>on the application side</em> — and it is now measured that
+A′ reintroduces a <strong>larger, non-evictable, per-tenant memory cost on the database side</strong>,
+paid whether the tenant is active, idle or dormant, and unreachable by any residency policy
+the application could adopt. Moving from process-per-tenant to database-per-tenant does not
+delete per-tenant memory; it relocates it from a tier that can evict to one that cannot.</p>
+<p><strong>Read latency does not degrade</strong> across this range — 0.92–1.22 ms p50 throughout, and the
+p99 improves as the run settles. So A′'s
+failure is not a gradual slowdown that monitoring would catch early. It is flat, flat, flat,
+and then either an <code>fassert()</code> on file descriptors or memory exhaustion.</p>
+<p><strong>The operational reading: A′ is real and cheap on the app tier, and it has two cliffs that
+are invisible until you hit them</strong> — a <code>ulimit</code> set outside the application, and a database
+memory slope steeper than the application memory it saves. Any adoption needs <code>nofile</code> raised
+deliberately and both file count and <code>mongod</code> RSS treated as capacity metrics. §6.7's
+index-pruning recommendation (several of the 35 indexes read as speculative) now has a
+measured slope to move along: <strong>each index removed is one file and a share of 3.8 MB per
+tenant</strong>, on every tenant, forever.</p>
+<h2 id="5-load-cycle-cold-wake-and-the-alarm-slice">5. Load cycle, cold wake, and the alarm slice<a class="headerlink" href="#5-load-cycle-cold-wake-and-the-alarm-slice" title="Permanent link">&para;</a></h2>
+<p>Loopback, so these are the CPU floors; scale by §3's ratios for a remote database.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;">wall p50</th>
+<th style="text-align: right;">wall p99</th>
+<th style="text-align: right;">CPU</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>incremental cycle, 14 ops in parallel</strong> (§2.3)</td>
+<td style="text-align: right;">1.242 ms</td>
+<td style="text-align: right;">2.404 ms</td>
+<td style="text-align: right;"><strong>1.824 ms</strong></td>
+</tr>
+<tr>
+<td>fetch whole window (4 queries)</td>
+<td style="text-align: right;">0.750 ms</td>
+<td style="text-align: right;">13.122 ms</td>
+<td style="text-align: right;">4.777 ms</td>
+</tr>
+<tr>
+<td><strong>fetch + build ddata (full cold wake)</strong></td>
+<td style="text-align: right;">0.697 ms</td>
+<td style="text-align: right;">23.483 ms</td>
+<td style="text-align: right;"><strong>6.817 ms</strong></td>
+</tr>
+<tr>
+<td><strong>alarm slice — what <code>ns-evaluator</code> fetches per change</strong></td>
+<td style="text-align: right;">0.898 ms</td>
+<td style="text-align: right;">1.968 ms</td>
+<td style="text-align: right;"><strong>1.189 ms</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Wall is below CPU because the operations run in parallel across cores; the "% of wall" column
+in the raw output is meaningless for these arms and should be ignored.</p>
+<p><strong>The load cycle, complete at last.</strong> Four passes have now each found a term the previous one
+missed:</p>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th style="text-align: right;">ms</th>
+<th style="text-align: right;">share</th>
+<th>found by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ddata</code> derivation, post-#8733</td>
+<td style="text-align: right;">2.19</td>
+<td style="text-align: right;">25 %</td>
+<td>K report §4</td>
+</tr>
+<tr>
+<td><code>cache.insertData</code> defensive clone</td>
+<td style="text-align: right;">4.08</td>
+<td style="text-align: right;">47 %</td>
+<td>EXP-MT-055b</td>
+</tr>
+<tr>
+<td><strong>database, 14 ops in parallel</strong></td>
+<td style="text-align: right;"><strong>2.50</strong></td>
+<td style="text-align: right;"><strong>29 %</strong></td>
+<td><strong>EXP-MT-026</strong></td>
+</tr>
+<tr>
+<td><strong>total</strong></td>
+<td style="text-align: right;"><strong>8.77</strong></td>
+<td style="text-align: right;"></td>
+<td>K = <strong>171</strong> active tenants/shard</td>
+</tr>
+</tbody>
+</table>
+<p>(Database term scaled to 10 ms RTT.) <strong>The cycle is now 4× what the second pass reported and
+the database is its smallest component.</strong> The largest is still a defensive deep clone that
+exists only to maintain a resident copy.</p>
+<p><strong>Cold wake at 6.8 ms</strong> confirms §7.1's ~3–4 ms estimate was the local-compute half and
+missed the fetch. It remains cheap in absolute terms — a tenant can be materialised on demand
+well inside a request budget.</p>
+<h2 id="6-the-revised-cost-model">6. The revised cost model<a class="headerlink" href="#6-the-revised-cost-model" title="Permanent link">&para;</a></h2>
+<p><code>node deployment-cost.js 10000</code>, with §3's measured CPU-per-operation and §5's measured cycle
+and evaluator costs substituted for the guesses. 10 ms RTT (a managed database in the same
+region) is the default; <code>RTT_MS=0</code> and <code>RTT_MS=50</code> reproduce the other two.</p>
+<table>
+<thead>
+<tr>
+<th>At 10,000 tenants</th>
+<th style="text-align: right;">processes</th>
+<th style="text-align: right;">resident RAM</th>
+<th style="text-align: right;">DB ops/s</th>
+<th>routing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A · stateful shards, all resident</td>
+<td style="text-align: right;"><strong>17</strong></td>
+<td style="text-align: right;">26.7 GB</td>
+<td style="text-align: right;">6,183</td>
+<td>tenant→shard map, sticky, rebalancing</td>
+</tr>
+<tr>
+<td>B · stateful shards, tiered</td>
+<td style="text-align: right;"><strong>13</strong></td>
+<td style="text-align: right;">5.3 GB</td>
+<td style="text-align: right;">4,285</td>
+<td>+ eviction policy + cold-alarm path</td>
+</tr>
+<tr>
+<td><strong>C · stateless api + evaluator + realtime</strong></td>
+<td style="text-align: right;"><strong>5</strong></td>
+<td style="text-align: right;"><strong>0.5 GB</strong></td>
+<td style="text-align: right;"><strong>633</strong></td>
+<td>none but socket stickiness</td>
+</tr>
+</tbody>
+</table>
+<p>Option C's internals, all now measured rather than assumed:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>api         533 req/s    110 ms/s   1 process   (0.207 ms CPU/op)
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>evaluator    33 /s        80 ms/s   1 process   (2.4 ms each: 1.19 fetch + 0.61 plugins + materialise)
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>realtime   6000 sockets  1.8 ms/s   1 process   0.2 GB
+</code></pre></div>
+<p><strong>The measured database numbers moved A from 13 to 17 processes and B from 10 to 13, and left
+C at 5.</strong> The reason is structural: the resident options pay database cost <em>per tenant per
+cycle on a timer</em>, so a more expensive query multiplies against tenant count; C pays it per
+request, so it multiplies against demand, which is 10× smaller.</p>
+<p><strong>The one number that moved against C</strong>: a typed cache hit is <strong>0.02 ms</strong> of CPU against
+<strong>0.207 ms</strong> for the equivalent query — <strong>10×</strong>. At 533 req/s that is 110 ms/s of a 300 ms/s
+budget spent on reads that residency serves nearly free. It does not change the process
+count, but it does mean the shared response cache keyed on <code>(tenant, lastUpdated)</code> in the
+component design is <strong>load-bearing, not optional</strong>, for <code>/api/v1/entries</code> specifically.</p>
+<h2 id="7-exp-mt-011b--one-logical-database-with-a-tenant-discriminator">7. EXP-MT-011b — one logical database with a tenant discriminator<a class="headerlink" href="#7-exp-mt-011b--one-logical-database-with-a-tenant-discriminator" title="Permanent link">&para;</a></h2>
+<p><strong>§4 measured a migration rung, not the destination shape.</strong> A′
+(database-per-tenant) is §6.7's stage 2 — a migration rung chosen because it requires no
+schema change. The multitenant target is §6.6's B on Mongo or D on Postgres: <strong>one logical
+database, every document carrying a tenant discriminator, the index set tenant-prefixed.</strong>
+Then 6 collections and 41 indexes are <em>totals</em>, not per-tenant.</p>
+<p>§6.7 asserts this outright — "35 total with <code>tenant_id</code> as the leading column, not 35 per
+tenant; the curve is flat instead of linear" — and never measured it. Same corpus, same index
+set mechanically tenant-prefixed, same queries, same server config, so the two are directly
+comparable.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">tenants</th>
+<th style="text-align: right;">documents</th>
+<th style="text-align: right;"><strong>WT files</strong></th>
+<th style="text-align: right;">mongod RSS</th>
+<th style="text-align: right;">data</th>
+<th style="text-align: right;">index</th>
+<th style="text-align: right;">read <code>?count=10</code> p50</th>
+<th style="text-align: right;">keys examined</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">175,300</td>
+<td style="text-align: right;"><strong>104</strong></td>
+<td style="text-align: right;">544.8 MB</td>
+<td style="text-align: right;">94.5 MB</td>
+<td style="text-align: right;">55.1 MB</td>
+<td style="text-align: right;">0.702 ms</td>
+<td style="text-align: right;"><strong>10</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">350,600</td>
+<td style="text-align: right;"><strong>104</strong></td>
+<td style="text-align: right;">765.1 MB</td>
+<td style="text-align: right;">189.2 MB</td>
+<td style="text-align: right;">113.9 MB</td>
+<td style="text-align: right;">0.745 ms</td>
+<td style="text-align: right;"><strong>10</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">300</td>
+<td style="text-align: right;">525,900</td>
+<td style="text-align: right;"><strong>104</strong></td>
+<td style="text-align: right;">973.8 MB</td>
+<td style="text-align: right;">284.0 MB</td>
+<td style="text-align: right;">172.6 MB</td>
+<td style="text-align: right;">0.554 ms</td>
+<td style="text-align: right;"><strong>10</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">400</td>
+<td style="text-align: right;">701,200</td>
+<td style="text-align: right;"><strong>104</strong></td>
+<td style="text-align: right;">1,075.6 MB</td>
+<td style="text-align: right;">378.7 MB</td>
+<td style="text-align: right;">233.6 MB</td>
+<td style="text-align: right;">1.011 ms</td>
+<td style="text-align: right;"><strong>10</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>The ceiling does not exist in this shape.</strong></p>
+<ul>
+<li><strong>104 files in total at 400 tenants — 0.26 per tenant, and flat.</strong> A′ needs 47.0 <em>per
+  tenant</em>: 18,800 files for the same 400 tenants, and 470,000 at 10,000. The file-descriptor
+  <code>fassert()</code> of §4 is unreachable here, because file count does not grow with tenant count at
+  all.</li>
+<li><strong>Index locality holds, which is the result that actually had to be checked.</strong> The planner
+  examines <strong>10 keys to return 10 documents at every tenant count</strong>. This is the opposite of
+  §6.1's measurement of MongoDB's <em>role-keyed view</em> mechanism, which gave the planner no
+  constant and forced either a COLLSCAN or an IXSCAN over every tenant's keys. <strong>An explicit
+  discriminator in the query is a constant the planner can build index bounds from; a
+  server-injected <code>$expr</code> over <code>$$USER_ROLES</code> is not.</strong> That distinction, not the engine, is
+  what decides index locality.</li>
+<li><strong>Indexes are cheaper in aggregate</strong>: 233.6 MB for 400 tenants against A′'s ~0.9 MB/tenant,
+  ~360 MB for the same corpus. One B-tree over 400 tenants packs better than 400 B-trees.</li>
+<li><strong>Memory is now data, not namespace.</strong> The 2,321 KB/tenant slope here is <em>not</em> comparable to
+  A′'s 3,793 KB/tenant: A′'s probe held <strong>zero documents</strong>, so that figure was pure namespace
+  overhead, while this one is loaded with 701,200 real documents and is therefore
+  data-and-index cache — evictable, proportional to stored data, and a cost both shapes pay.
+  <strong>The like-for-like comparison is A′'s ~3.7 MB/tenant of non-evictable namespace overhead
+  against this shape's approximately zero.</strong></li>
+</ul>
+<p>Read latency is roughly flat with noise (0.554–1.011 ms p50, non-monotonic) and the p50 at 400
+tenants is the highest measured. Since keys examined never moved, that is working-set pressure
+against the 1 GB WiredTiger cache — 612 MB of data and index at 400 tenants — not index
+degradation. <strong>It is the first sign of the constraint that replaces namespace count: ordinary
+cache pressure, which is the constraint every database has and which sharding addresses
+normally.</strong></p>
+<h3 id="71-what-the-shared-shape-costs-instead-the-forgotten-filter">7.1 What the shared shape costs instead: the forgotten filter<a class="headerlink" href="#71-what-the-shared-shape-costs-instead-the-forgotten-filter" title="Permanent link">&para;</a></h3>
+<p>Shared collections trade a namespace ceiling for an isolation problem, and it is worth being
+precise about which parts of that trade are real. Explain plans against the 400-tenant,
+230,400-document <code>entries</code> collection:</p>
+<table>
+<thead>
+<tr>
+<th>query</th>
+<th style="text-align: right;">keys examined</th>
+<th style="text-align: right;"><strong>docs examined</strong></th>
+<th style="text-align: right;">returned</th>
+<th style="text-align: right;">time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tenant + indexed field (<code>sgv</code>)</td>
+<td style="text-align: right;">154</td>
+<td style="text-align: right;">154</td>
+<td style="text-align: right;">154</td>
+<td style="text-align: right;">1 ms</td>
+</tr>
+<tr>
+<td>tenant + <strong>unindexed</strong> field (<code>rssi</code>)</td>
+<td style="text-align: right;">576</td>
+<td style="text-align: right;"><strong>576</strong></td>
+<td style="text-align: right;">576</td>
+<td style="text-align: right;">2 ms</td>
+</tr>
+<tr>
+<td>tenant + <strong>regex</strong> on unindexed field</td>
+<td style="text-align: right;">576</td>
+<td style="text-align: right;"><strong>576</strong></td>
+<td style="text-align: right;">576</td>
+<td style="text-align: right;">2 ms</td>
+</tr>
+<tr>
+<td><strong>forgotten tenant filter</strong>, unindexed</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;"><strong>230,400</strong></td>
+<td style="text-align: right;"><strong>230,400</strong></td>
+<td style="text-align: right;">92 ms</td>
+</tr>
+<tr>
+<td><strong>forgotten tenant filter</strong>, regex</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;"><strong>230,400</strong></td>
+<td style="text-align: right;"><strong>230,400</strong></td>
+<td style="text-align: right;">118 ms</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The good news is real: a tenant-scoped query stays bounded to one tenant's 576 documents
+even when the other predicate is unindexed, even for a regex.</strong> The tenant-prefixed index
+bounds the scan and the unindexed predicate is applied as a residual within those bounds. So
+§6.5's unbounded-query exposure <strong>does not get worse</strong> in the shared shape — a noisy tenant's
+regex costs one tenant's documents, exactly as it does under A′.</p>
+<p><strong>The bad news is the whole argument for RLS, now demonstrated rather than asserted.</strong> A query
+that simply omits the discriminator does not fail, does not error, and does not return
+nothing. It returns <strong>every tenant's data</strong> — 230,400 documents of other people's glucose
+readings — and it does so in 92 ms, fast enough that nothing looks wrong. §6.6 calls B "the
+only architecture where the enforcement component is developer discipline"; this is what that
+sentence costs when the discipline lapses at one of ~30 call sites.</p>
+<p>Against §6.1's measured Postgres result — <em>a query with zero <code>tenant_id</code> predicate in the SQL
+returns only the bound tenant's rows, and an unbound connection returns zero rows</em> — the
+comparison is stark, and it is not about performance:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>forgotten filter on Mongo + discriminator</th>
+<th>forgotten filter on Postgres + RLS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>result</td>
+<td><strong>every tenant's rows</strong></td>
+<td>the bound tenant's rows</td>
+</tr>
+<tr>
+<td>unbound connection</td>
+<td>every tenant's rows</td>
+<td><strong>zero rows</strong></td>
+</tr>
+<tr>
+<td>failure mode</td>
+<td>silent, fast, undetectable in tests that use one tenant</td>
+<td>fail-closed</td>
+</tr>
+</tbody>
+</table>
+<p><strong>So the engine question is settled by this and not by the namespace curve.</strong> Both engines
+handle the shared shape's <em>performance</em> well. Only one of them makes the forgotten filter
+safe, and for a system holding other people's clinical data that is the deciding property.</p>
+<h3 id="72-what-this-does-to-67s-ladder">7.2 What this does to §6.7's ladder<a class="headerlink" href="#72-what-this-does-to-67s-ladder" title="Permanent link">&para;</a></h3>
+<p>The ladder's stages are unchanged; their justifications are not.</p>
+<ul>
+<li><strong>Stage 2 (A′) is a transitional rung, not a resting place.</strong> Its case was "the entire
+  measured density win with no schema change", and §4 shows it pays for that with a
+  non-evictable ~3.7 MB/tenant on the database tier and a hard cliff at ~1,360 tenants. It
+  remains a reasonable <em>migration</em> step for a hoster in the hundreds of tenants, and its
+  per-tenant <code>mongodump</code> export is a genuine asset. It does not reach 10,000.</li>
+<li><strong>Stage 3's case is stronger and differently argued.</strong> §6.7 justified Postgres+RLS on three
+  axes: write coverage, index locality and connection multiplexing. <strong>Index locality is no
+  longer the discriminator between engines</strong> — §7 shows an explicit discriminator gives the
+  Mongo planner perfect bounds. What survives, and is now demonstrated, is <strong>fail-closed
+  isolation</strong> (§7.1) and write coverage. Those are sufficient.</li>
+<li><strong>The namespace argument moves from "A′ versus Postgres" to "per-tenant versus shared."</strong> It
+  is an argument about consolidating storage, which both engines support, and it should not be
+  cited as an argument for Postgres specifically.</li>
+</ul>
+<h2 id="8-exp-mt-057--how-the-evaluator-learns-on-postgres">8. EXP-MT-057 — how the evaluator learns, on Postgres<a class="headerlink" href="#8-exp-mt-057--how-the-evaluator-learns-on-postgres" title="Permanent link">&para;</a></h2>
+<p>The component design calls <code>ns-evaluator</code> "change-driven" and never says by what mechanism.
+Four candidates, and they are not interchangeable, because the consumer is an <strong>alarm</strong> path:
+a delayed event is a nuisance, a dropped event is a missed hypo alert. <strong>The question that
+separates them is not throughput — it is what happens while the consumer is not there.</strong> So
+every arm below is a disconnect test.</p>
+<p>PostgreSQL 16.14, <code>wal_level=logical</code>, 400 tenants × 576 entries = 230,400 rows, 53 MB.</p>
+<h3 id="81-a-methodology-correction-first-because-it-nearly-became-a-finding">8.1 A methodology correction first, because it nearly became a finding<a class="headerlink" href="#81-a-methodology-correction-first-because-it-nearly-became-a-finding" title="Permanent link">&para;</a></h3>
+<p>The first run measured RLS as the <code>postgres</code> superuser. <strong>Superusers bypass RLS
+unconditionally</strong> — <code>BYPASSRLS</code> is implicit, and <code>FORCE ROW LEVEL SECURITY</code> subjects the table
+<em>owner</em>, not a superuser. So the policy was never enforced: an unbound connection returned all
+230,400 rows and the planner, never seeing the predicate, chose the global date index. Both
+results were about to be written up — the first as "RLS fails open", the second as "RLS does
+not get index bounds". Both are artifacts of connecting as the wrong role.</p>
+<p><strong>§6.1's parenthetical "app role <code>NOSUPERUSER NOBYPASSRLS</code>" is not a detail. It is the entire
+mechanism</strong>, and it is silently absent in any environment where the application connects as
+the database owner — which is the default in most quick-start Postgres setups, including the
+one this experiment started from.</p>
+<h3 id="82-rls-on-nightscout-query-shapes">8.2 RLS on Nightscout query shapes<a class="headerlink" href="#82-rls-on-nightscout-query-shapes" title="Permanent link">&para;</a></h3>
+<p>As <code>ns_app</code> (<code>NOSUPERUSER NOBYPASSRLS</code>), bound per transaction with <code>set_config(..., true)</code>:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;">p50</th>
+<th style="text-align: right;">p99</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>RLS-bound, no tenant predicate in the SQL at all</strong></td>
+<td style="text-align: right;"><strong>0.383 ms</strong></td>
+<td style="text-align: right;">1.993 ms</td>
+</tr>
+<tr>
+<td>explicit <code>WHERE tenant_id = $1</code> (RLS also active)</td>
+<td style="text-align: right;">0.585 ms</td>
+<td style="text-align: right;">2.535 ms</td>
+</tr>
+<tr>
+<td>RLS-bound, full 48 h window (576 rows)</td>
+<td style="text-align: right;">1.452 ms</td>
+<td style="text-align: right;">3.770 ms</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>Limit  (actual time=0.013..0.023 rows=10)
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>  -&gt;  Index Scan using entries_tenant_date on entries  (actual rows=10)
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>        Index Cond: (tenant_id = (NULLIF(current_setting('app.current_tenant_id', true), ''))::uuid)
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>        Buffers: shared hit=9
+</code></pre></div>
+<p><strong>The policy predicate becomes an <code>Index Cond</code> on the tenant-leading index.</strong> Index locality
+is not merely comparable to the explicit filter — the RLS form is <em>faster</em> (0.383 vs 0.585 ms,
+9 buffers either way), because the planner resolves <code>current_setting</code> once rather than
+handling a bound parameter. This is the Postgres counterpart of EXP-MT-011b's "10 keys
+examined for 10 returned", and it settles the question that §6.1 could only answer on a
+generic corpus.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;">as <code>ns_app</code></th>
+<th style="text-align: right;">as superuser</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>unbound connection, no predicate</td>
+<td style="text-align: right;"><strong>0 rows</strong></td>
+<td style="text-align: right;">231,700 rows</td>
+</tr>
+<tr>
+<td>bound connection, no predicate in SQL</td>
+<td style="text-align: right;">581 rows (that tenant's)</td>
+<td style="text-align: right;">231,700 rows</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Fail-closed, confirmed on Nightscout's shapes</strong>, and the contrast with EXP-MT-011b's Mongo
+discriminator — where the same forgotten filter returned all 230,400 rows — is the reason the
+recommendation lands where it does.</p>
+<h3 id="83-the-four-mechanisms-and-the-disconnect-test">8.3 The four mechanisms, and the disconnect test<a class="headerlink" href="#83-the-four-mechanisms-and-the-disconnect-test" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;">delivered while connected</th>
+<th style="text-align: right;">latency</th>
+<th style="text-align: right;"><strong>written while consumer down</strong></th>
+<th style="text-align: right;"><strong>delivered after it returned</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LISTEN/NOTIFY</strong></td>
+<td style="text-align: right;">500/500</td>
+<td style="text-align: right;"><strong>1 ms p50</strong></td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;"><strong>0 — all lost</strong></td>
+</tr>
+<tr>
+<td><strong>logical replication slot</strong></td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;"><strong>200/200 — nothing lost</strong></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong><code>NOTIFY</code> is fast and lossy.</strong> 1 ms delivery latency, and <strong>every event written while the
+  listener was disconnected is gone permanently</strong> — there is no backlog, no cursor, nothing to
+  resume from. Re-<code>LISTEN</code> starts from now. For a browser refresh that is fine. <strong>For alarm
+  delivery it is disqualifying on its own.</strong></li>
+<li><strong>A replication slot loses nothing and does not replay.</strong> 200/200 INSERT changes delivered
+  when the consumer finally arrived; re-consuming immediately after returned <strong>0</strong> changes,
+  because <code>pg_logical_slot_get_changes</code> advances the slot. That is exactly the
+  at-least-once-with-a-cursor semantic an alarm path needs.</li>
+<li><strong>The slot's cost is WAL retention, and it is affordable.</strong> 574 bytes of pinned WAL per row.
+  At 10,000 tenants writing once per five minutes (33 rows/s), <strong>an abandoned slot pins
+  ~0.06 GB/hour</strong> — about 1.4 GB/day. That needs monitoring and an alert, but it is a slow
+  leak, not a fast one: an operator has days, not minutes, to notice.</li>
+</ul>
+<h3 id="84-the-poll-is-not-what-it-used-to-be">8.4 The poll is not what it used to be<a class="headerlink" href="#84-the-poll-is-not-what-it-used-to-be" title="Permanent link">&para;</a></h3>
+<p>Today's polling is per-tenant and O(tenants) — the 6,183 DB ops/s of option A. The poll a
+change-driven design needs is <strong>one aggregate query returning only the tenants whose newest
+reading is later than their last evaluation</strong>:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;">p50</th>
+<th style="text-align: right;">tenants returned</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>all tenants due (watermarks at zero — the cold-start case)</td>
+<td style="text-align: right;">20.89 ms</td>
+<td style="text-align: right;">400</td>
+</tr>
+<tr>
+<td>steady state, watermarks current</td>
+<td style="text-align: right;">13.69 ms</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><strong>bounded by the <code>date</code> index (last 10 minutes)</strong></td>
+<td style="text-align: right;"><strong>1.02 ms</strong></td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Bounded by a date index, the "who needs evaluating" sweep costs ~1 ms at 400 registered
+tenants.</strong> At one sweep every 30 seconds 1.02 ms is 0.03 ms/s of database work, four orders of
+magnitude below the resident model's polling. (T4.2, 2026-09-15, which built the component,
+measured how it scales with registered tenants — below.)</p>
+<p><strong>The cost is not independent of how many tenants are registered; the run above varied neither
+axis.</strong> Reproducing this run's own query <em>and</em> its own index configuration across
+corpora it never built (<code>tools/measure-feed-poll-bound.js</code> in <code>cgm-remote-monitor</code>):</p>
+<table>
+<thead>
+<tr>
+<th>registered tenants</th>
+<th style="text-align: right;">100</th>
+<th style="text-align: right;">400</th>
+<th style="text-align: right;">1600</th>
+<th style="text-align: right;">3200</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sweep p50, writing set held at 100</td>
+<td style="text-align: right;">0.696 ms</td>
+<td style="text-align: right;"><strong>0.979 ms</strong></td>
+<td style="text-align: right;">2.909 ms</td>
+<td style="text-align: right;">5.236 ms</td>
+</tr>
+</tbody>
+</table>
+<p>The plan is a nested loop with one index descent per row of the watermark table, so <strong>as
+published the sweep is O(registered tenants)</strong> — about 1.4 µs each. It lands on 1.02 ms at 400
+tenants because 400 tenants is what was measured. At 10,000 it would be <strong>~15 ms a sweep, not
+1</strong>.</p>
+<p><strong>What makes it genuinely bounded is an index no emitted schema contains — and cannot contain
+under its current rule.</strong> Every index <code>tools/nsschema/emit/postgres_emit.py</code> produces is
+<strong>tenant-leading</strong>, because every tenant-facing query runs under a policy predicate on
+<code>tenant_id</code> (§8.2). This sweep has <strong>no tenant predicate by construction</strong> (§8.6), so it needs a
+<strong>global</strong> index on <code>date</code>, and the emitter will never write one. With it, the same four corpora
+cost 0.806 / 0.731 / 0.761 / <strong>0.865 ms — flat across 32× the corpus</strong>; and holding the corpus
+at 1600 tenants while varying the writing set 25 → 1600 gives 0.579 / 0.790 / 1.209 / 3.001 ms.</p>
+<p><strong>So the real bound is rows written since the last sweep</strong> — ~0.57 ms fixed plus ~0.8 µs per row
+inside the window — which is what this section's own sentence <em>claimed</em> without the index that
+makes it true. Without it the same statement costs 6.6 ms at 57.6k rows and <strong>108 ms at 1.84M</strong>,
+flat against the writing set, which is the signature of scanning everything.</p>
+<p>So polling is not the alternative to CDC; <strong>it is the affordable backstop underneath it</strong> — on a
+schema that carries one index the emitter does not currently know how to produce.</p>
+<p><strong>Two things this lands on the emitter</strong> (<code>{P}</code> T2.1), neither of which it can do today:</p>
+<ol>
+<li><strong>A global, non-tenant-leading index</strong> for the cross-tenant sweep. The emitter's rule —
+   tenant first, always — is correct for every tenant-facing query and wrong for the two
+   components §8.6 says can never be tenant-bound. The rule needs an exception it can express.</li>
+<li><strong>An insertion-ordered column on <code>entries</code>.</strong> The window predicate is over the <strong>uploader's
+   clock</strong>, because the emitted schema has no server-assigned insertion column at all. A device
+   running slow writes rows a bounded sweep cannot see — which makes the periodic full sweep a
+   <em>detection latency</em> rather than a tidy-up — and a device running fast drags its tenant's
+   watermark past real time, after which honest readings sit below it and <strong>that tenant goes
+   quiet until the clock catches up</strong>. The second cannot be fixed at this layer: clamping
+   re-reports the same row forever, and dropping a reading is not something an alarm path may
+   do. T4.2 counts it instead.</li>
+</ol>
+<h3 id="85-the-recommendation-that-follows-a-spine-an-accelerator-and-a-backstop">8.5 The recommendation that follows: a spine, an accelerator, and a backstop<a class="headerlink" href="#85-the-recommendation-that-follows-a-spine-an-accelerator-and-a-backstop" title="Permanent link">&para;</a></h3>
+<p>None of the four mechanisms is sufficient alone, and the right answer uses three of them for
+different reasons:</p>
+<ol>
+<li><strong>Logical replication slot as the spine.</strong> The only mechanism measured here that survives a
+   consumer restart without losing an alarm. Requires slot monitoring (§8.3).</li>
+<li><strong><code>LISTEN</code>/<code>NOTIFY</code> as a latency accelerator</strong>, optional. It cuts the tail between a write
+   and an evaluation to ~1 ms where a slot reader's poll interval would otherwise set it. It
+   carries no correctness weight, so its lossiness does not matter.</li>
+<li><strong>The bounded aggregate poll as a safety backstop</strong>, non-optional. Slots get dropped,
+   consumers get partitioned, replication breaks. At ~1 ms per sweep there is no reason not to
+   run it, and <strong>for an alarm path "the feed was broken and nobody noticed" is the failure
+   that matters.</strong> It is also the mechanism that closes the cold-start case, where every
+   watermark is behind.</li>
+<li><strong>Write-path publish is rejected</strong> — it misses anything not written through the api
+   (backfills, migrations, <code>nightscout-connect</code> writing directly) and couples two components
+   that otherwise share only storage.</li>
+</ol>
+<h3 id="86-the-consequence-nobody-had-drawn-rls-cannot-protect-the-feed">8.6 The consequence nobody had drawn: RLS cannot protect the feed<a class="headerlink" href="#86-the-consequence-nobody-had-drawn-rls-cannot-protect-the-feed" title="Permanent link">&para;</a></h3>
+<p>This follows directly from §8.1 and is a real constraint on the component design.</p>
+<p><strong>The evaluator must see every tenant</strong> — that is its job. So it cannot run under a policy that
+binds it to one tenant. Likewise, reading a replication slot requires the <code>REPLICATION</code>
+attribute, which is not tenant-scoped at all: <strong>the WAL is one stream containing every
+tenant's rows.</strong></p>
+<p>So the isolation story is split, and honestly it should be stated that way:</p>
+<table>
+<thead>
+<tr>
+<th>path</th>
+<th>isolation enforced by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ns-api</code> — arbitrary client queries</td>
+<td><strong>the database</strong> (RLS, per-transaction bind, fail-closed)</td>
+</tr>
+<tr>
+<td><code>ns-evaluator</code>, <code>ns-realtime</code> — feed consumers</td>
+<td><strong>code review</strong>. They hold cross-tenant privilege by construction</td>
+</tr>
+</tbody>
+</table>
+<p><strong>RLS protects the path that takes untrusted input, which is the one that needs it most.</strong> But
+the change-feed components are privileged, their blast radius is every tenant, and no storage
+mechanism will fix that. The design consequence is that they must stay <strong>small, single-purpose
+and genuinely reviewed</strong> — which is an argument for them being separate, narrow entrypoints
+rather than modes of a large shared process, and it is a better argument for the decomposition
+than the cost model is.</p>
+<h2 id="9-exp-mt-058--the-last-hop-reaching-one-tenants-subscribers">9. EXP-MT-058 — the last hop: reaching one tenant's subscribers<a class="headerlink" href="#9-exp-mt-058--the-last-hop-reaching-one-tenants-subscribers" title="Permanent link">&para;</a></h2>
+<p>§8 settled how <code>ns-evaluator</code> <em>learns</em> about a change. It left the hop after that unexamined:
+a change for tenant X must reach the sockets subscribed to tenant X, which are held by one of
+N <code>ns-realtime</code> processes, and the process that learns about the change is not necessarily the
+one holding the socket. Does that hop need its own stateful routing — tenant→process affinity,
+a Redis adapter, per-tenant cursors — or are Postgres's primitives enough?</p>
+<p><strong>The asymmetry that makes this tractable</strong>, and which §8 established but did not apply here:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>losing a change means</th>
+<th>so it needs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ns-evaluator</code></td>
+<td>a missed hypo alarm</td>
+<td>the replication slot</td>
+</tr>
+<tr>
+<td><code>ns-realtime</code></td>
+<td>a browser is stale until the next reading, and re-syncs on reconnect</td>
+<td><strong>it can tolerate loss</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The cheap lossy mechanism is admissible precisely where correctness does not rest on it.</p>
+<h3 id="91-fan-out-every-listener-gets-everything-and-no-affinity-is-needed">9.1 Fan-out: every listener gets everything, and no affinity is needed<a class="headerlink" href="#91-fan-out-every-listener-gets-everything-and-no-affinity-is-needed" title="Permanent link">&para;</a></h3>
+<p>32 concurrent <code>LISTEN</code> connections on one channel, 200 <code>NOTIFY</code>s:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>200 NOTIFYs -&gt; 6400 deliveries across 32 listeners (expected 6400, 32/32 complete)
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>notify cost 0.490 ms/event at the writer; delivery latency 0 ms p50 / 2 p99 / 4 max
+</code></pre></div>
+<p><strong>Every listener received every event.</strong> So N <code>ns-realtime</code> processes can each subscribe, and
+each emits to whichever of its own local socket rooms match — <strong>no tenant→process affinity, no
+Redis adapter, no coordination.</strong> A process that holds no sockets for a tenant simply ignores
+that tenant's event.</p>
+<h3 id="92-postgres-will-do-the-per-tenant-routing-itself">9.2 Postgres will do the per-tenant routing itself<a class="headerlink" href="#92-postgres-will-do-the-per-tenant-routing-itself" title="Permanent link">&para;</a></h3>
+<p>Better than ignoring events is not receiving them. <code>LISTEN</code> takes a channel name, so a channel
+per tenant means the server filters:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">channels on one connection</th>
+<th style="text-align: right;">subscribe cost</th>
+<th style="text-align: right;">targeted <code>NOTIFY</code> delivered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">0.14 ms/channel</td>
+<td style="text-align: right;">1 (unsubscribed channel filtered out)</td>
+</tr>
+<tr>
+<td style="text-align: right;">1,000</td>
+<td style="text-align: right;">0.10 ms/channel</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: right;">5,000</td>
+<td style="text-align: right;">0.05 ms/channel</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: right;"><strong>10,000</strong></td>
+<td style="text-align: right;"><strong>0.08 ms/channel</strong></td>
+<td style="text-align: right;"><strong>1</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>One connection held 10,000 tenant channels</strong>, and a <code>NOTIFY</code> to a channel it had not
+subscribed to was filtered server-side. <code>LISTEN</code>/<code>UNLISTEN</code> as sockets connect and disconnect
+costs ~0.1 ms.</p>
+<p>This narrows §8.6's privilege finding in a useful way. <strong><code>ns-realtime</code> does not need
+cross-tenant privilege on the data path</strong> — it receives only the tenants it currently holds
+sockets for. Only the slot reader and <code>ns-evaluator</code> are unavoidably cross-tenant, which
+shrinks the code that must be reviewed as privileged to one small component.</p>
+<h3 id="93-a-real-delta-fits-in-the-payload">9.3 A real delta fits in the payload<a class="headerlink" href="#93-a-real-delta-fits-in-the-payload" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>realistic <code>dataUpdate</code> delta (1 SGV + 1 Loop devicestatus, 72-point prediction)</td>
+<td style="text-align: right;"><strong>1,039 bytes</strong></td>
+</tr>
+<tr>
+<td>largest <code>NOTIFY</code> payload accepted</td>
+<td style="text-align: right;">7,900 bytes (8,000 rejected: <em>payload string too long</em>)</td>
+</tr>
+<tr>
+<td>fallback: <code>NOTIFY</code> carries a row id, listener reads the row</td>
+<td style="text-align: right;"><strong>0.183 ms</strong> per lookup</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The common case carries the delta inline.</strong> A batch upload — AAPS posting many treatments at
+once — can exceed 7,900 bytes, and the fallback is an identifier plus one indexed lookup at
+0.183 ms. Both paths are cheap; the design should implement the fallback rather than assume
+the payload always fits.</p>
+<h3 id="94-the-hazard-and-the-design-change-it-argues-for">9.4 The hazard, and the design change it argues for<a class="headerlink" href="#94-the-hazard-and-the-design-change-it-argues-for" title="Permanent link">&para;</a></h3>
+<p>A <code>LISTEN</code>ing session that stops consuming cannot be cleaned up by the server. Its
+un-consumed notifications are retained in a shared <strong>8 GB SLRU queue</strong> until it reads them or
+disconnects. So: can one wedged <code>ns-realtime</code> degrade or stop <em>ingest</em>?</p>
+<p>With one listener holding its connection open and never reading its socket, 20,000 × 4 KB
+notifications:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>queue usage 0.0000% -&gt; 0.7753%
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>write latency {"p50":0.09,"p99":0.86,"max":1.85} ms      &lt;- flat, no degradation
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>ordinary INSERT with the queue in this state: 2.373 ms   &lt;- ingest unaffected
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>~2,579,522 notifies to fill the queue
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>at 33 changes/s (10,000 tenants), a stuck listener has ~21.7 hours
+</code></pre></div>
+<p><strong>The hazard is real but slow, and it is monitorable.</strong> ~21.7 hours of headroom at 4 KB
+payloads; at the realistic 1,039-byte delta it is roughly four times that. Write latency does
+not degrade on the way — there is no early warning in the timings, so
+<code>pg_notification_queue_usage()</code> must be an actual alert rather than something noticed.</p>
+<p><strong>What matters is what happens when it does fill: <code>NOTIFY</code> blocks.</strong> If the <code>NOTIFY</code> is fired
+by an <code>AFTER INSERT</code> trigger — which is how §8 implemented it, and how most examples do — then
+it is <em>inside the ingest transaction</em>, and a wedged realtime process eventually stops uploads.
+<strong>A CGM uploader failing to POST because a display component is stuck is not an acceptable
+coupling.</strong></p>
+<blockquote>
+<p><strong>Design consequence: do not <code>NOTIFY</code> from a trigger. <code>NOTIFY</code> from the slot reader.</strong> The
+slot reader is already consuming every change for <code>ns-evaluator</code>; having it also emit the
+per-tenant <code>NOTIFY</code> costs nothing and removes the notification queue from the write path
+entirely. Ingest then depends only on the WAL, and the worst case of a wedged <code>ns-realtime</code>
+is that realtime is stale — which §9's opening asymmetry already says is tolerable.</p>
+</blockquote>
+<p>This is the second time in this programme that the measured hazard was not the thing being
+measured: §4's file-descriptor <code>fassert()</code> and this one both arrived as "the mechanism works
+fine, and here is how it takes the system down anyway."</p>
+<h3 id="95-the-assembled-answer">9.5 The assembled answer<a class="headerlink" href="#95-the-assembled-answer" title="Permanent link">&para;</a></h3>
+<p><strong>How a change reaches one tenant's subscribers, with no stateful tracking beyond the sockets
+themselves:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>write ──&gt; WAL ──&gt; slot reader (privileged, cross-tenant)
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>                    ├──&gt; queue partitioned by tenant hash ──&gt; ns-evaluator workers
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>                    │                                            └──&gt; alarm row ──&gt; WAL ──┐
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>                    └──&gt; pg_notify('tenant_&lt;id&gt;', delta)  ───────────────────────────────┤
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>                                                                                          │
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>                       ns-realtime ── LISTEN only on tenants it holds sockets for ◄────────┘
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>                            └──&gt; io.to('DataReceivers:&lt;id&gt;').emit(...)
+</code></pre></div>
+<ul>
+<li><strong>State held by <code>ns-realtime</code></strong>: the socket rooms (inherent to the protocol) and one
+  <code>LISTEN</code> per tenant it currently serves. Both are <em>connection</em> state, discarded on
+  disconnect. <strong>No per-tenant cursor, no delivery tracking, no polling.</strong></li>
+<li><strong>Durability does not live in this path.</strong> It lives in the alarm row: a reconnecting client
+  queries what it missed, and the push channel (Pushover/APNS) is emitted by <code>ns-evaluator</code>
+  directly, so the safety-critical delivery never traverses a socket at all.</li>
+<li><strong>Postgres's primitives are sufficient for this hop.</strong> Fan-out, server-side per-tenant
+  filtering, and a payload large enough for the common delta — with one indexed lookup as the
+  documented fallback. No Redis, no broker, no affinity.</li>
+</ul>
+<h2 id="10-exp-mt-059--is-listennotify-built-for-this-or-would-kafka-be-better">10. EXP-MT-059 — is <code>LISTEN</code>/<code>NOTIFY</code> built for this, or would Kafka be better?<a class="headerlink" href="#10-exp-mt-059--is-listennotify-built-for-this-or-would-kafka-be-better" title="Permanent link">&para;</a></h2>
+<p>§9 showed <code>NOTIFY</code> does the fan-out hop correctly at 32 listeners. That is not the same as
+showing it <em>scales</em>, and the mechanism has three documented properties that should make anyone
+nervous about leaning on it (<code>src/backend/commands/async.c</code>):</p>
+<ol>
+<li><strong><code>NOTIFY</code> serialises.</strong> Appending to the notification queue takes an exclusive lock, so all
+   notify traffic in the cluster passes through one lock.</li>
+<li><strong>Delivery is signal-based and O(listeners).</strong> At commit the notifying backend walks every
+   listening backend and signals it.</li>
+<li><strong>A listener is a whole Postgres backend.</strong> <code>LISTEN</code> is session state, so every listening
+   process costs a connection out of <code>max_connections</code> plus a backend's memory.</li>
+</ol>
+<p>Each is a real ceiling. Whether any <em>binds</em> depends on how many listeners this design has.</p>
+<h3 id="101-the-axis-that-degrades-is-listener-count-not-message-rate">10.1 The axis that degrades is listener count, not message rate<a class="headerlink" href="#101-the-axis-that-degrades-is-listener-count-not-message-rate" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">listeners</th>
+<th style="text-align: right;">NOTIFY/s</th>
+<th style="text-align: right;">writer p50</th>
+<th style="text-align: right;">headroom vs the 33/s required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">7,873</td>
+<td style="text-align: right;">0.072 ms</td>
+<td style="text-align: right;">239×</td>
+</tr>
+<tr>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">5,202</td>
+<td style="text-align: right;">0.154 ms</td>
+<td style="text-align: right;">158×</td>
+</tr>
+<tr>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">3,016</td>
+<td style="text-align: right;">0.307 ms</td>
+<td style="text-align: right;">91×</td>
+</tr>
+<tr>
+<td style="text-align: right;">128</td>
+<td style="text-align: right;">1,016</td>
+<td style="text-align: right;">0.980 ms</td>
+<td style="text-align: right;">31×</td>
+</tr>
+<tr>
+<td style="text-align: right;">256</td>
+<td style="text-align: right;"><strong>495</strong></td>
+<td style="text-align: right;">1.967 ms</td>
+<td style="text-align: right;">15×</td>
+</tr>
+</tbody>
+</table>
+<p><strong>15.9× slower from 1 to 256 listeners.</strong> Sub-linear — strict O(listeners) would be 256× — but
+unmistakably not flat, and the writer's per-event cost grows ~27×. <strong>The concern is
+well-founded: <code>NOTIFY</code> is not built to scale in listener count.</strong></p>
+<p>Message rate is a different story:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;">NOTIFY/s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sequential, one per transaction</td>
+<td style="text-align: right;">9,434</td>
+</tr>
+<tr>
+<td>8 concurrent writers</td>
+<td style="text-align: right;">32,787</td>
+</tr>
+<tr>
+<td>32 concurrent writers</td>
+<td style="text-align: right;"><strong>35,398</strong></td>
+</tr>
+<tr>
+<td>batched in one transaction</td>
+<td style="text-align: right;">12,666</td>
+</tr>
+</tbody>
+</table>
+<p><strong>286× headroom on the slowest path</strong> — enough for ~2.8 M tenants at one change per five
+minutes. The queue lock does not bind anywhere near the rate this design generates.</p>
+<h3 id="102-why-the-design-survives-subscribers-are-not-listeners">10.2 Why the design survives: subscribers are not listeners<a class="headerlink" href="#102-why-the-design-survives-subscribers-are-not-listeners" title="Permanent link">&para;</a></h3>
+<p><strong>This is the whole answer, and it is a property of the design rather than of <code>NOTIFY</code>.</strong></p>
+<p>The subscribers are <strong>websockets</strong>, and they are held by <code>ns-realtime</code> processes. Only the
+<em>processes</em> <code>LISTEN</code>. At ~31 KB/socket (EXP-MT-045a) one process holds ~10⁵ sockets, so 10,000
+tenants at four followers each is <strong>40,000 sockets — one or two processes, hence one or two
+listeners</strong>, sitting at the top of the table above with 239× headroom.</p>
+<p><strong>Reaching 100 listeners would require ~10⁶ tenants.</strong> <code>NOTIFY</code>'s listener ceiling is about two
+orders of magnitude beyond the design target.</p>
+<p>The failure mode to avoid is therefore architectural, not operational: <strong>a design in which each
+subscriber, or each tenant, holds its own <code>LISTEN</code> would collapse.</strong> §9.2's 10,000 channels on
+<em>one connection</em> is the shape that works; 10,000 connections holding one channel each is the
+shape that does not. That distinction should be written into the design, because the two look
+superficially similar.</p>
+<h3 id="103-the-trap-listen-through-a-transaction-mode-pooler-fails-silently">10.3 The trap: <code>LISTEN</code> through a transaction-mode pooler fails silently<a class="headerlink" href="#103-the-trap-listen-through-a-transaction-mode-pooler-fails-silently" title="Permanent link">&para;</a></h3>
+<p>§6.7 recommends <strong>pgbouncer in transaction mode</strong> so one pool serves every tenant with
+<code>set_config(..., is_local =&gt; true)</code>. §9 recommends <code>LISTEN</code>. <code>LISTEN</code> is <em>session</em> state and a
+transaction-pooled connection is handed to a different client after each <code>COMMIT</code>. Measured
+against <code>edoburu/pgbouncer</code> in <code>pool_mode = transaction</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>ordinary query through transaction-mode bouncer: ok
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>LISTEN through the bouncer: accepted (no error raised)
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>50 NOTIFYs sent direct to Postgres -&gt; 0 received by the bouncer-side listener
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>verdict: LISTEN is accepted but delivers NOTHING — silent breakage
+</code></pre></div>
+<p><strong>No error is raised at any point.</strong> A realtime component placed behind the pooler would simply
+never update, and nothing would log a reason. This is a live trap in the recommendation as it
+stood: two pieces of advice from two different sections, each correct alone, silently
+incompatible when followed together.</p>
+<blockquote>
+<p><strong><code>ns-realtime</code> and the slot reader must connect directly to Postgres, not through the
+transaction-mode pooler.</strong> That is a handful of direct connections against a pool serving the
+api tier, so it costs nothing — but it has to be stated, because putting everything behind
+one pooler is the obvious thing to do and it fails without complaint.</p>
+</blockquote>
+<h3 id="104-would-kafka-be-better">10.4 Would Kafka be better?<a class="headerlink" href="#104-would-kafka-be-better" title="Permanent link">&para;</a></h3>
+<p><strong>The framing to reject first: this is not a choice between <code>NOTIFY</code> and Kafka.</strong> The design
+already has a durable, ordered, replayable log — <strong>the WAL, consumed through a replication
+slot</strong> (§8.3: 200/200 delivered after a consumer outage, no replay on re-consume). That is the
+Kafka-shaped primitive, and it is already doing the job Kafka would be brought in to do.
+<code>NOTIFY</code> is only the <em>last hop</em>, and the last hop is best-effort by design.</p>
+<p>So the real question is whether to run a <strong>second</strong> log. What each side buys:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Kafka / Redpanda</th>
+<th>WAL slot + <code>NOTIFY</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>durable ordered log</td>
+<td>yes</td>
+<td><strong>yes, already — the WAL</strong></td>
+</tr>
+<tr>
+<td>replay on the fan-out hop</td>
+<td>yes</td>
+<td>no — <strong>and §9 establishes it is not needed</strong></td>
+</tr>
+<tr>
+<td>consumer groups, partitions</td>
+<td>yes</td>
+<td>slot reader + hash-partitioned queue (§8.5)</td>
+</tr>
+<tr>
+<td>survives the database being down</td>
+<td>yes</td>
+<td>no — but with the database down there is nothing to publish</td>
+</tr>
+<tr>
+<td>independent of the storage engine</td>
+<td>yes</td>
+<td>no</td>
+</tr>
+<tr>
+<td><strong>operational cost</strong></td>
+<td><strong>a cluster: brokers, quorum, retention, upgrades, monitoring</strong></td>
+<td><strong>none — it is the database already being run</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Kafka's central value is durability and replay, which is precisely the property this hop does
+not want.</strong> Paying a cluster's operational cost for a guarantee the design explicitly discards
+is the wrong trade. §6.3 and EXP-MT-037 reached the same conclusion from the migration
+direction ("keep the plain change-stream-tailing script; do not stand up Kafka"), and §7.4
+notes that per-tenant Kafka topics were part of the 11–12 Kubernetes objects per tenant that
+made the current hosting model expensive in the first place.</p>
+<p><strong>And if <code>NOTIFY</code> ever does bind, Kafka is still not the next step.</strong> The limit measured here is
+<em>listener fan-out</em>, and the tools built for that are <strong>Redis pub/sub or NATS</strong> — fan-out buses
+with no durability, which is exactly the requirement. Reaching for Kafka would be buying the
+one property that is not needed while not directly addressing the one that bound.</p>
+<p><strong>Concrete triggers for revisiting</strong>, so this is falsifiable rather than a preference:</p>
+<ul>
+<li>more than ~100 listening processes — roughly 10⁶ tenants at measured socket density;</li>
+<li>a change rate approaching 10⁴/s — roughly 100× the current target;</li>
+<li>storage moving off Postgres, at which point the WAL-slot spine goes too and the whole
+  mechanism has to be re-chosen;</li>
+<li>a requirement that the fan-out hop survive database unavailability, which would be a change
+  to what the product promises rather than to how it is built.</li>
+</ul>
+<p><strong>None of those is within an order of magnitude of the 10,000-tenant target</strong>, which is the
+honest reason to use the database's own primitives and not run a second distributed system.</p>
+<h2 id="l-limits--read-before-quoting-any-of-this">L. Limits — read before quoting any of this<a class="headerlink" href="#l-limits--read-before-quoting-any-of-this" title="Permanent link">&para;</a></h2>
+<p>This is a laptop. The numbers above rank hypotheses and settle mechanism questions; <strong>none of
+them is a capacity result</strong>, and several would move on real infrastructure.</p>
+<p><strong>What is not in the loop at all:</strong></p>
+<ul>
+<li><strong>No TLS.</strong> A managed database connection is encrypted. Handshakes and per-message
+  encryption add CPU that is entirely absent here, and it lands on exactly the term the
+  recommendation depends on (CPU per operation). <strong>This is the most likely direction for
+  §3's figures to be wrong, and the gap is not small.</strong></li>
+<li><strong>No authentication.</strong> SCRAM adds per-connection cost, which matters most for a pool that
+  is being grown or recycled.</li>
+<li><strong>No replica-set write concern.</strong> A single-node replica set acknowledges immediately;
+  <code>w:majority</code> across three nodes does not.</li>
+</ul>
+<p><strong>What is unrepresentative:</strong></p>
+<ul>
+<li><strong>The working set is 45 MB and entirely in page cache.</strong> Every read here is a cache hit. A
+  hoster's working set exceeds RAM by design, and the first thing that changes is read
+  latency variance, not the mean.</li>
+<li><strong><code>tc netem</code> delay is constant and symmetric.</strong> Real networks have jitter, loss,
+  reordering, congestion control and slow-start. Delay is the component that matters for RTT
+  accounting, and it is the only one reproduced.</li>
+<li><strong>50 tenants, not 10,000.</strong> The per-query figures are per-tenant-database and should carry;
+  the <em>aggregate</em> behaviour of one cluster serving thousands of databases is precisely what
+  §4 shows can fail discontinuously, and it was not measured.</li>
+<li><strong>No competing load.</strong> One benchmark process, one mongod, on a machine also running a
+  desktop session and unrelated containers — which adds noise but no contention of the kind a
+  production cluster has.</li>
+<li><strong>16 cores.</strong> The parallel arms (§5) benefit from that; a 2-vCPU container would not.</li>
+</ul>
+<p><strong>What was not tested:</strong></p>
+<ul>
+<li><strong>PostgreSQL + RLS</strong> has been run with a database in the loop: <code>rls-poc/</code> ran against a live
+  <code>postgres:16-alpine</code> container (§6.1's figures), and §8 adds RLS and the change feed on
+  Nightscout's own query shapes. What remains unmeasured on Postgres here is <strong>writes at ingest
+  rate</strong> and the <strong>shared-collection working set past cache size</strong>. <strong><code>pgbouncer</code> in
+  transaction mode</strong> was not tested here; it is measured in
+  <a href="pgbouncer-tenant-binding-2026-09-15.html">pgbouncer and the D3 binding</a> (2026-09-15).</li>
+<li><strong>§7 tops out at 400 tenants and 701,200 documents</strong>, where working-set pressure against a
+  1 GB cache is only beginning to show. The shape of the curve past the point where the
+  working set exceeds cache is the open question for the shared model, and it is the normal
+  database capacity question rather than a Nightscout-specific one.</li>
+<li><strong>Change streams at tenant scale</strong> — the mechanism <code>ns-evaluator</code> and <code>ns-realtime</code> both
+  depend on. §4 of the component design flags the one-cursor-per-database tension with A′;
+  nothing here tested it.</li>
+<li><strong>Write paths.</strong> Every arm is a read. Ingest is what a hoster's uploaders actually generate.</li>
+<li><strong>Sustained running.</strong> The longest arm here is minutes. Nothing about connection churn,
+  memory growth, index fragmentation or oplog behaviour over days is visible.</li>
+</ul>
+<p><strong>What does transfer, with reasonable confidence:</strong> the CPU-versus-wall split under RTT (§3),
+because it is a property of the driver and the event loop rather than of the hardware; the
+relative cost of query shapes (§2), especially devicestatus; files-per-tenant and the shape
+of the A′ failure (§4); and the ordering of the three deployment options (§6), which holds
+across every RTT tested and would need CPU-per-operation to rise by roughly 4× before A or B
+became competitive on process count.</p>
+<h2 id="reproduction">Reproduction<a class="headerlink" href="#reproduction" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>--name<span class="w"> </span>nsbench-mongo<span class="w"> </span>--cap-add<span class="o">=</span>NET_ADMIN<span class="w"> </span>--ulimit<span class="w"> </span><span class="nv">nofile</span><span class="o">=</span><span class="m">64000</span>:64000<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span>-p<span class="w"> </span><span class="m">27099</span>:27017<span class="w"> </span>mongo:7<span class="w"> </span>--replSet<span class="w"> </span>rs0<span class="w"> </span>--bind_ip_all
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>nsbench-mongo<span class="w"> </span>mongosh<span class="w"> </span>--eval<span class="w"> </span><span class="s1">'rs.initiate({_id:"rs0",members:[{_id:0,host:"127.0.0.1:27017"}]})'</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="nb">cd</span><span class="w"> </span>tools/mt-bench
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>node<span class="w"> </span>dbloop.js<span class="w"> </span>load<span class="w"> </span><span class="m">50</span><span class="w">           </span><span class="c1"># ~190 s</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>node<span class="w"> </span>dbloop.js<span class="w"> </span>all<span class="w">  </span><span class="m">50</span><span class="w">           </span><span class="c1"># query shapes, cycle, cold wake, loop delay</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>nsbench-mongo<span class="w"> </span>tc<span class="w"> </span>qdisc<span class="w"> </span>add<span class="w"> </span>dev<span class="w"> </span>eth0<span class="w"> </span>root<span class="w"> </span>netem<span class="w"> </span>delay<span class="w"> </span>5ms<span class="w">    </span><span class="c1"># 10 ms RTT</span>
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="nv">RTT_LABEL</span><span class="o">=</span>rtt10ms<span class="w"> </span>node<span class="w"> </span>dbloop.js<span class="w"> </span>all<span class="w"> </span><span class="m">50</span>
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>nsbench-mongo<span class="w"> </span>tc<span class="w"> </span>qdisc<span class="w"> </span>change<span class="w"> </span>dev<span class="w"> </span>eth0<span class="w"> </span>root<span class="w"> </span>netem<span class="w"> </span>delay<span class="w"> </span>25ms<span class="w"> </span><span class="c1"># 50 ms RTT</span>
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="nv">RTT_LABEL</span><span class="o">=</span>rtt50ms<span class="w"> </span>node<span class="w"> </span>dbloop.js<span class="w"> </span>loopdelay<span class="w"> </span><span class="m">50</span>
+<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>nsbench-mongo<span class="w"> </span>tc<span class="w"> </span>qdisc<span class="w"> </span>del<span class="w"> </span>dev<span class="w"> </span>eth0<span class="w"> </span>root
+<a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>
+<a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a>node<span class="w"> </span>nsfiles.js<span class="w"> </span><span class="m">200</span><span class="w"> </span><span class="m">50</span><span class="w">           </span><span class="c1"># EXP-MT-040b, namespace cost, database-per-tenant</span>
+<a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a>node<span class="w"> </span>shared-tenant.js<span class="w"> </span><span class="m">400</span><span class="w"> </span><span class="m">100</span><span class="w">    </span><span class="c1"># EXP-MT-011b, one database + tenant discriminator</span>
+<a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a>
+<a id="__codelineno-8-18" name="__codelineno-8-18" href="#__codelineno-8-18"></a>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>--name<span class="w"> </span>nspg<span class="w"> </span>-e<span class="w"> </span><span class="nv">POSTGRES_PASSWORD</span><span class="o">=</span>poc<span class="w"> </span>-p<span class="w"> </span><span class="m">15433</span>:5432<span class="w"> </span>postgres:16-alpine<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-8-19" name="__codelineno-8-19" href="#__codelineno-8-19"></a><span class="w">  </span>-c<span class="w"> </span><span class="nv">wal_level</span><span class="o">=</span>logical<span class="w"> </span>-c<span class="w"> </span><span class="nv">max_replication_slots</span><span class="o">=</span><span class="m">10</span><span class="w"> </span>-c<span class="w"> </span><span class="nv">max_connections</span><span class="o">=</span><span class="m">300</span>
+<a id="__codelineno-8-20" name="__codelineno-8-20" href="#__codelineno-8-20"></a><span class="nb">cd</span><span class="w"> </span>pgfeed<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>npm<span class="w"> </span>install<span class="w"> </span>pg
+<a id="__codelineno-8-21" name="__codelineno-8-21" href="#__codelineno-8-21"></a>node<span class="w"> </span>pgfeed.js<span class="w"> </span>all<span class="w"> </span><span class="m">400</span><span class="w">           </span><span class="c1"># EXP-MT-057, RLS + change feed</span>
+<a id="__codelineno-8-22" name="__codelineno-8-22" href="#__codelineno-8-22"></a>node<span class="w"> </span>fanout.js<span class="w">  </span>all<span class="w"> </span><span class="m">32</span><span class="w">           </span><span class="c1"># EXP-MT-058, fan-out to subscribers</span>
+<a id="__codelineno-8-23" name="__codelineno-8-23" href="#__codelineno-8-23"></a>node<span class="w"> </span>notify-scale.js<span class="w"> </span>scale<span class="w">       </span><span class="c1"># EXP-MT-059, throughput vs listener count</span>
+<a id="__codelineno-8-24" name="__codelineno-8-24" href="#__codelineno-8-24"></a>node<span class="w"> </span>notify-scale.js<span class="w"> </span>ceiling<span class="w">     </span><span class="c1"># EXP-MT-059, serialisation limit</span>
+<a id="__codelineno-8-25" name="__codelineno-8-25" href="#__codelineno-8-25"></a><span class="c1"># pgbouncer arm needs a transaction-mode bouncer on :16432 — see §10.3</span>
+<a id="__codelineno-8-26" name="__codelineno-8-26" href="#__codelineno-8-26"></a>node<span class="w"> </span>notify-scale.js<span class="w"> </span>bouncer
+<a id="__codelineno-8-27" name="__codelineno-8-27" href="#__codelineno-8-27"></a>docker<span class="w"> </span>rm<span class="w"> </span>-f<span class="w"> </span>nspg
+<a id="__codelineno-8-28" name="__codelineno-8-28" href="#__codelineno-8-28"></a><span class="nv">RTT_MS</span><span class="o">=</span><span class="m">10</span><span class="w"> </span>node<span class="w"> </span>deployment-cost.js<span class="w"> </span><span class="m">10000</span>
+</code></pre></div>
+<p>To reproduce §4's crash deliberately, omit <code>--ulimit</code> and load past ~21 tenants.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

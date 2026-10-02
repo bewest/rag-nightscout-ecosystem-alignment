@@ -1,0 +1,6160 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/remedial/rc-15.0.9-integration-record.html">
+      
+      
+        <link rel="prev" href="phase0-pr-sequencing-2026-09-15.html">
+      
+      
+        <link rel="next" href="trust-proxy-deployment-matrix.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>15.0.9 integration record - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#1509-integration-record" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              15.0.9 integration record
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_24" id="__nav_5_24_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_24_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    30-design/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cgm-remote-monitor-telemetry-emitter-map-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor Telemetry Emitter Integration Map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-adoption-roadmap-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adoption roadmap: who builds what, in what order
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-integration-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Integration Guide for App Developers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-backend-service-design-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Backend Service Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-deployment-lifecycle-examples-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Deployment Lifecycle Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-implementation-breakdown-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Implementation Breakdown
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-lifecycle-policy-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Lifecycle Policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-local-integration-plan-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Local Integration Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-scheduling-dedupe-model-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Scheduling and Dedupe Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ns2parquet-keyed-pseudonyms.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ns2parquet keyed pseudonyms: design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../modernization/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    modernization/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../platform/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    platform/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24_14" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    remedial/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_24_14" id="__nav_5_24_14_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_24_14_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24_14">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    remedial/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="dev-cycle-review-harness-plan-2026-09-17.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    dev-cycle review harness — plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="maintainer-release-brief-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 0 release brief — for the maintainer who merges
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-backfix-register.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backfix register — defects that ship to existing operators, independent of multitenancy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="phase0-pr-sequencing-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 0: how to land ten branches as pull requests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    15.0.9 integration record
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="rc-15.0.9-integration-record.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    15.0.9 integration record
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#after-run-020" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        After run 020
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="After run 020">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#8785-295f1177" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        #8785, 295f1177
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="trust-proxy-deployment-matrix.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TRUST_PROXY deployment matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tenancy/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenancy/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../60-research/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#after-run-020" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        After run 020
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="After run 020">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#8785-295f1177" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        #8785, 295f1177
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="1509-integration-record">15.0.9 integration record<a class="headerlink" href="#1509-integration-record" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-10-02 at <code>a48cdbe6</code>.</em></p>
+<p><em>Contributor-facing. Living record of how the cgm-remote-monitor 15.0.9 candidate was assembled
+and tested. Item state is in <code>queue/work-queue.yaml</code> (<code>RT-0</code>); defect facts are in the
+<a href="nightscout-backfix-register.html">backfix register</a>; release contents are in
+<a href="../../../releases/cgm-remote-monitor-15.0.9/contents.html">releases/cgm-remote-monitor-15.0.9</a>.
+Several units fix defects that are live on the shipping release (15.0.8, <code>official/master</code>
+<code>92d08342</code>), so this record describes mechanisms only.</em></p>
+<p><strong>Where the candidate stands, 2026-10-02.</strong> The candidate is <code>official/dev</code> <code>25fc41d9</code> (tree
+<code>e5c8ea6b</code>, package version 15.0.9), merged 2026-10-02 17:33Z. 15.0.8..<code>25fc41d9</code>: 523 commits, 92
+first-parent merges, 302 files, +29531/−1874 (<code>git rev-list --count</code>, <code>--first-parent --count</code> and <code>git diff --shortstat</code>
+<code>official/master official/dev</code>). There is no <code>15.0.9</code> tag. Every PR opened for 15.0.9 is merged, and the BF-155 fix (decided 2026-10-02) is in progress;
+Crowdin #8730 (BF-132) is held out.</p>
+<ul>
+<li><strong>Current full run: run 020 on <code>ce30a94d</code> (2026-09-27).</strong> 3473/0/3 (passing/failing/pending) in
+  all six cells, Node 20/22/24 × MongoDB 4.4.24 and 7.0.43; probes; break-its of #8784; a compressed
+  A/B soak against 15.0.8. It has not been repeated on a later head.</li>
+<li><strong>Merged after run 020:</strong> #8785, #8786, #8788, #8790, #8791, #8793, #8794 and #8795, each checked
+  on its own; see <a href="#after-run-020">After run 020</a>.</li>
+<li><strong>Full suite on the candidate tree, one cell:</strong> #8795's head <code>fdf88f4e</code> has the same tree as
+  <code>25fc41d9</code> (<code>e5c8ea6b</code>). On it, after a fresh <code>npm ci</code>, the full suite gave 3532/0/4 (Node 22.23.2,
+  MongoDB 7.0.43).</li>
+<li><strong>Next run:</strong> the full six-cell run on the final head (after BF-155's fix merges).</li>
+<li><strong>Real-time soak (RT-SOAK):</strong> done on real sites, by the maintainer's decision of 2026-09-30; the
+  lab's 72 h soak was not run. Reports: as of 2026-09-29, one Loop, one Trio and one AndroidAPS user
+  ran <code>7000eb18</code> for about two days with no errors; on 2026-10-02 the maintainer reported AndroidAPS,
+  Trio and Loop users of the <code>dev</code> branch seeing stable, unsurprising behaviour all week. No rig
+  count or duration is recorded beyond that.</li>
+<li><strong><code>npm audit</code> on <code>25fc41d9</code></strong> (2026-10-02 17:31Z, npm 11.12.1, <code>--package-lock-only</code>, counting
+  packages with a finding): 10, 2 high; 8 with <code>--omit=dev</code>. The 2 high are one advisory against
+  <code>node-forge</code> (GHSA-86w9-cpqp-85rv, reviewed by GitHub 2026-10-01, no fixed release), filed
+  as BF-154 (low: Nightscout does not call the affected function, read from the code); the other 8
+  are triaged. Triage:
+  <a href="../../../releases/cgm-remote-monitor-15.0.9/contents.html#npm-audit-and-dependabot-triage">contents</a>.</li>
+<li><strong>Still owed before the tag:</strong> the six-cell run on the final head (after BF-155's fix merges); the browser hand checks listed under
+  <a href="#what-the-current-run-does-not-cover">What the current run does not cover</a>; the version class of
+  #8772, #8775 and #8780; re-approval of the release PR #8598 at its final head (its two approvals
+  were given on <code>e3adc91d</code>); the tag, by the maintainer. The release notes name BF-154 (<code>node-forge</code>) under Known issues (decided 2026-10-02). #8598's head
+  is <code>25fc41d9</code>; its CI there: 27 checks passed, 3 skipped (2026-10-02). The release
+  notes and tag message are drafted on <code>25fc41d9</code>.</li>
+</ul>
+<p>This record has five parts:</p>
+<ul>
+<li><a href="#after-run-020">After run 020</a> lists what merged after the current full run, and the checks
+  each merge had.</li>
+<li><a href="#current-run">Current run</a> is the evidence from the current full run, run 020.</li>
+<li><a href="#evidence-carried-from-earlier-runs">Evidence carried from earlier runs</a> covers checks that were
+  not repeated on the current tree and still stand for it.</li>
+<li><a href="#run-history">Run history</a> lists every run, with a link to its full record at the commit that
+  holds it.</li>
+<li><a href="#method">Method</a> gives the rules every run follows.</li>
+</ul>
+<p>A new run replaces the <strong>Current run</strong> section. The run it replaces moves to one row of
+<strong>Run history</strong>. Anything from that run that the new run did not repeat moves to <strong>Evidence carried
+from earlier runs</strong>.</p>
+<h2 id="after-run-020">After run 020<a class="headerlink" href="#after-run-020" title="Permanent link">&para;</a></h2>
+<p>Run 020 ran on <code>ce30a94d</code>. These merges came after it, oldest first. None of them repeated run 020;
+each was checked on its own, as below. Each PR's own CI on GitHub passed.</p>
+<table>
+<thead>
+<tr>
+<th>PR</th>
+<th>merge</th>
+<th>merged</th>
+<th>register</th>
+<th>files a site runs</th>
+<th>checks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#8785</td>
+<td><code>295f1177</code></td>
+<td>2026-09-27 18:39Z</td>
+<td></td>
+<td>none (one test file)</td>
+<td>CI nine cells; one test file 12/12</td>
+</tr>
+<tr>
+<td>#8786</td>
+<td><code>7000eb18</code></td>
+<td>2026-09-27 20:40Z</td>
+<td>BF-147</td>
+<td><code>package.json</code>, <code>package-lock.json</code></td>
+<td>CI nine cells, 3478/0/3 each; one local cell 3473/0/3; bundle byte-identical</td>
+</tr>
+<tr>
+<td>#8788</td>
+<td><code>3014f883</code></td>
+<td>2026-09-30 22:38Z</td>
+<td>BF-148</td>
+<td><code>lib/report_plugins/daytoday.js</code> (browser)</td>
+<td>local full suite 3481/0/3</td>
+</tr>
+<tr>
+<td>#8790</td>
+<td><code>73c9528b</code></td>
+<td>2026-10-01 18:04Z</td>
+<td>BF-150</td>
+<td><code>static/css/food.css</code> (browser)</td>
+<td>CI 13 passed, 2 skipped; hand check owed</td>
+</tr>
+<tr>
+<td>#8791</td>
+<td><code>50bc1084</code></td>
+<td>2026-10-01 18:08Z</td>
+<td>BF-108</td>
+<td><code>lib/server/query.js</code></td>
+<td>branch full suite 3485/0/3</td>
+</tr>
+<tr>
+<td>#8793</td>
+<td><code>839a1565</code></td>
+<td>2026-10-02 17:09Z</td>
+<td>BF-73</td>
+<td><code>lib/server/error-handler.js</code> (new), <code>lib/server/app.js</code></td>
+<td>branch full suite 3502/0/3</td>
+</tr>
+<tr>
+<td>#8794</td>
+<td><code>a143d507</code></td>
+<td>2026-10-02 17:17Z</td>
+<td>BF-153</td>
+<td><code>package.json</code>, <code>package-lock.json</code></td>
+<td>branch full suite 3512/0/4; <code>npm ci</code> on three Node versions and npm 12; bundle byte-identical</td>
+</tr>
+<tr>
+<td>#8795</td>
+<td><code>25fc41d9</code></td>
+<td>2026-10-02 17:33Z</td>
+<td>BF-151</td>
+<td><code>lib/api/entries/index.js</code></td>
+<td>full suite 3532/0/4 on the same tree, one cell</td>
+</tr>
+</tbody>
+</table>
+<h3 id="8785-295f1177">#8785, <code>295f1177</code><a class="headerlink" href="#8785-295f1177" title="Permanent link">&para;</a></h3>
+<h1 id="8785-merged-into-dev-as-295f1177-tree-27e7bf38-the-same-tree-as-its-head-a9b77d1e">8785 merged into <code>dev</code> as <code>295f1177</code> (tree <code>27e7bf38</code>, the same tree as its head <code>a9b77d1e</code>).<a class="headerlink" href="#8785-merged-into-dev-as-295f1177-tree-27e7bf38-the-same-tree-as-its-head-a9b77d1e" title="Permanent link">&para;</a></h1>
+<p>It changes one file, <code>tests/boluswizardpreview.test.js</code>: the sandbox now reads the same <code>now</code> the
+test data is stamped with. Before it, two IOB tests failed (49.95 against 50) when the test files
+sorted before this one took more than about 60 s; that is the failure on #8784's CI (Node 22 /
+MongoDB 4.4, 78 s). No file that runs on a site changed. Checks on
+<code>295f1177</code>: #8785's CI passed in all nine cells on <code>a9b77d1e</code>; CI on #8598 at <code>295f1177</code>, 27
+passed and 3 skipped; <code>tests/boluswizardpreview.test.js</code> 12 of 12 on Node 22.23.2; the browser
+gate names the same 14 paths as on <code>ce30a94d</code>; <code>package.json</code> and <code>package-lock.json</code> unchanged.
+15.0.8..<code>295f1177</code>: 505 commits, 85 first-parent merges, 296 files, +28279/−1703.</p>
+<h3 id="8786-bf-147-7000eb18">#8786 (BF-147), <code>7000eb18</code><a class="headerlink" href="#8786-bf-147-7000eb18" title="Permanent link">&para;</a></h3>
+<h1 id="8786-bf-147-merged-into-dev-as-7000eb18-2026-09-27">8786 (BF-147) merged into <code>dev</code> as <code>7000eb18</code> (2026-09-27<a class="headerlink" href="#8786-bf-147-merged-into-dev-as-7000eb18-2026-09-27" title="Permanent link">&para;</a></h1>
+<p>20:40Z; tree <code>3b22520e</code>, the same tree as its head <code>64a9cc13</code>). It changes <code>package.json</code> (the
+<code>ajv@^6</code> override 6.12.6 → 6.14.0 and <code>request</code>'s <code>form-data</code> override 2.5.5 → 2.5.6),
+<code>package-lock.json</code> (9 versions, patch or minor: those two, <code>browserslist</code>,
+<code>baseline-browser-mapping</code>, <code>postcss-selector-parser</code>, <code>caniuse-lite</code>, <code>electron-to-chromium</code>,
+<code>node-releases</code>, <code>update-browserslist-db</code>) and adds <code>tests/dependency-overrides.test.js</code>. No file
+under <code>lib/</code>, <code>views/</code> or <code>static/</code> changed. Checks on <code>7000eb18</code>:</p>
+<h1 id="8786s-ci-passed-in-all-nine-cells-node-202224--mongodb-4456-3478-passing-0-failing">8786's CI passed in all nine cells (Node 20/22/24 × MongoDB 4.4/5/6; 3478 passing, 0 failing,<a class="headerlink" href="#8786s-ci-passed-in-all-nine-cells-node-202224--mongodb-4456-3478-passing-0-failing" title="Permanent link">&para;</a></h1>
+<p>3 pending in each, the 5 added being <code>tests/dependency-overrides.test.js</code>) and the npm 12
+install-and-build check on <code>64a9cc13</code>; CI on #8598 at <code>7000eb18</code>, 27 passed and 3 skipped; one
+local cell before the push, 3473/0/3 (Node 24.15.0, MongoDB 7.0.43, dedicated container);
+<code>tests/dependency-overrides.test.js</code> 5 of 5 on the branch and 0 of 5 on <code>295f1177</code>'s installed
+tree. The production bundle built from <code>295f1177</code> and from <code>7000eb18</code> (Node 24.15.0, webpack
+5.106.2) is byte-identical, all 7 files; the browser gate names the same 14 paths plus the 11
+package entries #8786 changes. <code>npm audit</code>: 7 findings, all moderate. The compressed A/B soak was
+not repeated. 15.0.8..<code>7000eb18</code>: 507 commits, 86 first-parent merges, 297 files, +28363/−1722.</p>
+<h3 id="8788-bf-148-3014f883">#8788 (BF-148), <code>3014f883</code><a class="headerlink" href="#8788-bf-148-3014f883" title="Permanent link">&para;</a></h3>
+<h1 id="8788-bf-148-awss1i-merged-into-dev-as-3014f883">8788 (BF-148, awss1i) merged into <code>dev</code> as <code>3014f883</code><a class="headerlink" href="#8788-bf-148-awss1i-merged-into-dev-as-3014f883" title="Permanent link">&para;</a></h1>
+<p>(2026-09-30 22:38Z; tree <code>3549306b</code>, the same tree as its head <code>bbc6e75e</code>). Among files a site runs it
+changes only <code>lib/report_plugins/daytoday.js</code> (browser-side); it adds
+<code>tests/report-daytoday-durations.test.js</code> (jsdom) and edits <code>CHANGELOG.md</code> and
+<code>docs/test-specs/manual-smoke-checklist.md</code>. No package file changed. <strong>Run 020 was not repeated.</strong>
+Checks on <code>bbc6e75e</code>: full suite 3481/0/3 (Node 22.23.2, MongoDB 7.0.43 in a dedicated container with
+<code>--ulimit nofile=64000:64000</code>, <code>ci.test.env</code> form, 2026-09-30); the new test 3 of 3, and 1 of 3 with
+<code>7000eb18</code>'s <code>daytoday.js</code>; #8788's CI 14 passed, 2 skipped. The browser gate names 15 paths
+(<code>lib/report_plugins/daytoday.js</code> added). 15.0.8..<code>3014f883</code>: 509 commits, 87 first-parent merges,
+298 files, +28617/−1819.</p>
+<h3 id="8790-bf-150-73c9528b">#8790 (BF-150), <code>73c9528b</code><a class="headerlink" href="#8790-bf-150-73c9528b" title="Permanent link">&para;</a></h3>
+<h1 id="8790-merged-into-dev-as-73c9528b-2026-10-01-1804z-head-1298c9ed-tree-db24bc2c-on">8790 merged into <code>dev</code> as <code>73c9528b</code> (2026-10-01 18:04Z, head <code>1298c9ed</code>, tree <code>db24bc2c</code>). On<a class="headerlink" href="#8790-merged-into-dev-as-73c9528b-2026-10-01-1804z-head-1298c9ed-tree-db24bc2c-on" title="Permanent link">&para;</a></h1>
+<p>phones, the Food Editor's food list and quick picks scroll by touch (fixes #8192); dragging with a
+mouse into quick picks, and reordering them, are unchanged. It changes <code>static/css/food.css</code>, adds a
+test, and adds section 5 (Food Editor on a touch screen) to
+<code>docs/test-specs/manual-smoke-checklist.md</code>. Checks: #8790's CI, 13 passed and 2 skipped (read
+2026-10-02). The touch-screen hand check is owed.</p>
+<h3 id="8791-bf-108-50bc1084">#8791 (BF-108), <code>50bc1084</code><a class="headerlink" href="#8791-bf-108-50bc1084" title="Permanent link">&para;</a></h3>
+<h1 id="8791-merged-into-dev-as-50bc1084-2026-10-01-1808z-head-ee1ba31f-tree-bcdfdcdc-a-v1">8791 merged into <code>dev</code> as <code>50bc1084</code> (2026-10-01 18:08Z, head <code>ee1ba31f</code>, tree <code>bcdfdcdc</code>). A v1<a class="headerlink" href="#8791-merged-into-dev-as-50bc1084-2026-10-01-1808z-head-ee1ba31f-tree-bcdfdcdc-a-v1" title="Permanent link">&para;</a></h1>
+<p>filter that lists several dates under the date field is now read one date at a time. On 15.0.8 it
+answered 500, so xDrip4iOS bulk deletes of readings by timestamp removed nothing. It changes only
+<code>lib/server/query.js</code> (server). Checks: full suite on the branch 3485/0/3; #8791's CI 13 passed, 2
+skipped (read 2026-10-02).</p>
+<h3 id="8793-bf-73-839a1565">#8793 (BF-73), <code>839a1565</code><a class="headerlink" href="#8793-bf-73-839a1565" title="Permanent link">&para;</a></h3>
+<h1 id="8793-merged-into-dev-as-839a1565-2026-10-02-1709z-head-dc64e82d-tree-f99fdc8f-outside">8793 merged into <code>dev</code> as <code>839a1565</code> (2026-10-02 17:09Z, head <code>dc64e82d</code>, tree <code>f99fdc8f</code>). Outside<a class="headerlink" href="#8793-merged-into-dev-as-839a1565-2026-10-02-1709z-head-dc64e82d-tree-f99fdc8f-outside" title="Permanent link">&para;</a></h1>
+<p><code>NODE_ENV=development</code>, error replies carry the status and a short message, with no stack trace or
+server paths; the full error is still written to the server log. It adds <code>lib/server/error-handler.js</code>
+and changes <code>lib/server/app.js</code>. With <code>NODE_ENV</code> unset, error pages also stop showing the stack, and a
+4xx error raised without <code>err.expose</code> answers with the standard reason phrase. BF-73 is live on
+15.0.8, so the mechanism only is given here. Checks: full suite on the branch 3502/0/3; #8793's CI 14
+passed, 2 skipped (read 2026-10-02).</p>
+<h3 id="8794-bf-153-a143d507">#8794 (BF-153), <code>a143d507</code><a class="headerlink" href="#8794-bf-153-a143d507" title="Permanent link">&para;</a></h3>
+<h1 id="8794-merged-into-dev-as-a143d507-2026-10-02-1717z-head-7cb8d0bc-tree-ccfb344f-a">8794 merged into <code>dev</code> as <code>a143d507</code> (2026-10-02 17:17Z, head <code>7cb8d0bc</code>, tree <code>ccfb344f</code>), a<a class="headerlink" href="#8794-merged-into-dev-as-a143d507-2026-10-02-1717z-head-7cb8d0bc-tree-ccfb344f-a" title="Permanent link">&para;</a></h1>
+<p>dependency refresh. <code>ip-address</code>, <code>fast-uri</code>, <code>brace-expansion</code> and the axios entries under
+<code>minimed-connect-to-nightscout</code> move to their patch releases (<code>package.json</code> overrides); the axios
+devDependency, <code>webpack-dev-middleware</code> and <code>dompurify</code> are refreshed in the lockfile. That is 26
+lockfile version changes, all patch or minor. <code>moment</code> stays at 2.30.1 by decision (no request input
+reaches <code>moment.locale</code> on <code>dev</code>; 2.31.0 changes parsing and locale output). Checks: full suite on the
+branch 3512/0/4 (the added pending test is the floor check skipping the connector's own axios copy,
+which is outside the advisory range); <code>npm ci</code> on Node 20.20.0, 22.23.2 and 24.20.0 and in the npm 12
+job; production bundle byte-identical; #8794's CI 14 passed, 2 skipped (read 2026-10-02). Dependabot</p>
+<h1 id="8787-and-8789-were-closed-with-a-pointer-to-it-npm-audit-npm-11121---package-lock-only-20">8787 and #8789 were closed with a pointer to it. <code>npm audit</code> (npm 11.12.1, <code>--package-lock-only</code>): 20<a class="headerlink" href="#8787-and-8789-were-closed-with-a-pointer-to-it-npm-audit-npm-11121---package-lock-only-20" title="Permanent link">&para;</a></h1>
+<p>findings (4 high) on <code>50bc1084</code> and 8 (none high) on #8794's branch, as #8794 records; with
+<code>--omit=dev</code>, 16 and 6. The 8 are the seven of 2026-09-27 (a deliberate pin, legacy ingestion and
+dev dependencies, all removed on the modernization line) plus <code>moment</code>. On <code>25fc41d9</code> the count is
+10 (2 high), with the <code>node-forge</code> advisory GitHub reviewed on 2026-10-01.</p>
+<h3 id="8795-bf-151-25fc41d9">#8795 (BF-151), <code>25fc41d9</code><a class="headerlink" href="#8795-bf-151-25fc41d9" title="Permanent link">&para;</a></h3>
+<h1 id="8795-merged-into-dev-as-25fc41d9-2026-10-02-1733z-head-fdf88f4e-tree-e5c8ea6b-the-same">8795 merged into <code>dev</code> as <code>25fc41d9</code> (2026-10-02 17:33Z, head <code>fdf88f4e</code>, tree <code>e5c8ea6b</code>, the same<a class="headerlink" href="#8795-merged-into-dev-as-25fc41d9-2026-10-02-1733z-head-fdf88f4e-tree-e5c8ea6b-the-same" title="Permanent link">&para;</a></h1>
+<p>tree as its head). A brace pattern in two little-used v1 API addresses that would expand past a
+fixed limit is refused with a 400 before it is expanded; under the limit, nothing changes. It
+changes <code>lib/api/entries/index.js</code> (server only). BF-151 is live on 15.0.8, so the mechanism only is
+given here. Checks on <code>fdf88f4e</code> (<code>185e003a</code> with <code>dev</code> <code>a143d507</code> merged in), after a fresh <code>npm
+ci</code>: full suite 3532/0/4 (Node 22.23.2, MongoDB 7.0.43, one cell); the 5 refusal tests fail again with
+<code>a143d507</code>'s <code>lib/api/entries/index.js</code>. #8795's CI 14 passed, 2 skipped.</p>
+<h3 id="browser-hand-check-gate-on-a143d507">Browser hand-check gate on <code>a143d507</code><a class="headerlink" href="#browser-hand-check-gate-on-a143d507" title="Permanent link">&para;</a></h3>
+<p><code>node tools/queue/gates/client-unchanged-since-hand-check.js</code> on <code>a143d507</code> names 16 paths that
+differ on the browser side from the hand-checked <code>8d797ba4</code>: <code>.gitignore</code>, <code>.nycrc.json</code> (tooling),
+<code>lib/api2/index.js</code>, <code>lib/api2/notifications-v2.js</code>, <code>lib/client/clock-client.js</code>,
+<code>lib/data/calcdelta.js</code>, <code>lib/data/dataloader.js</code>, <code>lib/data/ddata.js</code>, <code>lib/levels.js</code>,
+<code>lib/plugins/pump.js</code>, <code>lib/profile/profileeditor.js</code>, <code>lib/profilefunctions.js</code>,
+<code>lib/report_plugins/daytoday.js</code>, <code>lib/settings.js</code>, <code>static/css/food.css</code> (#8790) and
+<code>views/index.html</code>, plus the package entries #8786 and #8794 change (the bundle is byte-identical, so
+those need no hand check). #8795, merged after this reading, changes only a server file, so the list
+holds for <code>25fc41d9</code>.</p>
+<h2 id="current-run">Current run<a class="headerlink" href="#current-run" title="Permanent link">&para;</a></h2>
+<p><strong>2026-09-27. Run 020: <code>origin/dev</code> <code>ce30a94d</code>, run 019's <code>699eb5fa</code> plus #8784 (BF-146, which
+also fixes BF-133).</strong></p>
+<p>Run 020's candidate was <code>dev</code> <code>ce30a94d</code> itself, tree <code>d300bee9</code>, with no local merge. <code>package.json</code> reports version
+15.0.9. <code>official/dev</code> and <code>origin/dev</code> were fetched at the start of the run and again at the end,
+and were <code>ce30a94d</code> both times; <code>origin/master</code> is still <code>92d08342</code> (15.0.8). The checks ran in run
+018's detached worktrees, checked out at <code>ce30a94d</code>: <code>externals/work/crm-rc-018-n20</code>, <code>-n22</code> and
+<code>-n24</code> for the suite, and <code>externals/work/crm-rc-018-soak</code> for the probes and the soak.</p>
+<h3 id="what-is-in-the-candidate">What is in the candidate<a class="headerlink" href="#what-is-in-the-candidate" title="Permanent link">&para;</a></h3>
+<p><code>dev</code>'s first-parent merge after <code>699eb5fa</code> (run 019's candidate):</p>
+<table>
+<thead>
+<tr>
+<th>merge</th>
+<th>PR</th>
+<th>merged head</th>
+<th>tree</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ce30a94d</code></td>
+<td>#8784, BF-146 and BF-133 (API v3 treatments and device status enter the server's in-memory cache with <code>mills</code>, as v1 writes do; commits <code>db99bba4</code> treatments, <code>d235bdf6</code> device status)</td>
+<td><code>d235bdf6</code></td>
+<td><code>d300bee9</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><code>699eb5fa..ce30a94d</code> changes one file under <code>lib/</code>,
+  <code>lib/api3/storage/mongoCachedCollection/index.js</code> (+20/−1), and adds
+  <code>tests/api3.cache-derived-fields.test.js</code> (312 lines, 15 tests). Nothing that runs in the
+  browser changed; what the server sends to the page does (late or edited v3 treatments now carry
+  <code>mills</code> in the page data).</li>
+<li><code>ce30a94d</code>'s tree equals <code>d235bdf6</code>'s, the head #8784 was opened with.</li>
+</ul>
+<h3 id="dependencies">Dependencies<a class="headerlink" href="#dependencies" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><code>package.json</code> and <code>package-lock.json</code> are identical to <code>699eb5fa</code>'s</strong> (and so to <code>e3adc91d</code>'s),
+  so <code>npm ci</code> was not repeated. Run 017's comparison of the lockfile with 15.0.8 still holds; see
+  <a href="#from-run-017-tree-d7383aae-origindev-e3adc91d">From run 017</a>.</li>
+<li><strong>The bundle was rebuilt</strong> in each of the four worktrees under its own Node (<code>npm run bundle</code>,
+  webpack 5.106.2, 3 warnings, as in runs 018 and 019).</li>
+<li><strong><code>npm audit</code>: 17 findings (1 low, 13 moderate, 3 high),</strong> the same as runs 017 to 019. Not
+  triaged in this run; triaged on 2026-09-27 in <a href="../../../releases/cgm-remote-monitor-15.0.9/contents.html#npm-audit-and-dependabot-triage">contents</a> (10 cleared by BF-147's fix, merged after
+  this run as #8786 <code>7000eb18</code>, which run 020 does not cover; 7 retired on the modernization line).</li>
+</ul>
+<h3 id="suite">Suite<a class="headerlink" href="#suite" title="Permanent link">&para;</a></h3>
+<p><strong>Method:</strong> as run 019: <code>NODE_ENV=test npx env-cmd -f ./my.test.env mocha --timeout 5000 --require ./tests/hooks.js --exit ./tests/*.test.js</code>.
+Each cell had a fresh container (<code>r020-&lt;cell&gt;</code>) with <code>--ulimit nofile=64000:64000</code> on its own port,
+and a new database whose name contains <code>test</code>, dropped before the run. The server version was read
+with <code>db.version()</code>, waiting for an x.y.z answer, and <code>node --version</code> was printed in the log. The
+container was removed by name after the cell. <strong>The cells ran one at a time, with no other heavy
+work on the machine.</strong> New in this run: each cell's output was also written with the seconds since
+the suite started, to time <code>tests/boluswizardpreview.test.js</code> (CI note below).</p>
+<table>
+<thead>
+<tr>
+<th>Node</th>
+<th>MongoDB (read)</th>
+<th style="text-align: right;">passing</th>
+<th style="text-align: right;">failing</th>
+<th style="text-align: right;">pending</th>
+<th style="text-align: right;"><code>boluswizardpreview</code> starts at</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>20.20.0</td>
+<td>4.4.24</td>
+<td style="text-align: right;">3473</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">60 s</td>
+</tr>
+<tr>
+<td>20.20.0</td>
+<td>7.0.43</td>
+<td style="text-align: right;">3473</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">58 s</td>
+</tr>
+<tr>
+<td>22.23.2</td>
+<td>4.4.24</td>
+<td style="text-align: right;">3473</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">59 s</td>
+</tr>
+<tr>
+<td>22.23.2</td>
+<td>7.0.43</td>
+<td style="text-align: right;">3473</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">58 s</td>
+</tr>
+<tr>
+<td>24.20.0</td>
+<td>4.4.24</td>
+<td style="text-align: right;">3473</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">60 s</td>
+</tr>
+<tr>
+<td>24.20.0</td>
+<td>7.0.43</td>
+<td style="text-align: right;">3473</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">57 s</td>
+</tr>
+<tr>
+<td>22.23.2, <code>test-ci</code> form (nyc)</td>
+<td>7.0.43</td>
+<td style="text-align: right;">3473</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">65 s</td>
+</tr>
+<tr>
+<td>22.23.2, <code>test:core</code></td>
+<td></td>
+<td style="text-align: right;">286</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;"></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Every cell printed mocha totals and exited 0,</strong> on the first pass, in 113 to 125 s. The pending
+  tests are run 017's three.</li>
+<li><strong>The <code>test-ci</code> form</strong> is CI's command with <code>my.test.env</code> in place of <code>tests/ci.test.env</code>, as in
+  runs 017 to 019. Coverage: statements 66.68%, branches 60.01%, functions 71.28%, lines 67.35%.</li>
+<li><strong><code>test:core</code></strong> ran in the Node 22 worktree after the suite: 286 passing.</li>
+<li><strong>CI note (<code>tests/boluswizardpreview.test.js</code>).</strong> Two of its tests read the clock when mocha loads
+  the file and fail with "expected 49.95 to be 50" when the files before it take more than about
+  60 s. It failed that way on #8784's CI cell Node 22 / MongoDB 4.4 (78 s), and <code>dev</code>'s latest CI
+  reached it at 60.3 s. In this run it started at 57 to 65 s and did not fail. The test-only fix
+  (<code>a9b77d1e</code>) merged after this run as #8785 (<code>295f1177</code>).</li>
+</ul>
+<p><strong>Test count.</strong> From <code>mocha --dry-run</code> with the same command and files:</p>
+<table>
+<thead>
+<tr>
+<th>merge</th>
+<th>PR</th>
+<th style="text-align: right;">passing</th>
+<th style="text-align: right;">added</th>
+<th>titles new / gone</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>699eb5fa</code></td>
+<td>run 019's candidate</td>
+<td style="text-align: right;">3458</td>
+<td style="text-align: right;"></td>
+<td></td>
+</tr>
+<tr>
+<td><code>ce30a94d</code></td>
+<td>#8784 BF-146, BF-133</td>
+<td style="text-align: right;">3473</td>
+<td style="text-align: right;">+15</td>
+<td>15 / 0</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>3458 + 15 = 3473, the executed count in every cell. The 15 new titles are exactly
+  <code>tests/api3.cache-derived-fields.test.js</code>'s; no title was lost. The titles were compared sorted;
+  none carries a generated ObjectId.</li>
+</ul>
+<h3 id="probes">Probes<a class="headerlink" href="#probes" title="Permanent link">&para;</a></h3>
+<p>Node 22.23.2. Each probe ran against the soak worktree on <code>ce30a94d</code> and against 15.0.8
+(<code>externals/work/crm-6a-soak-a</code>, <code>92d08342</code>) as its control, unless the table names another
+control. The <code>699eb5fa</code> control ran in <code>externals/work/crm-rc-018-n20</code>, checked out at <code>699eb5fa</code>
+for the probe and returned to <code>ce30a94d</code> (bundle rebuilt) afterwards. Probes that need a server
+started their own, against a dedicated <code>mongo:7.0.43</code> container (7.0.43 read) on its own port, and
+databases whose names contain <code>test</code>.</p>
+<p><strong>Run 020's new probe: <code>tools/lab/rc-soak/probe-v3-late-mills.js</code> (BF-146, BF-133).</strong> It boots the
+tree's server with 24 v1 notes held (so the dataloader loads incrementally), then writes through
+v3 a 1 U bolus and 30 g of carbs dated 40 min ago, and a device status dated 20 min ago after 24 v1
+statuses dated 60 to 37 min ago. Controls: a v1 bolus dated 41 min ago, a v3 bolus dated 1 min ago,
+a v1 status dated 19 min ago. It then restarts the server and prints the same values.</p>
+<table>
+<thead>
+<tr>
+<th>tree</th>
+<th>exit</th>
+<th>what it shows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ce30a94d</code></td>
+<td>0</td>
+<td>the late v3 bolus raises IOB 0 → 0.866; the late v3 carbs give COB 20.4 and are <code>cob.lastCarbs</code>; the late v3 status is first of 10 in the default <code>GET /api/v1/devicestatus.json</code>; all controls pass</td>
+</tr>
+<tr>
+<td><code>699eb5fa</code></td>
+<td>1</td>
+<td>the three arms fail: IOB stays 0, COB 0 with no <code>lastCarbs</code>, the v3 status is not in the default read. The v1 and v3-now boluses count, and the v1 status is first. After the restart IOB 2.721, COB 20.8, <code>lastCarbs</code> the v3 carbs and the v3 status second, behind the newer v1 one: the records were stored and are counted once they come from MongoDB</td>
+</tr>
+<tr>
+<td>15.0.8</td>
+<td>1</td>
+<td>as <code>699eb5fa</code>, with the same numbers</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Run 019's probes, repeated.</strong> Each log was compared with run 019's after removing numbers, ids,
+hex strings and paths, and matched it line for line (41 logs, the 15.0.8 and <code>ab7b22d6</code> controls
+included).</p>
+<table>
+<thead>
+<tr>
+<th>probe</th>
+<th>defect</th>
+<th><code>ce30a94d</code></th>
+<th>15.0.8</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>triage-2026-09/retry-keeps-srvcreated.js</code></td>
+<td>BF-143</td>
+<td>0: R1 to R9 keep <code>_id</code> and <code>srvCreated</code> and store one record</td>
+<td>(control <code>ff93fa94</code> in run 019)</td>
+</tr>
+<tr>
+<td><code>triage-2026-09/history-clock-restart.js</code>, batch 30,000</td>
+<td>BF-144</td>
+<td>0: after the restart both writes are stored above the reader's cursor, and history returns both; the writes came while wall time was 26 s behind the cursor</td>
+<td>(control <code>ff93fa94</code> in run 019)</td>
+</tr>
+<tr>
+<td><code>triage-2026-09/api3-empty-identifier-delete.js</code></td>
+<td>BF-140, BF-141, BF-142</td>
+<td>0, as on <code>699eb5fa</code></td>
+<td>0, as in run 019 (BF-135 not fixed there)</td>
+</tr>
+<tr>
+<td><code>tools/queue/gates/bf106-activity-date-coercion.js --ref ce30a94d</code></td>
+<td>BF-106</td>
+<td>0</td>
+<td>control ok</td>
+</tr>
+<tr>
+<td><code>triage-2026-09/maker-language.js</code></td>
+<td>BF-125</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>triage-2026-09/profile-switch-percentage.js</code></td>
+<td>BF-123</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>triage-2026-09/pebble-units.js</code></td>
+<td>BF-128</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>triage-2026-09/pebble-shared-scaled.js</code></td>
+<td>BF-138, BF-139</td>
+<td>0 (in-process, no server)</td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>triage-2026-09/same-time-carbs.js</code></td>
+<td>BF-121</td>
+<td>0; v3-noid and ws-dbAdd still store 1 (known issues, counted only with <code>--strict</code>)</td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>triage-2026-09/api3-app-field.js</code></td>
+<td>BF-136</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>triage-2026-09/v1-writes-v3-history.js</code></td>
+<td>BF-122</td>
+<td>1, on the <code>treatments-v1del</code> arm only (a v1 DELETE is a hard delete, kept by decision)</td>
+<td>1, on every v1 arm</td>
+</tr>
+<tr>
+<td><code>triage-2026-09/mmol-partial-thresholds.js</code></td>
+<td>BF-118</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>triage-2026-09/pump-suspend.js</code></td>
+<td>BF-119</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>triage-2026-09/clock-stale-offline.js</code></td>
+<td>BF-120</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>aaps-offline/probe.js</code></td>
+<td>BF-114</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>tools/lab/apns-shutdown/probe.js</code></td>
+<td>BF-134</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>rc-soak/probe-deleted-entry.js</code></td>
+<td>BF-131</td>
+<td>0, twice (the second on the same database)</td>
+<td>control <code>ab7b22d6</code>: 1, twice</td>
+</tr>
+<tr>
+<td><code>triage-2026-09/tooltip-bg-units.js</code></td>
+<td>#5940, not fixed</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>triage-2026-09/clock-token-link.js</code> (client arms only)</td>
+<td>#7377, not fixed</td>
+<td>1</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong><code>triage-2026-09/same-time-resend-shapes.js</code></strong> (BF-121), trees <code>base1508</code> = 15.0.8 and
+  <code>rc</code> = <code>ce30a94d</code>, exited 0 with the same outcome per shape as run 019.</li>
+<li><strong><code>triage-2026-09/bf80-alarm-delay.js</code></strong> (BF-80; untracked, outcomes only) ran on <code>ce30a94d</code> with
+  <code>readable</code> and <code>denied</code> and exited 0 each time, with run 019's outcomes for the candidate. Its
+  <code>e3adc91d</code> control was not repeated.</li>
+<li><code>probe-deleted-entry.js</code> ran against a <code>lab.sh up --no-apns</code> pair: A = <code>ab7b22d6</code>, B =
+  <code>ce30a94d</code> (<code>PFX=r020pd</code>), stopped by PID and its containers removed.</li>
+</ul>
+<h3 id="break-its-of-8784-on-the-candidate">Break-its of #8784 on the candidate<a class="headerlink" href="#break-its-of-8784-on-the-candidate" title="Permanent link">&para;</a></h3>
+<p>In a scratch worktree at <code>ce30a94d</code> (removed afterwards), with the new test file and the probe,
+Node 22.23.2, MongoDB 7.0.43:</p>
+<table>
+<thead>
+<tr>
+<th>break</th>
+<th>test file</th>
+<th>failures show</th>
+<th>probe</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>none</td>
+<td>15 of 15 pass</td>
+<td></td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>lib/api3/storage/mongoCachedCollection/index.js</code> from <code>db99bba4</code> (the device status commit undone)</td>
+<td>3 of 15 fail</td>
+<td>the late v3 status is missing from the default v1 read; the whole held set is not in time order; with <code>DENORMALIZE_DATES</code> the status is not in its place</td>
+<td>1: <code>ds-v3-late</code> only; the treatment arms pass</td>
+</tr>
+<tr>
+<td>the same file from <code>699eb5fa</code> (all of #8784's <code>lib/</code> change undone)</td>
+<td>10 of 15 fail</td>
+<td>IOB 0 for a late v3 bolus (before and after PATCH/PUT, and in the socket page data), COB 0 for late v3 carbs, mixed writes in reverse time order, "last carbs" the older 25 g entry instead of the newer 15 g, COB 34.5 g where time order gives 10 g, and the three device status failures above</td>
+<td>1: all three arms</td>
+</tr>
+<tr>
+<td>restored</td>
+<td>15 of 15 pass, <code>git status</code> clean</td>
+<td></td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>The five controls in the test file pass in every break.</p>
+<h3 id="browser-hand-check-gate">Browser hand-check gate<a class="headerlink" href="#browser-hand-check-gate" title="Permanent link">&para;</a></h3>
+<p><code>node tools/queue/gates/client-unchanged-since-hand-check.js --base ce30a94d --with ''</code> exits 1.
+The control is ok. It names the same 14 paths as runs 018 and 019; #8784 adds none. The browser
+walk of <code>ff93fa94</code> on 2026-09-26
+(<a href="../../60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.html">journey-lab-browser-15.0.9-2026-09-26</a>)
+passed its 11 scenarios. The three merges since are server-only. #8784 changes the page data a
+browser receives for late or edited v3 treatments; no browser check of that was made.</p>
+<h3 id="soak-toolslabrc-soak">Soak (tools/lab/rc-soak)<a class="headerlink" href="#soak-toolslabrc-soak" title="Permanent link">&para;</a></h3>
+<p>A/B soak, 2026-09-27 06:13Z to 08:29Z, A = 15.0.8 <code>92d08342</code>, B = <code>ce30a94d</code>
+(<code>ARM_B_DIR=externals/work/crm-rc-018-soak</code>), harness 5. <code>PFX</code> and ports were this run's own
+(<code>r020*</code>). R33 to R37 repeat run 019's R28 to R32 with the same commands; R38 and R39 repeat R33
+and R34 after four entries were added to <code>expected-diffs.json</code>. Results:
+<a href="../../../tools/lab/rc-soak/results/proof-2026-09-27-run020.html">proof-2026-09-27-run020</a>.</p>
+<p><strong>Verdict:</strong> R35, the A/A control R36 and R38 pass. R33 (11 findings) and R34 (7) failed
+on differences #8784 makes on purpose, plus BF-135's page loads in R34; after four entries were
+added to <code>expected-diffs.json</code>, R38 (R33 repeated) passes and R39 (R34 repeated) fails only on
+BF-135's page loads, which have no expected-difference rule. R37 fails by design. In every A/B run
+there were no liveness failures, every eligible reading reached the socket follower, and
+<code>ce30a94d</code> sent no deleted record to a page load.</p>
+<table>
+<thead>
+<tr>
+<th>run</th>
+<th>repeats</th>
+<th>shape</th>
+<th style="text-align: right;">compared</th>
+<th style="text-align: right;">differ</th>
+<th>ledger / parity</th>
+<th>verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R33</td>
+<td>R28</td>
+<td>Node 22.23.2, MongoDB 7.0.43, 25 min = 48 h</td>
+<td style="text-align: right;">8463</td>
+<td style="text-align: right;">2559</td>
+<td>1931 keys, 0 missing / equal</td>
+<td>FAIL: 11 findings, all #8784's</td>
+</tr>
+<tr>
+<td>R34</td>
+<td>R29</td>
+<td>as R33, 72 h, MongoDB restart at +20 min, server restart at +35 min</td>
+<td style="text-align: right;">12694</td>
+<td style="text-align: right;">3642 (249 in the disturbance windows)</td>
+<td>2896 keys, 0 missing / equal</td>
+<td>FAIL: 6 findings #8784's, 1 BF-135's page loads</td>
+</tr>
+<tr>
+<td>R35</td>
+<td>R30</td>
+<td>Node 24.20.0, MongoDB 4.4.24, <code>readable</code>, 45 s MongoDB outage</td>
+<td style="text-align: right;">4232</td>
+<td style="text-align: right;">1387 (231 in the outage window)</td>
+<td>966 keys, 0 missing / equal</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>R36</td>
+<td>R31</td>
+<td>A/A control (15.0.8 against itself), as R33</td>
+<td style="text-align: right;">8463</td>
+<td style="text-align: right;">0</td>
+<td>1931 keys, 0 missing / equal</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>R37</td>
+<td>R32</td>
+<td>arms swapped (A = <code>ce30a94d</code>, B = 15.0.8), 5 min = 12 h</td>
+<td style="text-align: right;">2115</td>
+<td style="text-align: right;">657</td>
+<td>483 keys, 0 missing</td>
+<td>FAIL by design: 29 findings</td>
+</tr>
+<tr>
+<td>R38</td>
+<td>R33</td>
+<td>R33 with the new entries</td>
+<td style="text-align: right;">8463</td>
+<td style="text-align: right;">2564</td>
+<td>1931 keys, 0 missing / equal</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>R39</td>
+<td>R34</td>
+<td>R34 with the new entries</td>
+<td style="text-align: right;">12694</td>
+<td style="text-align: right;">3642 (249 in the disturbance windows)</td>
+<td>2896 keys, 0 missing / equal</td>
+<td>FAIL: 1 finding, BF-135's page loads (by design)</td>
+</tr>
+</tbody>
+</table>
+<p>Run 019's differing counts were R28 1756, R29 2719 and R30 872. The differences filed under the
+four new entries are R33 885, R34 979 and R35 459.</p>
+<p><strong>Four new expected-difference entries, all #8784's.</strong> R33 failed on 11 findings where R28 passed, and
+R34 on six besides BF-135's page loads. Each is a difference #8784 makes on purpose, checked before
+an entry was added:</p>
+<ul>
+<li><strong><code>GET /api/v1/treatments</code> from memory carries <code>mills</code> and <code>endmills</code> on v3 records.</strong> R33's 144
+  dumped treatment reads: with those two fields left out, all 144 satisfy run 018's BF-135 rule;
+  603 records carry <code>mills</code> only on B, all v3, each equal to its <code>created_at</code>.</li>
+<li><strong><code>GET /api/v1/devicestatus</code> from memory places the AndroidAPS v3 status by time.</strong> R33's 48 dumped
+  reads: B is A's reply with the AndroidAPS statuses inserted by time in all 48; in 22 of them
+  15.0.8 leaves an AndroidAPS status out of <code>count=10</code>.</li>
+<li><strong><code>cob.lastCarbs</code> names the newest carb entry, and an AndroidAPS v3 bolus can be <code>iob.lastBolus</code>.</strong>
+  In every captured <code>lastCarbs</code> difference (R33 47, R34 73) A's entry is older than B's; B's is the
+  newest carb entry acknowledged before the request in all but three, which are the write tick
+  itself (the re-ask 3 s later names it; the reload debounce).</li>
+<li><strong>An AndroidAPS v3 temp basal can be the current basal treatment</strong> (once per run, at the end).</li>
+</ul>
+<p>The scratch checks' tampered-reply control exits 1. R38 and R39 then passed with the entries.
+R36 has 0
+differences, so the entries are not applied. R37 reports every expected difference as a finding
+with the direction reversed, the four new ones included, and fires <code>[apns]</code> (143 sessions) and
+<code>[fds]</code> (172 against 29) on the 15.0.8 arm. <code>expected-diffs.json</code> is committed with this run; the
+entries say which dumps they were checked against.</p>
+<p><strong>The <code>cob.lastCarbs</code> answer (R24, R29).</strong> On <code>ce30a94d</code> the treatments are in time order and B
+names the newest carb entry as each is written (carb-189, 585, 621, 657, 729, 765, 801, 837 in
+R34). 15.0.8 stays on older, edited entries: carb-153 before any disturbance, then carb-549 and
+carb-585, the entries R24 and R29 showed. The differences therefore now start before the restart:
+before #8784 both arms were wrong in step there. What R24 and R29 reported as a difference between
+two wrong answers is now 15.0.8 alone naming an older entry, the BF-133 defect #8784 fixes; it is
+classified under the new entry. Run 019's <code>trace-order.js</code> on R34's kept databases found every
+treatment with a finite <code>mills</code> and the newest carb entry last on both arms after a fresh boot.</p>
+<p><strong>R34's page loads (21 differences): BF-135's intended change,</strong> as in R29: 23 page loads on 15.0.8
+from tick 611 (the first after the server restart) send AndroidAPS records soft-deleted more than
+10 s earlier, and none on B; the analyser's 10 s rule leaves 21.</p>
+<p><strong>Nothing else new.</strong> No liveness failure, every eligible reading reached the socket follower in
+every A/B run, <code>ce30a94d</code> sent no deleted record to a page load, and the ledgers and parity were
+complete.</p>
+<p><strong>Resources.</strong></p>
+<table>
+<thead>
+<tr>
+<th>arm</th>
+<th>heap MB first→last (max)</th>
+<th>RSS MB first→last</th>
+<th>APNs sessions open at end</th>
+<th>fds first→last</th>
+<th>active handles</th>
+<th>event-loop p99 ms</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A 15.0.8 (R33)</td>
+<td>55.4→64.9 (70.1)</td>
+<td>147.9→256.5</td>
+<td>575 of 575</td>
+<td>30→604</td>
+<td>12→583</td>
+<td>21.1</td>
+</tr>
+<tr>
+<td>B <code>ce30a94d</code> (R33)</td>
+<td>46.4→50.6 (72.6)</td>
+<td>118.3→129.2</td>
+<td>0 of 575</td>
+<td>28→29</td>
+<td>11→8</td>
+<td>18.8</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Leak check</strong> (heap growth B − A, threshold 25 MB; RSS growth B − A, threshold 100 MB): R33
+  −6.8 and −69.0, R34 −12.4 and −85.8, R36 (A/A) 1.3 and −0.9, R38 −4.9 and −69.5, R39 −7.6 and
+  −79.9. R34 and R39: APNs sessions open at the end 259 of 862 on A (the server restart closed the
+  earlier ones) and 0 of 862 on B.</li>
+<li><strong>R35 (Node 24, MongoDB 4.4, 15 min):</strong> RSS 151.5→335.0 MB on A and 155.7→278.2 MB on B; APNs
+  sessions open at the end 287 of 287 on A and 0 of 287 on B; fds 30→315 on A and 28→28 on B. The
+  leak check needs a process lifetime of at least 20 min.</li>
+<li><strong>p95 latency, A / B, ms (R33):</strong> <code>loop.devicestatus</code> 56 / 42, <code>loopfollow.entries288</code> 9 / 9,
+  <code>cgm.post</code> 12 / 12, <code>loop.remote.override</code> 8 / 7. No latency finding in any run.</li>
+<li><strong>Runs were started in pairs</strong> (R33 with R36, R34 with R35, R38 with R39) and R37 alone, as in
+  run 019; the suite had finished before the first soak started.</li>
+</ul>
+<p><strong>The lab's 24 to 72 h real-time soak was not run</strong>; real sites running <code>7000eb18</code> stand in for it
+(maintainer, 2026-09-30). To run it on this tree: <code>export SOAK_STATE=$HOME/rc-soak-state;
+ARM_B_DIR=$PWD/externals/work/crm-rc-018-soak tools/lab/rc-soak/lab.sh soak --hours 72</code> (README,
+"Start the 72-hour soak of the release candidate"), with that worktree at <code>ce30a94d</code>.</p>
+<h2 id="evidence-carried-from-earlier-runs">Evidence carried from earlier runs<a class="headerlink" href="#evidence-carried-from-earlier-runs" title="Permanent link">&para;</a></h2>
+<p>These checks ran on earlier trees and were not repeated on <code>d300bee9</code>. Each row names the tree it
+ran on. Every unit listed here is now in <code>dev</code> <code>ce30a94d</code>. Its code is unchanged since it was
+checked, except where the row says otherwise.</p>
+<h3 id="from-run-019-tree-0b727dc5-origindev-699eb5fa">From run 019 (tree <code>0b727dc5</code>, <code>origin/dev</code> <code>699eb5fa</code>)<a class="headerlink" href="#from-run-019-tree-0b727dc5-origindev-699eb5fa" title="Permanent link">&para;</a></h3>
+<p>Run 020 did not repeat these. <code>ce30a94d</code> changes one server file and adds one test file after
+<code>699eb5fa</code>, and has the same <code>package.json</code> and lockfile.</p>
+<ul>
+<li><strong>Probe controls on the trees before #8781 and #8783.</strong> <code>retry-keeps-srvcreated.js</code> on
+  <code>ff93fa94</code>: exit 1, R1 to R4 (v1 re-sends with no identity) move <code>srvCreated</code> forward (BF-143).
+  <code>history-clock-restart.js</code> (batch 30,000) on <code>ff93fa94</code>: exit 1, both writes after the restart
+  stored below the reader's cursor (BF-144). <code>api3-empty-identifier-delete.js</code>: <code>ce7d754a</code> 0 with
+  <code>0</code> and <code>false</code> answering 404 (the BF-142 control), <code>ff93fa94</code> 0 with the <code>""</code> re-send stored
+  twice (BF-141), <code>e3adc91d</code> 1 (BF-140). <code>bf80-alarm-delay.js</code> on <code>e3adc91d</code>, <code>readable</code> and
+  <code>denied</code>: exit 0 with the control outcomes.</li>
+<li><strong>The <code>cob.lastCarbs</code> trace T1</strong> (R29's traffic, a scratch instrument in each server): whenever
+  the last carb entry in array order was not the newest, the array held AndroidAPS v3 records
+  without <code>mills</code> (15.0.8: 828 of 914 reloads before the restart, 497 of 525 after; <code>699eb5fa</code>: 827
+  of 912 and 500 of 528), and never otherwise. This is the cause #8784 fixes; details in
+  <a href="../../../tools/lab/rc-soak/results/proof-2026-09-27.html#why-coblastcarbs-names-an-older-carb-entry-bf-133">proof-2026-09-27</a>.</li>
+<li><strong>Run 018's <code>bgnow</code> miss, explained:</strong> a timing race on the first reading to enter the
+  dataloader's two-day window, inside the 5 s reload debounce; the code is the same on both trees
+  and R29 did not show it.</li>
+<li><strong>BF-135's dump tally on <code>699eb5fa</code></strong> (R28, 144 treatment reads): 61 identical, 83 explained by
+  A's 94 <code>isValid: false</code> records, 0 unexplained. Run 020's R33 repeats the rule with <code>mills</code> and
+  <code>endmills</code> left out.</li>
+</ul>
+<h3 id="from-run-018-tree-c342bce0-origindev-ff93fa94">From run 018 (tree <code>c342bce0</code>, <code>origin/dev</code> <code>ff93fa94</code>)<a class="headerlink" href="#from-run-018-tree-c342bce0-origindev-ff93fa94" title="Permanent link">&para;</a></h3>
+<p>Runs 019 and 020 did not repeat these. <code>ce30a94d</code> changes only server files and tests after
+<code>ff93fa94</code>, and has the same <code>package.json</code> and lockfile.</p>
+<ul>
+<li><strong><code>npm ci</code></strong> exited 0 on Node 20.20.0, 22.23.2 and 24.20.0, one worktree each, plus the soak
+  worktree on 22.23.2.</li>
+<li><strong>Per-merge dry-run counts from <code>e3adc91d</code> (3170) to <code>ff93fa94</code> (3396),</strong> one row per merge, are
+  in <a href="#run-history">How each unit adds to the suite count</a>. The title comparison found 235 new and
+  9 renamed titles (#8778's suite rename).</li>
+<li><strong>The parallel first pass</strong> of run 018 tripped <code>tests/boluswizardpreview.test.js</code> (it takes <code>now</code>
+  when mocha loads it; 2 failing per cell); each cell passed alone. Runs 019 and 020 ran the cells
+  one at a time and it did not trip.</li>
+<li><strong>Journey lab JL-1 (BF-135) on <code>ff93fa94</code>,</strong> from the journey lab: after an AndroidAPS v3
+  soft DELETE, <code>ff93fa94</code> shows no COB and v1 returns 0 records, where 15.0.8 shows COB 40 and
+  returns the record with <code>isValid: false</code>. Its record is
+  <a href="../../60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.html">journey-lab-browser-15.0.9-2026-09-26</a>.</li>
+</ul>
+<h3 id="from-run-017-tree-d7383aae-origindev-e3adc91d">From run 017 (tree <code>d7383aae</code>, <code>origin/dev</code> <code>e3adc91d</code>)<a class="headerlink" href="#from-run-017-tree-d7383aae-origindev-e3adc91d" title="Permanent link">&para;</a></h3>
+<p>Runs 018 to 020 did not repeat these. <code>ce30a94d</code> has the same <code>package.json</code> and
+<code>package-lock.json</code> as <code>e3adc91d</code>.</p>
+<ul>
+<li><strong>Dependencies against 15.0.8:</strong> <code>npm install --ignore-scripts</code> left the lockfile unchanged. The
+  lockfile differs from 15.0.8's by 1978 lines, and its <code>packages</code> entries went from 1029 to 1034.
+  The direct dependencies that moved are <code>@babel/core</code>, <code>@babel/preset-env</code>, <code>babel-loader</code>,
+  <code>body-parser</code>, <code>d3</code> (5.16.0 to 7.9.0), <code>express</code> and <code>nightscout-connect</code> (0.0.13 from a GitHub
+  tarball to 0.1.0 from npm), and in dev <code>axios</code>, <code>dompurify</code>, <code>jsdom</code> and <code>mocha</code>. <code>proxy-addr</code>
+  is a new direct dependency, and <code>overrides</code> changed. The full table is in run 017's record.</li>
+<li><strong>Soak R21</strong> (Node 24.20.0, MongoDB 4.4.24, without APNs, 25 min = 48 h): PASS. RSS ended at
+  279.3 MB on A and 310.3 MB on B, with the heap flat. The Node 24 RSS level is the same on both
+  arms and is not BF-134.</li>
+<li><strong>Soak R18's disturbance rule:</strong> it classified a devicestatus upload re-sent after its reply was
+  lost in the server restart (<code>ds-604</code>), the first time that rule fired.</li>
+<li><strong>Per-step attribution to <code>e3adc91d</code>:</strong> from <code>dev</code> <code>ecb63223</code> 2588, then +529 (#8758 and its
+  fixes), +26 (#8568, #8419), +27 (#8568 follow-up, #8768, #8769, #8770). No title was lost.</li>
+</ul>
+<h3 id="from-run-016-tree-dd51bb8a-the-local-merge-rc1509-full">From run 016 (tree <code>dd51bb8a</code>, the local merge <code>rc/15.0.9-full</code>)<a class="headerlink" href="#from-run-016-tree-dd51bb8a-the-local-merge-rc1509-full" title="Permanent link">&para;</a></h3>
+<p>Run 017 did not repeat these. Run 016's tree contains the candidate's #8758 merge (tree
+<code>cf590474</code>) and #8568 before its follow-up.</p>
+<ul>
+<li><strong>Object-id lab:</strong> candidate <code>104971fa</code> against <code>dev</code> <code>ecb63223</code>. 30 of 46 cells differ, all in
+  #8758's direction, and every control matches. The candidate's cells equal <code>e9dbb1fb</code>'s in run 015.</li>
+<li><strong>#8730's four <code>language</code> failures (BF-132):</strong> zh_TW <code>"ml"</code> shows as grams, the carbs label
+  changes and the "Pump Battery Low Alarm" label is dropped; Swedish "Days with food" reverts to
+  English; the Russian status string reverts. #8730 is held out of 15.0.9.</li>
+</ul>
+<h3 id="from-run-015-tree-ea4c4852-8758-ab7b22d6--wipobject-id-crud-fixes-2-e9dbb1fb">From run 015 (tree <code>ea4c4852</code>, #8758 <code>ab7b22d6</code> + wip/object-id-crud-fixes-2 <code>e9dbb1fb</code>)<a class="headerlink" href="#from-run-015-tree-ea4c4852-8758-ab7b22d6--wipobject-id-crud-fixes-2-e9dbb1fb" title="Permanent link">&para;</a></h3>
+<p>Runs 016 and 017 did not repeat these. Run 015's tree is the #8758 component of the candidate's</p>
+<h1 id="8758-merge-whose-tree-cf590474-is-that-component-merged-onto-dev-ecb63223">8758 merge, whose tree <code>cf590474</code> is that component merged onto <code>dev</code> <code>ecb63223</code>.<a class="headerlink" href="#8758-merge-whose-tree-cf590474-is-that-component-merged-onto-dev-ecb63223" title="Permanent link">&para;</a></h1>
+<ul>
+<li><strong>CI's command in six cells:</strong> <code>test-ci</code> then <code>test:core</code>, on Node 20.20.0, 22.23.2 and 24.20.0
+  × MongoDB 4.4.24 and 7.0.43. Every cell gave 3106/0/3 and 286 <code>test:core</code>. The harness red
+  control exited 124 with no totals.</li>
+<li><strong>Consumer replay:</strong> against <code>ab7b22d6</code>, only P11 (devicestatus re-post with its own <code>_id</code>)
+  changed. It answers 200 with one document, where <code>ab7b22d6</code> and 15.0.8 answer 500 (BF-116).</li>
+<li><strong>Deleted-reading probe control (BF-131):</strong> exit 1 on <code>6c3ccce6</code>, where the deleted reading
+  was still served from memory. Run 017 repeated the passing arm, not the control.</li>
+</ul>
+<h3 id="from-run-012-tree-ee10f1b1-8758-ab7b22d6--wipobject-id-crud-fixes-2-63dd716c">From run 012 (tree <code>ee10f1b1</code>, #8758 <code>ab7b22d6</code> + wip/object-id-crud-fixes-2 <code>63dd716c</code>)<a class="headerlink" href="#from-run-012-tree-ee10f1b1-8758-ab7b22d6--wipobject-id-crud-fixes-2-63dd716c" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>AAPS offline-marker probe on #8568's head <code>de8efff0</code></strong> (run with <code>63dd716c</code>'s <code>node_modules</code>).
+  Both controls behaved: finite false, still-off true.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>arm</th>
+<th>marker 5 h after re-enable</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>aaps-release</code></td>
+<td>cleared</td>
+</tr>
+<tr>
+<td><code>aaps-dev</code></td>
+<td>still on</td>
+</tr>
+</tbody>
+</table>
+<p>The probe exits 1. #8568 clears the marker for the AAPS release shape but not for the AAPS
+  development-branch shape. Not yet run on a merge that carries #8568.
+- <strong>Paths the three outside PRs change outside the gate's server-only list.</strong> Read from each PR's
+  diff against <code>dev</code>; the gate was not run on them.</p>
+<table>
+<thead>
+<tr>
+<th>PR</th>
+<th>paths</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#8568 <code>de8efff0</code></td>
+<td><code>lib/data/ddata.js</code>, <code>lib/profile/profileeditor.js</code></td>
+</tr>
+<tr>
+<td>#8419 <code>b1c23e74</code></td>
+<td><code>.gitignore</code>, <code>.nycrc.json</code></td>
+</tr>
+<tr>
+<td>#8530 <code>5353ff64</code></td>
+<td><code>views/index.html</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="from-run-011-tree-25ab7afc-dev-4f705217--8758-ab7b22d6">From run 011 (tree <code>25ab7afc</code>, <code>dev</code> <code>4f705217</code> + #8758 <code>ab7b22d6</code>)<a class="headerlink" href="#from-run-011-tree-25ab7afc-dev-4f705217--8758-ab7b22d6" title="Permanent link">&para;</a></h3>
+<p>Runs 012 to 015 compared their results with run 011's rather than repeating these.</p>
+<ul>
+<li><strong><code>dev</code> baseline suite:</strong> <code>dev</code> <code>4f705217</code> (tree <code>b69c9fd9</code>) on Node 22.23.2 / MongoDB 7.0.43
+  gave 2577/0/3 and 286 <code>test:core</code>. #8758 at <code>ab7b22d6</code> adds 489 passing tests over it: 490 new
+  titles, 1 renamed in <code>a2c7eb39</code> (BF-109).</li>
+<li><strong>Object-id lab against the 2026-09-24 run:</strong> on <code>ab7b22d6</code>, P-ID-10 matches 15.0.8 and <code>dev</code>
+  (BF-109 <code>a2c7eb39</code>), and P-ID-11 reads and deletes string-stored records (BF-111 <code>1c2d1afd</code>).
+  P-ID-12 stores nothing on <code>dev</code> and <code>ab7b22d6</code>, because subject create drops a client <code>_id</code>
+  (<code>dev</code> <code>a8f75da5</code>, #8754). Results:
+  <a href="../../../tools/lab/object-id/results/object-id-2026-09-25.html">object-id-2026-09-25</a>.</li>
+<li><strong>Consumer replay against the survey:</strong> on <code>ab7b22d6</code>, P1 (oref0 <code>count=1?&lt;token&gt;</code> and
+  <code>count=1?&lt;sha1&gt;</code>) and P2 (GluPredKit <code>count=0</code>) answer as 15.0.8 does, since #8761. P3, the activity
+  numeric-<code>date</code> filter, returns 0 records where 15.0.8 returns 7, on <code>dev</code> and <code>ab7b22d6</code>. P4b
+  (xdripswift <code>find[date][$in][]</code>) answers 500 on every build. P7, P8 and P10 are fixed relative to
+  15.0.8. On P13, only a subject with the ack permission clears an alarm. Every other probe matches
+  15.0.8.</li>
+<li><strong>The gate's default <code>--with</code> list is stale.</strong> It names <code>origin/bf2/auth-hardening</code>,
+  <code>origin/bf/object-id-crud</code> and <code>origin/bf/count-client-compat</code>, and the first and last are
+  already ancestors of <code>dev</code>.</li>
+</ul>
+<h3 id="break-its-of-the-units-in-dev">Break-its of the units in <code>dev</code><a class="headerlink" href="#break-its-of-the-units-in-dev" title="Permanent link">&para;</a></h3>
+<p>A break-it reverts or edits one unit's fix on the integrated tree and runs that unit's own tests. It
+counts only when the failures show the defect the fix addresses. All of these ran on Node 20.20.0
+with MongoDB 7.0.43, and every tree was restored and re-checked afterwards.</p>
+<table>
+<thead>
+<tr>
+<th>unit</th>
+<th>break</th>
+<th>failing</th>
+<th>failures show</th>
+<th>tree (run)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>count=0 answers <code>[]</code> (#8748)</td>
+<td>count-zero's <code>lib/</code> files from <code>dev</code> <code>74fc6619</code></td>
+<td>18 of 36</td>
+<td>17 count=0 reads and writes answer 400; 1 storage-layer read returns records for a zero count</td>
+<td><code>b9c9828b</code> (c)</td>
+</tr>
+<tr>
+<td></td>
+<td>DELETE branch of <code>validateCount</code> disabled</td>
+<td>6 of 36</td>
+<td>DELETE with an invalid or zero count is accepted</td>
+<td><code>b9c9828b</code> (c)</td>
+</tr>
+<tr>
+<td>backports (#8751)</td>
+<td><code>lib/api3/alarmSocket.js</code>, <code>lib/api/entries/index.js</code> from <code>dev</code> <code>74fc6619</code></td>
+<td>7 of 12</td>
+<td>6 credentials reach the log; 1 read allowed that should be refused</td>
+<td><code>b9c9828b</code> (c)</td>
+</tr>
+<tr>
+<td>ops (#8753)</td>
+<td><code>lib/plugins/index.js</code>, <code>lib/api/alexa/index.js</code>, <code>lib/server/booterror.js</code> from <code>dev</code>, one at a time</td>
+<td>1 of 14, 1 of 5, 2 of 4</td>
+<td>each unit's own symptom; the boot-error controls pass</td>
+<td><code>b9c9828b</code> (c)</td>
+</tr>
+<tr>
+<td>auth-hardening (#8754): client address</td>
+<td><code>lib/server/client-ip.js</code> from <code>395f3207</code></td>
+<td>7 of 67</td>
+<td>the seven <code>dev</code> edge-case pins, as on the branch</td>
+<td><code>b9c9828b</code> (c)</td>
+</tr>
+<tr>
+<td></td>
+<td>unset <code>TRUST_PROXY</code> trusts nothing</td>
+<td>28 of 67</td>
+<td>23 <code>client-ip</code> + 5 <code>authdelay</code>, as on the branch</td>
+<td><code>b9c9828b</code> (c)</td>
+</tr>
+<tr>
+<td></td>
+<td>throttle keys every address alike / drops the address key</td>
+<td>5 of 67 / 9 of 67</td>
+<td>a different client shares, or loses, its own counter</td>
+<td><code>b9c9828b</code> (c)</td>
+</tr>
+<tr>
+<td></td>
+<td><code>TRUST_PROXY</code> hop-count branch removed</td>
+<td>8 of 81</td>
+<td>a hop-count setting is refused at startup</td>
+<td><code>f37ac198</code> (e)</td>
+</tr>
+<tr>
+<td></td>
+<td>hop trust off by one</td>
+<td>5 of 81</td>
+<td>the wrong forwarded entry is taken as the client</td>
+<td><code>f37ac198</code> (e)</td>
+</tr>
+<tr>
+<td>auth-hardening (#8754): subjects</td>
+<td><code>lib/authorization/storage.js</code> from <code>dev</code></td>
+<td>11 of 13</td>
+<td>the access token is stored in the document; fields outside the allow-list are stored; edits lose stored fields</td>
+<td><code>b9c9828b</code> (c)</td>
+</tr>
+<tr>
+<td></td>
+<td>the <code>keepStoredFields</code> call removed</td>
+<td>5 of 13</td>
+<td>an edit resets <code>created_at</code> and clears notes</td>
+<td><code>b9c9828b</code> (c)</td>
+</tr>
+<tr>
+<td>alarm with no reading, BF-90 (#8755)</td>
+<td>the fix hunk reverse-applied, bundle rebuilt</td>
+<td>2 of 4</td>
+<td><code>TypeError</code> on the missing reading; the two invariants pass</td>
+<td><code>f37ac198</code> (e)</td>
+</tr>
+<tr>
+<td>quick-pick rebuild, BF-69 (#8756)</td>
+<td>the fix hunk reverse-applied, bundle rebuilt</td>
+<td>6 of 19</td>
+<td>the chooser shows only <code>(none)</code>; #8735's 11 tests pass</td>
+<td><code>f37ac198</code> (e)</td>
+</tr>
+<tr>
+<td>connector <code>0.1.0</code> pin (#8762)</td>
+<td>connector <code>v0.0.13</code> (the version 15.0.8's lockfile names) swapped into <code>node_modules</code></td>
+<td>5 of 23</td>
+<td>the five <code>DEBUG_LOGGING</code> × <code>CONNECT_DEBUG</code> cases fail on log-line counts, with no load error</td>
+<td><code>f37ac198</code> (e), on <code>0.1.0-dev.2</code>; <code>0.1.0</code> differs from <code>0.1.0-dev.3</code> only in <code>docs/releasing.md</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>#8758 has no break-its on an integrated tree.</strong> Its own branch has them.</p>
+<h3 id="live-server-checks">Live server checks<a class="headerlink" href="#live-server-checks" title="Permanent link">&para;</a></h3>
+<p>These ran against a server booted from the real <code>lib/server/app.js</code> on <code>1b1977e0</code> (run e). That tree
+is <code>dev</code> <code>74fc6619</code> plus every unit except #8758, and it carries #8754's final trust-proxy code.
+Each check sent a request without forwarding headers, then one with a two-entry <code>X-Forwarded-For</code>
+chain and <code>X-Forwarded-Proto: https</code>, both from the loopback peer.</p>
+<table>
+<thead>
+<tr>
+<th><code>TRUST_PROXY</code></th>
+<th>boots</th>
+<th>client address for a chained request (<code>req.ip</code> = throttle key)</th>
+<th><code>req.secure</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>unset</td>
+<td>yes, with the unset security warning</td>
+<td>left-most forwarded entry, as 15.0.8 resolves it</td>
+<td>true</td>
+</tr>
+<tr>
+<td><code>false</code></td>
+<td>yes</td>
+<td>the socket peer</td>
+<td>false</td>
+</tr>
+<tr>
+<td><code>127.0.0.1,::1</code></td>
+<td>yes</td>
+<td>the entry the trusted peer added</td>
+<td>true</td>
+</tr>
+<tr>
+<td><code>1</code></td>
+<td>yes</td>
+<td>the entry added one hop away</td>
+<td>true</td>
+</tr>
+<tr>
+<td><code>true</code></td>
+<td>yes, with the every-hop security warning</td>
+<td>left-most forwarded entry</td>
+<td>true</td>
+</tr>
+<tr>
+<td><code>0</code></td>
+<td>no: startup error naming the accepted forms</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>With no forwarding headers, every setting that booted gave the peer and <code>secure: false</code>.</p>
+<p>The count rules held on each of those servers. <code>count=0</code> answers 200 <code>[]</code>, a valid count answers
+with records, and a malformed count answers 400. A DELETE with a zero or invalid count answers 400
+and removes nothing. The full request table is in run c's record.</p>
+<h3 id="nightscout-to-nightscout-connector-lab">Nightscout-to-Nightscout connector lab<a class="headerlink" href="#nightscout-to-nightscout-connector-lab" title="Permanent link">&para;</a></h3>
+<p>Run on <code>d087588f</code> (combined run of 2026-09-23), connector <code>0.1.0-dev.3</code> from npm. <code>0.1.0</code> differs
+from that version only in <code>docs/releasing.md</code>.</p>
+<ul>
+<li><strong>Setup:</strong> source <code>dev</code> <code>1f9a9d10</code> with <code>AUTH_DEFAULT_ROLES=denied</code>, fed synthetic data by
+  <code>tools/lab/connector-soak/writer.js</code>. The sink was the candidate, reading through a byte-counting
+  proxy with the source's API secret.</li>
+<li><strong>Duration:</strong> 5 polls, 21:48–22:05Z. One request per collection per poll, no retries, and all 28
+  proxied requests answered 200.</li>
+<li><strong>Completeness:</strong> entries 587/587, treatments 225/225, devicestatus 192/192 and the in-effect
+  profile 1/1, with no twins and nothing missing in the window.</li>
+<li><strong>Update on change:</strong> a source profile edit reached the sink on the next poll under the same
+  <code>_id</code>, with no twin.</li>
+<li><strong>Secrets:</strong> the source, sink, proxy and writer logs were scanned for each API secret (raw and
+  SHA-1) and for the reader's access token. There were 0 matches.</li>
+</ul>
+<p>The bounded fetch and update-on-change were also lab-run for 80 and 46 minutes against
+15.0.9-candidate sinks, as recorded in
+<a href="../../60-research/remedial/connector-profile-sync.html">connector profile sync</a>.
+Update-on-change is active only against a sink that has #8758.</p>
+<h2 id="run-history">Run history<a class="headerlink" href="#run-history" title="Permanent link">&para;</a></h2>
+<p>Each record is kept at the commit shown. Suite results are passing/failing/pending, and every run
+had 0 failing. Before run 011, runs used <code>npm test</code>. Runs 011 to 015 use CI's <code>test-ci</code> + <code>test:core</code>. Runs 016 to 020 use <code>npm test</code>; runs 017 to 020 also run the <code>test-ci</code> form in one cell.</p>
+<table>
+<thead>
+<tr>
+<th>run</th>
+<th>date</th>
+<th>base</th>
+<th>added</th>
+<th>tip</th>
+<th>suite</th>
+<th>record</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>020 (current)</strong></td>
+<td>2026-09-27</td>
+<td><code>dev</code> <code>ce30a94d</code></td>
+<td><code>699eb5fa</code> + #8784 (BF-146, BF-133) merged into <code>dev</code></td>
+<td>tree <code>d300bee9</code></td>
+<td>3473/0/3, 6 cells one at a time, <code>npm test</code>; <code>test-ci</code> form and <code>test:core</code> on Node 22 / MongoDB 7; the BF-146 probe and 21 run-019 probes; break-its of #8784; gate; A/B soak R33–R39 with four new expected-difference entries</td>
+<td>this page</td>
+</tr>
+<tr>
+<td>019</td>
+<td>2026-09-26/27</td>
+<td><code>dev</code> <code>699eb5fa</code></td>
+<td><code>ff93fa94</code> + #8781 (BF-141, 143, 144) and #8783 (BF-142) merged into <code>dev</code></td>
+<td>tree <code>0b727dc5</code></td>
+<td>3458/0/3, 6 cells one at a time, <code>npm test</code>; <code>test-ci</code> form and <code>test:core</code> on Node 22 / MongoDB 7; 21 probes; gate; A/B soak R28–R32; <code>lastCarbs</code> trace T1</td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/04a873ce/docs/30-design/remedial/rc-15.0.9-integration-record.md">rc-15.0.9-integration-record</a></td>
+</tr>
+<tr>
+<td>018</td>
+<td>2026-09-26</td>
+<td><code>dev</code> <code>ff93fa94</code></td>
+<td><code>e3adc91d</code> + #8771–#8780 merged into <code>dev</code> (BF-106, 129, 125, 123, 122, 135, 136, 128, 139, 138, 80, 140, 121)</td>
+<td>tree <code>c342bce0</code></td>
+<td>3396/0/3, 6 cells, <code>npm test</code>; <code>test-ci</code> form and <code>test:core</code> on Node 22 / MongoDB 7; 19 probes; gate; A/B soak R23–R27</td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/8246a232/docs/30-design/remedial/rc-15.0.9-integration-record.md">rc-15.0.9-integration-record</a></td>
+</tr>
+<tr>
+<td>017</td>
+<td>2026-09-25</td>
+<td><code>dev</code> <code>e3adc91d</code></td>
+<td>the 15.0.9 candidate: #8758 <code>f1e8398b</code>, #8568 <code>0773260c</code>, #8768, #8769, #8419 <code>8cffc05e</code>, #8770 merged into <code>dev</code>; #8730 held out</td>
+<td>tree <code>d7383aae</code></td>
+<td>3170/0/3, 6 cells, <code>npm test</code>; <code>test-ci</code> form on Node 22 / MongoDB 7; 13 probes; gate; A/B soak R17–R22</td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/e2a3d8c1/docs/30-design/remedial/rc-15.0.9-integration-record.md">rc-15.0.9-integration-record</a></td>
+</tr>
+<tr>
+<td>016</td>
+<td>2026-09-25</td>
+<td><code>dev</code> <code>ecb63223</code></td>
+<td>the release candidate, full local merge <code>rc/15.0.9-full</code>: #8758 <code>25f5ea21</code>, fixes <code>e9dbb1fb</code>, #8568 <code>ae4dc2f7</code>, #8419 <code>b1c23e74</code>, #8730 <code>f99c0e54</code></td>
+<td>tree <code>dd51bb8a</code></td>
+<td>3139/5/3 (Node 20, 22), 3139/4/3 (Node 24), 6 cells, <code>npm test</code>; per-step attribution; object-id lab; three probes</td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/13449341/docs/30-design/remedial/rc-15.0.9-integration-record.md">rc-15.0.9-integration-record</a></td>
+</tr>
+<tr>
+<td>015</td>
+<td>2026-09-25</td>
+<td><code>dev</code> <code>4f705217</code></td>
+<td>#8758 <code>ab7b22d6</code> + wip/object-id-crud-fixes-2 <code>e9dbb1fb</code> (local, not pushed); not the release candidate</td>
+<td>tree <code>ea4c4852</code></td>
+<td>3106/0/3, 6 cells; object-id lab; replay; AAPS probe; deleted-reading probe; gate</td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4650c6dc/docs/30-design/remedial/rc-15.0.9-integration-record.md">rc-15.0.9-integration-record</a></td>
+</tr>
+<tr>
+<td>014</td>
+<td>2026-09-25</td>
+<td><code>dev</code> <code>4f705217</code></td>
+<td>#8758 <code>ab7b22d6</code> + wip/object-id-crud-fixes-2 <code>6c3ccce6</code> (local, not pushed); not the release candidate</td>
+<td>tree <code>fd3e5c94</code></td>
+<td>3097/0/3, 6 cells; object-id lab; replay; AAPS probe; gate</td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4cb0f1a0/docs/30-design/remedial/rc-15.0.9-integration-record.md">rc-15.0.9-integration-record</a></td>
+</tr>
+<tr>
+<td>013</td>
+<td>2026-09-25</td>
+<td><code>dev</code> <code>4f705217</code></td>
+<td>#8758 <code>ab7b22d6</code> + wip/object-id-crud-fixes-2 <code>cb7d4110</code> (local, not pushed); not the release candidate</td>
+<td>tree <code>1c3685fe</code></td>
+<td>3094/0/3, 6 cells; object-id lab; replay; AAPS probe; gate</td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/d6399575/docs/30-design/remedial/rc-15.0.9-integration-record.md">rc-15.0.9-integration-record</a></td>
+</tr>
+<tr>
+<td>012</td>
+<td>2026-09-25</td>
+<td><code>dev</code> <code>4f705217</code></td>
+<td>#8758 <code>ab7b22d6</code> + wip/object-id-crud-fixes-2 <code>63dd716c</code> (local, not pushed); not the release candidate</td>
+<td>tree <code>ee10f1b1</code></td>
+<td>3090/0/3, 6 cells; object-id lab; replay; AAPS probe on <code>63dd716c</code> and #8568 <code>de8efff0</code>; gate</td>
+<td>never committed; its results are in this row and in run 013's record, which differs from it only by <code>cb7d4110</code></td>
+</tr>
+<tr>
+<td>011</td>
+<td>2026-09-25</td>
+<td><code>dev</code> <code>4f705217</code></td>
+<td>#8758 <code>ab7b22d6</code></td>
+<td>tree <code>25ab7afc</code></td>
+<td>3066/0/3, 6 cells; <code>dev</code> 2577/0/3; object-id lab; replay</td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a35e7e25/docs/30-design/remedial/rc-15.0.9-integration-record.md">rc-15.0.9-integration-record</a></td>
+</tr>
+<tr>
+<td>010</td>
+<td>2026-09-24</td>
+<td><code>dev</code> <code>f1591069</code></td>
+<td>exact <code>0.1.0</code> pin (#8762), #8754 <code>ef3404fd</code>, #8758 <code>6d120fa2</code></td>
+<td>tree <code>4114f45a</code></td>
+<td>3046/0/3, 6 cells</td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b362302b/docs/30-design/remedial/rc-15.0.9-combined-010-2026-09-24.md">rc-15.0.9-combined-010</a></td>
+</tr>
+<tr>
+<td>59</td>
+<td>2026-09-23</td>
+<td><code>dev</code> <code>ddd9b600</code></td>
+<td>#8754 <code>ef3404fd</code>, #8758 <code>6d120fa2</code></td>
+<td>tree <code>2ce67b27</code></td>
+<td>3028/0/3, 6 cells</td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b362302b/docs/30-design/remedial/rc-15.0.9-combined-59-2026-09-23.md">rc-15.0.9-combined-59</a></td>
+</tr>
+<tr>
+<td>36b</td>
+<td>2026-09-23</td>
+<td><code>dev</code> <code>1f9a9d10</code></td>
+<td>ten units #8748–#8759, including #8758 <code>6d120fa2</code> and the <code>0.1.0-dev.3</code> pin</td>
+<td><code>d087588f</code></td>
+<td>3015/0/3, 6 cells; connector lab</td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b362302b/docs/30-design/remedial/rc-15.0.9-combined-2026-09-23.md">rc-15.0.9-combined</a></td>
+</tr>
+<tr>
+<td>e</td>
+<td>2026-09-23</td>
+<td><code>dev</code> <code>74fc6619</code></td>
+<td>every unit's current head, <code>0.1.0-dev.2</code> pin, #8754's trust-proxy trims</td>
+<td><code>1b1977e0</code></td>
+<td>2534/0/3, 12 cells; break-its; live checks</td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b362302b/docs/30-design/remedial/rc-15.0.9-additions-e-2026-09-23.md">rc-15.0.9-additions-e</a></td>
+</tr>
+<tr>
+<td>d</td>
+<td>2026-09-23</td>
+<td>run c's tip</td>
+<td>BF-90, BF-69</td>
+<td><code>5764156e</code></td>
+<td>2520/0/3, 6 cells; break-its</td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b362302b/docs/30-design/remedial/rc-15.0.9-additions-d-2026-09-23.md">rc-15.0.9-additions-d</a></td>
+</tr>
+<tr>
+<td>c</td>
+<td>2026-09-23</td>
+<td><code>dev</code> <code>74fc6619</code></td>
+<td>eight units, #8748–#8754</td>
+<td><code>b9c9828b</code></td>
+<td>2508/0/3, 6 cells; break-its; count rules live</td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b362302b/docs/30-design/remedial/rc-15.0.9-additions-c-2026-09-23.md">rc-15.0.9-additions-c</a></td>
+</tr>
+<tr>
+<td>a, b</td>
+<td>2026-09-23</td>
+<td><code>dev</code> <code>74fc6619</code></td>
+<td>five units, #8748–#8751 and the <code>0.1.0-dev.1</code> pin</td>
+<td><code>cfa8cb39</code>, <code>865bcba3</code></td>
+<td>2416/0/3, 2421/0/3</td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b362302b/docs/30-design/remedial/rc-15.0.9-additions-2026-09-23.md">rc-15.0.9-additions</a></td>
+</tr>
+<tr>
+<td>bf2</td>
+<td>2026-09-23</td>
+<td><code>dev</code> <code>74fc6619</code></td>
+<td>bf2/ops, bf2/backports, bf2/auth-hardening (<code>29e6430e</code>)</td>
+<td><code>e9a4ef62</code></td>
+<td>2480/0/3, 2 cells</td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b362302b/docs/30-design/remedial/backfix-2-integration-2026-09-23.md">backfix-2-integration</a></td>
+</tr>
+</tbody>
+</table>
+<p>To read a record locally: <code>git show b362302b:docs/30-design/remedial/&lt;file&gt;</code>, or for run 011
+<code>git show a35e7e25:docs/30-design/remedial/rc-15.0.9-integration-record.md</code>, or for run 013
+<code>git show d6399575:docs/30-design/remedial/rc-15.0.9-integration-record.md</code>, or for run 014
+<code>git show 4cb0f1a0:docs/30-design/remedial/rc-15.0.9-integration-record.md</code>, or for run 015
+<code>git show 4650c6dc:docs/30-design/remedial/rc-15.0.9-integration-record.md</code>, or for run 016
+<code>git show 13449341:docs/30-design/remedial/rc-15.0.9-integration-record.md</code>, or for run 017
+<code>git show e2a3d8c1:docs/30-design/remedial/rc-15.0.9-integration-record.md</code>, or for run 018
+<code>git show 8246a232:docs/30-design/remedial/rc-15.0.9-integration-record.md</code>, or for run 019
+<code>git show 04a873ce:docs/30-design/remedial/rc-15.0.9-integration-record.md</code>.</p>
+<p><strong>How each unit adds to the suite count</strong>, measured one step at a time with the sorted titles
+compared:</p>
+<table>
+<thead>
+<tr>
+<th>step</th>
+<th style="text-align: right;">tests added</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>count=0 answers <code>[]</code> (#8748)</td>
+<td style="text-align: right;">+23 (26 added, 3 renamed)</td>
+</tr>
+<tr>
+<td>qs 6.16 (#8749), MongoDB floor docs (#8750), connector pins</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>backports (#8751)</td>
+<td style="text-align: right;">+12</td>
+</tr>
+<tr>
+<td>ops (#8753)</td>
+<td style="text-align: right;">+6</td>
+</tr>
+<tr>
+<td>auth-hardening (#8754, including subject-edit and <code>TRUST_PROXY</code> hop counts)</td>
+<td style="text-align: right;">+95</td>
+</tr>
+<tr>
+<td>alarm with no reading (#8755)</td>
+<td style="text-align: right;">+4</td>
+</tr>
+<tr>
+<td>quick-pick rebuild (#8756)</td>
+<td style="text-align: right;">+8</td>
+</tr>
+<tr>
+<td>mmconnect deprecation warning (#8757)</td>
+<td style="text-align: right;">+1</td>
+</tr>
+<tr>
+<td>#8760</td>
+<td style="text-align: right;">+13</td>
+</tr>
+<tr>
+<td>#8761</td>
+<td style="text-align: right;">+18</td>
+</tr>
+<tr>
+<td>object-id CRUD (#8758) at <code>ab7b22d6</code></td>
+<td style="text-align: right;">+489</td>
+</tr>
+<tr>
+<td>#8758 fixes BF-115, BF-116, BF-117 at <code>63dd716c</code></td>
+<td style="text-align: right;">+24 (35 added, 11 renamed)</td>
+</tr>
+<tr>
+<td>#8758 fix narrowing and <code>{$oid}</code> (BF-117, BF-115) at <code>cb7d4110</code></td>
+<td style="text-align: right;">+4</td>
+</tr>
+<tr>
+<td>#8758 treatments batch fix (BF-130) at <code>6c3ccce6</code></td>
+<td style="text-align: right;">+3</td>
+</tr>
+<tr>
+<td>#8758 cache removal on delete by <code>_id</code> (BF-131) at <code>e9dbb1fb</code></td>
+<td style="text-align: right;">+9</td>
+</tr>
+<tr>
+<td>#8568 (BF-114) at <code>ae4dc2f7</code>, on the merge (run 016)</td>
+<td style="text-align: right;">+20</td>
+</tr>
+<tr>
+<td>#8419 at <code>b1c23e74</code>, on the merge (run 016)</td>
+<td style="text-align: right;">+6, plus one after-all hook that fails on Node 20/22</td>
+</tr>
+<tr>
+<td>#8730 at <code>f99c0e54</code>, on the merge (run 016)</td>
+<td style="text-align: right;">0; 4 existing <code>language</code> tests fail</td>
+</tr>
+<tr>
+<td>#8568 follow-up <code>1fd09446</code> (run 017)</td>
+<td style="text-align: right;">+15</td>
+</tr>
+<tr>
+<td>#8768 clock stale when offline, BF-120 (run 017)</td>
+<td style="text-align: right;">+5</td>
+</tr>
+<tr>
+<td>#8769 auth subject without a name, BF-126 (run 017)</td>
+<td style="text-align: right;">+4</td>
+</tr>
+<tr>
+<td>#8419 <code>8cffc05e</code>, hook fix (run 017)</td>
+<td style="text-align: right;">0; the after-all hook passes</td>
+</tr>
+<tr>
+<td>#8770 Loop APNs shutdown, BF-134 (run 017)</td>
+<td style="text-align: right;">+3</td>
+</tr>
+<tr>
+<td>#8771 BF-106 (run 018, dry-run count on the merge)</td>
+<td style="text-align: right;">+18</td>
+</tr>
+<tr>
+<td>#8772 BF-129 (run 018)</td>
+<td style="text-align: right;">+11</td>
+</tr>
+<tr>
+<td>#8773 BF-125 (run 018)</td>
+<td style="text-align: right;">+11</td>
+</tr>
+<tr>
+<td>#8774 BF-123 (run 018)</td>
+<td style="text-align: right;">+35</td>
+</tr>
+<tr>
+<td>#8775 BF-122, BF-135 (run 018)</td>
+<td style="text-align: right;">+30</td>
+</tr>
+<tr>
+<td>#8776 BF-136 (run 018)</td>
+<td style="text-align: right;">+16</td>
+</tr>
+<tr>
+<td>#8777 BF-128, BF-139, BF-138 (run 018)</td>
+<td style="text-align: right;">+46</td>
+</tr>
+<tr>
+<td>#8779 BF-80 (run 018)</td>
+<td style="text-align: right;">+18</td>
+</tr>
+<tr>
+<td>#8778 BF-140 (run 018)</td>
+<td style="text-align: right;">+22 (31 added, 9 renamed)</td>
+</tr>
+<tr>
+<td>#8780 BF-121 (run 018)</td>
+<td style="text-align: right;">+19</td>
+</tr>
+<tr>
+<td>#8781 BF-141, BF-143, BF-144 (run 019, dry-run count on the merge)</td>
+<td style="text-align: right;">+32</td>
+</tr>
+<tr>
+<td>#8783 BF-142 (run 019)</td>
+<td style="text-align: right;">+30</td>
+</tr>
+<tr>
+<td>#8784 BF-146, BF-133 (run 020, dry-run count on the merge)</td>
+<td style="text-align: right;">+15</td>
+</tr>
+</tbody>
+</table>
+<h2 id="method">Method<a class="headerlink" href="#method" title="Permanent link">&para;</a></h2>
+<p>Every run follows these rules. A run that departs from one says so in its own section.</p>
+<ul>
+<li><strong>Candidate by SHA.</strong> The candidate is built from <code>dev</code> by SHA, one <code>git merge --no-ff</code> per unit,
+  and never pushed. Each unit's head is checked against its PR head before merging and again at the
+  end of the run.</li>
+<li><strong>One mongod per cell.</strong> Each cell gets a fresh <code>mongo:&lt;ver&gt;</code> container with
+  <code>--ulimit nofile=64000:64000</code> (the #8758 suite peaks near 1130 open files). The server version is
+  read from the container before the cell runs. The database is dropped before every run.</li>
+<li><strong>Rebuild the bundle after every merge.</strong> The client tests run against the production webpack
+  bundle, so a stale bundle reports an already-fixed defect.</li>
+<li><strong>A cell that prints no mocha totals counts as a failure.</strong></li>
+<li><strong>Additivity by title.</strong> At each step, the sorted list of passing test titles is compared with the
+  previous step's, leaving out lines that carry a generated ObjectId. A step may add only its own
+  unit's titles.</li>
+<li><strong>Break-its count only when the failures show the defect.</strong> A break reverts or edits one unit's
+  fix, runs that unit's tests, and restores. <code>git status</code> must be clean afterwards, and the tests must
+  pass again.</li>
+<li><strong>Harness red control.</strong> The same runner is pointed at a tree or database set up to fail, to show
+  that a green result depends on what it claims to test.</li>
+</ul>
+<h2 id="what-the-current-run-does-not-cover">What the current run does not cover<a class="headerlink" href="#what-the-current-run-does-not-cover" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>The merges after run 020</strong> (#8785 to #8795) are covered by their own checks, listed under
+  <a href="#after-run-020">After run 020</a>, and the candidate tree by one full-suite cell, not by a full
+  six-cell run. That run is owed on the final head (after BF-155's fix merges).</li>
+<li><strong>The lab's 24 to 72 h real-time soak was not run.</strong> Real sites running the candidate stand in for
+  it (maintainer, 2026-09-30). The reports recorded are those under "Where the candidate stands" at the top of this
+  record; no other data from those sites is in it. The compressed A/B soak is under <a href="#soak-toolslabrc-soak">Soak</a>.</li>
+<li><strong><code>npm audit</code>'s 17 findings on <code>ce30a94d</code> were not triaged in this run.</strong> The triage (2026-09-27)
+  and the count on <code>25fc41d9</code> (10, 2 high, the <code>node-forge</code> advisory) are in
+  <a href="../../../releases/cgm-remote-monitor-15.0.9/contents.html#npm-audit-and-dependabot-triage">contents</a>.</li>
+<li><strong>Browser hand checks.</strong> The browser walk ran on <code>ff93fa94</code> (2026-09-26,
+  <a href="../../60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.html">browser record</a>); the gate on
+  <code>a143d507</code> names 16 paths, unchanged by #8795 (see <a href="#browser-hand-check-gate-on-a143d507">After run 020</a>). Still owed:
+  a remote bolus; LoopCaregiver from its own app; clock views; the pump pill; alarm level labels; the
+  Bolus Wizard Preview pill and reports during a percentage profile switch; the Day to Day report
+  (#8788, smoke checklist section 3, "Day to Day events with a duration past midnight"); the Food Editor on a touch screen (#8790, smoke checklist
+  section 5). #8784 changes the page data for late or edited v3 treatments (they now carry <code>mills</code>,
+  so the page's own IOB and COB count them); that was measured in the page data sent over the socket
+  by #8784's test, not in a browser.</li>
+<li><strong>BF-146 beyond the server's in-memory data</strong> was not measured: chart placement (the renderer
+  uses a record's own <code>date</code> before <code>mills</code>), temporary basals from v3 in the basal display (the
+  soak saw a v3 temp basal become <code>basal.current.treatment</code> once per run, nothing more), and
+  reports (they read MongoDB, not the cache).</li>
+<li><strong>Method differences from runs 011–015:</strong></li>
+<li>The six cells ran <code>npm test</code>, not CI's <code>test-ci</code>. The <code>test-ci</code> form and <code>test:core</code> ran in
+    one cell only.</li>
+<li>The consumer replay, the object-id lab and a harness red control were not run on this tree.</li>
+<li>Their latest results are under
+    <a href="#evidence-carried-from-earlier-runs">Evidence carried from earlier runs</a>.</li>
+<li><strong>The soak harness has two limits shown by R34 and R39.</strong> Page loads have no expected-difference
+  rule, and "deleted records shown" counts only hard deletes, so an arm that sends soft-deleted
+  records to a page is not flagged. The BF-135 and BF-122 entries, and three of run 020's four, match
+  positional or truncated signatures; they were checked against dumped replies or captured values
+  instead (see Soak). <code>nightguard.properties</code> is not dumped, so its entries rest on the analyser's
+  captured values.</li>
+<li><strong>No MongoDB 5.0 or 6.0 cell on this tree.</strong> CI on <code>f1e8398b</code> covered 4.4, 5.0 and 6.0 for #8758
+  alone.</li>
+<li><strong>Break-its of the other merged fixes on the integrated tree</strong> were not run; each fix's own branch
+  has them (see the register). #8784's ran on this tree.</li>
+<li><strong>The deleted-reading probe covers entries only.</strong></li>
+<li><strong>No connector lab run on this tree.</strong> The last one ran on <code>d087588f</code>.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

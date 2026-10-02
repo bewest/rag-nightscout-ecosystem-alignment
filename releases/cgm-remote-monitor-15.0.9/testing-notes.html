@@ -1,0 +1,2595 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/releases/cgm-remote-monitor-15.0.9/testing-notes.html">
+      
+      
+        <link rel="prev" href="release-notes.html">
+      
+      
+        <link rel="next" href="verification-record.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Nightscout 15.0.9 — testing notes for the release candidate - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#nightscout-1509--testing-notes-for-the-release-candidate" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Nightscout 15.0.9 — testing notes for the release candidate
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../docs/00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Releases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VERIFICATION-RECORDS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Verification records
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../_template/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _template/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor-15.0.9/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    cgm-remote-monitor-15.0.9/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="contents.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor 15.0.9 — contents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="decisions.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor 15.0.9 — decisions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="release-notes.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout 15.0.9 — release notes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout 15.0.9 — testing notes for the release candidate
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="testing-notes.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout 15.0.9 — testing notes for the release candidate
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#where-testing-stands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where testing stands
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#words-used-here" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Words used here
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-you-start-everyone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before you start (everyone)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-the-test-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting the test build
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="verification-record.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Verification record
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nightscout-connect-v0.0.14/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-connect-v0.0.14/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../docs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#where-testing-stands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where testing stands
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#words-used-here" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Words used here
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-you-start-everyone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before you start (everyone)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-the-test-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting the test build
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="nightscout-1509--testing-notes-for-the-release-candidate">Nightscout 15.0.9 — testing notes for the release candidate<a class="headerlink" href="#nightscout-1509--testing-notes-for-the-release-candidate" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-10-02 at <code>a48cdbe6</code>.</em></p>
+<p><strong>DRAFT — prepared for maintainer review before it is shared.</strong> Kept current as reports arrive and
+as the test build changes. Last updated 2026-10-02.</p>
+<p><em>For people who would like to help test the next Nightscout release before it comes out. Part 1 is
+for people who </em><em>use</em><em> a Nightscout site, for themselves or a family member. Part 2 is for people who
+</em><em>run</em><em> a site (set up its hosting and settings) or write apps and scripts that talk to it. Nightscout
+is a secondary display, and this is test software. Nothing here is medical advice or advice about
+insulin doses. For changes to your own or your family member's therapy settings, talk to your care
+team.</em></p>
+<h2 id="where-testing-stands">Where testing stands<a class="headerlink" href="#where-testing-stands" title="Permanent link">&para;</a></h2>
+<ul>
+<li>As of 2026-09-29, one Loop, one Trio and one AndroidAPS user had each run the test build of that
+  time (<code>7000eb18</code>) for about two days, with no errors and no changes in behaviour.</li>
+<li>On 2026-10-02 the maintainer reported that AndroidAPS, Trio and Loop users running the <code>dev</code>
+  branch had reported stable, unsurprising behaviour all week. These reports are informal; how many
+  sites and for how long is not recorded.</li>
+<li>Nobody has yet reported trying the unusual cases on purpose. That is what these notes ask for.</li>
+</ul>
+<p>The release notes list what changed:
+<a href="release-notes.html">release notes</a>. These notes pick out the changes that need someone with a
+particular setup to try them.</p>
+<h2 id="words-used-here">Words used here<a class="headerlink" href="#words-used-here" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>word</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>site</strong></td>
+<td>your Nightscout web page and the database behind it</td>
+</tr>
+<tr>
+<td><strong>uploader</strong></td>
+<td>anything that sends data to your site: Loop, Trio, AndroidAPS (AAPS), xDrip+, a CGM connector</td>
+</tr>
+<tr>
+<td><strong>follower</strong></td>
+<td>anything that only watches: a parent's phone, LoopFollow, a watch face, a report tool</td>
+</tr>
+<tr>
+<td><strong>careportal</strong></td>
+<td>your site's own form for entering treatments (the <strong>+</strong> button)</td>
+</tr>
+<tr>
+<td><strong>token</strong></td>
+<td>a limited-access login made on your site's admin page ("Admin tools"), for example read-only for a follower. Each one belongs to a <strong>user</strong> there and gets that user's <strong>roles</strong> (for example <code>readable</code> or <code>admin</code>)</td>
+</tr>
+<tr>
+<td><strong>API secret</strong></td>
+<td>your site's master password (<code>API_SECRET</code>)</td>
+</tr>
+<tr>
+<td><strong>setting</strong></td>
+<td>a value your site is started with, such as <code>DISPLAY_UNITS=mmol</code>. Where you change them depends on where your site is hosted</td>
+</tr>
+<tr>
+<td><strong>server log</strong></td>
+<td>the messages your site writes while it runs. Your hosting service has a page or command to show them</td>
+</tr>
+<tr>
+<td><strong>IOB / COB</strong></td>
+<td>insulin on board / carbs on board</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="before-you-start-everyone">Before you start (everyone)<a class="headerlink" href="#before-you-start-everyone" title="Permanent link">&para;</a></h2>
+<p><strong>Stay safe while testing.</strong></p>
+<ul>
+<li><strong>Have a second way to see your readings</strong> the whole time you test: your CGM app, your pump or
+  your meter. <strong>Keep the alarms on your CGM, pump and phone app switched on.</strong> Do not rely on the
+  test build to warn you.</li>
+<li><strong>Do not change any therapy to test something.</strong> Where a check below needs a situation such as a
+  suspended pump or an overdue reservoir, check it when that happens anyway. If you want to provoke
+  it, use a separate test site with a simulated pump and CGM (Loop, Trio and AAPS each have one),
+  not the site and phone that deliver your insulin.</li>
+<li><strong>Remote commands send real treatments.</strong> Only send a remote bolus or carbs you would send anyway,
+  or send them to a test phone with a simulated pump.</li>
+<li><strong>Back up your database before you switch</strong> to the test build. Going back to 15.0.8 has not been
+  tested as its own step; if you do go back, tell us how it went.</li>
+</ul>
+<p><strong>Keep your data private when you report.</strong></p>
+<ul>
+<li><strong>Never post</strong> your site's address, your API secret, tokens, or screenshots that show names, dates
+  of birth or other personal details. Crop or blur them first. Glucose values in a screenshot are
+  fine only if you are comfortable sharing them.</li>
+<li>Tell us what happened in words. If someone asks for a log, remove anything that looks like a
+  password, token or web address first.</li>
+</ul>
+<p><strong>What to put in a report</strong> (copy this list):</p>
+<ol>
+<li>What you did, what you expected, and what you saw.</li>
+<li>Your apps and their versions (for example "Loop 3.x", "AAPS 3.3.x", "xDrip+ nightly of …").</li>
+<li>Whether your site shows <strong>mg/dL or mmol/L</strong>.</li>
+<li>Whether your site needs a login to view (<code>AUTH_DEFAULT_ROLES=denied</code>) or not (<code>readable</code>, the usual).</li>
+<li>Where your site is hosted, and your database's MongoDB version if you know it.</li>
+<li>For each app that uses a token: <strong>which role</strong> that token has (<code>readable</code>, <code>careportal</code>, <code>admin</code>…).</li>
+<li>Whether the same thing happens on 15.0.8, if you can tell.</li>
+</ol>
+<p><strong>Where to report:</strong> <em>[maintainer to fill in: the channel or issue template for 15.0.9 reports]</em>.
+"It worked" reports are useful too. Say which check you did.</p>
+<p><strong>Already known — please don't report these again</strong>, but do tell us if one looks worse than
+described: the <a href="release-notes.html#known-issues--not-fixed-in-this-release">known issues</a> in the release
+notes.</p>
+<h2 id="getting-the-test-build">Getting the test build<a class="headerlink" href="#getting-the-test-build" title="Permanent link">&para;</a></h2>
+<p>The test build is the <code>dev</code> branch of <code>nightscout/cgm-remote-monitor</code> at commit <strong><code>25fc41d9</code></strong>
+(full: <code>25fc41d9e39bbdd7fbe5f283da70ccc604daa26e</code>, 2026-10-02). Its version reads <strong>15.0.9</strong>. Since
+the earlier test build <code>7000eb18</code> it adds:</p>
+<ul>
+<li>the Day to Day report shows events that run past midnight on both days (see 1.7);</li>
+<li>the Food Editor's lists scroll by touch on phones (see 1.8);</li>
+<li>xDrip4iOS can delete readings from your site in bulk (see 2.4);</li>
+<li>error pages and error replies no longer show internal details (see 2.6);</li>
+<li>a fix that stops one kind of oversized request to two little-used API addresses from making the
+  server stop responding for seconds; it is now refused (nothing to test by hand);</li>
+<li>updated versions of several software libraries it uses, with no change to what you see.</li>
+</ul>
+<p>If you are running <code>7000eb18</code> or a later <code>dev</code> build, keep going: your reports still count.</p>
+<ul>
+<li><strong>Docker:</strong> no image for <code>25fc41d9</code> was on Docker Hub when these notes were updated
+  (2026-10-02). <code>latest_dev</code> means "the newest <code>dev</code>" and moves when <code>dev</code> changes, so check which
+  commit it is before relying on it.</li>
+<li><strong>Deploying from your own copy of the code</strong> (Heroku, Railway, Northflank, Render, a VPS and
+  similar): update your copy's <code>dev</code> branch from <code>nightscout/cgm-remote-monitor</code> and deploy that
+  branch. Check the commit is <code>25fc41d9</code>.</li>
+<li><strong>A hosting service that runs Nightscout for you:</strong> ask them whether they offer the test build.</li>
+</ul>
+<p>One more fix is planned for 15.0.9: a problem reading from the database could stop Nightscout
+until it was restarted, and the fix answers that request with an error and keeps running. If <code>dev</code> moves to a new commit before the
+release, these notes will name it.</p>
+<hr />
+<h1 id="part-1-for-people-who-use-a-site">Part 1: for people who use a site<a class="headerlink" href="#part-1-for-people-who-use-a-site" title="Permanent link">&para;</a></h1>
+<p>Pick the checks that match your setup. Every check is useful on its own, and most take only a look.</p>
+<h2 id="11-everyone-keep-it-running-for-three-days-or-more">1.1 Everyone: keep it running for three days or more<a class="headerlink" href="#11-everyone-keep-it-running-for-three-days-or-more" title="Permanent link">&para;</a></h2>
+<p>Most of the reports so far cover two quiet days. What we most need now is <strong>three days or more that
+include ordinary disruptions</strong>. Note down when each of these happened and whether your site kept up:</p>
+<ul>
+<li>a sensor change, and a cannula or reservoir change;</li>
+<li>your phone restarting, or the app being force-closed and reopened;</li>
+<li>a period without signal (a flight, a basement, a phone left at home), and catching up afterwards;</li>
+<li>a caregiver or follower watching from another phone the whole time;</li>
+<li>editing or deleting a wrong entry, on the site and in your app.</li>
+</ul>
+<p><strong>Working looks like:</strong> readings keep arriving; after a gap the missing readings and treatments fill
+in; the IOB and COB your site shows agree with your app as closely as they did on 15.0.8; nothing
+appears twice; followers keep updating.</p>
+<h2 id="12-sites-that-show-mmoll">1.2 Sites that show mmol/L<a class="headerlink" href="#12-sites-that-show-mmoll" title="Permanent link">&para;</a></h2>
+<p><strong>This is the most important check for anyone on mmol/L.</strong> 15.0.9 reads each alarm level on its own,
+so on some sites <strong>low alarms start working</strong> where they never did. See
+<a href="release-notes.html#low-alarms-on-sites-that-use-mmoll">Low alarms on sites that use mmol/L</a>.</p>
+<ol>
+<li><strong>Before switching,</strong> write down the alarm levels you expect (urgent high, top and bottom of your
+   target range, urgent low), and whether each is set on your site or left at the default.</li>
+<li><strong>After switching,</strong> look at the target lines on your chart and the alarm levels your site shows.
+   Are they the numbers you meant?</li>
+<li>If you can see your server log, look for lines like
+   <code>Threshold bgTargetTop 8.5 taken as mmol/L, converted to 153 mg/dl</code>, one for each level.</li>
+<li>Over the next days: did a low alarm go off that never used to, or did "Warning HIGH" on in-range
+   readings stop? Either can be the fix. Tell us which, and tell whoever receives your alerts.</li>
+</ol>
+<h2 id="13-androidaps">1.3 AndroidAPS<a class="headerlink" href="#13-androidaps" title="Permanent link">&para;</a></h2>
+<p>See <a href="release-notes.html#androidaps-the-careportal-and-caregivers">AndroidAPS, the careportal and caregivers</a>.</p>
+<ul>
+<li><strong>Silencing an alarm from AAPS.</strong> In 15.0.9 an app can silence a Nightscout alarm only if its token's
+  user has the <code>admin</code> role. With any other role, the silence does nothing, and <strong>the app is not
+  told</strong>. When a Nightscout alarm next goes off on its own, silence it from AAPS and check whether it
+  also goes quiet on your site. <strong>Tell us your AAPS token's role and what happened.</strong> Nobody has
+  tested this from the phone yet.</li>
+<li><strong>Careportal and caregiver entries.</strong> Carbs or insulin entered in the careportal, or by a caregiver,
+  should reach the phone. An edit made on the site should show up in AAPS.</li>
+<li><strong>No meal twice.</strong> Check the treatment list on the phone and on the site after a day that included
+  a gap in signal.</li>
+<li><strong>Late entries.</strong> An entry that reaches the site late (after being offline), or one you edit to an
+  earlier time, should count in IOB and COB on the site, the same as on the phone.</li>
+<li><strong>Percentage Profile Switch.</strong> During one you would make anyway, the basal, ISF and carb ratio on
+  the site should match the phone. Also look at the <strong>Bolus Wizard Preview</strong> pill and
+  <strong>Reports</strong>; neither has been checked in a browser during a switch yet.</li>
+<li><strong>Loop turned off and back on.</strong> If you turn the loop off in AAPS and later back on, Nightscout's
+  "not looping" and pump alerts (if you use them) should work again afterwards.</li>
+</ul>
+<h2 id="14-loop-trio-and-loopcaregiver-remote-commands">1.4 Loop, Trio and LoopCaregiver: remote commands<a class="headerlink" href="#14-loop-trio-and-loopcaregiver-remote-commands" title="Permanent link">&para;</a></h2>
+<p>Remote overrides, remote carbs and cancelling an override from the careportal have been checked. Still
+to check:</p>
+<ul>
+<li><strong>A remote bolus</strong>, from the careportal and from the <strong>LoopCaregiver app itself</strong> (so far only
+  scripted). Follow the safety note above. <strong>Working looks like:</strong> the phone in use receives it once,
+  and the site records it.</li>
+<li><strong>After changing phones or reinstalling Loop:</strong> for up to about a minute a remote command can still
+  go to the old phone (a known issue). Tell us if you see it take longer.</li>
+</ul>
+<h2 id="15-followers-clocks-and-watch-faces">1.5 Followers, clocks and watch faces<a class="headerlink" href="#15-followers-clocks-and-watch-faces" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Clock views</strong> (menu → Clock, or <code>/clock/…</code>): they should show when their reading is old, including
+  after the page loses its connection. If your site needs a login, a clock opened from the menu can
+  be blank (a known issue); opening it directly with a token in the address should work.</li>
+<li><strong>Watch faces</strong> that read your site: the change since the last reading (delta) and any bolus
+  estimate should look right <strong>without</strong> any adjustment. If you had set up a watch face to multiply
+  or divide by 18, undo that and tell us whether the numbers are right.</li>
+<li><strong>Sites that need a login</strong> (<code>AUTH_DEFAULT_ROLES=denied</code>): followers such as LoopFollow and signed-in
+  pages should keep receiving live updates and alarms.</li>
+</ul>
+<h2 id="16-alarms-that-now-reach-your-phone">1.6 Alarms that now reach your phone<a class="headerlink" href="#16-alarms-that-now-reach-your-phone" title="Permanent link">&para;</a></h2>
+<p>These alerts could never fire before. Check them when the situation happens anyway.</p>
+<ul>
+<li><strong>Insulin age</strong> (the IAGE box): past your urgent level (72 hours unless you changed <code>IAGE_URGENT</code>)
+  the box should show <strong>URGENT</strong>. With <code>IAGE_ENABLE_ALERTS</code> on, one notification is sent when the
+  reservoir reaches that age, and it does not repeat.</li>
+<li><strong>Pump suspended</strong>: with <code>PUMP_ENABLE_ALERTS</code> and <code>PUMP_WARN_ON_SUSPEND</code> on, while your pump is
+  suspended the pump box on the page should turn the warning colour and a "Pump Suspended" warning
+  should arrive. Tell us your app and pump if the box says "suspended" but no warning arrives.</li>
+<li><strong>IFTTT</strong> on a site not set to English: applets named <code>ns-warning</code>, <code>ns-urgent</code> and so on should now
+  fire. If you had renamed them to translated names, rename them back.</li>
+</ul>
+<h2 id="17-reports">1.7 Reports<a class="headerlink" href="#17-reports" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Reports you use at clinic visits (Day to day, Daily stats, Distribution, Treatments): <strong>some numbers
+  are expected to change</strong>, because filters now return the right records. Tell us if a number
+  changed in a way you can't explain, with the report name and date range, not the data itself.</li>
+<li>The treatments report can now be filtered by treatment type.</li>
+<li><strong>Day to day</strong> (builds from <code>3014f883</code> on): an event that lasts a while and runs past midnight, such
+  as an exercise at 22:00 for four hours, should show on both days and stay inside each day's chart.
+  A temporary target cancelled early is still drawn for the full time it was set for (a known issue).</li>
+</ul>
+<h2 id="18-food-editor-on-a-phone-or-tablet">1.8 Food Editor on a phone or tablet<a class="headerlink" href="#18-food-editor-on-a-phone-or-tablet" title="Permanent link">&para;</a></h2>
+<p>The Food Editor (menu → Food Editor, or <code>/food</code> after your site's address; the menu item shows when
+you are signed in with admin access) keeps your saved foods and <strong>quick picks</strong> (groups of foods you
+can pick in one go in the bolus calculator). On 15.0.8 its lists
+could not be scrolled with a finger on a touch screen. With some foods and quick picks saved:</p>
+<ul>
+<li>On a phone or tablet, swipe up on a food in the list. <strong>Working looks like:</strong> the list scrolls to
+  the foods below.</li>
+<li>Swipe up on a quick pick. <strong>Working looks like:</strong> the page scrolls.</li>
+<li>On a computer with a mouse: drag a food onto a quick pick (the food is added to it), and drag a
+  quick pick by the empty end of its title line above another (the order changes). This should work
+  as it did on 15.0.8.</li>
+</ul>
+<p>Tell us your phone or tablet and browser if a swipe does not scroll.</p>
+<hr />
+<h1 id="part-2-for-people-who-run-a-site-or-write-tools-that-use-it">Part 2: for people who run a site, or write tools that use it<a class="headerlink" href="#part-2-for-people-who-run-a-site-or-write-tools-that-use-it" title="Permanent link">&para;</a></h1>
+<p>Contributor detail on what changed is in <a href="contents.html">contents</a> and the
+<a href="../../docs/60-research/remedial/consumer-impact-15.0.9-2026-09-23.html">consumer-impact survey</a>. The
+checks below are the ones only a real deployment or a real client can answer.</p>
+<h2 id="21-trust_proxy-on-your-actual-host">2.1 <code>TRUST_PROXY</code> on your actual host<a class="headerlink" href="#21-trust_proxy-on-your-actual-host" title="Permanent link">&para;</a></h2>
+<p><code>TRUST_PROXY</code> is new and optional; unset behaves as 15.0.8. See
+<a href="release-notes.html#the-new-trust_proxy-setting">The new <code>TRUST_PROXY</code> setting</a>. We would like one
+report per hosting setup: Heroku, Railway, Northflank, Render, Fly, Azure App Service, a VPS behind
+nginx or Caddy, Cloudflare in front of any of these, and hosted Nightscout services.</p>
+<ol>
+<li>Start with the setting unset. The server log should say at startup that the failed-login delay does
+   not protect against guessing.</li>
+<li>Set the value you think is right (usually a number of proxies, such as <code>1</code>).</li>
+<li><strong>Working looks like:</strong> the site loads over https with no redirect loop; the startup warning is
+   gone; one deliberately wrong password sent from a phone on mobile data shows <strong>the phone's
+   address</strong> in the admin page's "Failed authentication" notice.</li>
+<li><strong>If the site stops loading, remove the setting</strong> and report the host and the value you tried.</li>
+</ol>
+<p>Report: host, value, and whether each of the three results in step 3 held. Don't post the address you
+saw, only whether it was the phone's, the proxy's or something else.</p>
+<h2 id="22-sites-that-need-a-login-auth_default_rolesdenied">2.2 Sites that need a login (<code>AUTH_DEFAULT_ROLES=denied</code>)<a class="headerlink" href="#22-sites-that-need-a-login-auth_default_rolesdenied" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Signed-in pages and followers get live updates and alarms; a page that is not signed in gets none.</li>
+<li>After an uploader with an old password fails to sign in from the same network, a signed-in page may
+  start receiving alarms only after the failed-login delay. Tell us if that delay looks long enough to
+  matter.</li>
+</ul>
+<h2 id="23-tokens-and-roles-used-by-apps">2.3 Tokens and roles used by apps<a class="headerlink" href="#23-tokens-and-roles-used-by-apps" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Silencing alarms needs <code>admin</code>.</strong> For each app on your site that silences alarms, tell us its
+  token's role, and whether that app's setup guide tells people to use that role. This decides how
+  many people the change reaches; it is not in any code we could read.</li>
+<li><strong>Users edited on the admin page</strong> keep their notes and creation date. Other fields a tool stored on
+  a user are dropped the next time that user is saved. Tell us if a tool you use stored its own fields
+  there.</li>
+</ul>
+<h2 id="24-clients-we-have-no-field-evidence-for">2.4 Clients we have no field evidence for<a class="headerlink" href="#24-clients-we-have-no-field-evidence-for" title="Permanent link">&para;</a></h2>
+<p>The replay lab reproduced these, but no one has run the real thing against the test build yet.</p>
+<table>
+<thead>
+<tr>
+<th>client</th>
+<th>what to check</th>
+<th>working looks like</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>OpenAPS / oref0 rig</strong></td>
+<td>the rig's logs during normal looping</td>
+<td>no <code>400 Bad count</code>; the rig does not re-upload its last 24 h of treatments on every loop; the site's server log shows one <code>API v1: … (logged once)</code> deprecation line</td>
+</tr>
+<tr>
+<td><strong>GluPredKit</strong></td>
+<td>building a dataset over a date range</td>
+<td>entries, treatments and profiles come back, not empty lists; one <code>API v1: … (logged once)</code> line</td>
+</tr>
+<tr>
+<td><strong>nightscout-reporter</strong> (the current app), <strong>Sugarmate</strong>, <strong>python-nightscout</strong>, home-made scripts, spreadsheets</td>
+<td>whatever you use them for</td>
+<td>same results as on 15.0.8; any <code>Bad count</code> or "unsupported operator" error is from the <a href="release-notes.html#corrections-requests-answered-differently">corrections</a>: report the tool, its version and the request's shape (not its data)</td>
+</tr>
+<tr>
+<td><strong>xDrip+, xDrip4iOS, Loop, tconnectsync</strong> on a site with records from 15.0.6 or earlier, or copied from another site</td>
+<td>edit and delete an old record from the app</td>
+<td>the record updates in place or is deleted, with no second copy</td>
+</tr>
+<tr>
+<td><strong>Bulk-delete tools</strong></td>
+<td>a delete by a list of more than 20 ids</td>
+<td>on 15.0.8 this failed and deleted nothing; on 15.0.9 it deletes every match. Check that is what you meant</td>
+</tr>
+<tr>
+<td><strong>xDrip4iOS</strong> (build <code>50bc1084</code> or later)</td>
+<td>readings xDrip4iOS deletes from your site in bulk</td>
+<td>the readings are removed from the site. On 15.0.8 these deletes answered with a server error and removed nothing; deletes of one reading or of a time range already worked</td>
+</tr>
+</tbody>
+</table>
+<h2 id="25-setup-changes">2.5 Setup changes<a class="headerlink" href="#25-setup-changes" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Docker Compose</strong> with the bundled <code>docker-compose.yml</code> or a copy: MongoDB should start and stay up
+  (the file now raises its open-files limit). See
+  <a href="release-notes.html#if-you-run-nightscout-with-docker-compose">If you run Nightscout with Docker Compose</a>.</li>
+<li><strong><code>MMCONNECT_</code> or <code>BRIDGE_</code> settings:</strong> move to the connector's <code>CONNECT_*</code> settings and check that
+  readings arrive through the connector. See
+  <a href="release-notes.html#the-old-minimed-and-dexcom-connections-are-being-retired">The old MiniMed and Dexcom connections are being retired</a>.</li>
+<li><strong>The built-in CGM connector</strong> (Dexcom Share, LibreLinkUp, CareLink, Glooko): readings keep arriving
+  over several days, including after the vendor app logs you out or you change your CGM account
+  password.</li>
+<li><strong>MongoDB versions:</strong> tell us your database's version (4.4, 5.0, 6.0, 7.0, or a hosted service). 4.4
+  still works but is deprecated.</li>
+<li><strong>Node.js 20, 22 or 24:</strong> tell us which one your host runs.</li>
+</ul>
+<h2 id="26-logs-worth-sending-with-secrets-removed">2.6 Logs worth sending (with secrets removed)<a class="headerlink" href="#26-logs-worth-sending-with-secrets-removed" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Anything logged at startup that you did not see on 15.0.8.</li>
+<li><code>API v1: … (logged once)</code> deprecation lines: which one, and which client you think sent it.</li>
+<li>Any line that mentions a refused alarm silence, a refused filter condition, or <code>Bad count</code>.</li>
+<li>Any error followed by the site restarting.</li>
+<li><strong>Error pages and error replies</strong> now give only the status and a short message, unless the site
+  runs with <code>NODE_ENV=development</code>; the full error is still written to the server log. If you used to
+  read errors in the browser or in a tool's output, read the server log instead. Tell us if an error
+  you need to see no longer reaches the log.</li>
+</ul>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

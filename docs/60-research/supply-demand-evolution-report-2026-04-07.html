@@ -1,0 +1,8904 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/60-research/supply-demand-evolution-report-2026-04-07.html">
+      
+      
+        <link rel="prev" href="supply-demand-decomposition-report-2026-04-20.html">
+      
+      
+        <link rel="next" href="unexplained_variance_report_2026-04-22.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>From PK Values to Supply-Demand: The Physics of Glucose Modeling - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#from-pk-values-to-supply-demand-the-physics-of-glucose-modeling" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              From PK Values to Supply-Demand: The Physics of Glucose Modeling
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../30-design/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_27" id="__nav_5_27_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_27_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_27">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    60-research/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="exp-2844-phenotype-drilldown-report-2026-04-22.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-0001 to 2869
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="exp-2870-envelope-crossover-report-2026-04-22.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2870 to 2909
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="exp-2910-eight-dim-regrade-2026-04-23.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2910 to 2949
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="exp-2950-uniform-action-curve-2026-04-23.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2950 to 2999
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="exp-3000-3003-cf-replay-maturation-2026-04-25.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-3000 and later
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="AUTORESEARCH-SESSION-2026-04-26.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Programme, closeouts and syntheses
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="accuracy-validation-2026-04-05.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Productionization and pipelines
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="capability-report-clinical-decision-support.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Capability reports
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="circadian-therapy-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Therapy
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="aid-aware-settings-report-2026-04-09.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings and profiles
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="natural-experiment-deconfounding-2026-04-09.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Natural experiments
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27_13" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5_27_13" id="__nav_5_27_13_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EGP, supply-demand and deconfounding
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_27_13_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_27_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    EGP, supply-demand and deconfounding
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bilateral-deconfounding-report-2026-04-19.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bilateral Deconfounding: Supply + Demand Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="continuous-physiological-state-modeling-2026-04-05.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuous Physiological State Modeling: From Sparse Events to Functional Signals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cumulative-integral-slow-state-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cumulative Integrals &amp; Slow State Detection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="deconfounding-pipeline-report-2026-04-19.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deconfounding Pipeline: Scientific Methodology &amp; Three-Audience Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="deconfounding-signal-extraction-report-2026-04-19.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deconfounding Signal Extraction: 9-Experiment Research Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="deconfounding-toolkit-2026-04-22.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deconfounding Toolkit for AID / CGM Research
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="demand-calibration-fix-impact-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Demand Calibration Fix: Impact Assessment and Corrected Model Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="demand-calibration-model-improvement-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Demand Calibration &amp; Model Improvement Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="demand-diagnosis-glycogen-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Demand Chain Diagnosis, Rescue Carb Inference, and the Glycogen Pool as Hidden State Variable
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="egp-calibration-report-2026-04-13.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recovery Model Comparison &amp; Attribution — Round 2 Report (Revised)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="egp-deconfounding-report-2026-04-13.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EGP Deconfounding: Supply, Demand, and AID Controller Dynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="egp-dose-isf-report-2026-04-13.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dose-Dependent ISF &amp; Controller Dynamics — Round 3 Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="egp-evidence-synthesis-report-2026-04-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EGP Research Synthesis: Evidence Review and Corrective Reframing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="egp-methodology-validation-report-2026-04-13.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EGP Deconfounding Research — Round 4: Methodology Validation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="egp-phase-separation-report-2026-04-12.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EGP Phase Separation Research — Complete Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="egp-prescriptive-paradox-report-2026-04-13.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EGP Deconfounding Research — Round 5: The Descriptive-Prescriptive Paradox
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="egp-research-synthesis-report-2026-04-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EGP Research Synthesis: Physiology, Data Science &amp; Basal Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="glycogen-deconfounding-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glycogen Proxy Deconfounding and Metabolic Context Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="hypo-supply-demand-decomposition-2026-04-09.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hypoglycemia Through the Supply-Demand Lens: A Decomposition Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="metabolic-flux-report-2026-04-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metabolic Flux &amp; Physiological Encoding Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="metabolic-flux-synthesis-2026-04-07.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metabolic Flux &amp; Physiological Data Science: Comprehensive Synthesis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="multitimescale-supply-demand-report-2026-04-22.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Timescale Supply/Demand Architecture &amp; Triage Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="state-and-egp-integration-report-2026-04-22.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metabolic State &amp; EGP Integration Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="state-aware-harness-parallels-2026-07-01.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State-Aware Agent Harnesses: Parallels and Opportunities (2026-07-01)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="state-transition-audition-report-2026-04-22.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State-Transition Audition Windows — Stream B Triage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="supply-demand-decomposition-report-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supply-Demand Decomposition: Glucose Supply-Side Investigation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    From PK Values to Supply-Demand: The Physics of Glucose Modeling
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="supply-demand-evolution-report-2026-04-07.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    From PK Values to Supply-Demand: The Physics of Glucose Modeling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executive Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-i-the-three-eras-of-glucose-modeling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part I: The Three Eras of Glucose Modeling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part I: The Three Eras of Glucose Modeling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-evolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Evolution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#era-1-classical-pk-exp-001341" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Era 1: Classical PK (EXP-001–341)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#era-2-metabolic-flux-exp-435440" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Era 2: Metabolic Flux (EXP-435–440)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#era-3-supply-demand-conservation-exp-441493" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Era 3: Supply-Demand Conservation (EXP-441–493)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-ii-the-supply-demand-framework" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part II: The Supply-Demand Framework
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part II: The Supply-Demand Framework">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-ac-circuit-analogy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The AC Circuit Analogy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anatomy-of-a-meal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Anatomy of a Meal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-eight-pk-channels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Eight PK Channels
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-iii-conservation-and-symmetries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part III: Conservation and Symmetries
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part III: Conservation and Symmetries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-conservation-law" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Conservation Law
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-four-symmetries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Four Symmetries
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Four Symmetries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#①-time-translation-invariance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ① Time-Translation Invariance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#②-absorption-envelope-symmetry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ② Absorption Envelope Symmetry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#③-glucose-conservation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ③ Glucose Conservation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#④-patient-relative-scaling-equivariance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ④ Patient-Relative Scaling (Equivariance)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-iv-experimental-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part IV: Experimental Evidence
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part IV: Experimental Evidence">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#spectral-analysis-18-power-at-meal-frequencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spectral Analysis: 18× Power at Meal Frequencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cross-patient-universality" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross-Patient Universality
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-lag-classifying-meal-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase Lag: Classifying Meal Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#settings-quality-diagnostics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Settings Quality Diagnostics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-v-why-supply-demand-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part V: Why Supply-Demand Works
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part V: Why Supply-Demand Works">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-residual-as-diagnostic-signal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Residual as Diagnostic Signal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-schedule-symmetry-insight" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Schedule Symmetry Insight
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-not-just-use-glucose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Not Just Use Glucose?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-vi-from-theory-to-practice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part VI: From Theory to Practice
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part VI: From Theory to Practice">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-forecasting-contribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Forecasting Contribution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-clinical-contribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Clinical Contribution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-uvapadova-connection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The UVA/Padova Connection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-a-visualization-assets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix A: Visualization Assets
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Appendix A: Visualization Assets">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#static-figures-matplotlib" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Static Figures (Matplotlib)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fig-1-ac-circuit-analogy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fig 1: AC Circuit Analogy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fig-2-supply-demand-decomposition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fig 2: Supply-Demand Decomposition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fig-3-conservation-law" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fig 3: Conservation Law
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fig-4-four-symmetries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fig 4: Four Symmetries
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fig-5-spectral-power" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fig 5: Spectral Power
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fig-6-cross-patient-similarity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fig 6: Cross-Patient Similarity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fig-7-phase-lag" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fig 7: Phase Lag
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fig-8-evolution-timeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fig 8: Evolution Timeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fig-9-hepatic-hill-curve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fig 9: Hepatic Hill Curve
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fig-10-fidelity-diagnostic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fig 10: Fidelity Diagnostic
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fig-11-eight-pk-channels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fig 11: Eight PK Channels
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#animated-figures-manim" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Animated Figures (Manim)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regeneration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regeneration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-b-key-experimental-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix B: Key Experimental References
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-c-code-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix C: Code References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="unexplained_variance_report_2026-04-22.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unexplained Variance Analysis Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="variability-decomposition-report-2026-04-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Variability Source Decomposition &amp; GPU-Accelerated Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="wall-resolution-mechanism-report-2026-04-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-2669: Wall Resolution Mechanism
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="autotune-uam-characterization-report.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Meals and carbohydrates
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="causal-pk-leakage-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Insulin, ISF and pharmacokinetics
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="acceleration-clinical-utility-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clinical, safety and hypoglycaemia
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="aid-author-recommendations-report-2026-04-20.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AID controllers, cohorts and waves
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="centering-dynamics-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forecasting, prediction and classification
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="advanced-architectures-benchmark-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ML methods and architectures
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="canonical/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    canonical/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="collaboration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    collaboration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="external-inventories/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    external-inventories/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="modernization/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    modernization/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="programme/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    programme/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="remedial/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    remedial/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="tenancy/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenancy/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executive Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-i-the-three-eras-of-glucose-modeling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part I: The Three Eras of Glucose Modeling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part I: The Three Eras of Glucose Modeling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-evolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Evolution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#era-1-classical-pk-exp-001341" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Era 1: Classical PK (EXP-001–341)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#era-2-metabolic-flux-exp-435440" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Era 2: Metabolic Flux (EXP-435–440)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#era-3-supply-demand-conservation-exp-441493" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Era 3: Supply-Demand Conservation (EXP-441–493)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-ii-the-supply-demand-framework" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part II: The Supply-Demand Framework
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part II: The Supply-Demand Framework">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-ac-circuit-analogy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The AC Circuit Analogy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anatomy-of-a-meal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Anatomy of a Meal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-eight-pk-channels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Eight PK Channels
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-iii-conservation-and-symmetries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part III: Conservation and Symmetries
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part III: Conservation and Symmetries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-conservation-law" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Conservation Law
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-four-symmetries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Four Symmetries
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Four Symmetries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#①-time-translation-invariance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ① Time-Translation Invariance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#②-absorption-envelope-symmetry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ② Absorption Envelope Symmetry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#③-glucose-conservation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ③ Glucose Conservation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#④-patient-relative-scaling-equivariance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ④ Patient-Relative Scaling (Equivariance)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-iv-experimental-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part IV: Experimental Evidence
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part IV: Experimental Evidence">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#spectral-analysis-18-power-at-meal-frequencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spectral Analysis: 18× Power at Meal Frequencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cross-patient-universality" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross-Patient Universality
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-lag-classifying-meal-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase Lag: Classifying Meal Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#settings-quality-diagnostics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Settings Quality Diagnostics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-v-why-supply-demand-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part V: Why Supply-Demand Works
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part V: Why Supply-Demand Works">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-residual-as-diagnostic-signal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Residual as Diagnostic Signal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-schedule-symmetry-insight" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Schedule Symmetry Insight
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-not-just-use-glucose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Not Just Use Glucose?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-vi-from-theory-to-practice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part VI: From Theory to Practice
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part VI: From Theory to Practice">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-forecasting-contribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Forecasting Contribution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-clinical-contribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Clinical Contribution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-uvapadova-connection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The UVA/Padova Connection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-a-visualization-assets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix A: Visualization Assets
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Appendix A: Visualization Assets">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#static-figures-matplotlib" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Static Figures (Matplotlib)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fig-1-ac-circuit-analogy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fig 1: AC Circuit Analogy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fig-2-supply-demand-decomposition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fig 2: Supply-Demand Decomposition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fig-3-conservation-law" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fig 3: Conservation Law
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fig-4-four-symmetries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fig 4: Four Symmetries
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fig-5-spectral-power" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fig 5: Spectral Power
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fig-6-cross-patient-similarity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fig 6: Cross-Patient Similarity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fig-7-phase-lag" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fig 7: Phase Lag
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fig-8-evolution-timeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fig 8: Evolution Timeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fig-9-hepatic-hill-curve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fig 9: Hepatic Hill Curve
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fig-10-fidelity-diagnostic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fig 10: Fidelity Diagnostic
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fig-11-eight-pk-channels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fig 11: Eight PK Channels
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#animated-figures-manim" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Animated Figures (Manim)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regeneration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regeneration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-b-key-experimental-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix B: Key Experimental References
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-c-code-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix C: Code References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="from-pk-values-to-supply-demand-the-physics-of-glucose-modeling">From PK Values to Supply-Demand: The Physics of Glucose Modeling<a class="headerlink" href="#from-pk-values-to-supply-demand-the-physics-of-glucose-modeling" title="Permanent link">&para;</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Record</p>
+<p>Record as of 2026-04-07. A point-in-time document; it is not kept up to date.</p>
+</div>
+<p><strong>Date</strong>: 2026-04-07<br />
+<strong>Scope</strong>: Research evolution across EXP-001–493 (170+ experiments, 11 patients, ~180 days each)<br />
+<strong>Predecessor reports</strong>: <code>symmetry-sparsity-feature-selection-2026-04-05.md</code>, <code>continuous-physiological-state-modeling-2026-04-05.md</code>, <code>metabolic-flux-report-2026-04-06.md</code>, <code>metabolic-flux-synthesis-2026-04-07.md</code></p>
+<hr />
+<h2 id="executive-summary">Executive Summary<a class="headerlink" href="#executive-summary" title="Permanent link">&para;</a></h2>
+<p>This report traces how our glucose modeling framework evolved through three distinct eras — from classical pharmacokinetic (PK) features, through metabolic flux decomposition, to a full supply-demand conservation framework — and why each transition was necessary. The central finding: <strong>glucose obeys a conservation law</strong>, and that conservation law provides both predictive power and diagnostic power that neither PK features nor raw glucose can match.</p>
+<p>The supply-demand framework decomposes every 5-minute timestep of a patient's CGM data into:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>ΔBG(t) = SUPPLY(t) − DEMAND(t) + ε(t)
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>SUPPLY(t) = hepatic_production(t) + carb_absorption(t)    [always &gt; 0]
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>DEMAND(t) = insulin_action(t)                              [always &gt; 0]
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>ε(t)      = residual                                       [diagnostic signal]
+</code></pre></div>
+<p>When therapy settings are correct, the residual is small and random. When settings are wrong, the residual is large and persistent. When carb data is missing, the residual <em>becomes</em> the implicit meal channel. This is not a new physics — it's what every AID algorithm and every diabetes simulator already computes. What's new is using it as a <strong>retrospective diagnostic and feature engineering framework</strong> for real-world patient data.</p>
+<hr />
+<h2 id="part-i-the-three-eras-of-glucose-modeling">Part I: The Three Eras of Glucose Modeling<a class="headerlink" href="#part-i-the-three-eras-of-glucose-modeling" title="Permanent link">&para;</a></h2>
+<h3 id="the-evolution">The Evolution<a class="headerlink" href="#the-evolution" title="Permanent link">&para;</a></h3>
+<p><img alt="Evolution Timeline" src="../../visualizations/supply-demand-report/fig08_evolution_timeline.png" /></p>
+<p><em>Figure 8: The three eras of glucose modeling — from sparse PK events to conservation-based diagnostics.</em></p>
+<details>
+<summary>🎬 Animated Evolution Timeline (click to expand)</summary>
+
+![Evolution Animation](../../visualizations/supply-demand-report/EvolutionTimeline_ManimCE_v0.20.1.gif)
+
+</details>
+
+<h3 id="era-1-classical-pk-exp-001341">Era 1: Classical PK (EXP-001–341)<a class="headerlink" href="#era-1-classical-pk-exp-001341" title="Permanent link">&para;</a></h3>
+<p>The starting point: <strong>Insulin on Board (IOB)</strong> and <strong>Carbs on Board (COB)</strong> — the two standard pharmacokinetic signals used by every AID system. These are computed by convolving sparse treatment events (boluses, carb entries) with known absorption curves:</p>
+<ul>
+<li><strong>IOB</strong>: Exponential decay with DIA=5h, peak=55min (oref0 curve)</li>
+<li><strong>COB</strong>: Linear decay over ~3h absorption time</li>
+</ul>
+<p><strong>What worked</strong>: IOB and COB are continuous, dense signals that carry the metabolic <em>effect</em> of sparse events. EXP-298 confirmed: removing the sparse bolus channel <strong>improves</strong> 12h clustering (+0.224 silhouette), while removing dense IOB <strong>destroys</strong> it (−0.564). The transformation from sparse events to continuous effects is essential.</p>
+<p><strong>What broke</strong>: For patients who don't bolus (7/11 in our cohort are SMB-dominant), IOB reduces to basal-only — a near-constant. For patients who don't log carbs (common), COB is identically zero. The model receives zero signal about the most important metabolic events. This is the <strong>zero-data problem</strong>: the features are only as good as the data entered.</p>
+<h3 id="era-2-metabolic-flux-exp-435440">Era 2: Metabolic Flux (EXP-435–440)<a class="headerlink" href="#era-2-metabolic-flux-exp-435440" title="Permanent link">&para;</a></h3>
+<p>The key insight: even when IOB/COB are zero, the patient's body is still producing and consuming glucose. The liver never stops producing glucose (endogenous glucose production, EGP), and even basal insulin creates a non-zero demand signal.</p>
+<p><strong>Metabolic flux</strong> = the absolute magnitude of metabolic activity, regardless of direction:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>sum_flux(t) = |carb_absorption(t)| + |insulin_action(t)|
+</code></pre></div>
+<p>Adding hepatic glucose production as a modeled supply baseline solved the zero-data problem:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Patient</th>
+<th style="text-align: center;">Before (IOB/COB)</th>
+<th style="text-align: center;">After (hepatic rescue)</th>
+<th style="text-align: left;">Problem</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">j</td>
+<td style="text-align: center;">Zero flux, 0% detection</td>
+<td style="text-align: center;">Nonzero supply, 96% detection</td>
+<td style="text-align: left;">No carb entries</td>
+</tr>
+<tr>
+<td style="text-align: center;">k</td>
+<td style="text-align: center;">Near-zero IOB</td>
+<td style="text-align: center;">Hepatic + basal demand</td>
+<td style="text-align: left;">97% UAM</td>
+</tr>
+<tr>
+<td style="text-align: center;">All 11</td>
+<td style="text-align: center;">3/11 have usable flux</td>
+<td style="text-align: center;"><strong>11/11 have nonzero flux</strong></td>
+<td style="text-align: left;">Universal</td>
+</tr>
+</tbody>
+</table>
+<p>The hepatic production model uses a <strong>Hill equation</strong> for insulin suppression with <strong>circadian modulation</strong>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>EGP(t) = base_rate × (1 − suppression(IOB)) × circadian(hour)
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>suppression = IOB^1.5 / (2.0^1.5 + IOB^1.5) × 0.65
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>circadian   = 1 + 0.20 × sin(2π × hour / 24)
+</code></pre></div>
+<p><img alt="Hepatic Hill Curve" src="../../visualizations/supply-demand-report/fig09_hepatic_hill_curve.png" /></p>
+<p><em>Figure 9: Hepatic glucose production. Left: Hill equation suppression — even at maximum insulin, the liver still produces 35% of baseline. Right: 24-hour circadian cycle with dawn peak at 6 AM.</em></p>
+<h3 id="era-3-supply-demand-conservation-exp-441493">Era 3: Supply-Demand Conservation (EXP-441–493)<a class="headerlink" href="#era-3-supply-demand-conservation-exp-441493" title="Permanent link">&para;</a></h3>
+<p>The final leap: instead of just measuring <em>how much</em> metabolic activity exists (flux magnitude), decompose it into <strong>signed, directional</strong> components that must balance:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>dBG/dt = Supply(t) − Demand(t) + ε(t)
+</code></pre></div>
+<p>This is a conservation law. Over any complete absorption cycle, the integral of supply minus demand must equal the observed change in blood glucose. When it doesn't, the residual tells you <em>what's wrong</em>.</p>
+<hr />
+<h2 id="part-ii-the-supply-demand-framework">Part II: The Supply-Demand Framework<a class="headerlink" href="#part-ii-the-supply-demand-framework" title="Permanent link">&para;</a></h2>
+<h3 id="the-ac-circuit-analogy">The AC Circuit Analogy<a class="headerlink" href="#the-ac-circuit-analogy" title="Permanent link">&para;</a></h3>
+<p>The most intuitive way to understand why supply-demand decomposition matters: think of glucose as <strong>voltage</strong> and metabolic flux as <strong>current</strong> in an AC circuit.</p>
+<p><img alt="AC Circuit Analogy" src="../../visualizations/supply-demand-report/fig01_ac_circuit_analogy.png" /></p>
+<p><em>Figure 1: The AC circuit analogy. Top: Glucose appears nearly flat (TIR=92%). Middle: Underneath, supply and demand signals show 3–8× activity during meals. Bottom: Throughput (supply × demand) captures the metabolic "power" — the total work the system is performing.</em></p>
+<details>
+<summary>🎬 Animated: The Invisible Metabolic World (click to expand)</summary>
+
+![Invisible World Animation](../../visualizations/supply-demand-report/InvisibleMetabolicWorld_ManimCE_v0.20.1.gif)
+
+</details>
+
+<p>A patient with TIR &gt; 90% may have glucose traces that look nearly identical day to day, but their metabolic flux shows distinct patterns of meals, corrections, dawn phenomenon, and exercise. <strong>Well-controlled glucose hides enormous metabolic activity.</strong> This has implications beyond ML:</p>
+<ul>
+<li><strong>Clinical</strong>: Time-in-range doesn't capture metabolic burden</li>
+<li><strong>Engineering</strong>: Glucose-only ML models can't distinguish <em>why</em> glucose is at 120 mg/dL</li>
+<li><strong>Research</strong>: Many CGM studies analyzing only glucose values miss half the picture</li>
+</ul>
+<h3 id="anatomy-of-a-meal">Anatomy of a Meal<a class="headerlink" href="#anatomy-of-a-meal" title="Permanent link">&para;</a></h3>
+<p><img alt="Supply-Demand Decomposition" src="../../visualizations/supply-demand-report/fig02_supply_demand_decomposition.png" /></p>
+<p><em>Figure 2: A 60g meal with 5U bolus dissected into supply (hepatic + carb absorption), demand (insulin action), net flux, and resulting glucose. The hepatic channel is always on — the green area under the carb spike.</em></p>
+<h3 id="the-eight-pk-channels">The Eight PK Channels<a class="headerlink" href="#the-eight-pk-channels" title="Permanent link">&para;</a></h3>
+<p>The framework produces 8 continuous time-varying channels per timestep, transforming sparse treatment events into a rich physiological state representation:</p>
+<p><img alt="Eight PK Channels" src="../../visualizations/supply-demand-report/fig11_eight_pk_channels.png" /></p>
+<p><em>Figure 11: All 8 PK channels over 24 hours. Meal times marked with orange lines. Channel 6 (net_balance) shows signed supply−demand; positive (green) = glucose rising, negative (red) = glucose falling.</em></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Channel</th>
+<th style="text-align: left;">Content</th>
+<th style="text-align: left;">Key Property</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">0: insulin_total</td>
+<td style="text-align: left;">Cumulative active insulin (IOB)</td>
+<td style="text-align: left;">Never zero (basal)</td>
+</tr>
+<tr>
+<td style="text-align: left;">1: insulin_net</td>
+<td style="text-align: left;">Net insulin above basal baseline</td>
+<td style="text-align: left;">Zero during fasting</td>
+</tr>
+<tr>
+<td style="text-align: left;">2: basal_ratio</td>
+<td style="text-align: left;">Current delivery / scheduled basal</td>
+<td style="text-align: left;">1.0 = nominal</td>
+</tr>
+<tr>
+<td style="text-align: left;">3: carb_rate</td>
+<td style="text-align: left;">Carb absorption rate (Scheiner curves)</td>
+<td style="text-align: left;">Zero for UAM</td>
+</tr>
+<tr>
+<td style="text-align: left;">4: carb_accel</td>
+<td style="text-align: left;">Derivative of carb absorption</td>
+<td style="text-align: left;">Phase indicator</td>
+</tr>
+<tr>
+<td style="text-align: left;">5: hepatic_production</td>
+<td style="text-align: left;">Hill equation + circadian EGP</td>
+<td style="text-align: left;"><strong>Always positive</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">6: net_balance</td>
+<td style="text-align: left;">Supply − demand instantaneous</td>
+<td style="text-align: left;"><strong>Signed conservation</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">7: isf_curve</td>
+<td style="text-align: left;">Time-varying insulin sensitivity</td>
+<td style="text-align: left;">Circadian profile</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="part-iii-conservation-and-symmetries">Part III: Conservation and Symmetries<a class="headerlink" href="#part-iii-conservation-and-symmetries" title="Permanent link">&para;</a></h2>
+<h3 id="the-conservation-law">The Conservation Law<a class="headerlink" href="#the-conservation-law" title="Permanent link">&para;</a></h3>
+<p>The fundamental constraint that gives the framework its power:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>∫₀ᵀ (Supply(t) − Demand(t)) dt ≈ BG(T) − BG(0)
+</code></pre></div>
+<p>Over complete absorption cycles (~12h), this integral approaches zero because what goes up must come down — carbs raise glucose, insulin lowers it, and in a well-controlled patient, these effects approximately cancel.</p>
+<p><img alt="Conservation Law" src="../../visualizations/supply-demand-report/fig03_conservation_law.png" /></p>
+<p><em>Figure 3: Left: A 12-hour window showing the cumulative integral of (supply − demand), oscillating around zero. Right: Distribution of conservation residuals across 7,337 windows (EXP-421): mean = −1.8 ± 28.4 mg·h — glucose IS conserved over absorption cycles.</em></p>
+<details>
+<summary>🎬 Animated: Glucose Conservation Law (click to expand)</summary>
+
+![Conservation Animation](../../visualizations/supply-demand-report/GlucoseConservation_ManimCE_v0.20.1.gif)
+
+</details>
+
+<h3 id="the-four-symmetries">The Four Symmetries<a class="headerlink" href="#the-four-symmetries" title="Permanent link">&para;</a></h3>
+<p>From the symmetry-sparsity analysis (EXP-001–341), four fundamental symmetry properties were identified and validated. The supply-demand framework exploits all four:</p>
+<p><img alt="Four Symmetries" src="../../visualizations/supply-demand-report/fig04_four_symmetries.png" /></p>
+<p><em>Figure 4: The four symmetries in diabetes data. ① Time-translation invariance at episode scales. ② Approximate envelope symmetry of insulin/carb absorption. ③ Glucose conservation as supply-demand balance. ④ Patient-relative ISF scaling preserving response shape.</em></p>
+<h4 id="①-time-translation-invariance">① Time-Translation Invariance<a class="headerlink" href="#①-time-translation-invariance" title="Permanent link">&para;</a></h4>
+<p>A post-meal glucose spike at 8 AM is physiologically equivalent to one at 8 PM. The same absorption dynamics, the same insulin response curves, the same rise-and-fall envelope.</p>
+<p><strong>Evidence</strong>: EXP-298 — removing time-of-day features <strong>improves</strong> episode classification by +1.4% recall and +0.224 silhouette at ≤12h scales.</p>
+<p><strong>Exception</strong>: At ≥24h scales, circadian physiology breaks this symmetry. The dawn phenomenon imposes a 24-hour periodicity with <strong>71.3 ± 18.7 mg/dL amplitude</strong> (EXP-126). A simple 3-parameter circadian correction (<code>a·sin + b·cos + c</code>) captures more variance than any neural architecture change (EXP-781: +0.474 R² at 60min).</p>
+<p><strong>Supply-demand implication</strong>: Flux features are time-invariant at event scales — the same throughput pattern appears regardless of clock time.</p>
+<h4 id="②-absorption-envelope-symmetry">② Absorption Envelope Symmetry<a class="headerlink" href="#②-absorption-envelope-symmetry" title="Permanent link">&para;</a></h4>
+<p>Both insulin activity curves and carb absorption exhibit approximate rise/fall symmetry around their peaks. Insulin follows a bell-shaped curve (peak ~55min, DIA ~5h) from subcutaneous absorption kinetics. Carb response peaks at 30–60min, falls over 2–4h.</p>
+<p><strong>Evidence</strong>: EXP-437 — Metabolic flux envelopes are <strong>more symmetric</strong> than raw glucose:
+- Raw glucose asymmetry ratio: <strong>1.98</strong> (steep rise, gradual fall)
+- Flux envelope asymmetry ratio: <strong>1.36</strong> (more balanced)</p>
+<p>This means flux signals are better suited to symmetric convolutional kernels in neural networks.</p>
+<h4 id="③-glucose-conservation">③ Glucose Conservation<a class="headerlink" href="#③-glucose-conservation" title="Permanent link">&para;</a></h4>
+<p>Formalized as the supply-demand balance equation. EXP-421 validated that glucose is conserved over 12h windows (mean integral −1.8 ± 28.4 mg·h across 7,337 windows).</p>
+<p><strong>The diagnostic power</strong>: When the integral is <em>not</em> zero, the residual tells you exactly what's wrong:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">What's Wrong</th>
+<th style="text-align: left;">Observable Signal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Basal too low</td>
+<td style="text-align: left;">Positive drift overnight</td>
+</tr>
+<tr>
+<td style="text-align: left;">Basal too high</td>
+<td style="text-align: left;">Negative drift overnight</td>
+</tr>
+<tr>
+<td style="text-align: left;">ISF overestimated</td>
+<td style="text-align: left;">Overshoot post-correction</td>
+</tr>
+<tr>
+<td style="text-align: left;">ISF underestimated</td>
+<td style="text-align: left;">Undershoot post-correction</td>
+</tr>
+<tr>
+<td style="text-align: left;">CR overestimated</td>
+<td style="text-align: left;">Post-meal spikes</td>
+</tr>
+<tr>
+<td style="text-align: left;">CR underestimated</td>
+<td style="text-align: left;">Post-meal hypoglycemia</td>
+</tr>
+</tbody>
+</table>
+<h4 id="④-patient-relative-scaling-equivariance">④ Patient-Relative Scaling (Equivariance)<a class="headerlink" href="#④-patient-relative-scaling-equivariance" title="Permanent link">&para;</a></h4>
+<p>Patients with different ISF values produce different glucose amplitudes from the same insulin dose, but the <strong>shape</strong> of the response is nearly identical.</p>
+<p><strong>Evidence</strong>: EXP-445 — Cross-patient throughput shape similarity = <strong>0.987</strong> (near-identical) vs raw glucose similarity of only <strong>0.10</strong> (nearly orthogonal). The 4.5× ISF range between patients (21–95 mg/dL/U) affects amplitude but not dynamics.</p>
+<hr />
+<h2 id="part-iv-experimental-evidence">Part IV: Experimental Evidence<a class="headerlink" href="#part-iv-experimental-evidence" title="Permanent link">&para;</a></h2>
+<h3 id="spectral-analysis-18-power-at-meal-frequencies">Spectral Analysis: 18× Power at Meal Frequencies<a class="headerlink" href="#spectral-analysis-18-power-at-meal-frequencies" title="Permanent link">&para;</a></h3>
+<p><img alt="Spectral Power" src="../../visualizations/supply-demand-report/fig05_spectral_power.png" /></p>
+<p><em>Figure 5: Throughput (supply × demand) concentrates spectral power at meal frequencies — nearly 18× the power of raw glucose in the 3–5 hour band (EXP-444). This is the strongest evidence that throughput is a meal-specific signal.</em></p>
+<p>This spectral concentration explains why throughput discriminates meal events so much better than glucose alone:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Scale</th>
+<th style="text-align: center;">Glucose AUC</th>
+<th style="text-align: center;">Flux AUC</th>
+<th style="text-align: center;">Advantage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">2h</td>
+<td style="text-align: center;">0.61</td>
+<td style="text-align: center;">0.87</td>
+<td style="text-align: center;">+0.26</td>
+</tr>
+<tr>
+<td style="text-align: center;">6h</td>
+<td style="text-align: center;">0.64</td>
+<td style="text-align: center;">0.95</td>
+<td style="text-align: center;">+0.31</td>
+</tr>
+<tr>
+<td style="text-align: center;">12h</td>
+<td style="text-align: center;">0.65</td>
+<td style="text-align: center;">0.95</td>
+<td style="text-align: center;">+0.30</td>
+</tr>
+</tbody>
+</table>
+<h3 id="cross-patient-universality">Cross-Patient Universality<a class="headerlink" href="#cross-patient-universality" title="Permanent link">&para;</a></h3>
+<p><img alt="Cross-Patient Similarity" src="../../visualizations/supply-demand-report/fig06_cross_patient_similarity.png" /></p>
+<p><em>Figure 6: Left: Raw glucose responses to meals are highly variable across 11 patients (similarity = 0.10). Right: Metabolic throughput is nearly identical (similarity = 0.987). The metabolic response to meals is physiologically universal — individual variation is primarily in ISF/TDD scaling, not response shape.</em></p>
+<p>This universality has profound implications for transfer learning: a model trained on one patient's throughput patterns should generalize to others without retraining, because the underlying physics is the same.</p>
+<h3 id="phase-lag-classifying-meal-types">Phase Lag: Classifying Meal Types<a class="headerlink" href="#phase-lag-classifying-meal-types" title="Permanent link">&para;</a></h3>
+<p><img alt="Phase Lag" src="../../visualizations/supply-demand-report/fig07_phase_lag.png" /></p>
+<p><em>Figure 7: Left: Supply peaks ~20 minutes before demand (median lag, EXP-466), matching the physiological delay of insulin absorption after carb onset. Right: Announced meals (pre-bolused) show 10-min lag; UAM meals show 45-min lag — a 35-minute separation that serves as a meal-type classifier (EXP-471).</em></p>
+<details>
+<summary>🎬 Animated: Phase Lag Between Supply and Demand (click to expand)</summary>
+
+![Phase Lag Animation](../../visualizations/supply-demand-report/PhaseLagAnimation_ManimCE_v0.20.1.gif)
+
+</details>
+
+<p>The phase lag arises from a fundamental asymmetry in the physics: carb absorption peaks earlier than insulin action because gastric emptying is faster than subcutaneous insulin absorption. When a patient pre-boluses (administers insulin before eating), the lag compresses to ~10 min. When the AID system reacts to rising glucose (UAM), the lag extends to ~45 min because the system must first detect the glucose rise, then the insulin must be absorbed.</p>
+<h3 id="settings-quality-diagnostics">Settings Quality Diagnostics<a class="headerlink" href="#settings-quality-diagnostics" title="Permanent link">&para;</a></h3>
+<p><img alt="Fidelity Diagnostic" src="../../visualizations/supply-demand-report/fig10_fidelity_diagnostic.png" /></p>
+<p><em>Figure 10: Left: Glycemic fidelity scores across 11 patients (EXP-492), ranging from 84 (gold — settings well-tuned) to 15 (misaligned — settings need adjustment). Right: Conservation violations reveal the specific direction of settings errors.</em></p>
+<p>The composite fidelity score combines four equally-weighted components:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Component</th>
+<th style="text-align: left;">What It Measures</th>
+<th style="text-align: center;">Gold Standard (Patient k)</th>
+<th style="text-align: center;">Misaligned (Patient i)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Balance</td>
+<td style="text-align: left;">∫(supply−demand) ≈ 0 over 24h</td>
+<td style="text-align: center;">79</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">Residual</td>
+<td style="text-align: left;">RMSE of actual − predicted ΔBG</td>
+<td style="text-align: center;">67</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">Overnight</td>
+<td style="text-align: left;">BG stability 0–5 AM</td>
+<td style="text-align: center;">97</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">TIR</td>
+<td style="text-align: left;">% readings 70–180 mg/dL</td>
+<td style="text-align: center;">95</td>
+<td style="text-align: center;">60</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Composite</strong></td>
+<td style="text-align: left;"></td>
+<td style="text-align: center;"><strong>84/100</strong></td>
+<td style="text-align: center;"><strong>15/100</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="part-v-why-supply-demand-works">Part V: Why Supply-Demand Works<a class="headerlink" href="#part-v-why-supply-demand-works" title="Permanent link">&para;</a></h2>
+<h3 id="the-residual-as-diagnostic-signal">The Residual as Diagnostic Signal<a class="headerlink" href="#the-residual-as-diagnostic-signal" title="Permanent link">&para;</a></h3>
+<p>The most powerful aspect of the conservation framework: <strong>the residual is not noise — it's a diagnostic channel</strong>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>ε(t) = ε_meal(t)      [unannounced meal supply, ~25% of variance]
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>     + ε_dawn(t)       [hepatic model gap, ~13% of variance]
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>     + ε_exercise(t)   [activity-enhanced sensitivity, ~6% of variance]
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>     + ε_device(t)     [sensor age, cannula degradation]
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>     + ε_noise(t)      [measurement noise, ~53% of variance]
+</code></pre></div>
+<p>For the live-split patient (100% UAM, no carb data), <strong>the residual IS the implicit meal channel</strong> — 74% of positive residual periods correspond to meals (EXP-488). The framework detected <strong>2.0 meals per day</strong> on a patient who entered zero carb data, achieving <strong>96% detection on data-ready days</strong> (EXP-483).</p>
+<h3 id="the-schedule-symmetry-insight">The Schedule Symmetry Insight<a class="headerlink" href="#the-schedule-symmetry-insight" title="Permanent link">&para;</a></h3>
+<p>Therapy schedules encode the same circadian physiology from different angles:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Schedule</th>
+<th style="text-align: left;">What it says</th>
+<th style="text-align: left;">The flip side</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Basal rate</strong></td>
+<td style="text-align: left;">"I need this much insulin/hour"</td>
+<td style="text-align: left;">EGP increases by this much → more glucose</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Carb ratio</strong></td>
+<td style="text-align: left;">"This many carbs per unit"</td>
+<td style="text-align: left;">EGP variation mirrors CR variation</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>ISF</strong></td>
+<td style="text-align: left;">"One unit drops BG this much"</td>
+<td style="text-align: left;">Resistance factors make BG harder to lower</td>
+</tr>
+</tbody>
+</table>
+<p>When all three schedules are expanded as time-varying curves, they show insulin and glucose energy moving <strong>in and out of phase</strong> over 24 hours. 6/11 patients show the expected basal↔ISF anti-phase relationship (EXP-464), but 5/11 have flat ISF schedules (clinicians didn't tune them).</p>
+<h3 id="why-not-just-use-glucose">Why Not Just Use Glucose?<a class="headerlink" href="#why-not-just-use-glucose" title="Permanent link">&para;</a></h3>
+<p>A transformer trained on glucose alone allocates <strong>86.8% of attention to glucose history</strong> (EXP-114). This works for ≤60 min horizons because glucose is a momentum-driven system — the current trajectory dominates. But beyond 60 minutes, the effects of recent insulin haven't yet materialized in the glucose trace.</p>
+<p>Supply-demand features provide what glucose alone cannot:
+- <strong>Causal direction</strong>: Is glucose rising because of carbs or because insulin is wearing off?
+- <strong>Hidden activity</strong>: AID controllers mask metabolic events under flat glucose
+- <strong>Future trajectory</strong>: PK derivatives (dIOB/dt, dCOB/dt) predict what's coming before it arrives</p>
+<p>EXP-901 confirmed: PK derivative features improve 60-min prediction R² by +0.009. The combined forward sums + shape features add +0.033 (EXP-903) — the largest single improvement class in the prediction campaign.</p>
+<hr />
+<h2 id="part-vi-from-theory-to-practice">Part VI: From Theory to Practice<a class="headerlink" href="#part-vi-from-theory-to-practice" title="Permanent link">&para;</a></h2>
+<h3 id="the-forecasting-contribution">The Forecasting Contribution<a class="headerlink" href="#the-forecasting-contribution" title="Permanent link">&para;</a></h3>
+<p>The supply-demand framework feeds directly into glucose prediction:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Feature Class</th>
+<th style="text-align: center;">R² Contribution</th>
+<th style="text-align: left;">Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Base (BG + raw PK)</td>
+<td style="text-align: center;">0.506</td>
+<td style="text-align: left;">EXP-800</td>
+</tr>
+<tr>
+<td style="text-align: left;">+ Circadian correction</td>
+<td style="text-align: center;">+0.474 at 60min</td>
+<td style="text-align: left;">EXP-781</td>
+</tr>
+<tr>
+<td style="text-align: left;">+ PK derivatives (dIOB/dt, dCOB/dt)</td>
+<td style="text-align: center;">+0.009</td>
+<td style="text-align: left;">EXP-901</td>
+</tr>
+<tr>
+<td style="text-align: left;">+ Post-prandial shape features</td>
+<td style="text-align: center;">+0.006</td>
+<td style="text-align: left;">EXP-893</td>
+</tr>
+<tr>
+<td style="text-align: left;">+ IOB curve shape</td>
+<td style="text-align: center;">+0.004</td>
+<td style="text-align: left;">EXP-898</td>
+</tr>
+<tr>
+<td style="text-align: left;">+ Forward sums + all shape</td>
+<td style="text-align: center;">+0.033</td>
+<td style="text-align: left;">EXP-903</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Population warm-start</strong></td>
+<td style="text-align: center;">R² = 0.652</td>
+<td style="text-align: left;">EXP-777</td>
+</tr>
+</tbody>
+</table>
+<p>Population physics parameters (AR weight, decay) retain <strong>99.4% of personal R²</strong> (EXP-769), meaning the physics is essentially universal — patient-specific information is captured in supply/demand decomposition, not in model parameters. New patients can use population defaults immediately.</p>
+<h3 id="the-clinical-contribution">The Clinical Contribution<a class="headerlink" href="#the-clinical-contribution" title="Permanent link">&para;</a></h3>
+<p>Beyond prediction, the conservation framework enables automated clinical decision support:</p>
+<ul>
+<li><strong>Meal detection</strong> without carb entries: 96% on data-ready days (EXP-483)</li>
+<li><strong>Basal adequacy</strong>: 5/11 patients flagged as too low (EXP-489)</li>
+<li><strong>Settings quality triage</strong>: Fidelity score automatically gates analysis reliability</li>
+<li><strong>Eating pattern analysis</strong>: 2.0–2.9 events/day detected from demand signal alone (EXP-448)</li>
+<li><strong>Pre-bolusing behavior</strong>: Phase lag measures bolus timing quality (10 vs 45 min, EXP-471)</li>
+</ul>
+<h3 id="the-uvapadova-connection">The UVA/Padova Connection<a class="headerlink" href="#the-uvapadova-connection" title="Permanent link">&para;</a></h3>
+<p>Our framework is a simplified projection of what the UVA/Padova T1DMS simulator models with 20 state variables across 6 compartments (stomach, gut, plasma, tissue, liver, sensor). Our "supply" collapses gut absorption + hepatic production; our "demand" collapses insulin kinetics + receptor binding + glucose disposal.</p>
+<p>The key advantage: <strong>it works with the data patients actually have</strong> — CGM + pump telemetry + therapy schedules, not simulator parameters. The loss of compartmental detail is compensated by the residual term, which captures everything the simplified model misses.</p>
+<hr />
+<h2 id="appendix-a-visualization-assets">Appendix A: Visualization Assets<a class="headerlink" href="#appendix-a-visualization-assets" title="Permanent link">&para;</a></h2>
+<h3 id="static-figures-matplotlib">Static Figures (Matplotlib)<a class="headerlink" href="#static-figures-matplotlib" title="Permanent link">&para;</a></h3>
+<h3 id="fig-1-ac-circuit-analogy">Fig 1: AC Circuit Analogy<a class="headerlink" href="#fig-1-ac-circuit-analogy" title="Permanent link">&para;</a></h3>
+<p><img alt="AC circuit analogy — glucose as voltage, flux as current" src="../../visualizations/supply-demand-report/fig01_ac_circuit_analogy.png" /></p>
+<h3 id="fig-2-supply-demand-decomposition">Fig 2: Supply-Demand Decomposition<a class="headerlink" href="#fig-2-supply-demand-decomposition" title="Permanent link">&para;</a></h3>
+<p><img alt="Anatomy of a meal in supply-demand terms" src="../../visualizations/supply-demand-report/fig02_supply_demand_decomposition.png" /></p>
+<h3 id="fig-3-conservation-law">Fig 3: Conservation Law<a class="headerlink" href="#fig-3-conservation-law" title="Permanent link">&para;</a></h3>
+<p><img alt="Conservation law validation (EXP-421)" src="../../visualizations/supply-demand-report/fig03_conservation_law.png" /></p>
+<h3 id="fig-4-four-symmetries">Fig 4: Four Symmetries<a class="headerlink" href="#fig-4-four-symmetries" title="Permanent link">&para;</a></h3>
+<p><img alt="The four symmetries in diabetes data" src="../../visualizations/supply-demand-report/fig04_four_symmetries.png" /></p>
+<h3 id="fig-5-spectral-power">Fig 5: Spectral Power<a class="headerlink" href="#fig-5-spectral-power" title="Permanent link">&para;</a></h3>
+<p><img alt="Spectral power analysis (EXP-444)" src="../../visualizations/supply-demand-report/fig05_spectral_power.png" /></p>
+<h3 id="fig-6-cross-patient-similarity">Fig 6: Cross-Patient Similarity<a class="headerlink" href="#fig-6-cross-patient-similarity" title="Permanent link">&para;</a></h3>
+<p><img alt="Cross-patient universality (EXP-445)" src="../../visualizations/supply-demand-report/fig06_cross_patient_similarity.png" /></p>
+<h3 id="fig-7-phase-lag">Fig 7: Phase Lag<a class="headerlink" href="#fig-7-phase-lag" title="Permanent link">&para;</a></h3>
+<p><img alt="Phase lag classification (EXP-466, 471)" src="../../visualizations/supply-demand-report/fig07_phase_lag.png" /></p>
+<h3 id="fig-8-evolution-timeline">Fig 8: Evolution Timeline<a class="headerlink" href="#fig-8-evolution-timeline" title="Permanent link">&para;</a></h3>
+<p><img alt="PK → Flux → Supply-Demand timeline" src="../../visualizations/supply-demand-report/fig08_evolution_timeline.png" /></p>
+<h3 id="fig-9-hepatic-hill-curve">Fig 9: Hepatic Hill Curve<a class="headerlink" href="#fig-9-hepatic-hill-curve" title="Permanent link">&para;</a></h3>
+<p><img alt="Hepatic production Hill equation" src="../../visualizations/supply-demand-report/fig09_hepatic_hill_curve.png" /></p>
+<h3 id="fig-10-fidelity-diagnostic">Fig 10: Fidelity Diagnostic<a class="headerlink" href="#fig-10-fidelity-diagnostic" title="Permanent link">&para;</a></h3>
+<p><img alt="Conservation-based diagnostics (EXP-492)" src="../../visualizations/supply-demand-report/fig10_fidelity_diagnostic.png" /></p>
+<h3 id="fig-11-eight-pk-channels">Fig 11: Eight PK Channels<a class="headerlink" href="#fig-11-eight-pk-channels" title="Permanent link">&para;</a></h3>
+<p><img alt="The 8-channel PK feature system" src="../../visualizations/supply-demand-report/fig11_eight_pk_channels.png" /></p>
+<h3 id="animated-figures-manim">Animated Figures (Manim)<a class="headerlink" href="#animated-figures-manim" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Animation</th>
+<th style="text-align: left;">File</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Conservation</td>
+<td style="text-align: left;"><code>GlucoseConservation_ManimCE_v0.20.1.gif</code></td>
+<td style="text-align: left;">Supply-demand balance over 12h</td>
+</tr>
+<tr>
+<td style="text-align: left;">Phase Lag</td>
+<td style="text-align: left;"><code>PhaseLagAnimation_ManimCE_v0.20.1.gif</code></td>
+<td style="text-align: left;">Supply-demand phase relationship</td>
+</tr>
+<tr>
+<td style="text-align: left;">Invisible World</td>
+<td style="text-align: left;"><code>InvisibleMetabolicWorld_ManimCE_v0.20.1.gif</code></td>
+<td style="text-align: left;">AID masking metabolic activity</td>
+</tr>
+<tr>
+<td style="text-align: left;">Evolution</td>
+<td style="text-align: left;"><code>EvolutionTimeline_ManimCE_v0.20.1.gif</code></td>
+<td style="text-align: left;">PK → Flux → Supply-Demand progression</td>
+</tr>
+</tbody>
+</table>
+<p>All assets in: <code>visualizations/supply-demand-report/</code></p>
+<h3 id="regeneration">Regeneration<a class="headerlink" href="#regeneration" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Static figures (matplotlib)</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>python<span class="w"> </span>visualizations/supply-demand-report/generate_figures.py
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="c1"># Animations (manim)</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="nb">cd</span><span class="w"> </span>visualizations/supply-demand-report
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>manim<span class="w"> </span>-ql<span class="w"> </span>--format<span class="o">=</span>gif<span class="w"> </span>supply_demand_animation.py
+</code></pre></div>
+<hr />
+<h2 id="appendix-b-key-experimental-references">Appendix B: Key Experimental References<a class="headerlink" href="#appendix-b-key-experimental-references" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Experiment</th>
+<th style="text-align: left;">Finding</th>
+<th style="text-align: left;">Relevance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">EXP-298</td>
+<td style="text-align: left;">Time features hurt at ≤12h (+1.4% without)</td>
+<td style="text-align: left;">Time-translation symmetry</td>
+</tr>
+<tr>
+<td style="text-align: left;">EXP-421</td>
+<td style="text-align: left;">Conservation integral = −1.8 ± 28.4 mg·h</td>
+<td style="text-align: left;">Conservation law</td>
+</tr>
+<tr>
+<td style="text-align: left;">EXP-435–440</td>
+<td style="text-align: left;">Sum flux AUC 0.87–0.95</td>
+<td style="text-align: left;">Flux foundation</td>
+</tr>
+<tr>
+<td style="text-align: left;">EXP-441</td>
+<td style="text-align: left;">Product throughput 18× spectral power</td>
+<td style="text-align: left;">Throughput signal</td>
+</tr>
+<tr>
+<td style="text-align: left;">EXP-445</td>
+<td style="text-align: left;">Cross-patient shape similarity 0.987</td>
+<td style="text-align: left;">Universality</td>
+</tr>
+<tr>
+<td style="text-align: left;">EXP-466</td>
+<td style="text-align: left;">20-min median supply→demand lag</td>
+<td style="text-align: left;">Phase signature</td>
+</tr>
+<tr>
+<td style="text-align: left;">EXP-471</td>
+<td style="text-align: left;">35-min announced vs UAM separation</td>
+<td style="text-align: left;">Meal classifier</td>
+</tr>
+<tr>
+<td style="text-align: left;">EXP-483</td>
+<td style="text-align: left;">96% meal detection on data-ready days</td>
+<td style="text-align: left;">UAM robustness</td>
+</tr>
+<tr>
+<td style="text-align: left;">EXP-488</td>
+<td style="text-align: left;">Residual: 25% meal, 13% dawn, 53% noise</td>
+<td style="text-align: left;">Residual decomposition</td>
+</tr>
+<tr>
+<td style="text-align: left;">EXP-492</td>
+<td style="text-align: left;">Fidelity score range 15–84/100</td>
+<td style="text-align: left;">Settings quality</td>
+</tr>
+<tr>
+<td style="text-align: left;">EXP-781</td>
+<td style="text-align: left;">Circadian correction +0.474 R² at 60min</td>
+<td style="text-align: left;">Symmetry breaking</td>
+</tr>
+<tr>
+<td style="text-align: left;">EXP-800</td>
+<td style="text-align: left;">Ridge + physics features SOTA: R²=0.803/0.519 at 30/60min</td>
+<td style="text-align: left;">Prediction benchmark</td>
+</tr>
+<tr>
+<td style="text-align: left;">EXP-901</td>
+<td style="text-align: left;">PK derivatives +0.009 R²</td>
+<td style="text-align: left;">Dynamic features</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="appendix-c-code-references">Appendix C: Code References<a class="headerlink" href="#appendix-c-code-references" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Module</th>
+<th style="text-align: left;">Purpose</th>
+<th style="text-align: left;">Key Functions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>tools/cgmencode/continuous_pk.py</code></td>
+<td style="text-align: left;">8-channel PK features</td>
+<td style="text-align: left;"><code>build_continuous_pk_features()</code>, <code>compute_hepatic_production()</code>, <code>expand_schedule()</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>tools/cgmencode/exp_metabolic_441.py</code></td>
+<td style="text-align: left;">Supply-demand decomposition</td>
+<td style="text-align: left;"><code>compute_supply_demand()</code>, <code>compute_rolling_tdd()</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>tools/cgmencode/exp_phase_464.py</code></td>
+<td style="text-align: left;">Phase analysis</td>
+<td style="text-align: left;"><code>run_exp464()</code> – <code>run_exp467()</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>tools/cgmencode/exp_refined_483.py</code></td>
+<td style="text-align: left;">Precondition-gated detection</td>
+<td style="text-align: left;"><code>assess_day_readiness()</code>, <code>detect_meals_demand_weighted()</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>tools/cgmencode/exp_settings_489.py</code></td>
+<td style="text-align: left;">Settings assessment</td>
+<td style="text-align: left;"><code>run_exp489()</code>, <code>run_exp492()</code>, <code>run_exp493()</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>tools/cgmencode/production/metabolic_engine.py</code></td>
+<td style="text-align: left;">Production API</td>
+<td style="text-align: left;"><code>compute_metabolic_state()</code></td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

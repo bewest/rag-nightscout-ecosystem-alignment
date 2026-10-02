@@ -1,0 +1,5030 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/traceability/nightscout-api-requirements.html">
+      
+      
+        <link rel="prev" href="nightscout-api-gaps.html">
+      
+      
+        <link rel="next" href="orphan-artifact-priorities.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Nightscout Api Requirements - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#nightscout-api-requirements" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Nightscout Api Requirements
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../docs/00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../docs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    traceability/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="aid-algorithms-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Aid Algorithms Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="aid-algorithms-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Aid Algorithms Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-remote-monitor-docs-inventory.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Documentation Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-sources-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cgm Sources Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cgm-sources-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cgm Sources Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="connectors-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Connectors Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="connectors-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Connectors Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cross-validation-log.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-Validation Assessment Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="gap-discovery.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gap discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ml-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ML Pipeline Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-api-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Api Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Api Requirements
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="nightscout-api-requirements.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Api Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#req-api-001-document-deduplication-keys-per-collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-API-001: Document Deduplication Keys Per Collection
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#req-api-002-provide-machine-readable-api-specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-API-002: Provide Machine-Readable API Specification
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#req-api-003-document-timestamp-field-per-collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-API-003: Document Timestamp Field Per Collection
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#websocket-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WebSocket Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="WebSocket Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-api-004-document-websocket-capabilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-API-004: Document WebSocket Capabilities
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-api-005-cross-channel-event-propagation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-API-005: Cross-Channel Event Propagation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-api-006-websocket-rate-limiting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-API-006: WebSocket Rate Limiting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-api-023-purify-mutable-data-writes-consistently" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-API-023: Purify Mutable Data Writes Consistently
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plugin-system-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plugin System Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Plugin System Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-auth-001-document-permission-strings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-AUTH-001: Document Permission Strings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-auth-002-token-revocation-capability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-AUTH-002: Token Revocation Capability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-auth-003-document-role-requirements-per-endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-AUTH-003: Document Role Requirements Per Endpoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#frontendui-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frontend/UI Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Frontend/UI Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-err-001-empty-array-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-ERR-001: Empty Array Handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-err-002-crc-validation-enforcement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-ERR-002: CRC Validation Enforcement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-err-003-unknown-entry-type-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-ERR-003: Unknown Entry Type Logging
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#specification-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specification Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Specification Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-plugin-001-document-devicestatus-schema-per-controller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PLUGIN-001: Document DeviceStatus Schema Per Controller
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-plugin-002-normalize-prediction-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PLUGIN-002: Normalize Prediction Format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-plugin-003-document-iobcob-calculation-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PLUGIN-003: Document IOB/COB Calculation Models
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#syncupload-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sync/Upload Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Sync/Upload Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-spec-001-document-all-valid-eventtypes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-SPEC-001: Document All Valid eventTypes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-spec-002-document-controller-specific-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-SPEC-002: Document Controller-Specific Fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-spec-003-document-deduplication-algorithm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-SPEC-003: Document Deduplication Algorithm
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-spec-004-define-isvalid-semantics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-SPEC-004: Define isValid Semantics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#algorithm-conformance-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Algorithm Conformance Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Algorithm Conformance Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-stats-001-daily-aggregation-endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-STATS-001: Daily Aggregation Endpoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-stats-002-period-summary-endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-STATS-002: Period Summary Endpoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-stats-003-hourly-distribution-endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-STATS-003: Hourly Distribution Endpoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-stats-004-treatment-aggregation-endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-STATS-004: Treatment Aggregation Endpoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-stats-005-mcp-resource-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-STATS-005: MCP Resource Provider
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ui-001-document-frontend-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-UI-001: Document Frontend Architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ui-002-chart-accessibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-UI-002: Chart Accessibility
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ui-003-offline-data-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-UI-003: Offline Data Access
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-v3-sync-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API v3 Sync Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API v3 Sync Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-api3-001-history-endpoint-completeness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-API3-001: History Endpoint Completeness
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-api3-002-deduplication-determinism" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-API3-002: Deduplication Determinism
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-api3-003-srvmodified-monotonicity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-API3-003: srvModified Monotonicity
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#roles-gateway-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Roles Gateway Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Roles Gateway Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-rg-001-three-access-mode-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-RG-001: Three Access Mode Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-rg-002-api-secret-hashing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-RG-002: API Secret Hashing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-rg-003-time-based-access-policies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-RG-003: Time-Based Access Policies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-rg-004-group-membership-audit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-RG-004: Group Membership Audit
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interoperability-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interoperability Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Interoperability Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-ns-025-ordered-batch-write-guarantee" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-NS-025: Ordered Batch Write Guarantee
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ns-026-token-revocation-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-NS-026: Token Revocation Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ns-027-openapi-specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-NS-027: OpenAPI Specification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ns-028-sync-conflict-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-NS-028: Sync Conflict Detection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#devicestatus-schema-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DeviceStatus Schema Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DeviceStatus Schema Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-ds-001-unified-prediction-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-DS-001: Unified Prediction Format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ds-002-iob-component-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-DS-002: IOB Component Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ds-003-override-status-reporting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-DS-003: Override Status Reporting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ds-004-eventual-bg-prediction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-DS-004: Eventual BG Prediction
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ios-sdk-requirements-2026-01-31" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        iOS SDK Requirements (2026-01-31)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="iOS SDK Requirements (2026-01-31)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-sdk-001-v3-api-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-SDK-001: v3 API Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-sdk-002-multiple-authentication-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-SDK-002: Multiple Authentication Methods
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-sdk-003-incremental-sync" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-SDK-003: Incremental Sync
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-sdk-004-swift-concurrency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-SDK-004: Swift Concurrency
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#identity-provider-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identity Provider Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Identity Provider Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-idp-001-oidc-discovery-endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-IDP-001: OIDC Discovery Endpoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-idp-002-actor-claims-in-jwt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-IDP-002: Actor Claims in JWT
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-idp-003-care-team-role-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-IDP-003: Care Team Role Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#community-identity-provider-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Community Identity Provider Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Community Identity Provider Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-idp-004-oidc-compliance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-IDP-004: OIDC Compliance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-idp-005-multi-provider-federation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-IDP-005: Multi-Provider Federation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-idp-006-data-sovereignty" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-IDP-006: Data Sovereignty
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-idp-007-open-source-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-IDP-007: Open Source Components
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#timestamp-validation-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Timestamp Validation Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Timestamp Validation Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-ts-001-reject-future-dated-entries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TS-001: Reject Future-Dated Entries
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ts-002-minimum-timestamp-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TS-002: Minimum Timestamp Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="orphan-artifact-priorities.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Orphan Artifact Priority Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="pumps-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pumps Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="pumps-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pumps Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sync-identity-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sync Identity Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sync-identity-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sync Identity Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="telemetry-observability-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry and Observability Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="telemetry-observability-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry and Observability Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tool-validation-2026-01-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tool validation 2026 01 23
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="traceability-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requirements Traceability Matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="treatments-gaps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Treatments Gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="treatments-requirements.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Treatments Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="domain-matrices/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    domain-matrices/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="stpa/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    stpa/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#req-api-001-document-deduplication-keys-per-collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-API-001: Document Deduplication Keys Per Collection
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#req-api-002-provide-machine-readable-api-specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-API-002: Provide Machine-Readable API Specification
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#req-api-003-document-timestamp-field-per-collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-API-003: Document Timestamp Field Per Collection
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#websocket-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WebSocket Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="WebSocket Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-api-004-document-websocket-capabilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-API-004: Document WebSocket Capabilities
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-api-005-cross-channel-event-propagation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-API-005: Cross-Channel Event Propagation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-api-006-websocket-rate-limiting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-API-006: WebSocket Rate Limiting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-api-023-purify-mutable-data-writes-consistently" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-API-023: Purify Mutable Data Writes Consistently
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plugin-system-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plugin System Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Plugin System Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-auth-001-document-permission-strings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-AUTH-001: Document Permission Strings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-auth-002-token-revocation-capability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-AUTH-002: Token Revocation Capability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-auth-003-document-role-requirements-per-endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-AUTH-003: Document Role Requirements Per Endpoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#frontendui-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frontend/UI Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Frontend/UI Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-err-001-empty-array-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-ERR-001: Empty Array Handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-err-002-crc-validation-enforcement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-ERR-002: CRC Validation Enforcement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-err-003-unknown-entry-type-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-ERR-003: Unknown Entry Type Logging
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#specification-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specification Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Specification Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-plugin-001-document-devicestatus-schema-per-controller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PLUGIN-001: Document DeviceStatus Schema Per Controller
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-plugin-002-normalize-prediction-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PLUGIN-002: Normalize Prediction Format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-plugin-003-document-iobcob-calculation-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-PLUGIN-003: Document IOB/COB Calculation Models
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#syncupload-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sync/Upload Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Sync/Upload Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-spec-001-document-all-valid-eventtypes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-SPEC-001: Document All Valid eventTypes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-spec-002-document-controller-specific-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-SPEC-002: Document Controller-Specific Fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-spec-003-document-deduplication-algorithm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-SPEC-003: Document Deduplication Algorithm
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-spec-004-define-isvalid-semantics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-SPEC-004: Define isValid Semantics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#algorithm-conformance-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Algorithm Conformance Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Algorithm Conformance Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-stats-001-daily-aggregation-endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-STATS-001: Daily Aggregation Endpoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-stats-002-period-summary-endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-STATS-002: Period Summary Endpoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-stats-003-hourly-distribution-endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-STATS-003: Hourly Distribution Endpoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-stats-004-treatment-aggregation-endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-STATS-004: Treatment Aggregation Endpoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-stats-005-mcp-resource-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-STATS-005: MCP Resource Provider
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ui-001-document-frontend-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-UI-001: Document Frontend Architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ui-002-chart-accessibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-UI-002: Chart Accessibility
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ui-003-offline-data-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-UI-003: Offline Data Access
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-v3-sync-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API v3 Sync Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API v3 Sync Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-api3-001-history-endpoint-completeness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-API3-001: History Endpoint Completeness
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-api3-002-deduplication-determinism" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-API3-002: Deduplication Determinism
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-api3-003-srvmodified-monotonicity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-API3-003: srvModified Monotonicity
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#roles-gateway-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Roles Gateway Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Roles Gateway Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-rg-001-three-access-mode-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-RG-001: Three Access Mode Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-rg-002-api-secret-hashing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-RG-002: API Secret Hashing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-rg-003-time-based-access-policies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-RG-003: Time-Based Access Policies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-rg-004-group-membership-audit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-RG-004: Group Membership Audit
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interoperability-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interoperability Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Interoperability Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-ns-025-ordered-batch-write-guarantee" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-NS-025: Ordered Batch Write Guarantee
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ns-026-token-revocation-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-NS-026: Token Revocation Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ns-027-openapi-specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-NS-027: OpenAPI Specification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ns-028-sync-conflict-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-NS-028: Sync Conflict Detection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#devicestatus-schema-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DeviceStatus Schema Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DeviceStatus Schema Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-ds-001-unified-prediction-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-DS-001: Unified Prediction Format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ds-002-iob-component-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-DS-002: IOB Component Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ds-003-override-status-reporting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-DS-003: Override Status Reporting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ds-004-eventual-bg-prediction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-DS-004: Eventual BG Prediction
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ios-sdk-requirements-2026-01-31" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        iOS SDK Requirements (2026-01-31)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="iOS SDK Requirements (2026-01-31)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-sdk-001-v3-api-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-SDK-001: v3 API Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-sdk-002-multiple-authentication-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-SDK-002: Multiple Authentication Methods
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-sdk-003-incremental-sync" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-SDK-003: Incremental Sync
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-sdk-004-swift-concurrency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-SDK-004: Swift Concurrency
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#identity-provider-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identity Provider Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Identity Provider Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-idp-001-oidc-discovery-endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-IDP-001: OIDC Discovery Endpoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-idp-002-actor-claims-in-jwt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-IDP-002: Actor Claims in JWT
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-idp-003-care-team-role-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-IDP-003: Care Team Role Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#community-identity-provider-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Community Identity Provider Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Community Identity Provider Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-idp-004-oidc-compliance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-IDP-004: OIDC Compliance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-idp-005-multi-provider-federation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-IDP-005: Multi-Provider Federation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-idp-006-data-sovereignty" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-IDP-006: Data Sovereignty
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-idp-007-open-source-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-IDP-007: Open Source Components
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#timestamp-validation-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Timestamp Validation Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Timestamp Validation Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#req-ts-001-reject-future-dated-entries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TS-001: Reject Future-Dated Entries
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#req-ts-002-minimum-timestamp-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REQ-TS-002: Minimum Timestamp Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="nightscout-api-requirements">Nightscout Api Requirements<a class="headerlink" href="#nightscout-api-requirements" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-09-09 at <code>0adbca4b</code>.</em></p>
+<p>Domain-specific requirements extracted from requirements.md.
+See <a href="requirements.html">requirements.md</a> for the index.</p>
+<hr />
+<h3 id="req-api-001-document-deduplication-keys-per-collection">REQ-API-001: Document Deduplication Keys Per Collection<a class="headerlink" href="#req-api-001-document-deduplication-keys-per-collection" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The API specification MUST document the deduplication key fields for each collection.</p>
+<p><strong>Rationale</strong>: AID controllers must know which fields trigger dedup to avoid duplicate treatments and ensure proper sync behavior.</p>
+<p><strong>Scenarios</strong>:
+- Treatment batch upload from Loop
+- Retry after network failure
+- AAPS sync with existing data</p>
+<p><strong>Verification</strong>:
+- Spec documents <code>identifier</code> as primary key
+- Spec documents fallback keys per collection
+- Spec documents <code>API3_DEDUP_FALLBACK_ENABLED</code> behavior</p>
+<p><strong>Gap Reference</strong>: GAP-API-006</p>
+<hr />
+<hr />
+<h3 id="req-api-002-provide-machine-readable-api-specification">REQ-API-002: Provide Machine-Readable API Specification<a class="headerlink" href="#req-api-002-provide-machine-readable-api-specification" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The API SHOULD provide an OpenAPI 3.0 specification for automated client generation.</p>
+<p><strong>Rationale</strong>: Enables SDK generation, request validation, and reduces integration errors.</p>
+<p><strong>Scenarios</strong>:
+- New client development
+- API version migration
+- Automated testing</p>
+<p><strong>Verification</strong>:
+- OpenAPI spec exists and validates
+- Spec covers all v3 endpoints
+- Spec includes request/response schemas</p>
+<p><strong>Gap Reference</strong>: GAP-API-006</p>
+<hr />
+<hr />
+<h3 id="req-api-003-document-timestamp-field-per-collection">REQ-API-003: Document Timestamp Field Per Collection<a class="headerlink" href="#req-api-003-document-timestamp-field-per-collection" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The API specification MUST document the canonical timestamp field name and format for each collection.</p>
+<p><strong>Rationale</strong>: Clients need consistent timestamp handling for cross-collection queries and data correlation.</p>
+<p><strong>Scenarios</strong>:
+- Time-range queries across collections
+- Data export/import
+- Historical analysis</p>
+<p><strong>Verification</strong>:
+- Spec documents timestamp field per collection
+- Spec documents format (epoch vs ISO-8601)
+- Examples show correct field usage</p>
+<p><strong>Gap Reference</strong>: GAP-API-008</p>
+<hr />
+<h2 id="websocket-requirements">WebSocket Requirements<a class="headerlink" href="#websocket-requirements" title="Permanent link">&para;</a></h2>
+<h3 id="req-api-004-document-websocket-capabilities">REQ-API-004: Document WebSocket Capabilities<a class="headerlink" href="#req-api-004-document-websocket-capabilities" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Nightscout documentation SHOULD clearly describe both WebSocket channels and their limitations.</p>
+<p><strong>Rationale</strong>: Developers need to understand which channel suits their use case.</p>
+<p><strong>Scenarios</strong>:
+- Developer choosing between REST and WebSocket
+- Client implementing real-time updates
+- Understanding v1 vs v3 channel differences</p>
+<p><strong>Verification</strong>:
+- Documentation exists for both <code>/</code> and <code>/storage</code> namespaces
+- Supported events listed
+- Authentication methods documented</p>
+<p><strong>Gap Reference</strong>: GAP-API-013</p>
+<hr />
+<h3 id="req-api-005-cross-channel-event-propagation">REQ-API-005: Cross-Channel Event Propagation<a class="headerlink" href="#req-api-005-cross-channel-event-propagation" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Changes via any entry point (v1 REST, v3 REST, WebSocket v1) SHOULD be broadcast on all WebSocket channels.</p>
+<p><strong>Rationale</strong>: Clients shouldn't need to know which API was used for the original write.</p>
+<p><strong>Scenarios</strong>:
+- Loop uploads via v1 REST, follower subscribes to v3 storage
+- Web interface uses WebSocket v1, AAPS listens on v3</p>
+<p><strong>Verification</strong>:
+- Create treatment via v1 POST
+- Verify <code>/storage</code> channel receives <code>create</code> event</p>
+<p><strong>Gap Reference</strong>: GAP-API-014</p>
+<hr />
+<h3 id="req-api-006-websocket-rate-limiting">REQ-API-006: WebSocket Rate Limiting<a class="headerlink" href="#req-api-006-websocket-rate-limiting" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: WebSocket write operations SHOULD be rate-limited to prevent abuse.</p>
+<p><strong>Rationale</strong>: Prevent DOS attacks via rapid <code>dbAdd</code> events.</p>
+<p><strong>Scenarios</strong>:
+- Malicious client sends flood of events
+- Misbehaving client in tight loop</p>
+<p><strong>Verification</strong>:
+- Send 100 <code>dbAdd</code> events in 1 second
+- Verify rate limit response or throttling</p>
+<p><strong>Gap Reference</strong>: N/A (best practice)</p>
+<hr />
+<h3 id="req-api-023-purify-mutable-data-writes-consistently">REQ-API-023: Purify Mutable Data Writes Consistently<a class="headerlink" href="#req-api-023-purify-mutable-data-writes-consistently" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Nightscout MUST purify caller-controlled string fields for mutable data collection writes consistently across API v1 REST, API v3 REST, and legacy WebSocket entry points.</p>
+<p><strong>Rationale</strong>: Treatment, entry, device-status, food, and profile documents are shared across clients and rendered by multiple dashboard/report surfaces. A write-surface asymmetry allows a client with legitimate collection-write permission to persist unsafe strings that execute later in a viewer context.</p>
+<p><strong>Scenarios</strong>:
+- A treatment is created through API v3 and viewed in the day-to-day report.
+- A treatment is created through legacy WebSocket <code>dbAdd</code> and viewed on the dashboard.
+- A client uploads representative AAPS profile-switch and bolus-wizard treatments containing stringified JSON.
+- xDrip+ uploads a treatment with legacy eventType <code>&lt;none&gt;</code>.</p>
+<p><strong>Verification</strong>:
+- API v1 REST, API v3 create/replace/upsert/patch, and WebSocket write tests all strip event handlers and unsafe URLs from mutable data strings.
+- Existing plain-text mobile/edge-client payload fixtures still round-trip semantically.
+- Output-rendering tests verify escaping remains in dashboard/report sinks.</p>
+<p><strong>Gap Reference</strong>: GAP-API-022</p>
+<hr />
+<h2 id="plugin-system-requirements">Plugin System Requirements<a class="headerlink" href="#plugin-system-requirements" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="req-auth-001-document-permission-strings">REQ-AUTH-001: Document Permission Strings<a class="headerlink" href="#req-auth-001-document-permission-strings" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The specification MUST document all permission strings used across API endpoints.</p>
+<p><strong>Rationale</strong>: Enables client developers to request appropriate permissions for their use case.</p>
+<p><strong>Scenarios</strong>:
+- Client requesting minimal permissions
+- Custom role creation
+- Permission troubleshooting</p>
+<p><strong>Verification</strong>:
+- All endpoints list required permission
+- Permission format documented
+- Wildcard behavior documented</p>
+<p><strong>Gap Reference</strong>: GAP-API-006</p>
+<hr />
+<hr />
+<h3 id="req-auth-002-token-revocation-capability">REQ-AUTH-002: Token Revocation Capability<a class="headerlink" href="#req-auth-002-token-revocation-capability" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The authorization system SHOULD provide a mechanism to revoke access tokens without deleting subjects.</p>
+<p><strong>Rationale</strong>: Enables security response to compromised tokens while preserving audit history.</p>
+<p><strong>Scenarios</strong>:
+- Token compromise response
+- Device decommissioning
+- Permission change enforcement</p>
+<p><strong>Verification</strong>:
+- Revocation endpoint exists
+- Revoked tokens rejected
+- Revocation logged</p>
+<p><strong>Gap Reference</strong>: GAP-AUTH-002</p>
+<hr />
+<hr />
+<h3 id="req-auth-003-document-role-requirements-per-endpoint">REQ-AUTH-003: Document Role Requirements Per Endpoint<a class="headerlink" href="#req-auth-003-document-role-requirements-per-endpoint" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The OpenAPI specification SHOULD include required permissions for each endpoint.</p>
+<p><strong>Rationale</strong>: Enables automated permission checking and client-side validation.</p>
+<p><strong>Scenarios</strong>:
+- API client development
+- Permission audit
+- Automated testing</p>
+<p><strong>Verification</strong>:
+- <code>x-required-permission</code> extension on endpoints
+- Role-to-permission mapping documented
+- Default roles documented</p>
+<p><strong>Gap Reference</strong>: GAP-AUTH-001</p>
+<hr />
+<h2 id="frontendui-requirements">Frontend/UI Requirements<a class="headerlink" href="#frontendui-requirements" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="req-err-001-empty-array-handling">REQ-ERR-001: Empty Array Handling<a class="headerlink" href="#req-err-001-empty-array-handling" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Batch endpoints SHOULD return an empty success response for empty arrays, NOT create phantom records.</p>
+<p><strong>Rationale</strong>: Creating records from empty input is surprising behavior that masks bugs.</p>
+<p><strong>Scenarios</strong>:
+- Empty Batch Upload</p>
+<p><strong>Verification</strong>:
+- Submit empty array <code>[]</code> to treatments endpoint
+- Verify HTTP 200 with empty array response (or 400 error)
+- Verify no phantom records created</p>
+<p><strong>Gap Reference</strong>: GAP-ERR-001</p>
+<hr />
+<hr />
+<h3 id="req-err-002-crc-validation-enforcement">REQ-ERR-002: CRC Validation Enforcement<a class="headerlink" href="#req-err-002-crc-validation-enforcement" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Pump drivers SHOULD reject or retry data with invalid CRC, not silently use corrupted data.</p>
+<p><strong>Rationale</strong>: CRC failures indicate data corruption that could affect dosing calculations.</p>
+<p><strong>Scenarios</strong>:
+- Pump History Corruption</p>
+<p><strong>Verification</strong>:
+- Simulate CRC mismatch in pump history
+- Verify retry or rejection behavior
+- Verify corrupted data not used for IOB</p>
+<p><strong>Gap Reference</strong>: GAP-ERR-002</p>
+<hr />
+<hr />
+<h3 id="req-err-003-unknown-entry-type-logging">REQ-ERR-003: Unknown Entry Type Logging<a class="headerlink" href="#req-err-003-unknown-entry-type-logging" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Pump history decoders SHOULD log unknown entry types with full data for community analysis.</p>
+<p><strong>Rationale</strong>: Unknown entries may contain critical dosing information that is being silently discarded.</p>
+<p><strong>Scenarios</strong>:
+- New Firmware Entry Types</p>
+<p><strong>Verification</strong>:
+- Inject unknown entry type in history
+- Verify entry logged with full byte data
+- Verify user can report unknown entries</p>
+<p><strong>Gap Reference</strong>: GAP-ERR-003</p>
+<hr />
+<h2 id="specification-requirements">Specification Requirements<a class="headerlink" href="#specification-requirements" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="req-plugin-001-document-devicestatus-schema-per-controller">REQ-PLUGIN-001: Document DeviceStatus Schema Per Controller<a class="headerlink" href="#req-plugin-001-document-devicestatus-schema-per-controller" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The API specification MUST document the expected devicestatus fields for each AID controller (Loop, OpenAPS, AAPS, Trio).</p>
+<p><strong>Rationale</strong>: Controllers upload different field structures; plugins must know what to expect.</p>
+<p><strong>Scenarios</strong>:
+- Loop devicestatus upload
+- AAPS devicestatus upload
+- Plugin status display</p>
+<p><strong>Verification</strong>:
+- Spec documents Loop <code>status.loop</code> structure
+- Spec documents OpenAPS <code>status.openaps</code> structure
+- Spec documents required vs optional fields</p>
+<p><strong>Gap Reference</strong>: GAP-PLUGIN-001, GAP-PLUGIN-003</p>
+<hr />
+<hr />
+<h3 id="req-plugin-002-normalize-prediction-format">REQ-PLUGIN-002: Normalize Prediction Format<a class="headerlink" href="#req-plugin-002-normalize-prediction-format" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The visualization layer SHOULD normalize prediction data to a common format regardless of source controller.</p>
+<p><strong>Rationale</strong>: Enables consistent prediction display across Loop, OpenAPS, and AAPS.</p>
+<p><strong>Scenarios</strong>:
+- Loop single-curve prediction display
+- OpenAPS multi-curve prediction display
+- Cross-controller comparison</p>
+<p><strong>Verification</strong>:
+- Prediction visualization handles both formats
+- Documentation describes normalization approach
+- Unit tests cover both input formats</p>
+<p><strong>Gap Reference</strong>: GAP-PLUGIN-002</p>
+<hr />
+<hr />
+<h3 id="req-plugin-003-document-iobcob-calculation-models">REQ-PLUGIN-003: Document IOB/COB Calculation Models<a class="headerlink" href="#req-plugin-003-document-iobcob-calculation-models" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The specification SHOULD document the IOB and COB calculation algorithms used by Nightscout plugins.</p>
+<p><strong>Rationale</strong>: Enables cross-project validation and ensures consistent insulin/carb tracking.</p>
+<p><strong>Scenarios</strong>:
+- IOB calculation verification
+- COB absorption validation
+- Algorithm conformance testing</p>
+<p><strong>Verification</strong>:
+- IOB exponential decay model documented
+- COB absorption model documented
+- Formulas match implementation</p>
+<p><strong>Gap Reference</strong>: GAP-ALG-001</p>
+<hr />
+<h2 id="syncupload-requirements">Sync/Upload Requirements<a class="headerlink" href="#syncupload-requirements" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="req-spec-001-document-all-valid-eventtypes">REQ-SPEC-001: Document All Valid eventTypes<a class="headerlink" href="#req-spec-001-document-all-valid-eventtypes" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The OpenAPI specification MUST enumerate all valid eventType values including remote command types.</p>
+<p><strong>Rationale</strong>: Clients cannot implement correct behavior without knowing valid eventTypes.</p>
+<p><strong>Scenarios</strong>:
+- Remote Command Processing
+- Treatment Type Validation</p>
+<p><strong>Verification</strong>:
+- Compare spec enum to all eventTypes used in Nightscout server code
+- Verify all Loop/AAPS/Trio eventTypes are represented
+- Verify remote command types are documented</p>
+<p><strong>Gap Reference</strong>: GAP-SPEC-001</p>
+<hr />
+<hr />
+<h3 id="req-spec-002-document-controller-specific-fields">REQ-SPEC-002: Document Controller-Specific Fields<a class="headerlink" href="#req-spec-002-document-controller-specific-fields" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The treatments schema SHOULD document all fields used by major AID controllers with x-aid-controllers annotations.</p>
+<p><strong>Rationale</strong>: Enables round-trip data preservation and cross-system compatibility.</p>
+<p><strong>Scenarios</strong>:
+- AAPS Treatment Sync
+- Loop Treatment Sync
+- Cross-System Data Analysis</p>
+<p><strong>Verification</strong>:
+- Compare AAPS RemoteTreatment model fields to spec
+- Compare Loop treatment upload fields to spec
+- Verify no data loss on upload/download cycle</p>
+<p><strong>Gap Reference</strong>: GAP-SPEC-002</p>
+<hr />
+<hr />
+<h3 id="req-spec-003-document-deduplication-algorithm">REQ-SPEC-003: Document Deduplication Algorithm<a class="headerlink" href="#req-spec-003-document-deduplication-algorithm" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The API specification MUST document the deduplication key fields for each collection.</p>
+<p><strong>Rationale</strong>: Clients need to know which fields to include to prevent duplicates.</p>
+<p><strong>Scenarios</strong>:
+- Batch Treatment Upload
+- Network Retry Handling</p>
+<p><strong>Verification</strong>:
+- Verify spec documents <code>created_at</code> + <code>eventType</code> key for treatments
+- Verify spec documents <code>date</code> + <code>device</code> + <code>eventType</code> key for v3
+- Verify behavior when dedup key fields are missing</p>
+<p><strong>Gap Reference</strong>: GAP-SPEC-007</p>
+<hr />
+<hr />
+<h3 id="req-spec-004-define-isvalid-semantics">REQ-SPEC-004: Define isValid Semantics<a class="headerlink" href="#req-spec-004-define-isvalid-semantics" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The API specification MUST define the semantics of the <code>isValid</code> field including default value and deletion behavior.</p>
+<p><strong>Rationale</strong>: Consistent soft-delete handling across clients.</p>
+<p><strong>Scenarios</strong>:
+- Treatment Deletion
+- Sync History Query</p>
+<p><strong>Verification</strong>:
+- Document when isValid should be set to false
+- Document default value when field is missing
+- Document query behavior for isValid filter</p>
+<p><strong>Gap Reference</strong>: GAP-SPEC-006</p>
+<hr />
+<h2 id="algorithm-conformance-requirements">Algorithm Conformance Requirements<a class="headerlink" href="#algorithm-conformance-requirements" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="req-stats-001-daily-aggregation-endpoint">REQ-STATS-001: Daily Aggregation Endpoint<a class="headerlink" href="#req-stats-001-daily-aggregation-endpoint" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The system MUST provide a <code>/api/v3/stats/daily</code> endpoint returning per-day glucose statistics including mean, median, min, max, stdDev, CV, percentiles, and time-in-range.</p>
+<p><strong>Rationale</strong>: Eliminates client-side computation for daily reports, reduces data transfer by 90%+.</p>
+<p><strong>Scenarios</strong>:
+- Daily stats report generation
+- nightscout-reporter period analysis
+- Mobile app dashboards</p>
+<p><strong>Verification</strong>:
+- GET <code>/api/v3/stats/daily?from=X&amp;to=Y</code> returns array of daily stats
+- Each day includes glucose metrics and percentiles
+- Response matches documented schema</p>
+<p><strong>Gap Reference</strong>: GAP-STATS-001</p>
+<hr />
+<hr />
+<h3 id="req-stats-002-period-summary-endpoint">REQ-STATS-002: Period Summary Endpoint<a class="headerlink" href="#req-stats-002-period-summary-endpoint" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The system MUST provide a <code>/api/v3/stats/summary</code> endpoint returning aggregated statistics for configurable date ranges.</p>
+<p><strong>Rationale</strong>: Enables efficient period analysis without fetching raw entries.</p>
+<p><strong>Scenarios</strong>:
+- 14-day, 30-day, 90-day summaries
+- A1C/GMI estimation
+- Time-in-range tracking</p>
+<p><strong>Verification</strong>:
+- GET <code>/api/v3/stats/summary?from=X&amp;to=Y</code> returns period aggregation
+- Includes A1C estimates (DCCT, IFCC) and GMI
+- GVI and PGS variability metrics included</p>
+<p><strong>Gap Reference</strong>: GAP-STATS-001</p>
+<hr />
+<hr />
+<h3 id="req-stats-003-hourly-distribution-endpoint">REQ-STATS-003: Hourly Distribution Endpoint<a class="headerlink" href="#req-stats-003-hourly-distribution-endpoint" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The system SHOULD provide a <code>/api/v3/stats/hourly</code> endpoint returning hourly glucose distributions with percentiles.</p>
+<p><strong>Rationale</strong>: Enables percentile charts and time-of-day analysis without raw data.</p>
+<p><strong>Scenarios</strong>:
+- Percentile by time-of-day charts
+- Dawn phenomenon analysis
+- Post-meal pattern detection</p>
+<p><strong>Verification</strong>:
+- GET <code>/api/v3/stats/hourly</code> returns 24 hourly buckets
+- Each hour includes p10, p25, p50, p75, p90
+- Count and mean per hour included</p>
+<p><strong>Gap Reference</strong>: GAP-STATS-002</p>
+<hr />
+<hr />
+<h3 id="req-stats-004-treatment-aggregation-endpoint">REQ-STATS-004: Treatment Aggregation Endpoint<a class="headerlink" href="#req-stats-004-treatment-aggregation-endpoint" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The system SHOULD provide a <code>/api/v3/stats/treatments</code> endpoint returning insulin and carb summaries.</p>
+<p><strong>Rationale</strong>: Enables TDD tracking and insulin/carb ratio analysis.</p>
+<p><strong>Scenarios</strong>:
+- Total daily dose (TDD) tracking
+- Basal/bolus ratio analysis
+- Carb counting review</p>
+<p><strong>Verification</strong>:
+- Returns daily averages for insulin (basal, bolus, SMB)
+- Returns carb totals and meals per day
+- Includes bolus-to-basal ratio</p>
+<p><strong>Gap Reference</strong>: GAP-STATS-002</p>
+<hr />
+<hr />
+<h3 id="req-stats-005-mcp-resource-provider">REQ-STATS-005: MCP Resource Provider<a class="headerlink" href="#req-stats-005-mcp-resource-provider" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The Statistics API SHOULD be exposed as MCP (Model Context Protocol) resources for AI/LLM consumption.</p>
+<p><strong>Rationale</strong>: Enables efficient AI assistant integration for health insights.</p>
+<p><strong>Scenarios</strong>:
+- "What was my average glucose this week?"
+- "Show me my time-in-range for January"
+- Automated health summaries</p>
+<p><strong>Verification</strong>:
+- MCP resources defined for daily, summary, current stats
+- URI pattern: <code>nightscout://stats/{type}</code>
+- JSON response compatible with MCP spec</p>
+<p><strong>Gap Reference</strong>: GAP-STATS-003</p>
+<hr />
+<h3 id="req-ui-001-document-frontend-architecture">REQ-UI-001: Document Frontend Architecture<a class="headerlink" href="#req-ui-001-document-frontend-architecture" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The specification SHOULD include a frontend developer guide covering bundle structure, plugin UI development, and chart customization.</p>
+<p><strong>Rationale</strong>: Enables contributors to extend Nightscout frontend without extensive codebase archaeology.</p>
+<p><strong>Scenarios</strong>:
+- New plugin development
+- Chart customization
+- Translation contribution</p>
+<p><strong>Verification</strong>:
+- Developer guide exists
+- Build process documented
+- Plugin UI API documented</p>
+<p><strong>Gap Reference</strong>: GAP-UI-001</p>
+<hr />
+<hr />
+<h3 id="req-ui-002-chart-accessibility">REQ-UI-002: Chart Accessibility<a class="headerlink" href="#req-ui-002-chart-accessibility" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The glucose chart SHOULD provide accessible alternatives for visually impaired users.</p>
+<p><strong>Rationale</strong>: Ensures Nightscout is usable by all users regardless of visual ability.</p>
+<p><strong>Scenarios</strong>:
+- Screen reader navigation
+- Keyboard-only access
+- Data table view</p>
+<p><strong>Verification</strong>:
+- ARIA labels on chart elements
+- Data table alternative available
+- Keyboard navigation functional</p>
+<p><strong>Gap Reference</strong>: GAP-UI-002</p>
+<hr />
+<hr />
+<h3 id="req-ui-003-offline-data-access">REQ-UI-003: Offline Data Access<a class="headerlink" href="#req-ui-003-offline-data-access" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The application SHOULD cache recent data for offline viewing.</p>
+<p><strong>Rationale</strong>: Enables glucose monitoring during connectivity interruptions.</p>
+<p><strong>Scenarios</strong>:
+- Network disconnection
+- Poor mobile signal
+- Airplane mode with cached data</p>
+<p><strong>Verification</strong>:
+- Recent SGVs cached locally
+- Offline indicator displayed
+- Data refreshes on reconnection</p>
+<p><strong>Gap Reference</strong>: GAP-UI-003</p>
+<hr />
+<h2 id="api-v3-sync-requirements">API v3 Sync Requirements<a class="headerlink" href="#api-v3-sync-requirements" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="req-api3-001-history-endpoint-completeness">REQ-API3-001: History Endpoint Completeness<a class="headerlink" href="#req-api3-001-history-endpoint-completeness" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The <code>/history</code> endpoint MUST return all modified documents including soft-deleted ones (<code>isValid=false</code>).</p>
+<p><strong>Rationale</strong>: Clients need delete notifications to achieve full synchronization. Missing delete events cause stale data accumulation.</p>
+<p><strong>Scenarios</strong>:
+- Treatment deleted in web UI, Loop must remove from IOB
+- Device status pruned, client cache must update
+- Entry soft-deleted, all clients must reflect</p>
+<p><strong>Verification</strong>:
+- History response includes documents with <code>isValid: false</code>
+- Deleted documents appear within srvModified window
+- No silent document disappearance</p>
+<p><strong>Source</strong>: <code>lib/api3/generic/history/operation.js</code></p>
+<hr />
+<h3 id="req-api3-002-deduplication-determinism">REQ-API3-002: Deduplication Determinism<a class="headerlink" href="#req-api3-002-deduplication-determinism" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Deduplication MUST be deterministic based on <code>identifier</code> or collection-specific fallback fields.</p>
+<p><strong>Rationale</strong>: Prevents duplicate documents from sync race conditions. Critical for treatment safety (duplicate boluses).</p>
+<p><strong>Scenarios</strong>:
+- Loop retries failed upload - no duplicate treatment
+- AAPS uploads same reading twice - no duplicate SGV
+- Network timeout causes retry - dedup handles gracefully</p>
+<p><strong>Verification</strong>:
+- Identical POST requests don't create duplicates
+- Fallback dedup uses documented fields per collection
+- <code>API3_DEDUP_FALLBACK_ENABLED</code> behavior documented</p>
+<p><strong>Source</strong>: <code>lib/api3/generic/setup.js:29-93</code></p>
+<hr />
+<h3 id="req-api3-003-srvmodified-monotonicity">REQ-API3-003: srvModified Monotonicity<a class="headerlink" href="#req-api3-003-srvmodified-monotonicity" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: <code>srvModified</code> MUST be monotonically increasing within server timeline for a collection.</p>
+<p><strong>Rationale</strong>: Ensures history sync doesn't miss documents. If srvModified goes backward, incremental sync could skip updates.</p>
+<p><strong>Scenarios</strong>:
+- High-frequency updates (multiple per second)
+- Server time correction
+- Distributed Nightscout deployment</p>
+<p><strong>Verification</strong>:
+- Sequential updates produce increasing srvModified values
+- Clock adjustment doesn't cause srvModified regression
+- History endpoint returns in srvModified order</p>
+<p><strong>Source</strong>: <code>lib/api3/generic/history/operation.js:115-119</code></p>
+<hr />
+<h2 id="roles-gateway-requirements">Roles Gateway Requirements<a class="headerlink" href="#roles-gateway-requirements" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="req-rg-001-three-access-mode-support">REQ-RG-001: Three Access Mode Support<a class="headerlink" href="#req-rg-001-three-access-mode-support" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The roles gateway MUST support three orthogonal access modes: anonymous, identity-mapped, and API secret bypass.</p>
+<p><strong>Rationale</strong>: Different use cases require different authentication approaches - public dashboards, school/clinic RBAC, and legacy uploader compatibility.</p>
+<p><strong>Scenarios</strong>:
+- Public site view (anonymous access)
+- School health office with scheduled access (identity-mapped)
+- Legacy CGM uploader (API secret bypass)</p>
+<p><strong>Verification</strong>:
+- <code>require_identities=false</code> allows anonymous access
+- <code>require_identities=true</code> enforces identity check
+- <code>exempt_matching_api_secret=true</code> allows API secret bypass</p>
+<p><strong>Source</strong>: <code>mapping/nightscout-roles-gateway/authorization.md</code></p>
+<hr />
+<h3 id="req-rg-002-api-secret-hashing">REQ-RG-002: API Secret Hashing<a class="headerlink" href="#req-rg-002-api-secret-hashing" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: API secrets MUST be SHA1 hashed in storage, never stored in plaintext.</p>
+<p><strong>Rationale</strong>: Security requirement to protect credentials in case of database breach.</p>
+<p><strong>Verification</strong>:
+- <code>nightscout_secrets</code> table stores only hashed values
+- Comparison done via hash match</p>
+<p><strong>Source</strong>: <code>externals/nightscout-roles-gateway/lib/tokens/index.js</code></p>
+<hr />
+<h3 id="req-rg-003-time-based-access-policies">REQ-RG-003: Time-Based Access Policies<a class="headerlink" href="#req-rg-003-time-based-access-policies" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The gateway MUST support time-based access policies with weekly schedules.</p>
+<p><strong>Rationale</strong>: School/clinic deployments need access restrictions during off-hours.</p>
+<p><strong>Verification</strong>:
+- Policies can specify start/end times
+- Weekly schedule with fill patterns
+- Scheduled policies applied correctly</p>
+<p><strong>Source</strong>: <code>externals/nightscout-roles-gateway/lib/policies/index.js</code></p>
+<hr />
+<h3 id="req-rg-004-group-membership-audit">REQ-RG-004: Group Membership Audit<a class="headerlink" href="#req-rg-004-group-membership-audit" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The gateway MUST log group consent for HIPAA-adjacent audit requirements.</p>
+<p><strong>Rationale</strong>: Healthcare compliance requires audit trail of who accessed what data.</p>
+<p><strong>Verification</strong>:
+- <code>/api/v1/privy/:identity/groups/joined</code> endpoint records consent
+- <code>joined_groups</code> table maintains audit trail</p>
+<p><strong>Source</strong>: <code>externals/nightscout-roles-gateway/lib/routes.js:316-317</code></p>
+<hr />
+<h2 id="interoperability-requirements">Interoperability Requirements<a class="headerlink" href="#interoperability-requirements" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="req-ns-025-ordered-batch-write-guarantee">REQ-NS-025: Ordered Batch Write Guarantee<a class="headerlink" href="#req-ns-025-ordered-batch-write-guarantee" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The Nightscout API MUST preserve insertion order when processing batch uploads.</p>
+<p><strong>Rationale</strong>: Loop and other AID clients depend on chronological ordering for CGM data continuity. Unordered writes can cause gaps in glucose display.</p>
+<p><strong>Scenarios</strong>:
+- Loop uploads 100 SGV entries in batch
+- AAPS uploads treatments with timestamps</p>
+<p><strong>Verification</strong>:
+- Use <code>bulkWrite({ordered: true})</code> or equivalent
+- Test: upload batch, verify order matches input</p>
+<p><strong>Conformance</strong>: <code>conformance/assertions/api-behavior.yaml</code> (batch-order-preserved, batch-partial-failure)</p>
+<p><strong>Gap</strong>: GAP-DB-001</p>
+<p><strong>Source</strong>: <code>docs/10-domain/cgm-remote-monitor-design-review.md</code></p>
+<hr />
+<h3 id="req-ns-026-token-revocation-support">REQ-NS-026: Token Revocation Support<a class="headerlink" href="#req-ns-026-token-revocation-support" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The Nightscout API SHOULD support token revocation to invalidate compromised credentials.</p>
+<p><strong>Rationale</strong>: Currently no mechanism exists to revoke a compromised JWT or subject token until the subject is deleted.</p>
+<p><strong>Scenarios</strong>:
+- User suspects token compromise
+- Admin needs to revoke caregiver access</p>
+<p><strong>Verification</strong>:
+- Revocation endpoint or admin UI
+- Revoked tokens rejected on subsequent requests</p>
+<p><strong>Gap</strong>: GAP-AUTH-004</p>
+<p><strong>Source</strong>: <code>docs/10-domain/cgm-remote-monitor-design-review.md</code></p>
+<hr />
+<h3 id="req-ns-027-openapi-specification">REQ-NS-027: OpenAPI Specification<a class="headerlink" href="#req-ns-027-openapi-specification" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The Nightscout API SHOULD publish an OpenAPI 3.0 specification for all v3 endpoints.</p>
+<p><strong>Rationale</strong>: Enables SDK generation, automated testing, and documentation accuracy.</p>
+<p><strong>Scenarios</strong>:
+- Developer generates TypeScript client
+- CI validates request/response formats</p>
+<p><strong>Verification</strong>:
+- <code>swagger/openapi-v3.yaml</code> exists and validates
+- Generated client successfully calls all endpoints</p>
+<p><strong>Gap</strong>: GAP-API-001, GAP-API-006</p>
+<p><strong>Source</strong>: <code>docs/10-domain/cgm-remote-monitor-design-review.md</code></p>
+<hr />
+<h3 id="req-ns-028-sync-conflict-detection">REQ-NS-028: Sync Conflict Detection<a class="headerlink" href="#req-ns-028-sync-conflict-detection" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The Nightscout API SHOULD detect and report sync conflicts when multiple clients update the same record.</p>
+<p><strong>Rationale</strong>: Current last-write-wins behavior can silently lose data from slower clients.</p>
+<p><strong>Scenarios</strong>:
+- Loop and AAPS both update same treatment
+- Offline client syncs stale data</p>
+<p><strong>Verification</strong>:
+- Version field incremented on updates
+- 409 Conflict returned for stale updates</p>
+<p><strong>Gap</strong>: GAP-SYNC-008</p>
+<p><strong>Source</strong>: <code>docs/10-domain/cgm-remote-monitor-design-review.md</code></p>
+<hr />
+<h2 id="devicestatus-schema-requirements">DeviceStatus Schema Requirements<a class="headerlink" href="#devicestatus-schema-requirements" title="Permanent link">&para;</a></h2>
+<h3 id="req-ds-001-unified-prediction-format">REQ-DS-001: Unified Prediction Format<a class="headerlink" href="#req-ds-001-unified-prediction-format" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Nightscout SHOULD provide a unified prediction format that normalizes Loop and oref0 prediction arrays.</p>
+<p><strong>Rationale</strong>: Loop uses single <code>predicted.values</code> array while oref0 uses 4 separate curves (IOB, COB, UAM, ZT). Third-party tools must implement dual parsers.</p>
+<p><strong>Scenarios</strong>:
+- Third-party tool displays predictions from any controller
+- Report generates unified prediction chart</p>
+<p><strong>Verification</strong>:
+- API endpoint returns normalized prediction structure
+- Both Loop and oref0 data parse to same format</p>
+<p><strong>Gap</strong>: GAP-DS-001</p>
+<p><strong>Source</strong>: <code>docs/10-domain/nightscout-devicestatus-schema-audit.md</code></p>
+<hr />
+<h3 id="req-ds-002-iob-component-breakdown">REQ-DS-002: IOB Component Breakdown<a class="headerlink" href="#req-ds-002-iob-component-breakdown" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: All controllers SHOULD report IOB with basal and bolus components.</p>
+<p><strong>Rationale</strong>: Loop reports only total IOB, while oref0 provides <code>basaliob</code> and <code>bolusiob</code>. This limits analysis capabilities.</p>
+<p><strong>Scenarios</strong>:
+- Report shows IOB by source (basal vs bolus)
+- Retrospective analysis of insulin delivery</p>
+<p><strong>Verification</strong>:
+- devicestatus includes <code>iob.basaliob</code> and <code>iob.bolusiob</code>
+- Reports can chart IOB components separately</p>
+<p><strong>Conformance</strong>: <code>conformance/assertions/devicestatus-fields.yaml</code> (iob-total-present, iob-basal-component)</p>
+<p><strong>Gap</strong>: GAP-DS-002</p>
+<p><strong>Source</strong>: <code>docs/10-domain/nightscout-devicestatus-schema-audit.md</code></p>
+<hr />
+<h3 id="req-ds-003-override-status-reporting">REQ-DS-003: Override Status Reporting<a class="headerlink" href="#req-ds-003-override-status-reporting" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: All controllers SHOULD report active override/temporary target status in devicestatus.</p>
+<p><strong>Rationale</strong>: Loop has <code>status.override</code> but oref0 uses profile switches, which aren't visible in devicestatus.</p>
+<p><strong>Scenarios</strong>:
+- Dashboard shows active override for any controller
+- Reports annotate periods with overrides active</p>
+<p><strong>Verification</strong>:
+- devicestatus includes override field for all controllers
+- Profile switch events linked to devicestatus</p>
+<p><strong>Conformance</strong>: <code>conformance/assertions/devicestatus-fields.yaml</code> (override-active-indicator, override-name-present)</p>
+<p><strong>Gap</strong>: GAP-DS-003</p>
+<p><strong>Source</strong>: <code>docs/10-domain/nightscout-devicestatus-schema-audit.md</code></p>
+<hr />
+<h3 id="req-ds-004-eventual-bg-prediction">REQ-DS-004: Eventual BG Prediction<a class="headerlink" href="#req-ds-004-eventual-bg-prediction" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: All controllers SHOULD report <code>eventualBG</code> prediction endpoint.</p>
+<p><strong>Rationale</strong>: oref0 explicitly reports <code>eventualBG</code>, Loop does not. This limits prediction visualization.</p>
+<p><strong>Scenarios</strong>:
+- Dashboard shows eventual BG for any controller
+- Alerts based on eventual BG threshold</p>
+<p><strong>Verification</strong>:
+- devicestatus includes <code>eventualBG</code> field
+- Value represents prediction endpoint (2-6 hours out)</p>
+<p><strong>Conformance</strong>: <code>conformance/assertions/devicestatus-fields.yaml</code> (eventualbg-present, prediction-array-present)</p>
+<p><strong>Gap</strong>: GAP-DS-004</p>
+<p><strong>Source</strong>: <code>docs/10-domain/nightscout-devicestatus-schema-audit.md</code></p>
+<hr />
+<h2 id="ios-sdk-requirements-2026-01-31">iOS SDK Requirements (2026-01-31)<a class="headerlink" href="#ios-sdk-requirements-2026-01-31" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="req-sdk-001-v3-api-support">REQ-SDK-001: v3 API Support<a class="headerlink" href="#req-sdk-001-v3-api-support" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: NightscoutKit Swift SDK MUST support API v3 endpoints as primary interface.</p>
+<p><strong>Rationale</strong>: v3 provides incremental sync, soft-delete detection, and granular permissions.</p>
+<p><strong>Scenarios</strong>:
+- Client fetches entries via <code>/api/v3/entries</code>
+- Client uses <code>/api/v3/{collection}/history</code> for incremental sync
+- Deleted documents detected via <code>isValid: false</code></p>
+<p><strong>Verification</strong>:
+- SDK passes v3 conformance tests
+- History sync returns added, updated, and deleted documents</p>
+<p><strong>Gap</strong>: GAP-API-003</p>
+<p><strong>Source</strong>: <code>docs/sdqctl-proposals/nightscoutkit-swift-sdk-design.md</code></p>
+<hr />
+<h3 id="req-sdk-002-multiple-authentication-methods">REQ-SDK-002: Multiple Authentication Methods<a class="headerlink" href="#req-sdk-002-multiple-authentication-methods" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: NightscoutKit Swift SDK MUST support API_SECRET, JWT, and Token authentication.</p>
+<p><strong>Rationale</strong>: Different deployment scenarios require different auth methods.</p>
+<p><strong>Scenarios</strong>:
+- API_SECRET: Traditional SHA1 header for full access
+- JWT: Bearer token for granular permissions
+- Token: Query parameter for simple read access</p>
+<p><strong>Verification</strong>:
+- All three auth methods authenticate successfully
+- JWT permissions respected (read-only token cannot write)</p>
+<p><strong>Gap</strong>: GAP-API-003, GAP-API-004</p>
+<p><strong>Source</strong>: <code>docs/sdqctl-proposals/nightscoutkit-swift-sdk-design.md</code></p>
+<hr />
+<h3 id="req-sdk-003-incremental-sync">REQ-SDK-003: Incremental Sync<a class="headerlink" href="#req-sdk-003-incremental-sync" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: NightscoutKit Swift SDK MUST provide SyncManager for incremental synchronization.</p>
+<p><strong>Rationale</strong>: Full sync is expensive; incremental sync reduces bandwidth and latency.</p>
+<p><strong>Scenarios</strong>:
+- First sync: fetch all documents in date range
+- Subsequent sync: fetch only changes since <code>Last-Modified</code>
+- Deleted documents: return identifiers for local cache eviction</p>
+<p><strong>Verification</strong>:
+- SyncManager tracks last-modified per collection
+- Second sync returns only new/changed documents</p>
+<p><strong>Gap</strong>: GAP-API-001, GAP-API-003</p>
+<p><strong>Source</strong>: <code>docs/sdqctl-proposals/nightscoutkit-swift-sdk-design.md</code></p>
+<hr />
+<h3 id="req-sdk-004-swift-concurrency">REQ-SDK-004: Swift Concurrency<a class="headerlink" href="#req-sdk-004-swift-concurrency" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: NightscoutKit Swift SDK MUST use async/await for all network operations.</p>
+<p><strong>Rationale</strong>: Modern Swift concurrency provides cleaner code and better error handling.</p>
+<p><strong>Scenarios</strong>:
+- All fetch/create/update/delete operations are async
+- Actor-based client ensures thread safety
+- No callback-based APIs in public interface</p>
+<p><strong>Verification</strong>:
+- All public methods are marked <code>async throws</code>
+- Client is declared as <code>actor</code></p>
+<p><strong>Gap</strong>: GAP-API-003</p>
+<p><strong>Source</strong>: <code>docs/sdqctl-proposals/nightscoutkit-swift-sdk-design.md</code></p>
+<hr />
+<h2 id="identity-provider-requirements">Identity Provider Requirements<a class="headerlink" href="#identity-provider-requirements" title="Permanent link">&para;</a></h2>
+<h3 id="req-idp-001-oidc-discovery-endpoint">REQ-IDP-001: OIDC Discovery Endpoint<a class="headerlink" href="#req-idp-001-oidc-discovery-endpoint" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Nightscout instances MAY expose OIDC discovery metadata at <code>.well-known/openid-configuration</code>.</p>
+<p><strong>Rationale</strong>: Standard OIDC discovery enables client auto-configuration and federation.</p>
+<p><strong>Scenarios</strong>:
+- Client auto-configures from discovery document
+- Federation with external IdPs</p>
+<p><strong>Verification</strong>:
+- GET <code>/.well-known/openid-configuration</code> returns valid OIDC metadata
+- Standard claims (issuer, authorization_endpoint, etc.) present</p>
+<p><strong>Gap</strong>: GAP-IDP-001</p>
+<p><strong>Source</strong>: <code>docs/10-domain/trusted-identity-providers.md</code></p>
+<hr />
+<h3 id="req-idp-002-actor-claims-in-jwt">REQ-IDP-002: Actor Claims in JWT<a class="headerlink" href="#req-idp-002-actor-claims-in-jwt" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Identity tokens SHOULD include actor claims identifying the authenticated user.</p>
+<p><strong>Rationale</strong>: Enables care team visibility and audit trails for all data modifications.</p>
+<p><strong>Scenarios</strong>:
+- Parent boluses on behalf of child
+- School nurse acknowledges alarm
+- Automated agent (Loop) enacts temp basal</p>
+<p><strong>Verification</strong>:
+- JWT includes <code>actor_type</code>, <code>actor_name</code>, <code>act</code> claims
+- Treatments tagged with actor reference</p>
+<p><strong>Gap</strong>: GAP-IDP-001, GAP-AUTH-001</p>
+<p><strong>Source</strong>: <code>docs/10-domain/trusted-identity-providers.md</code>, <code>externals/cgm-remote-monitor/docs/proposals/oidc-actor-identity-proposal.md</code></p>
+<hr />
+<h3 id="req-idp-003-care-team-role-support">REQ-IDP-003: Care Team Role Support<a class="headerlink" href="#req-idp-003-care-team-role-support" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Nightscout SHOULD support defining care team roles with differentiated permissions.</p>
+<p><strong>Rationale</strong>: Different caregivers need different access levels (parent vs school nurse vs grandparent).</p>
+<p><strong>Scenarios</strong>:
+- Parent has full admin access
+- School nurse can view and acknowledge alarms
+- Grandparent has read-only access
+- Permissions can be time-limited</p>
+<p><strong>Verification</strong>:
+- Role definitions in database or config
+- Permission check respects role assignments
+- Time-based access expiration works</p>
+<p><strong>Gap</strong>: GAP-IDP-003, GAP-AUTH-002</p>
+<p><strong>Source</strong>: <code>docs/10-domain/trusted-identity-providers.md</code></p>
+<hr />
+<h2 id="community-identity-provider-requirements">Community Identity Provider Requirements<a class="headerlink" href="#community-identity-provider-requirements" title="Permanent link">&para;</a></h2>
+<h3 id="req-idp-004-oidc-compliance">REQ-IDP-004: OIDC Compliance<a class="headerlink" href="#req-idp-004-oidc-compliance" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Community IdP MUST be fully OIDC-compliant.</p>
+<p><strong>Rationale</strong>: OIDC is the industry standard for identity federation. Non-standard auth creates integration burden.</p>
+<p><strong>Scenarios</strong>: Provider selection, client integration, security audit.</p>
+<p><strong>Verification</strong>: OIDC conformance test suite, discovery endpoint validation.</p>
+<p><strong>Source</strong>: <code>docs/sdqctl-proposals/ns-community-idp-proposal.md</code></p>
+<hr />
+<h3 id="req-idp-005-multi-provider-federation">REQ-IDP-005: Multi-Provider Federation<a class="headerlink" href="#req-idp-005-multi-provider-federation" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: Federation MUST support multiple identity providers simultaneously.</p>
+<p><strong>Rationale</strong>: Single IdP creates central point of failure and control. Federation preserves user choice.</p>
+<p><strong>Scenarios</strong>: User selects provider, provider joins federation, provider leaves federation.</p>
+<p><strong>Verification</strong>: Test login via multiple providers, verify claim normalization.</p>
+<p><strong>Source</strong>: <code>docs/sdqctl-proposals/ns-community-idp-proposal.md</code></p>
+<hr />
+<h3 id="req-idp-006-data-sovereignty">REQ-IDP-006: Data Sovereignty<a class="headerlink" href="#req-idp-006-data-sovereignty" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: User data MUST remain with user's chosen provider.</p>
+<p><strong>Rationale</strong>: GDPR compliance, user trust, regional data residency requirements.</p>
+<p><strong>Scenarios</strong>: EU user chooses NS10BE, US user chooses t1pal.</p>
+<p><strong>Verification</strong>: Verify no cross-provider data replication of PII.</p>
+<p><strong>Source</strong>: <code>docs/sdqctl-proposals/ns-community-idp-proposal.md</code></p>
+<hr />
+<h3 id="req-idp-007-open-source-components">REQ-IDP-007: Open Source Components<a class="headerlink" href="#req-idp-007-open-source-components" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: All IdP components MUST be open source.</p>
+<p><strong>Rationale</strong>: Transparency, community trust, auditability, sustainability.</p>
+<p><strong>Scenarios</strong>: Component selection, security audit, community contribution.</p>
+<p><strong>Verification</strong>: All repos public, OSI-approved licenses.</p>
+<p><strong>Source</strong>: <code>docs/sdqctl-proposals/ns-community-idp-proposal.md</code></p>
+<hr />
+<h2 id="timestamp-validation-requirements">Timestamp Validation Requirements<a class="headerlink" href="#timestamp-validation-requirements" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="req-ts-001-reject-future-dated-entries">REQ-TS-001: Reject Future-Dated Entries<a class="headerlink" href="#req-ts-001-reject-future-dated-entries" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The server SHOULD reject entries with <code>date</code> or <code>created_at</code> more than 24 hours in the future.</p>
+<p><strong>Rationale</strong>: Future-dated entries break SAGE/CAGE pills, corrupt time-range queries, and indicate corrupt data from client-side bugs.</p>
+<p><strong>Scenarios</strong>:
+- CGM sensor activation with corrupted timestamp
+- Device clock skew combined with relative time math
+- Date serialization roundtrip bugs</p>
+<p><strong>Verification</strong>:
+- POST treatment with <code>created_at</code> = now + 48h
+- Verify HTTP 400 response with descriptive error
+- Verify <code>futureitems.js</code> admin plugin still works for cleanup</p>
+<p><strong>Gap Reference</strong>: GAP-API-021</p>
+<p><strong>Source</strong>: <a href="https://github.com/LoopKit/Loop/issues/2087">LoopKit/Loop#2087</a>, <a href="https://github.com/nightscout/cgm-remote-monitor/issues/8453">nightscout/cgm-remote-monitor#8453</a></p>
+<hr />
+<h3 id="req-ts-002-minimum-timestamp-validation">REQ-TS-002: Minimum Timestamp Validation<a class="headerlink" href="#req-ts-002-minimum-timestamp-validation" title="Permanent link">&para;</a></h3>
+<p><strong>Statement</strong>: The server MUST reject entries with <code>date</code> before 2000-01-01 (epoch 946684800000).</p>
+<p><strong>Rationale</strong>: Timestamps before Y2K are almost certainly corrupt. This validation already exists in v3 API.</p>
+<p><strong>Verification</strong>:
+- Verify <code>MIN_TIMESTAMP</code> constant enforced in <code>validateCommon()</code>
+- POST entry with <code>date</code> = 0 → HTTP 400</p>
+<p><strong>Status</strong>: Implemented (v3 API only)</p>
+<p><strong>Source</strong>: <code>lib/api3/const.json:MIN_TIMESTAMP</code></p>
+<hr />
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

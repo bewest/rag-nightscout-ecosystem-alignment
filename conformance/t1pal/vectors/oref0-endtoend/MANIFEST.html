@@ -1,0 +1,4609 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/conformance/t1pal/vectors/oref0-endtoend/MANIFEST.html">
+      
+      
+        <link rel="prev" href="index.html">
+      
+      
+        <link rel="next" href="../xval/index.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>oref0 End-to-End Test Vector Manifest - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#oref0-end-to-end-test-vector-manifest" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              oref0 End-to-End Test Vector Manifest
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../docs/00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../docs/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../docs/00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../docs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    More
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    .github/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12_2" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    conformance/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_12_2" id="__nav_12_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_12_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_12_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    conformance/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../e2e-nightscout/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    e2e-nightscout/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../field-transforms/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    field-transforms/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../scenarios/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    scenarios/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12_2_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    t1pal/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_12_2_5" id="__nav_12_2_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_12_2_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_12_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    t1pal/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../docs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12_2_5_3" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    vectors/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_12_2_5_3" id="__nav_12_2_5_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_12_2_5_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_12_2_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    vectors/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12_2_5_3_2" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    oref0-endtoend/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_12_2_5_3_2" id="__nav_12_2_5_3_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_12_2_5_3_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_12_2_5_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    oref0-endtoend/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    oref0 End-to-End Test Vector Manifest
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="MANIFEST.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    oref0 End-to-End Test Vector Manifest
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#natural-vectors-tv-001--tv-086" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Natural Vectors (TV-001 – TV-086)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Natural Vectors (TV-001 – TV-086)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#special-note-tv-086" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Special note: TV-086
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#synthetic-vectors-tv-087--tv-108" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Synthetic Vectors (TV-087 – TV-108)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Synthetic Vectors (TV-087 – TV-108)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#boundary-conditions-tested" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Boundary Conditions Tested
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consistency-issues-in-synthetic-vectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consistency Issues in Synthetic Vectors
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Consistency Issues in Synthetic Vectors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#issue-1-stale-originaloutput-all-22-vectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Issue 1: Stale originalOutput (all 22 vectors)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-2-activity-not-updated-when-iob-changed-all-22-vectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Issue 2: activity not updated when IOB changed (all 22 vectors)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-3-iobwithzerotemp-not-updated-all-22-vectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Issue 3: iobWithZeroTemp not updated (all 22 vectors)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-4-expected-values-are-formula-derived-not-algorithm-verified" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Issue 4: expected values are formula-derived, not algorithm-verified
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-5-deltaavgdelta-dont-reflect-bg-change-design-choice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Issue 5: Delta/avgDelta don't reflect BG change (design choice)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-6-tv-106-missing-parametricvariantof" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Issue 6: TV-106 missing parametricVariantOf
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cross-validation-recommendations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross-Validation Recommendations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cross-Validation Recommendations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tier-1-ground-truth-reliable-78-vectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 1: Ground-Truth Reliable (78 vectors)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tier-2-ground-truth-reliable-with-caveats-1-vector" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 2: Ground-Truth Reliable with Caveats (1 vector)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tier-3-boundary-smoke-tests-only-22-vectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 3: Boundary Smoke Tests Only (22 vectors)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#suggested-tags-for-filtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Suggested Tags for Filtering
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tool-filtering-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tool Filtering Status
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Tool Filtering Status">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#current-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Current state
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#whats-needed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What's needed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workaround-current" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workaround (current)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#file-inventory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File Inventory
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../xval/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xval/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../site/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    site/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../specs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    specs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../templates/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    templates/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../workflows/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    workflows/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../LIVE-BACKLOG.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Root files
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#natural-vectors-tv-001--tv-086" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Natural Vectors (TV-001 – TV-086)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Natural Vectors (TV-001 – TV-086)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#special-note-tv-086" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Special note: TV-086
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#synthetic-vectors-tv-087--tv-108" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Synthetic Vectors (TV-087 – TV-108)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Synthetic Vectors (TV-087 – TV-108)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#boundary-conditions-tested" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Boundary Conditions Tested
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consistency-issues-in-synthetic-vectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consistency Issues in Synthetic Vectors
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Consistency Issues in Synthetic Vectors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#issue-1-stale-originaloutput-all-22-vectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Issue 1: Stale originalOutput (all 22 vectors)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-2-activity-not-updated-when-iob-changed-all-22-vectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Issue 2: activity not updated when IOB changed (all 22 vectors)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-3-iobwithzerotemp-not-updated-all-22-vectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Issue 3: iobWithZeroTemp not updated (all 22 vectors)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-4-expected-values-are-formula-derived-not-algorithm-verified" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Issue 4: expected values are formula-derived, not algorithm-verified
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-5-deltaavgdelta-dont-reflect-bg-change-design-choice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Issue 5: Delta/avgDelta don't reflect BG change (design choice)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-6-tv-106-missing-parametricvariantof" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Issue 6: TV-106 missing parametricVariantOf
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cross-validation-recommendations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross-Validation Recommendations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cross-Validation Recommendations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tier-1-ground-truth-reliable-78-vectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 1: Ground-Truth Reliable (78 vectors)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tier-2-ground-truth-reliable-with-caveats-1-vector" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 2: Ground-Truth Reliable with Caveats (1 vector)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tier-3-boundary-smoke-tests-only-22-vectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 3: Boundary Smoke Tests Only (22 vectors)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#suggested-tags-for-filtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Suggested Tags for Filtering
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tool-filtering-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tool Filtering Status
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Tool Filtering Status">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#current-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Current state
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#whats-needed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What's needed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workaround-current" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workaround (current)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#file-inventory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File Inventory
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="oref0-end-to-end-test-vector-manifest">oref0 End-to-End Test Vector Manifest<a class="headerlink" href="#oref0-end-to-end-test-vector-manifest" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-03-29 at <code>d5193b92</code>.</em></p>
+<blockquote>
+<p>Generated 2025-07-14 — Audit of TV-001 through TV-108</p>
+</blockquote>
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Total vectors</td>
+<td>100</td>
+</tr>
+<tr>
+<td>Natural (captured)</td>
+<td>78 (TV-001 – TV-086)</td>
+</tr>
+<tr>
+<td>Synthetic (generated)</td>
+<td>22 (TV-087 – TV-108)</td>
+</tr>
+<tr>
+<td>Missing IDs</td>
+<td>TV-003, TV-033–035, TV-037, TV-057, TV-061, TV-071</td>
+</tr>
+<tr>
+<td>Natural BG range</td>
+<td>70.5 – 218 mg/dL (mean 128.0)</td>
+</tr>
+<tr>
+<td>Synthetic BG range</td>
+<td>55 – 300 mg/dL</td>
+</tr>
+<tr>
+<td>Natural IOB range</td>
+<td>−0.530 – 2.996 U</td>
+</tr>
+<tr>
+<td>Synthetic IOB range</td>
+<td>−1.000 – 2.000 U</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="natural-vectors-tv-001--tv-086">Natural Vectors (TV-001 – TV-086)<a class="headerlink" href="#natural-vectors-tv-001--tv-086" title="Permanent link">&para;</a></h2>
+<p>All 78 natural vectors have <code>category: "basal-adjustment"</code> and were extracted from
+real AAPS <code>ReplayApsResultsTest</code> fixtures (October–January 2023-24), except TV-086
+which comes from the <code>bewest/openaps-example</code> repository (July 2016).</p>
+<p>Each natural vector contains:</p>
+<ul>
+<li><strong>Internally consistent inputs</strong>: glucose, delta, IOB, activity all captured from
+  the same algorithm invocation on a real phone.</li>
+<li><strong>Verified originalOutput</strong>: the <code>originalOutput</code> field contains the actual oref0
+  result computed by AAPS at that timestamp, with matching <code>predBGs</code> trajectories.</li>
+<li><strong>Ground-truth reliable</strong>: safe to use as oracle comparisons in cross-validation.</li>
+</ul>
+<h3 id="special-note-tv-086">Special note: TV-086<a class="headerlink" href="#special-note-tv-086" title="Permanent link">&para;</a></h3>
+<p>TV-086 is the only natural vector with nonzero <code>bolusIob</code> (2.052 U) and the highest
+total IOB (2.996 U). It uses different targets (min_bg 106, max_bg 125 vs the usual
+91 or 99). It has <strong>no originalOutput</strong> field — it was extracted from raw OpenAPS
+data without a captured algorithm result.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Filename</th>
+<th>BG</th>
+<th>Delta</th>
+<th>IOB</th>
+<th>EventualBG</th>
+<th>Scenario</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TV-001</td>
+<td>TV-001-2023-10-28_133013.json</td>
+<td>90.8</td>
+<td>+6.95</td>
+<td>−0.53</td>
+<td>154</td>
+<td>Rising from normal, negative basal IOB</td>
+</tr>
+<tr>
+<td>TV-002</td>
+<td>TV-002-2023-10-28_133514.json</td>
+<td>89.3</td>
+<td>+5.59</td>
+<td>−0.50</td>
+<td>143</td>
+<td>Rising from normal, negative basal IOB</td>
+</tr>
+<tr>
+<td>TV-004</td>
+<td>TV-004-2023-10-28_134513.json</td>
+<td>90.8</td>
+<td>+12.39</td>
+<td>−0.52</td>
+<td>164</td>
+<td>Fast rise from normal</td>
+</tr>
+<tr>
+<td>TV-005</td>
+<td>TV-005-2023-10-28_135013.json</td>
+<td>86.2</td>
+<td>+8.81</td>
+<td>−0.49</td>
+<td>145</td>
+<td>Moderate rise from low-normal</td>
+</tr>
+<tr>
+<td>TV-006</td>
+<td>TV-006-2023-10-28_135514.json</td>
+<td>129.2</td>
+<td>+27.12</td>
+<td>−0.45</td>
+<td>295</td>
+<td>Rapid rise approaching high</td>
+</tr>
+<tr>
+<td>TV-007</td>
+<td>TV-007-2023-10-28_140013.json</td>
+<td>133.8</td>
+<td>+17.38</td>
+<td>−0.42</td>
+<td>260</td>
+<td>Continued high rise</td>
+</tr>
+<tr>
+<td>TV-008</td>
+<td>TV-008-2023-10-28_140514.json</td>
+<td>155.9</td>
+<td>+16.28</td>
+<td>−0.39</td>
+<td>274</td>
+<td>High and rising</td>
+</tr>
+<tr>
+<td>TV-009</td>
+<td>TV-009-2023-10-28_141014.json</td>
+<td>174.4</td>
+<td>+19.71</td>
+<td>−0.36</td>
+<td>305</td>
+<td>High and rising fast</td>
+</tr>
+<tr>
+<td>TV-010</td>
+<td>TV-010-2023-10-28_141513.json</td>
+<td>189.3</td>
+<td>+16.07</td>
+<td>−0.33</td>
+<td>301</td>
+<td>High plateau</td>
+</tr>
+<tr>
+<td>TV-011</td>
+<td>TV-011-2023-10-28_142013.json</td>
+<td>192.5</td>
+<td>+7.08</td>
+<td>−0.30</td>
+<td>248</td>
+<td>High, rise slowing</td>
+</tr>
+<tr>
+<td>TV-012</td>
+<td>TV-012-2023-10-28_142513.json</td>
+<td>211.2</td>
+<td>+13.55</td>
+<td>−0.27</td>
+<td>302</td>
+<td>Very high</td>
+</tr>
+<tr>
+<td>TV-013</td>
+<td>TV-013-2023-10-28_143013.json</td>
+<td>194.0</td>
+<td>−5.20</td>
+<td>−0.24</td>
+<td>258</td>
+<td>High, starting to fall</td>
+</tr>
+<tr>
+<td>TV-014</td>
+<td>TV-014-2023-10-28_143514.json</td>
+<td>207.0</td>
+<td>+2.91</td>
+<td>−0.22</td>
+<td>234</td>
+<td>High, near flat</td>
+</tr>
+<tr>
+<td>TV-015</td>
+<td>TV-015-2023-10-28_144013.json</td>
+<td>184.8</td>
+<td>−10.50</td>
+<td>−0.19</td>
+<td>202</td>
+<td>High, falling</td>
+</tr>
+<tr>
+<td>TV-016</td>
+<td>TV-016-2023-10-28_145014.json</td>
+<td>173.3</td>
+<td>−5.74</td>
+<td>−0.15</td>
+<td>156</td>
+<td>Falling from high</td>
+</tr>
+<tr>
+<td>TV-017</td>
+<td>TV-017-2023-10-29_191512.json</td>
+<td>111.5</td>
+<td>+12.40</td>
+<td>−0.28</td>
+<td>80</td>
+<td>In-range, rising, negative longAvg</td>
+</tr>
+<tr>
+<td>TV-018</td>
+<td>TV-018-2023-10-29_192012.json</td>
+<td>88.4</td>
+<td>−4.39</td>
+<td>−0.36</td>
+<td>47</td>
+<td>Low-normal, falling</td>
+</tr>
+<tr>
+<td>TV-019</td>
+<td>TV-019-2023-10-29_192512.json</td>
+<td>77.0</td>
+<td>−15.31</td>
+<td>−0.43</td>
+<td>42</td>
+<td>Low, falling fast</td>
+</tr>
+<tr>
+<td>TV-020</td>
+<td>TV-020-2023-10-31_042017.json</td>
+<td>197.4</td>
+<td>+29.49</td>
+<td>+0.31</td>
+<td>340</td>
+<td>High, rapid rise, positive IOB</td>
+</tr>
+<tr>
+<td>TV-021</td>
+<td>TV-021-2023-10-31_042517.json</td>
+<td>180.0</td>
+<td>+1.15</td>
+<td>+0.35</td>
+<td>165</td>
+<td>High, near flat, positive IOB</td>
+</tr>
+<tr>
+<td>TV-022</td>
+<td>TV-022-2023-10-31_043017.json</td>
+<td>209.4</td>
+<td>+13.81</td>
+<td>+0.39</td>
+<td>270</td>
+<td>Very high, rising</td>
+</tr>
+<tr>
+<td>TV-023</td>
+<td>TV-023-2023-10-31_043517.json</td>
+<td>188.4</td>
+<td>−4.18</td>
+<td>+0.42</td>
+<td>218</td>
+<td>High, slight fall</td>
+</tr>
+<tr>
+<td>TV-024</td>
+<td>TV-024-2023-10-31_044017.json</td>
+<td>172.5</td>
+<td>−17.59</td>
+<td>+0.46</td>
+<td>165</td>
+<td>High, falling fast</td>
+</tr>
+<tr>
+<td>TV-025</td>
+<td>TV-025-2023-10-31_044516.json</td>
+<td>181.4</td>
+<td>+0.62</td>
+<td>+0.41</td>
+<td>172</td>
+<td>High, flat</td>
+</tr>
+<tr>
+<td>TV-026</td>
+<td>TV-026-2023-10-31_045017.json</td>
+<td>146.2</td>
+<td>−20.52</td>
+<td>+0.44</td>
+<td>81</td>
+<td>Mid-range, dropping fast</td>
+</tr>
+<tr>
+<td>TV-027</td>
+<td>TV-027-2023-10-31_045517.json</td>
+<td>147.6</td>
+<td>−10.78</td>
+<td>+0.39</td>
+<td>81</td>
+<td>Mid-range, dropping</td>
+</tr>
+<tr>
+<td>TV-028</td>
+<td>TV-028-2023-10-31_050018.json</td>
+<td>142.1</td>
+<td>−3.22</td>
+<td>+0.34</td>
+<td>74</td>
+<td>Mid-range, slight fall</td>
+</tr>
+<tr>
+<td>TV-029</td>
+<td>TV-029-2023-10-31_050517.json</td>
+<td>95.1</td>
+<td>−33.18</td>
+<td>+0.29</td>
+<td>−18</td>
+<td>Crash: normal BG, massive drop</td>
+</tr>
+<tr>
+<td>TV-030</td>
+<td>TV-030-2023-10-31_051017.json</td>
+<td>95.8</td>
+<td>−15.19</td>
+<td>+0.24</td>
+<td>−2</td>
+<td>Near-low, fast fall</td>
+</tr>
+<tr>
+<td>TV-031</td>
+<td>TV-031-2023-10-31_051517.json</td>
+<td>91.0</td>
+<td>−2.95</td>
+<td>+0.18</td>
+<td>4</td>
+<td>Normal BG, slow fall</td>
+</tr>
+<tr>
+<td>TV-032</td>
+<td>TV-032-2023-10-31_052017.json</td>
+<td>93.2</td>
+<td>−0.13</td>
+<td>+0.14</td>
+<td>76</td>
+<td>Near-normal, flat</td>
+</tr>
+<tr>
+<td>TV-036</td>
+<td>TV-036-2023-10-31_054018.json</td>
+<td>87.7</td>
+<td>+15.64</td>
+<td>−0.04</td>
+<td>164</td>
+<td>Low-normal, rising fast</td>
+</tr>
+<tr>
+<td>TV-038</td>
+<td>TV-038-2023-10-31_055017.json</td>
+<td>98.1</td>
+<td>+14.87</td>
+<td>−0.04</td>
+<td>178</td>
+<td>In-range, rising</td>
+</tr>
+<tr>
+<td>TV-039</td>
+<td>TV-039-2023-10-31_055518.json</td>
+<td>128.7</td>
+<td>+31.77</td>
+<td>+0.01</td>
+<td>276</td>
+<td>Rapid rise, near-zero IOB</td>
+</tr>
+<tr>
+<td>TV-040</td>
+<td>TV-040-2023-10-31_060018.json</td>
+<td>145.5</td>
+<td>+21.41</td>
+<td>+0.05</td>
+<td>271</td>
+<td>Rising, low IOB</td>
+</tr>
+<tr>
+<td>TV-041</td>
+<td>TV-041-2023-10-31_060518.json</td>
+<td>142.2</td>
+<td>+3.44</td>
+<td>+0.10</td>
+<td>156</td>
+<td>Mid-range, slow rise</td>
+</tr>
+<tr>
+<td>TV-042</td>
+<td>TV-042-2023-10-31_061018.json</td>
+<td>170.8</td>
+<td>+17.96</td>
+<td>+0.14</td>
+<td>260</td>
+<td>High, rising</td>
+</tr>
+<tr>
+<td>TV-043</td>
+<td>TV-043-2023-10-31_061519.json</td>
+<td>150.5</td>
+<td>−4.02</td>
+<td>+0.18</td>
+<td>134</td>
+<td>Mid-range, slight fall</td>
+</tr>
+<tr>
+<td>TV-044</td>
+<td>TV-044-2023-10-31_062018.json</td>
+<td>194.3</td>
+<td>+22.44</td>
+<td>+0.18</td>
+<td>295</td>
+<td>High, rapid rise</td>
+</tr>
+<tr>
+<td>TV-045</td>
+<td>TV-045-2023-10-31_062518.json</td>
+<td>171.6</td>
+<td>−0.51</td>
+<td>+0.22</td>
+<td>154</td>
+<td>High, flat</td>
+</tr>
+<tr>
+<td>TV-046</td>
+<td>TV-046-2023-10-31_063018.json</td>
+<td>168.8</td>
+<td>−9.41</td>
+<td>+0.26</td>
+<td>183</td>
+<td>High, falling</td>
+</tr>
+<tr>
+<td>TV-047</td>
+<td>TV-047-2023-10-31_063519.json</td>
+<td>199.4</td>
+<td>+19.42</td>
+<td>+0.25</td>
+<td>263</td>
+<td>High, rising</td>
+</tr>
+<tr>
+<td>TV-048</td>
+<td>TV-048-2023-10-31_064018.json</td>
+<td>198.7</td>
+<td>+9.69</td>
+<td>+0.29</td>
+<td>233</td>
+<td>High, slow rise</td>
+</tr>
+<tr>
+<td>TV-049</td>
+<td>TV-049-2023-10-31_064519.json</td>
+<td>188.2</td>
+<td>−7.23</td>
+<td>+0.33</td>
+<td>189</td>
+<td>High, slight fall</td>
+</tr>
+<tr>
+<td>TV-050</td>
+<td>TV-050-2023-10-31_065018.json</td>
+<td>153.1</td>
+<td>−26.91</td>
+<td>+0.31</td>
+<td>111</td>
+<td>Mid-range, fast fall</td>
+</tr>
+<tr>
+<td>TV-051</td>
+<td>TV-051-2023-10-31_065518.json</td>
+<td>146.1</td>
+<td>−16.35</td>
+<td>+0.27</td>
+<td>93</td>
+<td>Mid-range, falling</td>
+</tr>
+<tr>
+<td>TV-052</td>
+<td>TV-052-2023-10-31_070019.json</td>
+<td>142.6</td>
+<td>−4.68</td>
+<td>+0.22</td>
+<td>84</td>
+<td>Mid-range, slight fall</td>
+</tr>
+<tr>
+<td>TV-053</td>
+<td>TV-053-2023-10-31_070518.json</td>
+<td>128.9</td>
+<td>−10.31</td>
+<td>+0.18</td>
+<td>60</td>
+<td>In-range, falling</td>
+</tr>
+<tr>
+<td>TV-054</td>
+<td>TV-054-2023-10-31_071018.json</td>
+<td>78.3</td>
+<td>−38.25</td>
+<td>+0.13</td>
+<td>−37</td>
+<td>Low, crash in progress</td>
+</tr>
+<tr>
+<td>TV-055</td>
+<td>TV-055-2023-10-31_071519.json</td>
+<td>105.5</td>
+<td>+1.30</td>
+<td>+0.09</td>
+<td>35</td>
+<td>In-range, barely rising</td>
+</tr>
+<tr>
+<td>TV-056</td>
+<td>TV-056-2023-10-31_072019.json</td>
+<td>92.3</td>
+<td>+0.21</td>
+<td>+0.04</td>
+<td>23</td>
+<td>Normal, flat</td>
+</tr>
+<tr>
+<td>TV-058</td>
+<td>TV-058-2023-10-31_073019.json</td>
+<td>75.0</td>
+<td>−0.28</td>
+<td>−0.04</td>
+<td>30</td>
+<td>Low, flat</td>
+</tr>
+<tr>
+<td>TV-059</td>
+<td>TV-059-2023-10-31_073519.json</td>
+<td>76.3</td>
+<td>+6.34</td>
+<td>−0.08</td>
+<td>99</td>
+<td>Low, recovering</td>
+</tr>
+<tr>
+<td>TV-060</td>
+<td>TV-060-2023-10-31_074019.json</td>
+<td>70.5</td>
+<td>−3.45</td>
+<td>−0.08</td>
+<td>51</td>
+<td>Low, still falling</td>
+</tr>
+<tr>
+<td>TV-062</td>
+<td>TV-062-2023-10-31_075019.json</td>
+<td>85.3</td>
+<td>+11.22</td>
+<td>−0.15</td>
+<td>149</td>
+<td>Low-normal, rising</td>
+</tr>
+<tr>
+<td>TV-063</td>
+<td>TV-063-2023-10-31_075519.json</td>
+<td>109.4</td>
+<td>+22.36</td>
+<td>−0.11</td>
+<td>226</td>
+<td>In-range, rapid rise</td>
+</tr>
+<tr>
+<td>TV-064</td>
+<td>TV-064-2023-12-23_030034.json</td>
+<td>121.0</td>
+<td>−18.44</td>
+<td>+0.51</td>
+<td>6</td>
+<td>In-range, fast fall, high IOB</td>
+</tr>
+<tr>
+<td>TV-065</td>
+<td>TV-065-2023-12-23_030536.json</td>
+<td>119.0</td>
+<td>−8.33</td>
+<td>+0.47</td>
+<td>34</td>
+<td>In-range, falling</td>
+</tr>
+<tr>
+<td>TV-066</td>
+<td>TV-066-2023-12-23_031036.json</td>
+<td>101.0</td>
+<td>−13.33</td>
+<td>+0.42</td>
+<td>−6</td>
+<td>Normal, fast fall</td>
+</tr>
+<tr>
+<td>TV-067</td>
+<td>TV-067-2023-12-23_031536.json</td>
+<td>94.0</td>
+<td>−9.50</td>
+<td>+0.38</td>
+<td>−40</td>
+<td>Normal, falling</td>
+</tr>
+<tr>
+<td>TV-068</td>
+<td>TV-068-2023-12-23_032036.json</td>
+<td>90.0</td>
+<td>−6.39</td>
+<td>+0.34</td>
+<td>−3</td>
+<td>Normal, falling</td>
+</tr>
+<tr>
+<td>TV-069</td>
+<td>TV-069-2023-12-23_032535.json</td>
+<td>87.0</td>
+<td>−3.72</td>
+<td>+0.29</td>
+<td>39</td>
+<td>Low-normal, slowing fall</td>
+</tr>
+<tr>
+<td>TV-070</td>
+<td>TV-070-2023-12-23_033036.json</td>
+<td>78.0</td>
+<td>−6.78</td>
+<td>+0.25</td>
+<td>−10</td>
+<td>Low, falling</td>
+</tr>
+<tr>
+<td>TV-072</td>
+<td>TV-072-2024-01-05_110247.json</td>
+<td>129.0</td>
+<td>−11.83</td>
+<td>+0.43</td>
+<td>31</td>
+<td>In-range, falling, IOB active</td>
+</tr>
+<tr>
+<td>TV-073</td>
+<td>TV-073-2024-01-05_110747.json</td>
+<td>105.0</td>
+<td>−19.39</td>
+<td>+0.37</td>
+<td>−43</td>
+<td>Normal, crash risk</td>
+</tr>
+<tr>
+<td>TV-074</td>
+<td>TV-074-2024-01-05_111248.json</td>
+<td>95.0</td>
+<td>−14.22</td>
+<td>+0.32</td>
+<td>−13</td>
+<td>Normal, fast fall</td>
+</tr>
+<tr>
+<td>TV-075</td>
+<td>TV-075-2024-01-05_111747.json</td>
+<td>90.0</td>
+<td>−8.50</td>
+<td>+0.27</td>
+<td>0</td>
+<td>Normal, falling to zero</td>
+</tr>
+<tr>
+<td>TV-076</td>
+<td>TV-076-2024-01-05_112247.json</td>
+<td>86.0</td>
+<td>−4.94</td>
+<td>+0.21</td>
+<td>−2</td>
+<td>Low-normal, falling</td>
+</tr>
+<tr>
+<td>TV-077</td>
+<td>TV-077-2024-01-05_112745.json</td>
+<td>78.0</td>
+<td>−6.56</td>
+<td>+0.16</td>
+<td>7</td>
+<td>Low, falling</td>
+</tr>
+<tr>
+<td>TV-078</td>
+<td>TV-078-2024-01-05_113245.json</td>
+<td>82.0</td>
+<td>−0.22</td>
+<td>+0.12</td>
+<td>78</td>
+<td>Low-normal, flat</td>
+</tr>
+<tr>
+<td>TV-079</td>
+<td>TV-079-2024-01-05_113747.json</td>
+<td>71.0</td>
+<td>−6.50</td>
+<td>+0.07</td>
+<td>37</td>
+<td>Low, falling</td>
+</tr>
+<tr>
+<td>TV-080</td>
+<td>TV-080-2024-01-05_114246.json</td>
+<td>71.0</td>
+<td>−2.61</td>
+<td>+0.03</td>
+<td>68</td>
+<td>Low, slow fall</td>
+</tr>
+<tr>
+<td>TV-081</td>
+<td>TV-081-2024-01-05_114747.json</td>
+<td>77.0</td>
+<td>+2.44</td>
+<td>−0.02</td>
+<td>103</td>
+<td>Low, recovering</td>
+</tr>
+<tr>
+<td>TV-082</td>
+<td>TV-082-2024-01-05_115511.json</td>
+<td>93.0</td>
+<td>+7.67</td>
+<td>−0.03</td>
+<td>148</td>
+<td>Normal, rising</td>
+</tr>
+<tr>
+<td>TV-083</td>
+<td>TV-083-2024-01-05_115754.json</td>
+<td>93.0</td>
+<td>+7.67</td>
+<td>+0.00</td>
+<td>162</td>
+<td>Normal, rising (high target 120)</td>
+</tr>
+<tr>
+<td>TV-084</td>
+<td>TV-084-2024-01-06_174057.json</td>
+<td>82.0</td>
+<td>+10.50</td>
+<td>+0.12</td>
+<td>140</td>
+<td>Low-normal, rising</td>
+</tr>
+<tr>
+<td>TV-085</td>
+<td>TV-085-2024-01-06_174548.json</td>
+<td>98.0</td>
+<td>+14.56</td>
+<td>+0.14</td>
+<td>180</td>
+<td>Normal, rising fast</td>
+</tr>
+<tr>
+<td>TV-086</td>
+<td>TV-086-openaps-example-2016-07-10.json</td>
+<td>218.0</td>
+<td>−9.00</td>
+<td>+3.00</td>
+<td>—</td>
+<td>High, falling, high IOB+bolus (historical)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="synthetic-vectors-tv-087--tv-108">Synthetic Vectors (TV-087 – TV-108)<a class="headerlink" href="#synthetic-vectors-tv-087--tv-108" title="Permanent link">&para;</a></h2>
+<p>All 22 synthetic vectors are <strong>parametric variants of TV-001</strong>. They modify only
+<code>glucoseStatus.glucose</code>, <code>iob.iob</code>, <code>iob.basalIob</code>, and <code>mealData.mealCOB</code> while
+leaving <strong>all other fields unchanged</strong> from TV-001.</p>
+<h3 id="boundary-conditions-tested">Boundary Conditions Tested<a class="headerlink" href="#boundary-conditions-tested" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Filename</th>
+<th>BG</th>
+<th>IOB</th>
+<th>COB</th>
+<th>Scenario</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TV-087</td>
+<td>TV-087-synthetic.json</td>
+<td>65</td>
+<td>+0.50</td>
+<td>0</td>
+<td>Hypoglycemia with positive IOB</td>
+</tr>
+<tr>
+<td>TV-088</td>
+<td>TV-088-synthetic.json</td>
+<td>55</td>
+<td>+0.80</td>
+<td>0</td>
+<td>Severe hypo with high IOB</td>
+</tr>
+<tr>
+<td>TV-089</td>
+<td>TV-089-synthetic.json</td>
+<td>250</td>
+<td>−0.50</td>
+<td>0</td>
+<td>Hyperglycemia with negative IOB</td>
+</tr>
+<tr>
+<td>TV-090</td>
+<td>TV-090-synthetic.json</td>
+<td>300</td>
+<td>0.00</td>
+<td>0</td>
+<td>Severe hyper baseline</td>
+</tr>
+<tr>
+<td>TV-091</td>
+<td>TV-091-synthetic.json</td>
+<td>120</td>
+<td>+2.00</td>
+<td>0</td>
+<td>In-range with high IOB</td>
+</tr>
+<tr>
+<td>TV-092</td>
+<td>TV-092-synthetic.json</td>
+<td>100</td>
+<td>0.00</td>
+<td>30</td>
+<td>In-range with COB</td>
+</tr>
+<tr>
+<td>TV-093</td>
+<td>TV-093-synthetic.json</td>
+<td>180</td>
+<td>+0.50</td>
+<td>50</td>
+<td>High with IOB and COB</td>
+</tr>
+<tr>
+<td>TV-094</td>
+<td>TV-094-synthetic.json</td>
+<td>70</td>
+<td>0.00</td>
+<td>20</td>
+<td>Low-normal with COB</td>
+</tr>
+<tr>
+<td>TV-095</td>
+<td>TV-095-synthetic.json</td>
+<td>140</td>
+<td>−1.00</td>
+<td>0</td>
+<td>Slightly high, negative IOB</td>
+</tr>
+<tr>
+<td>TV-096</td>
+<td>TV-096-synthetic.json</td>
+<td>80</td>
+<td>+1.50</td>
+<td>0</td>
+<td>Low-normal, high IOB</td>
+</tr>
+<tr>
+<td>TV-097</td>
+<td>TV-097-synthetic.json</td>
+<td>200</td>
+<td>+0.20</td>
+<td>10</td>
+<td>Hyper with some IOB and COB</td>
+</tr>
+<tr>
+<td>TV-098</td>
+<td>TV-098-synthetic.json</td>
+<td>110</td>
+<td>0.00</td>
+<td>0</td>
+<td>Stable in-range</td>
+</tr>
+<tr>
+<td>TV-099</td>
+<td>TV-099-synthetic.json</td>
+<td>95</td>
+<td>+0.30</td>
+<td>15</td>
+<td>Low-normal with IOB + COB</td>
+</tr>
+<tr>
+<td>TV-100</td>
+<td>TV-100-synthetic.json</td>
+<td>170</td>
+<td>−0.30</td>
+<td>0</td>
+<td>High-normal, neg IOB</td>
+</tr>
+<tr>
+<td>TV-101</td>
+<td>TV-101-synthetic.json</td>
+<td>130</td>
+<td>+0.70</td>
+<td>25</td>
+<td>Mid-range, IOB + COB</td>
+</tr>
+<tr>
+<td>TV-102</td>
+<td>TV-102-synthetic.json</td>
+<td>85</td>
+<td>+0.10</td>
+<td>5</td>
+<td>Low-normal, light IOB + COB</td>
+</tr>
+<tr>
+<td>TV-103</td>
+<td>TV-103-synthetic.json</td>
+<td>220</td>
+<td>+1.00</td>
+<td>0</td>
+<td>Hyper, high IOB</td>
+</tr>
+<tr>
+<td>TV-104</td>
+<td>TV-104-synthetic.json</td>
+<td>75</td>
+<td>0.00</td>
+<td>40</td>
+<td>Low-normal, high COB</td>
+</tr>
+<tr>
+<td>TV-105</td>
+<td>TV-105-synthetic.json</td>
+<td>160</td>
+<td>+0.50</td>
+<td>20</td>
+<td>High-normal, moderate IOB + COB</td>
+</tr>
+<tr>
+<td>TV-106</td>
+<td>TV-106-synthetic.json</td>
+<td>90</td>
+<td>+0.40</td>
+<td>0</td>
+<td>At target, moderate IOB</td>
+</tr>
+<tr>
+<td>TV-107</td>
+<td>TV-107-synthetic.json</td>
+<td>105</td>
+<td>0.00</td>
+<td>10</td>
+<td>At target, light COB</td>
+</tr>
+<tr>
+<td>TV-108</td>
+<td>TV-108-synthetic.json</td>
+<td>115</td>
+<td>−0.20</td>
+<td>0</td>
+<td>In-range, negative IOB</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="consistency-issues-in-synthetic-vectors">Consistency Issues in Synthetic Vectors<a class="headerlink" href="#consistency-issues-in-synthetic-vectors" title="Permanent link">&para;</a></h2>
+<h3 id="issue-1-stale-originaloutput-all-22-vectors">Issue 1: Stale <code>originalOutput</code> (all 22 vectors)<a class="headerlink" href="#issue-1-stale-originaloutput-all-22-vectors" title="Permanent link">&para;</a></h3>
+<p>Every synthetic vector carries TV-001's original <code>originalOutput</code> unchanged:
+<code>originalOutput.bg = 90.8</code>, <code>originalOutput.eventualBG = 154</code>. This does <strong>not</strong>
+correspond to the modified inputs. All vectors except TV-106 are flagged
+<code>originalPredBGsStale: true</code>.</p>
+<p><strong>Verdict</strong>: The stale flag is correctly set. The <code>originalOutput</code> and <code>predBGs</code>
+trajectories cannot be used as ground truth for these vectors.</p>
+<h3 id="issue-2-activity-not-updated-when-iob-changed-all-22-vectors">Issue 2: <code>activity</code> not updated when IOB changed (all 22 vectors)<a class="headerlink" href="#issue-2-activity-not-updated-when-iob-changed-all-22-vectors" title="Permanent link">&para;</a></h3>
+<p>All synthetic vectors inherit <code>iob.activity = −0.0041</code> from TV-001, regardless of
+the modified IOB value. In oref0, <code>activity</code> represents the current insulin
+absorption rate and should be proportional to IOB. Specific mismatches:</p>
+<table>
+<thead>
+<tr>
+<th>Vector</th>
+<th>IOB</th>
+<th>Activity</th>
+<th>Problem</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TV-087</td>
+<td>+0.50</td>
+<td>−0.0041</td>
+<td>Positive IOB, negative activity</td>
+</tr>
+<tr>
+<td>TV-088</td>
+<td>+0.80</td>
+<td>−0.0041</td>
+<td>Positive IOB, negative activity</td>
+</tr>
+<tr>
+<td>TV-091</td>
+<td>+2.00</td>
+<td>−0.0041</td>
+<td>High positive IOB, negative activity</td>
+</tr>
+<tr>
+<td>TV-096</td>
+<td>+1.50</td>
+<td>−0.0041</td>
+<td>High positive IOB, negative activity</td>
+</tr>
+<tr>
+<td>TV-090</td>
+<td>0.00</td>
+<td>−0.0041</td>
+<td>Zero IOB, nonzero activity</td>
+</tr>
+<tr>
+<td>TV-092</td>
+<td>0.00</td>
+<td>−0.0041</td>
+<td>Zero IOB, nonzero activity</td>
+</tr>
+<tr>
+<td>TV-098</td>
+<td>0.00</td>
+<td>−0.0041</td>
+<td>Zero IOB, nonzero activity</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Verdict</strong>: This is a <strong>bug in the vector generator</strong>. The activity field should
+have been recomputed or zeroed when IOB was modified. This means the BGI
+(blood glucose impact) computed by oref0 will be inconsistent with the stated IOB,
+potentially causing the algorithm to make different rate decisions than intended.</p>
+<h3 id="issue-3-iobwithzerotemp-not-updated-all-22-vectors">Issue 3: <code>iobWithZeroTemp</code> not updated (all 22 vectors)<a class="headerlink" href="#issue-3-iobwithzerotemp-not-updated-all-22-vectors" title="Permanent link">&para;</a></h3>
+<p>The nested <code>iob.iobWithZeroTemp</code> object retains TV-001's values (iob: −0.53,
+basaliob: −0.53, activity: −0.0041) even when the parent IOB fields were changed.
+oref0 uses <code>iobWithZeroTemp</code> in several safety checks. Having it diverge from the
+main IOB by &gt;2 U (e.g., TV-091: iob=2.0 vs iobWithZeroTemp.iob=−0.53) may
+trigger unexpected safety behavior.</p>
+<p><strong>Verdict</strong>: <strong>Bug</strong>. The <code>iobWithZeroTemp</code> should track the modified IOB values.</p>
+<h3 id="issue-4-expected-values-are-formula-derived-not-algorithm-verified">Issue 4: <code>expected</code> values are formula-derived, not algorithm-verified<a class="headerlink" href="#issue-4-expected-values-are-formula-derived-not-algorithm-verified" title="Permanent link">&para;</a></h3>
+<p>The <code>expected.rate</code> values in synthetic vectors appear to be rough estimates
+(e.g., TV-093: rate=1.955, TV-095: rate=1.615, TV-097: rate=1.7425) rather than
+actual oref0 outputs. Meanwhile <code>expected.iob</code> is always −0.53 (TV-001's value)
+and <code>expected.eventualBG</code> is always 154 (TV-001's value) — both stale.</p>
+<p><strong>Verdict</strong>: The <code>expected</code> fields are <strong>unreliable</strong> for synthetic vectors. Only
+<code>expected.rate</code> appears to have been modified; <code>expected.iob</code> and
+<code>expected.eventualBG</code> were not updated.</p>
+<h3 id="issue-5-deltaavgdelta-dont-reflect-bg-change-design-choice">Issue 5: Delta/avgDelta don't reflect BG change (design choice)<a class="headerlink" href="#issue-5-deltaavgdelta-dont-reflect-bg-change-design-choice" title="Permanent link">&para;</a></h3>
+<p>All synthetic vectors use TV-001's delta (+6.95), shortAvgDelta (+4.73), and
+longAvgDelta (−4.91). Combined with extreme BG values this produces unusual
+but not impossible scenarios (e.g., BG=55 rising at +7 mg/dL/5min implies
+previous reading ~48). This is arguably intentional — testing algorithm response
+to a specific BG level with a fixed trend — but means these are not internally
+coherent replay scenarios.</p>
+<p><strong>Verdict</strong>: Intentional design trade-off, but limits the vectors' utility for
+testing prediction curves (since the glucose history is absent).</p>
+<h3 id="issue-6-tv-106-missing-parametricvariantof">Issue 6: TV-106 missing <code>parametricVariantOf</code><a class="headerlink" href="#issue-6-tv-106-missing-parametricvariantof" title="Permanent link">&para;</a></h3>
+<p>TV-106 lacks the <code>parametricVariantOf</code> metadata field and does not have
+<code>originalPredBGsStale: true</code>, despite being structurally identical to the
+other synthetic vectors.</p>
+<p><strong>Verdict</strong>: Metadata oversight. TV-106 should be tagged like the others.</p>
+<hr />
+<h2 id="cross-validation-recommendations">Cross-Validation Recommendations<a class="headerlink" href="#cross-validation-recommendations" title="Permanent link">&para;</a></h2>
+<h3 id="tier-1-ground-truth-reliable-78-vectors">Tier 1: Ground-Truth Reliable (78 vectors)<a class="headerlink" href="#tier-1-ground-truth-reliable-78-vectors" title="Permanent link">&para;</a></h3>
+<p><strong>TV-001 through TV-085</strong>: Use for oracle-based cross-validation. The
+<code>originalOutput</code> was captured from the same algorithm run that produced the inputs.
+Safe to compare adapter outputs against <code>expected</code> and <code>originalOutput.predBGs</code>.</p>
+<h3 id="tier-2-ground-truth-reliable-with-caveats-1-vector">Tier 2: Ground-Truth Reliable with Caveats (1 vector)<a class="headerlink" href="#tier-2-ground-truth-reliable-with-caveats-1-vector" title="Permanent link">&para;</a></h3>
+<p><strong>TV-086</strong>: Real data but <strong>no <code>originalOutput</code></strong>. Can be used for smoke-testing
+adapters (does it run without crashing on high-IOB + bolus input?) but cannot
+verify correctness against an oracle.</p>
+<h3 id="tier-3-boundary-smoke-tests-only-22-vectors">Tier 3: Boundary Smoke Tests Only (22 vectors)<a class="headerlink" href="#tier-3-boundary-smoke-tests-only-22-vectors" title="Permanent link">&para;</a></h3>
+<p><strong>TV-087 through TV-108</strong>: Use <strong>only</strong> for verifying that adapters:
+- Don't crash on extreme inputs (BG 55–300, IOB −1 to +2)
+- Produce directionally correct results (rate=0 for hypos, high rate for hypers)
+- Respect safety limits (maxBasal, low glucose suspend)</p>
+<p><strong>Do NOT use for</strong>:
+- Numerical accuracy comparison (stale <code>expected</code> and <code>originalOutput</code>)
+- Prediction curve validation (no valid <code>predBGs</code>)
+- IOB/activity consistency checks (mismatched activity field)</p>
+<h3 id="suggested-tags-for-filtering">Suggested Tags for Filtering<a class="headerlink" href="#suggested-tags-for-filtering" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Tag</th>
+<th>Vectors</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>natural</code></td>
+<td>TV-001 – TV-085</td>
+<td>Ground-truth cross-validation</td>
+</tr>
+<tr>
+<td><code>historical</code></td>
+<td>TV-086</td>
+<td>Smoke test (no oracle)</td>
+</tr>
+<tr>
+<td><code>synthetic</code></td>
+<td>TV-087 – TV-108</td>
+<td>Boundary-condition smoke tests</td>
+</tr>
+<tr>
+<td><code>hypo</code></td>
+<td>TV-087, TV-088, TV-094, TV-096, TV-104</td>
+<td>Low BG behavior</td>
+</tr>
+<tr>
+<td><code>hyper</code></td>
+<td>TV-089, TV-090, TV-097, TV-103</td>
+<td>High BG behavior</td>
+</tr>
+<tr>
+<td><code>high-iob</code></td>
+<td>TV-091, TV-096, TV-103</td>
+<td>IOB &gt; 1.0 U</td>
+</tr>
+<tr>
+<td><code>with-cob</code></td>
+<td>TV-092–094, TV-097, TV-099, TV-101, TV-102, TV-104, TV-105, TV-107</td>
+<td>Active carbs on board</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="tool-filtering-status">Tool Filtering Status<a class="headerlink" href="#tool-filtering-status" title="Permanent link">&para;</a></h2>
+<h3 id="current-state">Current state<a class="headerlink" href="#current-state" title="Permanent link">&para;</a></h3>
+<p>The <code>lib/vector-loader.js</code> already supports <code>{ category, ids, limit }</code> filtering.
+However, <strong>neither <code>prediction-alignment.js</code> nor <code>convergence-loop.js</code> exposes
+these options</strong> in their CLI argument parsers.</p>
+<h3 id="whats-needed">What's needed<a class="headerlink" href="#whats-needed" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Add <code>--category &lt;name&gt;</code> flag to both <code>prediction-alignment.js</code> and
+   <code>convergence-loop.js</code>, passing it through to <code>loadVectors()</code>.</li>
+<li>Add <code>--exclude-category &lt;name&gt;</code> for negative filtering (e.g.,
+   <code>--exclude-category synthetic</code>).</li>
+<li>Add <code>--ids TV-001,TV-002,...</code> for explicit vector selection.</li>
+<li>Update Makefile <code>xval-*</code> targets to default to
+   <code>--exclude-category synthetic</code> for accuracy runs, and
+   <code>--category synthetic</code> for smoke-test runs.</li>
+</ol>
+<h3 id="workaround-current">Workaround (current)<a class="headerlink" href="#workaround-current" title="Permanent link">&para;</a></h3>
+<p>Use <code>--limit N</code> where N ≤ 78 (vectors are sorted by ID, so natural vectors load
+first). This is fragile and will break if vector ordering changes.</p>
+<hr />
+<h2 id="file-inventory">File Inventory<a class="headerlink" href="#file-inventory" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>conformance/t1pal/vectors/oref0-endtoend/
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── MANIFEST.md                              ← this file
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>├── TV-001-2023-10-28_133013.json            natural
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>├── TV-002-2023-10-28_133514.json            natural
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>├── TV-004-2023-10-28_134513.json            natural
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>├── TV-005-2023-10-28_135013.json            natural
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>├── TV-006-2023-10-28_135514.json            natural
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>├── TV-007-2023-10-28_140013.json            natural
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>├── TV-008-2023-10-28_140514.json            natural
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>├── TV-009-2023-10-28_141014.json            natural
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>├── TV-010-2023-10-28_141513.json            natural
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>├── TV-011-2023-10-28_142013.json            natural
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>├── TV-012-2023-10-28_142513.json            natural
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>├── TV-013-2023-10-28_143013.json            natural
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>├── TV-014-2023-10-28_143514.json            natural
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>├── TV-015-2023-10-28_144013.json            natural
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>├── TV-016-2023-10-28_145014.json            natural
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>├── TV-017-2023-10-29_191512.json            natural
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>├── TV-018-2023-10-29_192012.json            natural
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>├── TV-019-2023-10-29_192512.json            natural
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>├── TV-020-2023-10-31_042017.json            natural
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>├── TV-021-2023-10-31_042517.json            natural
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>├── TV-022-2023-10-31_043017.json            natural
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>├── TV-023-2023-10-31_043517.json            natural
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>├── TV-024-2023-10-31_044017.json            natural
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>├── TV-025-2023-10-31_044516.json            natural
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>├── TV-026-2023-10-31_045017.json            natural
+<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>├── TV-027-2023-10-31_045517.json            natural
+<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>├── TV-028-2023-10-31_050018.json            natural
+<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>├── TV-029-2023-10-31_050517.json            natural
+<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>├── TV-030-2023-10-31_051017.json            natural
+<a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>├── TV-031-2023-10-31_051517.json            natural
+<a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>├── TV-032-2023-10-31_052017.json            natural
+<a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a>├── TV-036-2023-10-31_054018.json            natural
+<a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a>├── TV-038-2023-10-31_055017.json            natural
+<a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a>├── TV-039-2023-10-31_055518.json            natural
+<a id="__codelineno-0-37" name="__codelineno-0-37" href="#__codelineno-0-37"></a>├── TV-040-2023-10-31_060018.json            natural
+<a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a>├── TV-041-2023-10-31_060518.json            natural
+<a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a>├── TV-042-2023-10-31_061018.json            natural
+<a id="__codelineno-0-40" name="__codelineno-0-40" href="#__codelineno-0-40"></a>├── TV-043-2023-10-31_061519.json            natural
+<a id="__codelineno-0-41" name="__codelineno-0-41" href="#__codelineno-0-41"></a>├── TV-044-2023-10-31_062018.json            natural
+<a id="__codelineno-0-42" name="__codelineno-0-42" href="#__codelineno-0-42"></a>├── TV-045-2023-10-31_062518.json            natural
+<a id="__codelineno-0-43" name="__codelineno-0-43" href="#__codelineno-0-43"></a>├── TV-046-2023-10-31_063018.json            natural
+<a id="__codelineno-0-44" name="__codelineno-0-44" href="#__codelineno-0-44"></a>├── TV-047-2023-10-31_063519.json            natural
+<a id="__codelineno-0-45" name="__codelineno-0-45" href="#__codelineno-0-45"></a>├── TV-048-2023-10-31_064018.json            natural
+<a id="__codelineno-0-46" name="__codelineno-0-46" href="#__codelineno-0-46"></a>├── TV-049-2023-10-31_064519.json            natural
+<a id="__codelineno-0-47" name="__codelineno-0-47" href="#__codelineno-0-47"></a>├── TV-050-2023-10-31_065018.json            natural
+<a id="__codelineno-0-48" name="__codelineno-0-48" href="#__codelineno-0-48"></a>├── TV-051-2023-10-31_065518.json            natural
+<a id="__codelineno-0-49" name="__codelineno-0-49" href="#__codelineno-0-49"></a>├── TV-052-2023-10-31_070019.json            natural
+<a id="__codelineno-0-50" name="__codelineno-0-50" href="#__codelineno-0-50"></a>├── TV-053-2023-10-31_070518.json            natural
+<a id="__codelineno-0-51" name="__codelineno-0-51" href="#__codelineno-0-51"></a>├── TV-054-2023-10-31_071018.json            natural
+<a id="__codelineno-0-52" name="__codelineno-0-52" href="#__codelineno-0-52"></a>├── TV-055-2023-10-31_071519.json            natural
+<a id="__codelineno-0-53" name="__codelineno-0-53" href="#__codelineno-0-53"></a>├── TV-056-2023-10-31_072019.json            natural
+<a id="__codelineno-0-54" name="__codelineno-0-54" href="#__codelineno-0-54"></a>├── TV-058-2023-10-31_073019.json            natural
+<a id="__codelineno-0-55" name="__codelineno-0-55" href="#__codelineno-0-55"></a>├── TV-059-2023-10-31_073519.json            natural
+<a id="__codelineno-0-56" name="__codelineno-0-56" href="#__codelineno-0-56"></a>├── TV-060-2023-10-31_074019.json            natural
+<a id="__codelineno-0-57" name="__codelineno-0-57" href="#__codelineno-0-57"></a>├── TV-062-2023-10-31_075019.json            natural
+<a id="__codelineno-0-58" name="__codelineno-0-58" href="#__codelineno-0-58"></a>├── TV-063-2023-10-31_075519.json            natural
+<a id="__codelineno-0-59" name="__codelineno-0-59" href="#__codelineno-0-59"></a>├── TV-064-2023-12-23_030034.json            natural
+<a id="__codelineno-0-60" name="__codelineno-0-60" href="#__codelineno-0-60"></a>├── TV-065-2023-12-23_030536.json            natural
+<a id="__codelineno-0-61" name="__codelineno-0-61" href="#__codelineno-0-61"></a>├── TV-066-2023-12-23_031036.json            natural
+<a id="__codelineno-0-62" name="__codelineno-0-62" href="#__codelineno-0-62"></a>├── TV-067-2023-12-23_031536.json            natural
+<a id="__codelineno-0-63" name="__codelineno-0-63" href="#__codelineno-0-63"></a>├── TV-068-2023-12-23_032036.json            natural
+<a id="__codelineno-0-64" name="__codelineno-0-64" href="#__codelineno-0-64"></a>├── TV-069-2023-12-23_032535.json            natural
+<a id="__codelineno-0-65" name="__codelineno-0-65" href="#__codelineno-0-65"></a>├── TV-070-2023-12-23_033036.json            natural
+<a id="__codelineno-0-66" name="__codelineno-0-66" href="#__codelineno-0-66"></a>├── TV-072-2024-01-05_110247.json            natural
+<a id="__codelineno-0-67" name="__codelineno-0-67" href="#__codelineno-0-67"></a>├── TV-073-2024-01-05_110747.json            natural
+<a id="__codelineno-0-68" name="__codelineno-0-68" href="#__codelineno-0-68"></a>├── TV-074-2024-01-05_111248.json            natural
+<a id="__codelineno-0-69" name="__codelineno-0-69" href="#__codelineno-0-69"></a>├── TV-075-2024-01-05_111747.json            natural
+<a id="__codelineno-0-70" name="__codelineno-0-70" href="#__codelineno-0-70"></a>├── TV-076-2024-01-05_112247.json            natural
+<a id="__codelineno-0-71" name="__codelineno-0-71" href="#__codelineno-0-71"></a>├── TV-077-2024-01-05_112745.json            natural
+<a id="__codelineno-0-72" name="__codelineno-0-72" href="#__codelineno-0-72"></a>├── TV-078-2024-01-05_113245.json            natural
+<a id="__codelineno-0-73" name="__codelineno-0-73" href="#__codelineno-0-73"></a>├── TV-079-2024-01-05_113747.json            natural
+<a id="__codelineno-0-74" name="__codelineno-0-74" href="#__codelineno-0-74"></a>├── TV-080-2024-01-05_114246.json            natural
+<a id="__codelineno-0-75" name="__codelineno-0-75" href="#__codelineno-0-75"></a>├── TV-081-2024-01-05_114747.json            natural
+<a id="__codelineno-0-76" name="__codelineno-0-76" href="#__codelineno-0-76"></a>├── TV-082-2024-01-05_115511.json            natural
+<a id="__codelineno-0-77" name="__codelineno-0-77" href="#__codelineno-0-77"></a>├── TV-083-2024-01-05_115754.json            natural
+<a id="__codelineno-0-78" name="__codelineno-0-78" href="#__codelineno-0-78"></a>├── TV-084-2024-01-06_174057.json            natural
+<a id="__codelineno-0-79" name="__codelineno-0-79" href="#__codelineno-0-79"></a>├── TV-085-2024-01-06_174548.json            natural
+<a id="__codelineno-0-80" name="__codelineno-0-80" href="#__codelineno-0-80"></a>├── TV-086-openaps-example-2016-07-10.json   natural (no oracle)
+<a id="__codelineno-0-81" name="__codelineno-0-81" href="#__codelineno-0-81"></a>├── TV-087-synthetic.json                    synthetic
+<a id="__codelineno-0-82" name="__codelineno-0-82" href="#__codelineno-0-82"></a>├── TV-088-synthetic.json                    synthetic
+<a id="__codelineno-0-83" name="__codelineno-0-83" href="#__codelineno-0-83"></a>├── TV-089-synthetic.json                    synthetic
+<a id="__codelineno-0-84" name="__codelineno-0-84" href="#__codelineno-0-84"></a>├── TV-090-synthetic.json                    synthetic
+<a id="__codelineno-0-85" name="__codelineno-0-85" href="#__codelineno-0-85"></a>├── TV-091-synthetic.json                    synthetic
+<a id="__codelineno-0-86" name="__codelineno-0-86" href="#__codelineno-0-86"></a>├── TV-092-synthetic.json                    synthetic
+<a id="__codelineno-0-87" name="__codelineno-0-87" href="#__codelineno-0-87"></a>├── TV-093-synthetic.json                    synthetic
+<a id="__codelineno-0-88" name="__codelineno-0-88" href="#__codelineno-0-88"></a>├── TV-094-synthetic.json                    synthetic
+<a id="__codelineno-0-89" name="__codelineno-0-89" href="#__codelineno-0-89"></a>├── TV-095-synthetic.json                    synthetic
+<a id="__codelineno-0-90" name="__codelineno-0-90" href="#__codelineno-0-90"></a>├── TV-096-synthetic.json                    synthetic
+<a id="__codelineno-0-91" name="__codelineno-0-91" href="#__codelineno-0-91"></a>├── TV-097-synthetic.json                    synthetic
+<a id="__codelineno-0-92" name="__codelineno-0-92" href="#__codelineno-0-92"></a>├── TV-098-synthetic.json                    synthetic
+<a id="__codelineno-0-93" name="__codelineno-0-93" href="#__codelineno-0-93"></a>├── TV-099-synthetic.json                    synthetic
+<a id="__codelineno-0-94" name="__codelineno-0-94" href="#__codelineno-0-94"></a>├── TV-100-synthetic.json                    synthetic
+<a id="__codelineno-0-95" name="__codelineno-0-95" href="#__codelineno-0-95"></a>├── TV-101-synthetic.json                    synthetic
+<a id="__codelineno-0-96" name="__codelineno-0-96" href="#__codelineno-0-96"></a>├── TV-102-synthetic.json                    synthetic
+<a id="__codelineno-0-97" name="__codelineno-0-97" href="#__codelineno-0-97"></a>├── TV-103-synthetic.json                    synthetic
+<a id="__codelineno-0-98" name="__codelineno-0-98" href="#__codelineno-0-98"></a>├── TV-104-synthetic.json                    synthetic
+<a id="__codelineno-0-99" name="__codelineno-0-99" href="#__codelineno-0-99"></a>├── TV-105-synthetic.json                    synthetic
+<a id="__codelineno-0-100" name="__codelineno-0-100" href="#__codelineno-0-100"></a>├── TV-106-synthetic.json                    synthetic
+<a id="__codelineno-0-101" name="__codelineno-0-101" href="#__codelineno-0-101"></a>├── TV-107-synthetic.json                    synthetic
+<a id="__codelineno-0-102" name="__codelineno-0-102" href="#__codelineno-0-102"></a>└── TV-108-synthetic.json                    synthetic
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

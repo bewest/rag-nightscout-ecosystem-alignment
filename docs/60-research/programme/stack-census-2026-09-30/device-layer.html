@@ -1,0 +1,8091 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/60-research/programme/stack-census-2026-09-30/device-layer.html">
+      
+      
+        <link rel="prev" href="cloud-layer.html">
+      
+      
+        <link rel="next" href="histories.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Device layer: drivers, simulators, protocol work, and V&V - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#device-layer-drivers-simulators-protocol-work-and-vv" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Device layer: drivers, simulators, protocol work, and V&amp;V
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../30-design/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_27" id="__nav_5_27_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_27_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_27">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    60-research/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../exp-2844-phenotype-drilldown-report-2026-04-22.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-0001 to 2869
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../exp-2870-envelope-crossover-report-2026-04-22.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2870 to 2909
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../exp-2910-eight-dim-regrade-2026-04-23.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2910 to 2949
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../exp-2950-uniform-action-curve-2026-04-23.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2950 to 2999
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../exp-3000-3003-cf-replay-maturation-2026-04-25.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-3000 and later
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../AUTORESEARCH-SESSION-2026-04-26.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Programme, closeouts and syntheses
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../accuracy-validation-2026-04-05.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Productionization and pipelines
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../capability-report-clinical-decision-support.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Capability reports
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../circadian-therapy-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Therapy
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../aid-aware-settings-report-2026-04-09.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings and profiles
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../natural-experiment-deconfounding-2026-04-09.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Natural experiments
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../bilateral-deconfounding-report-2026-04-19.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EGP, supply-demand and deconfounding
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../autotune-uam-characterization-report.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Meals and carbohydrates
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../causal-pk-leakage-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Insulin, ISF and pharmacokinetics
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../acceleration-clinical-utility-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clinical, safety and hypoglycaemia
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../aid-author-recommendations-report-2026-04-20.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AID controllers, cohorts and waves
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../centering-dynamics-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forecasting, prediction and classification
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../advanced-architectures-benchmark-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ML methods and architectures
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../canonical/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    canonical/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../collaboration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    collaboration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../external-inventories/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    external-inventories/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../modernization/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    modernization/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27_24" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    programme/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_27_24" id="__nav_5_27_24_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_27_24_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_27_24">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    programme/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../paving-the-cowpaths-2026-09-27.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Paving the cowpaths: the 15.0.9 release candidate as a quality record
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stack-census-2026-09-30.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The ecosystem stack, measured — 2026-09-30
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stakeholder-priority-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stakeholder Priority Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workflow-completeness-critique-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Completeness critique — what this workflow is missing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27_24_6" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    stack-census-2026-09-30/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_27_24_6" id="__nav_5_27_24_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_27_24_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_27_24_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    stack-census-2026-09-30/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cloud-layer.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The cloud layer: connectors, documented routes, and what quality control would need
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Device layer: drivers, simulators, protocol work, and V&amp;V
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="device-layer.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Device layer: drivers, simulators, protocol work, and V&amp;V
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-how-the-numbers-were-made" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. How the numbers were made
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-per-project-inventory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Per-project inventory
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Per-project inventory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-ios-kits-swift-loopandlearn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 iOS kits (Swift): loopandlearn
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-ios-kits-swift-loopkit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 iOS kits (Swift): LoopKit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-android-and-jvm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Android and JVM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-ios-reader-apps-swift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 iOS reader apps (Swift)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-javascript-and-go" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 JavaScript and Go
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-medtronic-7xxg-openminimed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6 Medtronic 7xxG (OpenMinimed)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#17-historical-and-decoding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.7 Historical and decoding
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-device-family--implementations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Device family × implementations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-duplication-independent-implementations-per-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Duplication: independent implementations per protocol
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-vv-gap-for-the-device-layer-and-the-work-to-close-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. V&amp;V gap for the device layer and the work to close it
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. V&amp;V gap for the device layer and the work to close it">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-what-exists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 What exists
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-what-a-quality-control-system-for-this-layer-would-need" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 What a quality-control system for this layer would need
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-work-estimate-estimates-in-person-weeks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Work estimate (ESTIMATES, in person-weeks)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-wearables-and-health-platforms-what-is-in-the-clones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Wearables and health platforms: what is in the clones
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="histories.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quality management, histories, funders and consensus methods: research notes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../remedial/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    remedial/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../tenancy/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenancy/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-how-the-numbers-were-made" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. How the numbers were made
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-per-project-inventory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Per-project inventory
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Per-project inventory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-ios-kits-swift-loopandlearn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 iOS kits (Swift): loopandlearn
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-ios-kits-swift-loopkit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 iOS kits (Swift): LoopKit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-android-and-jvm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Android and JVM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-ios-reader-apps-swift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 iOS reader apps (Swift)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-javascript-and-go" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 JavaScript and Go
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-medtronic-7xxg-openminimed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6 Medtronic 7xxG (OpenMinimed)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#17-historical-and-decoding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.7 Historical and decoding
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-device-family--implementations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Device family × implementations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-duplication-independent-implementations-per-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Duplication: independent implementations per protocol
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-vv-gap-for-the-device-layer-and-the-work-to-close-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. V&amp;V gap for the device layer and the work to close it
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. V&amp;V gap for the device layer and the work to close it">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-what-exists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 What exists
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-what-a-quality-control-system-for-this-layer-would-need" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 What a quality-control system for this layer would need
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-work-estimate-estimates-in-person-weeks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Work estimate (ESTIMATES, in person-weeks)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-wearables-and-health-platforms-what-is-in-the-clones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Wearables and health platforms: what is in the clones
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="device-layer-drivers-simulators-protocol-work-and-vv">Device layer: drivers, simulators, protocol work, and V&amp;V<a class="headerlink" href="#device-layer-drivers-simulators-protocol-work-and-vv" title="Permanent link">&para;</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Record</p>
+<p>Record as of 2026-09-30. A point-in-time document; it is not kept up to date.</p>
+</div>
+<p><em>Contributor-facing. Annex to the <a href="../stack-census-2026-09-30.html">stack census record of 2026-09-30</a>; a snapshot, not rewritten as the world moves. Prepared by research agents from the clones and pages named in it, and checked by the session that wrote the record.</em></p>
+<p>Measured 2026-09-30 from fresh clones under <code>externals/stack/&lt;owner&gt;__&lt;repo&gt;</code>. The manifest is <code>tools/programme/stack-census/repos.tsv</code> (layers <code>device</code> and <code>controller</code>). For four repositories a second checkout of the <code>dev</code> branch sits under <code>externals/stack/.dev/</code>. Where the <code>dev</code> branch is the active line, the figures below use it and name it.</p>
+<p>Scope: the BLE and radio drivers for CGMs and insulin pumps, the simulators, the protocol reverse-engineering, and the cryptography. Disclosure level: this file names mechanisms and protocol families only. It contains no keys, key-derivation constants, command sequences or bypass steps.</p>
+<h2 id="0-how-the-numbers-were-made">0. How the numbers were made<a class="headerlink" href="#0-how-the-numbers-were-made" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Test files.</strong> Source files (<code>.swift .kt .java .go .py .js .c/.cpp</code>) under a test directory, or named with a test convention (<code>*Tests/</code>, <code>/test/</code>, <code>jvmTest</code>, <code>androidTest</code>, <code>*_test.go</code>, <code>test_*.py</code>, <code>*Test.kt</code>, and so on). Vendored code is excluded.</li>
+<li><strong>Test declarations.</strong> The number of lines matching <code>@Test</code>, <code>func test…(</code>, <code>func Test…(</code> (Go), <code>def test_</code> and <code>it(</code>/<code>test(</code> (JS). This is a lower bound for data-driven tests and for Python doctests. For those two cases the count was made separately and is noted where it applies.</li>
+<li><strong>Activity.</strong> Commit and author figures are not repeated here; the census table (<code>tools/programme/stack-census/results/census-2026-09-30.md</code>) is the one place for them.</li>
+<li><strong>Licence.</strong> Taken from the top-level <code>LICENSE*</code> or <code>COPYING*</code> file, or from <code>package.json</code>. "none found" means there is no such file in the checked-out tree.</li>
+<li><strong>Shared vectors.</strong> Every hex string literal of 16 or more hex digits in each project's tests was extracted and normalised. For Dana and Medtrum the tests use byte arrays, so byte-array literals of 8 or more elements were extracted instead. The resulting sets were then intersected between projects. A shared literal means the same bytes appear in both test suites. Usually this means the tests were copied or ported.</li>
+</ul>
+<h2 id="1-per-project-inventory">1. Per-project inventory<a class="headerlink" href="#1-per-project-inventory" title="Permanent link">&para;</a></h2>
+<h3 id="11-ios-kits-swift-loopandlearn">1.1 iOS kits (Swift): loopandlearn<a class="headerlink" href="#11-ios-kits-swift-loopandlearn" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Repo @ sha</th>
+<th>Devices / protocol</th>
+<th>Crypto family (as named in code)</th>
+<th>Tests: files / decl.</th>
+<th>What the tests exercise</th>
+<th>Simulator</th>
+<th>CI</th>
+<th>Licence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>loopandlearn/OmnipodKit, <code>dev</code> @ 929dc47 (2026-09-28); <code>main</code> @ 4e923d7</td>
+<td>Omnipod Eros (over RileyLink), Omnipod DASH (BLE), Omnipod 5 ("O5" pod type in <code>OmnipodKit/OmnipodCommon/PodType.swift</code>). Replaces OmniKit and OmniBLE (README).</td>
+<td>DASH: EAP-AKA with Milenage, X25519 key agreement, AES-CCM, AES-CMAC. O5: P-256 key agreement, P-256 ECDSA message signing with a certificate store (<code>Bluetooth/Pair/O5CertificateStore.swift</code>), App Attest service (<code>Services/O5AppAttestService.swift</code>)</td>
+<td>37 / 189</td>
+<td>Message and packet encode/decode with hex vectors (<code>OmniTests/…/MessageTests.swift</code>, <code>PacketTests.swift</code>), CRC8 and CRC16, basal, bolus and temp-basal tables, pod state, <code>PodCommsSessionTests</code> (mock transport), DASH key exchange (1 test, fixed vectors), en/decrypt, O5 BLE framing fixtures, O5 message signing (6 tests)</td>
+<td>none in repo; <code>loopandlearn/pod</code> (DASH)</td>
+<td>none</td>
+<td>none found</td>
+</tr>
+<tr>
+<td>loopandlearn/DanaKit @ 79f492f (2026-09-26)</td>
+<td>Dana-i and Dana RS pumps over BLE (README says it is ported from <code>bastiaanv/danars-js</code>)</td>
+<td>Vendor-specific encryption modes. No standard primitive is named in the code.</td>
+<td>6 / 87</td>
+<td>Command encoding and encryption (<code>DanaKitTests/Encryption/EncryptTests.swift</code>, 14 tests), decryption, packet generation, CRC</td>
+<td><code>loopandlearn/dana-simulator</code></td>
+<td>none</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td>loopandlearn/dana-simulator @ 92c79e4 (2024-10-01)</td>
+<td>Dana-i / Dana RS v3 pump side, as a BLE peripheral on a Raspberry Pi (Go), with a React web client (<code>client/</code>)</td>
+<td>Pump-side encryption (<code>server/encryption.go</code>)</td>
+<td>0 / 0</td>
+<td>none</td>
+<td>is the simulator. README: it cannot reproduce the iOS pairing-PIN prompt.</td>
+<td>none</td>
+<td>none found</td>
+</tr>
+<tr>
+<td>loopandlearn/MedtrumKit @ ef866fa (2026-09-26); the same HEAD as jbr7rr/MedtrumKit</td>
+<td>Medtrum TouchCare Nano patch pump, 200 U (MD0201, MD8201) and 300 U (MD8301)</td>
+<td>Vendor-specific key derivation and encryption. No standard primitive is named.</td>
+<td>20 / 49</td>
+<td>One test file per packet (authorize, bolus, temp basal, basal profile, prime, activate, synchronize and others) plus <code>CryptoTests</code> (2)</td>
+<td>none</td>
+<td>none</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td>bastiaanv/EversenseKit @ e6ee8d0 (2026-09-28); the fork is loopandlearn/EversenseKit</td>
+<td>Eversense E3 (90 and 180 day) and Eversense 365</td>
+<td>P-256 key agreement, P-256 ECDSA, AES-CCM, AES-CBC, HMAC-SHA256 (<code>EversenseKit/…/CryptoUtil.swift</code>)</td>
+<td>6 / 34</td>
+<td><code>CryptoUtilTests</code> (6: session generation, signature, public-key decrypt, salt), chunk reassembly, packet-length guard, notification header</td>
+<td>none</td>
+<td>none</td>
+<td>none found</td>
+</tr>
+<tr>
+<td>loopandlearn/AccuChekKit @ 8105375 (2026-09-28); first commit 2026-02-01</td>
+<td>Accu-Chek SmartGuide CGM. README: only EU/NL sensors confirmed; "advanced security" variants are not yet compatible.</td>
+<td>P-256 ECDH key exchange with HMAC-SHA256 confirmation (<code>KeyExchangeEcdConfirmationPacket.swift</code>, <code>AcsAdapter+Crypto.swift</code>)</td>
+<td>6 / 19</td>
+<td>CGM packet encode/decode (calibrate, calibration read, measurement, start time, status, session time zone). No crypto tests.</td>
+<td>none</td>
+<td>none</td>
+<td>none found</td>
+</tr>
+<tr>
+<td>loopandlearn/LibreCRKit @ c562170 (2026-08-31); first commit 2026-05-27</td>
+<td>FreeStyle Libre 3: NFC activation, BLE pairing and authorisation, data-plane decode. It is a Swift package described as "clean-room", with an iOS harness app <code>Apps/LibreCR</code> and <code>protocol.md</code>.</td>
+<td>ECDH on P-256, AES-CCM, AES-CMAC, SHA-256</td>
+<td>15 / 160</td>
+<td>AES-CCM against the RFC 3610 packet vector, plus a tamper test (<code>Tests/LibreCRKitTests/AESCCMTests.swift</code>); key schedule, session key, BLE framing, NFC activation command, data-plane decode, sensor-state loader</td>
+<td>none (the live-device harness app is not a simulator)</td>
+<td>none (README: <code>swift test</code>)</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td>loopandlearn/LibreLoop @ 415b799 (2026-09-13); first commit 2026-05-12</td>
+<td>Libre 3 CGMManager for Loop, built on LibreCRKit</td>
+<td>through LibreCRKit</td>
+<td>1 / 8</td>
+<td>CGM manager state</td>
+<td>none</td>
+<td>none</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td>loopandlearn/pod @ ec13f46 (2025-12-05)</td>
+<td>Omnipod DASH <strong>pod side</strong>, as a BLE peripheral on a Raspberry Pi (Go)</td>
+<td>EAP-AKA/Milenage (vendored <code>wmnsk/milenage</code>), X25519, AES-CCM, AES-CMAC</td>
+<td>2 / 2 (<code>pkg/eap/eap_test.go</code>, <code>pkg/message/message_test.go</code>)</td>
+<td>EAP message parse, message parse</td>
+<td>is the simulator: dynamic reservoir level, total delivery, alerts and faults; an optional 3-minute disconnect; WebSocket API for a separate front end</td>
+<td>none</td>
+<td>GPL-3.0</td>
+</tr>
+</tbody>
+</table>
+<p>Trio (<code>nightscout/Trio</code> @ c0160aeaf) pulls all of the kits above except <code>pod</code> and <code>dana-simulator</code> as git submodules from <code>loopandlearn/*</code> (<code>.gitmodules</code>). Its <code>unit_tests.yml</code> runs on PRs and pushes to <code>dev</code>. It runs the "Trio Tests" scheme and <code>swift test</code> on <code>AlgorithmPackage</code>. No kit test target is referenced in Trio's project files, so the kits' own tests are not run by any CI found in the clones.</p>
+<h3 id="12-ios-kits-swift-loopkit">1.2 iOS kits (Swift): LoopKit<a class="headerlink" href="#12-ios-kits-swift-loopkit" title="Permanent link">&para;</a></h3>
+<p>The LoopKit kits all show commits dated 2026-09-26, which look like a shared maintenance sweep.</p>
+<table>
+<thead>
+<tr>
+<th>Repo @ sha</th>
+<th>Devices / protocol</th>
+<th>Crypto family</th>
+<th>Tests: files / decl.</th>
+<th>What the tests exercise</th>
+<th>CI</th>
+<th>Licence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LoopKit/OmniBLE @ 29358d5 (2026-05-29)</td>
+<td>Omnipod DASH</td>
+<td>EAP-AKA with Milenage (<code>OmniBLE/Bluetooth/Session/Milenage.swift</code>), X25519, AES-CCM, AES-CMAC</td>
+<td>21 / 115</td>
+<td>Message encode/decode hex vectors, payload split/join, string-length-prefix encoding, <code>KeyExchangeTests</code> (1, fixed vectors), <code>EnDecryptTests</code>. No Milenage known-answer test.</td>
+<td>none</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td>LoopKit/OmniKit @ 2b4253b (2026-05-12)</td>
+<td>Omnipod Eros over RileyLink (433 MHz)</td>
+<td>none (Eros uses a nonce scheme and CRC)</td>
+<td>13 / 109</td>
+<td>Packet and message hex vectors, CRC8 and CRC16, basal, bolus and temp-basal, pod state, <code>PodCommsSessionTests</code></td>
+<td>none</td>
+<td>none found</td>
+</tr>
+<tr>
+<td>LoopKit/RileyLinkKit @ 049f0d5 (2026-09-26)</td>
+<td>RileyLink BLE-to-sub-GHz bridge (host side)</td>
+<td>none</td>
+<td>4 / 3</td>
+<td>Response buffer, radio firmware version, RF packet</td>
+<td><code>.travis.yml</code> only</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td>LoopKit/MinimedKit @ a7b2685 (2026-09-26)</td>
+<td>Medtronic 5xx/7xx (x12–x54) over RileyLink, MySentry</td>
+<td>none</td>
+<td>58 / 164</td>
+<td>Message bodies (read settings, temp basal, battery, remaining insulin and others), history and glucose page decode, timestamped events, CRC8 and CRC16; <code>MockRileyLinkDevice</code> / <code>MockRileyLinkProvider</code> test doubles</td>
+<td>none</td>
+<td>none found</td>
+</tr>
+<tr>
+<td>LoopKit/CGMBLEKit @ 242a09d (2026-09-26)</td>
+<td>Dexcom G5 and G6 transmitters</td>
+<td>AES-based challenge–response (<code>CGMBLEKit/AESCrypt.m</code>, CommonCrypto)</td>
+<td>10 / 35</td>
+<td>Rx message decode (glucose, backfill, calibration, session start and stop, time, version), transmitter ID, "Anubis" detection</td>
+<td><code>.travis.yml</code> only</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td>LoopKit/G7SensorKit @ 0574a74 (2026-09-26)</td>
+<td>Dexcom G7 / ONE+. README: "Requires use of official G7 app", so this kit listens alongside the vendor app and does not authenticate itself.</td>
+<td>none in the kit</td>
+<td>4 / 28</td>
+<td>G7 glucose message decode (with calibration, lifecycle, negative rate), extended version, CGM manager</td>
+<td>none</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td>LoopKit/LibreTransmitter @ 4110512 (2026-09-26)</td>
+<td>Libre 1 (US and international), EU Libre 2 through MiaoMiao/Bubble bridges and direct over BLE, NFC</td>
+<td>Vendor-specific Libre 2 payload decryption; no standard primitive is named</td>
+<td>1 / 2</td>
+<td>minimal</td>
+<td><code>.travis.yml</code> only</td>
+<td>MIT</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>.travis.yml</code> files and README badges point at travis-ci.org. No GitHub Actions workflow exists in these repositories.</p>
+<h3 id="13-android-and-jvm">1.3 Android and JVM<a class="headerlink" href="#13-android-and-jvm" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Repo @ sha</th>
+<th>Devices / protocol</th>
+<th>Crypto family</th>
+<th>Tests: files / decl.</th>
+<th>What the tests exercise</th>
+<th>Simulator</th>
+<th>CI</th>
+<th>Licence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>nightscout/AndroidAPS, <code>dev</code> @ 550605ee36 (2026-09-30); <code>master</code> @ 598e2eb39c (2026-08-02)</td>
+<td>In-tree <strong>pump</strong> drivers, listed below. In-tree <strong>CGM</strong> sources are all app-to-app broadcast or intent receivers (<code>plugins/source</code>: Dexcom via a companion app, xDrip, Glimp, Poctech, Tomato, MM640g, Aidex, Syai, Glunovo, Intelligo, Instara, patched Sibionics/Sinocare apps, NotificationReader, NSClient, Random BG). No BLE CGM driver is in the tree.</td>
+<td>Per driver, listed below</td>
+<td>pumps total on <code>dev</code>: 678 / 5,810 (<code>@Test</code> lines); <code>plugins/source</code> 35 / 209</td>
+<td>Per driver, listed below</td>
+<td><code>pump/virtual</code> (virtual pump, 3 / 14)</td>
+<td>CircleCI runs unit tests plus jacoco (<code>.circleci/config.yml</code>). GitHub Actions <code>pr-ci.yml</code> builds APKs. <code>dev</code> adds <code>unit-tests.yml</code>.</td>
+<td>AGPL-3.0</td>
+</tr>
+<tr>
+<td>NightscoutFoundation/xDrip @ 9898cb8e0 (2026-09-25)</td>
+<td>Dexcom G5/G6 (Ob1 collector, <code>g5model</code>), G7 / ONE / ONE+ (<code>libkeks</code>), Libre via NFC and bridges (Blukon, MiaoMiao, Bubble, LimiTTer, Wixel variants), Medtrum A6 CGM (<code>cgm/medtrum</code>), CareSens and other BLE glucose meters (<code>glucosemeter/</code>), Aidex receiver, Eversense and CareSens Air through companion apps (README), UI-based collector</td>
+<td>Dexcom G5/G6: AES-based challenge–response. G7 / ONE+: EC-JPAKE on P-256 (<code>libkeks/src/main/java/…/keks/Calc.java</code>). Medtrum: vendor-specific (<code>CryptTest</code>).</td>
+<td>194 / 884 overall; <strong>device-driver tests: 12 / 39</strong> (<code>g5model/FastCRC16Test</code>, <code>RawScalingTest</code>, <code>LibreCrcTest</code>, <code>LibreUtilsTest</code>, <code>NFCReaderXTest</code>, <code>cgm/medtrum/CryptTest</code>, <code>InboundStreamTest</code>, caresens <code>TimeTxTest</code>/<code>ContextRxTest</code>, <code>BluetoothGlucoseMeterStartTest</code>, LibreWifi)</td>
+<td>CRC, raw scaling, Libre CRC, Medtrum decrypt and inbound stream, meter message decode. The remaining ~180 files cover followers, uploaders and UI. <code>libkeks</code> has no tests.</td>
+<td>none</td>
+<td><code>unit_test.yml</code> runs <code>testProdReleaseUnitTest</code></td>
+<td>GPL-3.0</td>
+</tr>
+<tr>
+<td>jwoglom/pumpX2 @ f13ccf96 (2026-09-28)</td>
+<td>Tandem t:slim X2 and Mobi: BLE protocol library (Java core plus Android library, and <code>cliparser</code>)</td>
+<td>EC-JPAKE pairing, HMAC-SHA256, HKDF</td>
+<td>418 / 968</td>
+<td>Per-message request and response encode/decode against captured hex (for example <code>messages/src/test/…/currentStatus/*Test.java</code> through <code>MessageTester.test(hex, …)</code>): currentStatus 132 files, historyLog 123, control 114, authentication 14 (the J-PAKE 1a/1b/2/3/4 request and response tests), <code>SimulatedJpakeAuthBuilderIntegrationTest</code>, <code>JpakeShortScalarTest</code>, with a <code>SecureRandomMock</code> for deterministic handshakes</td>
+<td><code>jwoglom/faketandem</code> consumes pumpX2</td>
+<td><code>android.yml</code> runs <code>testDebugUnitTest</code> and <code>:messages:test</code>; <code>code-coverage.yml</code> runs jacoco</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td>jwoglom/controlX2, <code>dev</code> @ ad2b637d (2026-09-19); <code>main</code> @ 45e3795b</td>
+<td>Android phone and Wear OS controller app for Tandem pumps, over pumpX2</td>
+<td>through pumpX2</td>
+<td>39 / 402</td>
+<td>Mostly the database layer (Nightscout and xDrip sync), view models, Wear snapshots. Protocol tests live in pumpX2.</td>
+<td>uses faketandem for integration (faketandem <code>GAP_ANALYSIS.md</code>)</td>
+<td><code>android.yml</code> runs <code>testDebugUnitTest</code></td>
+<td>none found</td>
+</tr>
+<tr>
+<td>j-kaltes/Juggluco @ db70dc1 (2026-09-30)</td>
+<td>Direct-to-phone reader. README lists Libre 2/2+/3/3+, Sibionics GS1, Dexcom G7 / ONE+, Accu-Chek SmartGuide, CareSens Air, Aidex X; there is also <code>Common/src/main/cpp/EverSense.cpp</code>. NovoPen NFC. Wear OS app.</td>
+<td>Dexcom G7: EC-JPAKE (<code>Common/src/main/cpp/dexcom/ecJPake.cpp</code>). Libre 3: ECDH and AES-family (<code>cpp/libre3/</code>). Vendored OpenSSL/BoringSSL headers.</td>
+<td>2 source files; there is no unit-test framework. <code>cpp/air/tests/</code> is a replay harness with recorded runs (<code>testdata/</code>, <code>Makefile</code>), and there is <code>cpp/abbotttest.cpp</code>.</td>
+<td>CareSens Air decode replay against recorded data</td>
+<td>none</td>
+<td>none</td>
+<td>GPL-3.0</td>
+</tr>
+</tbody>
+</table>
+<p>AndroidAPS in-tree pump drivers on <code>dev</code> @ 550605ee36 (<code>pump/</code>). "Shared" is the number of test-vector literals that also appear in the iOS counterpart (method in §0).</p>
+<table>
+<thead>
+<tr>
+<th>Driver dir</th>
+<th>Device(s) (from <code>PumpType.*</code> and plugin names)</th>
+<th>Crypto family named in code</th>
+<th>Test files / <code>@Test</code></th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>omnipod/eros</code></td>
+<td>Omnipod Eros over RileyLink</td>
+<td>none</td>
+<td>29 / 102 (on master)</td>
+<td>shares 46 hex vectors with OmniKit</td>
+</tr>
+<tr>
+<td><code>omnipod/dash</code></td>
+<td>Omnipod DASH</td>
+<td>EAP-AKA/Milenage, X25519, AES-CCM, AES-CMAC</td>
+<td>28 / 57 (on master)</td>
+<td><code>MilenageTest</code> (4, fixed vectors), <code>EapMessageTest</code>, <code>KeyExchangeTest</code>, <code>EnDecryptTest</code>, command and response encode tests; shares 58 hex vectors with OmniBLE</td>
+</tr>
+<tr>
+<td><code>omnipod/common</code></td>
+<td>shared</td>
+<td>–</td>
+<td>4 / 60 (on master)</td>
+<td>Figures for all of <code>omnipod</code> on dev: 70 / 283</td>
+</tr>
+<tr>
+<td><code>rileylink</code></td>
+<td>RileyLink bridge (host)</td>
+<td>none</td>
+<td>19 / 315</td>
+<td>CRC8-heavy radio-packet tests</td>
+</tr>
+<tr>
+<td><code>medtronic</code></td>
+<td>Medtronic 512/712 … 554/754 (Veo)</td>
+<td>none</td>
+<td>14 / 158</td>
+<td>shares 0 vectors with MinimedKit</td>
+</tr>
+<tr>
+<td><code>dana</code> (<code>danar</code>, <code>danars</code>, <code>common</code>)</td>
+<td>Dana R / R v2 / R Korean, Dana RS, Dana-i</td>
+<td>vendor-specific (<code>BleEncryptionTest</code>)</td>
+<td>134 / 396</td>
+<td>~45 per-packet <code>DanaRsPacket*Test</code>; shares 0 byte vectors with DanaKit</td>
+</tr>
+<tr>
+<td><code>medtrum</code></td>
+<td>Medtrum Nano and 300U</td>
+<td>vendor-specific</td>
+<td>32 / 114</td>
+<td>per-packet tests plus <code>CryptTest</code>; shares 7 byte vectors with MedtrumKit</td>
+</tr>
+<tr>
+<td><code>combov2</code> (<code>comboctl</code>)</td>
+<td>Accu-Chek Combo</td>
+<td>Twofish-based cipher (<code>comboctl/…/CipherTest.kt</code>), CRC16</td>
+<td>24 / 122</td>
+<td>frame, transport layer, display frame, nonce, CRC, cipher, PumpIO</td>
+</tr>
+<tr>
+<td><code>insight</code></td>
+<td>Accu-Chek Insight</td>
+<td>HMAC (named in code)</td>
+<td>20 / 140</td>
+<td></td>
+</tr>
+<tr>
+<td><code>diaconn</code></td>
+<td>Diaconn G8</td>
+<td>none named</td>
+<td>110 / 681</td>
+<td></td>
+</tr>
+<tr>
+<td><code>eopatch</code></td>
+<td>EOFlow EOPatch2</td>
+<td>ECDH on secp256r1</td>
+<td>62 / 668</td>
+<td></td>
+</tr>
+<tr>
+<td><code>equil</code></td>
+<td>Equil</td>
+<td>AES (a utility class; <code>AESUtilTest</code>), AES-GCM, SHA-256, CRC</td>
+<td>52 / 694</td>
+<td></td>
+</tr>
+<tr>
+<td><code>carelevo</code></td>
+<td>CareMedi CareLevo patch pump (first commit 2026-04-21)</td>
+<td>none named</td>
+<td>131 / 2,127</td>
+<td>ble/commands 25 files, use-cases 24, patch-flow UI 8</td>
+</tr>
+<tr>
+<td><code>virtual</code></td>
+<td>Virtual pump</td>
+<td>–</td>
+<td>3 / 14</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>AndroidAPS <code>dev</code> also contains <code>core/objects/src/commonTest/…/crypto/CryptoPrimitivesVectorsTest.kt</code>. It runs one set of fixed-string vectors (RFC 6070 PBKDF2 and the NIST GCM set) against both the JVM and the iOS crypto implementations, "so that the two cannot quietly drift apart". It covers export crypto rather than device protocols, and it is the only cross-platform known-answer arrangement found in the controller repositories. It is a direct precedent for §4.</p>
+<h3 id="14-ios-reader-apps-swift">1.4 iOS reader apps (Swift)<a class="headerlink" href="#14-ios-reader-apps-swift" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Repo @ sha</th>
+<th>Devices</th>
+<th>Crypto family</th>
+<th>Tests</th>
+<th>CI</th>
+<th>Licence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>JohanDegraeve/xdripswift @ c268542e (2026-09-22)</td>
+<td>Dexcom G5/G6, G7 / ONE+ / Stelo (<code>BluetoothTransmitter/CGM/Dexcom/G7</code>, with authentication in <code>Generic/DexcomG7AuthSession.swift</code>), Libre 2 direct, MiaoMiao, Bubble, Medtrum TouchCare Nano CGM. Libre 3 is used only as a BLE "heartbeat" (<code>BluetoothTransmitter/HeartBeat</code>).</td>
+<td>G7: J-PAKE on P-256 through vendored micro-ecc (<code>Generic/DexcomG7ECC.c</code>)</td>
+<td>25 / 538 overall; device-related: <code>CGMG5SensorSessionDetectionTests</code> 18, <code>DexcomG6SensorLabelTests</code> 21, <code>DexcomG6BluetoothSlotTests</code> 8, <code>DexcomG7CalibrationTests</code> 40, <code>Libre2FrameAssemblerTests</code> 3, <code>BluetoothSignalStrengthTests</code> 17 (107 in total); <code>CareLinkTests</code> 107 (cloud). There is no test for the G7 authentication session.</td>
+<td><code>build_xdrip.yml</code> builds with fastlane and uploads to TestFlight. No test step was found in <code>fastlane/Fastfile</code>.</td>
+<td>GPL-3.0</td>
+</tr>
+<tr>
+<td>gui-dos/DiaBLE @ e6a909c (2026-07-30)</td>
+<td>Research app. <code>DiaBLE/Sensor.swift</code> lists Libre 1, US 14-day, Pro/H, Libre 2, 2 Gen2, 3, X, Lingo, Select, Instinct, Dexcom G6, ONE, G7, ONE+, Stelo.</td>
+<td>Libre 3: ECDH on P-256, AES-CCM. Dexcom G7: the J-PAKE exchange is logged and marked <code>TODO</code> in <code>DiaBLE/DexcomG7.swift</code>, so it is not implemented.</td>
+<td>0 / 0</td>
+<td>none</td>
+<td>MIT</td>
+</tr>
+</tbody>
+</table>
+<h3 id="15-javascript-and-go">1.5 JavaScript and Go<a class="headerlink" href="#15-javascript-and-go" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Repo @ sha</th>
+<th>Devices</th>
+<th>Crypto family</th>
+<th>Tests</th>
+<th>Simulator</th>
+<th>CI</th>
+<th>Licence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>xdrip-js/xdrip-js, <code>dev</code> @ e301273 (2026-08-10); <code>master</code> @ 0cd1c55 (2022-04-30)</td>
+<td>Dexcom G5/G6. G7 on <code>dev</code> through <code>lib/keks_plugin/</code>, a JavaScript port of xDrip's <code>libkeks</code> (stated in the file header). Used by OpenAPS rigs.</td>
+<td>AES-based challenge–response (G5/G6); EC-JPAKE on P-256 (G7)</td>
+<td><code>dev</code>: 12 / 35 (mocha). Keks tests: curve-parameter checks against the published secp256r1 values, an Alice/Bob shared-key agreement check, a BLE packet round trip, and the plugin state machine.</td>
+<td>none</td>
+<td><code>nodejs.yml</code> runs <code>npm test</code> on Node 8/10/12</td>
+<td>MIT (<code>package.json</code>)</td>
+</tr>
+<tr>
+<td>jwoglom/faketandem @ 5afb93f (2026-09-29)</td>
+<td>Tandem pump <strong>simulator</strong>, forked from the <code>pod</code> simulator (README)</td>
+<td>pump-side EC-JPAKE through pumpX2's <code>cliparser</code> jar; HMAC-SHA256, HKDF</td>
+<td>43 / 245 (<code>func Test</code>)</td>
+<td>Is the simulator. It has a BLE transport (Linux) or a <strong>virtual TCP/JSON GATT transport</strong> for Mac and CI (<code>docs/virtual-gatt-protocol.md</code>), and an integration-harness HTTP API: a controllable clock with manual step and skew, a pump-side request log, pump-initiated actions, and <strong>fault injection</strong> armed per message (<code>pkg/faults</code>, <code>pkg/harness</code>). There are J-PAKE stress and failure tests. <code>GAP_ANALYSIS.md</code> (dated 2026-04-03, so it predates later commits) counts about 40 of about 50 currentStatus requests and about 10 of about 50 control requests as handled.</td>
+<td><code>ci.yml</code>: <code>go vet</code>; unit tests with <code>-race</code> and coverage; an integration job that builds pumpX2's cliparser and runs <code>go test ./pkg/handler</code>; lint; an ARM cross-build</td>
+<td>GPL-3.0</td>
+</tr>
+</tbody>
+</table>
+<h3 id="16-medtronic-7xxg-openminimed">1.6 Medtronic 7xxG (OpenMinimed)<a class="headerlink" href="#16-medtronic-7xxg-openminimed" title="Permanent link">&para;</a></h3>
+<p>All OpenMinimed repositories address the MiniMed 700-series BLE pumps (for example the 780G) and the Guardian 4 transmitter.</p>
+<table>
+<thead>
+<tr>
+<th>Repo @ sha</th>
+<th>Content</th>
+<th>Crypto family</th>
+<th>Tests</th>
+<th>CI</th>
+<th>Licence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OpenMinimed/Documentation @ 73a7811 (2026-09-17)</td>
+<td>Protocol notes: GATT conventions and streaming; pump services (Certificate Management, CGM, History and Trace, Insulin Delivery (IDD), Network Operational State, Secure Session Establishment); <code>sake.md</code>; <code>key_databases.md</code></td>
+<td>SAKE: AES-128 with ECB, CTR and CMAC modes (per the docs)</td>
+<td>–</td>
+<td>none</td>
+<td>none found</td>
+</tr>
+<tr>
+<td>OpenMinimed/PythonSake @ 1ebbdb2 (2026-08-18)</td>
+<td>Python implementation of the SAKE handshake (client, server, session, sequence crypto)</td>
+<td>as above</td>
+<td>2 files. The self-tests run through <code>python -m pysake.session</code>, <code>pysake.server</code> and <code>pysake.client</code>, which replay a recorded handshake transcript held in <code>pysake/constants.py</code>. There is no test framework.</td>
+<td>none</td>
+<td>GPL-3.0</td>
+</tr>
+<tr>
+<td>OpenMinimed/JavaSake @ 64ae39d (2026-07-07); first commit 2026-05-11</td>
+<td>Java port that "mirrors the public surface of PythonSake"; published to Maven Central (<code>RELEASING.md</code>)</td>
+<td>as above</td>
+<td>14 / 66. <code>AesEcbTest</code> and <code>AesCtrTest</code> use NIST SP 800-38A Appendix F vectors, <code>AesCmacTest</code> uses RFC 4493, and <code>SessionTest</code>, <code>SakeClientTest</code> and <code>SakeServerTest</code> replay the pysake transcript (6 vectors shared with pysake), with a deterministic <code>QueuedRngSource</code>.</td>
+<td><code>build.yml</code> runs <code>./gradlew build</code> (tests included); <code>release.yml</code></td>
+<td>GPL-3.0</td>
+</tr>
+<tr>
+<td>OpenMinimed/PythonPumpConnector @ 4ed3497 (2026-08-21)</td>
+<td>Linux BLE client for the 700-series pump (<code>ble/</code>, <code>cgm/</code>, <code>history/</code>, <code>idd/</code>, <code>services/</code>). README warning: proof-of-concept for reverse engineering.</td>
+<td>SAKE through PythonSake</td>
+<td>0 / 0</td>
+<td>none</td>
+<td>GPL-3.0</td>
+</tr>
+<tr>
+<td>OpenMinimed/JavaPumpConnector @ 4bc456a (2026-06-26)</td>
+<td>Skeleton Android app over JavaSake</td>
+<td>SAKE</td>
+<td>2 / 2 (template example tests)</td>
+<td><code>build.yml</code>: assemble, lint, <code>testDebugUnitTest</code></td>
+<td>GPL-3.0</td>
+</tr>
+<tr>
+<td>OpenMinimed/NativeSakeTests @ 9ae1e49 (2026-02-11)</td>
+<td>C harness that drives the vendor's native SAKE library for differential comparison (client, server, key DB, hook); README is TODO</td>
+<td>SAKE</td>
+<td>8 source files, no assertions</td>
+<td>none</td>
+<td>none found</td>
+</tr>
+<tr>
+<td>OpenMinimed/SakeLibraryRE @ d826bf4 (2026-08-09)</td>
+<td>Reverse-engineering report of the vendor's SAKE native library (a Ghidra project). It records AES-128 CTR and CMAC, and an SRP-based passkey subsystem in a later library version.</td>
+<td>AES-CTR, AES-CMAC, SRP</td>
+<td>–</td>
+<td>none</td>
+<td>none found</td>
+</tr>
+<tr>
+<td>OpenMinimed/FridaScripts @ b5be3e8 (2026-02-04)</td>
+<td>Dynamic-instrumentation scripts for the vendor Android apps (15 files)</td>
+<td>–</td>
+<td>–</td>
+<td>none</td>
+<td>none found</td>
+</tr>
+<tr>
+<td>OpenMinimed/JadxProjects @ 8ab27ad (2026-07-13)</td>
+<td>jadx decompiler project files for the vendor apps and the uploader (the apps themselves are not included)</td>
+<td>–</td>
+<td>–</td>
+<td>none</td>
+<td>none found</td>
+</tr>
+</tbody>
+</table>
+<h3 id="17-historical-and-decoding">1.7 Historical and decoding<a class="headerlink" href="#17-historical-and-decoding" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Repo @ sha</th>
+<th>Content</th>
+<th>Tests</th>
+<th>CI</th>
+<th>Last commit</th>
+<th>Licence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>openaps/openomni @ 8eda783</td>
+<td>Omnipod Eros RF decoding: the RTL-SDR decoder (<code>rtlomni/</code>), the RFCat Python library (<code>rfcatomni/</code>), analysis files</td>
+<td>5 Python test files, 24 tests (packet, CRC16, nonce, commands, message); 2 hex vectors shared with OmniKit, OmniBLE, OmnipodKit and AAPS</td>
+<td>none</td>
+<td>2026-05-31 (1 commit in 12 m)</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td>openaps/decocare @ bb2aa1e</td>
+<td>Medtronic CareLink USB stick protocol (Python 2)</td>
+<td>164 doctest examples in 8 modules</td>
+<td><code>.travis.yml</code> (Python 2.7), <code>circle.yml</code></td>
+<td>2016-10-26</td>
+<td>GPL-2.0 or later (the text begins "GNU General Public License")</td>
+</tr>
+<tr>
+<td>ps2/rileylink @ fed37bc</td>
+<td>RileyLink hardware design and firmware (BLE113 plus CC1110)</td>
+<td>none</td>
+<td>none</td>
+<td>2019-12-18</td>
+<td>MIT</td>
+</tr>
+</tbody>
+</table>
+<p>Adjacent, cloud layer: tidepool-org/uploader @ 22f53325 (2026-09-22) carries USB/BLE read-only drivers for 18 vendor families (<code>lib/drivers/</code>: including medtronic, medtronic600, tandem, insulet, dexcom, abbott, roche). Its test tree has 12 driver-related files with 170 <code>it()</code> declarations, and CircleCI runs <code>yarn test</code>.</p>
+<h2 id="2-device-family--implementations">2. Device family × implementations<a class="headerlink" href="#2-device-family--implementations" title="Permanent link">&para;</a></h2>
+<p>Column headings: iOS = Swift, Android = Kotlin/Java, JS, Py = Python, Go, C++. "Sim" means a simulator that exercises the device side exists in the clones. "Shared vectors" is the number of test-vector literals found in more than one project (§0).</p>
+<table>
+<thead>
+<tr>
+<th>Device family</th>
+<th>iOS</th>
+<th>Android</th>
+<th>JS</th>
+<th>Py</th>
+<th>Go</th>
+<th>C++</th>
+<th>Sim?</th>
+<th>Shared vectors across implementations</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Omnipod Eros (RF over RileyLink)</td>
+<td>OmniKit; OmnipodKit (Eros)</td>
+<td>AAPS <code>omnipod/eros</code></td>
+<td>–</td>
+<td>openomni (decode)</td>
+<td>–</td>
+<td>–</td>
+<td>no</td>
+<td>yes, by copying: OmniKit∩OmnipodKit 165, OmniKit∩AAPS 46, openomni∩each 2</td>
+</tr>
+<tr>
+<td>Omnipod DASH</td>
+<td>OmniBLE; OmnipodKit</td>
+<td>AAPS <code>omnipod/dash</code></td>
+<td>–</td>
+<td>–</td>
+<td><code>pod</code> (pod side)</td>
+<td>–</td>
+<td><strong>yes</strong> (<code>loopandlearn/pod</code>, Raspberry Pi BLE)</td>
+<td>OmniBLE∩OmnipodKit 191 (all of OmniBLE's), OmniBLE∩AAPS 58; the Milenage known-answer test exists only in AAPS</td>
+</tr>
+<tr>
+<td>Omnipod 5</td>
+<td>OmnipodKit (O5)</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>no</td>
+<td>n/a (1 implementation)</td>
+</tr>
+<tr>
+<td>Dexcom G5/G6</td>
+<td>CGMBLEKit; xdripswift; DiaBLE (reader)</td>
+<td>xDrip</td>
+<td>xdrip-js</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>no</td>
+<td>effectively none: CGMBLEKit∩xdrip-js 1, CGMBLEKit∩xDrip 1, others 0</td>
+</tr>
+<tr>
+<td>Dexcom G7 / ONE+ / Stelo</td>
+<td>G7SensorKit (passive, needs the vendor app); xdripswift (auth); DiaBLE (auth TODO)</td>
+<td>xDrip (<code>libkeks</code>); Juggluco (Java plus C++)</td>
+<td>xdrip-js <code>dev</code> (port of libkeks)</td>
+<td>–</td>
+<td>–</td>
+<td>Juggluco <code>ecJPake.cpp</code></td>
+<td>no</td>
+<td>G7SensorKit∩xdripswift 2; no authentication vectors are shared</td>
+</tr>
+<tr>
+<td>Libre 1 / Libre 2</td>
+<td>LibreTransmitter; xdripswift; DiaBLE</td>
+<td>xDrip; Juggluco</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>Juggluco</td>
+<td>no</td>
+<td>none found</td>
+</tr>
+<tr>
+<td>Libre 3</td>
+<td>LibreCRKit (+ LibreLoop); DiaBLE; xdripswift (heartbeat only)</td>
+<td>Juggluco</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>Juggluco</td>
+<td>no</td>
+<td>none. LibreCRKit uses the public RFC 3610 vector for AES-CCM.</td>
+</tr>
+<tr>
+<td>Eversense E3 / 365</td>
+<td>EversenseKit</td>
+<td>Juggluco (<code>EverSense.cpp</code>); xDrip through the companion app</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>Juggluco</td>
+<td>no</td>
+<td>none</td>
+</tr>
+<tr>
+<td>Accu-Chek SmartGuide (CGM)</td>
+<td>AccuChekKit</td>
+<td>Juggluco (<code>cpp/accu</code>)</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>Juggluco</td>
+<td>no</td>
+<td>none</td>
+</tr>
+<tr>
+<td>Medtronic 5xx/7xx (x12–x54)</td>
+<td>MinimedKit (+ RileyLinkKit)</td>
+<td>AAPS <code>medtronic</code> + <code>rileylink</code></td>
+<td>–</td>
+<td>decocare (CareLink USB, historical)</td>
+<td>–</td>
+<td>–</td>
+<td>no. MinimedKit has <code>MockRileyLinkDevice</code> test doubles only.</td>
+<td>MinimedKit∩AAPS 0</td>
+</tr>
+<tr>
+<td>Medtronic 6xxG (640G/670G)</td>
+<td>–</td>
+<td>AAPS MM640g and xDrip read through companion apps or the cloud; Tidepool uploader <code>medtronic600</code> (read)</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>no</td>
+<td>–</td>
+</tr>
+<tr>
+<td>Medtronic 7xxG (780G, BLE, SAKE)</td>
+<td>–</td>
+<td>JavaPumpConnector + JavaSake</td>
+<td>–</td>
+<td>PythonPumpConnector + PythonSake</td>
+<td>–</td>
+<td>NativeSakeTests (harness around the vendor library)</td>
+<td>partial. PythonSake and JavaSake both implement the SAKE <strong>server</strong> role, which their tests use.</td>
+<td><strong>yes: JavaSake∩pysake 6</strong> (a recorded transcript replayed in both), plus NIST and RFC vectors in JavaSake</td>
+</tr>
+<tr>
+<td>Tandem t:slim X2 / Mobi</td>
+<td>TandemKit (referenced in the faketandem README; not in the clones)</td>
+<td>pumpX2 (+ controlX2)</td>
+<td>–</td>
+<td>–</td>
+<td>faketandem</td>
+<td>–</td>
+<td><strong>yes</strong> (<code>jwoglom/faketandem</code>, BLE or virtual transport, harness API, fault injection)</td>
+<td>pumpX2∩faketandem 17. faketandem uses pumpX2's codec for parsing, so the two are not independent.</td>
+</tr>
+<tr>
+<td>Dana R / RS / i</td>
+<td>DanaKit</td>
+<td>AAPS <code>dana</code></td>
+<td>(danars-js, not cloned)</td>
+<td>–</td>
+<td>dana-simulator</td>
+<td>–</td>
+<td><strong>yes</strong> (<code>loopandlearn/dana-simulator</code>, Raspberry Pi BLE, inactive since 2024-10-01)</td>
+<td>DanaKit∩AAPS 0</td>
+</tr>
+<tr>
+<td>Medtrum Nano / 300U (pump)</td>
+<td>MedtrumKit</td>
+<td>AAPS <code>medtrum</code></td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>no</td>
+<td>MedtrumKit∩AAPS 7 byte vectors</td>
+</tr>
+<tr>
+<td>Medtrum A6 / TouchCare Nano (CGM)</td>
+<td>xdripswift</td>
+<td>xDrip</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>no</td>
+<td>none found</td>
+</tr>
+<tr>
+<td>Accu-Chek Combo</td>
+<td>–</td>
+<td>AAPS <code>combov2</code></td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>no</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>Accu-Chek Insight</td>
+<td>–</td>
+<td>AAPS <code>insight</code></td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>no</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>Diaconn G8, EOPatch2, Equil, CareLevo</td>
+<td>–</td>
+<td>AAPS only</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>no</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>Sibionics GS1, Aidex X, CareSens Air</td>
+<td>–</td>
+<td>Juggluco (direct); xDrip and AAPS (app-to-app receivers)</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>Juggluco</td>
+<td>no (Juggluco has a CareSens Air replay harness)</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>RileyLink bridge</td>
+<td>RileyLinkKit</td>
+<td>AAPS <code>rileylink</code></td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>firmware (ps2/rileylink)</td>
+<td>no</td>
+<td>none found</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-duplication-independent-implementations-per-protocol">3. Duplication: independent implementations per protocol<a class="headerlink" href="#3-duplication-independent-implementations-per-protocol" title="Permanent link">&para;</a></h2>
+<p>"Independent" here counts separate code bases that each encode or decode the device protocol. Forks and ports are counted, but they are marked, because a port inherits the original's interpretation.</p>
+<table>
+<thead>
+<tr>
+<th>Protocol</th>
+<th>Implementations (count)</th>
+<th>Of which ports/forks</th>
+<th>Shared vectors today</th>
+<th>Where one reference would help</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dexcom G7 / ONE+ authentication (EC-JPAKE family)</td>
+<td><strong>4</strong> that authenticate: xDrip <code>libkeks</code> (Java), xdrip-js <code>keks_plugin</code> (JS port of libkeks), xdripswift (Swift plus micro-ecc C), Juggluco (C++). One passive (G7SensorKit) and one incomplete (DiaBLE).</td>
+<td>1 (xdrip-js)</td>
+<td>0 authentication vectors; the only crypto tests found are xdrip-js's self-agreement and curve-parameter checks</td>
+<td>A shared handshake transcript with fixed randomness (the pumpX2 <code>SecureRandomMock</code> and JavaSake <code>QueuedRngSource</code> patterns) would let all four check the same exchange. The G7 glucose-message decode has 6 decoders and 2 shared literals.</td>
+</tr>
+<tr>
+<td>Dexcom G5/G6</td>
+<td><strong>5</strong>: CGMBLEKit, xDrip, xdripswift, xdrip-js, DiaBLE</td>
+<td>–</td>
+<td>≤1 literal between any pair</td>
+<td>A single decode corpus (glucose, backfill, calibration, session messages)</td>
+</tr>
+<tr>
+<td>Libre 2</td>
+<td><strong>5</strong>: LibreTransmitter, xDrip, xdripswift, Juggluco, DiaBLE</td>
+<td>–</td>
+<td>none</td>
+<td>Payload decrypt and decode vectors</td>
+</tr>
+<tr>
+<td>Libre 3</td>
+<td><strong>3</strong>: LibreCRKit (+ LibreLoop), Juggluco, DiaBLE</td>
+<td>–</td>
+<td>none</td>
+<td>NFC activation, handshake transcript, data-plane frames</td>
+</tr>
+<tr>
+<td>Omnipod Eros</td>
+<td><strong>3</strong> drivers (OmniKit, OmnipodKit, AAPS) + 1 decoder (openomni)</td>
+<td>OmnipodKit forks OmniKit</td>
+<td>165 and 46 (copied)</td>
+<td>The corpus exists de facto in OmniKit's tests. Extracting it to one file would stop it drifting between copies.</td>
+</tr>
+<tr>
+<td>Omnipod DASH</td>
+<td><strong>3</strong> (OmniBLE, OmnipodKit, AAPS) + a pod-side simulator</td>
+<td>OmnipodKit forks OmniBLE; the AAPS tests share 58 vectors</td>
+<td>191 and 58 (copied)</td>
+<td>The Milenage known-answer test exists only in AAPS. Its vectors, plus the public 3GPP Milenage test sets, could run in both Swift implementations.</td>
+</tr>
+<tr>
+<td>Medtronic 5xx/7xx</td>
+<td><strong>3</strong>: MinimedKit, AAPS <code>medtronic</code>, decocare (USB path)</td>
+<td>–</td>
+<td>0</td>
+<td>A history-page decode corpus (MinimedKit already holds 199 hex literals)</td>
+</tr>
+<tr>
+<td>Medtronic 7xxG SAKE</td>
+<td><strong>2</strong>: PythonSake, JavaSake (+ a differential harness against the vendor library)</td>
+<td>JavaSake ports PythonSake</td>
+<td>6 plus NIST/RFC</td>
+<td>Already the best-structured case: public known-answer tests for the primitives plus a cross-implementation transcript</td>
+</tr>
+<tr>
+<td>Tandem</td>
+<td><strong>1</strong> client in the clones (pumpX2) + a simulator (faketandem) + TandemKit outside the clones</td>
+<td>–</td>
+<td>17</td>
+<td>The pumpX2 test hex (1,334 literals) is a de facto reference corpus. faketandem depends on pumpX2's codec, so a simulator decode path independent of pumpX2 would be needed before faketandem can catch pumpX2 decode errors.</td>
+</tr>
+<tr>
+<td>Dana RS / i</td>
+<td><strong>2</strong> (DanaKit, AAPS) + a simulator + danars-js outside the clones</td>
+<td>DanaKit is ported from danars-js</td>
+<td>0</td>
+<td>Packet and encryption vectors shared between the Swift and Kotlin suites; revive dana-simulator</td>
+</tr>
+<tr>
+<td>Medtrum pump</td>
+<td><strong>2</strong> (MedtrumKit, AAPS)</td>
+<td>the test names mirror each other</td>
+<td>7</td>
+<td>A shared per-packet corpus</td>
+</tr>
+<tr>
+<td>Medtrum CGM (A6 / TouchCare Nano)</td>
+<td><strong>2</strong> (xDrip, xdripswift)</td>
+<td>–</td>
+<td>0</td>
+<td>–</td>
+</tr>
+<tr>
+<td>Eversense</td>
+<td><strong>2</strong> (EversenseKit, Juggluco)</td>
+<td>–</td>
+<td>0</td>
+<td>–</td>
+</tr>
+<tr>
+<td>Accu-Chek SmartGuide</td>
+<td><strong>2</strong> (AccuChekKit, Juggluco)</td>
+<td>–</td>
+<td>0</td>
+<td>–</td>
+</tr>
+<tr>
+<td>RileyLink host</td>
+<td><strong>2</strong> (RileyLinkKit, AAPS)</td>
+<td>–</td>
+<td>0</td>
+<td>–</td>
+</tr>
+</tbody>
+</table>
+<p>Totals: 14 protocols have 2 or more implementations: Dexcom G7 authentication, Dexcom G5/G6, Libre 2, Libre 3, Omnipod Eros, Omnipod DASH, Medtronic 5xx/7xx, SAKE, Dana, Medtrum pump, Medtrum CGM, Eversense, Accu-Chek SmartGuide and RileyLink. Between them there are 41 implementations (counting a port as one, Omnipod Eros including openomni, and only the four authenticating G7 implementations). For 3 of the 14 the shared vectors come from copying tests (Omnipod Eros and DASH, Medtrum pump). For 1 they come from a deliberate cross-check (SAKE). For the other 10 no vectors are shared, or at most 2 literals are. Tandem has a single client in the clones; its 17 shared literals come from the simulator depending on the client library.</p>
+<h2 id="4-vv-gap-for-the-device-layer-and-the-work-to-close-it">4. V&amp;V gap for the device layer and the work to close it<a class="headerlink" href="#4-vv-gap-for-the-device-layer-and-the-work-to-close-it" title="Permanent link">&para;</a></h2>
+<h3 id="41-what-exists">4.1 What exists<a class="headerlink" href="#41-what-exists" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Message encode/decode vectors</strong> are the dominant test type. The largest suites are pumpX2 (968 declarations, 1,334 hex literals), the AAPS pump drivers (5,810 <code>@Test</code> lines on <code>dev</code>, 2,127 of them in CareLevo), LibreCRKit (160 tests, 744 literals), MinimedKit (164) and the Omnipod suites (109–189 per implementation).</li>
+<li><strong>Crypto known-answer tests (KATs) against external standards.</strong> Five were found in the device layer: JavaSake (NIST SP 800-38A ECB and CTR, RFC 4493 CMAC), LibreCRKit (RFC 3610 AES-CCM vector 1, run as a round trip), AAPS DASH <code>MilenageTest</code> (fixed vectors; the source is not stated), and xdrip-js (curve parameters only). In the controller layer there is AAPS <code>CryptoPrimitivesVectorsTest</code> (RFC 6070 and NIST GCM). None was found for EAP-AKA/Milenage in Swift, X25519, P-256 ECDH/ECDSA, HKDF, HMAC, EC-JPAKE, or the vendor-specific Dana, Medtrum and Libre 2 schemes.</li>
+<li><strong>Deterministic handshake tests</strong> use injected randomness in pumpX2 (<code>SecureRandomMock</code>), JavaSake (<code>QueuedRngSource</code>) and faketandem (J-PAKE integration and stress). The OmniBLE, OmnipodKit and AAPS key-exchange tests use one fixed-vector case each.</li>
+<li><strong>Simulators.</strong> faketandem is the most complete: a virtual transport that runs in CI, a clock, a request log, fault injection, and an integration job against pumpX2. <code>pod</code> covers DASH on a Raspberry Pi, with state and faults but no virtual transport and 2 tests. dana-simulator covers Dana-i / RS v3 on a Raspberry Pi, with no tests and no commits since 2024-10-01. The PythonSake and JavaSake server roles act as a partial SAKE pump peer.</li>
+<li><strong>Test doubles</strong> below the transport: <code>MockRileyLinkDevice</code> (MinimedKit), mock transports in the <code>PodCommsSessionTests</code> of OmniKit, OmniBLE and OmnipodKit, and log parsers (<code>OmniBLEParser</code>, <code>OmniKitPacketParser</code>, <code>OmniParser</code>).</li>
+<li><strong>Fuzzing:</strong> none found. The matches for "fuzz" in xDrip, AAPS and Juggluco are timing and graph "fuzz" factors, not fuzz harnesses.</li>
+<li><strong>Hardware-in-the-loop:</strong> there are no automated rigs in the clones. The Raspberry Pi simulators and the LibreCR harness app are manual rigs.</li>
+<li><strong>Records:</strong> no per-release test report or verification record was found in any device repository. Coverage upload exists for pumpX2 and faketandem (codecov/jacoco) and for AAPS (<code>codecov.yml</code>).</li>
+<li><strong>CI that runs device tests:</strong> AAPS (CircleCI), xDrip, pumpX2, controlX2, faketandem, JavaSake, JavaPumpConnector and xdrip-js. <strong>No CI</strong> covers OmnipodKit, DanaKit, MedtrumKit, EversenseKit, AccuChekKit, LibreCRKit, LibreLoop, OmniBLE, OmniKit, MinimedKit or G7SensorKit (RileyLinkKit, CGMBLEKit and LibreTransmitter have legacy <code>.travis.yml</code> only), and none covers PythonSake, PythonPumpConnector, Juggluco, DiaBLE, pod or dana-simulator. Trio's test workflow does not reference the kits' test targets.</li>
+</ul>
+<h3 id="42-what-a-quality-control-system-for-this-layer-would-need">4.2 What a quality-control system for this layer would need<a class="headerlink" href="#42-what-a-quality-control-system-for-this-layer-would-need" title="Permanent link">&para;</a></h3>
+<ol>
+<li>One language-neutral <strong>vector corpus per protocol</strong>: frame, direction, characteristic, hex, and decoded fields, with de-identified serials and sensor IDs. Every implementation would load it from its own tests.</li>
+<li><strong>Crypto KATs</strong> from public standards for each standard primitive, in each implementation. Where a protocol composes primitives, a fixed-randomness <strong>handshake transcript</strong> shared by all implementations of that protocol.</li>
+<li><strong>Simulators</strong> with a virtual transport, following the faketandem model, so that driver integration tests run in CI without radios. They also need fault injection (dropped, duplicated, reordered and corrupted frames, disconnects mid-command, clock skew) and a device-side record of what was received.</li>
+<li><strong>Parser fuzzing</strong> of every inbound decoder, in CI.</li>
+<li><strong>Hardware-in-the-loop</strong> smoke runs against real devices before release, on a fixed rig.</li>
+<li><strong>Records</strong>: for each release of each driver, a test report tied to the sha, listing the vector-corpus version passed, the simulator scenarios run, the HIL runs, and any known gaps.</li>
+</ol>
+<h3 id="43-work-estimate-estimates-in-person-weeks">4.3 Work estimate (ESTIMATES, in person-weeks)<a class="headerlink" href="#43-work-estimate-estimates-in-person-weeks" title="Permanent link">&para;</a></h3>
+<p>These ranges are derived from the counts above, not from measured effort.</p>
+<p><strong>Assumptions:</strong>
+- An engineer is familiar with BLE and the host language.
+- The vendor protocol is already understood from existing code. No new reverse engineering is included.
+- Protocols in scope are the 14 with 2 or more implementations, plus Omnipod 5 and Tandem, which are single-implementation.
+- Vectors are extracted from existing test literals where possible (the OmniKit, OmniBLE, pumpX2, MinimedKit, CGMBLEKit and LibreCRKit literals, about 2,700 in total).
+- Captures used as vectors are de-identified.
+- Maintainers' review time is not included.
+- Swift kits need their parsers testable on Linux or macOS runners outside CoreBluetooth.</p>
+<table>
+<thead>
+<tr>
+<th>Work item</th>
+<th>Unit estimate</th>
+<th>Scope assumed</th>
+<th>Range (pw)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vector-corpus format, tooling, loaders</td>
+<td>3–6 pw once</td>
+<td>one schema and a loader per language (Swift, Kotlin/Java, JS, C++, Python, Go)</td>
+<td>3–6</td>
+</tr>
+<tr>
+<td>Seed corpus extraction and curation</td>
+<td>1–2 pw per protocol</td>
+<td>14 protocols</td>
+<td>14–28</td>
+</tr>
+<tr>
+<td>Adapters in each implementation</td>
+<td>0.5–1.5 pw per implementation</td>
+<td>about 30 implementation × protocol pairs</td>
+<td>15–45</td>
+</tr>
+<tr>
+<td>Crypto KATs from public standards</td>
+<td>0.25–0.5 pw per primitive × implementation</td>
+<td>about 25 pairs (Milenage ×3, X25519 ×3, AES-CCM ×5, AES-CMAC ×4, P-256 ECDH/ECDSA ×6, HKDF/HMAC ×2, EC-JPAKE ×2)</td>
+<td>6–13</td>
+</tr>
+<tr>
+<td>Fixed-randomness handshake transcripts</td>
+<td>1–2 pw per protocol</td>
+<td>7 authenticated protocols (DASH, O5, G7, Libre 3, Tandem, SAKE, Eversense)</td>
+<td>7–14</td>
+</tr>
+<tr>
+<td>Bring <code>pod</code> and <code>dana-simulator</code> to faketandem parity (virtual transport, harness API, faults, CI)</td>
+<td>4–8 pw each</td>
+<td>2</td>
+<td>8–16</td>
+</tr>
+<tr>
+<td>New simulators</td>
+<td>6–18 pw each</td>
+<td>5 priority families (Dexcom G6, Dexcom G7, Libre 2, Libre 3, Medtronic over RileyLink)</td>
+<td>30–90</td>
+</tr>
+<tr>
+<td>Parser fuzzing harnesses in CI</td>
+<td>0.5–1 pw per decoder target, plus triage</td>
+<td>about 30 decoder targets; triage 5–20</td>
+<td>20–50</td>
+</tr>
+<tr>
+<td>CI for repos that have none</td>
+<td>0.5–1.5 pw per repo</td>
+<td>about 15 repos (the iOS ones need macOS runners)</td>
+<td>8–22</td>
+</tr>
+<tr>
+<td>HIL rig: build, and integration per device family</td>
+<td>4–8 pw build + 1–2 pw per family</td>
+<td>10 families</td>
+<td>14–28</td>
+</tr>
+<tr>
+<td>Release records: template, automation, archive</td>
+<td>2–4 pw once</td>
+<td>–</td>
+<td>2–4</td>
+</tr>
+<tr>
+<td><strong>Total one-time</strong></td>
+<td></td>
+<td></td>
+<td><strong>≈127–316 pw</strong></td>
+</tr>
+<tr>
+<td>Ongoing</td>
+<td>0.1–0.2 FTE for rig and corpus upkeep, plus 0.5–1 day per driver release</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Notes on the ranges:
+- The spread is widest for new simulators. The faketandem history (362 commits since 2021, concentrated between 2025-12 and 2026-09, with a gap analysis still listing about 40 unhandled control requests as of 2026-04) indicates that a full-fidelity pump simulator is a multi-month effort. The low end assumes read and status paths only.
+- CGM simulators that authenticate would have to implement the sensor side of the handshake. That places them under the same disclosure constraints as the drivers.
+- Fuzzing triage is unbounded until it has been run. The range is a placeholder.</p>
+<h2 id="5-wearables-and-health-platforms-what-is-in-the-clones">5. Wearables and health platforms: what is in the clones<a class="headerlink" href="#5-wearables-and-health-platforms-what-is-in-the-clones" title="Permanent link">&para;</a></h2>
+<p>This section is from a grep across all cloned repositories. Only code paths are reported.</p>
+<table>
+<thead>
+<tr>
+<th>Integration</th>
+<th>Repositories and paths</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Garmin (Connect IQ)</td>
+<td>AndroidAPS <code>plugins/sync/src/main/kotlin/app/aaps/plugins/sync/garmin/</code> (13 files, plus <code>androidTest</code>); Juggluco <code>Common/src/mobile/java/tk/glucodata/nums/DirectGarminIQ.java</code>, <code>GarminIQCodec.java</code>, <code>GarminSdkContext.java</code>, <code>MyConnectIQListener.java</code>; iAPS (7 files, for example <code>FreeAPS/Sources/Assemblies/ServiceAssembly.swift</code>); Trio (15 files, for example <code>Model/Helper/CustomNotification.swift</code>); xDrip lists compatible apps in <code>utilitymodels/CompatibleApps.java</code> and serves a local web service with glucose, heart-rate and steps endpoints in <code>webservices/WebServiceSgv.java</code>, <code>WebServiceHeart.java</code> and <code>WebServiceSteps.java</code></td>
+</tr>
+<tr>
+<td>Fitbit</td>
+<td>sulkaharo/nsfitbit (a Fitbit clock face with a companion: <code>companion/</code>, <code>app/</code>, <code>sdk4</code>, <code>sdk5</code>); xDrip <code>utilitymodels/CompatibleApps.java</code> and <code>res/xml/pref_advanced_settings.xml</code></td>
+</tr>
+<tr>
+<td>Wear OS</td>
+<td>AndroidAPS <code>wear/</code> module; xDrip <code>wear/</code> module and <code>wearintegration/</code>; Juggluco Wear OS build (<code>Common/src/small/AndroidManifest.xml</code>); controlX2 <code>wear/</code> (a pump controller on the watch)</td>
+</tr>
+<tr>
+<td>Apple Watch (WatchConnectivity / WatchKit)</td>
+<td>Loop <code>Loop/Managers/WatchDataManager.swift</code>; Trio <code>Trio Watch App Extension/</code>; iAPS <code>FreeAPSWatch WatchKit Extension/</code>; xdripswift <code>xDrip Watch App/</code>; nightguard <code>nightguard/watch/</code>; LoopCaregiver <code>…/WatchConnectivityService.swift</code>; LoopFollow (2 files)</td>
+</tr>
+<tr>
+<td>HealthKit</td>
+<td>Loop, LoopKit (<code>LoopKitHostedTests/GlucoseStoreTests.swift</code>, among others), Trio, iAPS, xdripswift <code>xDrip/Managers/HealthKit/HealthKitManager.swift</code>, DiaBLE <code>DiaBLE/Health.swift</code>, nightguard <code>external/AppleHealthService.swift</code></td>
+</tr>
+<tr>
+<td>Health Connect</td>
+<td>xDrip <code>app/src/main/java/com/eveningoutpost/dexdrip/healthconnect/</code> (5 files); Juggluco (<code>Common/build.gradle</code>, <code>Common/src/mobile/AndroidManifest.xml</code>)</td>
+</tr>
+<tr>
+<td>Oura</td>
+<td>tidepool-org/platform <code>oura/</code> (an API client and subscription service, with tests <code>oura_test.go</code> and <code>oura_suite_test.go</code>); nocturne lists Oura in <code>src/Web/packages/portal/src/lib/data/connectors.ts</code> as <code>comingSoon: true</code></td>
+</tr>
+<tr>
+<td>Whoop</td>
+<td>none found</td>
+</tr>
+<tr>
+<td>Other watches found</td>
+<td>Pebble: xDrip (<code>webservices/WebServicePebble.java</code>), cgm-remote-monitor <code>tests/pebble.test.js</code>, oref0 <code>bin/oref0-pebble.js</code>, nsfitbit. Mi Band and Amazfit: xDrip <code>watch/miband/</code>, <code>wearintegration/</code>. Samsung Tizen: AndroidAPS <code>plugins/sync/…/tizen/</code>. LeFun: xDrip <code>watch/lefun/</code>.</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

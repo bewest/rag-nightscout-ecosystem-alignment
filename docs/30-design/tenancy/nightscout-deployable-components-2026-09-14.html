@@ -1,0 +1,5920 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/nightscout-deployable-components-2026-09-14.html">
+      
+      
+        <link rel="prev" href="nightscout-control-plane-reconciliation-2026-09-11.html">
+      
+      
+        <link rel="next" href="nightscout-multitenancy-discussion-2026-09-09.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Deployable components: entrypoints, program structure, and what an operator actually runs - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#deployable-components-entrypoints-program-structure-and-what-an-operator-actually-runs" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Deployable components: entrypoints, program structure, and what an operator actually runs
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_24" id="__nav_5_24_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_24_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    30-design/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cgm-remote-monitor-telemetry-emitter-map-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor Telemetry Emitter Integration Map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-adoption-roadmap-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adoption roadmap: who builds what, in what order
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-integration-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Integration Guide for App Developers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-backend-service-design-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Backend Service Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-deployment-lifecycle-examples-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Deployment Lifecycle Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-implementation-breakdown-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Implementation Breakdown
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-lifecycle-policy-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Lifecycle Policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-local-integration-plan-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Local Integration Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-scheduling-dedupe-model-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Scheduling and Dedupe Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ns2parquet-keyed-pseudonyms.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ns2parquet keyed pseudonyms: design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../modernization/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    modernization/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../platform/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    platform/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../remedial/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    remedial/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24_15" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenancy/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_24_15" id="__nav_5_24_15_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_24_15_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24_15">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    tenancy/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-configuration-and-delegation-2026-09-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings, extensibility, new data, and delegated access: four open questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-control-plane-reconciliation-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reconciling the agentic control plane RFC with what the corpus measured
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployable components: entrypoints, program structure, and what an operator actually runs
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="nightscout-deployable-components-2026-09-14.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployable components: entrypoints, program structure, and what an operator actually runs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#tldr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TL;DR
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-the-evidence-actually-constrains" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What the evidence actually constrains
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The components
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. The components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-ns-api--stateless" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 ns-api — stateless
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-ns-evaluator--change-driven" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 ns-evaluator — change-driven
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-ns-realtime--fan-out" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 ns-realtime — fan-out
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-ns-vcpool--vendor-connectivity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 ns-vcpool — vendor connectivity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-ns-single--the-existing-server-unchanged" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 ns-single — the existing server, unchanged
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-program-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Program structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#35-how-the-evaluator-is-woken-and-how-alarms-reach-subscribers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 How the evaluator is woken, and how alarms reach subscribers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.5 How the evaluator is woken, and how alarms reach subscribers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#351-what-controls-the-evaluators-scaling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.1 What controls the evaluator's scaling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#352-does-the-evaluator-tell-the-socket-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.2 Does the evaluator tell the socket engine?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#353-how-a-change-actually-reaches-one-tenants-subscribers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.3 How a change actually reaches one tenant's subscribers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3531-does-notify-scale-this-way-and-should-this-be-kafka" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.3.1 Does NOTIFY scale this way, and should this be Kafka?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#354-the-constraint-this-exposes-rls-cannot-protect-the-feed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.4 The constraint this exposes: RLS cannot protect the feed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-integration-the-change-feed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Integration: the change feed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-the-cost-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. The cost model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-answering-the-objection-directly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Answering the objection directly
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-ordering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Ordering
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-what-would-change-this-recommendation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. What would change this recommendation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-multitenancy-discussion-2026-09-09.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout multitenancy: evidence and options
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-multitenancy-execution-plan-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenancy execution plan: decisions, tasks, and the context each one needs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-seam-ordering-translation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design — how ordering crosses the storage seam
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-storage-seam-interface-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    T1.1 — the storage seam: interface definition and call-site classification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tenant-owner-config-surface-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The tenant-owner configuration surface — T3.0's missing schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../60-research/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#tldr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TL;DR
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-the-evidence-actually-constrains" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What the evidence actually constrains
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The components
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. The components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-ns-api--stateless" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 ns-api — stateless
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-ns-evaluator--change-driven" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 ns-evaluator — change-driven
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-ns-realtime--fan-out" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 ns-realtime — fan-out
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-ns-vcpool--vendor-connectivity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 ns-vcpool — vendor connectivity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-ns-single--the-existing-server-unchanged" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 ns-single — the existing server, unchanged
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-program-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Program structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#35-how-the-evaluator-is-woken-and-how-alarms-reach-subscribers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 How the evaluator is woken, and how alarms reach subscribers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.5 How the evaluator is woken, and how alarms reach subscribers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#351-what-controls-the-evaluators-scaling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.1 What controls the evaluator's scaling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#352-does-the-evaluator-tell-the-socket-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.2 Does the evaluator tell the socket engine?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#353-how-a-change-actually-reaches-one-tenants-subscribers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.3 How a change actually reaches one tenant's subscribers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3531-does-notify-scale-this-way-and-should-this-be-kafka" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.3.1 Does NOTIFY scale this way, and should this be Kafka?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#354-the-constraint-this-exposes-rls-cannot-protect-the-feed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.4 The constraint this exposes: RLS cannot protect the feed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-integration-the-change-feed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Integration: the change feed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-the-cost-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. The cost model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-answering-the-objection-directly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Answering the objection directly
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-ordering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Ordering
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-what-would-change-this-recommendation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. What would change this recommendation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="deployable-components-entrypoints-program-structure-and-what-an-operator-actually-runs">Deployable components: entrypoints, program structure, and what an operator actually runs<a class="headerlink" href="#deployable-components-entrypoints-program-structure-and-what-an-operator-actually-runs" title="Permanent link">&para;</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Record</p>
+<p>Record as of 2026-09-14. A point-in-time document; it is not kept up to date.</p>
+</div>
+<p><em>Contributor-facing.</em> <strong>Snapshot, written 2026-09-14. Current: the only statement of the
+deployable-component decomposition.</strong> Its recommendation was adopted as <strong>D5</strong> (four hosted
+entrypoints plus <code>single</code>) and <strong>D6</strong> (the change feed), and is extended by <strong>D7</strong> (<code>ns-admin</code>,
+the platform-admin plane) and <strong>D16</strong> (three listeners by audience) — <a href="nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">execution plan §1</a>.
+Task state lives in <a href="../../../queue/QUEUE.html"><code>queue/QUEUE.md</code></a>. Measurements carry their own dates
+and are post-#8733. Companion to <a href="nightscout-multitenancy-discussion-2026-09-09.html">Nightscout multitenancy: evidence and options</a>
+and <a href="../../60-research/tenancy/multitenancy-k-and-residency-2026-09-14.html">What sets K</a>.</p>
+<p><strong>Nothing here is a proposal to merge.</strong> This answers a specific question: given everything
+the experiments measured, <em>what are the deployable units</em>, what goes in each, how do they
+talk to each other, and which arrangement is cheapest for an operator to run.</p>
+<p><strong>Baseline.</strong> <a href="https://github.com/nightscout/cgm-remote-monitor/pull/8733">PR #8733</a> — the
+two quadratic scans over the treatment window, with differential tests over 636 randomised
+fixtures and a measured 6.3×–43× improvement — is the baseline. It is <strong>merged</strong> to <code>dev</code>
+(2026-09-17) and not released (<code>origin/master</code> = <code>15.0.8</code>). Every number below is post-#8733.
+This document is the <em>why</em>; the <a href="nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan</a> is the decisions and the tasks.</p>
+<p><strong>Objective function, as stated by the maintainer: minimise operator cost first, then
+maximise performance.</strong> So the units here are processes, gigabytes and database operations
+per second — not milliseconds.</p>
+<hr />
+<h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
+<p><strong>Recommendation (adopted as D5): four hosted entrypoints — <code>api</code> (stateless), <code>evaluator</code>
+(change-driven), <code>realtime</code> (socket fan-out) and <code>vcpool</code> — over one shared core, plus the
+existing single-tenant server as <code>single</code>, which changes nothing.</strong> D7 adds <code>ns-admin</code> on its own
+unrouted interface and D16 a tenant-owner listener, <code>ns-tenant-admin</code>; neither changes the cost
+model below. At 10,000 tenants that is
+<strong>5 processes, 0.5 GB and 633 database operations per second</strong>, against <strong>13–17 processes</strong>,
+5–27 GB and 4,285–6,183 ops/s for the resident-shard options — process counts now measured
+with a real database in the loop (EXP-MT-026), not modelled.</p>
+<p><strong>This reverses the <a href="../../60-research/tenancy/multitenancy-k-and-residency-2026-09-14.html">K report</a>
+§7's rejection of architecture D</strong>, and the maintainer's objection is why: an 8–15 ms CPU
+margin is not the right axis on which to choose a design that needs a tenant→shard map,
+sticky routing and a rebalancer over one that needs none. Three measured facts, none of them
+latency, decide it:</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Finding</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>After #8733, ~81 % of the load cycle is residency bookkeeping, not derivation.</strong> <code>cache.insertData</code>'s defensive deep clone is <strong>4.08 ms of a 6.27 ms cycle</strong>; <code>calcDelta</code> spends another ~1.0 ms deep-comparing two snapshots to rediscover what the write path already knew</td>
+<td>{R} §12.3</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Polling costs an order of magnitude more database than querying on demand.</strong> The resident model runs ~14 DB ops per tenant per cycle <em>on a timer</em>, for tenants nobody is asking about: <strong>6,183 ops/s</strong> at 10,000 tenants against <strong>633</strong> stateless</td>
+<td>{R} §12.6</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>API v3 already holds no resident state.</strong> Zero <code>ctx.ddata</code> references in <code>lib/api3/</code>; its "cached" collection wrapper is write-through only. The stateless tier does not have to be built — it has to be <em>given its own entrypoint</em></td>
+<td>{R} §12.1</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The two things that made residency look necessary both dissolve on measurement.</strong> Alarms
+for idle tenants need a small <strong>transient</strong> working set — measured at <strong>32.7 KB and 1.94 ms p50 per
+tenant per evaluation</strong> (2026-09-15, <a href="nightscout-multitenancy-execution-plan-2026-09-14.html">plan §7b</a>), not a resident <code>ddata</code> — and its
+only durable part is ack/snooze state, a few hundred bytes that belong in storage anyway. The
+socket delta needs a <em>change</em>, which both storage engines already produce.</p>
+<p><strong>What residency genuinely buys, and it is one endpoint</strong>: <code>/api/v1/entries.json</code> is served
+from memory with <strong>zero database operations</strong> today. That is the highest-QPS endpoint in the
+ecosystem. Replacing it with a query is 533 ops/s at 10,000 tenants — affordable, and
+collapsible with a shared response cache keyed on <code>(tenant, lastUpdated)</code>. <strong>A cache, which
+is evictable and correctness-neutral, not a resident <code>ddata</code>, which is neither.</strong></p>
+<p><strong>Storage: Postgres + RLS, and the evidence for it is now narrower and firmer.</strong> EXP-MT-011b
+showed index locality no longer separates the engines — an explicit discriminator gives
+MongoDB's planner perfect bounds. EXP-MT-057 shows what does: under RLS an unbound connection
+returns <strong>0 rows</strong> and a bound one with <strong>no tenant predicate in the SQL at all</strong> returns only
+that tenant's, at <strong>0.383 ms p50</strong> — <em>faster</em> than writing the filter by hand, with the policy
+predicate compiled into an <code>Index Cond</code>. The same forgotten filter against a Mongo
+discriminator returns <strong>every tenant's rows</strong>. For a system holding other people's clinical
+data, fail-closed is the deciding property.</p>
+<p><strong>At 1,000 tenants all three options cost 3–5 processes.</strong> The stateless decomposition is
+never materially more expensive to start and is 2–3× cheaper by 10,000. There is no scale at
+which it is the wrong first move.</p>
+<blockquote>
+<p><strong>EXP-MT-026</strong> ran with MongoDB 7.0 in the loop, including real RTT via <code>tc netem</code> —
+<a href="../../60-research/tenancy/exp-mt-026-database-in-the-loop-2026-09-14.html">the report</a>. <strong>The
+recommendation holds with a wider margin</strong>: the measured database cost puts A at <strong>17</strong>
+processes and B at <strong>13</strong>, leaving C at <strong>5</strong>. The assumption the model
+rested on is confirmed — CPU per operation grows <strong>2.5×</strong> between loopback and 50 ms RTT
+while wall time grows ~75×, and event-loop delay p50 stays flat at 1.1 ms — so <strong>process
+count is RTT-insensitive</strong> and what RTT buys you is a pool-depth requirement (~100 in flight
+at 50 ms), not more machines. Two further results: a typed cache hit is <strong>10×</strong> cheaper than
+the equivalent query (0.02 vs 0.207 ms CPU), making §2.1's response cache load-bearing
+rather than optional; and <strong>§6.7's A′ storage rung does not scale</strong> — <code>mongod</code> holds ~3.7 MB
+of non-evictable RSS per tenant database containing zero documents, more than the app-side
+state A′ was supposed to save — though <strong>that ceiling is a property of database-per-tenant,
+not of multitenancy</strong>: one logical database with a tenant discriminator holds <strong>104
+WiredTiger files in total at 400 tenants</strong>, flat, with the planner examining 10 keys per
+10-document read at every scale (EXP-MT-011b). The storage shape these components sit on
+is <strong>shared-collection with a storage-enforced predicate</strong>, not database-per-tenant (D2, D3).</p>
+<p>What remains unmeasured, and it is not small: <strong>no TLS and no authentication</strong> were in the
+loop, and both land on exactly the CPU-per-operation term the recommendation depends on.</p>
+</blockquote>
+<hr />
+<h2 id="1-what-the-evidence-actually-constrains">1. What the evidence actually constrains<a class="headerlink" href="#1-what-the-evidence-actually-constrains" title="Permanent link">&para;</a></h2>
+<p>Three questions decide a component boundary. Only the third is about performance.</p>
+<ol>
+<li><strong>What state does this code need, and for how long?</strong> — decides whether it can be
+   replicated freely.</li>
+<li><strong>What wakes it up?</strong> — a request, a timer, or a change. Decides whether it can scale to
+   zero.</li>
+<li><strong>What binds it?</strong> — CPU, memory, sockets, or somebody else's rate limiter. Decides
+   whether it belongs with its neighbours.</li>
+</ol>
+<p>Counted against <code>dev</code> @ <code>a8888f0d</code>, every server-side reader of resident state
+({R} §12.1):</p>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Resident state</th>
+<th>Woken by</th>
+<th>Binds on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>lib/api3/**</code> — all of it</strong></td>
+<td><strong>none</strong></td>
+<td>request</td>
+<td>request rate</td>
+</tr>
+<tr>
+<td>API v1 CRUD and writes</td>
+<td>none (borrows <code>processRawDataForRuntime</code> as a function)</td>
+<td>request</td>
+<td>request rate</td>
+</tr>
+<tr>
+<td>API v1 <code>entries</code> read</td>
+<td>optional cache, <strong>graceful DB fallback</strong></td>
+<td>request</td>
+<td>clone CPU</td>
+</tr>
+<tr>
+<td>API v1 <code>Last-Modified</code></td>
+<td>latest SGV</td>
+<td>request</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Loop remote API (<code>server/loop.js</code>)</td>
+<td>profile only</td>
+<td>request</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>/alarm</code> socket namespace</td>
+<td><strong>none</strong> — pure fan-out off the bus</td>
+<td>change</td>
+<td>sockets</td>
+</tr>
+<tr>
+<td>Alarm evaluation (18 plugins)</td>
+<td><strong>transient slice</strong> (32.7 KB measured, plan §7b) + durable ack/snooze</td>
+<td>change</td>
+<td>CPU</td>
+</tr>
+<tr>
+<td>API v2 <code>summary</code></td>
+<td>full <code>ddata</code></td>
+<td>request</td>
+<td>CPU</td>
+</tr>
+<tr>
+<td><code>dataUpdate</code> socket delta</td>
+<td>full <code>ddata</code> <strong>+ prior snapshot</strong></td>
+<td>change</td>
+<td>CPU</td>
+</tr>
+<tr>
+<td>Vendor connectivity</td>
+<td>419 KB/actor session state</td>
+<td>timer</td>
+<td><strong>vendor rate limit</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Only two paths require a whole resident <code>ddata</code></strong>, and both are derivable without one: v2's
+summary is a report over a window — a query — and the socket delta is a change, which both
+engines emit natively (§4).</p>
+<p><strong>Everything else is already stateless, already transient, or already has a fallback.</strong> The
+single-tenant assumption people reach for — <code>ctx</code> bound at module scope — turns out to be
+less load-bearing than the assumption nobody wrote down: <em>that all of these consumers should
+be served from one merged object rebuilt on one debounce.</em></p>
+<h2 id="2-the-components">2. The components<a class="headerlink" href="#2-the-components" title="Permanent link">&para;</a></h2>
+<pre class="mermaid"><code>graph TB
+    UP["&lt;b&gt;uploaders&lt;/b&gt;&lt;br/&gt;xDrip+, AAPS, Loop, Trio"]
+    FOL["&lt;b&gt;followers&lt;/b&gt;&lt;br/&gt;mobile apps, browser, watches"]
+    VENDOR["&lt;b&gt;vendors&lt;/b&gt;&lt;br/&gt;Dexcom, LibreLinkUp,&lt;br/&gt;Glooko, CareLink"]
+
+    ROUTER["&lt;b&gt;router&lt;/b&gt;&lt;br/&gt;Host to tenant; token claim must match.&lt;br/&gt;Stateless. Grows with request rate,&lt;br/&gt;not with tenant count."]
+
+    API["&lt;b&gt;ns-api&lt;/b&gt; — stateless&lt;br/&gt;api3 (all), api1 CRUD + reads, api2 summary,&lt;br/&gt;auth, tenant resolution&lt;br/&gt;&lt;i&gt;no tenant affinity · scale to zero · any replica&lt;/i&gt;"]
+    EVAL["&lt;b&gt;ns-evaluator&lt;/b&gt; — change-driven&lt;br/&gt;alarm evaluation, plugin tier, notification delivery&lt;br/&gt;&lt;i&gt;materialise ~33 KB, evaluate, discard&lt;/i&gt;&lt;br/&gt;&lt;i&gt;durable state: ack/snooze only&lt;/i&gt;"]
+    RT["&lt;b&gt;ns-realtime&lt;/b&gt; — fan-out&lt;br/&gt;socket.io, per-tenant rooms, /alarm namespace&lt;br/&gt;&lt;i&gt;the delta IS the change event&lt;/i&gt;&lt;br/&gt;&lt;i&gt;stateful only in connections&lt;/i&gt;"]
+    VC["&lt;b&gt;ns-vcpool&lt;/b&gt;&lt;br/&gt;nightscout-connect actors&lt;br/&gt;&lt;i&gt;split for egress identity,&lt;br/&gt;not for K&lt;/i&gt;"]
+
+    STORE[("&lt;b&gt;storage&lt;/b&gt;&lt;br/&gt;PostgreSQL, shared tables,&lt;br/&gt;tenant_id + RLS (D2, D3)")]
+    FEED{{"&lt;b&gt;change feed&lt;/b&gt;&lt;br/&gt;replication slot + NOTIFY&lt;br/&gt;+ bounded poll (D6)"}}
+
+    UP --&gt; ROUTER --&gt; API
+    FOL --&gt; ROUTER
+    ROUTER --&gt; RT
+    API --&gt; STORE
+    VC --&gt; STORE
+    VC -.-&gt;|egress proxy pool| VENDOR
+    STORE ==&gt; FEED
+    FEED ==&gt; EVAL
+    FEED ==&gt; RT
+    EVAL --&gt; STORE
+    EVAL --&gt;|push, email, webhook| FOL
+    RT --&gt;|dataUpdate, alarm| FOL
+
+    style API fill:#d4edda,stroke:#2c7a3f,color:#111
+    style EVAL fill:#d4edda,stroke:#2c7a3f,color:#111
+    style RT fill:#fff3cd,stroke:#a1791b,color:#111
+    style VC fill:#fff3cd,stroke:#a1791b,color:#111
+    style FEED fill:#d4edda,stroke:#2c7a3f,color:#111</code></pre>
+<p><strong>The integration rule that makes this tractable: no hosted component calls another
+synchronously.</strong> They share a store and a change feed. <code>router → api</code> is the only
+request-path edge. That is what lets each one be replicated, restarted, or scaled to zero
+without anything else knowing.</p>
+<h3 id="21-ns-api--stateless">2.1 <code>ns-api</code> — stateless<a class="headerlink" href="#21-ns-api--stateless" title="Permanent link">&para;</a></h3>
+<p><strong>Holds:</strong> nothing per tenant. <strong>Woken by:</strong> a request. <strong>Binds on:</strong> request rate.</p>
+<p>All of API v3 unchanged, API v1 CRUD and reads, API v2 summary re-expressed as a query,
+auth, tenant resolution. Any replica serves any tenant; there is no map to keep, no warm-up,
+no rebalance, and a replica can be killed mid-flight.</p>
+<p>The one real change is <code>/api/v1/entries.json</code>, which today answers from <code>ctx.cache</code> with no
+database operation. Two honest consequences:</p>
+<ul>
+<li><strong>It becomes 533 queries/s at 10,000 tenants</strong> (three followers polling once a minute).
+  That is included in the 633 ops/s total and is well within one primary.</li>
+<li><strong>A shared response cache keyed on <code>(tenant, lastUpdated)</code> collapses it</strong> to roughly the
+  change rate. This is the <em>right</em> use of Redis/keyv here — an opaque value, no query
+  language needed, exactly what {M} §7.6 already scoped keyv for — and it is a cache: a miss
+  costs a query, not a correctness failure.</li>
+</ul>
+<p><strong><code>lib/api/entries/index.js:459-500</code>.</strong> <code>?count=10</code> cost 0.83 ms or 0.02 ms for a
+byte-identical response depending on whether the caller named the entry type, because the
+untyped branch deep-cloned the whole 48-hour array before slicing ({R} §12.2) — a <strong>42×
+overcharge on the ecosystem's busiest endpoint</strong>. The slice-before-clone fix (T0.2, measured
+0.837 → 0.025 ms) is <strong>merged</strong> to <code>dev</code> via PR #8740 and not released.</p>
+<p><strong>Storage shape.</strong> These components assume one logical store with a tenant discriminator, not
+database-per-tenant. EXP-MT-011b measures the namespace cost of that choice as flat (104 files
+total at 400 tenants, against 47 per tenant for database-per-tenant) and index locality as
+exact (10 keys examined per 10-document read at every tenant count). The cost it trades for is
+that <strong>a query omitting the discriminator silently returns every tenant's rows</strong> — 230,400
+documents in 92 ms, no error — which is why the isolation predicate has to be enforced by the
+storage engine (Postgres RLS binding per transaction) rather than by ~30 call sites
+remembering a filter. <code>ns-api</code> is the component where that matters most, because it is the one
+that takes arbitrary client queries.</p>
+<h3 id="22-ns-evaluator--change-driven">2.2 <code>ns-evaluator</code> — change-driven<a class="headerlink" href="#22-ns-evaluator--change-driven" title="Permanent link">&para;</a></h3>
+<p><strong>Holds:</strong> a transient working set per evaluation (32.7 KB, plan §7b), discarded immediately.
+<strong>Woken by:</strong> the change feed. <strong>Binds on:</strong> CPU — 0.92 ms per evaluation in EXP-MT-026's
+model; 1.94 ms p50 measured over the full alarm plugin set on a realistic fixture (plan §7b).</p>
+<p>This is the component that makes residency unnecessary, so it is worth being precise about
+what it needs. Surveying all 18 plugins implementing <code>checkNotifications</code> ({R} §12.5): the
+latest reading, ~20 minutes of SGVs for <code>ar2</code>, the latest of six special treatment types —
+which <code>dataloader.js:396-418</code> <strong>already fetches as six <code>count:1</code> queries</strong> — the latest
+devicestatus, the profile, and a DIA window of treatments for <code>boluswizardpreview</code>.</p>
+<p>At 10,000 tenants uploading every five minutes: <strong>33 evaluations/s, 31 ms/s of CPU, one
+process.</strong></p>
+<p><strong>The one piece of durable state is ack/snooze</strong>, which is where {M} §3.1's blocker resolves.
+<code>lib/notifications.js:15</code>'s module-scope <code>alarms</code> map has no tenant dimension on <code>dev</code>; the
+modernization branch moved it inside <code>init()</code> for teardown reasons. In this design it does not
+live in process memory at all — it is a <code>(tenant, level, group)</code> row in storage (built as T4.4a,
+<code>lib/storage/ack-store.js</code>, on the unpublished seam branch; see plan Phase 4), which is what lets <strong>any</strong> evaluator replica handle
+<strong>any</strong> tenant's change. Alarm state surviving a process restart is a safety property that
+happens to be free here and is genuinely hard in a resident design.</p>
+<p><strong>Scale-to-zero is safe for this component in a way it is not for a resident shard.</strong> The
+{M} §7.4 objection — "a quarter-second to start the process before any round-trip, bad for
+an alarm engine cold-booting" — applied to <em>per-tenant</em> processes. These replicas are shared
+and always warm; 266 ms of process start is paid once per replica, not once per tenant.</p>
+<h3 id="23-ns-realtime--fan-out">2.3 <code>ns-realtime</code> — fan-out<a class="headerlink" href="#23-ns-realtime--fan-out" title="Permanent link">&para;</a></h3>
+<p><strong>Holds:</strong> connections. <strong>Woken by:</strong> the change feed. <strong>Binds on:</strong> socket memory,
+~31 KB/socket.</p>
+<p>Socket.IO with per-tenant rooms and the <code>/alarm</code> namespace. <code>lib/api3/alarmSocket.js</code> is
+already independent of <code>calcdelta</code> — it is bound to <code>ctx.bus.on('notification')</code> — so alarm
+fan-out moves here unchanged except for tenant rooms. On <code>dev</code> it emits to the whole
+namespace with no room at all, which is a worse leak than <code>DataReceivers</code> and must be fixed
+before any second tenant exists ({M} §3.4). Tenant rooms are built as T3.5 on the seam branch; the
+single-tenant form of the leak is BF-75/BF-76 (GHSA-8849), <strong>merged</strong> to <code>dev</code> via #8745 and not
+released.</p>
+<p><strong><code>calcdelta</code> does not move here; it goes away.</strong> At 6,000 sockets and 33 changes/s the emit
+cost is 1.8 ms/s — three orders of magnitude below the 1.0 ms/tenant/cycle that <code>calcDelta</code>
+spends deep-comparing snapshots. The delta <em>is</em> the change event, already carrying which
+document changed and for which tenant. This is the conclusion {M} §5.4 reached from the
+headless direction, now supported from the cost direction as well.</p>
+<p><strong>10,000 tenants at 15 % active and four sockets each is 6,000 sockets, 0.2 GB, one
+process.</strong> Sockets need affinity only within this component (sticky sessions or a socket.io
+adapter) — a property of the protocol, not of the tenancy model.</p>
+<h3 id="24-ns-vcpool--vendor-connectivity">2.4 <code>ns-vcpool</code> — vendor connectivity<a class="headerlink" href="#24-ns-vcpool--vendor-connectivity" title="Permanent link">&para;</a></h3>
+<p>Separate for one reason, and it is not K: the machinery holds ~9,700 accounts, but what binds
+it is the <strong>vendor's per-account and per-egress-IP rate limiting</strong> ({R} §6.2, {M} §10.5),
+which is a resource no other component budgets and which no harness here can measure
+(EXP-MT-051). Its failure modes — thundering herds, backoff storms, vendor outages — are also
+unrelated to anything else's.</p>
+<p>Two changes that need no vendor access: <strong>start jitter</strong> (800 actors fire their first request
+inside one second, on every restart and deploy, because <code>run()</code> has no jitter) and <strong>interval
+jitter</strong> on the unaligned branch. The later aligned cycles are already spread by an 18-second
+random window in each vendor driver (measured, plan T0.4). Both windows exist as
+<code>CONNECT_START_JITTER_MS</code> / <code>CONNECT_INTERVAL_JITTER_MS</code>, default <code>0</code>, on connector PR #68
+(open); the pool must set them.</p>
+<h3 id="25-ns-single--the-existing-server-unchanged">2.5 <code>ns-single</code> — the existing server, unchanged<a class="headerlink" href="#25-ns-single--the-existing-server-unchanged" title="Permanent link">&para;</a></h3>
+<p>Self-hosted single-tenant stays first-class permanently, on data-rights and mission grounds
+({M} §11). It keeps <code>ctx.ddata</code>, <code>ctx.cache</code>, <code>calcdelta</code> and one process, because at one
+tenant residency is unambiguously right: the cache costs 2.6 MB and saves every read a
+round-trip, and nothing about a single site needs a change feed.</p>
+<p><strong>This is what stops the decomposition from being a rewrite.</strong> The hosted entrypoints and the
+single-tenant server are different <code>bin/</code> scripts over the same <code>lib/</code>. Nothing in §2.1–2.4
+deletes code the single-tenant target needs; it selects a different subset of it.</p>
+<h2 id="3-program-structure">3. Program structure<a class="headerlink" href="#3-program-structure" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>packages/
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  core/                 domain logic, no server, no ctx binding
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    data/               ddata, calcdelta        &lt;- kept: ns-single and the derivation paths
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    plugins/            the 30-plugin registry  &lt;- unchanged, already sandbox-shaped
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    storage/            the §6.2 repository seam &lt;- the one real prerequisite
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    notifications/      alarm evaluation + delivery
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    connect/            nightscout-connect, in-tree
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>  server/               express app, routers, auth, socket transport
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>bin/
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>  single.js             ns-single    — today's server, unchanged
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>  api.js                ns-api       — express + storage, no bus, no ddata
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>  evaluator.js          ns-evaluator — change feed + notifications, no express
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>  realtime.js           ns-realtime  — socket.io + change feed, no storage writes
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>  vcpool.js             ns-vcpool    — connect actors + egress proxy
+</code></pre></div>
+<p><strong>Four hosted entrypoints and one legacy entrypoint, over one <code>package.json</code> and one CI
+pipeline</strong> — not five repositories. {M} §10.5 already argued this and it holds: these are
+thin <code>bin/</code> scripts selecting which factories to call, not independent products with
+independent release cycles.</p>
+<p><strong>The structure is mostly already there.</strong> {M} §9.1's finding was that <code>bootevent()</code>,
+<code>sandbox.js</code>, <code>plugins/index.js</code> and <code>data/*</code> are already <code>init(env, ctx)</code> factories with
+essentially no module-level mutable state. What each entrypoint does is call a <em>subset</em> of
+that chain:</p>
+<table>
+<thead>
+<tr>
+<th>Entrypoint</th>
+<th style="text-align: center;">bus</th>
+<th style="text-align: center;">dataloader</th>
+<th style="text-align: center;">ddata</th>
+<th style="text-align: center;">cache</th>
+<th style="text-align: center;">plugins</th>
+<th style="text-align: center;">notifications</th>
+<th style="text-align: center;">express</th>
+<th style="text-align: center;">socket.io</th>
+<th style="text-align: center;">storage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>single</code></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td><code>api</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">opt</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td><code>evaluator</code></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td><code>realtime</code></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">r/o</td>
+</tr>
+<tr>
+<td><code>vcpool</code></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">w</td>
+</tr>
+</tbody>
+</table>
+<p>The genuinely new code is small and bounded: <strong>a change-feed consumer</strong>, <strong>ack/snooze state
+in storage instead of a module-scope map</strong>, <strong>tenant rooms</strong>, and <strong>the storage seam</strong>
+({M} §6.2) that everything else already depended on.</p>
+<h2 id="35-how-the-evaluator-is-woken-and-how-alarms-reach-subscribers">3.5 How the evaluator is woken, and how alarms reach subscribers<a class="headerlink" href="#35-how-the-evaluator-is-woken-and-how-alarms-reach-subscribers" title="Permanent link">&para;</a></h2>
+<p><strong>Measured 2026-09-14, EXP-MT-057</strong> — PostgreSQL 16.14, 400 tenants, 230,400 rows.</p>
+<p><strong>No single mechanism is sufficient, and the split is not about throughput.</strong> For an alarm
+path, a delayed event is a nuisance and a dropped event is a missed hypo alert, so the
+question that separates the candidates is <em>what happens while the consumer is not there</em>:</p>
+<table>
+<thead>
+<tr>
+<th>mechanism</th>
+<th>while connected</th>
+<th style="text-align: right;"><strong>written while consumer down</strong></th>
+<th style="text-align: right;"><strong>delivered when it returned</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>LISTEN</code>/<code>NOTIFY</code></td>
+<td>500/500, <strong>1 ms</strong> p50</td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;"><strong>0 — all lost, permanently</strong></td>
+</tr>
+<tr>
+<td>logical replication slot</td>
+<td>—</td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;"><strong>200/200, and no replay on re-consume</strong></td>
+</tr>
+<tr>
+<td>write-path publish</td>
+<td>—</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">misses anything not written through <code>ns-api</code></td>
+</tr>
+<tr>
+<td>bounded aggregate poll</td>
+<td>—</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;"><strong>~1 ms per sweep, any backlog</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>The recommendation is three of them, layered:</strong></p>
+<ol>
+<li><strong>A logical replication slot is the spine.</strong> The only mechanism that survives a consumer
+   restart without losing an alarm. Its cost is WAL retention — 574 bytes per row, so an
+   <em>abandoned</em> slot pins ~0.06 GB/hour at a 10,000-tenant write rate. That needs an alert, but
+   an operator has days to react, not minutes.</li>
+<li><strong><code>NOTIFY</code> is an optional latency accelerator.</strong> It cuts write-to-evaluation to ~1 ms. It
+   carries no correctness weight, so its lossiness is irrelevant.</li>
+<li><strong>A bounded aggregate poll is the non-optional backstop.</strong> Not today's per-tenant poll —
+   <em>one</em> query for "which tenants have a reading newer than their last evaluation", bounded by
+   a <code>date</code> index: <strong>1.02 ms per sweep</strong> at 400 tenants, against 13.7 ms unbounded and 20.9 ms
+   at cold start. [Built as T4.2: as published the sweep is O(registered tenants) — 5.2 ms at
+   3,200 — and is flat only with a global, non-tenant-leading index the DDL emitter cannot yet
+   express (T2.1a); with it, cost is bounded by rows written since the last sweep. Plan Phase 4.] At one sweep per 30 s that is 0.03 ms/s. <strong>Slots get dropped and
+   consumers get partitioned; for an alarm path, "the feed broke and nobody noticed" is the
+   failure that matters.</strong> It also handles cold start, where every watermark is behind.</li>
+</ol>
+<p><strong>Write-path publish is rejected</strong>: it misses backfills, migrations and anything
+<code>nightscout-connect</code> writes directly, and it couples two components that otherwise share only
+storage.</p>
+<h3 id="351-what-controls-the-evaluators-scaling">3.5.1 What controls the evaluator's scaling<a class="headerlink" href="#351-what-controls-the-evaluators-scaling" title="Permanent link">&para;</a></h3>
+<p><strong>The change rate, not the tenant count</strong> — 33 evaluations/s at 10,000 tenants uploading every
+five minutes, 0.92 ms each (EXP-MT-026 §5), so one process with room to spare.</p>
+<p>Scaling out has one structural constraint worth stating: <strong>a replication slot is a single
+ordered stream and cannot be consumed by N workers.</strong> The shape that follows is one cheap slot
+reader feeding a queue partitioned by tenant hash, with N stateless workers behind it. The
+partition is not for throughput — it is because two changes for the same tenant evaluated
+concurrently would race on that tenant's ack/snooze state. <strong>Per-tenant ordering is required;
+cross-tenant ordering is not.</strong> Because ack state lives in storage, any worker can take any
+partition, so there is still no tenant→worker affinity to maintain.</p>
+<h3 id="352-does-the-evaluator-tell-the-socket-engine">3.5.2 Does the evaluator tell the socket engine?<a class="headerlink" href="#352-does-the-evaluator-tell-the-socket-engine" title="Permanent link">&para;</a></h3>
+<p><strong>For data updates, no.</strong> <code>ns-realtime</code> consumes the same feed independently. Chaining them
+would make socket latency depend on alarm evaluation finishing, for no benefit.</p>
+<p><strong>For alarms, yes — but not by calling it.</strong> The evaluator <strong>writes the alarm as a row</strong>, and
+the feed carries it to <code>ns-realtime</code> like any other change. One mechanism, and three
+properties fall out that the current design has to work for:</p>
+<ul>
+<li><strong>Alarms become durable and auditable</strong> — today they exist only as a socket emit and a
+  push notification.</li>
+<li><strong>A reconnecting client can query what it missed</strong>, which is the offline-delivery property
+  §5.4 of {M} wanted an MQTT broker for. No broker.</li>
+<li><strong><code>lib/api3/alarmSocket.js</code> barely changes.</strong> It is already bound to
+  <code>ctx.bus.on('notification')</code> rather than to <code>calcdelta</code>; the bus event becomes a feed event.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>writes ──&gt; storage ──&gt; feed ──┬──&gt; ns-realtime ──&gt; dataUpdate to tenant room
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>                              └──&gt; ns-evaluator ──&gt; alarm row ──&gt; storage ──&gt; feed ──&gt; ns-realtime ──&gt; /alarm
+</code></pre></div>
+<h3 id="353-how-a-change-actually-reaches-one-tenants-subscribers">3.5.3 How a change actually reaches one tenant's subscribers<a class="headerlink" href="#353-how-a-change-actually-reaches-one-tenants-subscribers" title="Permanent link">&para;</a></h3>
+<p><strong>Measured 2026-09-14, EXP-MT-058.</strong> The evaluator does not push to subscribers at all — and
+neither hop needs stateful tracking beyond the sockets themselves.</p>
+<ul>
+<li><strong>Fan-out works without affinity.</strong> 32 concurrent <code>LISTEN</code> connections, 200 <code>NOTIFY</code>s:
+  <strong>6,400/6,400 deliveries, 0 ms p50 / 4 ms max.</strong> Every <code>ns-realtime</code> process sees every
+  event it subscribed to, so none of them needs to be <em>the</em> process for a given tenant.</li>
+<li><strong>Postgres does the per-tenant routing itself.</strong> One connection held <strong>10,000 <code>LISTEN</code>
+  channels</strong> at ~0.1 ms per subscribe, and a <code>NOTIFY</code> to an unsubscribed channel was filtered
+  server-side. So <code>ns-realtime</code> <code>LISTEN</code>s on <code>tenant_&lt;id&gt;</code> for exactly the tenants it holds
+  sockets for, and <code>UNLISTEN</code>s on last disconnect.</li>
+<li><strong>A real delta fits inline.</strong> A <code>dataUpdate</code> with one SGV and one Loop devicestatus
+  (72-point prediction) is <strong>1,039 bytes</strong> against a 7,900-byte usable limit. A batch upload
+  can exceed it, so the fallback — <code>NOTIFY</code> carries a row id, the listener reads the row at
+  <strong>0.183 ms</strong> — should be implemented rather than assumed away.</li>
+</ul>
+<p><strong>What state <code>ns-realtime</code> holds: the socket rooms, and one <code>LISTEN</code> per tenant it currently
+serves.</strong> Both are connection state, discarded on disconnect. <strong>No per-tenant cursor, no
+delivery tracking, no polling.</strong> Durability is not in this path — it is in the alarm row, which
+a reconnecting client queries, and in the push channel, which <code>ns-evaluator</code> emits directly so
+the safety-critical delivery never traverses a socket.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>write ──&gt; WAL ──&gt; slot reader (privileged, cross-tenant)
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>                    ├──&gt; queue partitioned by tenant hash ──&gt; ns-evaluator workers
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>                    │                                            └──&gt; alarm row ──&gt; WAL ──┐
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>                    └──&gt; pg_notify('tenant_&lt;id&gt;', delta) ────────────────────────────────┤
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>                                                                                          │
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>                       ns-realtime ── LISTEN only on tenants it holds sockets for ◄────────┘
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>                            └──&gt; io.to('DataReceivers:&lt;id&gt;').emit(...)
+</code></pre></div>
+<p><strong>One hazard, and it changes the implementation.</strong> A <code>LISTEN</code>ing session that stops consuming
+pins the shared 8 GB notification queue: measured at <strong>~2.6 M notifications to fill, ~21.7
+hours</strong> at a 10,000-tenant change rate with 4 KB payloads (roughly 4× that at the realistic
+1,039 bytes). Write latency does not degrade on the way, so there is no early warning —
+<code>pg_notification_queue_usage()</code> has to be a real alert. <strong>And when it fills, <code>NOTIFY</code> blocks.</strong></p>
+<blockquote>
+<p><strong>So do not <code>NOTIFY</code> from an <code>AFTER INSERT</code> trigger.</strong> That puts it inside the ingest
+transaction, and a wedged display component would eventually stop CGM uploads. <strong><code>NOTIFY</code>
+from the slot reader instead</strong> — it is already consuming every change for the evaluator, so
+this costs nothing and removes the notification queue from the write path entirely. Ingest
+then depends only on the WAL, and a stuck <code>ns-realtime</code> can only make realtime stale.</p>
+</blockquote>
+<h3 id="3531-does-notify-scale-this-way-and-should-this-be-kafka">3.5.3.1 Does <code>NOTIFY</code> scale this way, and should this be Kafka?<a class="headerlink" href="#3531-does-notify-scale-this-way-and-should-this-be-kafka" title="Permanent link">&para;</a></h3>
+<p><strong>Measured 2026-09-14, EXP-MT-059.</strong> <code>NOTIFY</code> degrades in <strong>listener count</strong>, not in message
+rate — 7,873 NOTIFY/s at one listener falling to 495 at 256 (<strong>15.9×</strong>), while the message-rate
+ceiling is ~35,000/s, <strong>286× the 33/s this design generates</strong> at 10,000 tenants.</p>
+<p><strong>The design survives because subscribers are not listeners.</strong> Websockets are held by
+<code>ns-realtime</code> processes and only the <em>processes</em> <code>LISTEN</code>. At ~31 KB/socket one process holds
+~10⁵ sockets, so 10,000 tenants × 4 followers is 40,000 sockets — <strong>one or two listeners</strong>, at
+the top of that curve. Reaching 100 listeners needs ~10⁶ tenants.</p>
+<blockquote>
+<p><strong>Write this into the design, because the two shapes look alike:</strong> 10,000 channels on <strong>one</strong>
+connection (§3.5.3) works. 10,000 connections holding one channel each does not. A design in
+which each subscriber or each tenant holds its own <code>LISTEN</code> collapses.</p>
+</blockquote>
+<p><strong>A live trap between two recommendations.</strong> §6.7 of {M} wants <strong>pgbouncer in transaction
+mode</strong>; <code>LISTEN</code> is <em>session</em> state. Measured against <code>edoburu/pgbouncer</code> at
+<code>pool_mode = transaction</code>: <code>LISTEN</code> is <strong>accepted with no error and delivers nothing</strong> — 50
+<code>NOTIFY</code>s sent, 0 received. Nothing logs a reason. <strong><code>ns-realtime</code> and the slot reader must
+connect directly to Postgres</strong>, not through the transaction-mode pooler; that is a handful of
+direct connections beside a pool serving <code>ns-api</code>, so it costs nothing, but it fails silently
+if missed.</p>
+<p><strong>On Kafka: the design already has the durable ordered log — the WAL.</strong> A replication slot
+delivers everything written while the consumer was gone and does not replay (§8.3). Kafka would
+be a <em>second</em> log, and its central value is durability and replay, which is precisely what this
+hop deliberately does not want (§3.5's asymmetry). {M} §6.3 reached the same conclusion from
+the migration direction, and {M} §7.4 notes per-tenant Kafka topics were part of the 11–12
+Kubernetes objects per tenant that made the current hosting model expensive.</p>
+<p><strong>If <code>NOTIFY</code> ever binds, Kafka is still not the next step</strong> — the limit is listener fan-out,
+and the tools for that are Redis pub/sub or NATS, which are fan-out buses without durability.
+Concrete triggers for revisiting: &gt;~100 listening processes (~10⁶ tenants), a change rate near
+10⁴/s (~100×), storage moving off Postgres, or a requirement that fan-out survive database
+unavailability. <strong>None is within an order of magnitude of the target.</strong></p>
+<h3 id="354-the-constraint-this-exposes-rls-cannot-protect-the-feed">3.5.4 The constraint this exposes: RLS cannot protect the feed<a class="headerlink" href="#354-the-constraint-this-exposes-rls-cannot-protect-the-feed" title="Permanent link">&para;</a></h3>
+<p><strong>The evaluator must see every tenant</strong> — that is its job — so it cannot run under a policy
+binding it to one. Reading a replication slot needs the <code>REPLICATION</code> attribute, which is not
+tenant-scoped at all: the WAL is one stream containing every tenant's rows. So the isolation
+story is genuinely split, and the design should say so rather than imply RLS covers everything:</p>
+<table>
+<thead>
+<tr>
+<th>path</th>
+<th>isolation enforced by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ns-api</code> — arbitrary client queries</td>
+<td><strong>the database</strong> — RLS, per-transaction bind, fail-closed</td>
+</tr>
+<tr>
+<td>slot reader + <code>ns-evaluator</code></td>
+<td><strong>code review</strong>. Cross-tenant privilege by construction</td>
+</tr>
+<tr>
+<td><code>ns-realtime</code></td>
+<td><strong>the database</strong> — it <code>LISTEN</code>s only on the tenants it serves (§3.5.3)</td>
+</tr>
+</tbody>
+</table>
+<p>RLS protects the path that takes untrusted input, which is the one that most needs it. §3.5.3
+narrows the privileged surface further than expected: because Postgres filters per-tenant
+channels server-side, <strong><code>ns-realtime</code> never receives another tenant's data at all</strong>, leaving
+only the slot reader and the evaluator unavoidably cross-tenant.</p>
+<p><strong>That is still a blast radius of every tenant, and no storage mechanism will fix it</strong> — a
+replication slot is one stream containing everyone's rows. The design consequence is that the
+privileged part must stay <strong>small, single-purpose and genuinely reviewed</strong>, which is an
+argument for these being separate narrow entrypoints rather than modes of one large process —
+and a better argument for this decomposition than the cost model is.</p>
+<h2 id="4-integration-the-change-feed">4. Integration: the change feed<a class="headerlink" href="#4-integration-the-change-feed" title="Permanent link">&para;</a></h2>
+<p>Both engines produce a change stream natively, and the differences matter more than the
+similarity ({M} §5.4 covers the transport question; this covers delivery).</p>
+<table>
+<thead>
+<tr>
+<th>Mechanism</th>
+<th>Delivery</th>
+<th>Retention on consumer restart</th>
+<th>Per-tenant filter</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Postgres <code>LISTEN</code>/<code>NOTIFY</code></td>
+<td>fire-and-forget, 8 KB payload cap</td>
+<td><strong>none</strong> — a disconnected listener misses everything</td>
+<td>in the payload</td>
+</tr>
+<tr>
+<td>Postgres logical replication slot</td>
+<td>resumable</td>
+<td><strong>retains position</strong> — but an abandoned slot pins WAL and fills the disk</td>
+<td><code>tenant_id</code> on the row</td>
+</tr>
+<tr>
+<td>MongoDB change stream</td>
+<td>resumable via resume token</td>
+<td>bounded by the <strong>oplog window</strong></td>
+<td>server-side <code>$match</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong><code>NOTIFY</code> is a wake-up signal, not a delivery guarantee.</strong> For a browser refresh that is
+fine. <strong>For alarm delivery it is not</strong> — an evaluator that was restarting when a hypo landed
+must still fire. Use a replication slot (with slot monitoring) or a Mongo change stream, and
+treat <code>NOTIFY</code> as an optimisation layered on top.</p>
+<p><strong>One constraint on the A′ storage rung that {M} §6.7 does not note</strong> (A′ — database-per-tenant
+— was not adopted; D2). Change streams are
+scoped per database, so database-per-tenant means N cursors — reintroducing exactly the
+per-tenant resource multiplication A′ exists to delete. It is resolvable: <code>client.watch()</code>
+opens one deployment-level stream across all databases and each event carries <code>ns.db</code> for
+routing. But that needs a replica set and the <code>changeStream</code> privilege at deployment scope,
+and it should be stated as a precondition of A′ rather than discovered during implementation.</p>
+<p><strong>Latest-reading projection.</strong> On Postgres, <code>SELECT DISTINCT ON (tenant_id) … ORDER BY
+tenant_id, mills DESC</code> over an index on <code>(tenant_id, mills DESC)</code> returns every tenant's
+current reading in <strong>one index skip-scan — O(tenants), not O(rows)</strong>. That <em>is</em> the alarm
+slice's hot part, maintained by the database. {M} §6.3 already wants generated columns for
+the 22 <code>indexedFields</code>, and <code>mills</code> is among them, so most of this is already on the roadmap.</p>
+<p><strong>Do not plan around engine-maintained projections.</strong> Neither engine has incremental
+materialized views — Postgres MVs need <code>REFRESH</code>, Mongo's <code>$merge</code> views are batch. A
+latest-value projection is the index above or a small trigger-maintained table.</p>
+<h2 id="5-the-cost-model">5. The cost model<a class="headerlink" href="#5-the-cost-model" title="Permanent link">&para;</a></h2>
+<p><code>tools/mt-bench/deployment-cost.js</code>. Every input is listed at the top of that file with its
+provenance; assumptions are labelled as assumptions. Post-#8733, 30 % event-loop budget,
+4 GB/process, 15 % active fraction, three followers per tenant.</p>
+<p><strong>10,000 tenants:</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;">processes</th>
+<th style="text-align: right;">resident RAM</th>
+<th style="text-align: right;">DB ops/s</th>
+<th>routing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A · stateful shards, all resident</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">26.4 GB</td>
+<td style="text-align: right;">6,183</td>
+<td>tenant→shard map, sticky, rebalancing</td>
+</tr>
+<tr>
+<td>B · stateful shards, tiered</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">5.0 GB</td>
+<td style="text-align: right;">4,285</td>
+<td>+ eviction policy + cold-alarm path</td>
+</tr>
+<tr>
+<td><strong>C · stateless api + evaluator + realtime</strong></td>
+<td style="text-align: right;"><strong>5</strong></td>
+<td style="text-align: right;"><strong>0.5 GB</strong></td>
+<td style="text-align: right;"><strong>633</strong></td>
+<td><strong>none except socket stickiness</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>1,000 tenants:</strong> A = 4 processes, B = 3, C = 5. <strong>The options converge at small scale</strong>, so
+the decomposition costs an operator nothing to adopt early and saves 2–3× by 10,000. There is
+no crossover where starting with C is the expensive choice.</p>
+<p><strong>Where the post-#8733 cycle goes</strong>, which is why A and B stay expensive:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;">ms</th>
+<th style="text-align: right;">share</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ddata</code> derivation work (post-#8733)</td>
+<td style="text-align: right;">2.19</td>
+<td style="text-align: right;">35 %</td>
+</tr>
+<tr>
+<td><code>cache.insertData</code> defensive deep clone</td>
+<td style="text-align: right;"><strong>4.08</strong></td>
+<td style="text-align: right;"><strong>65 %</strong></td>
+</tr>
+<tr>
+<td><strong>total</strong></td>
+<td style="text-align: right;"><strong>6.27</strong></td>
+<td style="text-align: right;">K = <strong>239</strong> active tenants/shard</td>
+</tr>
+</tbody>
+</table>
+<p><strong>#8733 does not make the load cycle cheap — it makes a defensive clone the dominant term.</strong>
+Add <code>calcDelta</code>'s ~1.0 ms of deep-comparison and roughly <strong>81 % of the cycle is reconciling a
+resident copy rather than deriving anything</strong>. That is the cost C does not pay, and it is a
+much stronger argument than any latency margin.</p>
+<h2 id="6-answering-the-objection-directly">6. Answering the objection directly<a class="headerlink" href="#6-answering-the-objection-directly" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p><em>"It's not clear a difference of 8–15 ms should be a deciding factor on stateful monolith
+over a stateless component if the stateless component will scale and the stateful monolith
+does not."</em></p>
+</blockquote>
+<p><strong>Correct, and {R} §7 decided it on the wrong axis.</strong> Three corrections:</p>
+<ol>
+<li><strong>The 9.5 ms was never browser latency.</strong> No browser request waits on a load cycle; the
+   browser gets <code>/api/v1/entries</code> from cache and socket deltas already computed. It is a
+   charge on a single-threaded budget, paid per tenant per cycle — a <strong>capacity denominator</strong>,
+   not a latency. Comparing it to a per-request rebuild compares two different units.</li>
+<li><strong>Even read as capacity, the comparison flattered residency</strong>, because the cycle
+   measurement stopped at <code>ddata</code>'s door and missed 4.08 ms of cache cloning ({R} §12.3).</li>
+<li><strong>And capacity was not the binding consideration anyway.</strong> What separates the options is
+   that one needs a tenant→shard map, sticky routing, an eviction policy, a cold-alarm path
+   and a rebalancer, and the other needs none of them. At 10,000 tenants that is 5 processes
+   against 10–13, and 633 DB ops/s against 4,285–6,183.</li>
+</ol>
+<p><strong>What survives from D's original rejection, and it is not nothing:</strong></p>
+<ul>
+<li><strong>Cost is paid per request, not per cycle.</strong> At N consumers per tenant, a naive stateless
+  tier does N× the work. This is real and it is what the shared response cache in §2.1 exists
+  to answer — and a response cache is not residency, because a miss costs a query rather than
+  a wrong answer.</li>
+<li><strong>Alarms have no requester.</strong> A purely request-driven tier cannot do alarms at all. That is
+  why <code>ns-evaluator</code> is change-driven rather than being an endpoint, and it is the one place
+  where the original framing of D was genuinely incomplete rather than merely mis-weighted.</li>
+</ul>
+<h2 id="7-ordering">7. Ordering<a class="headerlink" href="#7-ordering" title="Permanent link">&para;</a></h2>
+<p>Each step is independently useful and independently reviewable. Nothing before step 4
+requires a tenancy decision.</p>
+<p>Status as of 2026-09-22 is in brackets; the queue is authoritative.</p>
+<ol>
+<li><strong>Land #8733.</strong> [merged to <code>dev</code> 2026-09-17; not released]</li>
+<li><strong>Fix the <code>/api/v1/entries</code> untyped branch</strong> ({R} §12.2). ~10 lines, 42× on the busiest
+   endpoint in the ecosystem, single-tenant benefit, no tenancy decision. [T0.2; merged via
+   #8740; not released]</li>
+<li><strong>Audit <code>cache.getData</code>'s five call sites</strong> ({R} §12.3) and stop deep-cloning the whole
+   retained array per cycle — resolving <code>dataloader.js:204</code>'s in-place write first. Worth
+   4.08 ms per cycle to every site, single- and multi-tenant alike. [T0.3; merged via #8740 with
+   its 1 ms target not met — 3.747 → 2.657 ms, the remainder almost all <code>devicestatus</code>; the write
+   at <code>:204</code> was dead and removed]</li>
+<li><strong>The storage seam</strong> ({M} §6.2). The one real prerequisite for everything else, and it is
+   validated by the existing suites because it changes no behaviour.</li>
+<li><strong>Split <code>bin/</code>.</strong> Carve <code>api</code>, <code>evaluator</code> and <code>realtime</code> entrypoints out of <code>bootevent</code>'s
+   factory chain, still single-tenant, still one deployment. <strong>This is the step that proves
+   the decomposition without betting anything on it</strong> — if the entrypoints cannot be carved
+   cleanly, that is discovered here, cheaply.</li>
+<li><strong>Ack/snooze state into storage</strong>, replacing the module-scope map. The §3.1 blocker,
+   resolved for tenancy reasons rather than teardown reasons, with a regression test.</li>
+<li><strong>Change feed + tenant rooms.</strong> The genuinely new code.</li>
+<li><strong>Tenant resolution and storage-enforced isolation</strong> (D2, D3, D10).</li>
+</ol>
+<p>Steps 4–8 are built, in part, on the unpublished <code>seam/*</code> branch chain (T1.x, T2.x, T3.x, T4.1,
+T4.2, T4.4a); see the plan's Phase 1–4 and the queue for what is done and what is owed.</p>
+<p><strong>Steps 1–3 ship to every existing single-tenant operator and are worth doing on their own
+merits.</strong> Steps 4–5 are reorganisation with no behaviour change. Only 6–8 are multitenancy.</p>
+<h2 id="8-what-would-change-this-recommendation">8. What would change this recommendation<a class="headerlink" href="#8-what-would-change-this-recommendation" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>EXP-MT-026 — a real database in the loop</strong> — see
+  <a href="../../60-research/tenancy/exp-mt-026-database-in-the-loop-2026-09-14.html">the report</a>. The
+  ordering held at every RTT tested, with A and B further from C. <code>dbQueryCpu_ms</code> measured
+  <strong>0.207 ms</strong> at 10 ms RTT (the model had assumed 0.15 ms).</li>
+<li><strong>TLS and authentication were not in the loop, and they land on the term that matters.</strong>
+  Every EXP-MT-026 figure is an unencrypted, unauthenticated connection. A managed database is
+  neither. This is the most likely direction for CPU-per-operation to be understated, and the
+  api tier has the least headroom (110 ms/s of a 300 ms/s budget at 10,000 tenants). <strong>This is
+  the highest-value follow-up.</strong></li>
+<li><strong>Write cost is not measured.</strong> Every EXP-MT-026 arm is a read; uploaders generate writes.
+  Write <em>correctness</em> across the two backends was measured on 2026-09-15 (plan §7).</li>
+<li><strong>The 15 % active fraction is unvalidated</strong> against a real hoster. It drives A and B much
+  harder than C, so a higher real figure widens C's margin rather than narrowing it.</li>
+<li><strong>If the change feed proves unreliable at tenant scale</strong> — oplog rollover under load, slot
+  management overhead — the evaluator needs a polling fallback, and that reintroduces some of
+  A's database load. This is a design, not a measurement, and it should be prototyped early.</li>
+<li><strong>If an operator's tenants are few and their sites are large</strong>, residency wins on its own
+  terms and <code>ns-single</code> per tenant is the honest answer. The decomposition targets density,
+  which is a hoster's problem and not everyone's.</li>
+</ul>
+<hr />
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>{M}</strong> — <a href="nightscout-multitenancy-discussion-2026-09-09.html">Nightscout multitenancy: evidence and options</a></li>
+<li><strong>{R}</strong> — <a href="../../60-research/tenancy/multitenancy-k-and-residency-2026-09-14.html">What sets K: residency, the load cycle, and two quadratics</a>, especially §12</li>
+<li><a href="https://github.com/nightscout/cgm-remote-monitor/pull/8733">PR #8733</a> — the two quadratic scans</li>
+<li><code>tools/mt-bench/apitier.js</code>, <code>deployment-cost.js</code> — the measurements and the model</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

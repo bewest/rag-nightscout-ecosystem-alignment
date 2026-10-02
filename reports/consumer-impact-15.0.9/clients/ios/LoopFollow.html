@@ -1,0 +1,3348 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/consumer-impact-15.0.9/clients/ios/LoopFollow.html">
+      
+      
+        <link rel="prev" href="LoopCaregiver.html">
+      
+      
+        <link rel="next" href="NightscoutKit.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>LoopFollow — Nightscout API / websocket usage (read-derived) - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#loopfollow--nightscout-api--websocket-usage-read-derived" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              LoopFollow — Nightscout API / websocket usage (read-derived)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../docs/00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../docs/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../docs/00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../docs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    reports/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../c-analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    c-analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../connector-pr-bodies/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    connector-pr-bodies/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    consumer-impact-15.0.9/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7_4" id="__nav_7_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    consumer-impact-15.0.9/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../change-inventory-8758.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    #8758 at ab7b22d6: consumer-visible _id changes (C68–C81)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../change-inventory.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor 15.0.8 → 15.0.9 candidate: inventory of consumer-visible changes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../clients-8758.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clients × #8758 (ab7b22d6): how each client uses _id / identifier
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lab-results.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Consumer-replay lab: results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_4_6" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    clients/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7_4_6" id="__nav_7_4_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_7_4_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    clients/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../android/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    android/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_4_6_3" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ios/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7_4_6_3" id="__nav_7_4_6_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_7_4_6_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_4_6_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ios/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="DiaBLE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DiaBLE: consumer-impact map against the cgm-remote-monitor 15.0.9 candidate
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="GlookoServiceKit.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GlookoServiceKit — Nightscout API surface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="LoopCaregiver.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LoopCaregiver — Nightscout API / websocket usage (read-derived)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LoopFollow — Nightscout API / websocket usage (read-derived)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="LoopFollow.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LoopFollow — Nightscout API / websocket usage (read-derived)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#header" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Header
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Header">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#positive-controls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Positive controls
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#s1s15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S1–S15
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#join-questions-ranked-by-how-likely-a-user-would-notice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Join questions (ranked by how likely a user would notice)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="NightscoutKit.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NightscoutKit (LoopKit) and its Loop consumers — Nightscout API surface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="Trio.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Trio — Nightscout API / websocket surface (consumer-impact, 15.0.9 candidate)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightguard.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightguard — consumer-impact map against cgm-remote-monitor 15.0.9 candidate
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="summary.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    iOS clients — join-step summary (from the agent's hand-back, saved by the main session)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="xdripswift.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    xdripswift (xDrip4iOS): consumer-impact map against the cgm-remote-monitor 15.0.9 candidate
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../readers/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    readers/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../uploaders/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    uploaders/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../exp-3022b/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    exp-3022b/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../patient-c-analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    patient-c-analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../phase0-pr-bodies/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    phase0-pr-bodies/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../reviewer-packets/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reviewer-packets/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#header" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Header
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Header">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#positive-controls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Positive controls
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#s1s15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S1–S15
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#join-questions-ranked-by-how-likely-a-user-would-notice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Join questions (ranked by how likely a user would notice)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="loopfollow--nightscout-api--websocket-usage-read-derived">LoopFollow — Nightscout API / websocket usage (read-derived)<a class="headerlink" href="#loopfollow--nightscout-api--websocket-usage-read-derived" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-09-23 at <code>64007ffc</code>.</em></p>
+<p>All claims below are <strong>read-derived</strong> from source at the ref named; nothing was run.</p>
+<h2 id="header">Header<a class="headerlink" href="#header" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>repo</td>
+<td>externals/LoopFollow (upstream loopandlearn/LoopFollow)</td>
+</tr>
+<tr>
+<td>ref analysed</td>
+<td><code>origin/main</code> <strong>4a74b781</strong> (2026-09-20, "Merge pull request #754 … release/v7.1.0")</td>
+</tr>
+<tr>
+<td><code>origin/dev</code></td>
+<td><strong>1098bc0a</strong> (2026-09-20). Each branch has one merge commit the other lacks, but <code>git diff origin/main origin/dev</code> is <strong>empty</strong>: the trees are identical, so every hit below holds for dev (what ships next).</td>
+</tr>
+<tr>
+<td>local checkout staleness</td>
+<td>HEAD 9d2cea6b, 139 behind origin/main, <strong>380 dirty files</strong> — working tree ignored; everything read with <code>git grep … origin/main</code> / <code>git show origin/main:&lt;path&gt;</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="positive-controls">Positive controls<a class="headerlink" href="#positive-controls" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>LoopFollow@4a74b781 LoopFollow/Helpers/NightscoutUtils.swift:50-65</code> — endpoint table: <code>/api/v1/treatments.json</code>, <code>/api/v1/entries.json</code>, <code>/api/v1/profiles.json</code>, <code>/api/v1/devicestatus.json</code>, <code>/api/v2/notifications/loop</code>, <code>/api/v2/properties/dbsize</code>.</li>
+<li><code>LoopFollow@4a74b781 LoopFollow/Controllers/Nightscout/BGData.swift:72-78</code> — entries read with <code>count</code> and <code>find[...]</code>.</li>
+</ul>
+<p>Patterns used (<code>git grep -n &lt;p&gt; origin/main -- '*.swift'</code>): <code>api/v</code>, <code>"count"</code>, <code>\[count\]</code>, <code>count=</code>, <code>find\[</code>, <code>\$exists|\$gte|\$lte|\$gt\b|\$lt\b|\$in|\$nin|\$ne|\$regex|\$eq</code>, <code>eventType: \.</code>, <code>executePostRequest</code>, <code>httpMethod = "</code>, <code>socket</code> (case-insensitive), <code>api-secret|Bearer|token=</code>, and one combined absence pattern <code>X-Forwarded|/api/v1/count|/api/v1/times|/api/v1/slice|/api/v1/echo|ddata|verifyauth|/api/v3|/alarm|loadRetro|dbAdd|dbUpdate|dbRemove|/food|quickpick|notifications/ack|\$in\b|\$exists</code> (zero hits). For libraries: <code>socket.io-client-swift</code> in <code>*.pbxproj</code>, <code>*.resolved</code>, <code>Podfile*</code>.</p>
+<h2 id="s1s15">S1–S15<a class="headerlink" href="#s1s15" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>S-id</th>
+<th>what the client does</th>
+<th>anchor (repo@sha path:line)</th>
+<th>patterns searched</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S1 count</td>
+<td>All GET, all integer arithmetic on <code>Int</code>, never 0, never fractional. <strong>BG (main screen):</strong> <code>bgFetchDays × maxExpectedUploaders(4) × 24 × 60 / 5</code>; <code>bgFetchDays</code> = <code>downloadDays</code> (stepper range <strong>1…4</strong>, default 1) + 1 if the yesterday overlay is on → <strong>1152…5760</strong>. <strong>Stats BG:</strong> <code>days × 1152</code> where <code>days = daysToAnalyze = daysBetween(start,end)+1 ≥ 1</code> (preset 7/14/30/90 → 8064…103680; the custom start <code>DatePicker</code> has no lower bound, so a very old start gives a proportionally large but finite count, far below 2^53). <strong>Treatments:</strong> <code>max(downloadDays×100, 5000)</code> = <strong>5000</strong>; stats treatments <code>max(days×100, 5000)</code> ≥ 5000. <strong>Treatments history view:</strong> <strong>100</strong> (pageSize). <strong>Devicestatus:</strong> <strong>1</strong> (main) and <strong>30</strong> (treatment detail). <strong>Profile:</strong> <strong>1</strong> (main, stats) and <strong>1000</strong> (remote diagnostics). <strong>CAGE/SAGE/IAGE:</strong> <strong>1</strong>. No DELETE anywhere. No count can be 0; none is exponent/hex/negative.</td>
+<td><code>LoopFollow@4a74b781 LoopFollow/Controllers/Nightscout/BGData.swift:10-13,72</code>; <code>LoopFollow/Settings/GraphSettingsView.swift:128-133</code>; <code>LoopFollow/Storage/Storage.swift:143</code>; <code>LoopFollow/Helpers/Globals.swift:26</code>; <code>LoopFollow/Stats/StatsDataFetcher.swift:29,150-154</code>; <code>LoopFollow/Stats/StatsDataService.swift:38-46</code>; <code>LoopFollow/Controllers/Nightscout/Treatments.swift:47-51</code>; <code>LoopFollow/Treatments/TreatmentsView.swift:651,981,1086</code>; <code>LoopFollow/Controllers/Nightscout/DeviceStatus.swift:10</code>; <code>LoopFollow/Controllers/Nightscout/Profile.swift:12</code>; <code>LoopFollow/Remote/Settings/RemoteSettingsViewModel.swift:43,254</code>; <code>LoopFollow/Controllers/Nightscout/CAge.swift:14</code>, <code>SAge.swift:16</code>, <code>IAge.swift:16</code></td>
+<td><code>"count"</code>, <code>count=</code>, <code>downloadDays</code>, <code>maxExpectedUploaders</code>, <code>pageSize</code>, <code>diagnosticsHistoryCap</code></td>
+</tr>
+<tr>
+<td>S2 operators</td>
+<td><code>$gte</code>, <code>$lte</code>, <code>$lt</code>, <code>$ne</code>, and bare-equality <code>find[eventType]=…</code>. Values: <code>find[date][$gte]=&lt;epoch ms int&gt;</code>, <code>find[dateString][$gte]=&lt;ISO…Z&gt;</code>, <code>find[type][$ne]=cal</code>, <code>find[created_at][$gte/$lte/$lt]=&lt;date string&gt;</code>, <code>find[startDate][$lte]=&lt;ISO with fractional s&gt;</code>, <code>find[eventType]=Site Change / Sensor Start / Insulin Change</code>. All in the allowlist. <strong>No <code>$exists</code></strong>, no <code>$expr</code>, no <code>pipeline</code>, no <code>$in</code>.</td>
+<td><code>LoopFollow@4a74b781 LoopFollow/Controllers/Nightscout/BGData.swift:73,76</code>; <code>LoopFollow/Stats/StatsDataFetcher.swift:30-31,101,152-153</code>; <code>LoopFollow/Controllers/Nightscout/CAge.swift:12-13</code>; <code>LoopFollow/Controllers/Nightscout/Profile.swift:13</code>; <code>LoopFollow/Treatments/TreatmentsView.swift:649-650,1084-1085</code></td>
+<td><code>find\[</code>, the operator list above</td>
+</tr>
+<tr>
+<td>S3 numeric comparisons</td>
+<td>One numeric range: <code>find[date][$gte]=&lt;int ms&gt;</code> on entries. <code>entries.date</code> is <code>number</code> in the candidate schema (<code>cgm-remote-monitor@ef3404fd lib/server/query-coercion.json</code>) and was already <code>parseInt</code>-walked on 15.0.8, and the value is an integer, so the answer is unchanged. All other ranges are on string fields (<code>dateString</code>, <code>created_at</code>, <code>startDate</code>) — not in the coercion table, compared as strings as before. Treatments/CAGE use <code>getDateTimeString</code> → <code>yyyy-MM-dd'T'HH:mm:ss</code> with <strong>no zone suffix</strong> (UTC), a string comparison against stored <code>…Z</code> values that behaves the same on both releases. No decimal thresholds, no workaround for empty results.</td>
+<td><code>LoopFollow@4a74b781 LoopFollow/Controllers/Nightscout/BGData.swift:73</code>; <code>LoopFollow/Helpers/DateTime.swift:72-93</code></td>
+<td><code>\$gt</code>, <code>\$lt</code>, <code>date]</code>, <code>getDateTimeString</code></td>
+</tr>
+<tr>
+<td>S4 shared/aggregate reads</td>
+<td><code>GET /api/v1/status.json?token=…</code> (token check and permission probe, reads <code>authorized.token</code> and <code>authorized.permissionGroups</code>); <code>GET /api/v2/properties/dbsize</code> (DB-size alarm). No <code>/count</code>, <code>/times</code>, <code>/slice</code>, <code>/echo</code>, <code>/ddata</code>, <code>/verifyauth</code>. <code>status.js</code> on the candidate changes only its client-IP helper.</td>
+<td><code>LoopFollow@4a74b781 LoopFollow/Helpers/NightscoutUtils.swift:202-275,306-346</code>; <code>LoopFollow/Controllers/Nightscout/DBSize.swift:6,32</code></td>
+<td>see combined absence pattern; <code>status.json</code>, <code>properties</code></td>
+</tr>
+<tr>
+<td>S5 auth</td>
+<td>Reads: access token as the <code>token=</code> query parameter on every request (<code>URLQueryItem</code>). Writes (<code>executePostRequest</code>, currently <strong>no callers</strong>): swaps the token for a JWT via <code>/api/v1/status.json</code> and sends <code>Authorization: Bearer</code>. <strong>Token provisioning:</strong> given the site's API secret, LoopFollow <code>GET</code>s <code>/api/v2/authorization/subjects</code> with the hashed secret in <code>api-secret</code>, reuses a subject named <code>LoopFollow</code> if its <code>accessToken</code> is listed, else <code>POST</code>s a subject <strong><code>{name: "LoopFollow", roles: ["readable"]}</code></strong> and then derives the token locally from the returned <code>_id</code> (it reimplements the server's token derivation rather than reading the token back). Fields stored = <code>name</code>, <code>roles</code> only — both in the candidate subject allowlist (<code>storage.js</code> <code>SUBJECT_FIELDS</code>). Candidate create returns the owned-fields copy (with its <code>_id</code>) as a bare object; LoopFollow accepts either an array or a bare object. The candidate <code>GET /subjects</code> still serves the derived <code>accessToken</code> (and adds <code>notes</code>), and the derivation expression is byte-identical between 92d08342 <code>storage.js:189-191</code> and ef3404fd <code>storage.js:255-257</code>. <code>verifyAPISecret</code> probes <code>GET /subjects</code> with a pasted value (401/403 → false). 401 on status → <code>tokenRequired</code>/<code>invalidToken</code>; 403 on provisioning → <code>invalidToken</code>. No <code>X-Forwarded-For</code>.</td>
+<td><code>LoopFollow@4a74b781 LoopFollow/Helpers/NightscoutUtils.swift:152-200,348-410,416-567</code>; server: <code>cgm-remote-monitor@ef3404fd lib/authorization/endpoints.js:38-56</code>, <code>lib/authorization/storage.js:44-57,100-123,249-259</code></td>
+<td><code>api-secret</code>, <code>Bearer</code>, <code>token=</code>, <code>authorization/subjects</code>, <code>X-Forwarded</code></td>
+</tr>
+<tr>
+<td>S6 websocket</td>
+<td>Socket.IO via SPM <code>socket.io-client-swift</code>, requirement <strong>upToNextMajor from 16.1.1</strong> (no <code>Package.resolved</code> committed, so the exact resolved version is not pinned in the repo). No <code>.version(...)</code> option is set, so the library's default protocol for 16.x applies (Socket.IO 3/4 wire, EIO=4 — <strong>library default recalled, not verified in this repo</strong>). Server is socket.io ~4.8.3 with <code>allowEIO3: true</code> on both 15.0.8 and dev, so either works. <code>connectParams(["token": …])</code>, then on connect emits <code>authorize</code> <code>{client: "LoopFollow", history: 1, secret: &lt;access token&gt;}</code> <strong>without an ack callback</strong>. Treats the server's <code>connected</code> event as "authenticated"; listens only to <code>dataUpdate</code> and uses it purely as a trigger to re-poll REST. No <code>loadRetro</code>, no <code>/alarm</code> namespace, no <code>dbAdd/dbUpdate/dbRemove</code>. <strong>While "authenticated", BG and devicestatus poll intervals are tripled (min 60 s).</strong> The server emits <code>connected</code> <em>before</em> checking <code>read</code> and joins <code>DataReceivers</code> only when <code>read</code> is true (<code>cgm-remote-monitor@origin/dev lib/server/websocket.js:804-827</code>); so a token that resolves but lacks <code>api:*:read</code> gets <code>connected</code> and no <code>dataUpdate</code>, and LoopFollow stretches polling. This flow is unchanged 15.0.8→dev→#8754 (the only websocket diffs are <code>loadRetro</code> gating and the client-IP helper), so it is <strong>pre-existing</strong>, not a 15.0.9 change. On <code>AUTH_DEFAULT_ROLES=denied</code> with a readable token: unchanged behaviour.</td>
+<td><code>LoopFollow@4a74b781 LoopFollow/Controllers/Nightscout/NightscoutSocketManager.swift:108-195</code>; <code>LoopFollow/Controllers/Nightscout/NightscoutSocketDataHandler.swift:14-53</code>; <code>LoopFollow/Controllers/Nightscout/BGData.swift:202-204</code>; <code>LoopFollow/Controllers/Nightscout/DeviceStatus.swift:252-254</code>; <code>LoopFollow.xcodeproj/project.pbxproj:858-865</code></td>
+<td><code>socket</code>, <code>SocketIO</code>, <code>authorize</code>, <code>connected</code>, <code>dataUpdate</code>, <code>loadRetro</code>, <code>/alarm</code>, <code>dbAdd</code></td>
+</tr>
+<tr>
+<td>S7 <code>_id</code></td>
+<td>Writes no v1 records, so sends no <code>_id</code>. Reads the subject <code>_id</code> from the subjects POST response (see S5) — a 24-hex ObjectId string; candidate behaviour unchanged.</td>
+<td><code>LoopFollow@4a74b781 LoopFollow/Helpers/NightscoutUtils.swift:418-428,504-533</code></td>
+<td><code>"_id"</code>, <code>PUT</code>, <code>DELETE</code></td>
+</tr>
+<tr>
+<td>S8 treatments edit</td>
+<td><strong>none found</strong> — read-only for treatments. Client-side de-duplication of treatment entries before display.</td>
+<td><code>LoopFollow@4a74b781 LoopFollow/Controllers/Nightscout/Treatments.swift:70-71</code></td>
+<td><code>httpMethod = "</code>, <code>PUT</code>, <code>DELETE</code>, <code>treatments.json</code> POST</td>
+</tr>
+<tr>
+<td>S9 food</td>
+<td><strong>none found</strong></td>
+<td>—</td>
+<td><code>/food</code>, <code>quickpick</code></td>
+</tr>
+<tr>
+<td>S10 profile</td>
+<td>Reads <code>/api/v1/profiles.json?count=1&amp;find[startDate][$lte]=&lt;now+60 s&gt;</code>; uses <code>store["default"] ?? store["Default"]</code> (main) or also <code>store[defaultProfile]</code> (stats); reads <code>loopSettings.deviceToken/bundleIdentifier</code> for remote diagnostics over up to 1000 profiles. No writes. The candidate <code>/profiles</code> route now answers a failed or refused query with 400/500 JSON instead of 200 with an undefined body; LoopFollow's <code>executeRequest</code> would then fail to decode and log.</td>
+<td><code>LoopFollow@4a74b781 LoopFollow/Controllers/Nightscout/Profile.swift:8-45</code>; <code>LoopFollow/Stats/StatsDataFetcher.swift:97-137</code>; <code>LoopFollow/Remote/Settings/RemoteSettingsViewModel.swift:245-300</code>; server <code>cgm-remote-monitor@ef3404fd lib/api/profile/index.js:40-50</code></td>
+<td><code>profiles.json</code>, <code>startDate</code>, <code>defaultProfile</code></td>
+</tr>
+<tr>
+<td>S11 COB/IOB</td>
+<td>Displays <strong>devicestatus</strong>-reported values: Loop <code>loop.iob</code>/<code>loop.cob</code>; OpenAPS/Trio/AAPS <code>openaps.iob.iob</code> and <code>enacted/suggested.COB</code> (with fallback), plus prediction arrays <code>ZT/IOB/COB/UAM</code>. Does not read Nightscout-computed COB/IOB (no pebble, no v2 properties other than <code>dbsize</code>). Unaffected by the 15.0.9 web-COB change.</td>
+<td><code>LoopFollow@4a74b781 LoopFollow/Controllers/Nightscout/DeviceStatusLoop.swift:55,62</code>; <code>LoopFollow/Controllers/Nightscout/DeviceStatusOpenAPS.swift:75,82-94,194</code></td>
+<td><code>"cob"</code>, <code>"COB"</code>, <code>"iob"</code>, <code>"IOB"</code>, <code>properties</code>, <code>pebble</code></td>
+</tr>
+<tr>
+<td>S12 query shape</td>
+<td>Bracket notation, one scalar per key (<code>[String: String]</code> → <code>URLQueryItem</code>), max 4 keys + <code>token</code>. No arrays, no <code>$in</code>, no valueless parameters (explicit guard against a bare <code>?</code>). Values with <code>:</code> and <code>.</code> unencoded by <code>URLQueryItem</code>; no <code>+</code> offsets in any date value.</td>
+<td><code>LoopFollow@4a74b781 LoopFollow/Helpers/NightscoutUtils.swift:180-200</code></td>
+<td><code>\$in</code>, <code>\[\]</code>, <code>queryItems</code></td>
+</tr>
+<tr>
+<td>S13 API v3</td>
+<td><strong>none found</strong></td>
+<td>—</td>
+<td><code>api/v3</code>, <code>identifier</code>, <code>lastModified</code>, <code>limit</code></td>
+</tr>
+<tr>
+<td>S14 remote commands</td>
+<td>Remote control does <strong>not</strong> go through Nightscout: <code>RemoteType</code> is <code>Trio Remote Control</code> or <code>Loop APNS</code>, both sending pushes directly to Apple APNs from the phone (<code>api.push.apple.com</code> / sandbox). The <code>/api/v2/notifications/loop</code> endpoint is still in the endpoint table and <code>executePostRequest</code> still exists, but <strong><code>git grep 'executePostRequest(eventType' origin/main</code> finds no caller outside its definition</strong> — dead code. Nightscout is only read (profile <code>loopSettings</code>) to obtain device token / bundle id. No Alexa/Google Home, no <code>/api/v1/notifications/ack</code>.</td>
+<td><code>LoopFollow@4a74b781 LoopFollow/Remote/RemoteType.swift:6-9</code>; <code>LoopFollow/Remote/LoopAPNS/LoopAPNSService.swift:350-366</code>; <code>LoopFollow/Remote/TRC/PushNotificationManager.swift:259</code>; <code>LoopFollow/Helpers/NightscoutUtils.swift:60-61,348-410</code></td>
+<td><code>executePostRequest</code>, <code>notifications</code>, <code>RemoteType</code>, <code>notifications/ack</code></td>
+</tr>
+<tr>
+<td>S15 errors / empty</td>
+<td><code>executeRequest</code>/<code>executeDynamicRequest</code> <strong>ignore the HTTP status</strong>: they only decode the body. A 400 <code>{"status":400,"message":"Bad count",…}</code> object fails to decode as the expected array → <code>.failure</code>. <strong>BG:</strong> logs, shows the Nightscout-failure banner, reschedules in <strong>10 s</strong> (retries indefinitely every 10 s), falls back to Dexcom Share data if configured. <strong>Devicestatus:</strong> reschedules in 10 s and re-evaluates the not-looping alarm. <strong>Treatments, profile, CAGE/SAGE/IAGE, stats:</strong> log only; previously displayed values stay. The treatments history view treats failure as an empty page. An empty array is handled as "no data" (e.g. <code>updateCage</code> clears the info row). Nothing is uploaded, so nothing is dropped or marked-uploaded.</td>
+<td><code>LoopFollow@4a74b781 LoopFollow/Helpers/NightscoutUtils.swift:68-150</code>; <code>LoopFollow/Controllers/Nightscout/BGData.swift:108-124</code>; <code>LoopFollow/Controllers/Nightscout/DeviceStatus.swift:12-35</code>; <code>LoopFollow/Controllers/Nightscout/Treatments.swift:53-66</code>; <code>LoopFollow/Controllers/Nightscout/CAge.swift:17-32</code>; <code>LoopFollow/Treatments/TreatmentsView.swift:1104-1122</code></td>
+<td><code>case .failure</code>, <code>rescheduleTask</code>, <code>statusCode</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="join-questions-ranked-by-how-likely-a-user-would-notice">Join questions (ranked by how likely a user would notice)<a class="headerlink" href="#join-questions-ranked-by-how-likely-a-user-would-notice" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>S5 token provisioning (setup flow; failure = follower cannot be configured).</strong> On the #8754 head, confirm: (a) <code>POST /api/v2/authorization/subjects</code> with <code>{name, roles}</code> still answers 2xx with an object carrying <code>_id</code>; (b) the token the server accepts for that subject is still derived from <code>_id</code> + site key + name exactly as on 15.0.8 (read-derived: identical expression), so LoopFollow's locally derived token keeps working; (c) <code>GET /subjects</code> still lists <code>accessToken</code>. Any change to token derivation or to the create response shape silently breaks LoopFollow's onboarding.</li>
+<li><strong>S1 BG/stats counts</strong> (data stops arriving if refused). Values 1152…5760 (main) and <code>days × 1152</code> (stats, unbounded above for very old custom ranges but finite integers). Confirm the candidate validator (<code>lib/api/index.js:73-90</code>, whole numbers, no cap) accepts these, and no per-collection maximum exists. A refusal here would turn into a 10-second retry loop with a banner.</li>
+<li><strong>S6 poll stretching</strong> (pre-existing; stale data risk rather than a 15.0.9 regression). The join should confirm that the #8754 socket changes do not alter when <code>connected</code> is emitted versus when <code>read</code> is granted. If a later release made <code>authorize</code> disconnect or not emit <code>connected</code> for <code>read=false</code>, LoopFollow would fall back to normal polling (an improvement); if it emitted <code>connected</code> for more cases, LoopFollow would poll less often.</li>
+<li><strong>S10</strong> — <code>/api/v1/profiles.json</code> with <code>find[startDate][$lte]</code> and <code>count=1000</code>: confirm the allowlist and count validator pass it and that <code>startDate</code> is not typed by <code>query-coercion.json</code> (read-derived: it is not).</li>
+<li><strong>S4</strong> — <code>/api/v2/properties/dbsize</code>: confirm no permission change on v2 properties in 15.0.9 (the two re-permissioned shared routes are v1 <code>count</code> and <code>slice</code>, per <code>d3ac8026</code>, which LoopFollow does not call).</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

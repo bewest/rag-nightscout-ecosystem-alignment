@@ -1,0 +1,9465 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/60-research/remedial/crud-by-id-matrix-2026-09-23.html">
+      
+      
+        <link rel="prev" href="consumer-impact-15.0.9-2026-09-23.html">
+      
+      
+        <link rel="next" href="e3-gate-vacuity-audit-2026-09-15.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>CRUD by _id: a matrix over every collection, stored _id form, API v1, API v3 and the websocket - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#crud-by-_id-a-matrix-over-every-collection-stored-_id-form-api-v1-api-v3-and-the-websocket" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              CRUD by _id: a matrix over every collection, stored _id form, API v1, API v3 and the websocket
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../30-design/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_27" id="__nav_5_27_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_27_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_27">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    60-research/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-2844-phenotype-drilldown-report-2026-04-22.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-0001 to 2869
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-2870-envelope-crossover-report-2026-04-22.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2870 to 2909
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-2910-eight-dim-regrade-2026-04-23.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2910 to 2949
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-2950-uniform-action-curve-2026-04-23.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2950 to 2999
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-3000-3003-cf-replay-maturation-2026-04-25.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-3000 and later
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../AUTORESEARCH-SESSION-2026-04-26.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Programme, closeouts and syntheses
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../accuracy-validation-2026-04-05.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Productionization and pipelines
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../capability-report-clinical-decision-support.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Capability reports
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../circadian-therapy-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Therapy
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../aid-aware-settings-report-2026-04-09.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings and profiles
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../natural-experiment-deconfounding-2026-04-09.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Natural experiments
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../bilateral-deconfounding-report-2026-04-19.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EGP, supply-demand and deconfounding
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../autotune-uam-characterization-report.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Meals and carbohydrates
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../causal-pk-leakage-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Insulin, ISF and pharmacokinetics
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../acceleration-clinical-utility-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clinical, safety and hypoglycaemia
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../aid-author-recommendations-report-2026-04-20.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AID controllers, cohorts and waves
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../centering-dynamics-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forecasting, prediction and classification
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../advanced-architectures-benchmark-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ML methods and architectures
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../canonical/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    canonical/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../collaboration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    collaboration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../external-inventories/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    external-inventories/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../modernization/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    modernization/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../programme/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    programme/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27_25" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    remedial/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_27_25" id="__nav_5_27_25_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_27_25_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_27_25">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    remedial/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf01-13-14-15-read-defects-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BF-01, BF-05, BF-13, BF-14, BF-15 — five read defects that answer 200 with the wrong thing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf09-dedup-zero-measurement-2026-09-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BF-09 — what socket dedup does with a zero, and whether treating zero as real would bring back the AAPS temp-basal display problem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf103-split-drag-time.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BF-103: a split treatment drag stores the old time, so IOB and COB ignore the move
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf17-bf30-auth-defects-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BF-17 and BF-30 — two authentication defects in shipping cgm-remote-monitor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf28-29-31-alarm-delivery-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Three alarm-delivery defects, fixed: one alarm that could never fire, one that could be off
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf41-future-reading-2026-09-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BF-41 — a future-dated reading does not silence the stale-data alarm through the real sandbox
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf52-age-push-once-2026-09-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BF-52 — an age reminder whose 20-minute window passed without a check was never sent
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf69-quickpick-rebuild-2026-09-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BF-69: the Bolus Wizard quick-pick chooser is built once, from nothing — reproduction, fix and browser evidence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bf90-alarm-no-reading-2026-09-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BF-90: an alarm at a page with no reading — reproduction, fix and browser evidence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="connector-0.1.0-dev.2-soak-2026-09-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-connect 0.1.0-dev.2 — Nightscout-to-Nightscout lab soak
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="connector-profile-sync.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-connect: profile sync from a Nightscout source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="consumer-impact-15.0.9-2026-09-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What 15.0.9 changes for the apps that talk to Nightscout
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CRUD by _id: a matrix over every collection, stored _id form, API v1, API v3 and the websocket
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="crud-by-id-matrix-2026-09-23.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CRUD by _id: a matrix over every collection, stored _id form, API v1, API v3 and the websocket
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#branch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Branch
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-the-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The matrix
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Results
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-cells-that-differ-on-bfobject-id-consistency-597e2899" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Cells that differ on bf/object-id-consistency 597e2899
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-cells-that-differ-on-origindev-1f9a9d10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Cells that differ on origin/dev 1f9a9d10
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The fixes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. The fixes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-entry-re-post-with-its-own-_id-commit-1-4b41bcf8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Entry re-POST with its own _id (commit 1, 4b41bcf8)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-upper-case-ids-on-entriesspec-commit-2-a612a26f" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Upper-case ids on /entries/:spec (commit 2, a612a26f)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-websocket-commit-3-12c01268" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Websocket (commit 3, 12c01268)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-api-v3-and-a-non-hex-_id-commit-5-44ac9047-d2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 API v3 and a non-hex _id (commit 5, 44ac9047, D2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-entries-post-answers-the-stored-_id-commit-6-18b09df7-d3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Entries POST answers the stored _id (commit 6, 18b09df7, D3)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-devicestatus-re-send-guard-commit-7-ad973110-d1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 devicestatus re-send guard (commit 7, ad973110, D1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#37-upper-case-string-_ids-commit-8-6d120fa2-d4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7 Upper-case string _ids (commit 8, 6d120fa2, D4)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-tests-break-its-suites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Tests, break-its, suites
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-decisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Decisions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-merges" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Merges
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-not-changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Not changed
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="e3-gate-vacuity-audit-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    E3 — gate vacuity audit of the work queue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="e4-queue-register-reconciliation-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    E4 — closing the gap between the work queue and the backfix register
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ghsa-xss-pair-verification-2026-09-21.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GHSA-5mrq-gpqw-q5v5 and GHSA-mjp4-84fw-gj4v — verification against v15.0.7, v15.0.8 and dev
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="github-triage-2026-09-25.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GitHub triage of cgm-remote-monitor and nightscout-connect
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="gt1-branch-inventory-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GT1 — branch, worktree and commit inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="gt3-register-truth-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GT3 — register truth and a contradiction sweep across the planning documents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="journey-lab-15.0.9-2026-09-25.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Journey lab, scripted walk on the 15.0.9 candidate
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="journey-lab-browser-15.0.9-2026-09-26.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Journey lab, browser hand checks on the 15.0.9 candidate
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="journey-map-15.0.9.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout user journey map (15.0.9)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="manual-lab-15.0.9-rc-2026-09-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Manual browser checks on the 15.0.9 combined rc
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modernization-backport-triage-2026-09-22.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modernization-only security commits: which fix a defect on dev
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="object-id-other-collections-2026-09-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A 24-hex _id stored as a string: devicestatus, food, activity, treatments, entries and API v3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="profile-object-id-2026-09-23.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A profile posted with its own _id is stored with a string _id
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="query-coercion-drift-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The query-coercion table, emitted — and the 158 places the shipping walkers disagree
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="t02-t03-cache-clone-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    T0.2 and T0.3 — what the runtime cache's defensive clone actually costs, and how much of it is safe to take
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="t05-schema-driven-coercion-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    T0.5 — schema-driven query type coercion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tenancy/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenancy/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#branch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Branch
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-the-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The matrix
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Results
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-cells-that-differ-on-bfobject-id-consistency-597e2899" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Cells that differ on bf/object-id-consistency 597e2899
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-cells-that-differ-on-origindev-1f9a9d10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Cells that differ on origin/dev 1f9a9d10
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The fixes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. The fixes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-entry-re-post-with-its-own-_id-commit-1-4b41bcf8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Entry re-POST with its own _id (commit 1, 4b41bcf8)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-upper-case-ids-on-entriesspec-commit-2-a612a26f" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Upper-case ids on /entries/:spec (commit 2, a612a26f)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-websocket-commit-3-12c01268" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Websocket (commit 3, 12c01268)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-api-v3-and-a-non-hex-_id-commit-5-44ac9047-d2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 API v3 and a non-hex _id (commit 5, 44ac9047, D2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-entries-post-answers-the-stored-_id-commit-6-18b09df7-d3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Entries POST answers the stored _id (commit 6, 18b09df7, D3)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-devicestatus-re-send-guard-commit-7-ad973110-d1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 devicestatus re-send guard (commit 7, ad973110, D1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#37-upper-case-string-_ids-commit-8-6d120fa2-d4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7 Upper-case string _ids (commit 8, 6d120fa2, D4)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-tests-break-its-suites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Tests, break-its, suites
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-decisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Decisions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-merges" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Merges
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-not-changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Not changed
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="crud-by-_id-a-matrix-over-every-collection-stored-_id-form-api-v1-api-v3-and-the-websocket">CRUD by <code>_id</code>: a matrix over every collection, stored <code>_id</code> form, API v1, API v3 and the websocket<a class="headerlink" href="#crud-by-_id-a-matrix-over-every-collection-stored-_id-form-api-v1-api-v3-and-the-websocket" title="Permanent link">&para;</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Record</p>
+<p>Record as of 2026-09-23. A point-in-time document; it is not kept up to date.</p>
+</div>
+<p><em>Contributor-facing. Snapshot, 2026-09-23. Current: the fix is PR #8758 (<code>bf/object-id-crud</code>
+<code>6d120fa2</code>), open for review and covered by <a href="../../30-design/remedial/rc-15.0.9-integration-record.html">15.0.9 integration record</a>;
+item state is in <code>queue/work-queue.yaml</code> (<code>BFQ-102</code>). Measured 2026-09-23 against <code>origin/dev</code> <code>1f9a9d10</code> (15.0.9),
+<code>bf/object-id-consistency</code> <code>597e2899</code>, and <code>bf/object-id-crud</code> <code>6d120fa2</code> (eight commits on
+<code>597e2899</code>). Storage: <code>mongo:7</code> and MongoDB 4.4 in Docker. Node 20.20.0 and 22.23.2 via <code>n exec</code>.
+Synthetic records only. Every row marked "measured" or "reproduced" was run; rows marked "read"
+were not.</em></p>
+<p>Continues <a href="object-id-other-collections-2026-09-23.html"><code>object-id-other-collections-2026-09-23.md</code></a>
+(BF-99 to BF-102), whose §9 "Not changed" list is the backlog here. Plan row: backfix-2 plan §1a
+"15.0.9 ID consistency". PR body draft:
+<a href="../../../reports/phase0-pr-bodies/bf-object-id-crud.html"><code>bf-object-id-crud.md</code></a>.</p>
+<h2 id="branch">Branch<a class="headerlink" href="#branch" title="Permanent link">&para;</a></h2>
+<p><code>bf/object-id-crud</code>, local, not pushed, worktree <code>externals/work/crm-bf-object-id-crud</code>, on
+<code>bf/object-id-consistency</code> <code>597e2899</code>:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>commit</th>
+<th>what it fixes or adds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>4b41bcf8</code></td>
+<td>an entry re-POSTed with its own hex <code>_id</code> answered 500 when the stored entry at that time and type had another <code>_id</code> (the string form, or a different id)</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>a612a26f</code></td>
+<td><code>GET</code> / <code>DELETE /api/v1/entries/&lt;UPPER-CASE HEX&gt;</code> was read as an entry type; the shared v1 <code>_id</code> check uses the helper's pattern</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>12c01268</code></td>
+<td>websocket <code>dbAdd</code> stored a hex <code>_id</code> as the string; <code>dbUpdate</code>, <code>dbUpdateUnset</code>, <code>dbRemove</code> missed a string-stored hex <code>_id</code>; a similar-treatment match on a string-<code>_id</code> treatment did not update it</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>c721e202</code></td>
+<td><code>tests/api.crud-by-id.matrix.test.js</code>, 336 cells</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>44ac9047</code></td>
+<td>API v3 could not read, replace or delete a record whose <code>_id</code> is a non-hex string (decision D2)</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>18b09df7</code></td>
+<td>an entries POST that matched a stored reading answered the sent <code>_id</code>, or <code>null</code>, instead of the stored <code>_id</code> (D3)</td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>ad973110</code></td>
+<td>a devicestatus re-sent with the <code>_id</code> of a string-stored copy was stored beside it (D1)</td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>6d120fa2</code></td>
+<td>comment only: the helper header states the upper-case string limit (D4)</td>
+</tr>
+</tbody>
+</table>
+<p>Commits 5 to 8 apply the maintainer's decisions of 2026-09-23 on D1 to D4 (§5).</p>
+<h2 id="1-the-matrix">1. The matrix<a class="headerlink" href="#1-the-matrix" title="Permanent link">&para;</a></h2>
+<p><code>tests/api.crud-by-id.matrix.test.js</code> boots one server with API v1, API v3 and the websocket
+(the API v3 test fixture, v1 mounted beside it). Each cell seeds one record directly into MongoDB
+(or creates one), runs one operation by that record's id, and then reads MongoDB for every record
+with that id in any <code>_id</code> form or as <code>identifier</code>.</p>
+<p>Axes:</p>
+<ul>
+<li><strong>collection</strong>: entries, treatments, devicestatus, profile, food, activity (every v1 route with
+  an id-addressable write; <code>lib/api/*/index.js</code>, read). API v3 over the same collections except
+  activity, which v3 does not serve; v3 <code>settings</code> has no v1 counterpart and is not in the matrix.
+  The websocket's <code>supportedCollections</code> are the same six.</li>
+<li><strong>stored <code>_id</code> form</strong>: <code>oid</code> (ObjectId, asked by lower-case hex), <code>oidU</code> (ObjectId, asked by
+  upper-case hex), <code>lower</code> (lower-case 24-hex string), <code>upper</code> (upper-case 24-hex string), <code>uuid</code>
+  (UUID string). For create, the form is what is sent: <code>lower</code>, <code>upper</code>, <code>uuid</code>.</li>
+<li><strong>operation</strong>: v1 create with own <code>_id</code>, re-send (POST the stored record again with its <code>_id</code>),
+  <code>find[_id]</code> (not food: no find route), <code>GET /entries/&lt;id&gt;</code>, PUT (treatments, profile, food,
+  activity), DELETE by id; v3 GET, PUT, permanent DELETE, POST with the same <code>identifier</code>;
+  websocket <code>dbAdd</code> create, <code>dbAdd</code> re-send, <code>dbUpdate</code>, <code>dbRemove</code>.</li>
+</ul>
+<p>The matrix observes what is stored; the <code>_id</code> an entries POST answers with (commit 6) is covered in
+<code>tests/api.entries.repost-with-id.test.js</code>.</p>
+<p>The expected outcome of every cell is written in the test (<code>EXPECT</code>) with its reason. Deliberate
+differences are expected outcomes, not failures:</p>
+<table>
+<thead>
+<tr>
+<th>rule</th>
+<th>cells</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a UUID <code>_id</code> moves to <code>identifier</code> (REQ-SYNC-072, <code>UUID_HANDLING</code> on by default)</td>
+<td>v1 create, treatments and entries</td>
+</tr>
+<tr>
+<td>a non-hex <code>_id</code> is refused with 400</td>
+<td>v1 create, re-send, PUT, DELETE for devicestatus, profile, food, activity</td>
+</tr>
+<tr>
+<td><code>/entries/:spec</code> takes a 24-hex id; anything else is an entry type</td>
+<td>v1 GET and DELETE <code>/entries/&lt;uuid&gt;</code> (<code>find[_id]</code> finds it)</td>
+</tr>
+<tr>
+<td>a re-sent profile or devicestatus <code>_id</code> is refused as a duplicate (500), whichever form it is stored in</td>
+<td>v1 re-send, profile (BF-99) and devicestatus (commit 7)</td>
+</tr>
+<tr>
+<td>the websocket keeps a non-hex <code>_id</code> as given (<code>tests/websocket.shape-handling.test.js</code>)</td>
+<td>ws create, <code>uuid</code></td>
+</tr>
+<tr>
+<td>API v3 identifiers are immutable: a PUT naming an ObjectId record by its upper-case hex is refused (400)</td>
+<td>v3 PUT, <code>oidU</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>CRUD_MATRIX_OUT=&lt;file&gt;</code> writes every cell as JSON.</p>
+<h2 id="2-results">2. Results<a class="headerlink" href="#2-results" title="Permanent link">&para;</a></h2>
+<p>The matrix file from <code>6d120fa2</code> copied into each tree, Node 20.20.0:</p>
+<table>
+<thead>
+<tr>
+<th>tree</th>
+<th><code>mongo:7</code> passing / failing</th>
+<th>MongoDB 4.4 passing / failing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>origin/dev</code> <code>1f9a9d10</code></td>
+<td>176 / 160</td>
+<td>176 / 160</td>
+</tr>
+<tr>
+<td><code>bf/object-id-consistency</code> <code>597e2899</code></td>
+<td>266 / 70</td>
+<td>266 / 70</td>
+</tr>
+<tr>
+<td><code>bf/object-id-crud</code> <code>6d120fa2</code></td>
+<td>336 / 0</td>
+<td>336 / 0</td>
+</tr>
+</tbody>
+</table>
+<p>MongoDB 4.4 and <code>mongo:7</code> gave the same outcome in all 336 cells on each of the three trees.</p>
+<p>Per collection and operation (of the stored forms, how many give the expected outcome):</p>
+<p><strong><code>origin/dev</code> <code>1f9a9d10</code></strong></p>
+<table>
+<thead>
+<tr>
+<th>api op</th>
+<th>entries</th>
+<th>treatments</th>
+<th>devicestatus</th>
+<th>profile</th>
+<th>food</th>
+<th>activity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v1 create</td>
+<td>3/3 ok</td>
+<td>3/3 ok</td>
+<td><strong>2/3 wrong</strong></td>
+<td><strong>2/3 wrong</strong></td>
+<td><strong>2/3 wrong</strong></td>
+<td><strong>2/3 wrong</strong></td>
+</tr>
+<tr>
+<td>v1 resend</td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>4/5 wrong</strong></td>
+<td><strong>4/5 wrong</strong></td>
+</tr>
+<tr>
+<td>v1 find</td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+<td>—</td>
+<td><strong>2/5 wrong</strong></td>
+</tr>
+<tr>
+<td>v1 get</td>
+<td><strong>3/5 wrong</strong></td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>v1 update</td>
+<td>—</td>
+<td><strong>2/5 wrong</strong></td>
+<td>—</td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+</tr>
+<tr>
+<td>v1 delete</td>
+<td><strong>3/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+</tr>
+<tr>
+<td>v3 get</td>
+<td><strong>3/5 wrong</strong></td>
+<td><strong>3/5 wrong</strong></td>
+<td><strong>3/5 wrong</strong></td>
+<td><strong>3/5 wrong</strong></td>
+<td><strong>3/5 wrong</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td>v3 put</td>
+<td><strong>3/5 wrong</strong></td>
+<td><strong>3/5 wrong</strong></td>
+<td><strong>3/5 wrong</strong></td>
+<td><strong>3/5 wrong</strong></td>
+<td><strong>3/5 wrong</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td>v3 delete</td>
+<td><strong>3/5 wrong</strong></td>
+<td><strong>3/5 wrong</strong></td>
+<td><strong>3/5 wrong</strong></td>
+<td><strong>3/5 wrong</strong></td>
+<td><strong>3/5 wrong</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td>v3 resend</td>
+<td><strong>3/5 wrong</strong></td>
+<td><strong>3/5 wrong</strong></td>
+<td><strong>3/5 wrong</strong></td>
+<td><strong>3/5 wrong</strong></td>
+<td><strong>3/5 wrong</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td>ws create</td>
+<td><strong>2/3 wrong</strong></td>
+<td><strong>2/3 wrong</strong></td>
+<td><strong>2/3 wrong</strong></td>
+<td><strong>2/3 wrong</strong></td>
+<td><strong>2/3 wrong</strong></td>
+<td><strong>2/3 wrong</strong></td>
+</tr>
+<tr>
+<td>ws resend</td>
+<td><strong>2/5 wrong</strong></td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+</tr>
+<tr>
+<td>ws update</td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+</tr>
+<tr>
+<td>ws remove</td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong><code>bf/object-id-consistency</code> <code>597e2899</code></strong></p>
+<table>
+<thead>
+<tr>
+<th>api op</th>
+<th>entries</th>
+<th>treatments</th>
+<th>devicestatus</th>
+<th>profile</th>
+<th>food</th>
+<th>activity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v1 create</td>
+<td>3/3 ok</td>
+<td>3/3 ok</td>
+<td>3/3 ok</td>
+<td>3/3 ok</td>
+<td>3/3 ok</td>
+<td>3/3 ok</td>
+</tr>
+<tr>
+<td>v1 resend</td>
+<td><strong>2/5 wrong</strong></td>
+<td>5/5 ok</td>
+<td><strong>2/5 wrong</strong></td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+</tr>
+<tr>
+<td>v1 find</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>—</td>
+<td>5/5 ok</td>
+</tr>
+<tr>
+<td>v1 get</td>
+<td><strong>2/5 wrong</strong></td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>v1 update</td>
+<td>—</td>
+<td>5/5 ok</td>
+<td>—</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+</tr>
+<tr>
+<td>v1 delete</td>
+<td><strong>2/5 wrong</strong></td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+</tr>
+<tr>
+<td>v3 get</td>
+<td><strong>1/5 wrong</strong></td>
+<td><strong>1/5 wrong</strong></td>
+<td><strong>1/5 wrong</strong></td>
+<td><strong>1/5 wrong</strong></td>
+<td><strong>1/5 wrong</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td>v3 put</td>
+<td><strong>1/5 wrong</strong></td>
+<td><strong>1/5 wrong</strong></td>
+<td><strong>1/5 wrong</strong></td>
+<td><strong>1/5 wrong</strong></td>
+<td><strong>1/5 wrong</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td>v3 delete</td>
+<td><strong>1/5 wrong</strong></td>
+<td><strong>1/5 wrong</strong></td>
+<td><strong>1/5 wrong</strong></td>
+<td><strong>1/5 wrong</strong></td>
+<td><strong>1/5 wrong</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td>v3 resend</td>
+<td><strong>1/5 wrong</strong></td>
+<td><strong>1/5 wrong</strong></td>
+<td><strong>1/5 wrong</strong></td>
+<td><strong>1/5 wrong</strong></td>
+<td><strong>1/5 wrong</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td>ws create</td>
+<td><strong>2/3 wrong</strong></td>
+<td><strong>2/3 wrong</strong></td>
+<td><strong>2/3 wrong</strong></td>
+<td><strong>2/3 wrong</strong></td>
+<td><strong>2/3 wrong</strong></td>
+<td><strong>2/3 wrong</strong></td>
+</tr>
+<tr>
+<td>ws resend</td>
+<td><strong>2/5 wrong</strong></td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+</tr>
+<tr>
+<td>ws update</td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+</tr>
+<tr>
+<td>ws remove</td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+<td><strong>2/5 wrong</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong><code>bf/object-id-crud</code> <code>6d120fa2</code></strong></p>
+<table>
+<thead>
+<tr>
+<th>api op</th>
+<th>entries</th>
+<th>treatments</th>
+<th>devicestatus</th>
+<th>profile</th>
+<th>food</th>
+<th>activity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v1 create</td>
+<td>3/3 ok</td>
+<td>3/3 ok</td>
+<td>3/3 ok</td>
+<td>3/3 ok</td>
+<td>3/3 ok</td>
+<td>3/3 ok</td>
+</tr>
+<tr>
+<td>v1 resend</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+</tr>
+<tr>
+<td>v1 find</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>—</td>
+<td>5/5 ok</td>
+</tr>
+<tr>
+<td>v1 get</td>
+<td>5/5 ok</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>v1 update</td>
+<td>—</td>
+<td>5/5 ok</td>
+<td>—</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+</tr>
+<tr>
+<td>v1 delete</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+</tr>
+<tr>
+<td>v3 get</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>—</td>
+</tr>
+<tr>
+<td>v3 put</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>—</td>
+</tr>
+<tr>
+<td>v3 delete</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>—</td>
+</tr>
+<tr>
+<td>v3 resend</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>—</td>
+</tr>
+<tr>
+<td>ws create</td>
+<td>3/3 ok</td>
+<td>3/3 ok</td>
+<td>3/3 ok</td>
+<td>3/3 ok</td>
+<td>3/3 ok</td>
+<td>3/3 ok</td>
+</tr>
+<tr>
+<td>ws resend</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+</tr>
+<tr>
+<td>ws update</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+</tr>
+<tr>
+<td>ws remove</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+<td>5/5 ok</td>
+</tr>
+</tbody>
+</table>
+<p>The devicestatus re-send of a string-stored <code>_id</code> is right on dev (refused, one record), wrong on
+<code>597e2899</code> (a second copy) and right again from commit 7.</p>
+<h3 id="21-cells-that-differ-on-bfobject-id-consistency-597e2899">2.1 Cells that differ on <code>bf/object-id-consistency</code> <code>597e2899</code><a class="headerlink" href="#21-cells-that-differ-on-bfobject-id-consistency-597e2899" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>api</th>
+<th>op</th>
+<th>collection</th>
+<th>stored/sent form</th>
+<th>observed</th>
+<th>expected</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v1</td>
+<td>get</td>
+<td>entries</td>
+<td>oidU</td>
+<td>200 n=0</td>
+<td>200 n=1</td>
+</tr>
+<tr>
+<td>v1</td>
+<td>delete</td>
+<td>entries</td>
+<td>oidU</td>
+<td>200 n=1</td>
+<td>200 n=0</td>
+</tr>
+<tr>
+<td>v1</td>
+<td>resend</td>
+<td>entries</td>
+<td>lower</td>
+<td>500 [string]</td>
+<td>200 [string]</td>
+</tr>
+<tr>
+<td>v1</td>
+<td>resend</td>
+<td>entries</td>
+<td>upper</td>
+<td>500 [string]</td>
+<td>200 [string]</td>
+</tr>
+<tr>
+<td>v1</td>
+<td>get</td>
+<td>entries</td>
+<td>upper</td>
+<td>200 n=0</td>
+<td>200 n=1</td>
+</tr>
+<tr>
+<td>v1</td>
+<td>delete</td>
+<td>entries</td>
+<td>upper</td>
+<td>200 n=1</td>
+<td>200 n=0</td>
+</tr>
+<tr>
+<td>v1</td>
+<td>resend</td>
+<td>devicestatus</td>
+<td>lower</td>
+<td>200 [ObjectId,string]</td>
+<td>500 [string]</td>
+</tr>
+<tr>
+<td>v1</td>
+<td>resend</td>
+<td>devicestatus</td>
+<td>upper</td>
+<td>200 [ObjectId,string]</td>
+<td>500 [string]</td>
+</tr>
+<tr>
+<td>v3</td>
+<td>get</td>
+<td>entries</td>
+<td>uuid</td>
+<td>404</td>
+<td>200</td>
+</tr>
+<tr>
+<td>v3</td>
+<td>put</td>
+<td>entries</td>
+<td>uuid</td>
+<td>201 n=2 edited=false</td>
+<td>200 n=1 edited=true</td>
+</tr>
+<tr>
+<td>v3</td>
+<td>delete</td>
+<td>entries</td>
+<td>uuid</td>
+<td>404 n=1</td>
+<td>200 n=0</td>
+</tr>
+<tr>
+<td>v3</td>
+<td>resend</td>
+<td>entries</td>
+<td>uuid</td>
+<td>500 n=2 edited=false</td>
+<td>200 n=1 edited=true</td>
+</tr>
+<tr>
+<td>v3</td>
+<td>get</td>
+<td>treatments</td>
+<td>uuid</td>
+<td>404</td>
+<td>200</td>
+</tr>
+<tr>
+<td>v3</td>
+<td>put</td>
+<td>treatments</td>
+<td>uuid</td>
+<td>201 n=2 edited=false</td>
+<td>200 n=1 edited=true</td>
+</tr>
+<tr>
+<td>v3</td>
+<td>delete</td>
+<td>treatments</td>
+<td>uuid</td>
+<td>404 n=1</td>
+<td>200 n=0</td>
+</tr>
+<tr>
+<td>v3</td>
+<td>resend</td>
+<td>treatments</td>
+<td>uuid</td>
+<td>500 n=2 edited=false</td>
+<td>200 n=1 edited=true</td>
+</tr>
+<tr>
+<td>v3</td>
+<td>get</td>
+<td>devicestatus</td>
+<td>uuid</td>
+<td>404</td>
+<td>200</td>
+</tr>
+<tr>
+<td>v3</td>
+<td>put</td>
+<td>devicestatus</td>
+<td>uuid</td>
+<td>201 n=2 edited=false</td>
+<td>200 n=1 edited=true</td>
+</tr>
+<tr>
+<td>v3</td>
+<td>delete</td>
+<td>devicestatus</td>
+<td>uuid</td>
+<td>404 n=1</td>
+<td>200 n=0</td>
+</tr>
+<tr>
+<td>v3</td>
+<td>resend</td>
+<td>devicestatus</td>
+<td>uuid</td>
+<td>500 n=2 edited=false</td>
+<td>200 n=1 edited=true</td>
+</tr>
+<tr>
+<td>v3</td>
+<td>get</td>
+<td>profile</td>
+<td>uuid</td>
+<td>404</td>
+<td>200</td>
+</tr>
+<tr>
+<td>v3</td>
+<td>put</td>
+<td>profile</td>
+<td>uuid</td>
+<td>201 n=2 edited=false</td>
+<td>200 n=1 edited=true</td>
+</tr>
+<tr>
+<td>v3</td>
+<td>delete</td>
+<td>profile</td>
+<td>uuid</td>
+<td>404 n=1</td>
+<td>200 n=0</td>
+</tr>
+<tr>
+<td>v3</td>
+<td>resend</td>
+<td>profile</td>
+<td>uuid</td>
+<td>201 n=2 edited=false</td>
+<td>200 n=1 edited=true</td>
+</tr>
+<tr>
+<td>v3</td>
+<td>get</td>
+<td>food</td>
+<td>uuid</td>
+<td>404</td>
+<td>200</td>
+</tr>
+<tr>
+<td>v3</td>
+<td>put</td>
+<td>food</td>
+<td>uuid</td>
+<td>201 n=2 edited=false</td>
+<td>200 n=1 edited=true</td>
+</tr>
+<tr>
+<td>v3</td>
+<td>delete</td>
+<td>food</td>
+<td>uuid</td>
+<td>404 n=1</td>
+<td>200 n=0</td>
+</tr>
+<tr>
+<td>v3</td>
+<td>resend</td>
+<td>food</td>
+<td>uuid</td>
+<td>201 n=2 edited=false</td>
+<td>200 n=1 edited=true</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>create</td>
+<td>entries</td>
+<td>lower</td>
+<td>[string]</td>
+<td>[ObjectId]</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>create</td>
+<td>entries</td>
+<td>upper</td>
+<td>[string]</td>
+<td>[ObjectId]</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>resend</td>
+<td>entries</td>
+<td>oid</td>
+<td>n=2</td>
+<td>n=1</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>resend</td>
+<td>entries</td>
+<td>oidU</td>
+<td>n=2</td>
+<td>n=1</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>update</td>
+<td>entries</td>
+<td>lower</td>
+<td>success n=1 edited=false</td>
+<td>success n=1 edited=true</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>remove</td>
+<td>entries</td>
+<td>lower</td>
+<td>success n=1</td>
+<td>success n=0</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>update</td>
+<td>entries</td>
+<td>upper</td>
+<td>success n=1 edited=false</td>
+<td>success n=1 edited=true</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>remove</td>
+<td>entries</td>
+<td>upper</td>
+<td>success n=1</td>
+<td>success n=0</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>create</td>
+<td>treatments</td>
+<td>lower</td>
+<td>[string]</td>
+<td>[ObjectId]</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>create</td>
+<td>treatments</td>
+<td>upper</td>
+<td>[string]</td>
+<td>[ObjectId]</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>update</td>
+<td>treatments</td>
+<td>lower</td>
+<td>success n=1 edited=false</td>
+<td>success n=1 edited=true</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>remove</td>
+<td>treatments</td>
+<td>lower</td>
+<td>success n=1</td>
+<td>success n=0</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>update</td>
+<td>treatments</td>
+<td>upper</td>
+<td>success n=1 edited=false</td>
+<td>success n=1 edited=true</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>remove</td>
+<td>treatments</td>
+<td>upper</td>
+<td>success n=1</td>
+<td>success n=0</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>create</td>
+<td>devicestatus</td>
+<td>lower</td>
+<td>[string]</td>
+<td>[ObjectId]</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>create</td>
+<td>devicestatus</td>
+<td>upper</td>
+<td>[string]</td>
+<td>[ObjectId]</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>update</td>
+<td>devicestatus</td>
+<td>lower</td>
+<td>success n=1 edited=false</td>
+<td>success n=1 edited=true</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>remove</td>
+<td>devicestatus</td>
+<td>lower</td>
+<td>success n=1</td>
+<td>success n=0</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>update</td>
+<td>devicestatus</td>
+<td>upper</td>
+<td>success n=1 edited=false</td>
+<td>success n=1 edited=true</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>remove</td>
+<td>devicestatus</td>
+<td>upper</td>
+<td>success n=1</td>
+<td>success n=0</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>create</td>
+<td>profile</td>
+<td>lower</td>
+<td>[string]</td>
+<td>[ObjectId]</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>create</td>
+<td>profile</td>
+<td>upper</td>
+<td>[string]</td>
+<td>[ObjectId]</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>update</td>
+<td>profile</td>
+<td>lower</td>
+<td>success n=1 edited=false</td>
+<td>success n=1 edited=true</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>remove</td>
+<td>profile</td>
+<td>lower</td>
+<td>success n=1</td>
+<td>success n=0</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>update</td>
+<td>profile</td>
+<td>upper</td>
+<td>success n=1 edited=false</td>
+<td>success n=1 edited=true</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>remove</td>
+<td>profile</td>
+<td>upper</td>
+<td>success n=1</td>
+<td>success n=0</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>create</td>
+<td>food</td>
+<td>lower</td>
+<td>[string]</td>
+<td>[ObjectId]</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>create</td>
+<td>food</td>
+<td>upper</td>
+<td>[string]</td>
+<td>[ObjectId]</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>resend</td>
+<td>food</td>
+<td>oid</td>
+<td>n=2</td>
+<td>n=1</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>resend</td>
+<td>food</td>
+<td>oidU</td>
+<td>n=2</td>
+<td>n=1</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>update</td>
+<td>food</td>
+<td>lower</td>
+<td>success n=1 edited=false</td>
+<td>success n=1 edited=true</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>remove</td>
+<td>food</td>
+<td>lower</td>
+<td>success n=1</td>
+<td>success n=0</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>update</td>
+<td>food</td>
+<td>upper</td>
+<td>success n=1 edited=false</td>
+<td>success n=1 edited=true</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>remove</td>
+<td>food</td>
+<td>upper</td>
+<td>success n=1</td>
+<td>success n=0</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>create</td>
+<td>activity</td>
+<td>lower</td>
+<td>[string]</td>
+<td>[ObjectId]</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>create</td>
+<td>activity</td>
+<td>upper</td>
+<td>[string]</td>
+<td>[ObjectId]</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>resend</td>
+<td>activity</td>
+<td>oid</td>
+<td>n=2</td>
+<td>n=1</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>resend</td>
+<td>activity</td>
+<td>oidU</td>
+<td>n=2</td>
+<td>n=1</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>update</td>
+<td>activity</td>
+<td>lower</td>
+<td>success n=1 edited=false</td>
+<td>success n=1 edited=true</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>remove</td>
+<td>activity</td>
+<td>lower</td>
+<td>success n=1</td>
+<td>success n=0</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>update</td>
+<td>activity</td>
+<td>upper</td>
+<td>success n=1 edited=false</td>
+<td>success n=1 edited=true</td>
+</tr>
+<tr>
+<td>ws</td>
+<td>remove</td>
+<td>activity</td>
+<td>upper</td>
+<td>success n=1</td>
+<td>success n=0</td>
+</tr>
+</tbody>
+</table>
+<h3 id="22-cells-that-differ-on-origindev-1f9a9d10">2.2 Cells that differ on <code>origin/dev</code> <code>1f9a9d10</code><a class="headerlink" href="#22-cells-that-differ-on-origindev-1f9a9d10" title="Permanent link">&para;</a></h3>
+<p>160 cells; 92 of them are fixed by <code>597e2899</code> and the other 68 are §2.1 less the two devicestatus
+re-send cells, which dev gets right.</p>
+<details><summary>All 160 rows</summary>
+
+| api | op | collection | stored/sent form | observed | expected |
+|---|---|---|---|---|---|
+| v1 | get | entries | oidU | 200 n=0 | 200 n=1 |
+| v1 | delete | entries | oidU | 200 n=1 | 200 n=0 |
+| v1 | resend | entries | lower | 500 [string] | 200 [string] |
+| v1 | find | entries | lower | 200 n=0 | 200 n=1 |
+| v1 | get | entries | lower | 500 n=0 | 200 n=1 |
+| v1 | delete | entries | lower | 200 n=1 | 200 n=0 |
+| v1 | resend | entries | upper | 500 [string] | 200 [string] |
+| v1 | find | entries | upper | 200 n=0 | 200 n=1 |
+| v1 | get | entries | upper | 200 n=0 | 200 n=1 |
+| v1 | delete | entries | upper | 200 n=1 | 200 n=0 |
+| v1 | resend | treatments | lower | 200 [ObjectId,string] | 200 [ObjectId] |
+| v1 | find | treatments | lower | 200 n=0 | 200 n=1 |
+| v1 | update | treatments | lower | 200 n=2 edited=false | 200 n=1 edited=true |
+| v1 | delete | treatments | lower | 200 n=1 | 200 n=0 |
+| v1 | resend | treatments | upper | 200 [ObjectId,string] | 200 [ObjectId] |
+| v1 | find | treatments | upper | 200 n=0 | 200 n=1 |
+| v1 | update | treatments | upper | 200 n=2 edited=false | 200 n=1 edited=true |
+| v1 | delete | treatments | upper | 200 n=1 | 200 n=0 |
+| v1 | create | devicestatus | lower | 200 [string] | 200 [ObjectId] |
+| v1 | create | devicestatus | upper | 200 [string] | 200 [ObjectId] |
+| v1 | resend | devicestatus | oid | 200 [ObjectId,string] | 500 [ObjectId] |
+| v1 | resend | devicestatus | oidU | 200 [ObjectId,string] | 500 [ObjectId] |
+| v1 | find | devicestatus | lower | 200 n=0 | 200 n=1 |
+| v1 | delete | devicestatus | lower | 200 n=1 | 200 n=0 |
+| v1 | find | devicestatus | upper | 200 n=0 | 200 n=1 |
+| v1 | delete | devicestatus | upper | 200 n=1 | 200 n=0 |
+| v1 | create | profile | lower | 200 [string] | 200 [ObjectId] |
+| v1 | create | profile | upper | 200 [string] | 200 [ObjectId] |
+| v1 | resend | profile | oid | 200 [ObjectId,string] | 500 [ObjectId] |
+| v1 | resend | profile | oidU | 200 [ObjectId,string] | 500 [ObjectId] |
+| v1 | find | profile | lower | 200 n=0 | 200 n=1 |
+| v1 | update | profile | lower | 200 n=2 edited=false | 200 n=1 edited=true |
+| v1 | delete | profile | lower | 200 n=1 | 200 n=0 |
+| v1 | find | profile | upper | 200 n=0 | 200 n=1 |
+| v1 | update | profile | upper | 200 n=2 edited=false | 200 n=1 edited=true |
+| v1 | delete | profile | upper | 200 n=1 | 200 n=0 |
+| v1 | create | food | lower | 200 [string] | 200 [ObjectId] |
+| v1 | create | food | upper | 200 [string] | 200 [ObjectId] |
+| v1 | resend | food | oid | 200 [ObjectId,string] | 200 [ObjectId] |
+| v1 | resend | food | oidU | 200 [ObjectId,string] | 200 [ObjectId] |
+| v1 | resend | food | lower | 200 [string] | 200 [ObjectId] |
+| v1 | update | food | lower | 200 n=2 edited=false | 200 n=1 edited=true |
+| v1 | delete | food | lower | 200 n=1 | 200 n=0 |
+| v1 | resend | food | upper | 200 [string] | 200 [ObjectId] |
+| v1 | update | food | upper | 200 n=2 edited=false | 200 n=1 edited=true |
+| v1 | delete | food | upper | 200 n=1 | 200 n=0 |
+| v1 | create | activity | lower | 200 [string] | 200 [ObjectId] |
+| v1 | create | activity | upper | 200 [string] | 200 [ObjectId] |
+| v1 | resend | activity | oid | 200 [ObjectId,string] | 200 [ObjectId] |
+| v1 | resend | activity | oidU | 200 [ObjectId,string] | 200 [ObjectId] |
+| v1 | resend | activity | lower | 200 [string] | 200 [ObjectId] |
+| v1 | find | activity | lower | 200 n=0 | 200 n=1 |
+| v1 | update | activity | lower | 200 n=2 edited=false | 200 n=1 edited=true |
+| v1 | delete | activity | lower | 200 n=1 | 200 n=0 |
+| v1 | resend | activity | upper | 200 [string] | 200 [ObjectId] |
+| v1 | find | activity | upper | 200 n=0 | 200 n=1 |
+| v1 | update | activity | upper | 200 n=2 edited=false | 200 n=1 edited=true |
+| v1 | delete | activity | upper | 200 n=1 | 200 n=0 |
+| v3 | get | entries | lower | 404 | 200 |
+| v3 | put | entries | lower | 201 n=2 edited=false | 200 n=1 edited=true |
+| v3 | delete | entries | lower | 404 n=1 | 200 n=0 |
+| v3 | resend | entries | lower | 500 n=2 edited=false | 200 n=1 edited=true |
+| v3 | get | entries | upper | 404 | 200 |
+| v3 | put | entries | upper | 201 n=2 edited=false | 200 n=1 edited=true |
+| v3 | delete | entries | upper | 404 n=1 | 200 n=0 |
+| v3 | resend | entries | upper | 500 n=2 edited=false | 200 n=1 edited=true |
+| v3 | get | entries | uuid | 404 | 200 |
+| v3 | put | entries | uuid | 201 n=2 edited=false | 200 n=1 edited=true |
+| v3 | delete | entries | uuid | 404 n=1 | 200 n=0 |
+| v3 | resend | entries | uuid | 500 n=2 edited=false | 200 n=1 edited=true |
+| v3 | get | treatments | lower | 404 | 200 |
+| v3 | put | treatments | lower | 201 n=2 edited=false | 200 n=1 edited=true |
+| v3 | delete | treatments | lower | 404 n=1 | 200 n=0 |
+| v3 | resend | treatments | lower | 500 n=2 edited=false | 200 n=1 edited=true |
+| v3 | get | treatments | upper | 404 | 200 |
+| v3 | put | treatments | upper | 201 n=2 edited=false | 200 n=1 edited=true |
+| v3 | delete | treatments | upper | 404 n=1 | 200 n=0 |
+| v3 | resend | treatments | upper | 500 n=2 edited=false | 200 n=1 edited=true |
+| v3 | get | treatments | uuid | 404 | 200 |
+| v3 | put | treatments | uuid | 201 n=2 edited=false | 200 n=1 edited=true |
+| v3 | delete | treatments | uuid | 404 n=1 | 200 n=0 |
+| v3 | resend | treatments | uuid | 500 n=2 edited=false | 200 n=1 edited=true |
+| v3 | get | devicestatus | lower | 404 | 200 |
+| v3 | put | devicestatus | lower | 201 n=2 edited=false | 200 n=1 edited=true |
+| v3 | delete | devicestatus | lower | 404 n=1 | 200 n=0 |
+| v3 | resend | devicestatus | lower | 500 n=2 edited=false | 200 n=1 edited=true |
+| v3 | get | devicestatus | upper | 404 | 200 |
+| v3 | put | devicestatus | upper | 201 n=2 edited=false | 200 n=1 edited=true |
+| v3 | delete | devicestatus | upper | 404 n=1 | 200 n=0 |
+| v3 | resend | devicestatus | upper | 500 n=2 edited=false | 200 n=1 edited=true |
+| v3 | get | devicestatus | uuid | 404 | 200 |
+| v3 | put | devicestatus | uuid | 201 n=2 edited=false | 200 n=1 edited=true |
+| v3 | delete | devicestatus | uuid | 404 n=1 | 200 n=0 |
+| v3 | resend | devicestatus | uuid | 500 n=2 edited=false | 200 n=1 edited=true |
+| v3 | get | profile | lower | 404 | 200 |
+| v3 | put | profile | lower | 201 n=2 edited=false | 200 n=1 edited=true |
+| v3 | delete | profile | lower | 404 n=1 | 200 n=0 |
+| v3 | resend | profile | lower | 201 n=2 edited=false | 200 n=1 edited=true |
+| v3 | get | profile | upper | 404 | 200 |
+| v3 | put | profile | upper | 201 n=2 edited=false | 200 n=1 edited=true |
+| v3 | delete | profile | upper | 404 n=1 | 200 n=0 |
+| v3 | resend | profile | upper | 201 n=2 edited=false | 200 n=1 edited=true |
+| v3 | get | profile | uuid | 404 | 200 |
+| v3 | put | profile | uuid | 201 n=2 edited=false | 200 n=1 edited=true |
+| v3 | delete | profile | uuid | 404 n=1 | 200 n=0 |
+| v3 | resend | profile | uuid | 201 n=2 edited=false | 200 n=1 edited=true |
+| v3 | get | food | lower | 404 | 200 |
+| v3 | put | food | lower | 201 n=2 edited=false | 200 n=1 edited=true |
+| v3 | delete | food | lower | 404 n=1 | 200 n=0 |
+| v3 | resend | food | lower | 201 n=2 edited=false | 200 n=1 edited=true |
+| v3 | get | food | upper | 404 | 200 |
+| v3 | put | food | upper | 201 n=2 edited=false | 200 n=1 edited=true |
+| v3 | delete | food | upper | 404 n=1 | 200 n=0 |
+| v3 | resend | food | upper | 201 n=2 edited=false | 200 n=1 edited=true |
+| v3 | get | food | uuid | 404 | 200 |
+| v3 | put | food | uuid | 201 n=2 edited=false | 200 n=1 edited=true |
+| v3 | delete | food | uuid | 404 n=1 | 200 n=0 |
+| v3 | resend | food | uuid | 201 n=2 edited=false | 200 n=1 edited=true |
+| ws | create | entries | lower | [string] | [ObjectId] |
+| ws | create | entries | upper | [string] | [ObjectId] |
+| ws | resend | entries | oid | n=2 | n=1 |
+| ws | resend | entries | oidU | n=2 | n=1 |
+| ws | update | entries | lower | success n=1 edited=false | success n=1 edited=true |
+| ws | remove | entries | lower | success n=1 | success n=0 |
+| ws | update | entries | upper | success n=1 edited=false | success n=1 edited=true |
+| ws | remove | entries | upper | success n=1 | success n=0 |
+| ws | create | treatments | lower | [string] | [ObjectId] |
+| ws | create | treatments | upper | [string] | [ObjectId] |
+| ws | update | treatments | lower | success n=1 edited=false | success n=1 edited=true |
+| ws | remove | treatments | lower | success n=1 | success n=0 |
+| ws | update | treatments | upper | success n=1 edited=false | success n=1 edited=true |
+| ws | remove | treatments | upper | success n=1 | success n=0 |
+| ws | create | devicestatus | lower | [string] | [ObjectId] |
+| ws | create | devicestatus | upper | [string] | [ObjectId] |
+| ws | update | devicestatus | lower | success n=1 edited=false | success n=1 edited=true |
+| ws | remove | devicestatus | lower | success n=1 | success n=0 |
+| ws | update | devicestatus | upper | success n=1 edited=false | success n=1 edited=true |
+| ws | remove | devicestatus | upper | success n=1 | success n=0 |
+| ws | create | profile | lower | [string] | [ObjectId] |
+| ws | create | profile | upper | [string] | [ObjectId] |
+| ws | update | profile | lower | success n=1 edited=false | success n=1 edited=true |
+| ws | remove | profile | lower | success n=1 | success n=0 |
+| ws | update | profile | upper | success n=1 edited=false | success n=1 edited=true |
+| ws | remove | profile | upper | success n=1 | success n=0 |
+| ws | create | food | lower | [string] | [ObjectId] |
+| ws | create | food | upper | [string] | [ObjectId] |
+| ws | resend | food | oid | n=2 | n=1 |
+| ws | resend | food | oidU | n=2 | n=1 |
+| ws | update | food | lower | success n=1 edited=false | success n=1 edited=true |
+| ws | remove | food | lower | success n=1 | success n=0 |
+| ws | update | food | upper | success n=1 edited=false | success n=1 edited=true |
+| ws | remove | food | upper | success n=1 | success n=0 |
+| ws | create | activity | lower | [string] | [ObjectId] |
+| ws | create | activity | upper | [string] | [ObjectId] |
+| ws | resend | activity | oid | n=2 | n=1 |
+| ws | resend | activity | oidU | n=2 | n=1 |
+| ws | update | activity | lower | success n=1 edited=false | success n=1 edited=true |
+| ws | remove | activity | lower | success n=1 | success n=0 |
+| ws | update | activity | upper | success n=1 edited=false | success n=1 edited=true |
+| ws | remove | activity | upper | success n=1 | success n=0 |
+
+</details>
+
+<h2 id="3-the-fixes">3. The fixes<a class="headerlink" href="#3-the-fixes" title="Permanent link">&para;</a></h2>
+<h3 id="31-entry-re-post-with-its-own-_id-commit-1-4b41bcf8">3.1 Entry re-POST with its own <code>_id</code> (commit 1, <code>4b41bcf8</code>)<a class="headerlink" href="#31-entry-re-post-with-its-own-_id-commit-1-4b41bcf8" title="Permanent link">&para;</a></h3>
+<p>Reproduced on dev and <code>597e2899</code>: an entry POSTed with the hex <code>_id</code> of an entry stored as the
+string at the same <code>sysTime</code> and <code>type</code> answers 500 ("Performing an update on the path '_id' would
+modify the immutable field '_id'"); so does a POST whose hex <code>_id</code> differs from the ObjectId of the
+entry stored at that time and type. The same POST without <code>_id</code> answers 200 and updates the entry.</p>
+<p><code>lib/server/entries.js</code> <code>create()</code> now writes the sent <code>_id</code> with <code>$setOnInsert</code> and leaves it out
+of <code>$set</code>: a new entry is stored with that <code>_id</code> (ObjectId, from <code>toStoredId</code>), and a matched entry
+keeps its own <code>_id</code>, as with a POST without <code>_id</code>. This is the existing dedup rule for entries
+(sysTime + type is the key; a different UUID at the same time deduplicates, <code>TEST-ENTRY-UUID-003</code>)
+applied to a hex <code>_id</code>.</p>
+<h3 id="32-upper-case-ids-on-entriesspec-commit-2-a612a26f">3.2 Upper-case ids on <code>/entries/:spec</code> (commit 2, <code>a612a26f</code>)<a class="headerlink" href="#32-upper-case-ids-on-entriesspec-commit-2-a612a26f" title="Permanent link">&para;</a></h3>
+<p><code>lib/api/entries/index.js</code> had <code>ID_PATTERN = /^[a-f\d]{24}$/</code>. <code>GET /entries/&lt;UPPER&gt;</code> answered
+<code>[]</code> and <code>DELETE /entries/&lt;UPPER&gt;</code> removed nothing (reproduced), because the id was taken for an
+entry <code>type</code>. It now uses <code>isHexId</code> from <code>lib/server/object-id-forms.js</code>.</p>
+<p>Upper case is accepted because every other path already did: <code>lib/server/query.js</code> (<code>find[_id]</code>),
+<code>lib/api/shared/objectid-validation.js</code> (devicestatus, food, activity, profile routes),
+<code>lib/server/websocket.js</code>, API v3, and <code>new ObjectId()</code> itself. The cost is that an entry <code>type</code>
+spelled as 24 upper-case hex characters can no longer be named in the path, as a lower-case one
+already could not. The shared validation module now imports the helper's rule instead of its own
+pattern; what it accepts is unchanged.</p>
+<h3 id="33-websocket-commit-3-12c01268">3.3 Websocket (commit 3, <code>12c01268</code>)<a class="headerlink" href="#33-websocket-commit-3-12c01268" title="Permanent link">&para;</a></h3>
+<p>Reproduced on dev and <code>597e2899</code> (§2.1): <code>dbAdd</code> stored a hex <code>_id</code> as the string in every
+collection; <code>dbUpdate</code>, <code>dbUpdateUnset</code> and <code>dbRemove</code> converted a hex <code>_id</code> to ObjectId and so
+missed a string-stored record while replying <code>success</code>; a re-sent record stored with an ObjectId
+<code>_id</code> got a string copy in entries, food and activity (the collections with no field dedup); the
+similar-treatment dedup converted the matched record's stored hex-string <code>_id</code> to an ObjectId and
+updated nothing.</p>
+<p><code>lib/server/websocket.js</code> now:</p>
+<ul>
+<li><code>dbAdd</code>: <code>storeIdAsObjectId</code> stores a 24-hex <code>_id</code> as the ObjectId it names, unless the same id
+  is already stored as a string, in which case the stored value is used and the insert collides
+  with that record as a re-send always has (reply <code>[]</code>). One indexed <code>findOne</code>, only for a record
+  carrying a 24-hex <code>_id</code>. Which socket clients send their own hex <code>_id</code> was not established.</li>
+<li><code>dbUpdate</code>, <code>dbUpdateUnset</code>, <code>dbRemove</code>: <code>idMatch</code> gives <code>{_id: {$in: idForms(id)}}</code> for a 24-hex
+  id and writes with <code>updateMany</code> / <code>deleteMany</code>, so an ObjectId copy and a string copy of one id
+  are both reached; any other id keeps <code>{_id: id}</code> with <code>updateOne</code> / <code>deleteOne</code>. The split keeps
+  <code>tests/websocket.input-validation.test.js</code> unmodified: its fake collection has only <code>updateOne</code>
+  and <code>deleteOne</code> and its ids are custom strings.</li>
+<li>the similar-treatment update uses <code>similar._id</code> as stored.</li>
+</ul>
+<p>A custom non-hex <code>_id</code> is kept exactly as given, as <code>tests/websocket.shape-handling.test.js</code>
+requires. This commit was rebuilt once: <code>f433dc16</code> placed the helper's <code>require</code> next to the
+<code>forwarded-for</code> lines that #8754 replaces and conflicted with #8754 and <code>rc/15.0.9-additions-e</code>;
+<code>12c01268</code> moves that one line.</p>
+<h3 id="34-api-v3-and-a-non-hex-_id-commit-5-44ac9047-d2">3.4 API v3 and a non-hex <code>_id</code> (commit 5, <code>44ac9047</code>, D2)<a class="headerlink" href="#34-api-v3-and-a-non-hex-_id-commit-5-44ac9047-d2" title="Permanent link">&para;</a></h3>
+<p>Records can hold a non-hex string <code>_id</code>: a UUID in treatments or entries stored by 15.0.6 or
+earlier, or a custom id the websocket keeps as given. v3 lists such a record with <code>identifier</code> =
+that <code>_id</code> (<code>normalizeDoc</code>), and <code>lib/api3/swagger.yaml</code> line 1112 says that identifier is used
+"when reading or addressing these documents", but <code>filterForOne</code> and <code>identifyingFilter</code> looked a
+non-hex identifier up in <code>identifier</code> only. Measured on <code>597e2899</code> and <code>c721e202</code>:</p>
+<table>
+<thead>
+<tr>
+<th>v3 operation</th>
+<th>treatments, entries, devicestatus</th>
+<th>profile, food</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET <code>/&lt;id&gt;</code></td>
+<td>404</td>
+<td>404</td>
+</tr>
+<tr>
+<td>PUT <code>/&lt;id&gt;</code></td>
+<td>201, second record</td>
+<td>201, second record</td>
+</tr>
+<tr>
+<td>DELETE <code>/&lt;id&gt;?permanent=true</code></td>
+<td>404, record kept</td>
+<td>404, record kept</td>
+</tr>
+<tr>
+<td>POST with that <code>identifier</code></td>
+<td>500 and a second record (traced for treatments: the dedup fallback fields find the record, the replace by identifier misses it, the upsert inserts a copy, and <code>lib/api3/generic/update/replace.js:41</code> throws "empty matchedCount")</td>
+<td>201, second record</td>
+</tr>
+</tbody>
+</table>
+<p>In both filters a non-hex <strong>string</strong> identifier now also matches <code>{_id: {$eq: identifier}}</code> (for
+<code>identifyingFilter</code>, with <code>identifier: {$exists: false}</code>), the same literal <code>$eq</code> as every other
+branch. An identifier that is not a string (operator-shaped, such as <code>{$ne: null}</code>) gets no <code>_id</code>
+branch, and its <code>identifier</code> branch is still a literal <code>$eq</code>
+(<code>tests/api3.storage.utils.test.js</code> "treats an object-shaped identifier as a literal value",
+unchanged, and two new assertions in <code>tests/api3.non-hex-id.test.js</code>); an operator-looking string such as <code>{"$ne":null}</code> is compared
+literally in both branches, and <code>GET /api/v3/treatments/{"$ne":null}</code> answers 404 with records
+present. <code>tests/api3.storage.modify.test.js</code> asserted the exact filter for the non-hex identifiers
+<code>record-1</code> and <code>record-2</code> (three assertions, lines 33, 49, 55) and is updated to the new shape.</p>
+<p><code>explain('executionStats')</code> on <code>mongo:7</code>, each collection holding 5,000 documents with
+<code>identifier</code> plus one with the UUID <code>_id</code>, with the indexes Nightscout creates at boot and API v3's
+<code>identifier_1</code>. Dedup fields are v3's own (<code>lib/api3/generic/setup.js</code>):</p>
+<table>
+<thead>
+<tr>
+<th>collection</th>
+<th>filter</th>
+<th>winning plan (flattened)</th>
+<th style="text-align: right;">returned</th>
+<th style="text-align: right;">docs examined</th>
+<th>COLLSCAN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>treatments</td>
+<td><code>filterForOne</code></td>
+<td><code>SUBPLAN &gt; FETCH &gt; OR &gt; [IXSCAN(_id_), IXSCAN(identifier_1)]</code></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td>no</td>
+</tr>
+<tr>
+<td>treatments</td>
+<td><code>identifyingFilter</code></td>
+<td><code>SUBPLAN &gt; FETCH &gt; OR &gt; [FETCH &gt; IXSCAN(_id_), IXSCAN(identifier_1)]</code></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td>no</td>
+</tr>
+<tr>
+<td>treatments</td>
+<td><code>identifyingFilter</code> + dedup fields</td>
+<td><code>… OR &gt; [FETCH &gt; IXSCAN(_id_), FETCH &gt; IXSCAN(eventType_1_created_at_-1_identifier_-1_date_-1), IXSCAN(identifier_1)]</code></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+<td>no</td>
+</tr>
+<tr>
+<td>entries</td>
+<td><code>filterForOne</code> / <code>identifyingFilter</code></td>
+<td>as treatments</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1 / 2</td>
+<td>no</td>
+</tr>
+<tr>
+<td>entries</td>
+<td>+ dedup fields</td>
+<td><code>… FETCH &gt; IXSCAN(date_-1_identifier_-1_created_at_-1) …</code></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+<td>no</td>
+</tr>
+<tr>
+<td>devicestatus</td>
+<td><code>filterForOne</code> / <code>identifyingFilter</code></td>
+<td>as treatments</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1 / 2</td>
+<td>no</td>
+</tr>
+<tr>
+<td>devicestatus</td>
+<td>+ dedup fields</td>
+<td><code>… FETCH &gt; IXSCAN(created_at_-1_identifier_-1_date_-1) …</code></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+<td>no</td>
+</tr>
+<tr>
+<td>profile</td>
+<td><code>filterForOne</code> / <code>identifyingFilter</code></td>
+<td>as treatments</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1 / 2</td>
+<td>no</td>
+</tr>
+<tr>
+<td>profile</td>
+<td>+ dedup fields</td>
+<td><code>… FETCH &gt; IXSCAN(created_at_1) …</code></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+<td>no</td>
+</tr>
+<tr>
+<td>food</td>
+<td><code>filterForOne</code> / <code>identifyingFilter</code></td>
+<td>as treatments</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1 / 2</td>
+<td>no</td>
+</tr>
+<tr>
+<td>food</td>
+<td>+ dedup fields</td>
+<td><code>… FETCH &gt; IXSCAN(identifier_1) …</code></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+<td>no</td>
+</tr>
+</tbody>
+</table>
+<h3 id="35-entries-post-answers-the-stored-_id-commit-6-18b09df7-d3">3.5 Entries POST answers the stored <code>_id</code> (commit 6, <code>18b09df7</code>, D3)<a class="headerlink" href="#35-entries-post-answers-the-stored-_id-commit-6-18b09df7-d3" title="Permanent link">&para;</a></h3>
+<p>After commit 1, a POST that matched a stored reading by <code>sysTime</code> + <code>type</code> was answered with the
+<code>_id</code> the client sent (measured: sent <code>…a03</code>, stored <code>…b03</code>), and a matched POST without <code>_id</code> with
+<code>_id: null</code>. <code>docs/proposals/TEST-IMPLEMENTATION-SUMMARY.md</code> §6.1.2 requires every item in a v1
+POST response to carry an <code>_id</code>; no existing test asserts the <code>null</code>, and every existing test that
+reads a POST response <code>_id</code> expects one to be present (<code>tests/api.v1-batch-operations.test.js</code>,
+<code>api.deduplication.test.js</code>, <code>api.partial-failures.test.js</code>, <code>api.aaps-client.test.js</code>;
+all pass). So both cases were changed; nothing required stopping.</p>
+<p>After the <code>bulkWrite</code>, <code>assignStoredIds</code> collects the entries the upsert did not insert and whose
+filter is <code>sysTime</code> + <code>type</code>, and reads their stored <code>_id</code>s in <strong>one</strong> <code>find</code> for the whole batch
+(an <code>$or</code> of those same filters, projection <code>_id, sysTime, type</code>), only when at least one entry
+matched. Each matched response item gets its stored <code>_id</code>; a new entry keeps the <code>_id</code> it was
+stored with. A second entry at the same time and type in one batch gets the first one's <code>_id</code>. If
+the read-back fails, the POST still answers 200 with the entries stored and the response <code>_id</code>s as
+before. Tests spy on the collection: one <code>find</code> for a batch of three matched entries, none for a
+batch of new entries, and the <code>$or</code> holds only the matched entries.</p>
+<h3 id="36-devicestatus-re-send-guard-commit-7-ad973110-d1">3.6 devicestatus re-send guard (commit 7, <code>ad973110</code>, D1)<a class="headerlink" href="#36-devicestatus-re-send-guard-commit-7-ad973110-d1" title="Permanent link">&para;</a></h3>
+<p><code>597e2899</code> commit c stored a 24-hex devicestatus <code>_id</code> as an ObjectId with no check for the string
+form, so a report re-sent with the <code>_id</code> of a string-stored copy was stored beside it (dev: refused,
+500). <code>lib/server/devicestatus.js</code> <code>storeIdsAsObjectIds</code> now, for a batch that carries 24-hex
+<code>_id</code>s, makes one <code>find({_id: {$in: &lt;string forms&gt;}}, {_id: 1})</code> (the lower-case and as-sent
+spelling of each id, the same forms the websocket commit uses) and keeps the stored value for ids
+found, so the insert collides and is refused as on dev and as a profile re-send is (BF-99). Other
+ids become ObjectIds. A batch without 24-hex <code>_id</code>s makes no read (test: spy counts zero finds). The
+in-process path (<code>ctx.devicestatus.create</code>, used by the connector) goes through the same code.</p>
+<p>As on dev, an ordered <code>insertMany</code> stores the rows of a batch that come before a collision and not
+the ones after it.</p>
+<p>Cost, measured with <code>ctx.devicestatus.create</code> in-process on Node 20.20.0 and <code>mongo:7</code>, 100-row
+batches, a devicestatus collection of 20,000 rows (10 % with string <code>_id</code>s), 40 timed runs per kind
+after 3 warm-up pairs, hex and no-<code>_id</code> batches alternated, two repeats per tree:</p>
+<table>
+<thead>
+<tr>
+<th>tree</th>
+<th>batch</th>
+<th style="text-align: right;">median ms</th>
+<th style="text-align: right;">p90 ms</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>18b09df7</code> (no guard)</td>
+<td>100 rows with hex <code>_id</code></td>
+<td style="text-align: right;">4.18 / 4.17</td>
+<td style="text-align: right;">5.39 / 7.68</td>
+</tr>
+<tr>
+<td><code>18b09df7</code> (no guard)</td>
+<td>100 rows without <code>_id</code></td>
+<td style="text-align: right;">4.06 / 4.09</td>
+<td style="text-align: right;">6.45 / 6.62</td>
+</tr>
+<tr>
+<td><code>ad973110</code> (guard)</td>
+<td>100 rows with hex <code>_id</code></td>
+<td style="text-align: right;">5.29 / 5.09</td>
+<td style="text-align: right;">7.48 / 8.81</td>
+</tr>
+<tr>
+<td><code>ad973110</code> (guard)</td>
+<td>100 rows without <code>_id</code></td>
+<td style="text-align: right;">4.14 / 3.93</td>
+<td style="text-align: right;">5.93 / 7.34</td>
+</tr>
+</tbody>
+</table>
+<p>So the guard adds about 1.0 to 1.1 ms (median) to a 100-row batch carrying hex <code>_id</code>s, and nothing
+to one without. The guard's <code>find</code> alone, 100 ids: median 0.67 ms, p90 0.75 to 0.78 ms (a separate
+loop in the same script), plan <code>PROJECTION_COVERED &gt; IXSCAN(_id_)</code>, no documents examined. An
+earlier 10-run attempt was taken while a full suite ran on the same MongoDB and is not used.</p>
+<h3 id="37-upper-case-string-_ids-commit-8-6d120fa2-d4">3.7 Upper-case string <code>_id</code>s (commit 8, <code>6d120fa2</code>, D4)<a class="headerlink" href="#37-upper-case-string-_ids-commit-8-6d120fa2-d4" title="Permanent link">&para;</a></h3>
+<p>No behaviour change. <code>lib/server/object-id-forms.js</code>'s header now states the limit: the string
+forms matched are the lower-case hex and the caller's own spelling, so a string <code>_id</code> stored in
+upper (or mixed) case is found when asked for in that spelling, not when asked for in lower case;
+the ObjectId form is found either way. The header's list of non-hex rules also now says that the
+websocket keeps a non-hex <code>_id</code> as given and that API v3 matches any string identifier against
+<code>_id</code> (commit 5).</p>
+<h2 id="4-tests-break-its-suites">4. Tests, break-its, suites<a class="headerlink" href="#4-tests-break-its-suites" title="Permanent link">&para;</a></h2>
+<p>New or changed test files and red counts (Node 20.20.0, <code>mongo:7</code>):</p>
+<table>
+<thead>
+<tr>
+<th>file</th>
+<th style="text-align: right;">tests</th>
+<th style="text-align: right;">red on <code>1f9a9d10</code></th>
+<th style="text-align: right;">red on <code>597e2899</code></th>
+<th style="text-align: right;">red on the commit's parent</th>
+<th>the passing ones (on the parent)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tests/api.entries.repost-with-id.test.js</code> (commits 1 and 6)</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">4 of 8 (commit 1), 7 of 18 (commit 6)</td>
+<td>re-POST with the stored <code>_id</code>; new entry; entry without <code>type</code>; POST without <code>_id</code>; sent <code>_id</code> for a new entry; no read for new entries; a failed read-back</td>
+</tr>
+<tr>
+<td><code>tests/api.entries.upper-case-id.test.js</code></td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td><code>GET /entries/&lt;lower&gt;</code>; <code>/entries/sgv</code></td>
+</tr>
+<tr>
+<td><code>tests/websocket.object-id.test.js</code></td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td>re-send of a string-stored record, lower and upper case; <code>dbUpdate</code> of an ObjectId record</td>
+</tr>
+<tr>
+<td><code>tests/api.crud-by-id.matrix.test.js</code></td>
+<td style="text-align: right;">336</td>
+<td style="text-align: right;">160</td>
+<td style="text-align: right;">70</td>
+<td style="text-align: right;">—</td>
+<td>§2</td>
+</tr>
+<tr>
+<td><code>tests/api3.non-hex-id.test.js</code></td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">11</td>
+<td>an operator-shaped identifier; GET by an operator-looking string; a UUID identifier; a hex id; a new identifier</td>
+</tr>
+<tr>
+<td><code>tests/api.devicestatus.resend-guard.test.js</code></td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td>on <code>597e2899</code>: ObjectId-stored re-send refused; new hex batch stored as ObjectIds; no read without <code>_id</code>s (dev, which stores hex <code>_id</code>s as strings, passes and fails a different mix)</td>
+</tr>
+<tr>
+<td><code>tests/api3.storage.modify.test.js</code> (changed)</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+<td>three filter-shape assertions updated to the D2 shape</td>
+</tr>
+</tbody>
+</table>
+<p>Break-its, one part of the fix removed at a time, the commit's own test file (for commit 5, also
+the two v3 storage test files):</p>
+<table>
+<thead>
+<tr>
+<th>commit</th>
+<th>removed</th>
+<th style="text-align: right;">red</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>$setOnInsert</code> of the sent <code>_id</code> (back to <code>$set: doc</code>)</td>
+<td style="text-align: right;">4 of 7</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>/entries/:spec</code> back to the lower-case pattern</td>
+<td style="text-align: right;">3 of 5</td>
+</tr>
+<tr>
+<td>2</td>
+<td>shared v1 <code>_id</code> check narrowed to lower case (other-collections, profiles and upper-case files)</td>
+<td style="text-align: right;">4 of 49</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>dbAdd</code> conversion / "already stored as a string" guard / either-form <code>idMatch</code></td>
+<td style="text-align: right;">3 / 2 / 6 of 13</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>dbUpdate</code> / <code>dbUpdateUnset</code> <code>updateMany</code>, <code>dbRemove</code> <code>deleteMany</code></td>
+<td style="text-align: right;">1 / 1 / 1 of 13</td>
+</tr>
+<tr>
+<td>3</td>
+<td>similar-treatment update by the stored <code>_id</code></td>
+<td style="text-align: right;">1 of 13</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>filterForOne</code> non-hex branch / <code>identifyingFilter</code> non-hex branch</td>
+<td style="text-align: right;">12 / 4 of 25</td>
+</tr>
+<tr>
+<td>5</td>
+<td>literal <code>$eq</code> in the <code>filterForOne</code> / <code>identifyingFilter</code> branch (bare value)</td>
+<td style="text-align: right;">4 / 1 of 25</td>
+</tr>
+<tr>
+<td>5</td>
+<td>the "string only" condition (any identifier gets an <code>_id</code> branch)</td>
+<td style="text-align: right;">2 of 25</td>
+</tr>
+<tr>
+<td>6</td>
+<td>the read-back call / "only matched entries" / the empty-batch early return</td>
+<td style="text-align: right;">7 / 2 / 1 of 18</td>
+</tr>
+<tr>
+<td>6</td>
+<td>per-entry mapping (every item gets the first stored <code>_id</code>) / the read-back <code>try</code></td>
+<td style="text-align: right;">2 / 1 of 18</td>
+</tr>
+<tr>
+<td>7</td>
+<td>the guard lookup / keeping the stored value / both string spellings / no read without hex ids</td>
+<td style="text-align: right;">4 / 1 / 1 / 1 of 8</td>
+</tr>
+<tr>
+<td>7</td>
+<td>the ObjectId conversion / the call</td>
+<td style="text-align: right;">2 / 4 of 8</td>
+</tr>
+</tbody>
+</table>
+<p>Commit 3's break-its ran on <code>f433dc16</code> (same hunks). Commit 8 is comment only and has no break-it.
+Two tests were added during the break-its so that a hunk had a test that could fail: the
+<code>dbUpdateUnset</code> twins test (commit 3) and the upper-case re-send of a lower-case string record
+(commit 7). A first failing-read-back test for commit 6 made the test's own read fail and was
+fixed before any count was taken.</p>
+<p>Full suite (<code>npm test</code>, <code>mongo:7</code> in container <code>crud-mongo</code>), passing / failing / pending:</p>
+<table>
+<thead>
+<tr>
+<th>tree</th>
+<th>Node 20.20.0</th>
+<th>Node 22.23.2</th>
+<th style="text-align: right;">new tests</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>bf/object-id-consistency</code> <code>597e2899</code></td>
+<td>2470 / 0 / 3</td>
+<td>2470 / 0 / 3</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td>1 <code>4b41bcf8</code></td>
+<td>2478 / 0 / 3</td>
+<td>2478 / 0 / 3</td>
+<td style="text-align: right;">+8</td>
+</tr>
+<tr>
+<td>2 <code>a612a26f</code></td>
+<td>2483 / 0 / 3</td>
+<td>2483 / 0 / 3</td>
+<td style="text-align: right;">+5</td>
+</tr>
+<tr>
+<td>3 <code>12c01268</code></td>
+<td>2496 / 0 / 3</td>
+<td>2496 / 0 / 3</td>
+<td style="text-align: right;">+13</td>
+</tr>
+<tr>
+<td>4 <code>c721e202</code></td>
+<td>2832 / 0 / 3</td>
+<td>2832 / 0 / 3</td>
+<td style="text-align: right;">+336</td>
+</tr>
+<tr>
+<td>5 <code>44ac9047</code></td>
+<td>2848 / 0 / 3</td>
+<td>2848 / 0 / 3</td>
+<td style="text-align: right;">+16</td>
+</tr>
+<tr>
+<td>6 <code>18b09df7</code></td>
+<td>2858 / 0 / 3</td>
+<td>2858 / 0 / 3</td>
+<td style="text-align: right;">+10</td>
+</tr>
+<tr>
+<td>7 <code>ad973110</code></td>
+<td>2866 / 0 / 3</td>
+<td>2866 / 0 / 3</td>
+<td style="text-align: right;">+8</td>
+</tr>
+<tr>
+<td>8 <code>6d120fa2</code> (tip)</td>
+<td>2866 / 0 / 3</td>
+<td>2866 / 0 / 3</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>Every step adds exactly its new tests. The only existing test changed is
+<code>tests/api3.storage.modify.test.js</code> (commit 5, D2).</p>
+<h2 id="5-decisions">5. Decisions<a class="headerlink" href="#5-decisions" title="Permanent link">&para;</a></h2>
+<p>Taken by the maintainer on 2026-09-23 and applied as commits 5 to 8:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>question</th>
+<th>decision</th>
+<th>commit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D1</td>
+<td>devicestatus re-sent with the <code>_id</code> of a string-stored copy</td>
+<td>add BF-99's guard, one indexed read per batch carrying hex <code>_id</code>s</td>
+<td><code>ad973110</code></td>
+</tr>
+<tr>
+<td>D2</td>
+<td>API v3 and a non-hex string <code>_id</code></td>
+<td>take the fix; update the filter-shape tests</td>
+<td><code>44ac9047</code></td>
+</tr>
+<tr>
+<td>D3</td>
+<td>entries POST response <code>_id</code> for a matched reading</td>
+<td>answer the stored <code>_id</code>, one read per batch, for a sent <code>_id</code> and for none</td>
+<td><code>18b09df7</code></td>
+</tr>
+<tr>
+<td>D4</td>
+<td>upper-case string <code>_id</code> asked in lower case</td>
+<td>leave; state the limit in the helper header</td>
+<td><code>6d120fa2</code></td>
+</tr>
+</tbody>
+</table>
+<p>Stated, not decisions (deliberate and tested): a non-hex <code>_id</code> is moved to <code>identifier</code> by v1
+treatments and entries, refused with 400 by the other v1 routes, and kept as given by the
+websocket; API v3 refuses a PUT that names an ObjectId record by its upper-case hex (400, the
+identifier is immutable), while GET and DELETE by that spelling work.</p>
+<h2 id="6-merges">6. Merges<a class="headerlink" href="#6-merges" title="Permanent link">&para;</a></h2>
+<p><code>git merge-tree --write-tree</code> of <code>6d120fa2</code> against each open 15.0.9 head:</p>
+<table>
+<thead>
+<tr>
+<th>head</th>
+<th>result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#8748 <code>d19043b2</code></td>
+<td>clean</td>
+</tr>
+<tr>
+<td>#8749 <code>46b20b38</code></td>
+<td>clean</td>
+</tr>
+<tr>
+<td>#8751 <code>b5038500</code></td>
+<td>clean</td>
+</tr>
+<tr>
+<td>#8753 <code>e6a50e9a</code></td>
+<td>clean</td>
+</tr>
+<tr>
+<td>#8754 <code>0a74ef4e</code></td>
+<td>clean</td>
+</tr>
+<tr>
+<td>#8755 <code>92544d8f</code></td>
+<td>clean</td>
+</tr>
+<tr>
+<td>#8756 <code>83cfff14</code></td>
+<td>clean</td>
+</tr>
+<tr>
+<td>#8757 <code>5d342ac1</code> (<code>bf3/mmconnect-deprecation-warning</code>)</td>
+<td>clean</td>
+</tr>
+<tr>
+<td><code>rc/15.0.9-additions-e</code> <code>1b1977e0</code></td>
+<td>clean</td>
+</tr>
+<tr>
+<td><code>bf/profile-object-id</code> <code>9b8cc2f9</code></td>
+<td>conflict, <code>lib/server/profile.js</code>, inherited from <code>597e2899</code> (land one)</td>
+</tr>
+<tr>
+<td><code>bf/object-id-other-collections</code> <code>2fac53f5</code></td>
+<td>conflict, <code>lib/server/object-id-forms.js</code> (commit 8's header)</td>
+</tr>
+<tr>
+<td><code>bf/api3-string-id</code> <code>7295bc8c</code></td>
+<td>conflict, <code>lib/server/object-id-forms.js</code> and <code>lib/api3/storage/mongoCollection/utils.js</code> (commits 5 and 8)</td>
+</tr>
+</tbody>
+</table>
+<p>The last three are the narrow alternatives that <code>bf/object-id-consistency</code> already carries; they
+merged cleanly with <code>c721e202</code> and conflict with commits 5 and 8, so they are not landed beside this
+branch. The merged tree with <code>rc/15.0.9-additions-e</code> (which contains #8754), written with
+<code>git read-tree</code> into a scratch worktree, passes the websocket, matrix, entries, devicestatus and v3
+storage test files (439 / 0; Node 20.20.0, with the node_modules of <code>origin/dev</code>'s lock;
+<code>rc/15.0.9-additions-e</code> changes <code>package.json</code>). The full suite was not run on merged trees.</p>
+<h2 id="7-not-changed">7. Not changed<a class="headerlink" href="#7-not-changed" title="Permanent link">&para;</a></h2>
+<ul>
+<li>No boot migration: string-<code>_id</code> records stay as they are until written, edited or deleted.</li>
+<li>The helper's forms (D4).</li>
+<li><code>chore/nightscout-modernization</code> was not examined for these defects.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

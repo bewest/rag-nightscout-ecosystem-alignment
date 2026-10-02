@@ -1,0 +1,2738 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/releases/nightscout-connect-v0.0.14/contents.html">
+      
+      
+        <link rel="prev" href="index.html">
+      
+      
+        <link rel="next" href="release-notes.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>nightscout-connect v0.0.14 — contents - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#nightscout-connect-v0014--contents" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              nightscout-connect v0.0.14 — contents
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../docs/00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Releases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VERIFICATION-RECORDS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Verification records
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../_template/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _template/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../cgm-remote-monitor-15.0.9/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor-15.0.9/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-connect-v0.0.14/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    nightscout-connect-v0.0.14/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-connect v0.0.14 — contents
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="contents.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-connect v0.0.14 — contents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#identity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identity
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-seven-commits-since-v0013" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The seven commits since v0.0.13
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-the-release-delivers-and-to-whom" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the release delivers, and to whom
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#-correction-the-security-headline-is-true-of-master-not-of-dev" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⚠ Correction: the security headline is true of master, not of dev
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#residual-leak-in-this-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Residual leak in this release
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#register-entries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Register entries
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Register entries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#-bf-34s-register-entry-is-incomplete-in-a-way-that-matters-for-the-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⚠ BF-34's register entry is incomplete in a way that matters for the notes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bf-08-needs-no-operator-note" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BF-08 needs no operator note
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bf-34s-measured-figures-with-their-methods-attached" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BF-34's measured figures, with their methods attached
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-version-number-is-not-settled" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The version number is not settled
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sequencing--what-must-happen-in-what-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sequencing — what must happen in what order
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-a-reviewer-must-verify-before-this-is-relied-on" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What a reviewer must verify before this is relied on
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="release-notes.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nightscout-connect v0.0.14 — release notes (DRAFT)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../docs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#identity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identity
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-seven-commits-since-v0013" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The seven commits since v0.0.13
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-the-release-delivers-and-to-whom" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the release delivers, and to whom
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#-correction-the-security-headline-is-true-of-master-not-of-dev" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⚠ Correction: the security headline is true of master, not of dev
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#residual-leak-in-this-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Residual leak in this release
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#register-entries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Register entries
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Register entries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#-bf-34s-register-entry-is-incomplete-in-a-way-that-matters-for-the-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⚠ BF-34's register entry is incomplete in a way that matters for the notes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bf-08-needs-no-operator-note" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BF-08 needs no operator note
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bf-34s-measured-figures-with-their-methods-attached" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BF-34's measured figures, with their methods attached
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-version-number-is-not-settled" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The version number is not settled
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sequencing--what-must-happen-in-what-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sequencing — what must happen in what order
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-a-reviewer-must-verify-before-this-is-relied-on" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What a reviewer must verify before this is relied on
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="nightscout-connect-v0014--contents">nightscout-connect v0.0.14 — contents<a class="headerlink" href="#nightscout-connect-v0014--contents" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-09-22 at <code>24b68f23</code>.</em></p>
+<p><strong>Status: DRAFT for maintainer review. Contributor-facing; full technical depth intended.</strong>
+Nothing has been pushed, published or <code>npm publish</code>ed. The tag exists <strong>locally only</strong>.</p>
+<blockquote>
+<p><strong>Status 2026-09-22: superseded. The local <code>v0.0.14</code> tag and <code>release/v0.0.14</code> branch are
+retired and must not be pushed</strong> (delete the tag with <code>git tag -d v0.0.14</code> before tagging the
+real release). All seven commits below are in connector <code>official/dev</code> (<code>1946beb</code>), through
+PR #64 (which carried #61, #66 and #67) and PR #68. There will be no 0.0.14: the line is
+<code>0.1.0</code> (connector PR #76), and prerelease <code>0.1.0-dev.1</code> is on npm. Current state is queue item
+<strong>P0-TAG</strong> in
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a79d969c34632122b787927642e8b5cfc4514c6c/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a>. This file describes the prepared tag
+as it was; its figures are about <code>649a7de</code>. <code>cgm-remote-monitor</code> dev pins <code>234d47c</code> (see
+<a href="../cgm-remote-monitor-15.0.9/contents.html"><code>../cgm-remote-monitor-15.0.9/contents.md</code></a>).</p>
+<p>Complements the generated changelog. The changelog is authoritative for <em>what merged</em>;
+this file is the record of <em>what the release is made of and what is unsettled about it</em>.</p>
+</blockquote>
+<h2 id="identity">Identity<a class="headerlink" href="#identity" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Repository</td>
+<td><code>nightscout/nightscout-connect</code></td>
+</tr>
+<tr>
+<td>Tag</td>
+<td><code>v0.0.14</code> — <strong>annotated</strong>, exists locally at <code>externals/nightscout-connect</code>, <strong>not pushed</strong></td>
+</tr>
+<tr>
+<td>Commit</td>
+<td><code>649a7de27b9e869154e718b0ec1d1bfa0388d0d8</code></td>
+</tr>
+<tr>
+<td>Branch</td>
+<td><code>release/v0.0.14</code> (the only local branch containing the commit)</td>
+</tr>
+<tr>
+<td>Previous release</td>
+<td><code>v0.0.13</code> = <code>b394411</code></td>
+</tr>
+<tr>
+<td><code>tag-message.txt</code></td>
+<td><strong>byte-identical to the live local tag body</strong> (<code>diff</code> clean, verified)</td>
+</tr>
+</tbody>
+</table>
+<p><code>git diff --stat c1cce2a release/v0.0.14</code> is <code>package.json</code> + <code>package-lock.json</code>, version
+bump only — so the connector's own test run at <code>c1cce2a</code> (<code>externals/work/nc-jitter</code>,
+<code>node --test</code>: 135 tests, 135 pass, 0 fail) covers exactly the code this tag ships.</p>
+<h2 id="the-seven-commits-since-v0013">The seven commits since v0.0.13<a class="headerlink" href="#the-seven-commits-since-v0013" title="Permanent link">&para;</a></h2>
+<p>Measured with <code>git log --oneline --no-merges v0.0.13..v0.0.14</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Commit</th>
+<th>Subject</th>
+<th>Register</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>9fa2c3c</code></td>
+<td>Prevent Dexcom credentials and sessions from reaching runtime logs</td>
+<td>BF-42</td>
+</tr>
+<tr>
+<td><code>5349d47</code></td>
+<td>Keep MiniMed credentials and patient data out of runtime logs</td>
+<td>BF-42</td>
+</tr>
+<tr>
+<td><code>8406edf</code></td>
+<td>Preserve MiniMed glucose and measurement-time status contracts</td>
+<td>(see below)</td>
+</tr>
+<tr>
+<td><code>77e2396</code></td>
+<td>Keep internal output payloads out of runtime logs</td>
+<td>BF-42</td>
+</tr>
+<tr>
+<td><code>51b6e6e</code></td>
+<td>Release connector listeners and settle output waits on stop</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>234d47c</code></td>
+<td>Make embedded connector debug logging opt-in</td>
+<td>BF-42</td>
+</tr>
+<tr>
+<td><code>c1cce2a</code></td>
+<td>Every retry interval was 256 ms, and the first cycle had no jitter</td>
+<td><strong>BF-34</strong>, <strong>BF-08</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Plus <code>649a7de</code>, the version bump, and four merge commits.</p>
+<p><code>8406edf</code> is the one to read hardest. It changes what the MiniMed source reports as glucose
+and as measurement time — a data-correctness change on a <strong>CGM ingestion path</strong>, in a
+release that is otherwise security and retry work. It carries two fixes:</p>
+<ul>
+<li>the <code>sg !== 0 &amp;&amp; kind === 'SG'</code> filter, absent from <code>v0.0.13</code> and from <code>dev</code>'s pin.
+  Without it, CareLink gap sentinels are ingested as <code>sgv: 0</code>. Reproduced elsewhere in this
+  programme: the same payload yields <code>[0, 120, 0]</code> on the older pins and <code>[120]</code> here and on
+  the retired legacy package. <strong>A sentinel zero is not itself alarmed, but while it is the
+  newest entry it makes <code>lib/plugins/simplealarms.js</code> skip the entire high/low evaluation</strong>
+  (<code>lastSGVEntry.mgdl &gt; 39</code>). That is the safety-relevant half and it is why this commit
+  belongs in the operator notes rather than only in the changelog;</li>
+<li><code>devicestatus.created_at</code> stamped from the measurement time rather than <code>(new Date())</code>.</li>
+</ul>
+<h2 id="what-the-release-delivers-and-to-whom">What the release delivers, and to whom<a class="headerlink" href="#what-the-release-delivers-and-to-whom" title="Permanent link">&para;</a></h2>
+<p><strong>The delivery mechanism is decision 2 (push the tag), not decision 3 (<code>npm publish</code>).</strong>
+Every <code>cgm-remote-monitor</code> pin is a GitHub tarball URL; nothing in the Nightscout tree
+resolves <code>nightscout-connect</code> from the npm registry. Verified by reading <code>package.json</code> at
+each ref.</p>
+<table>
+<thead>
+<tr>
+<th><code>cgm-remote-monitor</code> ref</th>
+<th>pin</th>
+<th>of the 6 post-v0.0.13 fixes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>origin/master</code> (15.0.8 — <strong>what operators run</strong>)</td>
+<td><code>refs/tags/v0.0.13.tar.gz</code></td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td><code>origin/dev</code> (15.0.9 candidate)</td>
+<td><code>234d47c8</code></td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td>parcels 1, 2, 3</td>
+<td><code>refs/tags/v0.0.13.tar.gz</code></td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td>parcel 4 <code>chore/mime-exposure-review</code></td>
+<td><code>c962a13f</code></td>
+<td>4</td>
+</tr>
+<tr>
+<td>parcel 5 <code>chore/nightscout-modernization</code></td>
+<td><code>b77e5bb</code></td>
+<td>5</td>
+</tr>
+<tr>
+<td><strong><code>bf/connect-pin</code></strong> (unpushed)</td>
+<td><code>refs/tags/v0.0.14.tar.gz</code></td>
+<td><strong>6</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Re-measured for this document with <code>git merge-base --is-ancestor &lt;commit&gt; &lt;pin&gt;</code> for each
+of <code>9fa2c3c</code>, <code>5349d47</code>, <code>77e2396</code>, <code>8406edf</code>, <code>51b6e6e</code>, <code>c1cce2a</code> against <code>234d47c8</code>,
+<code>649a7de</code> and <code>c962a13f</code>. Reproduces the published table exactly. <strong><code>v0.0.14</code> is the first
+ref carrying all six.</strong></p>
+<h2 id="-correction-the-security-headline-is-true-of-master-not-of-dev">⚠ Correction: the security headline is true of <code>master</code>, not of <code>dev</code><a class="headerlink" href="#-correction-the-security-headline-is-true-of-master-not-of-dev" title="Permanent link">&para;</a></h2>
+<p><strong>The brief this document was written from says v0.0.14 "carries three log-redaction fixes
+absent from the currently-pinned commit". That is true of the <em>commits</em> and misleading
+about the <em>effect on <code>dev</code></em>, and the distinction changes who the headline is for.</strong></p>
+<p>Measured — <strong>reproduced</strong>, by writing an independent comment- and literal-stripping scanner
+and running it over <code>git archive</code> extractions of four revisions
+(<code>tools</code>: scratch script; counts are <em>live <code>console.*</code> call sites</em> / <em>those passing a
+non-literal argument</em>, over <code>index.js</code> + everything under <code>lib/</code>):</p>
+<table>
+<thead>
+<tr>
+<th>revision</th>
+<th>carried by</th>
+<th>live / dynamic</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v0.0.13</code> (<code>b394411</code>)</td>
+<td><strong><code>origin/master</code> (15.0.8)</strong> and parcels 1–3</td>
+<td><strong>112 / 101</strong></td>
+</tr>
+<tr>
+<td><code>234d47c8</code></td>
+<td><code>origin/dev</code> (15.0.9 candidate)</td>
+<td><strong>22 / 20</strong></td>
+</tr>
+<tr>
+<td><code>c962a13f</code></td>
+<td>parcel 4</td>
+<td>108 / 44</td>
+</tr>
+<tr>
+<td><strong><code>649a7de</code> (v0.0.14)</strong></td>
+<td><code>bf/connect-pin</code></td>
+<td><strong>22 / 20</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Three findings, all reproduced:</p>
+<ol>
+<li><strong><code>dev</code>'s pin has already deleted the leaking call sites.</strong> <code>234d47c8</code> is an 18-file
+   rewrite introducing <code>lib/logging.js</code>; <code>lib/sources/minimedcarelink/index.js</code> goes from
+   51 sites to none, <code>librelinkup.js</code> from 9 to none, <code>index.js</code> from 5 to none. So
+   <code>dev</code>'s tree and <code>v0.0.14</code>'s tree have <strong>identical log surfaces</strong> — same five files,
+   same counts. The three redaction commits reach <code>dev</code> as a merge, not as a behaviour
+   change. <strong>The commits are absent from <code>dev</code>'s pin; their effect is not.</strong></li>
+<li><strong>The leaking pin is <code>master</code>'s.</strong> 112/101 with no guard —
+   <code>grep -rniE "if *\(.*(debug|verbose)"</code> returns nothing. That is <strong>BF-42</strong>, it is what
+   every operator on 15.0.8 is running today, and it is the audience the headline is for.
+   Parcels 1–3 pin the same tag, which is <strong>BF-65</strong>: the adopted train ships the leaking
+   connector to upgraders first.</li>
+<li><strong>Parcel 4's pin is a partial fix, and not monotone.</strong> 108/44 — the MiniMed block is
+   <em>commented out</em> rather than rewritten (47 sites, 0 dynamic), <code>internal.js</code> is redacted
+   (7/0), but <strong><code>librelinkup.js</code> still leaks at 9/8</strong> there and <code>index.js</code> still has one
+   dynamic site. Redaction does <strong>not</strong> improve monotonically with release order.</li>
+</ol>
+<p><strong>Non-vacuity of the scanner</strong> (house rule 2): it is not a check that cannot fail. It
+returns 112/101 on the leaking tree and 22/20 on the redacted ones, and it correctly
+reports parcel 4's commented-out MiniMed block as 47 live calls with <strong>0</strong> dynamic
+arguments — so it distinguishes <em>deleted</em> from <em>commented out</em> from <em>present</em>, which is
+the discrimination the claim rests on.</p>
+<p><strong>Provenance:</strong> source census, executed. <strong>No vendor account exists on this machine and no
+live run against any vendor was made.</strong> The census cannot tell you how often a leaked
+credential is actually used; it tells you the lines are printed.</p>
+<h2 id="residual-leak-in-this-release">Residual leak in this release<a class="headerlink" href="#residual-leak-in-this-release" title="Permanent link">&para;</a></h2>
+<p><code>lib/outputs/nightscout.js:20</code> in <code>v0.0.14</code> is still
+<code>// TODO change this, exposes secret in logs</code> followed by
+<code>console.log("SETTING UP nightscoutRestAPI", config)</code>, where <code>config</code> carries the
+Nightscout API secret. Fifteen sites, fourteen dynamic, in that file alone.</p>
+<p><strong>Not reachable from <code>cgm-remote-monitor</code></strong> — <code>index.js:71-72</code> hardcodes
+<code>var internal = { name: 'internal', logger: log }</code> and selects the <code>internal</code> output, so
+the <code>nightscout</code> output is never constructed on the embedded path. Read at the tag, not
+executed; <strong>a reviewer should confirm there is no other construction path</strong> before the
+release notes' "standalone users only" sentence is relied on. Affects standalone CLI users.</p>
+<h2 id="register-entries">Register entries<a class="headerlink" href="#register-entries" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Entry</th>
+<th>State</th>
+<th>Delivered by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>BF-34</strong> — every configured retry interval discarded (<code>{...config, ...defaults}</code>), 586× too fast, <code>use_random_slot</code> forced false</td>
+<td>fixed</td>
+<td><code>c1cce2a</code></td>
+</tr>
+<tr>
+<td><strong>BF-08</strong> — no start jitter; a pool reaches the vendor inside one second on restart</td>
+<td>fixed</td>
+<td><code>c1cce2a</code></td>
+</tr>
+<tr>
+<td><strong>BF-42</strong> — the connector every operator runs logs credentials unconditionally</td>
+<td><strong>only for consumers that move to this tag</strong></td>
+<td><code>9fa2c3c</code>, <code>5349d47</code>, <code>77e2396</code>, <code>234d47c</code></td>
+</tr>
+<tr>
+<td><strong>BF-65</strong> — the train ships the leaking connector to upgraders first</td>
+<td><strong>not fixed here.</strong> Requires parcels 1–3 to move their pins. Same one-line change as <code>bf/connect-pin</code>; all three pin the v0.0.13 <em>tag</em></td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>BF-43</strong> — <code>master</code> forces <code>axios 1.16.0</code> into a connector declaring <code>^1.18.1</code>, suppressed by <code>overrides</code></td>
+<td><strong>not fixed here.</strong> Must be reconciled if <code>master</code>'s pin moves</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="-bf-34s-register-entry-is-incomplete-in-a-way-that-matters-for-the-notes">⚠ BF-34's register entry is incomplete in a way that matters for the notes<a class="headerlink" href="#-bf-34s-register-entry-is-incomplete-in-a-way-that-matters-for-the-notes" title="Permanent link">&para;</a></h3>
+<p>The entry records the 586×-too-fast retry. The same <code>{...config, ...defaults}</code> merge
+<strong>also</strong> makes the ceiling 74.6 hours on the <em>pinned</em> connector, because <code>exponent_ceiling</code>
+caps the <strong>exponent</strong>, not the delay: with the discarded caller interval (I = 256 ms),
+attempt ≥ 20 gives 256 × (2²⁰ − 1) = 74.6 h. So one defect produces a retry storm first and
+a three-day dark window second, and <strong>both halves ship on <code>dev</code> today.</strong> <code>v0.0.14</code>'s
+builder caps the cycle at 30 minutes and the frame at 5 minutes, which closes both.</p>
+<p>The dark-window half is the one that stops a person's data, and it is the stronger argument
+for moving the pin than the storm is. It is <strong>not</strong> in the register entry as written; it is
+raised in <code>docs/60-research/modernization/e1-dexcom-path-comparison-2026-09-15.md</code> and is listed in this
+document's return value as a correction rather than edited into another agent's file.</p>
+<h3 id="bf-08-needs-no-operator-note">BF-08 needs no operator note<a class="headerlink" href="#bf-08-needs-no-operator-note" title="Permanent link">&para;</a></h3>
+<p>Both jitter windows default to <code>0</code>. <strong>Reproduced</strong> by executing <code>jitter_window()</code> from
+<code>index.js</code> at the tag: <code>undefined</code>, <code>''</code>, <code>'-1'</code> and <code>'abc'</code> all return <code>0</code>; <code>'5000'</code>
+returns <code>5000</code>. An operator who sets neither <code>CONNECT_START_JITTER_MS</code> nor
+<code>CONNECT_INTERVAL_JITTER_MS</code> sees no change. One line in the notes for completeness, no
+more.</p>
+<h2 id="bf-34s-measured-figures-with-their-methods-attached">BF-34's measured figures, with their methods attached<a class="headerlink" href="#bf-34s-measured-figures-with-their-methods-attached" title="Permanent link">&para;</a></h2>
+<p>House rule 9: the <strong>orderings</strong> are durable, the absolutes are machine- and
+method-specific.</p>
+<table>
+<thead>
+<tr>
+<th>Figure</th>
+<th>Method</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>585.94× exactly</strong> (150000 ÷ 256) at every attempt below the ceiling — a constant, not an average</td>
+<td>both versions of <code>lib/backoff.js</code> executed</td>
+</tr>
+<tr>
+<td>Shipped ceiling <strong>30 minutes</strong> for <code>dexcomshare</code>, <code>minimedcarelink</code>, <code>glooko</code> and <code>nightscout</code> — <code>lib/builder.js:89</code> supplies <code>max_interval_ms = expected_data_interval_ms × 6</code> and each declares <code>5 × 60 × 1000</code></td>
+<td>read + executed</td>
+</tr>
+<tr>
+<td><strong><code>librelinkup</code> is the exception</strong>: it derives the interval from <code>opts.linkUpInterval × 60 × 1000</code>, so its ceiling is <em>the operator's interval × 6</em> and is <strong>not</strong> 30 minutes unless the interval is 5</td>
+<td>read</td>
+</tr>
+<tr>
+<td><strong>3 s → 67 s</strong> for 100 actors delivering the same 800 requests, upstream refusing authentication</td>
+<td>T0.4 author's harness, on this machine. <strong>Not re-measured for this document</strong></td>
+</tr>
+<tr>
+<td>400 actors, busiest second <strong>400 → 15</strong> (BF-08)</td>
+<td>T0.4 author's harness. Not re-measured</td>
+</tr>
+<tr>
+<td>Delay at the ceiling spreads over [15 min, 30 min] with <code>jitter: 'equal'</code> — 2,000 samples at attempt 10 fell in [900,351 ms, 1,799,757 ms]</td>
+<td>executed</td>
+</tr>
+</tbody>
+</table>
+<h2 id="the-version-number-is-not-settled">The version number is not settled<a class="headerlink" href="#the-version-number-is-not-settled" title="Permanent link">&para;</a></h2>
+<p><code>docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md</code> §4.3 argues this should
+be <strong><code>0.1.0</code>, not <code>0.0.14</code></strong>, on the rule that below 1.0.0, <code>y</code> is read as the major. Five
+caller-visible changes, each independently breaking, measured by executing <code>lib/backoff.js</code>
+at both revisions:</p>
+<ol>
+<li>option precedence reversed — <code>{...config, ...defaults}</code> → <code>{...defaults, ...config}</code>;</li>
+<li>a changed default — <code>use_random_slot: false</code> → <code>jitter: 'equal'</code>;</li>
+<li>a new throw — <code>backoff({jitter:'wild'})</code> now throws <code>backoff: unknown jitter mode "wild"</code>;</li>
+<li>a new option, <code>max_interval_ms</code>;</li>
+<li><code>duration_for</code> is now non-deterministic where it was deterministic.</li>
+</ol>
+<p><strong>Nothing resolves by range</strong>, so the number changes no consumer's resolution — its entire
+job is to make a human stop. If the maintainer keeps <code>0.0.14</code>, the policy requires a
+<code>BREAKING</code> section in these notes, because the number will not carry it. The notes above
+carry (1) and (2) in operator language; <strong>(3), (4) and (5) are not in the operator notes
+and do not belong there</strong> — they are visible only to code that calls <code>backoff()</code> directly,
+which is the connector itself.</p>
+<p><strong>If the maintainer takes the <code>0.1.0</code> recommendation</strong>, this entire directory is renamed,
+the local tag is re-cut, and <code>bf/connect-pin</code>'s one-line URL changes. <strong>That decision must
+be made before the tag is pushed, not after</strong> — a pushed tag is superseded, never moved.</p>
+<h2 id="sequencing--what-must-happen-in-what-order">Sequencing — what must happen in what order<a class="headerlink" href="#sequencing--what-must-happen-in-what-order" title="Permanent link">&para;</a></h2>
+<p>From <code>docs/30-design/remedial/maintainer-release-brief-2026-09-15.md</code> §2 and §3. Each step is run by
+a <strong>human</strong>; none has been run.</p>
+<ol>
+<li>Decide the number (<code>0.0.14</code> or <code>0.1.0</code>). Re-cut the local tag if it changes.</li>
+<li>Fast-forward <code>nightscout-connect</code> <code>main</code> to the release commit and push the tag.
+   <strong>Fetch first</strong> — <code>origin/main</code> in this checkout is a cached remote-tracking ref and
+   nothing here has contacted GitHub. The <strong>local</strong> branch <code>main</code> in that checkout is 28
+   commits behind <code>origin/main</code>; do not push it and do not use it in the fast-forward check.</li>
+<li><strong>Only then</strong> regenerate <code>bf/connect-pin</code>'s <code>package-lock.json</code> with <code>npm install</code>, in
+   the same PR. The lock's <code>integrity</code> is a hash over a tarball GitHub does not generate
+   until the tag exists. <strong>A locally invented hash breaks <code>npm ci</code> for everyone; a stale
+   lock fails <code>npm ci</code> loudly, which is the correct failure.</strong></li>
+<li><code>npm publish</code> is a separate, optional decision. It does <strong>not</strong> gate this batch.
+   Whether the package is currently published on npm at all could not be checked — this
+   machine has no network egress by rule.</li>
+</ol>
+<h2 id="what-a-reviewer-must-verify-before-this-is-relied-on">What a reviewer must verify before this is relied on<a class="headerlink" href="#what-a-reviewer-must-verify-before-this-is-relied-on" title="Permanent link">&para;</a></h2>
+<ol>
+<li>That the <code>nightscout</code> output really is unreachable from the embedded path (read, not
+   executed) — the "standalone users only" sentence in the notes depends on it.</li>
+<li><code>8406edf</code>'s MiniMed contract change against a <strong>real CareLink account</strong>. It is a
+   data-correctness change on a CGM ingestion path and no live account exists here.</li>
+<li>Whether the Dexcom session-invalidation window in the notes' Known Issues is a rare edge
+   case or the normal case. Its severity is entirely a vendor-behaviour question and is
+   unanswerable from source.</li>
+<li>The 3 s → 67 s and 400 → 15 figures, if they are to be quoted publicly. Both are
+   inherited from T0.4's harness and were not re-measured here.</li>
+</ol>
+<hr />
+<p><em>Draft, 2026-09-15. Prepared locally. Nothing pushed, tagged, merged or published. Requires
+maintainer review before the tag is pushed or these notes are published.</em></p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

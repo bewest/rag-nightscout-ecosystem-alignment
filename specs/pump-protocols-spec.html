@@ -1,0 +1,5344 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/specs/pump-protocols-spec.html">
+      
+      
+        <link rel="prev" href="interoperability-spec-v1.html">
+      
+      
+        <link rel="next" href="openapi/index.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Pump Communication Protocols Specification - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#pump-communication-protocols-specification" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Pump Communication Protocols Specification
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../docs/00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../docs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    More
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    .github/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../conformance/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    conformance/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../site/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    site/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    specs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_12_4" id="__nav_12_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_12_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_12_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    specs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="interoperability-spec-v1.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Ecosystem Interoperability Specification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pump Communication Protocols Specification
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="pump-protocols-spec.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pump Communication Protocols Specification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#document-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Document Status
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-omnipod-dash-ble-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Omnipod DASH BLE Protocol
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Omnipod DASH BLE Protocol">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-ble-service-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 BLE Service Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.1 BLE Service Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#service-and-characteristic-uuids" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Service and Characteristic UUIDs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-ble-command-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 BLE Command Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-message-packet-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Message Packet Structure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.3 Message Packet Structure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#message-types-flags2-bits-4-7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Message Types (Flags2 bits 4-7)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-security-ltk-exchange-pairing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Security: LTK Exchange (Pairing)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-security-session-establishment-eap-aka" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 Security: Session Establishment (EAP-AKA)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.5 Security: Session Establishment (EAP-AKA)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#milenage-constants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Milenage Constants
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#session-establishment-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Session Establishment Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-encryption-aes-ccm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6 Encryption: AES-CCM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#17-pod-command-message-blocks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.7 Pod Command Message Blocks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.7 Pod Command Message Blocks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#message-block-types-opcodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Message Block Types (Opcodes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#18-setinsulinschedule-command-0x1a" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.8 SetInsulinSchedule Command (0x1a)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.8 SetInsulinSchedule Command (0x1a)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#schedule-type-codes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Schedule Type Codes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bolus-delivery-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bolus Delivery Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#temp-basal-delivery-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Temp Basal Delivery Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#19-bolusextra-command-0x17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.9 BolusExtra Command (0x17)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#110-statusresponse-0x1d" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.10 StatusResponse (0x1d)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.10 StatusResponse (0x1d)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#delivery-status-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delivery Status Values
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#111-pod-constants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.11 Pod Constants
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-dana-rsi-ble-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Dana RS/i BLE Protocol
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Dana RS/i BLE Protocol">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-packet-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Packet Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-packet-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Packet Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-encryption-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Encryption Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-encryption-handshake-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Encryption Handshake Flow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.4 Encryption Handshake Flow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rsv3--ble5-connection-states" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RSv3 / BLE5 Connection States
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handshake-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Handshake Commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-crc-16-calculation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 CRC-16 Calculation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#26-multi-layer-encryption-rsv3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.6 Multi-Layer Encryption (RSv3)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#27-command-categories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.7 Command Categories
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.7 Command Categories">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basal-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basal Commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bolus-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bolus Commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#history-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        History Commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#28-bolus-delivery-speeds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.8 Bolus Delivery Speeds
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#29-error-codes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.9 Error Codes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-medtronic-rf-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Medtronic RF Protocol
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Medtronic RF Protocol">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-physical-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Physical Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-message-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Message Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-history-entry-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 History Entry Types
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.3 History Entry Types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#delivery-events" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delivery Events
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-events" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration Events
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alarmstatus-events" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alarm/Status Events
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#statistics-events" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Statistics Events
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-entry-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Entry Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-device-specific-sizes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Device-Specific Sizes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-cross-protocol-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Cross-Protocol Comparison
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Cross-Protocol Comparison">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-transport-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Transport Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Security
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-bolus-precision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Bolus Precision
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-temp-basal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Temp Basal
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-implementation-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Implementation Notes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Implementation Notes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-nonce-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Nonce Management
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-delivery-uncertainty" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Delivery Uncertainty
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-history-reconciliation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 History Reconciliation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#source-files-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source Files Reference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Source Files Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#omnipod-dash-omnible---swift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Omnipod DASH (OmniBLE - Swift)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dana-rs-aaps---kotlin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dana RS (AAPS - Kotlin)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medtronic-aaps---kotlin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Medtronic (AAPS - Kotlin)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="openapi/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    openapi/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="quirks/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    quirks/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../templates/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    templates/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../workflows/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    workflows/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../LIVE-BACKLOG.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Root files
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#document-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Document Status
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-omnipod-dash-ble-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Omnipod DASH BLE Protocol
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Omnipod DASH BLE Protocol">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-ble-service-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 BLE Service Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.1 BLE Service Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#service-and-characteristic-uuids" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Service and Characteristic UUIDs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-ble-command-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 BLE Command Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-message-packet-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Message Packet Structure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.3 Message Packet Structure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#message-types-flags2-bits-4-7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Message Types (Flags2 bits 4-7)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-security-ltk-exchange-pairing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Security: LTK Exchange (Pairing)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-security-session-establishment-eap-aka" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 Security: Session Establishment (EAP-AKA)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.5 Security: Session Establishment (EAP-AKA)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#milenage-constants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Milenage Constants
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#session-establishment-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Session Establishment Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-encryption-aes-ccm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6 Encryption: AES-CCM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#17-pod-command-message-blocks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.7 Pod Command Message Blocks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.7 Pod Command Message Blocks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#message-block-types-opcodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Message Block Types (Opcodes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#18-setinsulinschedule-command-0x1a" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.8 SetInsulinSchedule Command (0x1a)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.8 SetInsulinSchedule Command (0x1a)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#schedule-type-codes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Schedule Type Codes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bolus-delivery-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bolus Delivery Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#temp-basal-delivery-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Temp Basal Delivery Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#19-bolusextra-command-0x17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.9 BolusExtra Command (0x17)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#110-statusresponse-0x1d" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.10 StatusResponse (0x1d)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.10 StatusResponse (0x1d)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#delivery-status-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delivery Status Values
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#111-pod-constants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.11 Pod Constants
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-dana-rsi-ble-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Dana RS/i BLE Protocol
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Dana RS/i BLE Protocol">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-packet-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Packet Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-packet-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Packet Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-encryption-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Encryption Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-encryption-handshake-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Encryption Handshake Flow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.4 Encryption Handshake Flow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rsv3--ble5-connection-states" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RSv3 / BLE5 Connection States
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handshake-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Handshake Commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-crc-16-calculation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 CRC-16 Calculation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#26-multi-layer-encryption-rsv3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.6 Multi-Layer Encryption (RSv3)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#27-command-categories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.7 Command Categories
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.7 Command Categories">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basal-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basal Commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bolus-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bolus Commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#history-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        History Commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#28-bolus-delivery-speeds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.8 Bolus Delivery Speeds
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#29-error-codes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.9 Error Codes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-medtronic-rf-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Medtronic RF Protocol
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Medtronic RF Protocol">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-physical-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Physical Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-message-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Message Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-history-entry-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 History Entry Types
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.3 History Entry Types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#delivery-events" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delivery Events
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-events" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration Events
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alarmstatus-events" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alarm/Status Events
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#statistics-events" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Statistics Events
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-entry-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Entry Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-device-specific-sizes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Device-Specific Sizes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-cross-protocol-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Cross-Protocol Comparison
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Cross-Protocol Comparison">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-transport-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Transport Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Security
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-bolus-precision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Bolus Precision
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-temp-basal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Temp Basal
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-implementation-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Implementation Notes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Implementation Notes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-nonce-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Nonce Management
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-delivery-uncertainty" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Delivery Uncertainty
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-history-reconciliation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 History Reconciliation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#source-files-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source Files Reference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Source Files Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#omnipod-dash-omnible---swift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Omnipod DASH (OmniBLE - Swift)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dana-rs-aaps---kotlin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dana RS (AAPS - Kotlin)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medtronic-aaps---kotlin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Medtronic (AAPS - Kotlin)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="pump-communication-protocols-specification">Pump Communication Protocols Specification<a class="headerlink" href="#pump-communication-protocols-specification" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-01-17 at <code>d249d4d6</code>.</em></p>
+<p>This specification documents the low-level communication protocols used by AID systems to communicate with insulin pumps. Based on analysis of OmniBLE (Loop), AAPS pump drivers, and MinimedKit sources.</p>
+<h2 id="document-status">Document Status<a class="headerlink" href="#document-status" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Date</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1.0</td>
+<td>2026-01-17</td>
+<td>Draft - Analysis Complete</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="1-omnipod-dash-ble-protocol">1. Omnipod DASH BLE Protocol<a class="headerlink" href="#1-omnipod-dash-ble-protocol" title="Permanent link">&para;</a></h2>
+<h3 id="11-ble-service-architecture">1.1 BLE Service Architecture<a class="headerlink" href="#11-ble-service-architecture" title="Permanent link">&para;</a></h3>
+<h4 id="service-and-characteristic-uuids">Service and Characteristic UUIDs<a class="headerlink" href="#service-and-characteristic-uuids" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>UUID</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Advertisement Service</td>
+<td><code>00004024-0000-1000-8000-00805f9b34fb</code></td>
+<td>Pod discovery</td>
+</tr>
+<tr>
+<td>Primary Service</td>
+<td><code>1A7E4024-E3ED-4464-8B7E-751E03D0DC5F</code></td>
+<td>Main communication</td>
+</tr>
+<tr>
+<td>Command Characteristic</td>
+<td><code>1A7E2441-E3ED-4464-8B7E-751E03D0DC5F</code></td>
+<td>Control flow commands</td>
+</tr>
+<tr>
+<td>Data Characteristic</td>
+<td><code>1A7E2442-E3ED-4464-8B7E-751E03D0DC5F</code></td>
+<td>Payload transfer</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Source</strong>: <code>OmniBLE/OmniBLE/Bluetooth/BluetoothServices.swift</code></p>
+<h3 id="12-ble-command-types">1.2 BLE Command Types<a class="headerlink" href="#12-ble-command-types" title="Permanent link">&para;</a></h3>
+<p>Flow control commands sent via Command Characteristic:</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Value</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RTS</td>
+<td><code>0x00</code></td>
+<td>Ready To Send</td>
+</tr>
+<tr>
+<td>CTS</td>
+<td><code>0x01</code></td>
+<td>Clear To Send</td>
+</tr>
+<tr>
+<td>NACK</td>
+<td><code>0x02</code></td>
+<td>Negative Acknowledgment</td>
+</tr>
+<tr>
+<td>ABORT</td>
+<td><code>0x03</code></td>
+<td>Abort transaction</td>
+</tr>
+<tr>
+<td>SUCCESS</td>
+<td><code>0x04</code></td>
+<td>Command succeeded</td>
+</tr>
+<tr>
+<td>FAIL</td>
+<td><code>0x05</code></td>
+<td>Command failed</td>
+</tr>
+<tr>
+<td>HELLO</td>
+<td><code>0x06</code></td>
+<td>Initial handshake</td>
+</tr>
+<tr>
+<td>INCORRECT</td>
+<td><code>0x09</code></td>
+<td>Invalid command</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Source</strong>: <code>OmniBLE/OmniBLE/Bluetooth/BluetoothServices.swift:18-27</code></p>
+<h3 id="13-message-packet-structure">1.3 Message Packet Structure<a class="headerlink" href="#13-message-packet-structure" title="Permanent link">&para;</a></h3>
+<p>All messages start with "TW" magic pattern and have 16-byte header:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Offset  Size  Field
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>0       2     Magic Pattern ("TW")
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>2       1     Flags1 (version[0:2], sas[3], tfs[4], eqos[5:7])
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>3       1     Flags2 (ack[0], priority[1], lastMessage[2], gateway[3], type[4:7])
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>4       1     Sequence Number
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>5       1     Ack Number
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>6       2     Payload Size (11 bits, shifted)
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>8       4     Source ID
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>12      4     Destination ID
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>16      N     Payload (+ 8-byte MAC for encrypted messages)
+</code></pre></div>
+<h4 id="message-types-flags2-bits-4-7">Message Types (Flags2 bits 4-7)<a class="headerlink" href="#message-types-flags2-bits-4-7" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CLEAR</td>
+<td><code>0x00</code></td>
+<td>Unencrypted message</td>
+</tr>
+<tr>
+<td>ENCRYPTED</td>
+<td><code>0x01</code></td>
+<td>AES-CCM encrypted</td>
+</tr>
+<tr>
+<td>SESSION_ESTABLISHMENT</td>
+<td><code>0x02</code></td>
+<td>EAP-AKA handshake</td>
+</tr>
+<tr>
+<td>PAIRING</td>
+<td><code>0x03</code></td>
+<td>LTK exchange</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Source</strong>: <code>OmniBLE/OmniBLE/Bluetooth/MessagePacket.swift</code></p>
+<h3 id="14-security-ltk-exchange-pairing">1.4 Security: LTK Exchange (Pairing)<a class="headerlink" href="#14-security-ltk-exchange-pairing" title="Permanent link">&para;</a></h3>
+<p>Uses X25519 key exchange with CMAC confirmation:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Step 1: Controller → Pod: SP1=&lt;pod_id&gt;, SP2=&lt;GetPodStatus&gt;
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>Step 2: Controller → Pod: SPS1=&lt;pdm_public_key(32)&gt; + &lt;pdm_nonce(16)&gt;
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>Step 3: Pod → Controller: SPS1=&lt;pod_public_key(32)&gt; + &lt;pod_nonce(16)&gt;
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>Step 4: Controller → Pod: SPS2=&lt;pdm_conf(16)&gt;  (CMAC confirmation)
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>Step 5: Pod → Controller: SPS2=&lt;pod_conf(16)&gt;  (CMAC confirmation)
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>Step 6: Controller → Pod: SP0GP0
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>Step 7: Pod → Controller: P0=0xA5
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>Result: LTK (16 bytes) derived from X25519 shared secret
+</code></pre></div>
+<p><strong>Source</strong>: <code>OmniBLE/OmniBLE/Bluetooth/Pair/LTKExchanger.swift</code></p>
+<h3 id="15-security-session-establishment-eap-aka">1.5 Security: Session Establishment (EAP-AKA)<a class="headerlink" href="#15-security-session-establishment-eap-aka" title="Permanent link">&para;</a></h3>
+<p>Uses 3GPP Milenage algorithm for mutual authentication:</p>
+<h4 id="milenage-constants">Milenage Constants<a class="headerlink" href="#milenage-constants" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Constant</th>
+<th>Value</th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MILENAGE_OP</td>
+<td><code>cdc202d5123e20f62b6d676ac72cb318</code></td>
+<td>16 bytes</td>
+</tr>
+<tr>
+<td>MILENAGE_AMF</td>
+<td><code>b9b9</code></td>
+<td>2 bytes</td>
+</tr>
+<tr>
+<td>RESYNC_AMF</td>
+<td><code>0000</code></td>
+<td>2 bytes</td>
+</tr>
+<tr>
+<td>KEY_SIZE</td>
+<td>16</td>
+<td>bytes</td>
+</tr>
+<tr>
+<td>SQN_SIZE</td>
+<td>6</td>
+<td>bytes</td>
+</tr>
+<tr>
+<td>AUTS_SIZE</td>
+<td>14</td>
+<td>bytes</td>
+</tr>
+</tbody>
+</table>
+<h4 id="session-establishment-flow">Session Establishment Flow<a class="headerlink" href="#session-establishment-flow" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Step 1: Controller → Pod: EAP-AKA Challenge
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>        - AT_AUTN: Authentication token (16 bytes)
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>        - AT_RAND: Random challenge (16 bytes)
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>        - AT_CUSTOM_IV: Controller IV (4 bytes)
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>Step 2: Pod → Controller: EAP-AKA Response
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>        - AT_RES: Response (8 bytes) - must match expected
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>        - AT_CUSTOM_IV: Pod IV (4 bytes)
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>        OR Resynchronization:
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>        - AT_AUTS: Resync token (14 bytes)
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>Step 3: Controller → Pod: EAP-SUCCESS
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>Result: 
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>- CK: Cipher Key (16 bytes) from Milenage
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>- Nonce: Controller_IV (4 bytes) + Pod_IV (4 bytes)
+</code></pre></div>
+<p><strong>Source</strong>: <code>OmniBLE/OmniBLE/Bluetooth/Session/SessionEstablisher.swift</code>, <code>Milenage.swift</code></p>
+<h3 id="16-encryption-aes-ccm">1.6 Encryption: AES-CCM<a class="headerlink" href="#16-encryption-aes-ccm" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Algorithm</td>
+<td>AES-128-CCM</td>
+</tr>
+<tr>
+<td>Key</td>
+<td>CK from Milenage (16 bytes)</td>
+</tr>
+<tr>
+<td>Nonce</td>
+<td>13 bytes (prefix + sequence number)</td>
+</tr>
+<tr>
+<td>MAC Size</td>
+<td>8 bytes</td>
+</tr>
+<tr>
+<td>AAD</td>
+<td>Message header (16 bytes)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Source</strong>: <code>OmniBLE/OmniBLE/Bluetooth/EnDecrypt/EnDecrypt.swift</code></p>
+<h3 id="17-pod-command-message-blocks">1.7 Pod Command Message Blocks<a class="headerlink" href="#17-pod-command-message-blocks" title="Permanent link">&para;</a></h3>
+<h4 id="message-block-types-opcodes">Message Block Types (Opcodes)<a class="headerlink" href="#message-block-types-opcodes" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Opcode</th>
+<th>Name</th>
+<th>Direction</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0x01</code></td>
+<td>VersionResponse</td>
+<td>Pod→Ctrl</td>
+<td>Pod version info</td>
+</tr>
+<tr>
+<td><code>0x02</code></td>
+<td>PodInfoResponse</td>
+<td>Pod→Ctrl</td>
+<td>Pod status details</td>
+</tr>
+<tr>
+<td><code>0x03</code></td>
+<td>SetupPod</td>
+<td>Ctrl→Pod</td>
+<td>Initial pod setup</td>
+</tr>
+<tr>
+<td><code>0x06</code></td>
+<td>ErrorResponse</td>
+<td>Pod→Ctrl</td>
+<td>Error details</td>
+</tr>
+<tr>
+<td><code>0x07</code></td>
+<td>AssignAddress</td>
+<td>Ctrl→Pod</td>
+<td>Assign pod address</td>
+</tr>
+<tr>
+<td><code>0x08</code></td>
+<td>FaultConfig</td>
+<td>Ctrl→Pod</td>
+<td>Configure fault behavior</td>
+</tr>
+<tr>
+<td><code>0x0e</code></td>
+<td>GetStatus</td>
+<td>Ctrl→Pod</td>
+<td>Request status</td>
+</tr>
+<tr>
+<td><code>0x11</code></td>
+<td>AcknowledgeAlert</td>
+<td>Ctrl→Pod</td>
+<td>Clear alerts</td>
+</tr>
+<tr>
+<td><code>0x13</code></td>
+<td>BasalScheduleExtra</td>
+<td>Ctrl→Pod</td>
+<td>Extended basal params</td>
+</tr>
+<tr>
+<td><code>0x16</code></td>
+<td>TempBasalExtra</td>
+<td>Ctrl→Pod</td>
+<td>Extended TBR params</td>
+</tr>
+<tr>
+<td><code>0x17</code></td>
+<td>BolusExtra</td>
+<td>Ctrl→Pod</td>
+<td>Extended bolus params</td>
+</tr>
+<tr>
+<td><code>0x19</code></td>
+<td>ConfigureAlerts</td>
+<td>Ctrl→Pod</td>
+<td>Alert configuration</td>
+</tr>
+<tr>
+<td><code>0x1a</code></td>
+<td>SetInsulinSchedule</td>
+<td>Ctrl→Pod</td>
+<td>Main delivery command</td>
+</tr>
+<tr>
+<td><code>0x1c</code></td>
+<td>DeactivatePod</td>
+<td>Ctrl→Pod</td>
+<td>Deactivate pod</td>
+</tr>
+<tr>
+<td><code>0x1d</code></td>
+<td>StatusResponse</td>
+<td>Pod→Ctrl</td>
+<td>Current status</td>
+</tr>
+<tr>
+<td><code>0x1e</code></td>
+<td>BeepConfig</td>
+<td>Ctrl→Pod</td>
+<td>Configure beeps</td>
+</tr>
+<tr>
+<td><code>0x1f</code></td>
+<td>CancelDelivery</td>
+<td>Ctrl→Pod</td>
+<td>Stop delivery</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Source</strong>: <code>OmniBLE/OmniBLE/OmnipodCommon/MessageBlocks/MessageBlock.swift</code></p>
+<h3 id="18-setinsulinschedule-command-0x1a">1.8 SetInsulinSchedule Command (0x1a)<a class="headerlink" href="#18-setinsulinschedule-command-0x1a" title="Permanent link">&para;</a></h3>
+<p>Main insulin delivery command. Supports three schedule types:</p>
+<h4 id="schedule-type-codes">Schedule Type Codes<a class="headerlink" href="#schedule-type-codes" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0x00</code></td>
+<td>BasalSchedule</td>
+<td>Scheduled basal program</td>
+</tr>
+<tr>
+<td><code>0x01</code></td>
+<td>TempBasal</td>
+<td>Temporary basal rate</td>
+</tr>
+<tr>
+<td><code>0x02</code></td>
+<td>Bolus</td>
+<td>Immediate bolus</td>
+</tr>
+</tbody>
+</table>
+<h4 id="bolus-delivery-structure">Bolus Delivery Structure<a class="headerlink" href="#bolus-delivery-structure" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>Offset  Size  Field
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>0       1     Block Type (0x1a)
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>1       1     Length
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>2       4     Nonce (32-bit, big-endian)
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>6       1     Schedule Type (0x02 for bolus)
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>7       2     Checksum
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>9       1     Num Segments
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>10      2     FieldA (pulses × time multiplier)
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>12      2     First Segment Pulses
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>14      N     Delivery table entries (2 bytes each)
+</code></pre></div>
+<h4 id="temp-basal-delivery-structure">Temp Basal Delivery Structure<a class="headerlink" href="#temp-basal-delivery-structure" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>Offset  Size  Field
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>0       1     Block Type (0x1a)
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>1       1     Length
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>2       4     Nonce
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>6       1     Schedule Type (0x01 for TBR)
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>7       2     Checksum
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>9       1     Num Segments
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>10      2     Seconds Remaining (shifted left 3)
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>12      2     First Segment Pulses
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>14      N     Delivery table entries
+</code></pre></div>
+<p><strong>Source</strong>: <code>OmniBLE/OmniBLE/OmnipodCommon/MessageBlocks/SetInsulinScheduleCommand.swift</code></p>
+<h3 id="19-bolusextra-command-0x17">1.9 BolusExtra Command (0x17)<a class="headerlink" href="#19-bolusextra-command-0x17" title="Permanent link">&para;</a></h3>
+<p>Extended bolus parameters (13 bytes total):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>Offset  Size  Field
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>0       1     Block Type (0x17)
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>1       1     Length (0x0d)
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>2       1     Beep Options (ack[7], completion[6], reminder[0:5])
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>3       2     Pulse Count × 10 (big-endian)
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>5       4     Time Between Pulses (hundredths of ms, big-endian)
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>9       2     Extended Pulse Count × 10
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>11      4     Time Between Extended Pulses
+</code></pre></div>
+<p><strong>Source</strong>: <code>OmniBLE/OmniBLE/OmnipodCommon/MessageBlocks/BolusExtraCommand.swift</code></p>
+<h3 id="110-statusresponse-0x1d">1.10 StatusResponse (0x1d)<a class="headerlink" href="#110-statusresponse-0x1d" title="Permanent link">&para;</a></h3>
+<p>Pod status (10 bytes):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>Offset  Size  Field
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>0       1     Block Type (0x1d)
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>1       1     Delivery Status (high nibble), Progress Status (low nibble)
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>2-4     13b   Insulin Delivered (pulses)
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>4       4b    Last Programming Message Seq
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>4-5     10b   Bolus Not Delivered (pulses)
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>6-7     8b    Alerts (AlertSet bitmap)
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>7-8     13b   Time Active (minutes)
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>8-9     10b   Reservoir Level (pulses)
+</code></pre></div>
+<h4 id="delivery-status-values">Delivery Status Values<a class="headerlink" href="#delivery-status-values" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0x00</code></td>
+<td>Suspended</td>
+<td>Delivery suspended</td>
+</tr>
+<tr>
+<td><code>0x01</code></td>
+<td>ScheduledBasal</td>
+<td>Normal basal running</td>
+</tr>
+<tr>
+<td><code>0x02</code></td>
+<td>TempBasalRunning</td>
+<td>Temp basal active</td>
+</tr>
+<tr>
+<td><code>0x04</code></td>
+<td>Priming</td>
+<td>Priming in progress</td>
+</tr>
+<tr>
+<td><code>0x05</code></td>
+<td>BolusInProgress</td>
+<td>Bolus delivering</td>
+</tr>
+<tr>
+<td><code>0x06</code></td>
+<td>BolusAndTempBasal</td>
+<td>Both active</td>
+</tr>
+<tr>
+<td><code>0x08</code></td>
+<td>ExtendedBolusWhileSuspended</td>
+<td>Extended bolus, suspended</td>
+</tr>
+<tr>
+<td><code>0x09</code></td>
+<td>ExtendedBolusRunning</td>
+<td>Extended bolus active</td>
+</tr>
+<tr>
+<td><code>0x0a</code></td>
+<td>ExtendedBolusAndTempBasal</td>
+<td>Both extended + TBR</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Source</strong>: <code>OmniBLE/OmniBLE/OmnipodCommon/Pod.swift</code>, <code>StatusResponse.swift</code></p>
+<h3 id="111-pod-constants">1.11 Pod Constants<a class="headerlink" href="#111-pod-constants" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Constant</th>
+<th>Value</th>
+<th>Unit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pulse Size</td>
+<td>0.05</td>
+<td>U</td>
+</tr>
+<tr>
+<td>Pulses per Unit</td>
+<td>20</td>
+<td>pulses/U</td>
+</tr>
+<tr>
+<td>Seconds per Bolus Pulse</td>
+<td>2</td>
+<td>seconds</td>
+</tr>
+<tr>
+<td>Bolus Delivery Rate</td>
+<td>0.025</td>
+<td>U/s</td>
+</tr>
+<tr>
+<td>Max Reservoir Reading</td>
+<td>50</td>
+<td>U</td>
+</tr>
+<tr>
+<td>Reservoir Capacity</td>
+<td>200</td>
+<td>U</td>
+</tr>
+<tr>
+<td>Max Basal Schedule Entries</td>
+<td>24</td>
+<td>entries</td>
+</tr>
+<tr>
+<td>Min Basal Entry Duration</td>
+<td>30</td>
+<td>minutes</td>
+</tr>
+<tr>
+<td>Service Duration</td>
+<td>80</td>
+<td>hours</td>
+</tr>
+<tr>
+<td>Nominal Pod Life</td>
+<td>72</td>
+<td>hours</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Source</strong>: <code>OmniBLE/OmniBLE/OmnipodCommon/Pod.swift</code></p>
+<hr />
+<h2 id="2-dana-rsi-ble-protocol">2. Dana RS/i BLE Protocol<a class="headerlink" href="#2-dana-rsi-ble-protocol" title="Permanent link">&para;</a></h2>
+<h3 id="21-packet-structure">2.1 Packet Structure<a class="headerlink" href="#21-packet-structure" title="Permanent link">&para;</a></h3>
+<p>All Dana RS packets follow this format:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>Offset  Size  Field
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>0       2     Start Bytes (0xA5, 0xA5)
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>2       1     Length (packet size - 7)
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>3       1     Type (command type)
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>4       1     OpCode (command code)
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>5       N     Data payload
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>-4      2     CRC-16 (big-endian)
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>-2      2     End Bytes (0x5A, 0x5A)
+</code></pre></div>
+<p><strong>Source</strong>: <code>pump/danars/src/main/kotlin/app/aaps/pump/danars/comm/DanaRSPacket.kt</code></p>
+<h3 id="22-packet-types">2.2 Packet Types<a class="headerlink" href="#22-packet-types" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>COMMAND</td>
+<td>Standard</td>
+<td>Regular pump commands</td>
+</tr>
+<tr>
+<td>ENCRYPTION_REQUEST</td>
+<td>Request</td>
+<td>Encryption handshake request</td>
+</tr>
+<tr>
+<td>ENCRYPTION_RESPONSE</td>
+<td>Response</td>
+<td>Encryption handshake response</td>
+</tr>
+<tr>
+<td>NOTIFY</td>
+<td>Notify</td>
+<td>Pump notifications</td>
+</tr>
+<tr>
+<td>RESPONSE</td>
+<td>Response</td>
+<td>Command responses</td>
+</tr>
+</tbody>
+</table>
+<h3 id="23-encryption-types">2.3 Encryption Types<a class="headerlink" href="#23-encryption-types" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+<th>Security Level</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ENCRYPTION_DEFAULT</td>
+<td>Legacy encryption</td>
+<td>Time + Password + SN encoding</td>
+</tr>
+<tr>
+<td>ENCRYPTION_RSv3</td>
+<td>Dana RS v3</td>
+<td>Pairing key + random key + matrix</td>
+</tr>
+<tr>
+<td>ENCRYPTION_BLE5</td>
+<td>BLE5 (Dana-i)</td>
+<td>6-digit PIN + matrix encryption</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Source</strong>: <code>pump/danars/src/main/kotlin/app/aaps/pump/danars/encryption/BleEncryption.kt</code></p>
+<h3 id="24-encryption-handshake-flow">2.4 Encryption Handshake Flow<a class="headerlink" href="#24-encryption-handshake-flow" title="Permanent link">&para;</a></h3>
+<h4 id="rsv3--ble5-connection-states">RSv3 / BLE5 Connection States<a class="headerlink" href="#rsv3--ble5-connection-states" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Pre-handshake</td>
+<td>Initial connection</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Time exchange</td>
+<td>Awaiting pairing keys</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Authenticated</td>
+<td>Full encryption active</td>
+</tr>
+</tbody>
+</table>
+<h4 id="handshake-commands">Handshake Commands<a class="headerlink" href="#handshake-commands" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>OpCode</th>
+<th>Name</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0x00</code></td>
+<td>PUMP_CHECK</td>
+<td>Initial pump identification</td>
+</tr>
+<tr>
+<td><code>0x01</code></td>
+<td>PASSKEY_REQUEST</td>
+<td>Request passkey</td>
+</tr>
+<tr>
+<td><code>0x02</code></td>
+<td>PASSKEY_RETURN</td>
+<td>Passkey returned</td>
+</tr>
+<tr>
+<td><code>0x03</code></td>
+<td>CHECK_PASSKEY</td>
+<td>Verify passkey</td>
+</tr>
+<tr>
+<td><code>0x04</code></td>
+<td>TIME_INFORMATION</td>
+<td>Time sync + authentication</td>
+</tr>
+<tr>
+<td><code>0x05</code></td>
+<td>GET_PUMP_CHECK</td>
+<td>Verify pump connection</td>
+</tr>
+<tr>
+<td><code>0x06</code></td>
+<td>GET_EASY_MENU_CHECK</td>
+<td>Check easy menu status</td>
+</tr>
+</tbody>
+</table>
+<h3 id="25-crc-16-calculation">2.5 CRC-16 Calculation<a class="headerlink" href="#25-crc-16-calculation" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kd">fun</span><span class="w"> </span><span class="nf">generateCrc</span><span class="p">(</span><span class="n">buffer</span><span class="p">:</span><span class="w"> </span><span class="n">UByteArray</span><span class="p">):</span><span class="w"> </span><span class="n">UInt</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">crc</span><span class="p">:</span><span class="w"> </span><span class="n">UShort</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="n">u</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">byte</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">buffer</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nv">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">crc</span><span class="p">.</span><span class="na">ushr</span><span class="p">(</span><span class="m">8</span><span class="p">)</span><span class="w"> </span><span class="n">or</span><span class="w"> </span><span class="n">crc</span><span class="p">.</span><span class="na">shl</span><span class="p">(</span><span class="m">8</span><span class="p">)</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">        </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="na">xor</span><span class="p">(</span><span class="n">byte</span><span class="p">)</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">        </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="na">xor</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="na">and</span><span class="p">(</span><span class="m">0</span><span class="n">xFFu</span><span class="p">).</span><span class="na">ushr</span><span class="p">(</span><span class="m">4</span><span class="p">))</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">        </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="na">xor</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="na">shl</span><span class="p">(</span><span class="m">12</span><span class="p">))</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">        </span><span class="c1">// Variant based on encryption type and connection state</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">        </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="n">xor</span><span class="w"> </span><span class="p">(...)</span><span class="w">  </span><span class="c1">// Different polynomial per mode</span>
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">        </span><span class="n">crc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">result</span>
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">crc</span>
+<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="p">}</span>
+</code></pre></div>
+<p>CRC polynomial varies by encryption type and connection state.</p>
+<p><strong>Source</strong>: <code>pump/danars/src/main/kotlin/app/aaps/pump/danars/encryption/BleEncryption.kt:453-480</code></p>
+<h3 id="26-multi-layer-encryption-rsv3">2.6 Multi-Layer Encryption (RSv3)<a class="headerlink" href="#26-multi-layer-encryption-rsv3" title="Permanent link">&para;</a></h3>
+<p>RSv3 encryption applies three layers:</p>
+<ol>
+<li><strong>Serial Number Encoding</strong>: XOR with device name bytes</li>
+<li><strong>Time Encoding</strong>: XOR with time info bytes</li>
+<li><strong>Password Encoding</strong>: XOR with password bytes</li>
+<li><strong>CfPassKey Encoding</strong>: XOR with confirmed passkey</li>
+</ol>
+<p>For BLE5, simpler matrix-based encryption using 6-digit PIN.</p>
+<h3 id="27-command-categories">2.7 Command Categories<a class="headerlink" href="#27-command-categories" title="Permanent link">&para;</a></h3>
+<h4 id="basal-commands">Basal Commands<a class="headerlink" href="#basal-commands" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>OpCode</th>
+<th>Name</th>
+<th>Parameters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GetBasalRate</td>
+<td>Read basal program</td>
+<td>-</td>
+</tr>
+<tr>
+<td>GetProfileNumber</td>
+<td>Read active profile</td>
+<td>-</td>
+</tr>
+<tr>
+<td>SetProfileBasalRate</td>
+<td>Write basal program</td>
+<td>24 rates</td>
+</tr>
+<tr>
+<td>SetProfileNumber</td>
+<td>Change profile</td>
+<td>Profile number</td>
+</tr>
+<tr>
+<td>SetTemporaryBasal</td>
+<td>Start TBR</td>
+<td>Duration, rate</td>
+</tr>
+<tr>
+<td>CancelTemporaryBasal</td>
+<td>Stop TBR</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<h4 id="bolus-commands">Bolus Commands<a class="headerlink" href="#bolus-commands" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>OpCode</th>
+<th>Name</th>
+<th>Parameters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SetStepBolusStart</td>
+<td>Start bolus</td>
+<td>Amount, speed</td>
+</tr>
+<tr>
+<td>SetStepBolusStop</td>
+<td>Cancel bolus</td>
+<td>-</td>
+</tr>
+<tr>
+<td>SetExtendedBolus</td>
+<td>Start extended</td>
+<td>Amount, duration</td>
+</tr>
+<tr>
+<td>SetExtendedBolusCancel</td>
+<td>Cancel extended</td>
+<td>-</td>
+</tr>
+<tr>
+<td>GetStepBolusInformation</td>
+<td>Read bolus status</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<h4 id="history-commands">History Commands<a class="headerlink" href="#history-commands" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>OpCode</th>
+<th>Name</th>
+<th>Parameters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>APSHistoryEvents</td>
+<td>Read APS history</td>
+<td>Since timestamp</td>
+</tr>
+<tr>
+<td>APSSetEventHistory</td>
+<td>Write APS event</td>
+<td>Event data</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Source</strong>: <code>pump/danars/src/main/kotlin/app/aaps/pump/danars/comm/DanaRSMessageHashTable.kt</code></p>
+<h3 id="28-bolus-delivery-speeds">2.8 Bolus Delivery Speeds<a class="headerlink" href="#28-bolus-delivery-speeds" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Speed</th>
+<th>Time per 1U</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 (Fast)</td>
+<td>12 sec/U</td>
+<td>12 seconds</td>
+</tr>
+<tr>
+<td>1 (Normal)</td>
+<td>30 sec/U</td>
+<td>30 seconds</td>
+</tr>
+<tr>
+<td>2 (Slow)</td>
+<td>60 sec/U</td>
+<td>60 seconds</td>
+</tr>
+</tbody>
+</table>
+<h3 id="29-error-codes">2.9 Error Codes<a class="headerlink" href="#29-error-codes" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0x10</code></td>
+<td>Max bolus violation</td>
+</tr>
+<tr>
+<td><code>0x20</code></td>
+<td>Command error</td>
+</tr>
+<tr>
+<td><code>0x40</code></td>
+<td>Speed error</td>
+</tr>
+<tr>
+<td><code>0x80</code></td>
+<td>Insulin limit violation</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Source</strong>: <code>pump/danars/src/main/kotlin/app/aaps/pump/danars/DanaRSPlugin.kt</code></p>
+<hr />
+<h2 id="3-medtronic-rf-protocol">3. Medtronic RF Protocol<a class="headerlink" href="#3-medtronic-rf-protocol" title="Permanent link">&para;</a></h2>
+<h3 id="31-physical-layer">3.1 Physical Layer<a class="headerlink" href="#31-physical-layer" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Frequency (US)</td>
+<td>916.5 MHz</td>
+</tr>
+<tr>
+<td>Frequency (EU)</td>
+<td>868 MHz</td>
+</tr>
+<tr>
+<td>Modulation</td>
+<td>FSK</td>
+</tr>
+<tr>
+<td>Bridge Device</td>
+<td>RileyLink</td>
+</tr>
+</tbody>
+</table>
+<h3 id="32-message-structure">3.2 Message Structure<a class="headerlink" href="#32-message-structure" title="Permanent link">&para;</a></h3>
+<p>Medtronic uses Carelink message format:</p>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Short Message</td>
+<td>Head + Body (&lt; 64 bytes)</td>
+</tr>
+<tr>
+<td>Long Message</td>
+<td>Multi-packet with paging</td>
+</tr>
+</tbody>
+</table>
+<h3 id="33-history-entry-types">3.3 History Entry Types<a class="headerlink" href="#33-history-entry-types" title="Permanent link">&para;</a></h3>
+<p>Based on <code>PumpHistoryEntryType.kt</code>, major opcodes:</p>
+<h4 id="delivery-events">Delivery Events<a class="headerlink" href="#delivery-events" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Name</th>
+<th>Head</th>
+<th>Date</th>
+<th>Body</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0x01</code></td>
+<td>Bolus</td>
+<td>4 (8 on 523+)</td>
+<td>5</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>0x03</code></td>
+<td>Prime</td>
+<td>5</td>
+<td>5</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>0x16</code></td>
+<td>TempBasalDuration</td>
+<td>2</td>
+<td>5</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>0x33</code></td>
+<td>TempBasalRate</td>
+<td>2</td>
+<td>5</td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>0x1e</code></td>
+<td>SuspendPump</td>
+<td>2</td>
+<td>5</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>0x1f</code></td>
+<td>ResumePump</td>
+<td>2</td>
+<td>5</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>0x7b</code></td>
+<td>BasalProfileStart</td>
+<td>2</td>
+<td>5</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+<h4 id="configuration-events">Configuration Events<a class="headerlink" href="#configuration-events" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0x08</code></td>
+<td>ChangeBasalProfile_Old</td>
+<td>Previous basal program</td>
+</tr>
+<tr>
+<td><code>0x09</code></td>
+<td>ChangeBasalProfile_New</td>
+<td>New basal program</td>
+</tr>
+<tr>
+<td><code>0x14</code></td>
+<td>ChangeBasalPattern</td>
+<td>Pattern selection</td>
+</tr>
+<tr>
+<td><code>0x24</code></td>
+<td>ChangeMaxBolus</td>
+<td>Max bolus setting</td>
+</tr>
+<tr>
+<td><code>0x2c</code></td>
+<td>ChangeMaxBasal</td>
+<td>Max basal setting</td>
+</tr>
+</tbody>
+</table>
+<h4 id="alarmstatus-events">Alarm/Status Events<a class="headerlink" href="#alarmstatus-events" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0x06</code></td>
+<td>NoDeliveryAlarm</td>
+<td>Occlusion/empty</td>
+</tr>
+<tr>
+<td><code>0x0b</code></td>
+<td>SensorAlert</td>
+<td>CGM alert</td>
+</tr>
+<tr>
+<td><code>0x0c</code></td>
+<td>ClearAlarm</td>
+<td>Alarm acknowledged</td>
+</tr>
+<tr>
+<td><code>0x19</code></td>
+<td>LowBattery</td>
+<td>Battery warning</td>
+</tr>
+<tr>
+<td><code>0x1a</code></td>
+<td>BatteryChange</td>
+<td>Battery replaced</td>
+</tr>
+<tr>
+<td><code>0x34</code></td>
+<td>LowReservoir</td>
+<td>Reservoir warning</td>
+</tr>
+</tbody>
+</table>
+<h4 id="statistics-events">Statistics Events<a class="headerlink" href="#statistics-events" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0x6c</code></td>
+<td>DailyTotals515</td>
+<td>Daily summary (515)</td>
+</tr>
+<tr>
+<td><code>0x6d</code></td>
+<td>DailyTotals522</td>
+<td>Daily summary (522)</td>
+</tr>
+<tr>
+<td><code>0x6e</code></td>
+<td>DailyTotals523</td>
+<td>Daily summary (523)</td>
+</tr>
+<tr>
+<td><code>0x07</code></td>
+<td>EndResultTotals</td>
+<td>Period totals</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Source</strong>: <code>pump/medtronic/src/main/kotlin/app/aaps/pump/medtronic/comm/history/pump/PumpHistoryEntryType.kt</code></p>
+<h3 id="34-entry-structure">3.4 Entry Structure<a class="headerlink" href="#34-entry-structure" title="Permanent link">&para;</a></h3>
+<p>Each history entry has variable structure:</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Size</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Head</td>
+<td>2-8 bytes</td>
+<td>Opcode + parameters</td>
+</tr>
+<tr>
+<td>Date</td>
+<td>0-5 bytes</td>
+<td>Timestamp (5-byte packed)</td>
+</tr>
+<tr>
+<td>Body</td>
+<td>0-145 bytes</td>
+<td>Additional data</td>
+</tr>
+</tbody>
+</table>
+<h3 id="35-device-specific-sizes">3.5 Device-Specific Sizes<a class="headerlink" href="#35-device-specific-sizes" title="Permanent link">&para;</a></h3>
+<p>Different pump models have different entry sizes:</p>
+<table>
+<thead>
+<tr>
+<th>Entry Type</th>
+<th>512/515</th>
+<th>522/523</th>
+<th>523+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bolus Head</td>
+<td>4</td>
+<td>4</td>
+<td>8</td>
+</tr>
+<tr>
+<td>BolusWizard Body</td>
+<td>12</td>
+<td>13</td>
+<td>15</td>
+</tr>
+<tr>
+<td>BolusWizardSetup Body</td>
+<td>32</td>
+<td>117</td>
+<td>137</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-cross-protocol-comparison">4. Cross-Protocol Comparison<a class="headerlink" href="#4-cross-protocol-comparison" title="Permanent link">&para;</a></h2>
+<h3 id="41-transport-layer">4.1 Transport Layer<a class="headerlink" href="#41-transport-layer" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Omnipod DASH</th>
+<th>Dana RS</th>
+<th>Medtronic</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Transport</td>
+<td>BLE Direct</td>
+<td>BLE Direct</td>
+<td>RF (via RileyLink)</td>
+</tr>
+<tr>
+<td>Frequency</td>
+<td>2.4 GHz</td>
+<td>2.4 GHz</td>
+<td>916.5/868 MHz</td>
+</tr>
+<tr>
+<td>Bridge Required</td>
+<td>No</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>MTU</td>
+<td>20 bytes</td>
+<td>20 bytes</td>
+<td>64 bytes</td>
+</tr>
+</tbody>
+</table>
+<h3 id="42-security">4.2 Security<a class="headerlink" href="#42-security" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Omnipod DASH</th>
+<th>Dana RS</th>
+<th>Medtronic</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pairing</td>
+<td>X25519 + CMAC</td>
+<td>6-digit PIN</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Session Auth</td>
+<td>EAP-AKA (Milenage)</td>
+<td>Time + Password</td>
+<td>Serial check</td>
+</tr>
+<tr>
+<td>Encryption</td>
+<td>AES-128-CCM</td>
+<td>Matrix + XOR</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Replay Protection</td>
+<td>Sequence numbers</td>
+<td>CRC</td>
+<td>Sequence numbers</td>
+</tr>
+</tbody>
+</table>
+<h3 id="43-bolus-precision">4.3 Bolus Precision<a class="headerlink" href="#43-bolus-precision" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Omnipod DASH</th>
+<th>Dana RS</th>
+<th>Medtronic</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Step Size</td>
+<td>0.05 U</td>
+<td>0.01-0.05 U</td>
+<td>0.025-0.05 U</td>
+</tr>
+<tr>
+<td>Min Bolus</td>
+<td>0.05 U</td>
+<td>0.05 U</td>
+<td>0.025-0.05 U</td>
+</tr>
+<tr>
+<td>Max Bolus</td>
+<td>30 U</td>
+<td>Configurable</td>
+<td>25 U</td>
+</tr>
+<tr>
+<td>Delivery Rate</td>
+<td>0.025 U/s</td>
+<td>Configurable</td>
+<td>~0.025 U/s</td>
+</tr>
+</tbody>
+</table>
+<h3 id="44-temp-basal">4.4 Temp Basal<a class="headerlink" href="#44-temp-basal" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Omnipod DASH</th>
+<th>Dana RS</th>
+<th>Medtronic</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Type</td>
+<td>Absolute only</td>
+<td>Percent</td>
+<td>Absolute</td>
+</tr>
+<tr>
+<td>Duration Step</td>
+<td>30 min</td>
+<td>15/30/60 min</td>
+<td>30 min</td>
+</tr>
+<tr>
+<td>Max Duration</td>
+<td>12 hours</td>
+<td>24 hours</td>
+<td>24 hours</td>
+</tr>
+<tr>
+<td>Max Rate</td>
+<td>30 U/hr</td>
+<td>200%</td>
+<td>35 U/hr</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-implementation-notes">5. Implementation Notes<a class="headerlink" href="#5-implementation-notes" title="Permanent link">&para;</a></h2>
+<h3 id="51-nonce-management">5.1 Nonce Management<a class="headerlink" href="#51-nonce-management" title="Permanent link">&para;</a></h3>
+<p>Omnipod DASH requires nonce for most commands:
+- Nonce is 32-bit value
+- Must be unique per command
+- Pod tracks last nonce for replay protection
+- <code>NonceResyncableMessageBlock</code> protocol for commands requiring nonce</p>
+<h3 id="52-delivery-uncertainty">5.2 Delivery Uncertainty<a class="headerlink" href="#52-delivery-uncertainty" title="Permanent link">&para;</a></h3>
+<p>All protocols have mechanisms for detecting uncertain delivery:</p>
+<table>
+<thead>
+<tr>
+<th>System</th>
+<th>Mechanism</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Loop</td>
+<td><code>PumpManagerStatus.deliveryIsUncertain</code> flag</td>
+</tr>
+<tr>
+<td>AAPS</td>
+<td><code>PumpEnactResult.success</code> + retry logic</td>
+</tr>
+<tr>
+<td>Omnipod</td>
+<td>StatusResponse verification after command</td>
+</tr>
+<tr>
+<td>Dana</td>
+<td>Bolus progress tracking</td>
+</tr>
+</tbody>
+</table>
+<h3 id="53-history-reconciliation">5.3 History Reconciliation<a class="headerlink" href="#53-history-reconciliation" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>System</th>
+<th>Pattern</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Loop</td>
+<td><code>PumpManagerDelegate.hasNewPumpEvents()</code> callback</td>
+</tr>
+<tr>
+<td>AAPS</td>
+<td><code>PumpSync.syncBolusWithPumpId()</code></td>
+</tr>
+<tr>
+<td>Omnipod</td>
+<td>No persistent history, track via StatusResponse</td>
+</tr>
+<tr>
+<td>Dana</td>
+<td>Full history retrieval via APSHistoryEvents</td>
+</tr>
+<tr>
+<td>Medtronic</td>
+<td>Page-based history with CRC validation</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="source-files-reference">Source Files Reference<a class="headerlink" href="#source-files-reference" title="Permanent link">&para;</a></h2>
+<h3 id="omnipod-dash-omnible---swift">Omnipod DASH (OmniBLE - Swift)<a class="headerlink" href="#omnipod-dash-omnible---swift" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>OmniBLE/Bluetooth/BluetoothServices.swift</code> - BLE UUIDs, command types</li>
+<li><code>OmniBLE/Bluetooth/MessagePacket.swift</code> - Packet structure</li>
+<li><code>OmniBLE/Bluetooth/EnDecrypt/EnDecrypt.swift</code> - AES-CCM encryption</li>
+<li><code>OmniBLE/Bluetooth/Session/SessionEstablisher.swift</code> - EAP-AKA</li>
+<li><code>OmniBLE/Bluetooth/Session/Milenage.swift</code> - Milenage algorithm</li>
+<li><code>OmniBLE/Bluetooth/Pair/LTKExchanger.swift</code> - Key exchange</li>
+<li><code>OmniBLE/OmnipodCommon/MessageBlocks/*.swift</code> - Command definitions</li>
+<li><code>OmniBLE/OmnipodCommon/Pod.swift</code> - Constants</li>
+</ul>
+<h3 id="dana-rs-aaps---kotlin">Dana RS (AAPS - Kotlin)<a class="headerlink" href="#dana-rs-aaps---kotlin" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>pump/danars/comm/DanaRSPacket.kt</code> - Packet structure</li>
+<li><code>pump/danars/encryption/BleEncryption.kt</code> - Encryption layers</li>
+<li><code>pump/danars/comm/DanaRSMessageHashTable.kt</code> - Command registry</li>
+<li><code>pump/danars/DanaRSPlugin.kt</code> - Driver implementation</li>
+</ul>
+<h3 id="medtronic-aaps---kotlin">Medtronic (AAPS - Kotlin)<a class="headerlink" href="#medtronic-aaps---kotlin" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>pump/medtronic/comm/history/pump/PumpHistoryEntryType.kt</code> - Opcodes</li>
+<li><code>pump/medtronic/comm/MedtronicCommunicationManager.kt</code> - Protocol</li>
+<li><code>pump/medtronic/comm/message/*.kt</code> - Message formats</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

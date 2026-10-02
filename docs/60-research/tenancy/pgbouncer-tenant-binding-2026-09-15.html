@@ -1,0 +1,8046 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/60-research/tenancy/pgbouncer-tenant-binding-2026-09-15.html">
+      
+      
+        <link rel="prev" href="ns-evaluator-spike-2026-09-15.html">
+      
+      
+        <link rel="next" href="seam-filter-ast-three-arm-validation-2026-09-14.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>pgbouncer and the D3 tenant binding — isolation holds, and two of the three modes are usable - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#pgbouncer-and-the-d3-tenant-binding--isolation-holds-and-two-of-the-three-modes-are-usable" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              pgbouncer and the D3 tenant binding — isolation holds, and two of the three modes are usable
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../30-design/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_27" id="__nav_5_27_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_27_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_27">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    60-research/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-2844-phenotype-drilldown-report-2026-04-22.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-0001 to 2869
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-2870-envelope-crossover-report-2026-04-22.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2870 to 2909
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-2910-eight-dim-regrade-2026-04-23.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2910 to 2949
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-2950-uniform-action-curve-2026-04-23.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-2950 to 2999
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../exp-3000-3003-cf-replay-maturation-2026-04-25.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments EXP-3000 and later
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../AUTORESEARCH-SESSION-2026-04-26.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Programme, closeouts and syntheses
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../accuracy-validation-2026-04-05.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Productionization and pipelines
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../capability-report-clinical-decision-support.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Capability reports
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../circadian-therapy-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Therapy
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../aid-aware-settings-report-2026-04-09.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings and profiles
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../natural-experiment-deconfounding-2026-04-09.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Natural experiments
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../bilateral-deconfounding-report-2026-04-19.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EGP, supply-demand and deconfounding
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../autotune-uam-characterization-report.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Meals and carbohydrates
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../causal-pk-leakage-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Insulin, ISF and pharmacokinetics
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../acceleration-clinical-utility-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clinical, safety and hypoglycaemia
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../aid-author-recommendations-report-2026-04-20.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AID controllers, cohorts and waves
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../centering-dynamics-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forecasting, prediction and classification
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../advanced-architectures-benchmark-report-2026-04-10.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ML methods and architectures
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../canonical/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    canonical/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../collaboration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    collaboration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../external-inventories/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    external-inventories/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../modernization/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    modernization/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../programme/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    programme/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../remedial/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    remedial/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_27_26" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenancy/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_27_26" id="__nav_5_27_26_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_27_26_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_27_26">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    tenancy/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="alarm-critical-slice-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The alarm-critical slice, measured: 32.7 KB and 1.94 ms, not 852 KB and 27.5 ms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="auth-plane-ory-vs-inhouse-2026-09-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The auth plane: Ory Kratos/Hydra against building it ourselves
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="exp-mt-026-database-in-the-loop-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-MT-026: a real database in the loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="multitenancy-k-and-residency-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What sets K: residency, the load cycle, and two quadratics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ns-evaluator-spike-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ns-evaluator: what a per-tenant evaluation loop actually needs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    pgbouncer and the D3 tenant binding — isolation holds, and two of the three modes are usable
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="pgbouncer-tenant-binding-2026-09-15.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    pgbouncer and the D3 tenant binding — isolation holds, and two of the three modes are usable
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-the-question-and-what-is-deliberately-not-re-asked" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. The question, and what is deliberately not re-asked
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0. The question, and what is deliberately not re-asked">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#verdicts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verdicts
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Setup
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#two-shapes-because-one-shape-cannot-answer-for-all-three-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two shapes, because one shape cannot answer for all three modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-mechanism-read-then-observed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The mechanism: read, then observed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-per-mode-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Per-mode results
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Per-mode results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#session-mode-queues-rather-than-failing-and-it-is-severe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        session mode queues rather than failing, and it is severe
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#statement-mode-the-adapter-boots-and-then-fails-everything" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        statement mode: the adapter boots and then fails everything
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-non-vacuity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Non-vacuity
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Non-vacuity">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#red-1--the-binding-made-session-scoped" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RED-1 — the binding, made session-scoped
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#red-2--the-boot-time-bypassrls-refusal-through-the-pooler" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RED-2 — the boot-time BYPASSRLS refusal, through the pooler
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-connection-reuse-was-demonstrated-not-assumed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Connection reuse was demonstrated, not assumed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-what-the-pooler-broke--three-defects-none-in-the-binding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. What the pooler broke — three defects, none in the binding
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. What the pooler broke — three defects, none in the binding">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-bf-27--the-store-boots-under-a-pooling-mode-that-cannot-run-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 BF-27 · the store boots under a pooling mode that cannot run it
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-bf-28--an-error-on-an-idle-pooled-connection-ends-the-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 BF-28 · an error on an idle pooled connection ends the process
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-bf-29--set-search_path-is-not-a-per-connection-guarantee-under-transaction-pooling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 BF-29 · SET search_path is not a per-connection guarantee under transaction pooling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-prepared-statements-and-discard-all--measured-nothing-found" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 Prepared statements and DISCARD ALL — measured, nothing found
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-indicative-cost-clearly-labelled" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Indicative cost, clearly labelled
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-honest-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Honest limits
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-proposed-backfixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Proposed backfixes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-reproduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Reproduction
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="seam-filter-ast-three-arm-validation-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Three-arm validation of the storage seam's filter AST: closing §8.5
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="seam-filter-re-operator-validation-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    T2.3 — the nine operators in SQL, and what turning re on found
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="seam-limit-and-projection-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    limit and projection across the seam — and two live API defects
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="seam-ordering-and-pagination-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ordering across the seam — and a live pagination defect in API v3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="seam-readoptions-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    readOptions across the seam — a bound that stops holding exactly where it matters
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="seam-write-path-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The write path across the seam — three divergences, and a vacuity trap in my own harness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sort-key-typing-corpus-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Are sort keys really "one type in practice"? — measured against the corpus
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="t25-postgres-backend-verification-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Verifying the T2.5 PostgreSQL backend — four predictions, two of them wrong
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tenant-resolution-adversarial-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Attacking tenant resolution — the half of isolation that runs before the database
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tenant-shared-state-audit-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module-level shared state: what T3.3 has to fix before it can exist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="v1-operator-census-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What API v1 operators clients actually send — the census behind T2.4's allowlist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-the-question-and-what-is-deliberately-not-re-asked" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. The question, and what is deliberately not re-asked
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0. The question, and what is deliberately not re-asked">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#verdicts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verdicts
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Setup
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#two-shapes-because-one-shape-cannot-answer-for-all-three-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two shapes, because one shape cannot answer for all three modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-mechanism-read-then-observed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The mechanism: read, then observed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-per-mode-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Per-mode results
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Per-mode results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#session-mode-queues-rather-than-failing-and-it-is-severe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        session mode queues rather than failing, and it is severe
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#statement-mode-the-adapter-boots-and-then-fails-everything" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        statement mode: the adapter boots and then fails everything
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-non-vacuity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Non-vacuity
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Non-vacuity">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#red-1--the-binding-made-session-scoped" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RED-1 — the binding, made session-scoped
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#red-2--the-boot-time-bypassrls-refusal-through-the-pooler" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RED-2 — the boot-time BYPASSRLS refusal, through the pooler
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-connection-reuse-was-demonstrated-not-assumed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Connection reuse was demonstrated, not assumed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-what-the-pooler-broke--three-defects-none-in-the-binding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. What the pooler broke — three defects, none in the binding
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. What the pooler broke — three defects, none in the binding">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-bf-27--the-store-boots-under-a-pooling-mode-that-cannot-run-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 BF-27 · the store boots under a pooling mode that cannot run it
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-bf-28--an-error-on-an-idle-pooled-connection-ends-the-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 BF-28 · an error on an idle pooled connection ends the process
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-bf-29--set-search_path-is-not-a-per-connection-guarantee-under-transaction-pooling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 BF-29 · SET search_path is not a per-connection guarantee under transaction pooling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-prepared-statements-and-discard-all--measured-nothing-found" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 Prepared statements and DISCARD ALL — measured, nothing found
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-indicative-cost-clearly-labelled" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Indicative cost, clearly labelled
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-honest-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Honest limits
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-proposed-backfixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Proposed backfixes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-reproduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Reproduction
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="pgbouncer-and-the-d3-tenant-binding--isolation-holds-and-two-of-the-three-modes-are-usable">pgbouncer and the D3 tenant binding — isolation holds, and two of the three modes are usable<a class="headerlink" href="#pgbouncer-and-the-d3-tenant-binding--isolation-holds-and-two-of-the-three-modes-are-usable" title="Permanent link">&para;</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Record</p>
+<p>Record as of 2026-09-15. A point-in-time document; it is not kept up to date.</p>
+</div>
+<blockquote>
+<p><strong>Snapshot — research as of 2026-09-15, measured against <code>crm-seam</code> <code>239f8c25</code> (modules unchanged at <code>29749d92</code>). Status: current — tenancy research, not on a shipping path; the three pooler defects in §6/§9 are open on the seam branch and are not in the register (their proposed ids collide — see §9). Current facts: <a href="../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan</a> §7.</strong></p>
+</blockquote>
+<p><em>Audience: contributors.</em></p>
+<p>Date: 2026-09-15 · Harness: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a79d969c34632122b787927642e8b5cfc4514c6c/tools/qc/pgbouncer-tenant-binding.js"><code>tools/qc/pgbouncer-tenant-binding.js</code></a>
+Under test: <code>crm-seam</code> at <strong><code>239f8c25</code></strong> ("Close the seam between the tenant reader and its
+writer"), read from an independent detached worktree. <strong>No shipping code was changed by this work
+and nothing was committed to the branch under test.</strong></p>
+<p><strong>The branch moved during this work and the findings still apply.</strong> <code>crm-seam</code> advanced to
+<code>29749d92</code> (T3.3 and T3.5 — per-tenant contexts and tenant socket rooms) while this ran;
+<code>git diff 239f8c25..29749d92</code> is <strong>empty</strong> for every module measured here —
+<code>lib/storage/postgres-storage.js</code>, <code>lib/storage/tenant-scope.js</code>, <code>lib/storage/postgres/</code>,
+<code>lib/api3/storage/pgCollection/</code>, <code>tests/support/postgres.js</code>,
+<code>tests/postgres-entries-rls.test.js</code> and <code>package.json</code> (checked with <code>git diff</code>, not assumed).</p>
+<p>Arms: real PostgreSQL <strong>16.14</strong> and a real <strong>pgbouncer 1.25.2</strong> in front of it, in each of its
+three pooling modes, connected as a <code>NOSUPERUSER NOBYPASSRLS</code> role against the <strong>emitted</strong> schema
+(<code>lib/storage/postgres/generated/entries.sql</code>) under <code>FORCE ROW LEVEL SECURITY</code>.</p>
+<p>This closes one row of the execution plan's <em>"What is still unmeasured"</em> table:</p>
+<blockquote>
+<p>| <strong>pgbouncer + <code>set_config(is_local)</code></strong> | T2.5 | {M} §6.7 says the pooler may be required; its interaction with transaction-scoped binding is untested |</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>ref</th>
+<th>document</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>{P}</strong></td>
+<td><a href="../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">multitenancy execution plan</a> — §7 the unmeasured table, and the <code>is_local</code> vacuity note above it</td>
+</tr>
+<tr>
+<td><strong>{T}</strong></td>
+<td><a href="t25-postgres-backend-verification-2026-09-15.html">T2.5 PostgreSQL backend verification</a> — house style, and the run this one follows</td>
+</tr>
+<tr>
+<td><strong>{M}</strong></td>
+<td><a href="../../30-design/tenancy/nightscout-multitenancy-discussion-2026-09-09.html">Nightscout multitenancy: evidence and options</a> — §6.7, the claim this checks</td>
+</tr>
+<tr>
+<td><strong>{B}</strong></td>
+<td><a href="../../30-design/remedial/nightscout-backfix-register.html">backfix register</a></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="0-the-question-and-what-is-deliberately-not-re-asked">0. The question, and what is deliberately not re-asked<a class="headerlink" href="#0-the-question-and-what-is-deliberately-not-re-asked" title="Permanent link">&para;</a></h2>
+<p>Tenant isolation on this backend rests on one statement in
+<code>lib/storage/postgres-storage.js</code> <code>runBound()</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">await</span><span class="w"> </span><span class="nx">client</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="s1">'BEGIN'</span><span class="p">);</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1">// is_local =&gt; true. The whole reason this is a transaction.</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="k">await</span><span class="w"> </span><span class="nx">client</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="s2">"SELECT set_config('app.current_tenant_id', $1, true)"</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="nx">uuid</span><span class="w"> </span><span class="p">]);</span>
+</code></pre></div>
+<p>and one predicate in the emitted DDL:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">USING</span><span class="w"> </span><span class="p">(</span><span class="n">tenant_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">NULLIF</span><span class="p">(</span><span class="n">current_setting</span><span class="p">(</span><span class="s1">'app.current_tenant_id'</span><span class="p">,</span><span class="w"> </span><span class="k">true</span><span class="p">),</span><span class="w"> </span><span class="s1">''</span><span class="p">)::</span><span class="n">uuid</span><span class="p">)</span>
+</code></pre></div>
+<p><code>tests/postgres-entries-rls.test.js</code> already proves this holds with <strong>no pooler</strong>, including that a
+connection handed back to node-postgres's own pool carries no binding, each check paired with a
+break. <strong>None of that is re-tested here.</strong> The only question asked is: <em>does the property survive a
+real pgbouncer in between, in each of its pooling modes?</em></p>
+<p>The failure being looked for is specific, and is the ordinary way RLS isolation dies in production.
+A pooler in <code>transaction</code> mode changes <strong>the unit of connection reuse</strong>: the server connection one
+client's transaction ran on is handed to a <em>different</em> client's next transaction. A session-scoped
+binding — <code>set_config(name, value, false)</code>, or a bare <code>SET</code> — would outlive the transaction that set
+it and be visible to whatever ran next on that backend. pgbouncer does <strong>not</strong> issue <code>DISCARD ALL</code>
+between transactions: <code>server_reset_query</code> is a <em>session</em>-mode reset unless <code>server_reset_query_always</code>
+is on, and it is off by default. That would be one tenant reading another tenant's glucose data with
+nothing logged and nothing raised.</p>
+<p>{P} is explicit that this was previously unmeasurable rather than measured:</p>
+<blockquote>
+<p>Breaking <code>set_config(…, is_local =&gt; true)</code> to <code>false</code> produced <strong>0 failures</strong> — because the
+adapter binds every operation anyway, so nothing distinguished a transaction-local binding from a
+session-local one. The entire argument for <code>is_local</code> … was unmeasured.</p>
+</blockquote>
+<p>Through a transaction-pooling pgbouncer, that same break now produces <strong>50 leaked rows in the serial
+probe and 250 in the concurrent one</strong> (§4). The property is measurable, and it is measured.</p>
+<h3 id="verdicts">Verdicts<a class="headerlink" href="#verdicts" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>question</th>
+<th>answer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Does isolation hold under <code>session</code> pooling?</td>
+<td><strong>yes</strong> — 0 cross-tenant rows, shared backend proven</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Does isolation hold under <code>transaction</code> pooling?</td>
+<td><strong>yes</strong> — 0 cross-tenant rows over 50 bound transactions and 50 unbound reads on one shared backend</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Does isolation hold under <code>statement</code> pooling?</td>
+<td><strong>not applicable — the backend cannot run there at all.</strong> <code>BEGIN</code> is refused <code>08P01</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Is the binding transaction-local in fact, not just in source?</td>
+<td><strong>yes</strong>, observed: no binding survives <code>COMMIT</code> onto the next client</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Can the probe go red?</td>
+<td><strong>yes</strong> in <code>transaction</code> mode (50 / 250 rows). <strong>No</strong> in <code>session</code> mode, and §4 says why and what carries the evidence instead</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Did the clients actually share a backend connection?</td>
+<td><strong>yes</strong>, by <code>pg_backend_pid()</code> and by pgbouncer's own <code>SHOW POOLS</code> / <code>SHOW SERVERS</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Three defects were found on the way, none of them in the binding.</strong> They are in §6 and proposed as
+BF-27, BF-28 and BF-29. BF-28 is the serious one.
+[2026-09-22: these ids were never filed; register BF-27, BF-28 and BF-29 are unrelated defects. The three pooler defects are open on the seam branch and unregistered, and the ids below are local labels only.]</p>
+<hr />
+<h2 id="1-setup">1. Setup<a class="headerlink" href="#1-setup" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>piece</th>
+<th>value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PostgreSQL</td>
+<td>16.14 (<code>postgres:16-alpine</code>), container <code>pool-pg</code>, host port 15438</td>
+</tr>
+<tr>
+<td>pgbouncer</td>
+<td>1.25.2 (<code>edoburu/pgbouncer</code>), container <code>pool-bouncer</code>, host port 16438</td>
+</tr>
+<tr>
+<td>role</td>
+<td><code>ns_test_app_&lt;random&gt;</code>, <code>NOSUPERUSER NOBYPASSRLS</code>, created per run by <code>tests/support/postgres.js</code></td>
+</tr>
+<tr>
+<td>schema</td>
+<td>one per arm, <code>CREATE SCHEMA … AUTHORIZATION &lt;role&gt;</code>, so <code>FORCE RLS</code> has an owner to subject</td>
+</tr>
+<tr>
+<td><code>default_pool_size</code></td>
+<td><strong>1</strong> for every isolation measurement</td>
+</tr>
+<tr>
+<td><code>query_wait_timeout</code></td>
+<td>15 s, so a pool of one queues visibly instead of hanging the run</td>
+</tr>
+<tr>
+<td><code>auth_type</code></td>
+<td><code>scram-sha-256</code>, userlist written at 0600 into a <code>mkdtemp</code> directory and deleted on exit</td>
+</tr>
+<tr>
+<td><code>server_reset_query</code></td>
+<td><code>DISCARD ALL</code>, <code>server_reset_query_always = 0</code> (both defaults, read back off the admin console)</td>
+</tr>
+<tr>
+<td><code>max_prepared_statements</code></td>
+<td>200 (the 1.25 default)</td>
+</tr>
+</tbody>
+</table>
+<p><code>default_pool_size = 1</code> is the load-bearing choice. With <strong>one</strong> server connection behind the pool,
+two clients <em>cannot</em> avoid sharing a backend, so a green isolation result is a result about a shared
+backend rather than about two clients that happened never to meet. That is the exact way this
+measurement would go vacuous, and §5 shows it did not.</p>
+<p>Every arm is driven through the <strong>shipping</strong> modules — <code>lib/storage/postgres-storage.js</code>,
+<code>lib/api3/storage/pgCollection/</code>, the emitted DDL — via <code>store.withTenant()</code> and
+<code>store.storageCollection(…).insertOne()</code>. Nothing is reimplemented.</p>
+<h3 id="two-shapes-because-one-shape-cannot-answer-for-all-three-modes">Two shapes, because one shape cannot answer for all three modes<a class="headerlink" href="#two-shapes-because-one-shape-cannot-answer-for-all-three-modes" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Serial handoff.</strong> One live client connection at a time. A client connects, binds a tenant,
+  commits and disconnects; then an <em>unbound</em> client connects and reads. With <code>default_pool_size = 1</code>
+  this forces the single server connection to be handed from one client to the next in <strong>every</strong>
+  pooling mode, which is the literal shape of the failure being looked for.</li>
+<li><strong>Concurrent interleave.</strong> Three live client connections — tenant A, tenant B, and an unbound
+  bystander — alternating short transactions through a pool of one. This is what a hoster actually
+  runs, and it is the shape transaction pooling exists for.</li>
+</ul>
+<p>The <strong>unbound bystander</strong> is the party that matters. The adapter has no unbound path — <code>query()</code>
+always binds — but a deployment has plenty of things that reach the database outside <code>withTenant()</code>:
+a health check, a monitoring query, a migration, and whatever code is written next. Under a
+transaction-local binding that reader is unbound, <code>NULLIF(…)</code> yields <code>NULL</code>, and RLS gives it zero
+rows. Under a session-local one it inherits whichever tenant used the backend last. Every row it can
+see is a row belonging to somebody else, so its row count <em>is</em> the leak count.</p>
+<hr />
+<h2 id="2-the-mechanism-read-then-observed">2. The mechanism: read, then observed<a class="headerlink" href="#2-the-mechanism-read-then-observed" title="Permanent link">&para;</a></h2>
+<p>Read: <code>postgres-storage.js:189</code> passes <code>true</code> as the third argument to <code>set_config</code>, which is
+<code>is_local</code> — <strong>transaction</strong>-local, not session-local. That is the correct choice under transaction
+pooling. It is also what <code>tenant-scope.js</code> and the file's own header say it is.</p>
+<p>Reading is not evidence. Observed, through the pooler, in each mode:</p>
+<ol>
+<li>A client binds tenant A, runs a read, commits and <strong>disconnects</strong>.</li>
+<li>A different client connects — onto the same backend, proven in §5 — and reads
+   <code>current_setting('app.current_tenant_id', true)</code> and then the <code>entries</code> table.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>mode</th>
+<th>binding seen by the next client (10 rounds)</th>
+<th>rows it could then read</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>session</td>
+<td><code>0/10</code> — none</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td>transaction</td>
+<td><code>0/10</code> — none</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td>statement</td>
+<td>n/a — the adapter cannot open a transaction at all</td>
+<td>n/a</td>
+</tr>
+</tbody>
+</table>
+<p>The adapter's own <code>store.pooledTenantBinding()</code> — which exists so that <code>is_local =&gt; true</code> can be
+<em>measured</em> rather than asserted — returns <code>null</code> after every committed transaction in both usable
+modes.</p>
+<hr />
+<h2 id="3-per-mode-results">3. Per-mode results<a class="headerlink" href="#3-per-mode-results" title="Permanent link">&para;</a></h2>
+<p><code>bound cross-tenant rows</code> counts every row a <strong>bound</strong> client saw that belongs to the other tenant.
+<code>unbound reader rows</code> counts every row the <strong>unbound</strong> bystander saw at all; each one would be a
+leak.</p>
+<table>
+<thead>
+<tr>
+<th>pool mode</th>
+<th>adapter boots</th>
+<th>explicit <code>BEGIN</code></th>
+<th>shared backend</th>
+<th>rounds</th>
+<th>bound cross-tenant rows</th>
+<th>unbound reader rows</th>
+<th>verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>session</strong></td>
+<td>yes</td>
+<td>accepted</td>
+<td><strong>yes</strong>, 1 pid</td>
+<td>10 serial + 2 concurrent</td>
+<td><strong>0</strong></td>
+<td><strong>0</strong></td>
+<td><strong>isolation holds</strong> — usable, with a caveat below</td>
+</tr>
+<tr>
+<td><strong>transaction</strong></td>
+<td>yes</td>
+<td>accepted</td>
+<td><strong>yes</strong>, 1 pid</td>
+<td>10 serial + 25 concurrent</td>
+<td><strong>0</strong></td>
+<td><strong>0</strong></td>
+<td><strong>isolation holds</strong> — this is the mode hosters want, and it works</td>
+</tr>
+<tr>
+<td><strong>statement</strong></td>
+<td><strong>boots</strong>, then every operation fails</td>
+<td><strong>REFUSED</strong> <code>08P01 transaction blocks not allowed in statement pooling mode</code></td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td><strong>cannot carry this backend at all</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The transaction-mode concurrent figure is over <strong>50 bound transactions and 50 unbound reads</strong>
+alternating between two tenants on <strong>one</strong> shared backend connection, with 5 rows per tenant
+present the whole time. Zero rows crossed in either direction.</p>
+<h3 id="session-mode-queues-rather-than-failing-and-it-is-severe"><code>session</code> mode queues rather than failing, and it is severe<a class="headerlink" href="#session-mode-queues-rather-than-failing-and-it-is-severe" title="Permanent link">&para;</a></h3>
+<p><code>session</code> pooling assigns a server connection to a client for the whole life of that client's
+connection. Three live clients against <code>default_pool_size = 1</code> therefore serialise at
+<em>client-connection</em> granularity, and the thing that eventually frees the server is node-postgres's
+own <code>idleTimeoutMillis</code> (10 s by default) closing an idle client. Measured:</p>
+<table>
+<thead>
+<tr>
+<th>mode</th>
+<th>concurrent interleave</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>transaction</td>
+<td><strong>25/25 rounds in 48 ms</strong> — 2 ms/round</td>
+</tr>
+<tr>
+<td>session</td>
+<td><strong>2/25 rounds in 80 119 ms</strong> — 40 060 ms/round</td>
+</tr>
+</tbody>
+</table>
+<p>That is roughly a 20 000× difference per round on the same work, and it is not a subtlety of the configuration: any
+deployment whose client-side pool is larger than its pgbouncer pool will do this. It is a
+<em>performance</em> result, not an isolation one — isolation held in every round that ran — but it is the
+reason <code>transaction</code> is the mode {M} §6.7 is talking about.</p>
+<h3 id="statement-mode-the-adapter-boots-and-then-fails-everything"><code>statement</code> mode: the adapter boots and then fails everything<a class="headerlink" href="#statement-mode-the-adapter-boots-and-then-fails-everything" title="Permanent link">&para;</a></h3>
+<p>This is a mismatch, and it is reported as one rather than worked around.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>explicit BEGIN/COMMIT in this mode : REFUSED [08P01] transaction blocks not allowed in statement pooling mode
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>--- statement / GREEN(shipping)
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>  boot                    : ok
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>  entries table in schema : FAILED [08P01] transaction blocks not allowed in statement pooling mode
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>  role through pooler     : FAILED [08P01] transaction blocks not allowed in statement pooling mode
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>  seed                    : FAILED [08P01] transaction blocks not allowed in statement pooling mode
+</code></pre></div>
+<p><strong><code>boot: ok</code> is the finding.</strong> <code>connect()</code> runs <code>assertNotBypassingRls()</code> and <code>ensureSchema()</code>, and
+every statement in both is a single statement outside a transaction — exactly what <code>statement</code>
+pooling allows. So the store is constructed, the boot-time safety check passes, the process reports
+itself healthy, and then <em>every</em> storage operation fails, because <code>runBound()</code> opens a transaction
+and <code>withTenant()</code> is the only way in. A deployment misconfigured this way comes up green and
+serves nothing. That is BF-27.</p>
+<p>No arm was re-run in another mode to obtain a green result.</p>
+<hr />
+<h2 id="4-non-vacuity">4. Non-vacuity<a class="headerlink" href="#4-non-vacuity" title="Permanent link">&para;</a></h2>
+<h3 id="red-1--the-binding-made-session-scoped">RED-1 — the binding, made session-scoped<a class="headerlink" href="#red-1--the-binding-made-session-scoped" title="Permanent link">&para;</a></h3>
+<p>The harness writes a <strong>copy</strong> of the shipping <code>postgres-storage.js</code> next to the original (so its
+relative <code>require</code> and <code>__dirname</code> still resolve) with one substitution:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="o">-</span><span class="w">  </span><span class="k">await</span><span class="w"> </span><span class="nx">client</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="s2">"SELECT set_config('app.current_tenant_id', $1, true)"</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="nx">uuid</span><span class="w"> </span><span class="p">]);</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="o">+</span><span class="w">  </span><span class="k">await</span><span class="w"> </span><span class="nx">client</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="s2">"SELECT set_config('app.current_tenant_id', $1, false)"</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="nx">uuid</span><span class="w"> </span><span class="p">]);</span>
+</code></pre></div>
+<p>and drives the entire battery through the copy. The shipping file is never opened for writing; the
+copy is deleted on exit, including on <code>SIGINT</code> and on an uncaught throw. Same pooler, same schema
+shape, same probes, same comparator.</p>
+<table>
+<thead>
+<tr>
+<th>mode</th>
+<th>probe</th>
+<th>GREEN (shipping)</th>
+<th>RED-1 (session-scoped)</th>
+<th>sensitive?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>transaction</strong></td>
+<td>bindings inherited by an unbound client</td>
+<td>0/10</td>
+<td><strong>10/10</strong></td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td><strong>transaction</strong></td>
+<td>rows that unbound client could read (serial)</td>
+<td>0</td>
+<td><strong>50</strong></td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td><strong>transaction</strong></td>
+<td>rows the unbound bystander read (concurrent)</td>
+<td>0</td>
+<td><strong>250</strong></td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td><strong>transaction</strong></td>
+<td>binding surviving <code>COMMIT</code> (<code>pooledTenantBinding()</code>)</td>
+<td>none</td>
+<td><strong><code>11111111-…</code></strong></td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td><strong>session</strong></td>
+<td>bindings inherited by an unbound client</td>
+<td>0/10</td>
+<td><strong>0/10</strong></td>
+<td><strong>NO</strong></td>
+</tr>
+<tr>
+<td><strong>session</strong></td>
+<td>rows that unbound client could read</td>
+<td>0</td>
+<td><strong>0</strong></td>
+<td><strong>NO</strong></td>
+</tr>
+<tr>
+<td><strong>session</strong></td>
+<td>binding surviving <code>COMMIT</code> (<code>pooledTenantBinding()</code>)</td>
+<td>none</td>
+<td><strong><code>11111111-…</code></strong></td>
+<td><strong>yes</strong></td>
+</tr>
+</tbody>
+</table>
+<p>In <code>transaction</code> mode the leak probes go red hard, and the leaked rows are named: both tenants'
+uuids appear, in both directions. The green result above them is therefore evidence.</p>
+<p><strong>In <code>session</code> mode the cross-client leak probe cannot go red, and saying so is the point.</strong> The
+reason was measured rather than guessed. A session-scoped GUC set outside a transaction was written
+by one client, that client disconnected, and the next client on the same backend read it back:</p>
+<table>
+<thead>
+<tr>
+<th>mode</th>
+<th>session GUC across a client disconnect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>session</td>
+<td><strong>cleared</strong></td>
+</tr>
+<tr>
+<td>transaction</td>
+<td><strong>SURVIVED</strong></td>
+</tr>
+</tbody>
+</table>
+<p>That is <code>server_reset_query = DISCARD ALL</code>, which pgbouncer issues when a <em>client</em> disconnects in
+session mode and does not issue between transactions in transaction mode
+(<code>server_reset_query_always = 0</code>). So under session pooling the pooler itself scrubs a session-local
+binding at the handoff boundary, and a deployment running session mode would be <em>accidentally</em> safe
+against the RED-1 defect. The evidence that <code>session</code> mode's green result is not vacuous is
+therefore the third row — <code>pooledTenantBinding()</code> still distinguishes the two adapters, because the
+leak is real <em>within</em> one client's own session, which is the axis the no-pooler suite already
+covers.</p>
+<p><strong>Do not read this as "session mode is safe, so <code>is_local</code> does not matter".</strong> It means session
+mode's safety here is supplied by pgbouncer's default <code>server_reset_query</code>, which is a configurable
+knob on someone else's component, and the transaction-mode number two rows up is what happens when
+that scrubbing is not there.</p>
+<h3 id="red-2--the-boot-time-bypassrls-refusal-through-the-pooler">RED-2 — the boot-time <code>BYPASSRLS</code> refusal, through the pooler<a class="headerlink" href="#red-2--the-boot-time-bypassrls-refusal-through-the-pooler" title="Permanent link">&para;</a></h3>
+<p>pgbouncer authenticates the client and then opens its <strong>own</strong> server connection. The question is not
+whether the check works — the shipping suite covers that — but whether a pooler in between hides the
+answer. <code>BYPASSRLS</code> was granted to the very role the run connects as, and the store was booted
+through the pooler:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>store refused to boot under BYPASSRLS : YES
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>error : PostgreSQL role "ns_test_app_…" is BYPASSRLS, so row-level security is not enforced for it
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>        and tenant isolation would be absent. Connect as a role that is NOSUPERUSER NOBYPASSRLS.
+</code></pre></div>
+<p><code>current_user</code> read through the pooler is the application role in every mode, with
+<code>rolsuper=false rolbypassrls=false</code>. The pooler does not launder the role.</p>
+<hr />
+<h2 id="5-connection-reuse-was-demonstrated-not-assumed">5. Connection reuse was demonstrated, not assumed<a class="headerlink" href="#5-connection-reuse-was-demonstrated-not-assumed" title="Permanent link">&para;</a></h2>
+<p>A green isolation result from two clients that never shared a server connection measures nothing.
+Two independent witnesses:</p>
+<p><strong><code>pg_backend_pid()</code>, read inside every bound transaction and by the bystander.</strong> In every arm that
+ran, across both tenants' clients and the unbound bystander, across serial and concurrent shapes:
+<strong>one distinct pid</strong>. Example, transaction mode, GREEN:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>SERIAL HANDOFF        : 10/10 rounds in 49 ms, 1 distinct backend pid(s) [395]
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>CONCURRENT INTERLEAVE : 25/25 rounds in 48 ms, 50 bound txns + 50 unbound reads
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>  SHARED BACKEND      : YES (1 distinct pid) [395]
+</code></pre></div>
+<p><strong>pgbouncer's own account</strong>, off the admin console:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>SHOW POOLS   : db=postgres user=ns_test_app_… cl_active=0 sv_active=0 sv_idle=1 sv_used=0 pool_mode=transaction
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>SHOW SERVERS : pid=395 state=idle
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>SHOW CONFIG  : default_pool_size="1" pool_mode="transaction" server_reset_query="DISCARD ALL"
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>               server_reset_query_always="0" max_prepared_statements="200" server_lifetime="3600"
+</code></pre></div>
+<p>One server connection existed for the pool, its backend pid is the pid both tenants' transactions
+ran on, and pgbouncer agrees.</p>
+<p>The whole battery was run <strong>four times</strong> while the harness was being built out. Every isolation
+number above reproduced exactly on each run — <code>0</code> green, <code>50</code> and <code>250</code> red, one backend pid. The
+per-round <em>timings</em> did not: the transaction-mode concurrent interleave came in at 39 ms, 48 ms,
+59 ms and 193 ms for the same 25 rounds, which is the ordinary noise of a loopback container and
+the reason §7 measures cost somewhere else.</p>
+<hr />
+<h2 id="6-what-the-pooler-broke--three-defects-none-in-the-binding">6. What the pooler broke — three defects, none in the binding<a class="headerlink" href="#6-what-the-pooler-broke--three-defects-none-in-the-binding" title="Permanent link">&para;</a></h2>
+<h3 id="61-bf-27--the-store-boots-under-a-pooling-mode-that-cannot-run-it">6.1 BF-27 · the store boots under a pooling mode that cannot run it<a class="headerlink" href="#61-bf-27--the-store-boots-under-a-pooling-mode-that-cannot-run-it" title="Permanent link">&para;</a></h3>
+<p>Covered in §3. <code>assertNotBypassingRls()</code> and <code>ensureSchema()</code> are transaction-free, so they pass
+under <code>statement</code> pooling and the store is handed back as ready. Every subsequent operation fails
+<code>08P01</code>.</p>
+<p><em>Fix</em>: an <code>assertTransactionsWork()</code> beside <code>assertNotBypassingRls()</code> — open a transaction, bind,
+roll back — so the store refuses to boot into a configuration where it cannot serve a single read.
+Both checks share the same rationale: the failure is otherwise invisible until it is a production
+outage.</p>
+<h3 id="62-bf-28--an-error-on-an-idle-pooled-connection-ends-the-process">6.2 BF-28 · an error on an idle pooled connection ends the process<a class="headerlink" href="#62-bf-28--an-error-on-an-idle-pooled-connection-ends-the-process" title="Permanent link">&para;</a></h3>
+<p><strong>This is the serious one, and it is not pgbouncer's fault.</strong> It is in this report because the
+pooler is what made it visible: the <code>statement</code> mode arms produced nine uncaught
+<code>Connection terminated unexpectedly</code> exceptions, and the only reason the harness survived to report
+anything is an <code>uncaughtException</code> instrument it carries for that purpose.</p>
+<p><code>pg-pool</code> re-emits an idle client's error on the Pool (<code>node_modules/pg-pool/index.js:62</code>,
+<code>pool.emit('error', err, client)</code>). Node's <code>EventEmitter</code> <strong>throws</strong> on an <code>'error'</code> event with no
+listener. <code>postgres-storage.js</code> registers <code>pool.on('connect', …)</code> and <strong>no <code>'error'</code> listener</strong> —
+grep confirms there is none anywhere under <code>lib/storage/</code> or <code>lib/api3/storage/</code>.</p>
+<p>Measured in three child processes, so "the process dies" is an exit code rather than an inference.
+The disconnect is a plain <code>pg_terminate_backend()</code>, which is what a failover, a restart, an
+idle-connection reaper, a pgbouncer restart or an operator does:</p>
+<table>
+<thead>
+<tr>
+<th>arm</th>
+<th>what it is</th>
+<th>exit</th>
+<th>outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>store</code></td>
+<td><strong>the shipping adapter's own pool</strong></td>
+<td><strong>1</strong></td>
+<td><code>throw er; // Unhandled 'error' event</code> — <code>terminating connection due to administrator command</code></td>
+</tr>
+<tr>
+<td><code>bare</code></td>
+<td>a <code>pg.Pool</code> with no <code>'error'</code> listener</td>
+<td><strong>1</strong></td>
+<td>identical — the mechanism alone</td>
+</tr>
+<tr>
+<td><code>handled</code></td>
+<td>the same pool <strong>with</strong> <code>pool.on('error')</code></td>
+<td><strong>0</strong></td>
+<td><code>POOL ERROR HANDLED: …</code> then <code>SURVIVED</code></td>
+</tr>
+</tbody>
+</table>
+<p>The third arm is the fix, demonstrated in the same run: one listener is the whole difference between
+a logged reconnect and a dead Nightscout.</p>
+<p><em>Scope, stated honestly</em>: this reproduces <strong>against a direct connection</strong> and is not caused by
+pgbouncer. A pooler adds ways to trigger it — pgbouncer restart or <code>RELOAD</code>, <code>client_idle_timeout</code>,
+and the <code>statement</code>-mode connection close above — but so does any database restart or failover, and
+a multitenant deployment on managed PostgreSQL will see those routinely. Severity is <strong>high</strong> on
+availability: a single tenant's database blip takes down every tenant on that process.</p>
+<p><em>Fix</em>: <code>pool.on('error', …)</code> on the Pool created in <code>connect()</code>, logging and no more. The MongoDB
+adapter has no equivalent exposure because the driver owns its own topology; this is a property of
+using <code>pg.Pool</code> directly.</p>
+<h3 id="63-bf-29--set-search_path-is-not-a-per-connection-guarantee-under-transaction-pooling">6.3 BF-29 · <code>SET search_path</code> is not a per-connection guarantee under transaction pooling<a class="headerlink" href="#63-bf-29--set-search_path-is-not-a-per-connection-guarantee-under-transaction-pooling" title="Permanent link">&para;</a></h3>
+<p><code>postgres-storage.js</code> issues <code>SET search_path</code> in two places, both <strong>outside</strong> any transaction:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nx">pool</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'connect'</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="p">(</span><span class="nx">client</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">  </span><span class="nx">client</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="sb">`SET search_path TO "</span><span class="si">${</span><span class="nx">schema</span><span class="si">}</span><span class="sb">"`</span><span class="p">)</span><span class="err">…</span><span class="w">      </span><span class="c1">// "Every connection in the pool"</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="p">});</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="err">…</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="k">await</span><span class="w"> </span><span class="nx">client</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="sb">`SET search_path TO "</span><span class="si">${</span><span class="nx">schema</span><span class="si">}</span><span class="sb">"`</span><span class="p">);</span><span class="w">  </span><span class="c1">// ensureSchema(), then the emitted DDL</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">exists</span><span class="p">.</span><span class="nx">rowCount</span><span class="p">)</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">client</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="nx">ddlFor</span><span class="p">(</span><span class="nx">specName</span><span class="p">));</span><span class="w">   </span><span class="c1">// CREATE TABLE entries — unqualified</span>
+</code></pre></div>
+<p>Under transaction pooling a statement outside a transaction <em>is</em> its own transaction, and the server
+connection it lands on is not the server connection the next statement from the same client lands
+on. <code>SET</code> is session state on the server, so the guarantee the <code>on('connect')</code> comment describes —
+<em>"Every connection in the pool, including ones created later"</em> — does not exist through pgbouncer.</p>
+<p>Demonstrated deterministically at <code>default_pool_size = 2</code>, by pinning the first server connection
+inside an open transaction held by another client so the fallback is certain rather than hoped for:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>before pinning : search_path=ns_test_searchpath_85cdf613  backend=351
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>                 unqualified SELECT   : resolved
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>pinned backend : 351 (held inside an open transaction by another client)
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>after pinning  : search_path="$user", public            backend=353
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>                 unqualified SELECT   : [42P01] relation "entries" does not exist
+</code></pre></div>
+<p><em>Why it did not bite the measurements above</em>: <code>tableFor()</code> qualifies every table name
+(<code>"schema"."entries"</code>), so ordinary reads and writes do not consult <code>search_path</code> at all, and every
+arm in §3 ran at <code>default_pool_size = 1</code> where there is no second server to land on. The exposure is
+<code>ensureSchema()</code> at boot under a pool larger than one: its <code>SET</code> and its unqualified
+<code>CREATE TABLE entries</code> can reach different backends. The usual outcome is loud — <code>42P01</code>, or
+<code>permission denied for schema public</code>, since PostgreSQL 15 removed the public <code>CREATE</code> grant. The
+outcome that is <strong>not</strong> loud is a deployment where a schema named after the role exists, in which
+case the emitted table is created in the wrong namespace and nothing complains.</p>
+<p><em>Fix</em>: qualify the DDL, or run <code>ensureSchema()</code>'s <code>SET</code> and DDL inside one explicit transaction, and
+delete the <code>pool.on('connect')</code> handler rather than leave a comment promising something the pooler
+does not provide. Severity <strong>medium</strong>: boot-time, usually loud, and only under a pool larger than
+one.</p>
+<h3 id="64-prepared-statements-and-discard-all--measured-nothing-found">6.4 Prepared statements and <code>DISCARD ALL</code> — measured, nothing found<a class="headerlink" href="#64-prepared-statements-and-discard-all--measured-nothing-found" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>The adapter uses no named prepared statements.</strong> Every query it issues is an unnamed
+  extended-protocol statement (<code>client.query(text, params)</code>); grep found no <code>{ name: … }</code> query
+  object anywhere in <code>lib/storage/</code> or <code>lib/api3/storage/</code>. pgbouncer's historic transaction-mode
+  weak point is therefore not reachable from this code today.</li>
+<li><strong>Named prepared statements work anyway</strong> in all three modes on pgbouncer 1.25.2, including
+  <code>statement</code>, with <code>max_prepared_statements = 200</code> (the 1.25 default): four uses of the same named
+  statement across four separate acquisitions succeeded. Recorded for whoever adds one later; it is
+  a property of pgbouncer ≥ 1.21, not of this codebase.</li>
+<li><strong><code>server_reset_query = DISCARD ALL</code> runs on client disconnect in <code>session</code> mode and not between
+  transactions in <code>transaction</code> mode</strong>, confirmed by the GUC probe in §4. This is what makes
+  <code>is_local =&gt; true</code> load-bearing rather than stylistic, and it is why a future operator who sets
+  <code>server_reset_query_always = 1</code> would be <em>masking</em> a defect rather than fixing one.</li>
+</ul>
+<hr />
+<h2 id="7-indicative-cost-clearly-labelled">7. Indicative cost, clearly labelled<a class="headerlink" href="#7-indicative-cost-clearly-labelled" title="Permanent link">&para;</a></h2>
+<p>{P} says the pooler "may be required", so the per-operation cost of the extra hop is useful context.
+It is <strong>not a benchmark</strong>: one machine, one run, loopback TCP, a ten-row table entirely in cache, no
+TLS, no load, and a single client at <code>default_pool_size = 20</code> — the pooler doing its ordinary job
+rather than the pathological pool of one used for the isolation work.</p>
+<table>
+<thead>
+<tr>
+<th>arm</th>
+<th>p50</th>
+<th>p90</th>
+<th>p99</th>
+<th>mean</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>through pgbouncer (<code>transaction</code>)</td>
+<td><strong>0.338 ms</strong></td>
+<td>0.682 ms</td>
+<td>1.504 ms</td>
+<td>0.427 ms</td>
+</tr>
+<tr>
+<td>direct to PostgreSQL</td>
+<td><strong>0.270 ms</strong></td>
+<td>0.462 ms</td>
+<td>0.889 ms</td>
+<td>0.318 ms</td>
+</tr>
+<tr>
+<td><strong>p50 overhead of the extra hop</strong></td>
+<td><strong>0.068 ms</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>n = 2000 per arm, one bound read (<code>withTenant</code> → <code>BEGIN</code> → <code>set_config</code> → <code>SELECT count(*)</code> →
+<code>COMMIT</code>), back to back, same process, same table.</p>
+<p>The isolation arms' own latency figures are <strong>not</strong> usable for this and are excluded: they are taken
+with three live clients contending for a pool of one, and two runs of the same harness put the
+transaction-mode pooled p50 at 0.74 ms and 2.85 ms. The direction was consistent across every run
+(pooled is slower); the magnitude was not, which is exactly why the cost note is measured separately
+and why it should not be quoted as a figure for a loaded system. <strong>The situation a pooler is added
+for — many more clients than server connections — is not measured here at all.</strong></p>
+<hr />
+<h2 id="8-honest-limits">8. Honest limits<a class="headerlink" href="#8-honest-limits" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>One pgbouncer (1.25.2) and one PostgreSQL (16.14).</strong> <code>max_prepared_statements</code> defaulting to
+  200 is a 1.24+ behaviour; on an older pgbouncer the named-statement result in §6.4 would differ.
+  The <code>is_local</code> result does not depend on either version — it is a property of PostgreSQL's
+  transaction semantics — but the statements about pgbouncer's defaults are statements about this
+  build.</li>
+<li><strong>pgbouncer only.</strong> Odyssey, pgcat, RDS Proxy, Supavisor and PgDog all pool differently; none was
+  tested. A hoster using one of those has not had this question answered.</li>
+<li><strong><code>session</code> mode's concurrent interleave completed 2 of 25 rounds</strong> before the wall-clock budget
+  stopped it, because that configuration queues for ~40 s per round. Session mode's isolation
+  evidence therefore rests on the <strong>serial handoff</strong> (10/10 rounds, shared backend proven), not on
+  the concurrent shape. And the cross-client leak probe is <strong>insensitive</strong> in session mode (§4) —
+  that arm's green result is carried by <code>pooledTenantBinding()</code> alone.</li>
+<li><strong><code>default_pool_size = 1</code> throughout the isolation work.</strong> That is what makes backend sharing
+  certain, but it is not a realistic production setting, and it means nothing here exercises the
+  case where pgbouncer holds <em>several</em> server connections with different residual session state.</li>
+<li><strong>One collection.</strong> <code>entries</code> is the only collection with an emitted PostgreSQL schema, so every
+  row counted above is an <code>entries</code> row.</li>
+<li><strong>No TLS and no <code>LISTEN</code>.</strong> {P} already records, from {DB} §10.3, that transaction-mode pooling
+  accepts <code>LISTEN</code> and silently delivers nothing — that is T4.3's problem and was not re-verified
+  here. TLS adds CPU to the per-operation term the cost model rests on and is still unmeasured, as
+  {P} §7's first row says.</li>
+<li><strong>Nothing was driven over HTTP.</strong> Every arm reaches the adapter directly through
+  <code>store.withTenant()</code>; express, the router, <code>lib/server/entries.js</code> and the tenant middleware are
+  not in the loop. BF-27's "the process reports itself healthy" is read from <code>connect()</code> rather than
+  observed against a running server.</li>
+<li><strong>BF-28's severity is an argument, not a measurement.</strong> That the process dies is measured. That a
+  managed-PostgreSQL deployment sees such disconnects routinely is an expectation about operations,
+  and a maintainer should weigh it.</li>
+<li><strong>The <code>statement</code>-mode arms leave <code>boot: ok</code> in the summary table.</strong> That is accurate and it is
+  the finding; it is not a green isolation result and is not counted as one.</li>
+</ul>
+<hr />
+<h2 id="9-proposed-backfixes">9. Proposed backfixes<a class="headerlink" href="#9-proposed-backfixes" title="Permanent link">&para;</a></h2>
+<p><code>BF-01</code>–<code>BF-26</code> were taken in {B} on 2026-09-15; these were proposed as the next three.
+[Correction 2026-09-22: see §0 — these ids collide with different register entries; treat them as local labels. Status of all three: open, seam branch, not registered.]</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>defect</th>
+<th>where</th>
+<th>severity</th>
+<th>status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>BF-27</strong></td>
+<td>The store boots successfully under a pooling mode that cannot run it; <code>assertNotBypassingRls()</code> and <code>ensureSchema()</code> are transaction-free, so <code>statement</code> pooling passes boot and then fails every storage operation <code>08P01</code></td>
+<td><code>lib/storage/postgres-storage.js</code> <code>connect()</code></td>
+<td>medium — a misconfigured deployment reports healthy and serves nothing</td>
+<td>open</td>
+</tr>
+<tr>
+<td><strong>BF-28</strong></td>
+<td>The <code>pg.Pool</code> has no <code>'error'</code> listener, so an error on an <strong>idle</strong> pooled connection is an unhandled <code>'error'</code> event and ends the process</td>
+<td><code>lib/storage/postgres-storage.js</code> <code>connect()</code></td>
+<td><strong>high</strong> — availability; one database blip kills the process for every tenant on it</td>
+<td>open</td>
+</tr>
+<tr>
+<td><strong>BF-29</strong></td>
+<td><code>SET search_path</code> is issued outside a transaction in <code>pool.on('connect')</code> and in <code>ensureSchema()</code>, which is not a per-connection guarantee under transaction pooling; <code>ensureSchema()</code>'s unqualified DDL depends on it</td>
+<td><code>lib/storage/postgres-storage.js</code> <code>connect()</code> / <code>ensureSchema()</code></td>
+<td>medium — boot-time, usually loud, only at <code>default_pool_size &gt; 1</code></td>
+<td>open</td>
+</tr>
+</tbody>
+</table>
+<p>None of them is a defect in the tenant binding, and none of them changes the answer in §3.</p>
+<hr />
+<h2 id="10-reproduction">10. Reproduction<a class="headerlink" href="#10-reproduction" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>git<span class="w"> </span>-C<span class="w"> </span>&lt;crm-seam&gt;<span class="w"> </span>worktree<span class="w"> </span>add<span class="w"> </span>--detach<span class="w"> </span>&lt;crm-pool&gt;<span class="w"> </span>239f8c25
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>ln<span class="w"> </span>-s<span class="w"> </span>../crm-seam/node_modules<span class="w"> </span>&lt;crm-pool&gt;/node_modules<span class="w">   </span><span class="c1"># worktrees do not share one</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>docker<span class="w"> </span>network<span class="w"> </span>create<span class="w"> </span>pool-net
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>--name<span class="w"> </span>pool-pg<span class="w"> </span>--network<span class="w"> </span>pool-net<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">  </span>-e<span class="w"> </span><span class="nv">POSTGRES_PASSWORD</span><span class="o">=</span><span class="s2">"</span><span class="nv">$PGPASSWORD</span><span class="s2">"</span><span class="w"> </span>-p<span class="w"> </span><span class="m">15438</span>:5432<span class="w"> </span>postgres:16-alpine
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="nb">cd</span><span class="w"> </span>tools/qc<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>npm<span class="w"> </span>install
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="nv">PGPASSWORD</span><span class="o">=</span>…<span class="w"> </span><span class="nv">WORKTREE</span><span class="o">=</span>&lt;crm-pool&gt;<span class="w"> </span>node<span class="w"> </span>pgbouncer-tenant-binding.js
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="c1"># or one mode: session | transaction | statement</span>
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="c1"># env: ROUNDS, LATENCY_ITERS, LATENCY_NOTE_ITERS, BUDGET_MS, SKIP_RED, POOL_PORT</span>
+</code></pre></div>
+<p>pgbouncer is started and stopped <strong>by the harness</strong>, once per pooling mode, from a config directory
+it creates under <code>$TMPDIR</code>.</p>
+<p><strong>No credential is stored anywhere.</strong> The harness exits <code>2</code> with instructions if <code>PGPASSWORD</code> is
+unset. The superuser password is read from the environment and never written. The unprivileged role
+the run connects as is created per run by
+<code>tests/support/postgres.js</code> (not in the repository) with a
+password that exists only in the process's memory — reused rather than reimplemented, because RLS is
+silently not enforced for a superuser and a run that connected as one would have measured nothing.
+pgbouncer needs that password in a <code>userlist.txt</code>; the harness writes it at <code>0600</code> into a <code>mkdtemp</code>
+directory outside the repository and removes it in a <code>finally</code>, on <code>SIGINT</code>, and on an uncaught
+throw — together with the RED-1 adapter copy and the pgbouncer container.</p>
+<p>Run this only against a throwaway database. The harness creates roles and schemas and drops them.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
