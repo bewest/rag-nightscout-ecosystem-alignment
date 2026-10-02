@@ -11386,9 +11386,8 @@ items:
     title: "tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3)"
     parcel: register-open
     repo: rag-nightscout-ecosystem-alignment
-    branch: lab/proxy-trust-ws
+    branch: main
     base: main
-    worktree: ../rag-alignment-proxy-trust-ws
     state: ready-to-push
     pr: []
     blast_radius: >

@@ -2200,7 +2200,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `DEPENDABOT-CONFIG` | Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev | `needs-decision` | `-` | n/a | 1 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `merged-upstream` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
-| `WS-LAB` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | `ready-to-push` | `lab/proxy-trust-ws` | n/a | 1 run + 1 no-gate |
+| `WS-LAB` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | `ready-to-push` | `main` | n/a | 1 run + 1 no-gate |
 | `OID-PREVALENCE` | Count string _ids and twin pairs per collection in real data, counts only | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `BFQ-129` | BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500 | `merged-upstream` | `bf/entries-unknown-id` | patch | 1 run |
 | `OID-UNUSABLE-ID-OTHER-PATHS` | Websocket dbAdd and API v3 POST store an unusable _id as given; drop it as BF-115 does for v1 | `not-started` | `-` | patch | 0 run + 1 no-gate |
@@ -4891,9 +4891,9 @@ distinction is the only thing that makes the register mean anything - widening
 |---|---|
 | state (claimed) | `ready-to-push` |
 | repo | `rag-nightscout-ecosystem-alignment` |
-| branch | `lab/proxy-trust-ws` |
+| branch | `main` |
 | base | `main` |
-| worktree | `../rag-alignment-proxy-trust-ws` |
+| worktree | `-` |
 | semver | `n/a` |
 | review | maintainer |
 

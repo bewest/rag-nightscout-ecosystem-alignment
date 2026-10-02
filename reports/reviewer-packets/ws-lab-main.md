@@ -18,7 +18,7 @@
 | | |
 |---|---|
 | repository | `rag-nightscout-ecosystem-alignment` |
-| branch | `lab/proxy-trust-ws` |
+| branch | `main` |
 | base | `main` |
 | claimed state | `ready-to-push` — a claim; `make queue-status ID=WS-LAB` is the measurement |
 | semver | `n/a` |
