@@ -81,11 +81,10 @@ questions:
 2. **GOVERNANCE-TODAY gaps only the foundation can fill**: how spending is approved, who holds which
    repository and domain rights, how a submitted proposal is tracked. The page lists them as open
    rather than guessing.
-3. **Whether HISTORY names founders and early authors** where primary sources name them, or uses
-   roles throughout.
-4. **Financial filings in GOVERNANCE-TODAY.** ProPublica has no Form 990 data for the foundation, and
-   the page says so. The IRS master file also lists a 990-N filing requirement (code 02); it is left
-   out of the page until you decide whether the foundation should state its own filing position.
+3. **Names in HISTORY.** Decided by the maintainer, 2026-10-02: roles throughout. Publication
+   citations (author et al.) and source URLs are kept as citations.
+4. **Financial filings in GOVERNANCE-TODAY.** Decided by the maintainer, 2026-10-02: the IRS master
+   file's 990-N filing requirement stays out. The page says only that ProPublica has no Form 990 data.
 5. **GOVERNANCE-TODAY §7** lists five facts only the foundation can supply (bylaws and
    conflict-of-interest policy access, the request committee, spending approval, holdings,
    sponsorship records); a board member could fill them.
