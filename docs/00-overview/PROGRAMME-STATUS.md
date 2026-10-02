@@ -104,8 +104,8 @@ If a defect marked `fixed` or `merged` exists in 15.0.8, anyone running 15.0.8 s
 
 The size of that, from the register's §1 (the section whose defects reach existing operators),
 measured 2026-10-02 with `node tools/queue/gates/register-exposure-legend.js`: **112 defects**
-(BF-12, invalid, and BF-41, closed, excluded) — 24 `open`, 82 `merged`, 1 `partly merged`,
-5 `fixed` (BF-52; BF-09, BF-50, BF-51 and BF-156 on unmerged branches). A few were introduced and repaired on `dev` before any release (BF-80, BF-106 and
+(BF-12, invalid, and BF-41, closed, excluded) — 23 `open`, 82 `merged`, 1 `partly merged`,
+6 `fixed` (BF-52; BF-09, BF-50, BF-51, BF-94 and BF-156 on unmerged branches). A few were introduced and repaired on `dev` before any release (BF-80, BF-106 and
 BF-142, as of 2026-09-26), so they never reached 15.0.8. The count moves when entries are filed or
 merged; re-run the gate before quoting it.
 
@@ -175,7 +175,7 @@ cover more than one `BF-`:
 | `BFQ-91` | `merged-upstream` | BF-91 - connector capture mode cannot find trace-axios for two sources |
 | `BFQ-92` | `not-started` | BF-92 - a page with no glucose reading never presents a server alarm, including device ala |
 | `BFQ-93` | `not-started` | BF-93 - food changes never reach an open page |
-| `BFQ-94` | `unsettled` | BF-94 - a kept profile instance can return a temp basal that has been replaced |
+| `BFQ-94` | `ready-to-push` | BF-94 - a kept profile instance can return a temp basal that has been replaced |
 | `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm |
 | `BFQ-98` | `merged-upstream` | BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix does not rep |
 | `BFQ-99` | `blocked` | bf/profile-object-id - a profile posted with its own _id is stored as an ObjectId, and str |
@@ -199,7 +199,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  | 17 |  | 1 |  |  |  | **22** |
 | `release-train` | 5 |  | 5 |  | 5 |  | 13 | 2 | 1 |  |  | 1 | **32** |
-| `register-open` | 27 | 3 | 3 | 2 | 7 | 1 | 49 | 5 |  | 1 | 2 |  | **100** |
+| `register-open` | 27 | 3 | 3 | 3 | 7 | 1 | 49 | 5 |  |  | 2 |  | **100** |
 | `tenancy` | 9 |  |  | 1 | 7 |  |  | 1 |  | 1 |  |  | **19** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  | 2 |  |  |  | **10** |
 | `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |

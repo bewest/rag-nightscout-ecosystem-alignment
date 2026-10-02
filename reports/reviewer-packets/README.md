@@ -26,6 +26,7 @@ repository.
 | [`BFQ-09`](bfq-09-bf-socket-dedup-zero.md) | #8797 | `in-flight-upstream` | BF-09 - socket dedup truthiness skips a falsy value |
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | [`BFQ-152`](bfq-152.md) | &mdash; | `needs-decision` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission |
+| [`BFQ-94`](bfq-94-bf-profile-temp-cache.md) | &mdash; | `ready-to-push` | BF-94 - a kept profile instance can return a temp basal that has been replaced |
 | [`BFQ-95`](bfq-95.md) | &mdash; | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm |
 | [`BFQ-CONFIG-DOCS`](bfq-config-docs-bf-config-docs-truth.md) | &mdash; | `ready-to-push` | bf/config-docs-truth - documentation for BF-46, BF-48, BF-49, BF-74, BF-78, BF-81 and the fixes for BF-50, BF-51, for 15.0.9 |
 | [`DEPENDABOT-CONFIG`](dependabot-config.md) | &mdash; | `needs-decision` | Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev |

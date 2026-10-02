@@ -6630,10 +6630,10 @@ items:
     title: BF-94 - a kept profile instance can return a temp basal that has been replaced
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
-    base: origin/dev@74fc6619
-    worktree: externals/cgm-remote-monitor-official
-    state: unsettled
+    branch: bf/profile-temp-cache
+    base: official/dev@ca6fcfaf
+    worktree: externals/work/crm-bf94-fix
+    state: ready-to-push
     ships_to_operators_today: true
     blast_radius: >
       lib/profilefunctions.js:19 (module-scope prevBasalTreatment), :455-456 (the
@@ -6664,6 +6664,16 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/bf09-dedup-zero-measurement-2026-09-23.md
     notes: >
+      2026-10-02 (session -d4): measured in a browser and fixed. Severity:
+      moderate, display only (basal pill and line keep a cancelled or
+      shortened temp on an open page; a reload is right). Branch
+      bf/profile-temp-cache 2a64c500, one commit on dev ca6fcfaf
+      (lib/profilefunctions.js +6/-1; tests/profile-temp-cache.test.js, 4
+      tests, 3 fail on ca6fcfaf; break-it: reset only fails test 3,
+      per-instance only fails 1-2). Full suite 3538/0/4. Harness
+      tools/lab/bf94-browser/ (run 2 authoritative). PR body:
+      reports/phase0-pr-bodies/profile-temp-cache.md. Whether it goes into
+      15.0.9 is being put to the maintainer; not in RT-0's blocks_on.
       Filed 2026-09-23, a side finding of the BF-09 measurement. Not BF-09.
 
   - id: BFQ-95

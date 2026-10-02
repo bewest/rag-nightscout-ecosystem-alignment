@@ -44,13 +44,13 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `not-started` | 51 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-124, BFQ-127, BFQ-137, BFQ-145, BFQ-149, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
 | `in-progress` | 3 | BFQ-46, BFQ-ENV, OID-LAB |
 | `gate-not-met` | 9 | RT-REBASE, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
-| `ready-to-push` | 4 | P0-C-REMEDIATE, T30-AUTH, BFQ-CONFIG-DOCS, WS-LAB |
+| `ready-to-push` | 5 | P0-C-REMEDIATE, T30-AUTH, BFQ-94, BFQ-CONFIG-DOCS, WS-LAB |
 | `blocked` | 19 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, BFQ-72, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-154, BFQ-156 |
 | `in-flight-upstream` | 1 | BFQ-09 |
 | `merged-upstream` | 81 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-125, BFQ-126, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 8 | RT-PROPAGATION, RT-0, T30-RESEARCH, BFQ-95, ADV-XSS-META, ADV-CONFIG, BFQ-152, DEPENDABOT-CONFIG |
 | `done` | 4 | P0-TAG, DOC-VIEWS, DOC-LINKS, RT-SOAK |
-| `unsettled` | 2 | A7A-7, BFQ-94 |
+| `unsettled` | 1 | A7A-7 |
 | `closed` | 2 | BFQ-41, BFQ-141 |
 | `answered` | 1 | RT-D3 |
 
@@ -2149,7 +2149,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-90` | BF-90 - an alarm at a page with no reading throws in the client | `merged-upstream` | `bf3/alarm-no-reading` | patch | 1 run + 2 no-gate |
 | `BFQ-92` | BF-92 - a page with no glucose reading never presents a server alarm, including device alarms | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `BFQ-93` | BF-93 - food changes never reach an open page | `not-started` | `-` | patch | 0 run + 1 no-gate |
-| `BFQ-94` | BF-94 - a kept profile instance can return a temp basal that has been replaced | `unsettled` | `-` | patch | 0 run + 1 no-gate |
+| `BFQ-94` | BF-94 - a kept profile instance can return a temp basal that has been replaced | `ready-to-push` | `bf/profile-temp-cache` | patch | 0 run + 1 no-gate |
 | `BFQ-95` | BF-95 - an uploader clock running ahead delays the stale-data alarm | `needs-decision` | `-` | minor | 0 run + 1 no-gate |
 | `BFQ-96` | BF-96 - the headless test fixture's bundle cache key is an un-normalised path | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `BFQ-67` | BF-67, BF-86 - alarm thresholds quietly changed, or quietly kept when they cannot work | `gate-not-met` | `-` | minor | 1 run + 1 no-gate |
@@ -3209,11 +3209,11 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `unsettled` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
-| base | `origin/dev@74fc6619` |
-| worktree | `externals/cgm-remote-monitor-official` |
+| branch | `bf/profile-temp-cache` |
+| base | `official/dev@ca6fcfaf` |
+| worktree | `externals/work/crm-bf94-fix` |
 | semver | `patch` |
 | review | maintainer |
 | ships to operators today | **yes** |
@@ -3234,7 +3234,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/60-research/remedial/bf09-dedup-zero-measurement-2026-09-23.md`
 
-**Notes.** Filed 2026-09-23, a side finding of the BF-09 measurement. Not BF-09.
+**Notes.** 2026-10-02 (session -d4): measured in a browser and fixed. Severity: moderate, display only (basal pill and line keep a cancelled or shortened temp on an open page; a reload is right). Branch bf/profile-temp-cache 2a64c500, one commit on dev ca6fcfaf (lib/profilefunctions.js +6/-1; tests/profile-temp- cache.test.js, 4 tests, 3 fail on ca6fcfaf; break-it: reset only fails test 3, per-instance only fails 1-2). Full suite 3538/0/4. Harness tools/lab/bf94-browser/ (run 2 authoritative). PR body: reports/phase0-pr- bodies/profile-temp-cache.md. Whether it goes into 15.0.9 is being put to the maintainer; not in RT-0's blocks_on. Filed 2026-09-23, a side finding of the BF-09 measurement. Not BF-09.
 
 ### `BFQ-95` &mdash; BF-95 - an uploader clock running ahead delays the stale-data alarm
 
