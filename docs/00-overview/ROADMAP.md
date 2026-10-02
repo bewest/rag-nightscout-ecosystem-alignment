@@ -56,7 +56,7 @@ release.
 
 | id | what | claimed state | waiting for | PR |
 |---|---|---|---|---|
-| `BFQ-155` | BF-155 - a failed storage read on GET /api/v1/activity ends the server process,  | `in-progress` | Maintainer | &mdash; |
+| `BFQ-155` | BF-155 - a failed storage read on GET /api/v1/activity ends the server process,  | `ready-to-push` | Maintainer | &mdash; |
 
 <!-- END GENERATED: release-waits -->
 

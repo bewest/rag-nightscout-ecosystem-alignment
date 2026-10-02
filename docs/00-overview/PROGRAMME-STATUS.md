@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 130 | 37 | 9 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 130 | 37 | 10 |
 | **Modernization** | `release-train` | 32 | 5 | 2 |
 | **Multitenant** | `tenancy` | 19 | 9 | 3 |
-| | **total** | **183** | **51** | **14** |
+| | **total** | **183** | **51** | **15** |
 
 <!-- END GENERATED: horizons -->
 
@@ -105,8 +105,8 @@ If a defect marked `fixed` or `merged` exists in 15.0.8, anyone running 15.0.8 s
 
 The size of that, from the register's §1 (the section whose defects reach existing operators),
 measured 2026-10-02 with `node tools/queue/gates/register-exposure-legend.js`: **111 defects**
-(BF-12, invalid, and BF-41, closed, excluded) — 28 `open`, 81 `merged`, 1 `partly merged`,
-1 `fixed` (BF-52). A few were introduced and repaired on `dev` before any release (BF-80, BF-106 and
+(BF-12, invalid, and BF-41, closed, excluded) — 27 `open`, 81 `merged`, 1 `partly merged`,
+2 `fixed` (BF-52; BF-155 on its 15.0.9 branch). A few were introduced and repaired on `dev` before any release (BF-80, BF-106 and
 BF-142, as of 2026-09-26), so they never reached 15.0.8. The count moves when entries are filed or
 merged; re-run the gate before quoting it.
 
@@ -162,7 +162,7 @@ cover more than one `BF-`:
 | `BFQ-149` | `not-started` | BF-149 - the Day to Day report draws a cancelled or replaced temp target or override for i |
 | `BFQ-152` | `needs-decision` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier |
 | `BFQ-154` | `blocked` | BF-154 - node-forge 1.4.0 (pinned in overrides) is inside an advisory range with no fixed  |
-| `BFQ-155` | `in-progress` | BF-155 - a failed storage read on GET /api/v1/activity ends the server process, for 15.0.9 |
+| `BFQ-155` | `ready-to-push` | BF-155 - a failed storage read on GET /api/v1/activity ends the server process, for 15.0.9 |
 | `BFQ-40` | `merged-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `gate-not-met` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
 | `BFQ-47` | `merged-upstream` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
@@ -199,7 +199,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  | 17 |  | 1 |  |  |  | **22** |
 | `release-train` | 5 |  | 5 |  | 5 | 13 | 2 | 1 |  |  | 1 | **32** |
-| `register-open` | 27 | 2 | 5 | 1 | 6 | 48 | 5 |  | 2 | 2 |  | **98** |
+| `register-open` | 27 | 1 | 5 | 2 | 6 | 48 | 5 |  | 2 | 2 |  | **98** |
 | `tenancy` | 9 |  |  | 1 | 7 |  | 1 |  | 1 |  |  | **19** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  | 2 |  |  |  | **10** |
 | `backfix2` |  |  |  |  |  | 2 |  |  |  |  |  | **2** |

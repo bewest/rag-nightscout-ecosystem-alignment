@@ -32,19 +32,19 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 183 |
-| runnable gates | 248 |
+| runnable gates | 249 |
 | explicit `no-gate:` markers | 238 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 238 of the 486 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 238 of the 487 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
 | `not-started` | 51 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-124, BFQ-127, BFQ-137, BFQ-145, BFQ-149, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
-| `in-progress` | 2 | BFQ-155, OID-LAB |
+| `in-progress` | 1 | OID-LAB |
 | `gate-not-met` | 11 | RT-REBASE, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
-| `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
+| `ready-to-push` | 4 | P0-C-REMEDIATE, T30-AUTH, BFQ-155, WS-LAB |
 | `blocked` | 18 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, BFQ-72, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-154 |
 | `merged-upstream` | 80 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-125, BFQ-126, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 8 | RT-PROPAGATION, RT-0, T30-RESEARCH, BFQ-95, ADV-XSS-META, ADV-CONFIG, BFQ-152, DEPENDABOT-CONFIG |
@@ -2197,7 +2197,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-152` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission | `needs-decision` | `-` | n/a | 0 run + 1 no-gate |
 | `DEPENDABOT-CONFIG` | Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev | `needs-decision` | `-` | n/a | 1 run + 1 no-gate |
 | `BFQ-154` | BF-154 - node-forge 1.4.0 (pinned in overrides) is inside an advisory range with no fixed release | `blocked` | `-` | patch | 0 run + 1 no-gate |
-| `BFQ-155` | BF-155 - a failed storage read on GET /api/v1/activity ends the server process, for 15.0.9 | `in-progress` | `bf/activity-read-error` | patch | 0 run + 1 no-gate |
+| `BFQ-155` | BF-155 - a failed storage read on GET /api/v1/activity ends the server process, for 15.0.9 | `ready-to-push` | `bf/activity-read-error` | patch | 1 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `merged-upstream` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
 | `WS-LAB` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | `ready-to-push` | `main` | n/a | 1 run + 1 no-gate |
@@ -4858,7 +4858,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/activity-read-error` |
 | base | `official/dev@25fc41d9` |
@@ -4868,7 +4868,7 @@ distinction is the only thing that makes the register mean anything - widening
 | ships to operators today | **yes** |
 | register | `BF-155` |
 
-**Blast radius.** lib/api/activity/index.js read callback: answer any storage error instead of reading a null result; the same check on other v1 read callbacks that format results without checking the error.
+**Blast radius.** lib/api/activity/index.js and lib/api/profile/index.js (/profile/current) read callbacks: any storage error is answered with a 500 without its text (logged on the server); a refused query still 400. tests/api.read-storage- failure.test.js. Branch bf/activity-read-error e20b66ba, one commit on dev 25fc41d9, worktree externals/work/crm-bf155, not pushed.
 
 **What an operator sees.** A problem reading from the database could stop Nightscout until it was restarted. It now answers that request with an error and keeps running.
 
@@ -4876,13 +4876,15 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- **NO GATE** &mdash; Reproduced 2026-10-02 on local test servers of v15.0.8 and dev 25fc41d9; the method is held outside version control while the defect is live on 15.0.8. The branch's tests decide, using a stubbed storage failure.
+- `[static]` `git -C externals/cgm-remote-monitor-official cat-file -e bf/activity-read-error:tests/api.read-storage-failure.test.js`
+  - The branch carries the storage-failure test (a presence check; RED on origin/dev 25fc41d9). The test decides.
+- **NO GATE** &mdash; Reproduced 2026-10-02 on local test servers of v15.0.8 and dev 25fc41d9; the method is held outside version control while the defect is live on 15.0.8. The branch's tests decide, using a stubbed storage failure delivered through run-with-callback: on e20b66ba (Node 22.23.2, MongoDB 7.0.43) both answer 500 without the error text and the server keeps serving; with dev 25fc41d9's handlers both requests are never answered (timeout). Full suite 3534/0/4 (dev 3532/0/4).
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Decided 2026-10-02 (maintainer): fix for 15.0.9; in RT-0's blocks_on. Found while reviewing bf/regex-limits (BFQ-72), which does not cover it.
+**Notes.** Decided 2026-10-02 (maintainer): fix for 15.0.9; in RT-0's blocks_on. Found while reviewing bf/regex-limits (BFQ-72), which does not cover it. The audit of the other v1 read callbacks found /profile/current with the same failure (fixed here). /api/v1/food and /api/v1/profile answer null with 200 on a failed read, which does not end the process; left for a later change. PR body: reports/phase0-pr-bodies/activity-read-error.md.
 
 ### `BFQ-134` &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 

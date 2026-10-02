@@ -11324,13 +11324,16 @@ items:
     repo: cgm-remote-monitor
     branch: bf/activity-read-error
     base: official/dev@25fc41d9
-    state: in-progress
+    state: ready-to-push
     pr: []
     ships_to_operators_today: true
     blast_radius: >
-      lib/api/activity/index.js read callback: answer any storage error
-      instead of reading a null result; the same check on other v1 read
-      callbacks that format results without checking the error.
+      lib/api/activity/index.js and lib/api/profile/index.js
+      (/profile/current) read callbacks: any storage error is answered with
+      a 500 without its text (logged on the server); a refused query still
+      400. tests/api.read-storage-failure.test.js. Branch
+      bf/activity-read-error e20b66ba, one commit on dev 25fc41d9, worktree
+      externals/work/crm-bf155, not pushed.
     review: maintainer
     operator_visible: >
       A problem reading from the database could stop Nightscout until it
@@ -11340,17 +11343,30 @@ items:
     semver_reason: a failed read answers an error instead of ending the process
     register: [BF-155]
     gates:
+      - run: git -C externals/cgm-remote-monitor-official cat-file -e bf/activity-read-error:tests/api.read-storage-failure.test.js
+        kind: static
+        describe: >
+          The branch carries the storage-failure test (a presence check; RED on
+          origin/dev 25fc41d9). The test decides.
       - no-gate: >
           Reproduced 2026-10-02 on local test servers of v15.0.8 and dev
           25fc41d9; the method is held outside version control while the
           defect is live on 15.0.8. The branch's tests decide, using a stubbed
-          storage failure.
+          storage failure delivered through run-with-callback: on e20b66ba
+          (Node 22.23.2, MongoDB 7.0.43) both answer 500 without the error
+          text and the server keeps serving; with dev 25fc41d9's handlers both
+          requests are never answered (timeout). Full suite 3534/0/4 (dev
+          3532/0/4).
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
       Decided 2026-10-02 (maintainer): fix for 15.0.9; in RT-0's blocks_on.
       Found while reviewing bf/regex-limits (BFQ-72), which does not cover it.
+      The audit of the other v1 read callbacks found /profile/current with
+      the same failure (fixed here). /api/v1/food and /api/v1/profile answer
+      null with 200 on a failed read, which does not end the process; left
+      for a later change. PR body: reports/phase0-pr-bodies/activity-read-error.md.
   - id: RT-PR-8781
     title: "#8781 - treatment retries keep srvCreated, empty identities match, history clock survives a restart (AndyLow91; BF-141, BF-143, BF-144), merged for 15.0.9"
     parcel: release-train
