@@ -37,6 +37,7 @@ shipping release, and this repository is public.*
 | **BF-152 is after 15.0.9** (API v3 `settings` documents are admin-only through search and history but readable by identifier with read permission): AndroidAPS's follower app reads its settings by identifier, so which side is the intended contract is a question for the AndroidAPS developers (2026-10-01) | `BFQ-152` | open, not in 15.0.9 |
 | **BF-145 after 15.0.9**: v3 PATCH and PUT by the id v3 GET shows miss a record stored with identifier `null`, `""` or `0` (PATCH 404, PUT stores a second copy); the same on 15.0.8 (2026-09-26) | `BFQ-145` | release notes, Known issues |
 | **Version class of #8772, #8775 and #8780 deferred**: the queue classes #8775 and #8780 as minor and #8772's 500 → 200 is an open question; the maintainer is still collecting data before deciding whether they are recorded as minor-under-patch exceptions (as #8530) or re-classed (2026-09-26) | `BFQ-129`, `BFQ-122`, `BFQ-121` | undecided |
+| **BF-09 after 15.0.9** (2026-10-02): the socket duplicate check's zero handling is fixed on #8797 (a zero is a value for `percent`, `absolute` and `duration`, and means none for `insulin` and `carbs`) and ships after 15.0.9. The path it fixes is AndroidAPS NSClient v1 (3.4.2.6; removed from AndroidAPS `master`), the standalone NSClient app and the chart's drag-to-move, and a record is lost only when two of the same type start within 2 s; no field report | `BFQ-09` | #8797 open |
 | **After 15.0.9**: BF-137 (several IFTTT Maker keys), and making a v3 or websocket edit of a record stored twice merge the two copies (2026-09-26) | `BFQ-137`, `OID-V3-EDIT-MERGE`, `OID-WS-EDIT-MERGE` | not started |
 | **nightscout-connect 0.1.0 is pinned in 15.0.9**, after the prerelease had a lab soak with a seeded source Nightscout syncing into a second one, and the maintainer's judgement (2026-09-22, amended 2026-09-23) | `P0-TAG`, `P0-PIN` | released 2026-09-24; #8762 merged |
 | **No separate deprecation release.** The legacy-ingestion notice goes in 15.0.9's release notes (2026-09-23) | `RT-4` | release notes |
@@ -76,7 +77,7 @@ shipping release, and this repository is public.*
 
 | decision | queue |
 |---|---|
-| BF-09: measure first, then decide; the maintainer leans towards zero being a real value. The measurement must show the AAPS rapid-zero-temp display problem (`bec641ca`) does not return | `BFQ-09` |
+| BF-09: a zero is a value for `percent`, `absolute` and `duration` and means none for `insulin` and `carbs` (2026-10-02, after the 2026-09-23 measurement); the harness shows every kept temp is drawn exactly, so the AAPS temp-basal display problem (`bec641ca`) does not return. Fixed on #8797, after 15.0.9 | `BFQ-09` |
 | BF-41: the stale-data check ignores a future-dated reading and keeps the reading as sent; tolerance configurable, default 5 minutes. Snoozes run on the wall clock; an evaluator may take an "as of" time, but never for live alarms. BF-41 is closed as not reproducing | `BFQ-41`, `A7A-7` |
 | BF-52: the age push is sent once, even when the exact check is missed | `BFQ-52` |
 | Each cut is renumbered when it is rebased | `RT-VERSION` |

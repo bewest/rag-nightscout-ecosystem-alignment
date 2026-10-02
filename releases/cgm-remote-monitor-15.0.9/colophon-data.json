@@ -5,7 +5,7 @@
   "tip": "ca6fcfaf",
   "spec": "official/master..official/dev"
  },
- "repo_commit": "89e21e69",
+ "repo_commit": "49ca4996",
  "kpis": {
   "pr_merges": 93,
   "commits": 525,
@@ -835,7 +835,7 @@
    ]
   },
   {
-   "disposition": "fix being prepared, decided 2026-10-02",
+   "disposition": "fix prepared, after 15.0.9 or not yet scheduled",
    "count": 5,
    "ids": [
     "BF-09",
