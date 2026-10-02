@@ -1201,17 +1201,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#a-zero-temp-basal-or-a-cancel-sent-over-the-live-connection-is-no-longer-dropped" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        A zero temp basal or a cancel sent over the live connection is no longer dropped
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#late-or-edited-androidaps-entries-now-count-in-insulin-and-carbs-on-board" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1614,6 +1603,17 @@
     <span class="md-ellipsis">
       
         Translations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#settings-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Settings documentation
       
     </span>
   </a>
@@ -2909,17 +2909,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#a-zero-temp-basal-or-a-cancel-sent-over-the-live-connection-is-no-longer-dropped" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        A zero temp basal or a cancel sent over the live connection is no longer dropped
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#late-or-edited-androidaps-entries-now-count-in-insulin-and-carbs-on-board" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3329,6 +3318,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#settings-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Settings documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#other-fixes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3423,7 +3423,7 @@
 
 
 <h1 id="nightscout-1509--release-notes">Nightscout 15.0.9 — release notes<a class="headerlink" href="#nightscout-1509--release-notes" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-02 at <code>49ca4996</code>.</em></p>
+<p><em>Living document, last changed 2026-10-02 at <code>3d18bbac</code>.</em></p>
 <p><strong>Draft: 15.0.9 is not yet released, and the wording may change before it is.</strong></p>
 <p><em>For people who run a Nightscout site for themselves or a family member. Nightscout is a
 secondary display, nothing in these notes is advice about insulin doses, and you should talk
@@ -3751,21 +3751,6 @@ one (such as the careportal), a different carb or insulin amount. An app that se
 again, or an updated version of it, still updates the one record. Entries lost before this update
 are not brought back. Some cases are still stored as one; see
 <a href="#known-issues--not-fixed-in-this-release">Known issues</a>.</p>
-<h3 id="a-zero-temp-basal-or-a-cancel-sent-over-the-live-connection-is-no-longer-dropped">A zero temp basal or a cancel sent over the live connection is no longer dropped<a class="headerlink" href="#a-zero-temp-basal-or-a-cancel-sent-over-the-live-connection-is-no-longer-dropped" title="Permanent link">&para;</a></h3>
-<p>When a treatment arrived over Nightscout's live connection within 2 seconds of another, Nightscout
-compared the two to avoid storing a repeat, and it ignored any value of zero while doing so. So a
-zero temp basal (the basal pause an AID app sets) sent a second after a different temp of the same
-length was taken for that temp and thrown away. The chart then showed the earlier rate for the
-whole temp while the pump was delivering no basal. The same could happen to a cancel, a 100 % temp,
-and an entry of 0 units or 0 g after one with an amount. The AID app and the pump kept their own
-correct records.</p>
-<p>Now a zero counts. For temp basal rates and lengths, including cancels, zero is a real value. For
-insulin and carbs, zero means none: an entry of 0 units is not taken for one of 1 unit, and an app
-that fills in <code>insulin: 0</code> on a carb entry is still recognised when it sends that entry again.
-This affects AndroidAPS with its older NSClient connection (v1), the older standalone NSClient app
-that xDrip+ can send treatments to, and dragging a treatment on Nightscout's own chart. Loop, Trio,
-xDrip4iOS and AndroidAPS with the NSClient v3 connection use a different route and are not
-affected. Entries dropped before this update are not brought back.</p>
 <h3 id="late-or-edited-androidaps-entries-now-count-in-insulin-and-carbs-on-board">Late or edited AndroidAPS entries now count in insulin and carbs on board<a class="headerlink" href="#late-or-edited-androidaps-entries-now-count-in-insulin-and-carbs-on-board" title="Permanent link">&para;</a></h3>
 <p>Nightscout works out its own <strong>insulin on board</strong> (IOB: insulin from earlier doses that is still
 expected to act) and <strong>carbs on board</strong> (COB: carbs not yet expected to be absorbed) from the
@@ -4391,6 +4376,13 @@ they got an error before.</p>
 <h3 id="translations">Translations<a class="headerlink" href="#translations" title="Permanent link">&para;</a></h3>
 <p>Updated translations from Nightscout's volunteer translators on Crowdin, as of early September
 2026. Later Crowdin updates are not in this release.</p>
+<h3 id="settings-documentation">Settings documentation<a class="headerlink" href="#settings-documentation" title="Permanent link">&para;</a></h3>
+<p>The README now describes the API v3 settings (every name that starts with <code>API3_</code>), the webhook
+plugin and its four <code>WEBHOOK_</code> settings, and <code>ENTRIES_COLLECTION</code>, and no longer lists
+<code>MONGODB_COLLECTION</code>, which does nothing. It also says that <code>SECURE_HSTS_HEADER_INCLUDESUBDOMAINS</code>
+is spelled as one word; the spelling with an underscore before <code>SUBDOMAINS</code> has no effect. The
+Azure deployment template now uses Node 22 by default instead of a version Nightscout no longer
+runs on.</p>
 <h3 id="other-fixes">Other fixes<a class="headerlink" href="#other-fixes" title="Permanent link">&para;</a></h3>
 <p>Faster data loading on sites with many treatments; deleted records no longer reappear; failed
 treatment searches no longer crash the server; a problem reading from the database while answering a
@@ -4486,9 +4478,10 @@ and many other software library updates.</p>
   <code>CUSTOMCONNSTR_</code> prefix on Azure). If one is set to a number of days, then whenever an app
   saves, changes or deletes a record of that kind through API v3, Nightscout deletes every record
   of that kind older than that many days. The deletion cannot be undone. They do nothing unless
-  set, and this is the same on 15.0.8 and earlier. Check your site's settings for any name that
-  starts with <code>API3_</code> and remove one you did not set on purpose. These settings are being
-  documented.</li>
+  set, and this is the same on 15.0.8 and earlier. If a deletion fails (for example, the
+  database is unreachable at that moment), Nightscout stops and must be restarted. Check your
+  site's settings for any name that starts with <code>API3_</code> and remove one you did not set on
+  purpose. The README now describes every <code>API3_</code> setting.</li>
 <li><strong>A page with no glucose reading does not sound or show any server alarm.</strong> When the big
   number reads <code>---</code>, a Nightscout page ignores every alarm the server sends, including pump,
   loop, cannula, sensor and insulin-age alarms that have nothing to do with glucose. This is the

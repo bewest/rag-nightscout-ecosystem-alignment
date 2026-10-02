@@ -2217,7 +2217,7 @@
 
 
 <h1 id="cgm-remote-monitor-1509--decisions">cgm-remote-monitor 15.0.9 — decisions<a class="headerlink" href="#cgm-remote-monitor-1509--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-02 at <code>f50bbb61</code>.</em></p>
+<p><em>Living document, last changed 2026-10-02 at <code>3d18bbac</code>.</em></p>
 <p><em>Contributor-facing. Living record of the maintainer's decisions that shape 15.0.9, taken
 2026-09-22 to 2026-10-02, as of <code>dev</code> <code>ca6fcfaf</code> (2026-10-02). Each row states the decision as it stands. Item state is in
 <code>queue/work-queue.yaml</code>; what 15.0.9 contains and what is still open before the tag is in
@@ -2359,6 +2359,26 @@ shipping release, and this repository is public.</em></p>
 <td><strong>Version class of #8772, #8775 and #8780 deferred</strong>: the queue classes #8775 and #8780 as minor and #8772's 500 → 200 is an open question; the maintainer is still collecting data before deciding whether they are recorded as minor-under-patch exceptions (as #8530) or re-classed (2026-09-26)</td>
 <td><code>BFQ-129</code>, <code>BFQ-122</code>, <code>BFQ-121</code></td>
 <td>undecided</td>
+</tr>
+<tr>
+<td><strong>BF-09 after 15.0.9</strong> (2026-10-02): the socket duplicate check's zero handling is fixed on #8797 (a zero is a value for <code>percent</code>, <code>absolute</code> and <code>duration</code>, and means none for <code>insulin</code> and <code>carbs</code>) and ships after 15.0.9. The path it fixes is AndroidAPS NSClient v1 (3.4.2.6; removed from AndroidAPS <code>master</code>), the standalone NSClient app and the chart's drag-to-move, and a record is lost only when two of the same type start within 2 s; no field report</td>
+<td><code>BFQ-09</code></td>
+<td>#8797 open</td>
+</tr>
+<tr>
+<td><strong>The configuration documentation branch is in 15.0.9</strong> (2026-10-02): <code>bf/config-docs-truth</code> documents the API v3 settings (BF-46) and the webhook settings (BF-48), states the HSTS setting's spelling (BF-49), replaces <code>MONGODB_COLLECTION</code> with <code>ENTRIES_COLLECTION</code> (BF-50) and sets the Azure template's Node default to <code>~22</code> (BF-51). Documentation only</td>
+<td><code>BFQ-46</code>, <code>BFQ-ENV</code></td>
+<td>branch <code>c102d98f</code>, not yet pushed</td>
+</tr>
+<tr>
+<td><strong>BF-156 after 15.0.9, carried as a known issue with BF-46</strong> (2026-10-02): it needs an <code>API3_AUTOPRUNE_*</code> setting and a failed delete; a fix that handles the delete's promise is prepared for the next release</td>
+<td><code>BFQ-156</code></td>
+<td>branch being prepared</td>
+</tr>
+<tr>
+<td><strong>After 15.0.9</strong>: reading the <code>API3_*</code> and <code>WEBHOOK_*</code> settings through <code>lib/server/env.js</code> (a minor change); a code alias for the underscored HSTS spelling (it would start sending <code>includeSubDomains</code> on sites that set it); reconciling the Azure Node default with cut 1's <code>~24</code> when cut 1 is rebased (2026-10-02)</td>
+<td><code>BFQ-46</code>, <code>BFQ-ENV</code>, <code>RT-1</code></td>
+<td>not started</td>
 </tr>
 <tr>
 <td><strong>After 15.0.9</strong>: BF-137 (several IFTTT Maker keys), and making a v3 or websocket edit of a record stored twice merge the two copies (2026-09-26)</td>
@@ -2510,7 +2530,7 @@ shipping release, and this repository is public.</em></p>
 </thead>
 <tbody>
 <tr>
-<td>BF-09: measure first, then decide; the maintainer leans towards zero being a real value. The measurement must show the AAPS rapid-zero-temp display problem (<code>bec641ca</code>) does not return</td>
+<td>BF-09: a zero is a value for <code>percent</code>, <code>absolute</code> and <code>duration</code> and means none for <code>insulin</code> and <code>carbs</code> (2026-10-02, after the 2026-09-23 measurement); the harness shows every kept temp is drawn exactly, so the AAPS temp-basal display problem (<code>bec641ca</code>) does not return. Fixed on #8797, after 15.0.9</td>
 <td><code>BFQ-09</code></td>
 </tr>
 <tr>

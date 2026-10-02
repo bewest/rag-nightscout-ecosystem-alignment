@@ -2285,7 +2285,7 @@
 
 
 <h1 id="cgm-remote-monitor-1509--contents">cgm-remote-monitor 15.0.9 — contents<a class="headerlink" href="#cgm-remote-monitor-1509--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-02 at <code>49ca4996</code>.</em></p>
+<p><em>Living document, last changed 2026-10-02 at <code>3d18bbac</code>.</em></p>
 <p><strong>Status: DRAFT for maintainer review. Contributor-facing; full technical depth intended.</strong>
 Nothing here is tagged or released. Measured 2026-10-02 against <code>official/dev</code> <code>ca6fcfaf</code>
 (merge of #8796) and <code>official/master</code> <code>92d08342</code> (= tag <code>15.0.8</code>, the shipping release), in
@@ -3148,6 +3148,16 @@ in a future release.</p>
 <td>named in the notes under Known issues</td>
 </tr>
 <tr>
+<td>BF-09 — in the socket <code>dbAdd</code> duplicate check a zero is ignored, so within 2 s a zero temp, 100 % temp, cancel, zero bolus or zero carbs can be taken for another record of the same type and dropped (AndroidAPS NSClient v1, the standalone NSClient app, the chart's drag-to-move)</td>
+<td>fixed on #8797 (open); after 15.0.9 by decision (2026-10-02)</td>
+<td>unchanged from 15.0.8</td>
+</tr>
+<tr>
+<td>BF-156 — autoprune's delete result is never read: the deleted count is never logged, and a failed delete ends the server process (only where an <code>API3_AUTOPRUNE_*</code> setting is on; the same on 15.0.8)</td>
+<td>open; after 15.0.9 by decision (2026-10-02), fix being prepared (<code>BFQ-156</code>)</td>
+<td>carried as a known issue with BF-46</td>
+</tr>
+<tr>
 <td>BF-76 — unbounded <code>silenceTime</code></td>
 <td>open, left open deliberately by #8745</td>
 <td>carried as a known issue</td>
@@ -3252,10 +3262,9 @@ this file does not copy them.</p>
 <p>What the queue tracks is generated, and current, in
 <a href="../../docs/00-overview/ROADMAP.html#1-the-next-release-1509">ROADMAP §1</a>. As of <code>dev</code> <code>ca6fcfaf</code> (2026-10-02), 15.0.9 waits on:</p>
 <ol>
-<li><strong>#8797 (BF-09)</strong>, open (head <code>7dff9f38</code>, one commit on <code>ca6fcfaf</code>), taken into 15.0.9 on
-   2026-10-02: in the socket <code>dbAdd</code> duplicate check a zero is a value for <code>percent</code>, <code>absolute</code>
-   and <code>duration</code>, and means none for <code>insulin</code> and <code>carbs</code>. Branch suite 3556/0/4 (Node 22.23.2,
-   MongoDB 7.0.43, one cell). Merging it moves <code>dev</code> past <code>ca6fcfaf</code>.</li>
+<li><strong><code>bf/config-docs-truth</code> (BF-46 documentation, BF-48 to BF-51)</strong>, taken into 15.0.9 on
+   2026-10-02; five commits on <code>ca6fcfaf</code>, head <code>c102d98f</code>, not yet pushed. README, <code>azuredeploy.json</code>
+   and the API v3 swagger text only; full suite 3534/0/4. Merging it moves <code>dev</code> past <code>ca6fcfaf</code>.</li>
 <li><strong>One full six-cell run on the final head</strong> (Node 20/22/24 × MongoDB 4.4.24 and 7.0.43, probes,
    compressed A/B soak against 15.0.8, as run 020 on <code>ce30a94d</code>). What has run since run 020 is
    under <a href="#evidence">Evidence</a>.</li>
@@ -3300,7 +3309,7 @@ this file does not copy them.</p>
    update waits for an upstream fix and is carried with the modernization work.</li>
 <li><strong>The tag</strong>, by the maintainer.</li>
 </ol>
-<p>The <a href="release-notes.html">release notes</a> and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/49ca4996368d72944f8f633bfd7c8dd57a4496f0/releases/cgm-remote-monitor-15.0.9/tag-message.txt">tag message</a> are drafted on <code>ca6fcfaf</code>.</p>
+<p>The <a href="release-notes.html">release notes</a> and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/d2752d577e75dad4c8410e4c3cba2818bf3efab6/releases/cgm-remote-monitor-15.0.9/tag-message.txt">tag message</a> are drafted on <code>ca6fcfaf</code>.</p>
 <p>The real-time soak is done by decision: on 2026-09-30 the maintainer decided that real sites
 running the candidate count as the 24 to 72 h real-time soak, and the lab's 72 h soak
 (<code>lab.sh soak --hours 72</code>) is not run. Recorded reports: as of 2026-09-29, one Loop, one Trio and
