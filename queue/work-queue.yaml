@@ -11085,9 +11085,9 @@ items:
     repo: cgm-remote-monitor
     branch: bf/dependency-refresh-2026-10
     base: official/dev@50bc1084
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8794]
-    ships_to_operators_today: true
+    ships_to_operators_today: false
     blast_radius: >
       package.json overrides (ip-address, fast-uri, brace-expansion, the
       axios entries under minimed-connect-to-nightscout), the axios
@@ -11102,11 +11102,12 @@ items:
     semver_reason: patch and minor dependency versions; no behaviour change intended
     register: [BF-153]
     gates:
-      - run: "git -C externals/cgm-remote-monitor-official show bf/dependency-refresh-2026-10:package.json | grep -qE 'ip-address.{3,4}10[.]7[.]1'"
+      - run: "git -C externals/cgm-remote-monitor-official show origin/dev:package.json | grep -qE 'ip-address.{3,4}10[.]7[.]1'"
         kind: static
         describe: >
-          The branch's overrides carry the fixed ip-address (a presence check;
-          tests/dependency-overrides.test.js on the installed tree decides).
+          origin/dev's overrides carry the fixed ip-address (merged 2026-10-02
+          as a143d507; a presence check, tests/dependency-overrides.test.js on
+          the installed tree decides).
       - no-gate: >
           npm audit depends on the advisory database on the day it runs, so
           it is a measurement, not a gate. 2026-10-01, npm 11.12.1,
@@ -11127,6 +11128,9 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - releases/cgm-remote-monitor-15.0.9/contents.md
     notes: >
+      2026-10-02: merged into dev by the maintainer as a143d507 (17:17Z), CI
+      14 passed and 2 skipped; Dependabot #8787 and #8789 closed with a
+      pointer to it.
       2026-10-02: pushed and opened as #8794 by the maintainer (head
       7cb8d0bc = 22d82889 plus a merge of dev 839a1565, which brings only
       #8793 and touches no package file); taken into 15.0.9, so in RT-0's

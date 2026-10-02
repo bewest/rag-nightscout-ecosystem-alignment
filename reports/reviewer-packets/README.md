@@ -23,7 +23,6 @@ repository.
 |---|---|---|---|
 | [`RT-0`](rt-0-origin-dev.md) | #8598 | `needs-decision` | Release 15.0.9 |
 | [`ADV-CONFIG`](adv-config.md) | #8746 | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81) |
-| [`BFQ-153`](bfq-153-bf-dependency-refresh-2026-10.md) | #8794 | `in-flight-upstream` | BF-153 - dependency advisories published after the 2026-09-27 triage (BF-147 style refresh) |
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | [`BFQ-151`](bfq-151-bf-braces-expansion-cap.md) | &mdash; | `ready-to-push` | BF-151 - one /api/v1/times or /slice request can block the server for seconds (brace expansion has no bound), for 15.0.9 |
 | [`BFQ-152`](bfq-152.md) | &mdash; | `needs-decision` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission |
