@@ -27,7 +27,7 @@ they need is a release, and that is one item — `RT-0` — which is listed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 12 items
+### Maintainer &mdash; 11 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
@@ -41,7 +41,6 @@ they need is a release, and that is one item — `RT-0` — which is listed.
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `WS-LAB` | `ready-to-push` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | &mdash; |
-| `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value | &mdash; |
 | `BFQ-94` | `unsettled` | BF-94 - a kept profile instance can return a temp basal that has been replaced | &mdash; |
 
 ### Maintainer + a second human &mdash; 1 item

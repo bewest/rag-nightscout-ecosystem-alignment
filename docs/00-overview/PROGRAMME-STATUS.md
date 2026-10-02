@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 130 | 37 | 9 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 130 | 37 | 8 |
 | **Modernization** | `release-train` | 32 | 5 | 2 |
 | **Multitenant** | `tenancy` | 19 | 9 | 3 |
-| | **total** | **183** | **51** | **14** |
+| | **total** | **183** | **51** | **13** |
 
 <!-- END GENERATED: horizons -->
 
@@ -126,7 +126,7 @@ cover more than one `BF-`:
 | `ADV-RETRO` | `merged-upstream` | GHSA-gjhc - loadRetro serves devicestatus to any socket (BF-79) |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | `BFQ-04` | `merged-upstream` | BF-04 - the v1 operator allowlist - superseded by P0-K |
-| `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value |
+| `BFQ-09` | `in-progress` | BF-09 - socket dedup truthiness skips a falsy value |
 | `BFQ-10` | `merged-upstream` | BF-10 - mongod fatal-asserts at Docker's default nofile=1024 |
 | `BFQ-100` | `blocked` | BF-100 - devicestatus, food and activity store a hex _id as a string |
 | `BFQ-101` | `blocked` | BF-101 - API v3 id filters miss records stored with a string _id |
@@ -162,7 +162,7 @@ cover more than one `BF-`:
 | `BFQ-152` | `needs-decision` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier |
 | `BFQ-154` | `blocked` | BF-154 - node-forge 1.4.0 (pinned in overrides) is inside an advisory range with no fixed  |
 | `BFQ-40` | `merged-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
-| `BFQ-46` | `gate-not-met` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
+| `BFQ-46` | `in-progress` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
 | `BFQ-47` | `merged-upstream` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
 | `BFQ-52` | `blocked` | BF-52 - an age reminder whose 20-minute window passed without a check was never sent |
 | `BFQ-67` | `gate-not-met` | BF-67, BF-86 - alarm thresholds quietly changed, or quietly kept when they cannot work |
@@ -180,7 +180,7 @@ cover more than one `BF-`:
 | `BFQ-99` | `blocked` | bf/profile-object-id - a profile posted with its own _id is stored as an ObjectId, and str |
 | `BFQ-CAP01` | `not-started` | CAP-01 - Nightscout cannot be served from a sub-path |
 | `BFQ-CONNECTOR` | `gate-not-met` | BF-42, BF-43 - master pins the leaking connector, with a violated axios override |
-| `BFQ-ENV` | `gate-not-met` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies |
+| `BFQ-ENV` | `in-progress` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies |
 | `BFQ-MINIMED` | `not-started` | BF-44, BF-45, BF-85 - MiniMed ingestion divergences and the CareLink zero reading |
 
 <!-- END GENERATED: operator-exposure -->
@@ -197,7 +197,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  | 17 |  | 1 |  |  |  | **22** |
 | `release-train` | 5 |  | 5 |  | 5 | 13 | 2 | 1 |  |  | 1 | **32** |
-| `register-open` | 27 | 1 | 5 | 1 | 6 | 49 | 5 |  | 2 | 2 |  | **98** |
+| `register-open` | 27 | 4 | 3 | 1 | 6 | 49 | 5 |  | 1 | 2 |  | **98** |
 | `tenancy` | 9 |  |  | 1 | 7 |  | 1 |  | 1 |  |  | **19** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  | 2 |  |  |  | **10** |
 | `backfix2` |  |  |  |  |  | 2 |  |  |  |  |  | **2** |

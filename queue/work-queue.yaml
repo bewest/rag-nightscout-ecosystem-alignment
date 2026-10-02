@@ -3492,9 +3492,9 @@ items:
     parcel: register-open
     repo: cgm-remote-monitor
     branch: ""
-    base: origin/dev@a8888f0d
-    worktree: externals/work/crm-bf-alarms
-    state: unsettled
+    base: official/dev@ca6fcfaf
+    worktree: externals/work/crm-bf09
+    state: in-progress
     ships_to_operators_today: true
     blast_radius: lib/server/websocket.js:538-566 (the register cites 535-568).
     review: maintainer - this needs a decision on intent before it needs code
@@ -3530,6 +3530,13 @@ items:
       - docs/60-research/remedial/gt3-register-truth-2026-09-15.md
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-02 (maintainer, relayed by session -d4): confirm and adopt
+      conditional handling of zero by field and type. The maintainer's
+      reading: a temp basal with 0 is a real value and a bolus with 0 is a
+      real value, but insulin: 0 on a carbs entry is not a match key. A
+      local fix branch is being prepared by -d4's agent in
+      externals/work/crm-bf09 off dev ca6fcfaf, not pushed; whether it goes
+      into 15.0.9 is decided once it is measured.
       Measured, awaiting the maintainer's decision.
       docs/60-research/remedial/bf09-dedup-zero-measurement-2026-09-23.md
       (dev 74fc6619 and 15.0.8, identical): treating zero as a real
@@ -6033,9 +6040,9 @@ items:
     parcel: register-open
     repo: cgm-remote-monitor
     branch: ""
-    base: origin/dev@a8888f0d
-    worktree: externals/cgm-remote-monitor-official
-    state: gate-not-met
+    base: official/dev@ca6fcfaf
+    worktree: externals/work/crm-bf46-env
+    state: in-progress
     ships_to_operators_today: true
     blast_radius: >
       lib/api3/index.js:24-38 setENVTruthy and its call sites at :70-76, plus
@@ -6081,6 +6088,12 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-02 (maintainer, relayed by session -d4): a known issue of
+      15.0.9, named in its release notes and contents (by -d4), and the
+      documentation of the API3_* variables is updated. A local branch is
+      being prepared by -d4's agent in externals/work/crm-bf46-env off dev
+      ca6fcfaf, not pushed; whether it goes into 15.0.9 is decided once it is
+      measured.
       Kept out of BFQ-ENV deliberately. The other three are a documentation and
       plumbing residue; this one irreversibly deletes a person's glucose history
       through a name nobody can look up, with the result unawaited. A reviewer
@@ -6187,9 +6200,9 @@ items:
     parcel: register-open
     repo: cgm-remote-monitor
     branch: ""
-    base: origin/dev@a8888f0d
-    worktree: externals/cgm-remote-monitor-official
-    state: gate-not-met
+    base: official/dev@ca6fcfaf
+    worktree: externals/work/crm-bf46-env
+    state: in-progress
     ships_to_operators_today: true
     blast_radius: >
       lib/plugins/webhook.js:36-39, lib/settings.js:48-49 against
@@ -6260,6 +6273,10 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-02 (maintainer, relayed by session -d4): correct the
+      information for BF-48 to BF-51. Prepared with BFQ-46 by -d4's agent in
+      externals/work/crm-bf46-env off dev ca6fcfaf, not pushed; whether it
+      goes into 15.0.9 is decided once it is measured.
       Batched because it is one piece of work with one runnable gate in four
       arms - make the configuration surface tell the truth - and because a
       reviewer reading any one of them alone would ask about the other three.

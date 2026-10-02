@@ -42,14 +42,14 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | state | n | ids |
 |---|---|---|
 | `not-started` | 51 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-124, BFQ-127, BFQ-137, BFQ-145, BFQ-149, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
-| `in-progress` | 1 | OID-LAB |
-| `gate-not-met` | 11 | RT-REBASE, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
+| `in-progress` | 4 | BFQ-09, BFQ-46, BFQ-ENV, OID-LAB |
+| `gate-not-met` | 9 | RT-REBASE, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
 | `blocked` | 18 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, BFQ-72, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-154 |
 | `merged-upstream` | 81 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-125, BFQ-126, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 8 | RT-PROPAGATION, RT-0, T30-RESEARCH, BFQ-95, ADV-XSS-META, ADV-CONFIG, BFQ-152, DEPENDABOT-CONFIG |
 | `done` | 4 | P0-TAG, DOC-VIEWS, DOC-LINKS, RT-SOAK |
-| `unsettled` | 3 | BFQ-09, A7A-7, BFQ-94 |
+| `unsettled` | 2 | A7A-7, BFQ-94 |
 | `closed` | 2 | BFQ-41, BFQ-141 |
 | `answered` | 1 | RT-D3 |
 
@@ -2117,7 +2117,7 @@ distinction is the only thing that makes the register mean anything - widening
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
 | `BFQ-91` | BF-91 - connector capture mode cannot find trace-axios for two sources | `merged-upstream` | `fix/trace-axios-path` | patch | 2 run + 1 no-gate |
-| `BFQ-09` | BF-09 - socket dedup truthiness skips a falsy value | `unsettled` | `-` | patch | 1 run + 2 no-gate |
+| `BFQ-09` | BF-09 - socket dedup truthiness skips a falsy value | `in-progress` | `-` | patch | 1 run + 2 no-gate |
 | `BFQ-10` | BF-10 - mongod fatal-asserts at Docker's default nofile=1024 | `merged-upstream` | `-` | patch | 1 run + 1 no-gate |
 | `BFQ-04` | BF-04 - the v1 operator allowlist - superseded by P0-K | `merged-upstream` | `bf/operators` | minor | 0 run + 1 no-gate |
 | `BFQ-21` | BF-21 - pg bulkUpsert ignores {mode:'replace'} | `not-started` | `seam/t1-2-storage-interface` | n/a | 0 run + 1 no-gate |
@@ -2139,9 +2139,9 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-87` | BF-87 - the root qs override holds the connector below its range and pins the server's query parser | `merged-upstream` | `bf/qs-6.16` | patch | 3 run + 1 no-gate |
 | `BFQ-CONNECTOR` | BF-42, BF-43 - master pins the leaking connector, with a violated axios override | `gate-not-met` | `-` | patch | 1 run + 2 no-gate |
 | `BFQ-MINIMED` | BF-44, BF-45, BF-85 - MiniMed ingestion divergences and the CareLink zero reading | `not-started` | `-` | minor | 0 run + 3 no-gate |
-| `BFQ-46` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data | `gate-not-met` | `-` | minor | 1 run + 1 no-gate |
+| `BFQ-46` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data | `in-progress` | `-` | minor | 1 run + 1 no-gate |
 | `BFQ-47` | BF-47 - an ordinary subject edit destroys stored fields, on today's release | `merged-upstream` | `bf2/subject-edit-keeps-fields` | major | 3 run + 1 no-gate |
-| `BFQ-ENV` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies | `gate-not-met` | `-` | minor | 4 run + 2 no-gate |
+| `BFQ-ENV` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies | `in-progress` | `-` | minor | 4 run + 2 no-gate |
 | `BFQ-52` | BF-52 - an age reminder whose 20-minute window passed without a check was never sent | `blocked` | `bf3/age-push-once` | patch | 2 run + 1 no-gate |
 | `BFQ-90` | BF-90 - an alarm at a page with no reading throws in the client | `merged-upstream` | `bf3/alarm-no-reading` | patch | 1 run + 2 no-gate |
 | `BFQ-92` | BF-92 - a page with no glucose reading never presents a server alarm, including device alarms | `not-started` | `-` | minor | 0 run + 1 no-gate |
@@ -2253,11 +2253,11 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `unsettled` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
-| base | `origin/dev@a8888f0d` |
-| worktree | `externals/work/crm-bf-alarms` |
+| base | `official/dev@ca6fcfaf` |
+| worktree | `externals/work/crm-bf09` |
 | semver | `patch` |
 | review | maintainer - this needs a decision on intent before it needs code |
 | ships to operators today | **yes** |
@@ -2282,7 +2282,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/60-research/remedial/gt3-register-truth-2026-09-15.md`
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Measured, awaiting the maintainer's decision. docs/60-research/remedial/bf09-dedup-zero-measurement-2026-09-23.md (dev 74fc6619 and 15.0.8, identical): treating zero as a real value fixes 6 dedup cases and changes no control, and bec641ca, the candidate for the old AAPS zero-temp display problem, was rendering only. No fix branch. Decisions: - 2026-09-23 (maintainer): measure first, then decide. The maintainer leans towards treating zero as a real value (a zero temp basal is a real value in AID terms), and the fix must not bring back the temp-basal display problem seen when AAPS issues zero temps seconds apart. Reproduced 2026-09-23 as cases X1 and X2: because a falsy field is left out of the lookup, the lookup can end up keyed on fields another eventType also has, so a zero temp can match a different eventType within the ±2 s window (maxtimediff). Only uploaders using the socket path without NSCLIENT_ID reach this. The register entry names the wrong fields: over 277,690 treatments there are zero zero-valued `insulin` (0 of 107,732) and zero zero-valued `carbs` (0 of 12,394); the field that carries falsy values is `absolute`, 67,521 of 153,315 (44%), the zero temp basal, and `duration:0` adds 2,094. GT3's reading: a bug, not intent, because the author built an explicit selected/fallback mechanism. tools/queue/gates/bf09-corpus- divergence.js undercounts and needs fixing before its figure is trusted. 2026-09-26 - BF-121's fix (bf/same-time-treatments fc821024, BFQ-121) makes the socket similar match always key on eventType, which fixes X1 and X2; Z2, Z5, P2, B2 and C2 remain. A BF-09 branch will conflict with BF-121's on the similar-match lines.
+**Notes.** 2026-10-02 (maintainer, relayed by session -d4): confirm and adopt conditional handling of zero by field and type. The maintainer's reading: a temp basal with 0 is a real value and a bolus with 0 is a real value, but insulin: 0 on a carbs entry is not a match key. A local fix branch is being prepared by -d4's agent in externals/work/crm-bf09 off dev ca6fcfaf, not pushed; whether it goes into 15.0.9 is decided once it is measured. Measured, awaiting the maintainer's decision. docs/60-research/remedial/bf09-dedup-zero- measurement-2026-09-23.md (dev 74fc6619 and 15.0.8, identical): treating zero as a real value fixes 6 dedup cases and changes no control, and bec641ca, the candidate for the old AAPS zero-temp display problem, was rendering only. No fix branch. Decisions: - 2026-09-23 (maintainer): measure first, then decide. The maintainer leans towards treating zero as a real value (a zero temp basal is a real value in AID terms), and the fix must not bring back the temp-basal display problem seen when AAPS issues zero temps seconds apart. Reproduced 2026-09-23 as cases X1 and X2: because a falsy field is left out of the lookup, the lookup can end up keyed on fields another eventType also has, so a zero temp can match a different eventType within the ±2 s window (maxtimediff). Only uploaders using the socket path without NSCLIENT_ID reach this. The register entry names the wrong fields: over 277,690 treatments there are zero zero-valued `insulin` (0 of 107,732) and zero zero-valued `carbs` (0 of 12,394); the field that carries falsy values is `absolute`, 67,521 of 153,315 (44%), the zero temp basal, and `duration:0` adds 2,094. GT3's reading: a bug, not intent, because the author built an explicit selected/fallback mechanism. tools/queue/gates/bf09-corpus-divergence.js undercounts and needs fixing before its figure is trusted. 2026-09-26 - BF-121's fix (bf/same-time-treatments fc821024, BFQ-121) makes the socket similar match always key on eventType, which fixes X1 and X2; Z2, Z5, P2, B2 and C2 remain. A BF-09 branch will conflict with BF-121's on the similar-match lines.
 
 ### `BFQ-10` &mdash; BF-10 - mongod fatal-asserts at Docker's default nofile=1024
 
@@ -2960,11 +2960,11 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `gate-not-met` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
-| base | `origin/dev@a8888f0d` |
-| worktree | `externals/cgm-remote-monitor-official` |
+| base | `official/dev@ca6fcfaf` |
+| worktree | `externals/work/crm-bf46-env` |
 | semver | `minor` |
 | review | maintainer - the documentation half is the load-bearing half and it is a decision about what to promise, not only what to write |
 | ships to operators today | **yes** |
@@ -2986,7 +2986,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Kept out of BFQ-ENV deliberately. The other three are a documentation and plumbing residue; this one irreversibly deletes a person's glucose history through a name nobody can look up, with the result unawaited. A reviewer should not have to find it inside a batch whose other members are a README typo and a dead settings key.
+**Notes.** 2026-10-02 (maintainer, relayed by session -d4): a known issue of 15.0.9, named in its release notes and contents (by -d4), and the documentation of the API3_* variables is updated. A local branch is being prepared by -d4's agent in externals/work/crm-bf46-env off dev ca6fcfaf, not pushed; whether it goes into 15.0.9 is decided once it is measured. Kept out of BFQ-ENV deliberately. The other three are a documentation and plumbing residue; this one irreversibly deletes a person's glucose history through a name nobody can look up, with the result unawaited. A reviewer should not have to find it inside a batch whose other members are a README typo and a dead settings key.
 
 ### `BFQ-47` &mdash; BF-47 - an ordinary subject edit destroys stored fields, on today's release
 
@@ -3030,11 +3030,11 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `gate-not-met` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
-| base | `origin/dev@a8888f0d` |
-| worktree | `externals/cgm-remote-monitor-official` |
+| base | `official/dev@ca6fcfaf` |
+| worktree | `externals/work/crm-bf46-env` |
 | semver | `minor` |
 | review | maintainer |
 | ships to operators today | **yes** |
@@ -3063,7 +3063,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Batched because it is one piece of work with one runnable gate in four arms - make the configuration surface tell the truth - and because a reviewer reading any one of them alone would ask about the other three. Split it back by arm if the documentation half lands separately from the plumbing half. BF-46 is deliberately not batched here; see that item.
+**Notes.** 2026-10-02 (maintainer, relayed by session -d4): correct the information for BF-48 to BF-51. Prepared with BFQ-46 by -d4's agent in externals/work/crm- bf46-env off dev ca6fcfaf, not pushed; whether it goes into 15.0.9 is decided once it is measured. Batched because it is one piece of work with one runnable gate in four arms - make the configuration surface tell the truth - and because a reviewer reading any one of them alone would ask about the other three. Split it back by arm if the documentation half lands separately from the plumbing half. BF-46 is deliberately not batched here; see that item.
 
 ### `BFQ-52` &mdash; BF-52 - an age reminder whose 20-minute window passed without a check was never sent
 
