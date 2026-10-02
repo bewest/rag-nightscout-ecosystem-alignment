@@ -8437,7 +8437,10 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/consumer-impact-15.0.9-2026-09-23.md
     notes: >
-      2026-10-01: merged into dev by the maintainer as 50bc1084 (11:08 PDT);
+      2026-10-01: merged into dev by the maintainer as 50bc1084 (11:08 PDT),
+      from head ee1ba31f (350f6f09 plus a merge of dev 73c9528b, which
+      brought #8790); CI at that head 13 passed and 2 skipped (14 and 2 at
+      350f6f09 when opened);
       the gate, which measures origin/dev, is green.
       2026-10-01: pushed and opened as #8791 by the maintainer (15:23Z, head
       350f6f09), MERGEABLE, CI 14 passed and 2 skipped. No other PR fixes
