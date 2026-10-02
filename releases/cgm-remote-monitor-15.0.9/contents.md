@@ -1,15 +1,15 @@
 # cgm-remote-monitor 15.0.9 — contents
 
 **Status: DRAFT for maintainer review. Contributor-facing; full technical depth intended.**
-Nothing here is tagged or released. Measured 2026-09-27 against `official/dev` `7000eb18`
-(merge of #8786), re-checked unchanged on 2026-09-30, and `official/master` `92d08342` (= tag `15.0.8`, the shipping release), in
+Nothing here is tagged or released. Measured 2026-09-30 against `official/dev` `3014f883`
+(merge of #8788) and `official/master` `92d08342` (= tag `15.0.8`, the shipping release), in
 `externals/cgm-remote-monitor-official` after `git fetch official`.
 
 > Complements the generated changelog. The changelog is authoritative for *what merged*;
 > this file records what the release is made of, how each figure was measured, and what is
 > unsettled.
 
-15.0.9 is **everything on `dev` at `7000eb18`**. Every PR the maintainer decided ships in it
+15.0.9 is **everything on `dev` at `3014f883`**. Every PR the maintainer decided ships in it
 ([decisions](decisions.md)) is merged, except Crowdin #8730, which the maintainer held out on
 2026-09-25 because its sync reverts translations `dev` corrected (BF-132). Every PR merged to `dev`
 is `merged`; none is `released`.
@@ -20,14 +20,14 @@ is `merged`; none is `released`.
 |---|---|
 | Merged part | `official/master..official/dev` |
 | Base (shipping) | `92d08342` = `15.0.8` |
-| `dev` head | `7000eb18` (merge of #8786, 2026-09-27 20:40Z), tree `3b22520e`, the same tree as #8786's head `64a9cc13` |
-| Commits on `dev` | 507 — `git rev-list --count official/master..official/dev` |
-| First-parent merges on `dev` | **86** — `git rev-list --first-parent --count official/master..official/dev`; every first-parent commit in the range is a PR merge (`git log --first-parent --format=%s official/master..official/dev \| grep -vc '^Merge pull request'` prints 0) |
-| Diff on `dev` | 297 files, +28363/−1722 — `git diff --shortstat official/master official/dev` |
+| `dev` head | `3014f883` (merge of #8788, 2026-09-30 22:38Z), tree `3549306b`, the same tree as #8788's head `bbc6e75e` |
+| Commits on `dev` | 509 — `git rev-list --count official/master..official/dev` |
+| First-parent merges on `dev` | **87** — `git rev-list --first-parent --count official/master..official/dev`; every first-parent commit in the range is a PR merge (`git log --first-parent --format=%s official/master..official/dev \| grep -vc '^Merge pull request'` prints 0) |
+| Diff on `dev` | 298 files, +28617/−1819 — `git diff --shortstat official/master official/dev` |
 | `package.json` version | `15.0.9` on `dev` — `git show official/dev:package.json \| grep '"version"'` |
 | Connector pin | `nightscout-connect` exactly `0.1.0` from npm on `dev` (#8762); `15.0.8` pins the `v0.0.13` tag tarball — `git show official/<ref>:package.json \| grep nightscout-connect` |
 | Held out | Crowdin #8730 (head `f99c0e54`, open; BF-132) — `gh pr view 8730 --json state,headRefOid` |
-| Release PR | #8598 (`dev` → `master`, head `7000eb18`, author AndyLow91): open, mergeable, `reviewDecision` `APPROVED`; both approvals (the maintainer, 2026-09-26 00:39Z) were given on `e3adc91d`. CI on `7000eb18`: 27 checks passed, 3 skipped (read 2026-09-30) — `gh pr view 8598 --json state,reviewDecision,reviews`, `gh pr checks 8598` |
+| Release PR | #8598 (`dev` → `master`, head `3014f883`, author AndyLow91): open, mergeable, `reviewDecision` `APPROVED`; both approvals (the maintainer, 2026-09-26 00:39Z) were given on `e3adc91d`. CI on `3014f883`: 27 checks passed, 3 skipped (read 2026-09-30) — `gh pr view 8598 --json state,reviewDecision,reviews`, `gh pr checks 8598` |
 | Tag | none. No `15.0.9` tag exists |
 
 ## What 15.0.9 contains
@@ -164,6 +164,7 @@ no multi-hour soak and no source outage.
 | #8587 | `48441640` | 2026-09-04 | COB pill uses the COB reported by the uploading system (new `lib/client-core/devicestatus/cob.js`) |
 | #8589 | `2af0aed9` | 2026-09-04 | report page built once per page load |
 | #8590 | `101f51a0` | 2026-09-04 | treatments table filter by event type |
+| #8788 | `3014f883` | 2026-09-30 | BF-148, by awss1i (fixes #8223): the Day to Day report draws an event with a duration (Exercise, Note, OpenAPS Offline, Temporary Override, and other events such as a Temporary Target) on every day it covers, clipped to each day, with its label centred on the part shown; events that began the day before a shown day are drawn from `datastorage.treatments`. `lib/report_plugins/daytoday.js` (the five band copies become `appendDurationBand`), `tests/report-daytoday-durations.test.js` (jsdom), `CHANGELOG.md`, `docs/test-specs/manual-smoke-checklist.md`. Head `bbc6e75e`; 4 files, +254/−97. It makes BF-149 (cancellations not applied to report bands, as on 15.0.8) visible on the next day's chart |
 | #8530 | `c3d42d4e` | 2026-09-25 | a `48` choice in the main (focus) chart's hour selector, between `24` and `...` (one line in `views/index.html`); no default changes. Carried by the 2026-09-25 decision |
 | #8568 | `99689bf9` | 2026-09-25 | BF-114: `lib/data/ddata.js` ends an AAPS open-ended loop disable at the next running-mode record from the same source, so the offline marker no longer keeps the "not looping" and pump alerts off after re-enable; covers the released-AAPS shape and, with the follow-up `1fd09446`, the AAPS development-build shape (`originalDuration` 0, a 10-year duration). Carried by the 2026-09-25 decision |
 | #8419 | `96a2c948` | 2026-09-25 | tests only: iOS Loop push-notification and websocket integration tests (`tests/loopnotifications.test.js`, replacing `tests/loop-server.test.js`), fixtures, `.nycrc.json`; head `8cffc05e` includes the maintainer's hook cleanup. Carried by the 2026-09-25 decision |
@@ -213,6 +214,7 @@ The outside contributors whose PRs the 2026-09-25 decision carries into 15.0.9, 
 - **lejcey** — #8568, the AAPS loop-status timeline fix
 - **je-l** — #8419, the iOS Loop push-notification and websocket tests
 - **alanshurafa** — #8530, the 48-hour chart choice
+- **awss1i** — #8788, Day to Day events past midnight (merged 2026-09-30)
 
 ## Version number: 15.0.9
 
@@ -277,9 +279,9 @@ What the queue tracks is generated, and current, in
 2026-09-26 it lists one open blocker of queue `RT-0`, `RT-VERSION`, whose red gate is on the cut
 branches, which are renumbered when they are rebased. Beside that:
 
-1. **The browser checks.** `node tools/queue/gates/client-unchanged-since-hand-check.js --base 7000eb18 --with ''`
-   names 14 files changed since the hand-checked `8d797ba4` (12 on `e3adc91d`; #8773 adds
-   `lib/levels.js` and #8774 adds `lib/profilefunctions.js`; #8781, #8783, #8784 and #8785 add none). #8786 adds no file; the gate also lists the 11 package entries it changes (the two overrides and nine locked versions), and the production bundle built from `295f1177` and from `7000eb18` is byte-identical, so they need no hand check. The browser-side ones need the checks
+1. **The browser checks.** `node tools/queue/gates/client-unchanged-since-hand-check.js --base 3014f883 --with ''`
+   names 15 files changed since the hand-checked `8d797ba4` (12 on `e3adc91d`; #8773 adds
+   `lib/levels.js`, #8774 adds `lib/profilefunctions.js` and #8788 adds `lib/report_plugins/daytoday.js`; #8781, #8783, #8784 and #8785 add none). #8786 adds no file; the gate also lists the 11 package entries it changes (the two overrides and nine locked versions), and the production bundle built from `295f1177` and from `7000eb18` is byte-identical, so they need no hand check. The browser-side ones need the checks
    repeated by hand: the Loop remote-command path (`lib/api2/index.js`,
    `lib/api2/notifications-v2.js`, a remote override, carbs and bolus from careportal and
    LoopCaregiver each needing a 200 and a delivered push), the clock views
@@ -297,21 +299,23 @@ branches, which are renumbered when they are rebased. Beside that:
    open; the Profile Editor; during a 150% AAPS Profile Switch, the basal pill, ISF and carb ratio.
    No regression was found. **Still owed:** a remote bolus; LoopCaregiver from its own app (only
    scripted); the clock views; the pump pill; the alarm level labels (`lib/levels.js`); the Bolus
-   Wizard Preview pill and the reports during a percentage switch. #8781, #8783, #8784, #8785 and #8786
+   Wizard Preview pill and the reports during a percentage switch; the Day to Day report (#8788),
+   by the new "Day to Day events with a duration past midnight" section of
+   `docs/test-specs/manual-smoke-checklist.md`. #8781, #8783, #8784, #8785 and #8786
    (after `ff93fa94`) change no browser-side file. #8784 changes what the server sends to the page (late or
    edited v3 treatments now carry `mills` in the page data, so the page's IOB and COB count them);
    that was not checked in a browser.
-2. **The 24 to 72 h real-time soak** on `7000eb18`: **done**. Run 020's compressed A/B soak against 15.0.8 is
+2. **The 24 to 72 h real-time soak** on `7000eb18`: **done**; #8788 (browser-side, the Day to Day report) came after it. Run 020's compressed A/B soak against 15.0.8 is
    in the [integration record](../../docs/30-design/remedial/rc-15.0.9-integration-record.md).
    Real sites are running the candidate (the `dev_7000eb18…` image or the `dev` branch at
    `7000eb18`, per the [testing notes](testing-notes.md)). On 2026-09-30 the maintainer decided
    that these real-site runs count as the real-time soak, and reported that they have shown no
-   visible regression so far. No rig count, duration or client list is recorded here. The lab
+   visible regression so far. The testing notes record, as of 2026-09-29, one Loop, one Trio and one AndroidAPS user running `7000eb18` for about two days with no errors ([testing notes](testing-notes.md#where-testing-stands)); no later count is recorded. The lab
    real-time soak (`lab.sh soak --hours 72`) was not run.
    **The `npm audit` triage is done** ([below](#npm-audit-and-dependabot-triage), 2026-09-27): of
    the 17 findings (1 low, 13 moderate, 3 high) on `295f1177`, 10 are cleared by BF-147's fix (two
    override values and a lockfile refresh), merged as #8786 (`7000eb18`); `dev` now audits at 7,
-   all moderate. The other 7 are a deliberate pin, legacy ingestion and dev dependencies, all
+   all moderate, and `3014f883` is the same (#8788 changes no package file). The other 7 are a deliberate pin, legacy ingestion and dev dependencies, all
    removed on the modernization line.
 3. **Hand-written `CHANGELOG.md` `[Unreleased]` section on dev** (lines 5–75 of
    `git show official/dev:CHANGELOG.md` at `4f705217`; `git log --no-merges official/master..official/dev -- CHANGELOG.md`)
@@ -320,10 +324,15 @@ branches, which are renumbered when they are rebased. Beside that:
 4. **Re-approval of #8598 at the final head and the semver decision**, by the maintainer (the
    approvals were given on `e3adc91d`; the version class of #8772, #8775 and #8780 is undecided,
    see [decisions](decisions.md)).
-5. **The tag**, by the maintainer.
+5. **Whether the BF-108 fix goes in**, by the maintainer. A v1 filter listing two or more dates
+   under the date field answers 500, so xDrip4iOS bulk deletes remove nothing (on 15.0.8 too). The
+   fix is one commit on `3014f883`, branch `bf/date-filter-list` `350f6f09`, PR #8791
+   (opened 2026-10-01, CI 14 passed and 2 skipped; queue `BFQ-108`). Taking it moves
+   `dev` once more; it changes `lib/server/query.js` only, server-side, so no browser check.
+6. **The tag**, by the maintainer.
 
-#8598's two approvals were given on `e3adc91d`; its head is now `7000eb18`. The release notes and
-tag body are drafted for `7000eb18`.
+#8598's two approvals were given on `e3adc91d`; its head is now `3014f883`. The release notes and
+tag body are drafted for `3014f883`.
 
 Housekeeping: Dependabot #8747 targets `master` with an axios bump `dev` already contains (#8565);
 it is moot once #8598 merges.
@@ -434,10 +443,11 @@ No Dependabot pull request is open (2026-09-27).
 
 Not blockers by decision; recorded so a green suite is not read as covering them.
 
-- **Test-script coverage.** 74 of the 220 `tests/*.test.js` files on `dev` `7000eb18` match neither
+- **Test-script coverage.** 75 of the 221 `tests/*.test.js` files on `dev` `3014f883` match neither
   `npm run test:unit` nor `test:integration` (compare the files against the two globs in
   `git show official/dev:package.json`; 66 of 190 on `4f705217`, 69 of 205 on `e3adc91d`, 72 of 216
-  on `ff93fa94`, 73 of 219 on `295f1177`; #8786 adds `dependency-overrides`). Among
+  on `ff93fa94`, 73 of 219 on `295f1177`, 74 of 220 on `7000eb18`; #8786 adds `dependency-overrides`, #8788
+  `report-daytoday-durations`). Among
   them: `query.operands`, `boluscalc.quickpick`, `boluscalc.quickpick-rebuild`, `booterror`,
   `client.alarm-no-reading`, `treatmenttime`, `debug-logging`, `dependency-d3`, #8754's `authdelay`,
   `authsubjects` and `client-ip`, and 2026-09-26's `maker-level-names` (#8773),
@@ -610,12 +620,24 @@ the user-facing form. Facts the notes must not lose:
 - **v3 DELETE with an identifier of `0` or `false` (#8783, BF-142).** `dev`-only for `0` and
   `false`, which delete as on 15.0.8. A list identifier is refused where 15.0.8 deleted it; the notes
   carry it as a known issue.
+- **Day to Day events past midnight (#8788, BF-148).** An event with a duration that runs past
+  midnight is drawn on each day it covers, clipped to each day's chart; on 15.0.8 it was drawn only on
+  its start day and ran off the chart's edge. Same-day events are drawn as before. BF-149 (a cancelled
+  or replaced temporary target, and likely an override ended early, is drawn for its entered length,
+  as on 15.0.8) now also shows on the next day's chart; the notes carry it as a known issue. The notes
+  carry the change under "Other changes you may notice".
 
 ## Evidence
 
 - Merged part: per-PR test evidence, ablations and controls are in each PR body and in the
   register entry for each id.
-- **The candidate, `dev` `7000eb18`**: `295f1177` plus #8786 (BF-147), which changes
+- **The candidate, `dev` `3014f883`**: `7000eb18` plus #8788 (BF-148), which changes only
+  `lib/report_plugins/daytoday.js` among files a site runs (browser-side, the Day to Day report), adds
+  `tests/report-daytoday-durations.test.js` and edits `CHANGELOG.md` and the manual smoke checklist.
+  Full suite on its head `bbc6e75e` (same tree): 3481 passing, 0 failing, 3 pending (Node 22.23.2,
+  MongoDB 7.0.43, local, 2026-09-30); its test passes 3 of 3 and 1 of 3 with `7000eb18`'s
+  `daytoday.js`. #8788's own CI: 14 checks passed, 2 skipped.
+- **`dev` `7000eb18`**: `295f1177` plus #8786 (BF-147), which changes
   `package.json` (two override values), `package-lock.json` (9 versions, patch or minor: `ajv` 6,
   `request`'s `form-data`, and build tooling) and adds `tests/dependency-overrides.test.js`. No file
   under `lib/`, `views/` or `static/` changed, and the production bundle built from `295f1177` and
@@ -643,11 +665,11 @@ the user-facing form. Facts the notes must not lose:
   fails only on BF-135's intended page-load change.
 - The previous candidate, `dev` `699eb5fa` (tree `0b727dc5`, run 019): 3458 passing, 0 failing,
   3 pending in the same six cells.
-- CI on #8598 at `7000eb18`: 27 checks passed, 3 skipped (read 2026-09-27); at `295f1177` the same. At `e3adc91d` it was
+- CI on #8598 at `3014f883`: 27 checks passed, 3 skipped (read 2026-09-30); at `7000eb18` and `295f1177`, 27 checks passed, 3 skipped. At `e3adc91d` it was
   27 green and 3 skipped (Node 20/22/24 × MongoDB 4.4/5.0/6.0, CodeQL, Docker).
 - Queue items P0-A…P0-K, P0-T01, ADV-RETRO, ADV-ALARM and ADV-CONFIG hold the gates. Do not treat
   a local `test:unit` pass as coverage ([Known test gaps](#known-test-gaps)).
 
 ---
 
-*Draft, 2026-09-27. Requires maintainer review before release. Nothing tagged or published.*
+*Draft, 2026-09-30. Requires maintainer review before release. Nothing tagged or published.*

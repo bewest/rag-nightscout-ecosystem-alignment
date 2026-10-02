@@ -993,6 +993,15 @@ The "Hours:" choices on the main page, which set how much time the main chart sh
 or "Temp Basal", each with how many entries it has), so a long list can be narrowed to one kind of
 entry. The default, "All event types", shows the same list as before.
 
+### Day to Day report: events that run past midnight
+
+In **Reports → Day to Day**, an event that lasts a while (for example Exercise, a Note with a
+length, a Temporary Target, or a Loop override) now shows on every day it covers. An exercise
+entered at 22:00 for four hours shows from 22:00 to midnight on the first day and from midnight to
+02:00 on the next, including when you look at the next day on its own. Before, it showed only on
+the day it started and ran off the edge of that day's chart. Events that start and end on the same
+day look the same as before.
+
 ### Translations
 
 Updated translations from Nightscout's volunteer translators on Crowdin, as of early September
@@ -1145,6 +1154,11 @@ software library updates.
 - **Reports → Profiles can leave out profiles saved on the last day of the report.** When more
   than one profile was saved on that day, only the earliest is listed, and other report pages may
   draw that day's basal and targets from it. The same happens on 15.0.8.
+- **In Reports → Day to Day, a temporary target that was cancelled early is shown for the full
+  time it was set for**, and a Loop override that was ended early probably is too. The main chart
+  shows when it really ended. Because events that run past midnight now also show on the next
+  day, such a band can now appear on that day's chart as well. The same happens on 15.0.8 within
+  one day.
 - **For about a minute after a new phone, or a reinstalled Loop, uploads its settings, a remote
   command from the careportal or LoopCaregiver can still go to the old phone**, and Nightscout
   answers as if it was sent. After changing phones, check on the phone in use that a remote

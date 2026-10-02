@@ -15,7 +15,7 @@ Simulate Loop's upload behavior against a local cgm-remote-monitor instance.
 
 ```bash
 # Start Nightscout server (if not running)
-cd /home/bewest/src/worktrees/nightscout/cgm-pr-8447
+cd <workspace>/worktrees/nightscout/cgm-pr-8447
 export $(cat my.test.env | xargs) && node server.js &
 
 # Run tests
@@ -56,7 +56,7 @@ export API_SECRET="test_api_secret_12_chars"
 ## Server Setup
 
 ```bash
-cd /home/bewest/src/worktrees/nightscout/cgm-pr-8447
+cd <workspace>/worktrees/nightscout/cgm-pr-8447
 source my.test.env   # Sets INSECURE_USE_HTTP=true
 npm start            # Starts on localhost:1337
 ```

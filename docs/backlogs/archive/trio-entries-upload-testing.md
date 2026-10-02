@@ -3,7 +3,7 @@
 > **Goal**: Develop comprehensive tests for cgm-remote-monitor `entries.js` that handle Trio's UUID `_id` pattern.
 > **Gap**: [GAP-SYNC-045](../../../traceability/sync-identity-gaps.md#gap-sync-045-trio-entries-upload-uses-uuid-as-_id)
 > **Related Fix**: [PR #8447](https://github.com/nightscout/cgm-remote-monitor/pull/8447) (treatments only)
-> **Test Location**: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/tests/`
+> **Test Location**: `<workspace>/worktrees/nightscout/cgm-pr-8447/tests/`
 > **Created**: 2026-03-11
 
 ---
@@ -340,7 +340,7 @@ api.indexedFields = [
 
 #### Iteration 8: Run Full Test Suite
 ```bash
-cd /home/bewest/src/worktrees/nightscout/cgm-pr-8447
+cd <workspace>/worktrees/nightscout/cgm-pr-8447
 npm test  # All 722+ tests must pass
 ```
 

@@ -213,7 +213,7 @@ After documentation updates:
 
 ```bash
 # Verify test docs are accurate
-cd /home/bewest/src/worktrees/nightscout/cgm-pr-8447
+cd <workspace>/worktrees/nightscout/cgm-pr-8447
 
 # Test safety check works
 unset NODE_ENV && npm test 2>&1 | grep -E "SAFETY|NODE_ENV"  # Should fail

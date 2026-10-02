@@ -1,7 +1,7 @@
 # Roadmap — what comes next, and in what order
 
 *Prepared for the Nightscout project; proposed for Nightscout Foundation stewardship. Contributor-facing. Living document: prose dated
-2026-09-30 against cgm-remote-monitor `origin/dev` `7000eb18` and `origin/master` `92d08342`
+2026-09-30 against cgm-remote-monitor `origin/dev` `3014f883` and `origin/master` `92d08342`
 (tag `15.0.8`). The two order tables are generated from `queue/work-queue.yaml`, and
 `make views-check` fails when they drift.*
 
@@ -44,19 +44,23 @@ Everything merged since 15.0.8 reaches operators only through 15.0.9 (queue `RT-
 | id | what | claimed state | waiting for | PR |
 |---|---|---|---|---|
 | `RT-VERSION` | Two artefacts claim version 15.0.9 with different Node floors | `not-started` | Maintainer | &mdash; |
+| `BFQ-151` | BF-151 - one /api/v1/times or /slice request can block the server for seconds (b | `ready-to-push` | Maintainer | &mdash; |
+| `BFQ-73` | BF-73 - error responses carry a stack trace and server paths in production, for  | `ready-to-push` | Maintainer | &mdash; |
 
 <!-- END GENERATED: release-waits -->
 
 Also before the tag, and not queue items of their own (they are in `RT-0`'s notes and gates):
 the rest of the browser checks (the Loop remote-command checks that #8764 made necessary were done
 by hand on `ff93fa94` on 2026-09-26, except a remote bolus and LoopCaregiver from its app; see
-[the browser record](../60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.md)), the semver decision, the release notes,
-re-approval of #8598 at its final head (it was approved at `e3adc91d` and is at `7000eb18`), a
+[the browser record](../60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.md), and the Day to Day
+report #8788 changed, by the smoke checklist's new section), the semver decision, the release notes,
+re-approval of #8598 at its final head (it was approved at `e3adc91d` and is at `3014f883`), a
 review of #8598 by someone other than the author, and the maintainer's tag. The last full test run
 is run 020 on `ce30a94d`; it stands for `295f1177` (test-only #8785), and #8786's dependency change
-on `7000eb18` is covered by its own nine-cell CI and a byte-identical bundle, not by run 020
+on `7000eb18` is covered by its own nine-cell CI and a byte-identical bundle, and #8788's Day to Day
+change on `3014f883` by a local full suite on its head (3481/0/3) and its CI, not by run 020
 ([integration record](../30-design/remedial/rc-15.0.9-integration-record.md)). The real-time soak (`RT-SOAK`) is done: on 2026-09-30 the maintainer decided that real sites running
-the candidate count for it, and reported no visible regression so far. The `npm audit`
+the candidate `7000eb18` count for it, and reported no visible regression so far; #8788 came after it. The `npm audit`
 triage is done ([contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#npm-audit-and-dependabot-triage)).
 
 | for | read |
@@ -102,7 +106,7 @@ rebase cut 1 is right after 15.0.9 is tagged, while `dev` is quiet.
 | 1 | `RT-REBASE` | Cuts 1-5 are far behind dev and all five conflict | `gate-not-met` | &mdash; |
 | 1 | `RT-VERSION` | Two artefacts claim version 15.0.9 with different Node floors | `not-started` | &mdash; |
 | 2 | `OID-MIGRATION` | Opt-in migration that stores every string _id as the ObjectId it names, then ret | `not-started` | `OID-PREVALENCE` |
-| 2 | `RT-0` | Release 15.0.9 | `needs-decision` | `RT-VERSION` |
+| 2 | `RT-0` | Release 15.0.9 | `needs-decision` | `RT-VERSION`, `BFQ-151`, `BFQ-73` |
 | 3 | `RT-1` | Cut 1 - chore/retire-jsdom | `blocked` | `RT-0`, `RT-REBASE` |
 | 4 | `RT-2` | Cut 2 - chore/build-runtime-separation | `blocked` | `RT-1` |
 | 4 | `RT-D3-SUITE` | The treatment-drag clamps get a regression test in cut 1's real-browser suite | `blocked` | `RT-1` |

@@ -27,7 +27,7 @@ First PR slice:
 
 ### `lib/server/env.js`
 
-`lib/server/env.js` centralizes environment parsing. It already reads basic settings in `config()` and uses helpers such as `readENV` and `readENVTruthy` (`/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/server/env.js:33-58`, `:191-226`).
+`lib/server/env.js` centralizes environment parsing. It already reads basic settings in `config()` and uses helpers such as `readENV` and `readENVTruthy` (`<workspace>/worktrees/nightscout/cgm-pr-8447/lib/server/env.js:33-58`, `:191-226`).
 
 Recommended additions:
 
@@ -49,7 +49,7 @@ Acceptance criteria:
 
 ### `lib/settings.js`
 
-Enabled plugins are parsed through `settings.enable`, `settings.DEFAULT_FEATURES`, `enableAndDisableFeatures`, and `isEnabled` (`/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/settings.js:181`, `:267-280`, `:337-351`). Telemetry should read feature names from `env.settings.enable` but map them through the telemetry schema allowlist before including them.
+Enabled plugins are parsed through `settings.enable`, `settings.DEFAULT_FEATURES`, `enableAndDisableFeatures`, and `isEnabled` (`<workspace>/worktrees/nightscout/cgm-pr-8447/lib/settings.js:181`, `:267-280`, `:337-351`). Telemetry should read feature names from `env.settings.enable` but map them through the telemetry schema allowlist before including them.
 
 Acceptance criteria:
 
@@ -61,7 +61,7 @@ Acceptance criteria:
 
 ### `lib/server/server.js`
 
-The server boots env/config, runs boot events, creates the Express app, starts HTTP(S), and initializes websocket handling (`/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/server/server.js:29-54`, `:71`).
+The server boots env/config, runs boot events, creates the Express app, starts HTTP(S), and initializes websocket handling (`<workspace>/worktrees/nightscout/cgm-pr-8447/lib/server/server.js:29-54`, `:71`).
 
 Recommended behavior:
 
@@ -72,20 +72,20 @@ Recommended behavior:
 
 ### `lib/server/bootevent.js`
 
-Boot events initialize `ctx.runtimeState`, bus, plugins, middleware, storage, and Nightscout Connect (`/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/server/bootevent.js:17-23`, `:223-251`, `:341-352`). This is the best place to attach a telemetry collector to `ctx` once env and settings are loaded.
+Boot events initialize `ctx.runtimeState`, bus, plugins, middleware, storage, and Nightscout Connect (`<workspace>/worktrees/nightscout/cgm-pr-8447/lib/server/bootevent.js:17-23`, `:223-251`, `:341-352`). This is the best place to attach a telemetry collector to `ctx` once env and settings are loaded.
 
 Recommended behavior:
 
 - `ctx.telemetry = require('../telemetry')(env, ctx)` during internal setup.
 - Record `startup.success`, `startup.config-error`, `startup.database-error`, or `startup.dependency-error` based on boot errors/runtime state.
-- Prefer wiring runtime event listeners around `setupListeners`, where the boot chain already attaches `tick`, `data-received`, `data-loaded`, `data-processed`, and `notification` bus listeners (`/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/server/bootevent.js:293-345`).
+- Prefer wiring runtime event listeners around `setupListeners`, where the boot chain already attaches `tick`, `data-received`, `data-loaded`, `data-processed`, and `notification` bus listeners (`<workspace>/worktrees/nightscout/cgm-pr-8447/lib/server/bootevent.js:293-345`).
 - Add teardown cleanup through existing `ctx.bus` lifecycle rather than process-level handlers.
 
 ## Request counter touchpoints
 
 ### Top-level app mount: `lib/server/app.js`
 
-`lib/server/app.js` mounts static routes, pages, API v1/v2/v3, Pebble, docs, and development middleware (`/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/server/app.js:184-248`, `:229-248`, `:275-318`).
+`lib/server/app.js` mounts static routes, pages, API v1/v2/v3, Pebble, docs, and development middleware (`<workspace>/worktrees/nightscout/cgm-pr-8447/lib/server/app.js:184-248`, `:229-248`, `:275-318`).
 
 Recommended behavior:
 
@@ -109,11 +109,11 @@ Recommended behavior:
 
 ### Middleware registry
 
-`lib/middleware/index.js` centralizes common middleware such as JSON parsing, compression, extension handling, and device-provenance obscuring (`/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/middleware/index.js:1-30`). Telemetry should initially avoid broad automatic body-parser hooks. A small route-family counter middleware is safer than putting telemetry into shared parsing helpers.
+`lib/middleware/index.js` centralizes common middleware such as JSON parsing, compression, extension handling, and device-provenance obscuring (`<workspace>/worktrees/nightscout/cgm-pr-8447/lib/middleware/index.js:1-30`). Telemetry should initially avoid broad automatic body-parser hooks. A small route-family counter middleware is safer than putting telemetry into shared parsing helpers.
 
 ### API v1: `lib/api/index.js`
 
-API v1 enables plugins as Express app features and mounts collection routes (`/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/api/index.js:23-30`, `:43-65`). This is the clearest place to map v1 routes to allowed telemetry counters.
+API v1 enables plugins as Express app features and mounts collection routes (`<workspace>/worktrees/nightscout/cgm-pr-8447/lib/api/index.js:23-30`, `:43-65`). This is the clearest place to map v1 routes to allowed telemetry counters.
 
 Route family mapping:
 
@@ -130,7 +130,7 @@ Do not count treatment write/read in the first schema. Treatment counters may be
 
 ### API v3: `lib/api3/index.js`
 
-API v3 sets version, enabled collections, status/version/lastModified routes, generic setup, and storage sockets (`/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/api3/index.js:38-76`, `:78-108`). This is the place to add v3 route-family counters or a telemetry middleware before generic routes.
+API v3 sets version, enabled collections, status/version/lastModified routes, generic setup, and storage sockets (`<workspace>/worktrees/nightscout/cgm-pr-8447/lib/api3/index.js:38-76`, `:78-108`). This is the place to add v3 route-family counters or a telemetry middleware before generic routes.
 
 Initial mapping:
 
@@ -143,11 +143,11 @@ Initial mapping:
 
 ### Reports and pages
 
-`appPages` maps `/report` to the report UI (`/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/server/app.js:197-238`). Count `/report` page render as `reports.opened`. Daily/weekly/monthly report counters should only be added when the exact report route/action is identified and allowlisted.
+`appPages` maps `/report` to the report UI (`<workspace>/worktrees/nightscout/cgm-pr-8447/lib/server/app.js:197-238`). Count `/report` page render as `reports.opened`. Daily/weekly/monthly report counters should only be added when the exact report route/action is identified and allowlisted.
 
 ## Websocket health touchpoints
 
-`lib/server/websocket.js` tracks `watchers` and emits client counts on connection/disconnect (`/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/server/websocket.js:41`, `:155-166`). A telemetry collector can observe connection and disconnect events to update `websocket_connections` or peak/current counters.
+`lib/server/websocket.js` tracks `watchers` and emits client counts on connection/disconnect (`<workspace>/worktrees/nightscout/cgm-pr-8447/lib/server/websocket.js:41`, `:155-166`). A telemetry collector can observe connection and disconnect events to update `websocket_connections` or peak/current counters.
 
 Acceptance criteria:
 
@@ -156,7 +156,7 @@ Acceptance criteria:
 
 ## Plugin enabled-state touchpoints
 
-`lib/plugins/index.js` registers server defaults, marks enabled plugins based on `ctx.settings.enable`, exposes `enabledPluginNames`, and exposes `eachEnabledPlugin` (`/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/plugins/index.js:75-120`, `:129-173`, `:246-262`). This is preferable to hand-parsing `ENABLE` once `ctx.plugins` exists.
+`lib/plugins/index.js` registers server defaults, marks enabled plugins based on `ctx.settings.enable`, exposes `enabledPluginNames`, and exposes `eachEnabledPlugin` (`<workspace>/worktrees/nightscout/cgm-pr-8447/lib/plugins/index.js:75-120`, `:129-173`, `:246-262`). This is preferable to hand-parsing `ENABLE` once `ctx.plugins` exists.
 
 Recommended behavior:
 
@@ -166,7 +166,7 @@ Recommended behavior:
 
 ## Connector/vendor tally touchpoints
 
-Nightscout Connect configuration uses `CONNECT_SOURCE` / `env.extendedSettings.connect.source`. The package README documents currently supported source names such as `nightscout`, `dexcomshare`, `glooko`, `linkup`, and `minimedcarelink` (`/home/bewest/src/worktrees/nightscout/cgm-pr-8447/node_modules/nightscout-connect/README.md`).
+Nightscout Connect configuration uses `CONNECT_SOURCE` / `env.extendedSettings.connect.source`. The package README documents currently supported source names such as `nightscout`, `dexcomshare`, `glooko`, `linkup`, and `minimedcarelink` (`<workspace>/worktrees/nightscout/cgm-pr-8447/node_modules/nightscout-connect/README.md`).
 
 Telemetry should include only reviewed source names:
 
@@ -194,7 +194,7 @@ The cgm branch now derives these names from `env.extendedSettings.connect.source
 
 ### API v1 status/admin area
 
-`lib/api/status.js` already builds a filtered status response with runtime state and filtered settings (`/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/api/status.js:17-42`). Preview should not be added to public status by default because the payload includes an installation identifier.
+`lib/api/status.js` already builds a filtered status response with runtime state and filtered settings (`<workspace>/worktrees/nightscout/cgm-pr-8447/lib/api/status.js:17-42`). Preview should not be added to public status by default because the payload includes an installation identifier.
 
 Recommended endpoint:
 
@@ -202,7 +202,7 @@ Recommended endpoint:
 GET /api/v1/admin/telemetry/preview
 ```
 
-Use existing authorization/admin patterns near `verifyauth` and `adminnotifiesapi` in `lib/api/index.js` (`/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/api/index.js:58-60`). The endpoint should require admin permission and return the exact payload that would be sent, plus a disabled/off reason when telemetry is off.
+Use existing authorization/admin patterns near `verifyauth` and `adminnotifiesapi` in `lib/api/index.js` (`<workspace>/worktrees/nightscout/cgm-pr-8447/lib/api/index.js:58-60`). The endpoint should require admin permission and return the exact payload that would be sent, plus a disabled/off reason when telemetry is off.
 
 Alternative for first branch:
 
@@ -213,8 +213,8 @@ Alternative for first branch:
 
 Existing tests use Mocha, `supertest`, and boot helpers. Useful references:
 
-- `tests/api.status.test.js` boots API v1 with `supertest` and checks status formats (`/home/bewest/src/worktrees/nightscout/cgm-pr-8447/tests/api.status.test.js:1-80`).
-- `tests/settings.test.js` covers env-derived settings, default features, feature disablement, and `isEnabled` behavior (`/home/bewest/src/worktrees/nightscout/cgm-pr-8447/tests/settings.test.js:1-170`, `:248-259`).
+- `tests/api.status.test.js` boots API v1 with `supertest` and checks status formats (`<workspace>/worktrees/nightscout/cgm-pr-8447/tests/api.status.test.js:1-80`).
+- `tests/settings.test.js` covers env-derived settings, default features, feature disablement, and `isEnabled` behavior (`<workspace>/worktrees/nightscout/cgm-pr-8447/tests/settings.test.js:1-170`, `:248-259`).
 - `tests/bootevent-debounce.test.js` isolates boot/listener async behavior and is the pattern for bus-listener tests.
 - `tests/reports.test.js` covers report-route conventions.
 

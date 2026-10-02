@@ -1906,7 +1906,7 @@ representation, achievable without leaving Node.
 ### 7.4 Deployment models: where the cost of "one Nightscout per person" actually is
 
 Hosters (T1Pal, NSPro, and this workspace's `node-multienv` prototype) run one Node process
-— usually one database — per tenant under Kubernetes. `/home/bewest/src/node-multienv` is
+— usually one database — per tenant under Kubernetes. `<workspace>/node-multienv` is
 exactly this, evolved over four generations to a Metacontroller CompositeController
 declaring **11–12 child resources per tenant** (MongoDB StatefulSet + Service + Secret,
 Nightscout Deployment + Service, Kafka Topic + Connector, PVCs, PodDisruptionBudgets,

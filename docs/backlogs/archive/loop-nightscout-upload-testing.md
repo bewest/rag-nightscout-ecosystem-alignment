@@ -1,7 +1,7 @@
 # Loop → Nightscout Upload Testing Backlog
 
 > **Goal**: Develop comprehensive tests for cgm-remote-monitor that faithfully simulate all ways Loop uploads data to Nightscout.
-> **Test Location**: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/tests/`
+> **Test Location**: `<workspace>/worktrees/nightscout/cgm-pr-8447/tests/`
 > **Created**: 2026-03-10
 
 ## Override Upload Analysis (LOOP-SRC-010)

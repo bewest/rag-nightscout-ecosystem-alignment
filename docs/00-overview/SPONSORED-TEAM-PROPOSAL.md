@@ -6,9 +6,10 @@ cgm-remote-monitor `official/dev` `295f1177`; figures re-measured against this r
 and `official/dev` `7000eb18` (the merge of #8786) the same day. Added 2026-09-29: the cross-project
 release and contributor figures and the dated-work paragraph in §2, the OpenStreetMap and SQLite rows
 in §6, and the vendor-change table in §6a. Added 2026-09-30: §1a, with the published clinical evidence
-and the case for a research commons. Where it touches employment, contracting, tax or
-the foundation's exempt status, it needs review by the foundation's counsel and accountant before
-any decision rests on it (§9). Nothing here is decided.*
+and the case for a research commons. Added 2026-10-01: CNCF's conformance and service-provider
+programmes in §6, and option E (companies paying for assurance) in §7. Where it touches employment,
+contracting, tax or the foundation's exempt status, it needs review by the foundation's counsel and
+accountant before any decision rests on it (§9). Nothing here is decided.*
 
 *Author's interests: the author maintains cgm-remote-monitor, founded a company that hosts
 Nightscout commercially, and could be a candidate for paid work under this proposal. The
@@ -96,7 +97,7 @@ releases slowed (both below). Tag dates in cgm-remote-monitor (`git tag --sort=c
 | 15.0.4 | 2026-02-28 | 296 |
 | 15.0.7 | 2026-04-29 | 57 (15.0.5 and 15.0.6 in between) |
 | 15.0.8 | 2026-09-04 | 128 |
-| 15.0.9 | candidate `7000eb18`, not tagged | — |
+| 15.0.9 | candidate `3014f883` (2026-09-30), not tagged | — |
 
 **Important work can wait for years.** The MongoDB 5 driver upgrade was first proposed in #7344,
 opened 2022-02-16. The upgrade that shipped was #8421: opened 2026-01-19, merged 2026-03-16, released
@@ -172,8 +173,11 @@ person are the ones this proposal would fund:
 | dependency alerts | 80 Dependabot alerts are open against `master`, the last release; 74 of them are already fixed on `dev` and close only when a release ships (measured on `dev` `7000eb18`). 38 merges since 15.0.7 changed the lockfile, 20 of them Dependabot's. Each remaining finding needs a person to establish whether Nightscout reaches it: the 15.0.9 triage took 17 findings to 7, and the modernization line to 0 ([triage](../../releases/cgm-remote-monitor-15.0.9/contents.md#npm-audit-and-dependabot-triage)) |
 | backlog | 35 open pull requests (18 opened in 2026, the oldest in 2021) and 102 open issues in cgm-remote-monitor (`gh pr list`, `gh issue list`, 2026-09-27) |
 
-Today all of this depends on the unpaid time of a few people. When their time runs short, the work
-waits.
+Today all of this depends on a few people. Some of them are paid for part of their time by the
+commercial hosts they work for, on terms each host sets, and those arrangements differ in scope,
+availability and the compliance obligations each host carries. No one is paid to do this work for
+the ecosystem as a whole, on published terms, with a public report. When those few people's time
+runs short, the work waits.
 
 ## 4. What the team would do
 
@@ -217,7 +221,7 @@ Figures are for the year shown. Re-check each against its source before quoting 
 |---|---|---|---|---|
 | [Zig Software Foundation](https://ziglang.org/zsf/) (US 501(c)(3), 2020) | donations almost entirely: FY2025 revenue $921,832, 100% contributions ([990](https://projects.propublica.org/nonprofits/organizations/845105214)); 2024 income $670,673 from GitHub Sponsors and a few large donors ([2024 report](https://ziglang.org/news/2025-financials/)) | one fulltime employee plus hourly contractors; of $520,749 spent in 2024, $306,362 went to contractors and $154,263 to the employee, "92% of our money in 2024 paying contributors" in the report's words ([2024 report](https://ziglang.org/news/2025-financials/)) | a three-person board; no published technical governance document | the closest match: small, lean, nearly all money goes to code. It rests on one lead and a few large donors |
 | [Haskell Foundation](https://haskell.foundation/) (2020; funds held through Haskell.org, Inc., a 501(c)(3); [merger announced 2024](https://blog.haskell.org/haskell-foundation-and-committee-merger/), completion not verified) | corporate sponsorship tiers from $15k to $100k+ a year; sponsors sit on an advisory board ([donations](https://haskell.foundation/donations/)); Haskell.org, Inc. FY2024 revenue $136,256 ([990](https://projects.propublica.org/nonprofits/organizations/475236502)) | one executive director from 2024; a DevOps role restructured after a 2024 shortfall ([post](https://discourse.haskell.org/t/devops-at-the-haskell-foundation/9654)); from mid-2026 no director and a volunteer technical committee directing most spending ([2026 update](https://discourse.haskell.org/t/haskell-foundation-2026-update/14136)) | a 12-member board; existing technical committees keep their authority | sponsor income did not reliably cover a director plus an engineer; fund engineering first, administration second |
-| [CNCF](https://www.cncf.io/) (a directed fund of the Linux Foundation, a 501(c)(6), 2015) | 2024: events about two-thirds, membership 23.5%, training 7.5%; 728 members ([annual report 2024, p. 26](https://www.cncf.io/wp-content/uploads/2025/04/CNCF-Annual-Report-2024_v2.pdf)); dues up to $350k a year ([join](https://www.cncf.io/about/join/)) | pays for services (events, infrastructure, security audits, mentoring), not core developers; project engineers are employed by member companies | a governing board sets budget; a technical oversight committee admits projects and tracks their maturity; projects keep their own governance ([charter](https://github.com/cncf/foundation/blob/main/charter.md) §9(c)) | useful for its maturity levels and project independence; its funding model needs many corporate members we do not have |
+| [CNCF](https://www.cncf.io/) (a directed fund of the Linux Foundation, a 501(c)(6), 2015) | 2024: events about two-thirds, membership 23.5%, training 7.5%; 728 members ([annual report 2024, p. 26](https://www.cncf.io/wp-content/uploads/2025/04/CNCF-Annual-Report-2024_v2.pdf)); dues up to $350k a year ([join](https://www.cncf.io/about/join/)) | pays for services (events, infrastructure, security audits, mentoring), not core developers; project engineers are employed by member companies. Commercial support grows around one upstream: "every vendor's version of Kubernetes supports the required APIs", checked by "the identical open source conformance application" any user can run, renewed yearly, over 90 certified offerings ([conformance](https://www.cncf.io/training/certification/software-conformance/)); certified service providers are CNCF members with three or more certified engineers ([KCSP](https://www.cncf.io/training/certification/kcsp/)), both read 2026-10-01 | a governing board sets budget; a technical oversight committee admits projects and tracks their maturity; projects keep their own governance ([charter](https://github.com/cncf/foundation/blob/main/charter.md) §9(c)) | its scale of membership does not transfer. What does: companies sell support for one open codebase and prove conformance with the same public tests everyone runs, so commercial support adds to the commons instead of forking it ([collaboration model](COLLABORATION-MODEL.md) rules 5 and 8) |
 | [WHATWG](https://whatwg.org/faq) (2004; steering group since 2017) | no published budget | editors work on the standards; they are understood to be employed by browser vendors (not verified) | a steering group of organisations that build a major browser engine ([agreement](https://whatwg.org/sg-agreement)); a feature needs two or more engines | authority follows the people who implement. Our equivalent is the app builders whose clients depend on the server |
 | [W3C](https://www.w3.org/about/) (US 501(c)(3) since 2023) | mainly membership dues: FY2024 revenue $8.71M ([990](https://projects.propublica.org/nonprofits/organizations/844023862)); 335+ members | about 50 staff who coordinate and edit; members' employees do the technical work | a board, an advisory board, a technical architecture group; working groups decide by consensus | stable staff funding, but the overhead suits many paying members, not a small community |
 | [PSF Developers-in-Residence](https://www.python.org/psf/developersinresidence/) (Python) | each seat paid for by a named sponsor; the first began in July 2021 ([announcement](https://pyfound.blogspot.com/2021/07/ukasz-langa-is-inaugural-cpython.html)) | four residents today; the work is triage, reviews, build monitoring and security response in support of the volunteer core team | the core developers and their elected steering council | the nearest model to §4's roles: paid people doing the review and release work volunteers find hardest to sustain. Each seat lasts only as long as its sponsor |
@@ -233,6 +237,11 @@ What they have in common:
   engineering work and very little on administration.
 - Companies that build on the commons pay for work and assurance, not for control (OpenStreetMap,
   SQLite). The rules that would keep it so here are in [COLLABORATION-MODEL](COLLABORATION-MODEL.md) §5.
+- Free users and paying companies get the same releases (SQLite), and commercial offerings prove
+  they track the same upstream with the same public tests (CNCF). One codebase serves people who
+  build and run their own tools and companies that use its evidence in their own quality systems.
+- One table of every precedent these proposals cite, with the size of each community beside it, is
+  in [PRECEDENTS](PRECEDENTS.md).
 
 ## 6a. More than one server
 
@@ -289,10 +298,12 @@ A second server makes this proposal more necessary, not less:
 | A. Release and review lead only | one person, fulltime | [board to fill in] | smallest step; one person is still a single point of failure |
 | B. The three roles in §4 | two fulltime, one part time | [board to fill in] | covers review, compatibility and security; needs sustained funding |
 | C. Grant-funded fixed term | option A or B for 12–18 months from a grant | per grant | tests the model before a long-term commitment; ends when the grant ends |
-| D. No change | volunteers only | none | keeps today's pattern of long release gaps |
+| D. No change | volunteers, and the part-time paid arrangements individual hosts make (§3) | none to the foundation | keeps today's pattern of long release gaps; the requirements others ask of the server (release schedule, security response, vendor changes) stay with whoever has time |
+| E. Companies pay for assurance | hosts and companies that build on Nightscout buy release evidence for their own quality systems, fixes on the release line they run, or test runs in their configuration, on published terms ([collaboration rule 8](COLLABORATION-MODEL.md#5-proposed-rules-for-working-together)); the money funds A or B | depends on demand | evidence and fixes stay public, so free users get the same releases; needs buyers, and adds the counsel questions in COLLABORATION-MODEL §8 |
 
-The board fills in the costs (§9). For reference, the Sovereign Tech Fellowship pays €64k–€82k a year
-for an employed two-year post, and Zig paid $460,625 to its contractors and one employee in 2024 (§6).
+Option E can be combined with A, B or C. The board fills in the costs (§9). For reference, the
+Sovereign Tech Fellowship pays €64k–€82k a year for an employed two-year post, and Zig paid
+$460,625 to its contractors and one employee in 2024 (§6).
 
 ## 8. How we would know it works
 
@@ -323,7 +334,8 @@ For counsel and the accountant:
 
 For the board:
 
-6. Cost ranges for options A–C, and which funding sources to approach.
+6. Cost ranges for options A–C, which funding sources to approach, and whether to test demand for
+   option E with the hosting providers (COLLABORATION-MODEL decision 6).
 7. Who the team reports to, and how the maintainers take part in hiring and reviews.
 
 For a clinician or clinical researcher:

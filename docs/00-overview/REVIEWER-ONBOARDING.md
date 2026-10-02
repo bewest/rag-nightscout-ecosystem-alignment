@@ -2,7 +2,7 @@
 
 *Contributor-facing. Written for somebody who has never seen this repository and
 is considering reviewing work in it. Prose revised 2026-09-30 against
-cgm-remote-monitor `origin/dev` `7000eb18` and `origin/master` `92d08342` (tag
+cgm-remote-monitor `origin/dev` `3014f883` and `origin/master` `92d08342` (tag
 `15.0.8`).*
 
 Thank you for looking. What you would be taking on, so you can decide quickly:
@@ -112,7 +112,7 @@ Four entry points, easiest first:
    welcome. Among safety items, `BFQ-92` (a page with no
    glucose reading presents no server alarm, including device alarms) has no fix yet.
 3. **The release.** `RT-0` (release PR #8598, 15.0.9) is green on CI and approved. It is
-   86 first-parent merges (`dev` `7000eb18`, unchanged from 2026-09-27 to 2026-09-30); its
+   87 first-parent merges (`dev` `3014f883`, 2026-09-30); its
    remaining blockers are generated in [ROADMAP §1](ROADMAP.md#1-the-next-release-1509), its
    contents are in [contents.md](../../releases/cgm-remote-monitor-15.0.9/contents.md), and how the
    candidate was tested is in the

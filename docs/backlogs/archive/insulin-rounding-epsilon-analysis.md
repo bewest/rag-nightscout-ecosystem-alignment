@@ -7,7 +7,7 @@
 - `tests/boluswizardpreview.test.js` - Flaky test `set a pill to the BWP with infos`
 - `docs/test-specs/flaky-tests.md` - Historical documentation
 
-**Worktree**: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
+**Worktree**: `<workspace>/worktrees/nightscout/cgm-pr-8447`
 
 ---
 

@@ -1,12 +1,12 @@
 cgm-remote-monitor 15.0.9
 
 DRAFT tag body, not applied. Delete this paragraph when the tag is
-cut. If dev moves past 7000eb18 before the tag, re-measure the counts
+cut. If dev moves past 3014f883 before the tag, re-measure the counts
 (git rev-list --first-parent --count 15.0.8..<tag>;
 git rev-list --count 15.0.8..<tag>; git diff --shortstat 15.0.8 <tag>).
 
-15.0.8..dev at 7000eb18: 86 first-parent PR merges, 507 commits,
-297 files, +28363/-1722. Crowdin #8730 is held out (BF-132).
+15.0.8..dev at 3014f883: 87 first-parent PR merges, 509 commits,
+298 files, +28617/-1819. Crowdin #8730 is held out (BF-132).
 
 Query and API correctness
   #8737 025f1310  schema-driven query coercion; $exists operand;
@@ -127,6 +127,8 @@ Alarms and client
   #8588 c1943ced  report SGV de-duplication no longer cascades
   #8589 2af0aed9  report page built once per load
   #8590 101f51a0  treatments table event-type filter
+  #8788 3014f883  Day to Day report draws an event with a duration on
+                  every day it covers, clipped to each day (BF-148)
   #8699 6fbff0ec  clock view low-and-falling
   #8701 5a09befd  profile-switch schedule preprocessing
   #8702 ca35f2a3  unnamed profiles preserved
@@ -220,7 +222,7 @@ the BF-121 x BF-136 re-send duplicate; BF-124 tooltip BG units;
 BF-127 clock from the menu for a token viewer on a denied site;
 BF-137 several Maker keys; BF-145 v3 PATCH/PUT of a record with an
 empty identity; BF-142's list identifiers stay undeletable through
-v3.
+v3; BF-149 Day to Day bands ignore a cancelled temp target.
 
 BF- ids refer to the backfix register in the nightscout ecosystem
 alignment repository; each PR body carries its evidence.

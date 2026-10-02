@@ -1,11 +1,11 @@
 # Report #1 — Stored XSS via WebSocket Write Purification Bypass
 
 **Date evaluated:** 2026-09-01
-**Source materials:** `/home/bewest/Downloads/potential-crm-xss-treatments-01`,
+**Source materials:** `~/Downloads/potential-crm-xss-treatments-01`,
 `Screen Recording 2026-09-01 at 10.13.37 pm.mov` (reference only, not
 reproduced here)
 **Branch:** `wip/bewest/security-hotfix-eval-stored-xss`
-**Worktree:** `/home/bewest/src/worktrees/nightscout/cgm-dev-node22`
+**Worktree:** `<workspace>/worktrees/nightscout/cgm-dev-node22`
 **Base:** `dev@4982e954`
 **Status:** ✅ Fixed, tested, committed (2 commits, working tree clean)
 

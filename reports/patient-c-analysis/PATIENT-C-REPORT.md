@@ -404,7 +404,7 @@ confirm the daypart pattern automatically.
 ## 9. Reproduce
 
 ```bash
-cd /home/bewest/src/rag-nightscout-ecosystem-alignment
+cd <workspace>/rag-nightscout-ecosystem-alignment
 PYTHONPATH=. python3 tools/cgmencode/analyze_patient_c.py
 ls reports/patient-c-analysis/plots/
 ```

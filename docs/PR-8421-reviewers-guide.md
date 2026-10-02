@@ -6,7 +6,7 @@
 > **Size**: 146 files, +36,222 / -4,654 lines  
 > **Created**: 2026-03-12  
 > **Work Tracking**: [pr-8421-review-analysis.md](backlogs/archive/pr-8421-review-analysis.md)  
-> **Worktree**: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
+> **Worktree**: `<workspace>/worktrees/nightscout/cgm-pr-8447`
 
 ---
 
@@ -184,7 +184,7 @@ During the upgrade, analysis of popular AID apps revealed several issues:
 **Discovery process**:
 ```bash
 # Find all lib changes not related to UUID handling
-cd /home/bewest/src/worktrees/nightscout/cgm-pr-8447
+cd <workspace>/worktrees/nightscout/cgm-pr-8447
 git diff official/master -- lib/ | grep -E "^\+" | grep -v "identifier\|UUID\|normalize" | head -50
 ```
 
@@ -328,7 +328,7 @@ python tools/verify_refs.py --verbose | grep -E "BROKEN|ERROR" || echo "✅ All 
 python tools/verify_coverage.py --json | jq '.summary'
 
 # Run the specific UUID tests
-cd /home/bewest/src/worktrees/nightscout/cgm-pr-8447
+cd <workspace>/worktrees/nightscout/cgm-pr-8447
 npm test -- --grep "UUID" 2>&1 | tail -20
 ```
 

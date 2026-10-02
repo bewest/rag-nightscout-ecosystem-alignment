@@ -2891,20 +2891,44 @@ items:
           browser, not by Nightscout's own mocha suite, which cannot see the drag
           clamps (RT-D3 answered 2026-09-24; the suite gap is RT-D3-SUITE on cut
           1). Recording it as a no-gate keeps it from reading as covered.
-    blocks_on: [RT-VERSION, BFQ-102, BFQ-114, BFQ-118, BFQ-119, RT-PR-8419, RT-PR-8530, BFQ-120, BFQ-126, BFQ-134, BFQ-106, BFQ-129, BFQ-125, BFQ-123, BFQ-122, BFQ-136, BFQ-128, RT-PR-8778, BFQ-80, BFQ-121, RT-PR-8781, BFQ-142, BFQ-146]
+    blocks_on: [RT-VERSION, BFQ-102, BFQ-114, BFQ-118, BFQ-119, RT-PR-8419, RT-PR-8530, BFQ-120, BFQ-126, BFQ-134, BFQ-106, BFQ-129, BFQ-125, BFQ-123, BFQ-122, BFQ-136, BFQ-128, RT-PR-8778, BFQ-80, BFQ-121, RT-PR-8781, BFQ-142, BFQ-146, RT-PR-8788, BFQ-108, RT-PR-8790, BFQ-151, BFQ-73]
     evidence:
       - releases/cgm-remote-monitor-15.0.9/contents.md
       - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
       - docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md
       - docs/30-design/remedial/rc-15.0.9-integration-record.md
     notes: >
+      2026-10-01 - #8790 (awss1i, BF-150, Food Editor touch scrolling) and
+      #8791 (BF-108) merged into dev (73c9528b, 50bc1084); dev is 50bc1084,
+      515 commits and 89 first-parent merges ahead of master. Release PR
+      #8598 at 50bc1084, mergeable, 27 passed and 3 skipped, APPROVED
+      (approvals at e3adc91d). Decided the same day (maintainer): BF-151
+      (GHSA-phrf) and BF-73 (GHSA-2m9c) are fixed for 15.0.9 (BFQ-151,
+      BFQ-73 added to blocks_on); the BF-153 dependency refresh is prepared
+      and decided on its result; moment stays at 2.30.1. BF-152 (GHSA-25pr)
+      is after 15.0.9 (AndroidAPS contract question). GHSA-cg6f duplicates
+      GHSA-r3gv, fixed on dev by #8743. The 15.0.9 records are re-anchored
+      once these merge.
+      2026-09-30 - #8788 (awss1i, BF-148, Day to Day report) merged into dev
+      as 3014f883 (22:38Z, tree 3549306b = head bbc6e75e); RT-PR-8788 added
+      to blocks_on. dev is 3014f883: 509 commits and 87 first-parent merges
+      ahead of master, 298 files, +28617/-1819. Release PR #8598 is at
+      3014f883, mergeable, reviewDecision APPROVED (approvals at e3adc91d);
+      CI 27 passed and 3 skipped. Local full suite on bbc6e75e 3481/0/3 (Node 22.23.2,
+      MongoDB 7.0.43). The browser-check gate names 15 files (adds
+      lib/report_plugins/daytoday.js; its hand check is the smoke
+      checklist's new Day to Day section). The real-site soak ran on
+      7000eb18, before #8788. The 15.0.9 records are re-anchored on
+      3014f883. Still owed by the maintainer: browser hand checks,
+      re-approval of #8598 at the final head, the semver decision.
       2026-09-30 - re-measured after fetching official: dev is still
       7000eb18 (merged 2026-09-27 20:40Z), 507 commits and 86 first-parent
       merges ahead of master; release PR #8598 is at 7000eb18, mergeable, 27
       checks passed and 3 skipped, reviewDecision APPROVED (both approvals
       given at e3adc91d). No 15.0.9 tag. The maintainer reported the same day
       that real sites running the candidate have shown no visible regression
-      so far (no rig count or duration recorded), and decided that those
+      so far (the testing notes record one Loop, one Trio and one AndroidAPS
+      user for about two days as of 2026-09-29), and decided that those
       real-site runs count as the 24-72 h real-time soak (RT-SOAK, done).
       Still owed by the maintainer: browser hand checks, re-approval of #8598
       at the final head, the semver decision.
@@ -5561,6 +5585,11 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-01: API v3's re filter operator is the same class (reported
+      privately 2026-09-28); measured directly on mongod 7.0.43, one count
+      over 20 000 documents of backtracking-prone text took 49.6 s, 9 ms on
+      short text. Any fix here (for example a server-side time limit on
+      find queries) should cover both APIs. After 15.0.9.
       Open on 15.0.8 and on dev (bf72-regex-operand-bounded.js fails on
       origin/dev 153e5658, 2026-09-24); no fix branch. The disclosure
       disposition was decided by the maintainer on 2026-09-23 and its
@@ -8348,14 +8377,18 @@ items:
     title: BF-108 - a list of timestamps under the date field answers 500, so bulk deletes by timestamp do nothing
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: origin/dev
-    base: origin/dev@ddd9b600
-    state: not-started
-    pr: []
-    ships_to_operators_today: true
+    branch: bf/date-filter-list
+    base: official/dev@3014f883
+    state: merged-upstream
+    pr: [8791]
+    ships_to_operators_today: false
     blast_radius: >
-      lib/server/query.js enforceDateFilter, the ISO rewrite of date
-      operator values.
+      lib/server/query.js enforceDateFilter: each element of a list operand
+      ($in, $nin) under the date field goes through the single-date rewrite
+      (new normalizeDate, the old body unchanged); single operands unchanged.
+      Tests in tests/query.test.js (3) and tests/api.entries.test.js (1).
+      Branch bf/date-filter-list 350f6f09, one commit on dev 3014f883, open
+      as #8791.
     review: maintainer
     operator_visible: >
       If you use xDrip4iOS, readings it asks Nightscout to delete in bulk
@@ -8368,17 +8401,36 @@ items:
       - run: node tools/queue/gates/bf108-date-in-list.js
         kind: static
         describe: >
-          Builds the entries query from origin/dev's own query.js with a
+          Builds the entries query from the fix branch's own query.js with a
           two-timestamp find[date][$in]; its control is the same filter with
-          one timestamp. RED on v15.0.8, dev ddd9b600 and the candidate
-          1067e668. No ref carrying a fix exists yet, so the gate has never
-          been seen green.
+          one timestamp. GREEN on bf/date-filter-list 350f6f09; RED on
+          v15.0.8, dev ddd9b600, 3014f883 and the candidate 1067e668 (run
+          without --ref it measures origin/dev). Once merged, measure
+          origin/dev again.
+      - no-gate: >
+          The tests need MongoDB and a tree with node_modules, so they are not
+          a queue gate. 2026-09-30 in externals/work/crm-bf108 (Node 22.23.2,
+          MongoDB 7.0.43, dedicated container): tests/query.test.js and
+          tests/api.entries.test.js 65 passing on the branch; with 3014f883's
+          query.js 61 passing and the 4 new tests failing. Full suite
+          3485/0/3 (3481 on 3014f883). A DELETE listing 50 of 60 posted readings deletes those 50
+          (deletedCount 50, 10 left).
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/consumer-impact-15.0.9-2026-09-23.md
     notes: >
-      Open, no branch. Reproduced 2026-09-23 by the consumer-replay lab
+      2026-10-01: merged into dev by the maintainer as 50bc1084 (11:08 PDT);
+      the gate, which measures origin/dev, is green.
+      2026-10-01: pushed and opened as #8791 by the maintainer (15:23Z, head
+      350f6f09), MERGEABLE, CI 14 passed and 2 skipped. No other PR fixes
+      BF-108: the five cut tips and #8348 (Remove Moment, which conflicts
+      with #8791 in query.js) fail the gate; no issue or PR mentions it.
+      2026-09-30: fixed on local branch bf/date-filter-list 350f6f09 (one
+      commit on dev 3014f883), not pushed; PR body draft
+      reports/phase0-pr-bodies/date-filter-list.md. Whether it goes into
+      15.0.9 is the maintainer's call (not in RT-0's blocks_on).
+      Reproduced 2026-09-23 by the consumer-replay lab
       on v15.0.8, dev ddd9b600 and the candidate, with a one-value
       control; the gate is red on origin/dev 153e5658 (2026-09-24).
       xdripswift c268542e NightscoutSyncManager.swift:794-806 is the
@@ -10756,6 +10808,411 @@ items:
       deletes through v3. Branch ref for re-reading: `git -C
       externals/cgm-remote-monitor-official fetch official
       pull/8778/head:refs/triage/pr-8778`.
+  - id: RT-PR-8788
+    title: "#8788 - the Day to Day report draws an event with a duration on every day it covers (awss1i; BF-148, fixes #8223); merged for 15.0.9"
+    parcel: release-train
+    repo: cgm-remote-monitor
+    branch: awss1i:wip/daytoday-duration-past-midnight
+    base: origin/dev@7000eb18
+    state: merged-upstream
+    pr: [8788]
+    ships_to_operators_today: false
+    blast_radius: >
+      lib/report_plugins/daytoday.js only in code (+55/-97): the five copies
+      of the duration-band code become appendDurationBand, reached through
+      appendDurationEvent; each band is clipped to its day; after the day's
+      own treatments, drawChart draws events from datastorage.treatments that
+      began before the day and are still running at its start (insulin,
+      carbs, temp basals, combo boluses, profile switches, and notes with
+      Notes off are skipped). Plus tests/report-daytoday-durations.test.js
+      (jsdom), CHANGELOG.md [Unreleased] and
+      docs/test-specs/manual-smoke-checklist.md. Browser-side only: the
+      report bundle changes, the server does not.
+    review: maintainer
+    operator_visible: >
+      In the Day to Day report, an exercise, note, override, temporary
+      target or other event with a length that runs past midnight now also
+      shows on the next day, and stays inside each day's chart. Nothing
+      else in the report changes.
+    semver: patch
+    semver_reason: a report draws what it already loads; no API, setting or stored value changes
+    register: [BF-148]
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bbc6e75e origin/dev
+        kind: static
+        describe: >
+          #8788's head bbc6e75e is contained in origin/dev (merged
+          2026-09-30 as 3014f883; RED before that).
+      - no-gate: >
+          Measured 2026-09-30 in externals/work/crm-8788 (bbc6e75e, Node
+          22.23.2): the PR's test 3/3, and 1/3 with 7000eb18's daytoday.js
+          (the two failures the PR body names); eslint on the two changed
+          JavaScript files clean; git diff --check clean. Probes with the
+          PR's harness: a 240 min event from 22:00 draws 22:00-24:00 and
+          00:00-02:00; a 30 h event draws on three days; a string duration
+          behaves as a number; a cancelled Temporary Target keeps its full
+          length (BF-149). Full suite on bbc6e75e: 3481/0/3 (Node 22.23.2,
+          MongoDB 7.0.43 in its own container, ci.test.env form), against
+          3478 on 7000eb18's own CI; the 3 added are the PR's.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - releases/cgm-remote-monitor-15.0.9/contents.md
+    notes: >
+      Merged 2026-09-30 22:38Z by the maintainer as 3014f883 (tree 3549306b,
+      the same as bbc6e75e); dev is 3014f883, 509 commits and 87
+      first-parent merges ahead of master. BF-148 merged; BF-149 is after
+      15.0.9 and a known issue in the release notes.
+      Opened 2026-09-30 16:19Z by awss1i (first PR to the repository), one
+      commit bbc6e75e on dev 7000eb18, MERGEABLE, no review yet; CI ran on
+      the fork PR (CodeQL and the npm 12 install-and-build check passed; the
+      nine test cells were running at 2026-09-30 evening).
+      Same-day drawing is unchanged by reading: every event type reaches the
+      same branch as on 7000eb18 with Other treatments on or off, and band
+      and label geometry are identical unless the band is clipped.
+      Cost of merging before the 15.0.9 tag: dev moves past 7000eb18, so the
+      15.0.9 records (contents, tag message, release notes, integration
+      record, RT-0) are re-anchored; lib/report_plugins/daytoday.js joins
+      the files the browser-check gate names, and the manual smoke
+      checklist's new Day to Day section is the hand check; the real-site
+      soak ran on 7000eb18, which does not carry this change.
+      Cost at cut 1 (RT-REBASE): cut 1 retires jsdom, so the new test is
+      ported to cut 1's Playwright suite or dropped there.
+      The CHANGELOG entry follows the practice of 12 other dev commits; the
+      rule for that section is the maintainer's open decision
+      (releases/README.md, "Open item: CHANGELOG on dev").
+  - id: BFQ-149
+    title: "BF-149 - the Day to Day report draws a cancelled or replaced temp target or override for its whole entered duration"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: origin/dev@7000eb18
+    state: not-started
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/report/reportclient.js (pass the duration events through
+      ddata.processDurations, as the main chart does for temp targets and
+      the report already does for temp basals) or the band code in
+      lib/report_plugins/daytoday.js; tests beside
+      tests/report-daytoday-durations.test.js.
+    review: maintainer
+    operator_visible: >
+      In the Day to Day report, a temporary target (and likely a Loop
+      override) that was cancelled early is drawn for the length it was
+      entered with, so it can look active for longer than it was. The main
+      chart is not affected. The same on 15.0.8. This is not medical advice.
+    semver: patch
+    semver_reason: a report band ends where the main chart already ends it
+    register: [BF-149]
+    gates:
+      - run: sh -c 'git -C externals/cgm-remote-monitor-official show origin/dev:lib/report/reportclient.js | grep -Eq "processDurations\((datastorage\.)?treatments"'
+        kind: static
+        describe: >
+          FAILS while the report passes only tempbasalTreatments through
+          processDurations (RED on dev 7000eb18, 2026-09-30). A presence
+          check for one possible fix; a test that cancels a target decides.
+      - no-gate: >
+          Measured 2026-09-30 with #8788's jsdom harness (externals/work,
+          Node 22.23.2): a Temporary Target at 20:00 for 60 min cancelled at
+          20:30 is drawn 20:00-21:00 on 92d08342, 7000eb18 and bbc6e75e; with
+          bbc6e75e one at 22:00 for 240 min cancelled at 22:30 is also drawn
+          00:00-02:00 on the next day. The override half is read from Loop's
+          uploader, not run.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Filed 2026-09-30 from the review of #8788 (RT-PR-8788). Present on
+      15.0.8; #8788 does not cause it but makes the extra length visible on
+      the next day's chart. Could be asked of #8788's author or done after.
+  - id: RT-PR-8790
+    title: "#8790 - the Food Editor's food list and quick picks scroll by touch on phones (awss1i; BF-150, fixes #8192), merged for 15.0.9"
+    parcel: release-train
+    repo: cgm-remote-monitor
+    branch: awss1i:wip/food-editor-touch-scroll
+    base: origin/dev@3014f883
+    state: merged-upstream
+    pr: [8790]
+    ships_to_operators_today: false
+    blast_radius: >
+      static/css/food.css only in code (+9): touch-action auto on
+      #fe_data .draggablefood and #fe_picklist .sortablequickpick; plus
+      tests/food-editor-touch-scroll.test.js, CHANGELOG.md and the manual
+      smoke checklist. Browser-side, the /food page only.
+    review: maintainer
+    operator_visible: >
+      On a phone, the Food Editor's list of foods can be scrolled again by
+      swiping. Dragging a food into a quick pick still needs a mouse, as
+      before.
+    semver: patch
+    semver_reason: a page that could not be scrolled on touch screens now can; nothing else changes
+    register: [BF-150]
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1298c9ed origin/dev
+        kind: static
+        describe: >
+          #8790's head 1298c9ed is contained in origin/dev (merged 2026-10-01
+          as 73c9528b).
+      - no-gate: >
+          Measured 2026-10-01 on 1298c9ed (Node 22.23.2): its test 4/4, and
+          2/4 with 3014f883's food.css; CI 13 passed, 2 skipped. The author's
+          full suite 3485/0/3. Browser check: the smoke checklist's new
+          Food Editor section.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Opened 2026-10-01 by awss1i, merged the same day by the maintainer
+      (73c9528b). static/css/food.css joins the files the browser-check gate
+      names.
+  - id: BFQ-151
+    title: "BF-151 - one /api/v1/times or /slice request can block the server for seconds (brace expansion has no bound), for 15.0.9"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: bf/braces-expansion-cap
+    base: official/dev@50bc1084
+    state: ready-to-push
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/api/entries/index.js prep_patterns: refuse a prefix or pattern
+      whose expansion exceeds a fixed number of results, before expanding
+      it, with a 400; under the limit, unchanged. Tests beside the existing
+      times/slice tests.
+    review: maintainer
+    operator_visible: >
+      A kind of request to two little-used API addresses could make
+      Nightscout stop responding for several seconds. It is now refused.
+      Nothing you see on your site changes.
+    semver: patch
+    semver_reason: an unbounded request is refused; every request within the limit answers as before
+    register: [BF-151]
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official grep -q MAX_BRACE_PATTERNS bf/braces-expansion-cap -- lib/api/entries/index.js
+        kind: static
+        describe: >
+          The branch's prep_patterns carries the cap (a presence check; RED on
+          origin/dev 50bc1084). The tests decide.
+      - no-gate: >
+          The measurement needs a booted server and is held outside version
+          control while the defect is live on 15.0.8 (the report is
+          private). 2026-10-01 on v15.0.8 and dev 3014f883, NODE_ENV=
+          production: one request at 10^6 results blocked the event loop
+          2.1 s; anonymous on readable, any read token under denied; on
+          dev 50bc1084 a 10^7 request killed the process (heap OOM). The
+          branch's own tests decide: on 185e003a (Node 22.23.2, MongoDB
+          7.0.43) 7 new tests in tests/api.entries.test.js, the 5 refusal
+          tests fail with 50bc1084's lib/api/entries/index.js (2.7 s and 200,
+          or 500), full suite 3496/0/3 (dev 3489/0/3); 10^6 and 10^7 inputs
+          answer 400 in 1-3 ms with a concurrent status read unaffected.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Decided 2026-10-01 (maintainer): fix for 15.0.9. In RT-0's
+      blocks_on. Branch bf/braces-expansion-cap 185e003a, one commit on dev
+      50bc1084 (lib/api/entries/index.js +57/-2: count_patterns counts from
+      braces.parse without expanding, cap 2000; a whole day of minutes is
+      1440, the largest documented example 192), not pushed. PR body:
+      reports/phase0-pr-bodies/braces-expansion-cap.md. Review notes: the
+      counter reads braces 3.0.3's parse tree (ranges, commas, invalid,
+      dollar), so a braces upgrade must re-run these tests; a single range
+      over braces' own rangeLimit still answers 500 as on dev. Disclosure:
+      the tests necessarily build an input that expands past the cap, so
+      opening the PR publishes an easy trigger for 15.0.8; open it close
+      to the tag, as #8743 was handled.
+  - id: BFQ-73
+    title: "BF-73 - error responses carry a stack trace and server paths in production, for 15.0.9"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: bf/production-error-handler
+    base: official/dev@50bc1084
+    state: ready-to-push
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/server/app.js: errorhandler only when NODE_ENV is development;
+      otherwise a final handler that keeps the status, sends a short
+      message without stack or paths, and logs the full error. Tests that
+      boot the app.
+    review: maintainer
+    operator_visible: >
+      When a request fails, Nightscout's error reply no longer includes
+      technical details about where it is installed. The details are still
+      written to the server log.
+    semver: patch
+    semver_reason: error replies keep their status and message and lose the stack trace
+    register: [BF-73]
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official cat-file -e bf/production-error-handler:lib/server/error-handler.js
+        kind: static
+        describe: >
+          The branch carries the production error handler (a presence check;
+          RED on origin/dev 50bc1084). The tests decide.
+      - no-gate: >
+          Measured 2026-10-01 on v15.0.8 and dev 3014f883 (NODE_ENV=
+          production, readable and denied): a malformed body answers 400
+          with 10 stack frames and the install path, before any auth check.
+          The branch's own tests decide: on dc64e82d (Node 22.23.2, MongoDB
+          7.0.43) tests/error-handler.test.js 13 cases; the 4 that boot the
+          app fail with 50bc1084's lib/server/app.js (stack in JSON, HTML and
+          text); full suite 3502/0/3 on a fresh database (dev 3489/0/3). Live,
+          NODE_ENV=production and AUTH_DEFAULT_ROLES=denied: a malformed body
+          answers 400 {"error":{"message":"Unexpected end of JSON input",
+          "status":400}}, no stack.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Decided 2026-10-01 (maintainer): fix for 15.0.9; this settles the
+      BF-73 half of ADV-XSS-META's decision. In RT-0's blocks_on. Branch
+      bf/production-error-handler dc64e82d, one commit on dev 50bc1084 (new
+      lib/server/error-handler.js, app.js -5/+3, tests), not pushed. PR
+      body: reports/phase0-pr-bodies/production-error-handler.md.
+      Operator-visible for the release notes: with NODE_ENV unset (some
+      hosts), error pages also stop showing the stack; it is in the server
+      log. A 4xx an app path raises without err.expose now answers with the
+      standard reason phrase instead of its own message. Follow-up, not in
+      this branch: the v1 'Mongo Error' / 'Query Error' replies carry the
+      driver's error text (database host and port when unreachable).
+  - id: BFQ-153
+    title: "BF-153 - dependency advisories published after the 2026-09-27 triage (BF-147 style refresh)"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: bf/dependency-refresh-2026-10
+    base: official/dev@50bc1084
+    state: ready-to-push
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      package.json overrides (ip-address, fast-uri, brace-expansion, the
+      axios entries under minimed-connect-to-nightscout), the axios
+      devDependency, and package-lock.json (webpack-dev-middleware,
+      dompurify); tests/dependency-overrides.test.js. moment is left at
+      2.30.1 by decision.
+    review: maintainer
+    operator_visible: >
+      No change in how Nightscout works. Updated libraries clear published
+      security notices; most of them are build and test tools.
+    semver: patch
+    semver_reason: patch and minor dependency versions; no behaviour change intended
+    register: [BF-153]
+    gates:
+      - run: "git -C externals/cgm-remote-monitor-official show bf/dependency-refresh-2026-10:package.json | grep -qE 'ip-address.{3,4}10[.]7[.]1'"
+        kind: static
+        describe: >
+          The branch's overrides carry the fixed ip-address (a presence check;
+          tests/dependency-overrides.test.js on the installed tree decides).
+      - no-gate: >
+          npm audit depends on the advisory database on the day it runs, so
+          it is a measurement, not a gate. 2026-10-01, npm 11.12.1,
+          --package-lock-only (a count of packages with a finding, parents
+          counted again): dev 50bc1084 20 (4 high), the branch 8 (0 high);
+          --omit=dev 16 -> 6. The 8 left are the 2026-09-27 set of 7 plus
+          moment, held by decision. Measured on 22d82889 in
+          externals/work/crm-bf153 (Node 22.23.2, MongoDB 7.0.43): full suite
+          3512/0/4 (dev 3489/0/3; the added pending is the connector's own
+          axios 1.20.0 copy, outside the advisory range, which the new floor
+          check skips); the 27 new or raised dependency checks fail on dev's
+          installed tree and pass here; test:dependencies 345/0/1; npm ci on
+          Node 20.20.0, 22.23.2, 24.20.0 and the npm 12 job; production bundle
+          byte-identical (7 files); IMPORT_CONFIG fetched and applied as on dev
+          with axios 0.34.0.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - releases/cgm-remote-monitor-15.0.9/contents.md
+    notes: >
+      2026-10-01 (maintainer): prepare it; whether it goes into 15.0.9 is
+      decided on the measured result. moment stays at 2.30.1 (2026-10-01):
+      no request input reaches moment.locale on dev (BF-31), and 2.31.0
+      changes parsing and locale display output. Not in RT-0's blocks_on
+      until decided. Branch bf/dependency-refresh-2026-10 22d82889 (one
+      commit on 50bc1084), 26 lockfile version changes, all patch or minor;
+      @types/tough-cookie's dev flag, which npm 10 and 11 both flip on dev's
+      own package.json, is kept as on dev. Not pushed. PR body:
+      reports/phase0-pr-bodies/dependency-refresh-2026-10.md.
+  - id: BFQ-152
+    title: "BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@50bc1084
+    state: needs-decision
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/api3/generic/read/operation.js (or a per-collection permission
+      map shared by search, history and read), if the decision is to gate.
+    review: maintainer
+    operator_visible: >
+      Not yet decided. If changed, apps that read their own saved settings
+      from Nightscout may need a token with more permissions.
+    semver: n/a
+    semver_reason: undecided until the contract question is answered; gating read behind admin would break AAPSClient followers that use read-only tokens
+    register: [BF-152]
+    gates:
+      - no-gate: >
+          A decision item. Reproduced 2026-10-01 on v15.0.8 and dev 3014f883:
+          search and history 403, read by identifier 200, readable and
+          denied. AndroidAPS's AAPSClient reads its running configuration
+          by identifier (plugins/sync nsclientV3 LoadSettingsRunner).
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      After 15.0.9. The question for the AndroidAPS developers: is
+      settings meant to be readable by a follower's read token (then search
+      and history are the inconsistent side), or admin-only (then AAPSClient
+      needs a token change first)?
+  - id: DEPENDABOT-CONFIG
+    title: "Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@50bc1084
+    state: needs-decision
+    pr: []
+    ships_to_operators_today: false
+    blast_radius: >
+      .github/dependabot.yml (new) and repository settings; no product code.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: repository configuration
+    register: []
+    gates:
+      - run: sh -c '! git -C externals/cgm-remote-monitor-official cat-file -e origin/dev:.github/dependabot.yml'
+        kind: static
+        describe: >
+          PASSES while dev has no .github/dependabot.yml (measured
+          2026-10-01); it goes red once a configuration is added, at which
+          point this item is done or replaced by a gate on its contents.
+      - no-gate: >
+          Measured 2026-10-01 with gh api: Dependabot security updates
+          enabled, no dependabot.yml on dev or master, default branch
+          master. Of the Dependabot PRs: 45 closed unmerged and 1 merged
+          against master, 21 merged and 1 closed against dev, 2 open against
+          master (#8787, #8789). 85 open alerts, all measured against master
+          (15.0.8): 61 in runtime scope and 23 in development scope by
+          Dependabot's own classification, which records where a package is
+          declared, not whether its vulnerable code is reached.
+    blocks_on: []
+    evidence:
+      - releases/cgm-remote-monitor-15.0.9/contents.md
+    notes: >
+      Raised by the maintainer 2026-10-01 ("I wonder if dependabot is
+      configured correctly; it produces a lot of noise that gets taken out
+      of context"). Options, none decided: (1) a dependabot.yml with
+      version updates targeting dev, grouped, on a schedule, so routine
+      bumps arrive where work happens; (2) keep alerts, and dismiss each
+      one that is fixed on dev or not reachable, with GitHub's dismissal
+      reason and a comment linking the triage, so the alert list shows the
+      project's assessment; (3) release more often, since alerts close only
+      when master moves. Security-update PRs follow the default branch and
+      dependabot.yml's target-branch does not change that, so turning them
+      off and relying on (1) and (2) is the way to stop PRs against master.
   - id: RT-PR-8781
     title: "#8781 - treatment retries keep srvCreated, empty identities match, history clock survives a restart (AndyLow91; BF-141, BF-143, BF-144), merged for 15.0.9"
     parcel: release-train
@@ -11487,7 +11944,8 @@ items:
       24-72 h real-time soak, lab.sh soak --hours 72 (README).
       2026-09-30 (maintainer): real sites running the candidate 7000eb18
       count as the 24-72 h real-time soak, and have shown no visible
-      regression so far; no rig count or duration is recorded. The lab
+      regression so far; the testing notes record one Loop, one Trio and one
+      AndroidAPS user running it for about two days as of 2026-09-29. The lab
       real-time soak was not run. Done.
   - id: BFQ-133
     title: "BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one (fixed by BF-146's #8784), merged for 15.0.9"

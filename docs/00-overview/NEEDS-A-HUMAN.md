@@ -2,7 +2,7 @@
 
 *Contributor-facing. The subset of the work queue where no further engineering
 advances anything — a person has to push, decide, or review. Prose revised
-2026-09-30 against cgm-remote-monitor `origin/dev` `7000eb18` and nightscout-connect
+2026-09-30 against cgm-remote-monitor `origin/dev` `3014f883` and nightscout-connect
 `official/main` `4dde1ec` (tag `v0.1.0`); tables generated.*
 
 This page lists only the items whose claimed state means **the next move belongs to
@@ -27,15 +27,20 @@ they need is a release, and that is one item — `RT-0` — which is listed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 10 items
+### Maintainer &mdash; 15 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
+| `BFQ-152` | `needs-decision` | BF-152 - API v3 settings are admin-only through search and history, readable by  | &mdash; |
 | `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm | &mdash; |
+| `DEPENDABOT-CONFIG` | `needs-decision` | Dependabot runs with no configuration: security PRs target master, and alerts co | &mdash; |
 | `RT-PROPAGATION` | `needs-decision` | How the release train reaches dev: merge dev into the cuts, or rebase the cuts o | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
+| `BFQ-151` | `ready-to-push` | BF-151 - one /api/v1/times or /slice request can block the server for seconds (b | &mdash; |
+| `BFQ-153` | `ready-to-push` | BF-153 - dependency advisories published after the 2026-09-27 triage (BF-147 sty | &mdash; |
+| `BFQ-73` | `ready-to-push` | BF-73 - error responses carry a stack trace and server paths in production, for  | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `WS-LAB` | `ready-to-push` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | &mdash; |
@@ -75,7 +80,7 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 
 <!-- END GENERATED: open-prs -->
 
-Every cgm-remote-monitor PR decided for 15.0.9 is merged into `dev` (`7000eb18`, 2026-09-27, unchanged on 2026-09-30), and
+Every cgm-remote-monitor PR decided for 15.0.9 is merged into `dev` (`3014f883`, 2026-09-30, the merge of #8788), and
 none is released. The one exception is Crowdin #8730, which the maintainer held out because its sync
 reverts translations `dev` corrected (BF-132). The PR-by-PR list is in
 [the release contents](../../releases/cgm-remote-monitor-15.0.9/contents.md). `dev` itself is the
@@ -111,13 +116,13 @@ which is on 15.0.8 as well and is tracked as `BFQ-103`.
 
 ### `RT-0` — release 15.0.9
 
-The most consequential row on this page. 15.0.9 (`origin/master..origin/dev`) is 86 first-parent merges
-(`git rev-list --first-parent --count origin/master..origin/dev`, 2026-09-30); `master` is 507 commits
+The most consequential row on this page. 15.0.9 (`origin/master..origin/dev`) is 87 first-parent merges
+(`git rev-list --first-parent --count origin/master..origin/dev`, 2026-09-30); `master` is 509 commits
 behind `dev`. Until 15.0.9 ships, every one of those fixes exists in code and protects nobody. They
 include the fixes for two published-advisory defects that survive `AUTH_DEFAULT_ROLES=denied`,
 GHSA-gjhc (BF-79, #8744) and GHSA-8849 (BF-75/76, #8745), the boot notice for world-readable sites
 (#8746), and the two backported security fixes (BF-104, BF-105, #8751); every instance on 15.0.8 is
-still exposed to all of them. Release PR #8598 is at `dev` `7000eb18`. It was approved at `e3adc91d`
+still exposed to all of them. Release PR #8598 is at `dev` `3014f883`. It was approved at `e3adc91d`
 (two approvals by the maintainer; the PR's author is Andy), and re-approval at its final head is
 owed. What 15.0.9 still waits on is generated from the queue in
 [ROADMAP §1](ROADMAP.md#1-the-next-release-1509); what it contains and leaves broken is in

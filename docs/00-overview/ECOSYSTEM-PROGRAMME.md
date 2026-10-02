@@ -41,6 +41,17 @@ measured against what cgm-remote-monitor and its clients actually do.
 The principle: **the foundation stewards the shared layers and keeps them open to every
 implementation; each implementation makes its own technical choices.** A second server, such as
 Nocturne, is a second implementation of the same contract, not a competitor for the shared layers.
+Stewarding a layer means hosting it and running its change process in public; the implementers
+decide changes to it ([COLLABORATION-MODEL](COLLABORATION-MODEL.md) rule 5).
+
+**One codebase, two uses.** The same open-source releases serve people who build and run their own
+tools, under the digital rights in [DIGITAL-RIGHTS](../DIGITAL-RIGHTS.md), and companies that host
+Nightscout or use its release evidence inside their own quality systems. Companies can pay for
+assurance (packaged evidence, fixes on the line they run, test runs in their configuration), and
+the evidence that decides each public release stays public (SQLite's model). Commercial offerings can
+show they track the same contract with the same public conformance suite (CNCF's model). There is no
+separate commercial edition. Neither use carries a clinical or regulatory claim for the other
+(COLLABORATION-MODEL rules 6 and 8).
 
 ## 2a. Beneath the layers: devices and vendor clouds
 
@@ -65,7 +76,7 @@ and hosting. The work on it runs in three horizons ([PROGRAMME-STATUS](PROGRAMME
 
 - **Remedial.** Defects in what ships to operators today, tracked in the
   [backfix register](../30-design/remedial/nightscout-backfix-register.md). The 15.0.9 candidate is
-  `7000eb18`, not yet tagged ([ROADMAP §1](ROADMAP.md#1-the-next-release-1509)).
+  `3014f883`, not yet tagged ([ROADMAP §1](ROADMAP.md#1-the-next-release-1509)).
 - **Modernization.** A staged release train for the dependency tree and runtime
   ([ROADMAP §2](ROADMAP.md#2-modernization-the-release-train)).
 - **Multitenancy.** A second deployment target for hosting providers, on PostgreSQL. Self-hosted,

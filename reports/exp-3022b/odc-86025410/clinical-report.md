@@ -1,7 +1,7 @@
 # Clinical Analysis Report — patient `odc-86025410`
 
 _Generated: 2026-04-27T15:15:34.002015+00:00_  
-_Source parquet: `/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/ns-parquet/training`_  
+_Source parquet: `<workspace>/rag-nightscout-ecosystem-alignment/externals/ns-parquet/training`_  
 _Profile timezone: `US/Eastern`_  
 _Days of data: 375.0_
 

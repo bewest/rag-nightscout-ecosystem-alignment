@@ -143,7 +143,7 @@ dev descends from master with no divergence to reconcile
 
 ## Blocked on
 
-`RT-VERSION`, `BFQ-102`, `BFQ-114`, `BFQ-118`, `BFQ-119`, `RT-PR-8419`, `RT-PR-8530`, `BFQ-120`, `BFQ-126`, `BFQ-134`, `BFQ-106`, `BFQ-129`, `BFQ-125`, `BFQ-123`, `BFQ-122`, `BFQ-136`, `BFQ-128`, `RT-PR-8778`, `BFQ-80`, `BFQ-121`, `RT-PR-8781`, `BFQ-142`, `BFQ-146`
+`RT-VERSION`, `BFQ-102`, `BFQ-114`, `BFQ-118`, `BFQ-119`, `RT-PR-8419`, `RT-PR-8530`, `BFQ-120`, `BFQ-126`, `BFQ-134`, `BFQ-106`, `BFQ-129`, `BFQ-125`, `BFQ-123`, `BFQ-122`, `BFQ-136`, `BFQ-128`, `RT-PR-8778`, `BFQ-80`, `BFQ-121`, `RT-PR-8781`, `BFQ-142`, `BFQ-146`, `RT-PR-8788`, `BFQ-108`, `RT-PR-8790`, `BFQ-151`, `BFQ-73`
 
 ## Evidence
 
@@ -154,13 +154,34 @@ dev descends from master with no divergence to reconcile
 
 ## Notes carried on the item
 
-2026-09-30 - re-measured after fetching official: dev is still 7000eb18
-(merged 2026-09-27 20:40Z), 507 commits and 86 first-parent merges ahead of
-master; release PR #8598 is at 7000eb18, mergeable, 27 checks passed and 3
-skipped, reviewDecision APPROVED (both approvals given at e3adc91d). No 15.0.9
-tag. The maintainer reported the same day that real sites running the
-candidate have shown no visible regression so far (no rig count or duration
-recorded), and decided that those real-site runs count as the 24-72 h real-
+2026-10-01 - #8790 (awss1i, BF-150, Food Editor touch scrolling) and #8791
+(BF-108) merged into dev (73c9528b, 50bc1084); dev is 50bc1084, 515 commits
+and 89 first-parent merges ahead of master. Release PR #8598 at 50bc1084,
+mergeable, 27 passed and 3 skipped, APPROVED (approvals at e3adc91d). Decided
+the same day (maintainer): BF-151 (GHSA-phrf) and BF-73 (GHSA-2m9c) are fixed
+for 15.0.9 (BFQ-151, BFQ-73 added to blocks_on); the BF-153 dependency refresh
+is prepared and decided on its result; moment stays at 2.30.1. BF-152
+(GHSA-25pr) is after 15.0.9 (AndroidAPS contract question). GHSA-cg6f
+duplicates GHSA-r3gv, fixed on dev by #8743. The 15.0.9 records are re-
+anchored once these merge. 2026-09-30 - #8788 (awss1i, BF-148, Day to Day
+report) merged into dev as 3014f883 (22:38Z, tree 3549306b = head bbc6e75e);
+RT-PR-8788 added to blocks_on. dev is 3014f883: 509 commits and 87 first-
+parent merges ahead of master, 298 files, +28617/-1819. Release PR #8598 is at
+3014f883, mergeable, reviewDecision APPROVED (approvals at e3adc91d); CI 27
+passed and 3 skipped. Local full suite on bbc6e75e 3481/0/3 (Node 22.23.2,
+MongoDB 7.0.43). The browser-check gate names 15 files (adds
+lib/report_plugins/daytoday.js; its hand check is the smoke checklist's new
+Day to Day section). The real-site soak ran on 7000eb18, before #8788. The
+15.0.9 records are re-anchored on 3014f883. Still owed by the maintainer:
+browser hand checks, re-approval of #8598 at the final head, the semver
+decision. 2026-09-30 - re-measured after fetching official: dev is still
+7000eb18 (merged 2026-09-27 20:40Z), 507 commits and 86 first-parent merges
+ahead of master; release PR #8598 is at 7000eb18, mergeable, 27 checks passed
+and 3 skipped, reviewDecision APPROVED (both approvals given at e3adc91d). No
+15.0.9 tag. The maintainer reported the same day that real sites running the
+candidate have shown no visible regression so far (the testing notes record
+one Loop, one Trio and one AndroidAPS user for about two days as of
+2026-09-29), and decided that those real-site runs count as the 24-72 h real-
 time soak (RT-SOAK, done). Still owed by the maintainer: browser hand checks,
 re-approval of #8598 at the final head, the semver decision. 2026-09-27 -
 #8785 (boluswizardpreview test clock; the timing flake that failed one cell of

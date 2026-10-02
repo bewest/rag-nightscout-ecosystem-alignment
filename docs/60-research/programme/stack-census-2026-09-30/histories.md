@@ -428,10 +428,10 @@ The case for zero paid maintainers, in its strongest form:
 4. Paid people cannot approve their own work.
 5. There is an employer or host cap on any deciding body.
 6. A monthly public report.
-7. Volunteer maintainers keep merge authority.
+7. Each project's maintainers, paid or not, keep merge authority; no payer gains it.
 8. Dissent is recorded in each proposal (PEP 1) and answered, not outvoted (RFC 7282).
 
-The volunteer-only position then has a standing test: if paid work ever changed a merge decision or
+The volunteer-only position then has a standing test: if a payer ever decided what merges, or paid work
 went unreported, rule 7 or rule 6 has been broken, and that can be checked in public.
 
 ---

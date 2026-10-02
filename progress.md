@@ -18,19 +18,19 @@ Prepared a cgm-remote-monitor implementation branch for the first disabled-by-de
 
 | Deliverable | Location | Key Insights |
 |-------------|----------|--------------|
-| cgm branch | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` branch `wip/bewest/nightscout-telemetry-emitter` commit `a8f6c31f` | Adds local telemetry config parsing, allowlists, monthly HMAC ID helper, counters, schema-shaped payload builder, no-network facade, and tests |
-| cgm preview slice | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `df8b218e` | Adds admin-only `/api/telemetry/preview.json` endpoint so reviewers/operators can inspect the exact pending aggregate payload without any network sender |
-| identity-source update | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `5005aa26` | Keeps telemetry identity separate from `API_SECRET` and JWT `randomString`; supports explicit `NIGHTSCOUT_TELEMETRY_SECRET` and labels ephemeral preview IDs |
-| route-counter slice | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `6555e713` | Adds allowlisted route-family/status counters and websocket connection counts locally, with no raw URL/query/body/IP/user-agent retention |
-| manual sender slice | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `c3d6f33d` | Adds explicit `sendOnce()` POST support to `NIGHTSCOUT_TELEMETRY_ENDPOINT`; no automatic scheduling or default emission |
-| persistence slice | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `8a3376f2` | Persists a telemetry-specific generated secret and prototype counter state; scheduling review found counter retention should align with send windows before production |
-| scheduling helper | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `10b63a99` | Adds pure schedule calculations for first-run jitter, weekly success interval, and failure retry without automatic timers |
-| retention fix | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `b8149521` | Retains counters across day boundaries until successful send, then resets and persists send state |
-| manual E2E trigger | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `4ae99daf` | Adds admin-only `POST /api/telemetry/send.json`, gated by `NIGHTSCOUT_TELEMETRY_MANUAL_SEND`, for local E2E testing |
-| report counter fix | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `ea47d14e` | Counts `/report` page opens directly as `reports.opened` and adds focused preview test coverage |
-| scheduled-send gate | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `5e7a54d4` | Adds explicit `NIGHTSCOUT_TELEMETRY_SCHEDULED_SEND` gate and `runDue()` path, with tests proving no send before first-run jitter due time |
-| tick lifecycle wiring | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `a6825185` | Wires scheduled send checks to existing tick lifecycle, still gated by `NIGHTSCOUT_TELEMETRY_SCHEDULED_SEND=false` by default |
-| Mongo-backed state | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `5969531e` | Prefers Mongo-backed telemetry secret/counter/schedule state when `ctx.store` is available, with file fallback for local/dev |
+| cgm branch | `<workspace>/worktrees/nightscout/cgm-pr-8447` branch `wip/bewest/nightscout-telemetry-emitter` commit `a8f6c31f` | Adds local telemetry config parsing, allowlists, monthly HMAC ID helper, counters, schema-shaped payload builder, no-network facade, and tests |
+| cgm preview slice | `<workspace>/worktrees/nightscout/cgm-pr-8447` commit `df8b218e` | Adds admin-only `/api/telemetry/preview.json` endpoint so reviewers/operators can inspect the exact pending aggregate payload without any network sender |
+| identity-source update | `<workspace>/worktrees/nightscout/cgm-pr-8447` commit `5005aa26` | Keeps telemetry identity separate from `API_SECRET` and JWT `randomString`; supports explicit `NIGHTSCOUT_TELEMETRY_SECRET` and labels ephemeral preview IDs |
+| route-counter slice | `<workspace>/worktrees/nightscout/cgm-pr-8447` commit `6555e713` | Adds allowlisted route-family/status counters and websocket connection counts locally, with no raw URL/query/body/IP/user-agent retention |
+| manual sender slice | `<workspace>/worktrees/nightscout/cgm-pr-8447` commit `c3d6f33d` | Adds explicit `sendOnce()` POST support to `NIGHTSCOUT_TELEMETRY_ENDPOINT`; no automatic scheduling or default emission |
+| persistence slice | `<workspace>/worktrees/nightscout/cgm-pr-8447` commit `8a3376f2` | Persists a telemetry-specific generated secret and prototype counter state; scheduling review found counter retention should align with send windows before production |
+| scheduling helper | `<workspace>/worktrees/nightscout/cgm-pr-8447` commit `10b63a99` | Adds pure schedule calculations for first-run jitter, weekly success interval, and failure retry without automatic timers |
+| retention fix | `<workspace>/worktrees/nightscout/cgm-pr-8447` commit `b8149521` | Retains counters across day boundaries until successful send, then resets and persists send state |
+| manual E2E trigger | `<workspace>/worktrees/nightscout/cgm-pr-8447` commit `4ae99daf` | Adds admin-only `POST /api/telemetry/send.json`, gated by `NIGHTSCOUT_TELEMETRY_MANUAL_SEND`, for local E2E testing |
+| report counter fix | `<workspace>/worktrees/nightscout/cgm-pr-8447` commit `ea47d14e` | Counts `/report` page opens directly as `reports.opened` and adds focused preview test coverage |
+| scheduled-send gate | `<workspace>/worktrees/nightscout/cgm-pr-8447` commit `5e7a54d4` | Adds explicit `NIGHTSCOUT_TELEMETRY_SCHEDULED_SEND` gate and `runDue()` path, with tests proving no send before first-run jitter due time |
+| tick lifecycle wiring | `<workspace>/worktrees/nightscout/cgm-pr-8447` commit `a6825185` | Wires scheduled send checks to existing tick lifecycle, still gated by `NIGHTSCOUT_TELEMETRY_SCHEDULED_SEND=false` by default |
+| Mongo-backed state | `<workspace>/worktrees/nightscout/cgm-pr-8447` commit `5969531e` | Prefers Mongo-backed telemetry secret/counter/schedule state when `ctx.store` is available, with file fallback for local/dev |
 | Reviewer guide | `docs/reports/cgm-remote-monitor-telemetry-branch-reviewer-guide-2026-07-16.md` | Summarizes branch commits, safety boundaries, validation, review focus, and next slices |
 
 **Key Findings**:
@@ -51,10 +51,10 @@ Prepared a cgm-remote-monitor implementation branch for the first disabled-by-de
 - `npm run test:unit -- --grep telemetry`
 
 **Source Files Changed**:
-- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/server/env.js`
-- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/telemetry/`
-- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/tests/telemetry.test.js`
-- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/package.json`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/server/env.js`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/telemetry/`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/tests/telemetry.test.js`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/package.json`
 
 ---
 
@@ -95,10 +95,10 @@ Converted the telemetry strategy into first-pass execution materials for board, 
 - `docs/10-domain/nightscout-telemetry-observability-deep-dive.md`
 - `specs/jsonschema/aid-events.schema.json`
 - `docs/reports/nightscout-dependabot-context-2026-07-07.md`
-- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/server/{env,server,app,bootevent,websocket}.js`
-- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/api/index.js`
-- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/api3/index.js`
-- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/settings.js`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/server/{env,server,app,bootevent,websocket}.js`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/api/index.js`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/api3/index.js`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/settings.js`
 
 ---
 
@@ -148,9 +148,9 @@ Extended `nightscout-connect` Nightscout source/output support from entries-only
 - Full sync remains v1-based; v3 identifiers/upsert are still separate future work.
 
 **Source Files Analyzed**:
-- `/home/bewest/src/worktrees/nightscout-connect/lib/sources/nightscout.js`
-- `/home/bewest/src/worktrees/nightscout-connect/lib/outputs/nightscout.js`
-- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/api/{entries,treatments,devicestatus,profile}/index.js`
+- `<workspace>/worktrees/nightscout-connect/lib/sources/nightscout.js`
+- `<workspace>/worktrees/nightscout-connect/lib/outputs/nightscout.js`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/api/{entries,treatments,devicestatus,profile}/index.js`
 - `externals/nocturne/src/Connectors/Nocturne.Connectors.Nightscout/Services/NightscoutConnectorService.cs`
 
 ---
@@ -196,13 +196,13 @@ Reviewed the updated `nightscout-connect` dev branch architecture after the conn
 - Glooko web-login/v3 graph work should be feature-flagged and fixture-backed, not folded into the 0.0.13 release baseline.
 
 **Source Files Analyzed**:
-- `/home/bewest/src/worktrees/nightscout-connect/lib/builder.js`
-- `/home/bewest/src/worktrees/nightscout-connect/lib/machines/session.js`
-- `/home/bewest/src/worktrees/nightscout-connect/lib/machines/fetch.js`
-- `/home/bewest/src/worktrees/nightscout-connect/lib/machines/cycle.js`
-- `/home/bewest/src/worktrees/nightscout-connect/machines.md`
-- `/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/nocturne/src/Connectors/Nocturne.Connectors.Core/Services/BaseConnectorService.cs`
-- `/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/nocturne/src/Connectors/Nocturne.Connectors.Glooko/`
+- `<workspace>/worktrees/nightscout-connect/lib/builder.js`
+- `<workspace>/worktrees/nightscout-connect/lib/machines/session.js`
+- `<workspace>/worktrees/nightscout-connect/lib/machines/fetch.js`
+- `<workspace>/worktrees/nightscout-connect/lib/machines/cycle.js`
+- `<workspace>/worktrees/nightscout-connect/machines.md`
+- `<workspace>/rag-nightscout-ecosystem-alignment/externals/nocturne/src/Connectors/Nocturne.Connectors.Core/Services/BaseConnectorService.cs`
+- `<workspace>/rag-nightscout-ecosystem-alignment/externals/nocturne/src/Connectors/Nocturne.Connectors.Glooko/`
 
 ---
 
@@ -224,12 +224,12 @@ Promoted the tested `nightscout-connect` connectivity baseline onto `origin/dev`
 - Glooko EU CSRF web-login and v3 graph fallback are still larger follow-up work; they should be a dedicated branch with fixtures, not silently folded into the release baseline.
 
 **Source Files Analyzed**:
-- `/home/bewest/src/worktrees/nightscout-connect/lib/sources/dexcomshare.js`
-- `/home/bewest/src/worktrees/nightscout-connect/lib/sources/librelinkup.js`
-- `/home/bewest/src/worktrees/nightscout-connect/lib/sources/glooko/index.js`
-- `/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/nocturne/src/Connectors/Nocturne.Connectors.Dexcom/Services/DexcomAuthTokenProvider.cs`
-- `/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/nocturne/src/Connectors/Nocturne.Connectors.Glooko/`
-- `/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/nocturne/src/Connectors/Nocturne.Connectors.FreeStyle/`
+- `<workspace>/worktrees/nightscout-connect/lib/sources/dexcomshare.js`
+- `<workspace>/worktrees/nightscout-connect/lib/sources/librelinkup.js`
+- `<workspace>/worktrees/nightscout-connect/lib/sources/glooko/index.js`
+- `<workspace>/rag-nightscout-ecosystem-alignment/externals/nocturne/src/Connectors/Nocturne.Connectors.Dexcom/Services/DexcomAuthTokenProvider.cs`
+- `<workspace>/rag-nightscout-ecosystem-alignment/externals/nocturne/src/Connectors/Nocturne.Connectors.Glooko/`
+- `<workspace>/rag-nightscout-ecosystem-alignment/externals/nocturne/src/Connectors/Nocturne.Connectors.FreeStyle/`
 
 ---
 
@@ -253,7 +253,7 @@ Surveyed local telemetry discussion notes, ecosystem telemetry references, the T
 **Gaps Identified**: GAP-OBS-001, GAP-OBS-002, GAP-OBS-003, GAP-OBS-004, GAP-OBS-005
 
 **Source Files Analyzed**:
-- `/home/bewest/Downloads/nightscout_telemetry_observability_options.md`
+- `~/Downloads/nightscout_telemetry_observability_options.md`
 - `externals/trio-telemetry/trio-telemetry-backend/README.md`
 - `externals/trio-telemetry/trio-telemetry-backend/app/main.py`
 - `externals/trio-telemetry/trio-telemetry-backend/app/metrics.py`
@@ -268,7 +268,7 @@ Surveyed local telemetry discussion notes, ecosystem telemetry references, the T
 
 ## Nightscout Dependabot Alert Context Report (2026-07-07)
 
-Reviewed the cgm-remote-monitor dependency-dev-tooling branch in `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` and wrote a report for closing or consolidating low-value Dependabot PRs without misrepresenting raw advisory counts.
+Reviewed the cgm-remote-monitor dependency-dev-tooling branch in `<workspace>/worktrees/nightscout/cgm-pr-8447` and wrote a report for closing or consolidating low-value Dependabot PRs without misrepresenting raw advisory counts.
 
 | Deliverable | Location | Key Insights |
 |-------------|----------|--------------|
@@ -280,14 +280,14 @@ Reviewed the cgm-remote-monitor dependency-dev-tooling branch in `/home/bewest/s
 - The recommended closure workflow classifies PRs as covered by dev refresh, dev/test-only, optional-feature-path, major-migration-needed, or keep-open-runtime.
 
 **Source Files Analyzed**:
-- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/package.json`
-- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/package-lock.json`
-- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/server/app.js`
-- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/server/websocket.js`
-- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/middleware/index.js`
-- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/server/bootevent.js`
-- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/client/index.js`
-- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/server/purifier.js`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/package.json`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/package-lock.json`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/server/app.js`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/server/websocket.js`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/middleware/index.js`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/server/bootevent.js`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/client/index.js`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/server/purifier.js`
 
 ---
 
@@ -311,12 +311,12 @@ Inspected the cgm-remote-monitor dev candidate PR #8482 and set up a clean sibli
 **Gaps Identified**: GAP-CONNECT-013, GAP-CONNECT-014, GAP-CONNECT-015
 
 **Source Files Analyzed**:
-- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/package.json`
-- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/package-lock.json`
-- `/home/bewest/src/worktrees/nightscout-connect/lib/sources/dexcomshare.js`
-- `/home/bewest/src/worktrees/nightscout-connect/lib/sources/glooko/index.js`
-- `/home/bewest/src/worktrees/nightscout-connect/lib/sources/nightscout.js`
-- `/home/bewest/src/worktrees/nightscout-connect/lib/outputs/nightscout.js`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/package.json`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/package-lock.json`
+- `<workspace>/worktrees/nightscout-connect/lib/sources/dexcomshare.js`
+- `<workspace>/worktrees/nightscout-connect/lib/sources/glooko/index.js`
+- `<workspace>/worktrees/nightscout-connect/lib/sources/nightscout.js`
+- `<workspace>/worktrees/nightscout-connect/lib/outputs/nightscout.js`
 
 ---
 
@@ -2027,7 +2027,7 @@ rather than argue about them.
 
 **Measured follow-up 3 (deployment models, prompted by real hoster experience with
 Kubernetes cost at ~scores-to-thousands of tenants)** — `tools/mt-bench/{footprint,arch}.js`,
-prior art at `/home/bewest/src/node-multienv`:
+prior art at `<workspace>/node-multienv`:
 - **Correction**: Nocturne's Rust is small (6 618 LOC vs 89 430 C#, ~7%), optional, and
   **off by default** — the alert engine selector defaults to managed C#; Rust only runs in
   `shadow` (side-effect-free comparison) or explicit `rust` mode
