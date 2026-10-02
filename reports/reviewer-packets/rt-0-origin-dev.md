@@ -143,7 +143,7 @@ dev descends from master with no divergence to reconcile
 
 ## Blocked on
 
-`BFQ-102`, `BFQ-114`, `BFQ-118`, `BFQ-119`, `RT-PR-8419`, `RT-PR-8530`, `BFQ-120`, `BFQ-126`, `BFQ-134`, `BFQ-106`, `BFQ-129`, `BFQ-125`, `BFQ-123`, `BFQ-122`, `BFQ-136`, `BFQ-128`, `RT-PR-8778`, `BFQ-80`, `BFQ-121`, `RT-PR-8781`, `BFQ-142`, `BFQ-146`, `RT-PR-8788`, `BFQ-108`, `RT-PR-8790`, `BFQ-151`, `BFQ-73`, `BFQ-153`, `BFQ-155`
+`BFQ-102`, `BFQ-114`, `BFQ-118`, `BFQ-119`, `RT-PR-8419`, `RT-PR-8530`, `BFQ-120`, `BFQ-126`, `BFQ-134`, `BFQ-106`, `BFQ-129`, `BFQ-125`, `BFQ-123`, `BFQ-122`, `BFQ-136`, `BFQ-128`, `RT-PR-8778`, `BFQ-80`, `BFQ-121`, `RT-PR-8781`, `BFQ-142`, `BFQ-146`, `RT-PR-8788`, `BFQ-108`, `RT-PR-8790`, `BFQ-151`, `BFQ-73`, `BFQ-153`, `BFQ-155`, `BFQ-CONFIG-DOCS`
 
 ## Evidence
 

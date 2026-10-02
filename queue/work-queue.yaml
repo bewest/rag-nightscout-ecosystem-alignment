@@ -2893,7 +2893,7 @@ items:
           browser, not by Nightscout's own mocha suite, which cannot see the drag
           clamps (RT-D3 answered 2026-09-24; the suite gap is RT-D3-SUITE on cut
           1). Recording it as a no-gate keeps it from reading as covered.
-    blocks_on: [BFQ-102, BFQ-114, BFQ-118, BFQ-119, RT-PR-8419, RT-PR-8530, BFQ-120, BFQ-126, BFQ-134, BFQ-106, BFQ-129, BFQ-125, BFQ-123, BFQ-122, BFQ-136, BFQ-128, RT-PR-8778, BFQ-80, BFQ-121, RT-PR-8781, BFQ-142, BFQ-146, RT-PR-8788, BFQ-108, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155]
+    blocks_on: [BFQ-102, BFQ-114, BFQ-118, BFQ-119, RT-PR-8419, RT-PR-8530, BFQ-120, BFQ-126, BFQ-134, BFQ-106, BFQ-129, BFQ-125, BFQ-123, BFQ-122, BFQ-136, BFQ-128, RT-PR-8778, BFQ-80, BFQ-121, RT-PR-8781, BFQ-142, BFQ-146, RT-PR-8788, BFQ-108, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS]
     evidence:
       - releases/cgm-remote-monitor-15.0.9/contents.md
       - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
@@ -6114,6 +6114,11 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-02 (maintainer, relayed by session -d4): the documentation
+      half goes into 15.0.9 as BFQ-CONFIG-DOCS (bf/config-docs-truth); the
+      code half, routing the API3_* variables through env.js, is after
+      15.0.9 and stays here. BF-156 (autoprune result) is carried in the
+      BF-46 known issue of 15.0.9.
       2026-10-02: documentation half on bf/config-docs-truth c102d98f with
       BFQ-ENV (README documents the API v3 settings; swagger text corrected,
       including a DEVICESTATUS=60 autoprune default the code never had). The
@@ -6304,6 +6309,11 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-02 (maintainer, relayed by session -d4): BF-50 and BF-51 and
+      the documentation half of BF-48 and BF-49 go into 15.0.9 as
+      BFQ-CONFIG-DOCS; after 15.0.9 here: env.js routing for WEBHOOK_*, the
+      HSTS alias, and reconciling the Azure template's Node ~22 with cut 1's
+      ~24.
       2026-10-02 (session -d4's agent): bf/config-docs-truth c102d98f, five
       commits (one per id: BF-46, 48, 49, 50, 51) on dev ca6fcfaf, README.md
       +33/-4, azuredeploy.json, lib/api3/swagger.yaml and swagger.json; no
@@ -11432,9 +11442,10 @@ items:
     title: "BF-156 - API v3 auto-prune never handles its delete's result; a failed delete ends the process"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
+    branch: bf/autoprune-promise
+    worktree: externals/work/crm-bf156
     base: official/dev@ca6fcfaf
-    state: not-started
+    state: blocked
     pr: []
     ships_to_operators_today: true
     blast_radius: >
@@ -11454,12 +11465,63 @@ items:
           Collection and CachedCollectionStorage, a fake storage layer): the
           callback never runs and a rejected delete exits the process. Read on
           dev ca6fcfaf (collection.js:157) and v15.0.8 (:149).
-    blocks_on: []
+    blocks_on: [RT-0]
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after
+      15.0.9, and carried in 15.0.9's BF-46 known issue. A fix branch,
+      bf/autoprune-promise, is being prepared by -d4 in
+      externals/work/crm-bf156 for the next release.
       Filed 2026-10-02. Whether it goes into 15.0.9 is being put to the
       maintainer by session -d4; not in RT-0's blocks_on until decided.
+  - id: BFQ-CONFIG-DOCS
+    title: "bf/config-docs-truth - the documentation half of BF-46, BF-48, BF-49 and the fixes for BF-50, BF-51, for 15.0.9"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: bf/config-docs-truth
+    base: official/dev@ca6fcfaf
+    worktree: externals/work/crm-bf46-env
+    state: ready-to-push
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      Documentation only, five commits (one per id) on dev ca6fcfaf:
+      README.md +33/-4 (API v3 settings, webhook settings, the HSTS
+      spelling, ENTRIES_COLLECTION instead of MONGODB_COLLECTION),
+      azuredeploy.json (uses its WEBSITE_NODE_DEFAULT_VERSION parameter),
+      lib/api3/swagger.yaml and swagger.json (corrected settings text). No
+      .js change.
+    review: maintainer
+    operator_visible: >
+      The setup documentation now names the settings Nightscout actually
+      reads, including the API v3 settings and the webhook plugin's, and the
+      Azure deploy template uses the Node version you choose.
+    semver: patch
+    semver_reason: documentation and a deploy template parameter
+    register: [BF-46, BF-48, BF-49, BF-50, BF-51]
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official cat-file -e c102d98f
+        kind: static
+        describe: >
+          The branch head c102d98f exists in the clone (a presence check). The
+          config-surface-census gate's readme (BF-50) and azure (BF-51) arms
+          decide; its api3, webhook and hsts arms stay red until the code half
+          (BFQ-46, BFQ-ENV) is done.
+      - no-gate: >
+          Measured 2026-10-02 by session -d4's agent on c102d98f: full suite
+          3534/0/4 (Node 24.15.0, MongoDB 7.0.43); readme and azure arms
+          red -> green.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - reports/phase0-pr-bodies/config-docs-truth.md
+    notes: >
+      Decided 2026-10-02 (maintainer, relayed by session -d4): goes into
+      15.0.9; in RT-0's blocks_on. Split out of BFQ-46 and BFQ-ENV so that
+      the release waits on this branch only: their code half (env.js routing
+      for API3_* and WEBHOOK_*, the HSTS alias) is after 15.0.9 and stays on
+      those items. Not pushed.
   - id: RT-PR-8781
     title: "#8781 - treatment retries keep srvCreated, empty identities match, history clock survives a restart (AndyLow91; BF-141, BF-143, BF-144), merged for 15.0.9"
     parcel: release-train

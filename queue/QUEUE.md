@@ -31,21 +31,21 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 184 |
-| runnable gates | 249 |
-| explicit `no-gate:` markers | 239 |
+| items | 185 |
+| runnable gates | 250 |
+| explicit `no-gate:` markers | 240 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 239 of the 488 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 240 of the 490 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 52 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-124, BFQ-127, BFQ-137, BFQ-145, BFQ-149, BFQ-156, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
+| `not-started` | 51 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-124, BFQ-127, BFQ-137, BFQ-145, BFQ-149, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
 | `in-progress` | 3 | BFQ-46, BFQ-ENV, OID-LAB |
 | `gate-not-met` | 9 | RT-REBASE, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
-| `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
-| `blocked` | 18 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, BFQ-72, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-154 |
+| `ready-to-push` | 4 | P0-C-REMEDIATE, T30-AUTH, BFQ-CONFIG-DOCS, WS-LAB |
+| `blocked` | 19 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, BFQ-72, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-154, BFQ-156 |
 | `in-flight-upstream` | 1 | BFQ-09 |
 | `merged-upstream` | 81 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-125, BFQ-126, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 8 | RT-PROPAGATION, RT-0, T30-RESEARCH, BFQ-95, ADV-XSS-META, ADV-CONFIG, BFQ-152, DEPENDABOT-CONFIG |
@@ -115,6 +115,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-152** BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission
 - **BFQ-154** BF-154 - node-forge 1.4.0 (pinned in overrides) is inside an advisory range with no fixed release
 - **BFQ-156** BF-156 - API v3 auto-prune never handles its delete's result; a failed delete ends the process
+- **BFQ-CONFIG-DOCS** bf/config-docs-truth - the documentation half of BF-46, BF-48, BF-49 and the fixes for BF-50, BF-51, for 15.0.9
 - **BFQ-134** BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 - **BFQ-129** BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500
 - **BFQ-133** BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one (fixed by BF-146's #8784), merged for 15.0.9
@@ -1389,7 +1390,7 @@ that costs.
 | worktree | `externals/cgm-remote-monitor-official` |
 | semver | `minor` |
 | review | maintainer, and at least one human reviewer who is not the author. Release PR #8598 is authored by AndyLow91 and approved twice by the maintainer (2026-09-26 00:39Z) at head e3adc91d. Integration PR #8605 carries the modernization cuts (RT-3), not this release. |
-| blocks on | `BFQ-102`, `BFQ-114`, `BFQ-118`, `BFQ-119`, `RT-PR-8419`, `RT-PR-8530`, `BFQ-120`, `BFQ-126`, `BFQ-134`, `BFQ-106`, `BFQ-129`, `BFQ-125`, `BFQ-123`, `BFQ-122`, `BFQ-136`, `BFQ-128`, `RT-PR-8778`, `BFQ-80`, `BFQ-121`, `RT-PR-8781`, `BFQ-142`, `BFQ-146`, `RT-PR-8788`, `BFQ-108`, `RT-PR-8790`, `BFQ-151`, `BFQ-73`, `BFQ-153`, `BFQ-155` |
+| blocks on | `BFQ-102`, `BFQ-114`, `BFQ-118`, `BFQ-119`, `RT-PR-8419`, `RT-PR-8530`, `BFQ-120`, `BFQ-126`, `BFQ-134`, `BFQ-106`, `BFQ-129`, `BFQ-125`, `BFQ-123`, `BFQ-122`, `BFQ-136`, `BFQ-128`, `RT-PR-8778`, `BFQ-80`, `BFQ-121`, `RT-PR-8781`, `BFQ-142`, `BFQ-146`, `RT-PR-8788`, `BFQ-108`, `RT-PR-8790`, `BFQ-151`, `BFQ-73`, `BFQ-153`, `BFQ-155`, `BFQ-CONFIG-DOCS` |
 
 **Blast radius.** 15.0.9 is everything in origin/master..origin/dev: master 92d08342 (tag 15.0.8) to dev 7000eb18 (merge of #8786), measured 2026-09-27: 507 commits, 86 first-parent merges (all PR merges), 297 files, +28363/-1722. Among them the programme's backfix PRs (#8733-#8740 and #8743-#8746 from 2026-09-17 to 2026-09-21; #8748-#8753, #8755-#8757 and #8759 on 2026-09-23; #8760-#8762 and #8754 (with #8763 and #8765 folded in) on 2026-09-24; #8758 and #8766-#8770 on 2026-09-25; #8771-#8777, #8779, #8780, #8783 and #8784 on 2026-09-26; the test-only #8785 and #8786 (BF-147) on 2026-09-27), #8741, #8778 and #8781 from outside contributors on the same work, #8568, #8419 and #8530 carried by the 2026-09-25 decision, the D3 5.16 -> 7.9 chart migration (RT-D3), the opt-in debug logging change (#8726), the connector pin to exactly 0.1.0 (#8762), profile, treatment-query and clock fixes, report and chart fixes, dependency updates and translations. Crowdin #8730 is held out. The candidate is dev 7000eb18: RC run 020 ran on ce30a94d; #8785 changes only tests/boluswizardpreview.test.js, and #8786 changes two dependency overrides and nine locked versions (its own nine-cell CI; the production bundle is byte- identical). Reproduce with `git -C externals/cgm-remote-monitor-official log --first-parent --oneline origin/master..origin/dev` and `git diff --shortstat origin/master origin/dev`.
 
@@ -2110,7 +2111,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 99 items
+`parcel: register-open` &mdash; 100 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2199,7 +2200,8 @@ distinction is the only thing that makes the register mean anything - widening
 | `DEPENDABOT-CONFIG` | Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev | `needs-decision` | `-` | n/a | 1 run + 1 no-gate |
 | `BFQ-154` | BF-154 - node-forge 1.4.0 (pinned in overrides) is inside an advisory range with no fixed release | `blocked` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-155` | BF-155 - a failed storage read on GET /api/v1/activity ends the server process, for 15.0.9 | `merged-upstream` | `bf/activity-read-error` | patch | 1 run + 1 no-gate |
-| `BFQ-156` | BF-156 - API v3 auto-prune never handles its delete's result; a failed delete ends the process | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `BFQ-156` | BF-156 - API v3 auto-prune never handles its delete's result; a failed delete ends the process | `blocked` | `bf/autoprune-promise` | patch | 0 run + 1 no-gate |
+| `BFQ-CONFIG-DOCS` | bf/config-docs-truth - the documentation half of BF-46, BF-48, BF-49 and the fixes for BF-50, BF-51, for 15.0.9 | `ready-to-push` | `bf/config-docs-truth` | patch | 1 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `merged-upstream` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
 | `WS-LAB` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | `ready-to-push` | `main` | n/a | 1 run + 1 no-gate |
@@ -2989,7 +2991,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-02: documentation half on bf/config-docs-truth c102d98f with BFQ-ENV (README documents the API v3 settings; swagger text corrected, including a DEVICESTATUS=60 autoprune default the code never had). The code half stays open. BF-156 (autoprune result never handled) was found while doing it. 2026-10-02 (maintainer, relayed by session -d4): a known issue of 15.0.9, named in its release notes and contents (by -d4), and the documentation of the API3_* variables is updated. A local branch is being prepared by -d4's agent in externals/work/crm-bf46-env off dev ca6fcfaf, not pushed; whether it goes into 15.0.9 is decided once it is measured. Kept out of BFQ-ENV deliberately. The other three are a documentation and plumbing residue; this one irreversibly deletes a person's glucose history through a name nobody can look up, with the result unawaited. A reviewer should not have to find it inside a batch whose other members are a README typo and a dead settings key.
+**Notes.** 2026-10-02 (maintainer, relayed by session -d4): the documentation half goes into 15.0.9 as BFQ-CONFIG-DOCS (bf/config-docs-truth); the code half, routing the API3_* variables through env.js, is after 15.0.9 and stays here. BF-156 (autoprune result) is carried in the BF-46 known issue of 15.0.9. 2026-10-02: documentation half on bf/config-docs-truth c102d98f with BFQ-ENV (README documents the API v3 settings; swagger text corrected, including a DEVICESTATUS=60 autoprune default the code never had). The code half stays open. BF-156 (autoprune result never handled) was found while doing it. 2026-10-02 (maintainer, relayed by session -d4): a known issue of 15.0.9, named in its release notes and contents (by -d4), and the documentation of the API3_* variables is updated. A local branch is being prepared by -d4's agent in externals/work/crm-bf46-env off dev ca6fcfaf, not pushed; whether it goes into 15.0.9 is decided once it is measured. Kept out of BFQ-ENV deliberately. The other three are a documentation and plumbing residue; this one irreversibly deletes a person's glucose history through a name nobody can look up, with the result unawaited. A reviewer should not have to find it inside a batch whose other members are a README typo and a dead settings key.
 
 ### `BFQ-47` &mdash; BF-47 - an ordinary subject edit destroys stored fields, on today's release
 
@@ -3066,7 +3068,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-02 (session -d4's agent): bf/config-docs-truth c102d98f, five commits (one per id: BF-46, 48, 49, 50, 51) on dev ca6fcfaf, README.md +33/-4, azuredeploy.json, lib/api3/swagger.yaml and swagger.json; no .js change; full suite 3534/0/4 (Node 24.15.0, MongoDB 7.0.43); not pushed; PR body reports/phase0-pr-bodies/config-docs-truth.md. The config-surface-census gate: readme (BF-50) and azure (BF-51) arms red -> green; api3 (BF-46), webhook (BF-48) and hsts (BF-49) stay red until the code half (env.js routing or an alias) is done. Gate defect: the hsts arm reads lib/settings.js from the main clone's working tree whatever --ref says. 2026-10-02 (maintainer, relayed by session -d4): correct the information for BF-48 to BF-51. Prepared with BFQ-46 by -d4's agent in externals/work/crm-bf46-env off dev ca6fcfaf, not pushed; whether it goes into 15.0.9 is decided once it is measured. Batched because it is one piece of work with one runnable gate in four arms - make the configuration surface tell the truth - and because a reviewer reading any one of them alone would ask about the other three. Split it back by arm if the documentation half lands separately from the plumbing half. BF-46 is deliberately not batched here; see that item.
+**Notes.** 2026-10-02 (maintainer, relayed by session -d4): BF-50 and BF-51 and the documentation half of BF-48 and BF-49 go into 15.0.9 as BFQ-CONFIG-DOCS; after 15.0.9 here: env.js routing for WEBHOOK_*, the HSTS alias, and reconciling the Azure template's Node ~22 with cut 1's ~24. 2026-10-02 (session -d4's agent): bf/config-docs-truth c102d98f, five commits (one per id: BF-46, 48, 49, 50, 51) on dev ca6fcfaf, README.md +33/-4, azuredeploy.json, lib/api3/swagger.yaml and swagger.json; no .js change; full suite 3534/0/4 (Node 24.15.0, MongoDB 7.0.43); not pushed; PR body reports/phase0-pr-bodies/config-docs-truth.md. The config-surface-census gate: readme (BF-50) and azure (BF-51) arms red -> green; api3 (BF-46), webhook (BF-48) and hsts (BF-49) stay red until the code half (env.js routing or an alias) is done. Gate defect: the hsts arm reads lib/settings.js from the main clone's working tree whatever --ref says. 2026-10-02 (maintainer, relayed by session -d4): correct the information for BF-48 to BF-51. Prepared with BFQ-46 by -d4's agent in externals/work/crm- bf46-env off dev ca6fcfaf, not pushed; whether it goes into 15.0.9 is decided once it is measured. Batched because it is one piece of work with one runnable gate in four arms - make the configuration surface tell the truth - and because a reviewer reading any one of them alone would ask about the other three. Split it back by arm if the documentation half lands separately from the plumbing half. BF-46 is deliberately not batched here; see that item.
 
 ### `BFQ-52` &mdash; BF-52 - an age reminder whose 20-minute window passed without a check was never sent
 
@@ -4892,15 +4894,16 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `blocked` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
+| branch | `bf/autoprune-promise` |
 | base | `official/dev@ca6fcfaf` |
-| worktree | `-` |
+| worktree | `externals/work/crm-bf156` |
 | semver | `patch` |
 | review | maintainer |
 | ships to operators today | **yes** |
 | register | `BF-156` |
+| blocks on | `RT-0` |
 
 **Blast radius.** lib/api3/generic/collection.js autoPrune: await or .then/.catch the promise deleteManyOr returns, log the count and any error.
 
@@ -4916,7 +4919,40 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Filed 2026-10-02. Whether it goes into 15.0.9 is being put to the maintainer by session -d4; not in RT-0's blocks_on until decided.
+**Notes.** 2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9, and carried in 15.0.9's BF-46 known issue. A fix branch, bf/autoprune-promise, is being prepared by -d4 in externals/work/crm-bf156 for the next release. Filed 2026-10-02. Whether it goes into 15.0.9 is being put to the maintainer by session -d4; not in RT-0's blocks_on until decided.
+
+### `BFQ-CONFIG-DOCS` &mdash; bf/config-docs-truth - the documentation half of BF-46, BF-48, BF-49 and the fixes for BF-50, BF-51, for 15.0.9
+
+| | |
+|---|---|
+| state (claimed) | `ready-to-push` |
+| repo | `cgm-remote-monitor` |
+| branch | `bf/config-docs-truth` |
+| base | `official/dev@ca6fcfaf` |
+| worktree | `externals/work/crm-bf46-env` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-46`, `BF-48`, `BF-49`, `BF-50`, `BF-51` |
+
+**Blast radius.** Documentation only, five commits (one per id) on dev ca6fcfaf: README.md +33/-4 (API v3 settings, webhook settings, the HSTS spelling, ENTRIES_COLLECTION instead of MONGODB_COLLECTION), azuredeploy.json (uses its WEBSITE_NODE_DEFAULT_VERSION parameter), lib/api3/swagger.yaml and swagger.json (corrected settings text). No .js change.
+
+**What an operator sees.** The setup documentation now names the settings Nightscout actually reads, including the API v3 settings and the webhook plugin's, and the Azure deploy template uses the Node version you choose.
+
+**Why `patch`.** documentation and a deploy template parameter
+
+**Gates.**
+
+- `[static]` `git -C externals/cgm-remote-monitor-official cat-file -e c102d98f`
+  - The branch head c102d98f exists in the clone (a presence check). The config-surface-census gate's readme (BF-50) and azure (BF-51) arms decide; its api3, webhook and hsts arms stay red until the code half (BFQ-46, BFQ-ENV) is done.
+- **NO GATE** &mdash; Measured 2026-10-02 by session -d4's agent on c102d98f: full suite 3534/0/4 (Node 24.15.0, MongoDB 7.0.43); readme and azure arms red -> green.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `reports/phase0-pr-bodies/config-docs-truth.md`
+
+**Notes.** Decided 2026-10-02 (maintainer, relayed by session -d4): goes into 15.0.9; in RT-0's blocks_on. Split out of BFQ-46 and BFQ-ENV so that the release waits on this branch only: their code half (env.js routing for API3_* and WEBHOOK_*, the HSTS alias) is after 15.0.9 and stays on those items. Not pushed.
 
 ### `BFQ-134` &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 
