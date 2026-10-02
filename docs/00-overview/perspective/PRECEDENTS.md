@@ -132,6 +132,114 @@ Each row is sourced in the [histories annex §B](../../60-research/programme/sta
 | ELISA and Zephyr | open source used where safety evidence is needed | shared tools so a company can certify its own system; a limited certification scope; rules brought in by stages | two labels: the project provides evidence; any certification is the certifier's |
 | Tidepool Loop (FDA 510(k) K203689, 2023-01-23) | DIY Loop, built by volunteers | a nonprofit took it through clearance with its own paid team and a community observational study; the DIY project continued alongside | regulated and DIY tracks coexist, each with its own label |
 
+## Transitions, on one template
+
+Each case answers the same eight questions, so they can be compared with one another and with the
+[observations](../observations/ECOSYSTEM-EVIDENCE.md). Sources are those in the
+[histories annex §B](../../60-research/programme/stack-census-2026-09-30/histories.md#b-histories)
+unless a line links its own; outside quotes were re-read at the source on 2026-10-02 where they
+first appear on this site in [INFRASTRUCTURE-TRANSITION](INFRASTRUCTURE-TRANSITION.md).
+
+### OpenSSL, 2014–2024
+
+1. **Starting condition.** A cryptography library maintained by volunteers; before April 2014, "two
+   primary developers, both of whom were volunteers, and no decision-making process" (LWN, 2016).
+2. **What depended on it.** Encrypted connections in a large share of servers and devices; not measured in the sources read.
+3. **Pressure.** Heartbleed, disclosed April 2014. Its foundation "typically receives about US$2000 a
+   year in outright donations".
+4. **Response.** The Linux Foundation's Core Infrastructure Initiative funded "two, fulltime core
+   developers" and an audit; the project wrote release, security and support policies and required
+   review of all code. In 2024 it became a foundation and a corporation as "two independent but
+   co-equal entities".
+5. **Stayed with the community.** The project's own decisions, through its committees.
+6. **Became paid.** Two developers per funded role, then more from donations.
+7. **Still disputed or hard.** Not found in the sources read; the 2024 split is recent.
+8. **Transfers / does not.** Transfers: money turned into a working project through named roles plus
+   written policies. Does not: the scale of dependence and of funding.
+
+### OpenStreetMap Foundation, 2020–2023
+
+1. **Starting condition.** A volunteer mapping community with a volunteer board.
+2. **What depended on it.** The map data and the foundation's own servers, which need "full-time
+   system monitoring to ensure availability" (Strategic Plan).
+3. **Pressure.** "Given that volunteer work has not proven to be sufficient in the past, support
+   through paid development is necessary"; "An all volunteer Board has proven insufficient to
+   execute on all Foundation needs" ([Strategic Plan](https://osmfoundation.org/wiki/Strategic_Plan), 2023).
+4. **Response.** A [Hiring Framework](https://osmfoundation.org/wiki/Hiring_Framework), introduced to
+   the members in May 2020, and then
+   paid work on core systems and full-time monitoring.
+5. **Stayed with the community.** Working groups, so that "the overall course of the OSMF is driven by
+   community members as opposed to a paid body of staff"; the framework avoids "paid leadership or
+   decision-making positions".
+6. **Became paid.** Core-systems development and system monitoring.
+7. **Still disputed or hard.** The board listed the risks in public before hiring: a "chilling
+   effect on volunteering", different incentives, and paid staff's greater power to set direction
+   ([osmf-talk, 2020-05-06](https://lists.openstreetmap.org/pipermail/osmf-talk/2020-May/006816.html)).
+8. **Transfers / does not.** Transfers: writing down, before hiring, what paid staff may and may not
+   decide. Does not: OSM's size and its own hosted service.
+
+### Debian: Dunc-Tank (2006) and paid long-term support (2014–)
+
+1. **Starting condition.** A volunteer project that pays none of its members; about 1,000 voting
+   developers in 2006 and 1,030 in 2025.
+2. **What depended on it.** Debian's users, and the long-supported releases companies run.
+3. **Pressure.** A release to deliver (Etch, planned for December 2006, shipped 2007-04-08), and
+   security support that lasted three years.
+4. **Response.** 2006: an independent group, with the project leader on its board, paid two release
+   managers for a month each. From 2014: long-term support run by Freexian as a separate service,
+   funded by sponsors outside the project, with monthly public reports.
+5. **Stayed with the community.** All of Debian's own decisions; the 2006 resolution said the
+   experiment "is not the result of a decision of the Debian Project".
+6. **Became paid.** Long-term security support beyond the project's own term.
+7. **Still disputed or hard.** Dunc-Tank drew a recall vote (which failed) and a protest statement;
+   the lesson drawn in 2019 was "don't let the DPL decide alone who gets paid".
+8. **Transfers / does not.** Transfers: paid work as a separate, named, reported service; never one
+   person deciding who is paid. Does not: Debian's size.
+
+### Home Assistant and the Open Home Foundation, 2018–2025
+
+1. **Starting condition.** A community home-automation project.
+2. **What depended on it.** Its users and device integrations; not measured in the sources read.
+3. **Pressure.** Not stated in the sources read as a single event; for years "a significant portion
+   of Nabu Casa's revenue was used to pay the salaries" of maintainers.
+4. **Response.** 2024: a nonprofit foundation took ownership, "funded by commercial partner fees and
+   donations"; each partner must "contribute a majority of its profit from selling licensed
+   products"; in 2025 the staff working on foundation projects moved to the foundation.
+5. **Stayed with the community.** Contributions from the wider community, under the foundation.
+6. **Became paid.** "more than 50 full-time employees".
+7. **Still disputed or hard.** Not found in the sources read.
+8. **Transfers / does not.** Transfers: a founder-linked company paying maintainers, formalised as a
+   foundation with a published rule for partners; it took six years. Does not: the revenue scale.
+
+### Python Software Foundation Developers-in-Residence, 2021–
+
+1. **Starting condition.** A volunteer core team with an elected Steering Council.
+2. **What depended on it.** Python's users and its package index; not measured in the sources read.
+3. **Pressure.** Review, triage and security load on volunteer core developers.
+4. **Response.** From July 2021, paid residents, each seat funded by a named sponsor
+   ([PSF](https://www.python.org/psf/developersinresidence/)).
+5. **Stayed with the community.** Technical decisions, through the Steering Council.
+6. **Became paid.** Triage, review, build monitoring and security response.
+7. **Still disputed or hard.** Each seat lasts only as long as its sponsor.
+8. **Transfers / does not.** Transfers: the nearest model to paid review and release work beside
+   volunteers. Does not: the number of sponsors Python can draw.
+
+### Tidepool Loop, 2020–2023
+
+1. **Starting condition.** DIY Loop, built by volunteers, run by people who build it themselves.
+2. **What depended on it.** People using Loop, and later a manufacturer's product.
+3. **Pressure.** Not stated as a single event in the sources read.
+4. **Response.** A nonprofit, Tidepool, took the software through FDA 510(k) clearance (submitted
+   2020-12-17, cleared 2023-01-23) with its own paid team and a community observational study; the
+   clearance "can now become a predicate device".
+5. **Stayed with the community.** DIY Loop continued alongside.
+6. **Became paid.** The regulated track: Tidepool's team, and later Sequel's twiist system, which
+   incorporates the cleared technology.
+7. **Still disputed or hard.** Not found in the sources read.
+8. **Transfers / does not.** Transfers: regulated and DIY tracks can coexist, each with its own label.
+   Does not: a regulatory route is a choice for each project, not something a foundation does for
+   it.
+
 ## Claims about these organisations that the sources do not support
 
 Read 2026-10-02. They circulate in summaries of these organisations; do not cite them without a
