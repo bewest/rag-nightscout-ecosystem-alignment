@@ -12,6 +12,7 @@ Descriptive only: dates, counts, sources and methods, with no recommendation.
 
 | page | what it covers |
 |---|---|
+| [History](observations/HISTORY.md) | a chronology from 2012 to now: projects, hosting changes, regulation and published evidence, with sources and the points where sources differ |
 | [Ecosystem evidence](observations/ECOSYSTEM-EVIDENCE.md) | what the ecosystem consists of, what depends on the shared server, release and contributor history across the main projects, where maintenance time goes, dates set by vendors and platforms, published clinical evidence |
 
 ## 2. Perspective: how other communities met the same conditions

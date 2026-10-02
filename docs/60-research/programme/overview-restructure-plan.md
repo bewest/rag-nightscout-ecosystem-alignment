@@ -63,7 +63,7 @@ questions:
 |---|---|---|---|
 | 0 | Fixes found by the 2026-10-02 source check: BFQ-72's withheld disposition, the census repository count, unsupported precedent claims | done | `0f3ca59a` |
 | 1 | This plan | done | `e3d7b65c` |
-| 2 | Draft HISTORY | in progress | |
+| 2 | Draft HISTORY | drafted: 2012–2026 chronology from `git` on the stack clones and primary pages read 2026-10-02 (a sample re-run by the session; each external link checked for status); roles, not names; where sources differ and what is not established listed in its §5 | this commit |
 | 3 | Draft GOVERNANCE-TODAY | in progress | |
 | 4 | Draft ECOSYSTEM-EVIDENCE, moving evidence out of the proposals; one home per figure, generated where a generator exists | drafted: census, client survey, cross-project releases and contributors, maintenance time (review load links to the generated table), vendor calendar and connector changes, clinical studies | this commit |
 | 5 | Part 2: move PRECEDENTS, add case studies on the §4 template, write INFRASTRUCTURE-TRANSITION | PRECEDENTS moved, and now holds the comparison tables the proposals carried (collaboration §4 rules and §4a SQLite, sponsored-team §6 funding, quality-system §7 histories), each proposal keeping its heading, a pointer and its own reading; INFRASTRUCTURE-TRANSITION drafted; case studies on the template still to do | `6e4137b4`, this commit |

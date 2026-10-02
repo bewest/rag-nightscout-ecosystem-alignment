@@ -27,7 +27,8 @@ here.]**
 
 ## 1a. What is at stake
 
-The facts this section relies on are on the [evidence page](observations/ECOSYSTEM-EVIDENCE.md).
+The facts this section relies on are on the [evidence page](observations/ECOSYSTEM-EVIDENCE.md);
+the history is in [HISTORY](observations/HISTORY.md).
 
 **Open-source AID has published evidence behind it.** It improved time in range over pump therapy in
 a randomised trial and, in real-world comparisons, matched or exceeded commercial systems on time in
