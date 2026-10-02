@@ -2639,7 +2639,7 @@
 
 
 <h1 id="how-1509-was-made">How 15.0.9 was made<a class="headerlink" href="#how-1509-was-made" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-02 at <code>3d18bbac</code>.</em></p>
+<p><em>Living document, last changed 2026-10-02 at <code>e61032c5</code>.</em></p>
 <p><em>Contributor- and maintainer-facing. Living record, measured 2026-10-02 against cgm-remote-monitor
 <code>official/dev</code> <code>ca6fcfaf</code> (the 15.0.9 candidate, release PR #8598) and <code>official/master</code> <code>92d08342</code>
 (tag <code>15.0.8</code>, the shipping release), in <code>externals/cgm-remote-monitor-official</code> after
@@ -3388,7 +3388,7 @@ to <code>github</code>; an id not in a list counts as <code>latent</code>. Close
 <tbody>
 <tr>
 <td>latent</td>
-<td style="text-align: right;">91</td>
+<td style="text-align: right;">92</td>
 <td style="text-align: right;">57</td>
 <td>present on 15.0.8, found by audit, lab, survey or review of an outside PR</td>
 </tr>
@@ -3424,7 +3424,7 @@ to <code>github</code>; an id not in a list counts as <code>latent</code>. Close
 </tr>
 <tr>
 <td><strong>all</strong></td>
-<td style="text-align: right;"><strong>155</strong></td>
+<td style="text-align: right;"><strong>156</strong></td>
 <td style="text-align: right;"></td>
 <td></td>
 </tr>
@@ -3434,7 +3434,7 @@ to <code>github</code>; an id not in a list counts as <code>latent</code>. Close
 
 <!-- chart: burnup -->
 
-<p>Per day, to 2026-10-02 (open and closed count only the 131 ids in scope):</p>
+<p>Per day, to 2026-10-02 (open and closed count only the 132 ids in scope):</p>
 <table>
 <thead>
 <tr>
@@ -3633,22 +3633,23 @@ to <code>github</code>; an id not in a list counts as <code>latent</code>. Close
 </tr>
 <tr>
 <td>10-02</td>
-<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">0</td>
-<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
 <td style="text-align: right;">4</td>
-<td style="text-align: right;">36</td>
+<td style="text-align: right;">37</td>
 </tr>
 </tbody>
 </table>
 <p>The checks first run on each day are in the
 <a href="../../docs/60-research/programme/paving-the-cowpaths-2026-09-27.html#5-defect-arrival">snapshot §5</a>.
 Of the ids filed 09-30 to 10-02, BF-149 was found in review of #8788, and BF-153 and BF-154 in the
-dependency advisory triage (<a href="contents.html#npm-audit-and-dependabot-triage">contents</a>).</p>
+dependency advisory triage (<a href="contents.html#npm-audit-and-dependabot-triage">contents</a>); BF-155 in review of
+the BF-72 branch, and BF-156 while documenting the API v3 settings (BF-46).</p>
 <h3 id="register-totals">Register totals<a class="headerlink" href="#register-totals" title="Permanent link">&para;</a></h3>
 <p><code>node tools/queue/gates/register-exposure-legend.js</code> parses 154 status cells, 113 in §1 and 41 in
 §1b/§1c. In §1: 28 <code>open</code>, 1 <code>fixed</code> (on an unmerged branch), 82 <code>merged</code> (in <code>dev</code>, not
@@ -3672,7 +3673,7 @@ shipping release is 111 entries until 15.0.9 is tagged and installed.</p>
 </tr>
 <tr>
 <td>in scope and not closed</td>
-<td style="text-align: right;">36</td>
+<td style="text-align: right;">37</td>
 <td>the 10-02 row above; includes BF-07 and BF-63 (<code>partly merged</code>) and BF-52 (<code>fixed</code> on an unmerged branch)</td>
 </tr>
 <tr>
@@ -3690,7 +3691,7 @@ issue by decision of 2026-10-02.
 BF-154 (a dependency advisory with no fixed release, in code Nightscout does not call) is named
 in the release notes as well.</p>
 <h3 id="what-the-open-entries-are">What the open entries are<a class="headerlink" href="#what-the-open-entries-are" title="Permanent link">&para;</a></h3>
-<p>Every one of the 36 has a queue item, and every one is present on 15.0.8 or only on unreleased
+<p>Every one of the 37 has a queue item, and every one is present on 15.0.8 or only on unreleased
 branches and tooling, so none is a regression of 15.0.9. Each is in exactly one row below, as
 recorded in the register and <code>queue/work-queue.yaml</code> on 2026-10-02.</p>
 <table>
@@ -3704,13 +3705,18 @@ recorded in the register and <code>queue/work-queue.yaml</code> on 2026-10-02.</
 <tbody>
 <tr>
 <td>known issue, described in the 15.0.9 notes</td>
-<td>BF-44, BF-45, BF-46, BF-67, BF-72, BF-86, BF-92, BF-93, BF-95, BF-124, BF-127, BF-132, BF-137, BF-145, BF-149, BF-152, BF-154</td>
-<td style="text-align: right;">17</td>
+<td>BF-44, BF-45, BF-46, BF-67, BF-72, BF-86, BF-92, BF-93, BF-95, BF-124, BF-127, BF-132, BF-137, BF-145, BF-149, BF-152, BF-154, BF-156</td>
+<td style="text-align: right;">18</td>
 </tr>
 <tr>
 <td>documentation fix going into 15.0.9</td>
-<td>BF-48, BF-49, BF-50, BF-51</td>
-<td style="text-align: right;">4</td>
+<td>BF-48, BF-49, BF-50, BF-51, BF-74, BF-78, BF-81</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr>
+<td>fix going into 15.0.9</td>
+<td>BF-94</td>
+<td style="text-align: right;">1</td>
 </tr>
 <tr>
 <td>fix prepared, after 15.0.9</td>
@@ -3728,16 +3734,6 @@ recorded in the register and <code>queue/work-queue.yaml</code> on 2026-10-02.</
 <td style="text-align: right;">5</td>
 </tr>
 <tr>
-<td>decided, not yet built</td>
-<td>BF-78</td>
-<td style="text-align: right;">1</td>
-</tr>
-<tr>
-<td>waiting on a maintainer decision</td>
-<td>BF-74, BF-81, BF-94</td>
-<td style="text-align: right;">3</td>
-</tr>
-<tr>
 <td>open with no decision or schedule</td>
 <td>BF-71</td>
 <td style="text-align: right;">1</td>
@@ -3745,7 +3741,7 @@ recorded in the register and <code>queue/work-queue.yaml</code> on 2026-10-02.</
 <tr>
 <td><strong>all</strong></td>
 <td></td>
-<td style="text-align: right;"><strong>36</strong></td>
+<td style="text-align: right;"><strong>37</strong></td>
 </tr>
 </tbody>
 </table>
@@ -3753,21 +3749,23 @@ recorded in the register and <code>queue/work-queue.yaml</code> on 2026-10-02.</
 <li><strong>Partly fixed:</strong> BF-07's remainder is left by decision; BF-52's fix is ready and ships with
   BF-92's in a later release; BF-54 has no defect in shipped code and gets its regression test in
   cut 1's browser suite; BF-63's other half is on cut 4.</li>
-<li><strong>Documentation fix going into 15.0.9:</strong> BF-48 to BF-51 correct the README and the Azure deployment
-  template (<code>bf/config-docs-truth</code>); BF-48 and BF-49 keep a code half for later.</li>
+<li><strong>Documentation fix going into 15.0.9</strong> (<code>bf/config-docs-truth</code>): BF-48 to BF-51 correct the README
+  and the Azure deployment template; BF-74 says API v3 <code>settings</code> documents are stored as sent;
+  BF-78 and BF-81 say which setting is the access boundary and which roles need <code>readable</code>. BF-48,
+  BF-49 and BF-78 (its boot warning) keep a code half for later.</li>
+<li><strong>Fix going into 15.0.9:</strong> BF-94, an open page kept showing a cancelled or shortened temp basal
+  sent by AndroidAPS v3 or Trio (<code>bf/profile-temp-cache</code>).</li>
 <li><strong>Fix prepared, after 15.0.9:</strong> BF-09 makes a zero a real value in the live-update duplicate check
   where it carries meaning (a zero temp basal, a zero bolus), in #8797, deferred by decision because
   the path is AndroidAPS's legacy NSClient v1 and the trigger is two records within 2 s.</li>
-<li><strong>Waiting on a decision:</strong> BF-74 (API v3 <code>settings</code> documents are stored without the input
-  cleaning the other collections get), BF-81 (which of two similarly named settings is the access
-  boundary, a wording decision), BF-94 (a module-scope cache in the basal calculation, severity
-  not yet settled).</li>
+<li><strong>No decision yet:</strong> BF-71 (any <code>dateString</code> filter drops the default date window); it belongs
+  with BF-72's work after 15.0.9.</li>
 </ul>
 <!-- chart: open -->
 
 <h3 id="regressions-caught-before-release">Regressions caught before release<a class="headerlink" href="#regressions-caught-before-release" title="Permanent link">&para;</a></h3>
 <p>Seven defects were introduced on <code>dev</code> by merged fix PRs. All seven are absent from 15.0.8 and fixed
-on <code>dev</code>; none reached a release. No register entry filed after 2026-09-27 (BF-147 to BF-155) is
+on <code>dev</code>; none reached a release. No register entry filed after 2026-09-27 (BF-147 to BF-156) is
 described as introduced on <code>dev</code>, and 10 merges have landed since the last regression fixes
 (#8781, #8783 on 09-26) with no new one found.</p>
 <table>
@@ -3875,7 +3873,7 @@ claim of conformity with any standard.</p>
 <tr>
 <td>work control</td>
 <td>183 queue items in 6 parcels, 249 runnable gates and 238 explicit <code>no-gate: &lt;reason&gt;</code> markers; 38 gate scripts</td>
-<td><code>make queue-validate</code>; <code>ls tools/queue/gates \| wc -l</code>; <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/d2752d577e75dad4c8410e4c3cba2818bf3efab6/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></td>
+<td><code>make queue-validate</code>; <code>ls tools/queue/gates \| wc -l</code>; <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/fb1a6e9aa739ee970e8da10c03c6349564d61411/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></td>
 </tr>
 <tr>
 <td>review</td>
@@ -3933,7 +3931,7 @@ risk, the table says what was done and what it does not cover.</p>
 </tr>
 <tr>
 <td><strong>What's left open</strong></td>
-<td>27 items are listed in "What is NOT in 15.0.9" and carried in the release notes as known issues or deferred by decision. 36 register entries in scope are not closed: 17 known issues, 4 with a documentation fix going into 15.0.9, 1 with a fix prepared for after 15.0.9, 4 partly fixed, 5 only on unreleased branches or tooling, 1 decided and not built, 3 waiting on a maintainer decision, 1 with no decision yet (<a href="#what-the-open-entries-are">§6</a>).</td>
+<td>27 items are listed in "What is NOT in 15.0.9" and carried in the release notes as known issues or deferred by decision. 37 register entries in scope are not closed: 18 known issues, 7 with a documentation fix and 1 with a code fix going into 15.0.9, 1 with a fix prepared for after 15.0.9, 4 partly fixed, 5 only on unreleased branches or tooling, 1 with no decision yet (<a href="#what-the-open-entries-are">§6</a>).</td>
 <td></td>
 </tr>
 </tbody>
@@ -4005,7 +4003,7 @@ and generated files):</p>
 <li><a href="contents.html">contents.md</a>, <a href="decisions.html">decisions.md</a>, <a href="testing-notes.html">testing-notes.md</a>, <a href="release-notes.html">release-notes.md</a></li>
 <li><a href="../../docs/30-design/remedial/rc-15.0.9-integration-record.html">15.0.9 integration record</a></li>
 <li><a href="../../docs/30-design/remedial/nightscout-backfix-register.html">backfix register</a></li>
-<li><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/d2752d577e75dad4c8410e4c3cba2818bf3efab6/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></li>
+<li><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/fb1a6e9aa739ee970e8da10c03c6349564d61411/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></li>
 <li><a href="../../specs/quirks/index.html">quirks registry</a></li>
 <li><a href="../../docs/60-research/remedial/consumer-impact-15.0.9-2026-09-23.html">consumer impact</a> and <a href="../../reports/consumer-impact-15.0.9/lab-results.html">replay lab results</a></li>
 <li><a href="../../docs/60-research/remedial/journey-map-15.0.9.html">journey map</a> and <a href="../../docs/60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.html">browser record</a></li>

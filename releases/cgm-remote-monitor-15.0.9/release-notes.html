@@ -1621,6 +1621,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#an-open-page-shows-a-cancelled-temp-basal-as-cancelled" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        An open page shows a cancelled temp basal as cancelled
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#other-fixes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3329,6 +3340,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#an-open-page-shows-a-cancelled-temp-basal-as-cancelled" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        An open page shows a cancelled temp basal as cancelled
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#other-fixes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3423,7 +3445,7 @@
 
 
 <h1 id="nightscout-1509--release-notes">Nightscout 15.0.9 — release notes<a class="headerlink" href="#nightscout-1509--release-notes" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-02 at <code>3d18bbac</code>.</em></p>
+<p><em>Living document, last changed 2026-10-02 at <code>e61032c5</code>.</em></p>
 <p><strong>Draft: 15.0.9 is not yet released, and the wording may change before it is.</strong></p>
 <p><em>For people who run a Nightscout site for themselves or a family member. Nightscout is a
 secondary display, nothing in these notes is advice about insulin doses, and you should talk
@@ -4382,7 +4404,17 @@ plugin and its four <code>WEBHOOK_</code> settings, and <code>ENTRIES_COLLECTION
 <code>MONGODB_COLLECTION</code>, which does nothing. It also says that <code>SECURE_HSTS_HEADER_INCLUDESUBDOMAINS</code>
 is spelled as one word; the spelling with an underscore before <code>SUBDOMAINS</code> has no effect. The
 Azure deployment template now uses Node 22 by default instead of a version Nightscout no longer
-runs on.</p>
+runs on. <code>AUTH_DEFAULT_ROLES</code> is now described as the setting that decides who can see or change your
+data without logging in, with what each built-in role allows; <code>AUTHENTICATION_PROMPT_ON_LOAD</code> only
+makes the page ask for a login and grants nothing. The roles <code>careportal</code>, <code>devicestatus-upload</code> and
+<code>activity</code> do nothing in <code>AUTH_DEFAULT_ROLES</code> unless <code>readable</code> is also there. API v3 <code>settings</code>
+records are stored exactly as sent, so an app that displays them must treat them as untrusted.</p>
+<h3 id="an-open-page-shows-a-cancelled-temp-basal-as-cancelled">An open page shows a cancelled temp basal as cancelled<a class="headerlink" href="#an-open-page-shows-a-cancelled-temp-basal-as-cancelled" title="Permanent link">&para;</a></h3>
+<p>When AndroidAPS (with its NSClient v3 connection) or Trio shortened or cancelled a temp basal, a
+Nightscout page that was already open could keep showing the old rate in the basal display and on
+the chart: for about a quarter of a minute when another temp followed, and until the temp's planned
+end when it was simply cancelled. The pump and the app had the right value, and reloading the page
+showed it. An open page now shows the change as soon as it arrives.</p>
 <h3 id="other-fixes">Other fixes<a class="headerlink" href="#other-fixes" title="Permanent link">&para;</a></h3>
 <p>Faster data loading on sites with many treatments; deleted records no longer reappear; failed
 treatment searches no longer crash the server; a problem reading from the database while answering a

@@ -2839,7 +2839,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-02 at <code>12837cc7</code>.</em></p>
+<p><em>Living document, last changed 2026-10-02 at <code>2ad2af01</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -2878,19 +2878,19 @@
 <tbody>
 <tr>
 <td>items</td>
-<td>183</td>
+<td>185</td>
 </tr>
 <tr>
 <td>runnable gates</td>
-<td>249</td>
+<td>250</td>
 </tr>
 <tr>
 <td>explicit <code>no-gate:</code> markers</td>
-<td>238</td>
+<td>240</td>
 </tr>
 </tbody>
 </table>
-<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 238 of the 487 gate slots in this queue are in that state.</p>
+<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 240 of the 490 gate slots in this queue are in that state.</p>
 <h3 id="claimed-state-not-a-measurement----run-make-queue-status">Claimed state (NOT a measurement -- run <code>make queue-status</code>)<a class="headerlink" href="#claimed-state-not-a-measurement----run-make-queue-status" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -2918,13 +2918,13 @@
 </tr>
 <tr>
 <td><code>ready-to-push</code></td>
-<td>3</td>
-<td>P0-C-REMEDIATE, T30-AUTH, WS-LAB</td>
+<td>4</td>
+<td>P0-C-REMEDIATE, T30-AUTH, BFQ-CONFIG-DOCS, WS-LAB</td>
 </tr>
 <tr>
 <td><code>blocked</code></td>
-<td>18</td>
-<td>RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, BFQ-72, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-154</td>
+<td>19</td>
+<td>RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, BFQ-72, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-154, BFQ-156</td>
 </tr>
 <tr>
 <td><code>in-flight-upstream</code></td>
@@ -3022,6 +3022,8 @@
 <li><strong>BFQ-149</strong> BF-149 - the Day to Day report draws a cancelled or replaced temp target or override for its whole entered duration</li>
 <li><strong>BFQ-152</strong> BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission</li>
 <li><strong>BFQ-154</strong> BF-154 - node-forge 1.4.0 (pinned in overrides) is inside an advisory range with no fixed release</li>
+<li><strong>BFQ-156</strong> BF-156 - API v3 auto-prune never handles its delete's result; a failed delete ends the process</li>
+<li><strong>BFQ-CONFIG-DOCS</strong> bf/config-docs-truth - the documentation half of BF-46, BF-48, BF-49 and the fixes for BF-50, BF-51, for 15.0.9</li>
 <li><strong>BFQ-134</strong> BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open</li>
 <li><strong>BFQ-129</strong> BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500</li>
 <li><strong>BFQ-133</strong> BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one (fixed by BF-146's #8784), merged for 15.0.9</li>
@@ -5530,7 +5532,7 @@ that costs.</p>
 </tr>
 <tr>
 <td>blocks on</td>
-<td><code>BFQ-102</code>, <code>BFQ-114</code>, <code>BFQ-118</code>, <code>BFQ-119</code>, <code>RT-PR-8419</code>, <code>RT-PR-8530</code>, <code>BFQ-120</code>, <code>BFQ-126</code>, <code>BFQ-134</code>, <code>BFQ-106</code>, <code>BFQ-129</code>, <code>BFQ-125</code>, <code>BFQ-123</code>, <code>BFQ-122</code>, <code>BFQ-136</code>, <code>BFQ-128</code>, <code>RT-PR-8778</code>, <code>BFQ-80</code>, <code>BFQ-121</code>, <code>RT-PR-8781</code>, <code>BFQ-142</code>, <code>BFQ-146</code>, <code>RT-PR-8788</code>, <code>BFQ-108</code>, <code>RT-PR-8790</code>, <code>BFQ-151</code>, <code>BFQ-73</code>, <code>BFQ-153</code>, <code>BFQ-155</code>, <code>BFQ-09</code></td>
+<td><code>BFQ-102</code>, <code>BFQ-114</code>, <code>BFQ-118</code>, <code>BFQ-119</code>, <code>RT-PR-8419</code>, <code>RT-PR-8530</code>, <code>BFQ-120</code>, <code>BFQ-126</code>, <code>BFQ-134</code>, <code>BFQ-106</code>, <code>BFQ-129</code>, <code>BFQ-125</code>, <code>BFQ-123</code>, <code>BFQ-122</code>, <code>BFQ-136</code>, <code>BFQ-128</code>, <code>RT-PR-8778</code>, <code>BFQ-80</code>, <code>BFQ-121</code>, <code>RT-PR-8781</code>, <code>BFQ-142</code>, <code>BFQ-146</code>, <code>RT-PR-8788</code>, <code>BFQ-108</code>, <code>RT-PR-8790</code>, <code>BFQ-151</code>, <code>BFQ-73</code>, <code>BFQ-153</code>, <code>BFQ-155</code>, <code>BFQ-CONFIG-DOCS</code></td>
 </tr>
 </tbody>
 </table>
@@ -6839,7 +6841,7 @@ that costs.</p>
 <p><strong>Notes.</strong> Follow-up to BF-110/BF-117, queued 2026-09-25 at the maintainer's request. Editing both copies is not wrong for what is shown (both carry the edit), but the pair never becomes one record, so reads that list treatments keep showing two. The fix shape: update the ObjectId copy (converting a string-only record to its ObjectId, as dbAdd does), then delete the string forms, as the v1 treatments PUT does; the renderer's split-drag path (dbUpdate then dbAdd) must still see the edited _id. Best done with OID-V3-EDIT-MERGE and OID-STORAGE- HELPER, which would give v1, v3 and the websocket one rule for writes by _id. Decisions: - 2026-09-26 (maintainer): after 15.0.9.</p>
 <hr />
 <h2 id="open-backfix-register-entries">Open backfix-register entries<a class="headerlink" href="#open-backfix-register-entries" title="Permanent link">&para;</a></h2>
-<p><code>parcel: register-open</code> &mdash; 98 items</p>
+<p><code>parcel: register-open</code> &mdash; 100 items</p>
 <p>The §1 / §1b distinction is preserved in <code>ships_to_operators_today</code>. That
 distinction is the only thing that makes the register mean anything - widening
 §1's criterion would destroy it.</p>
@@ -7043,7 +7045,7 @@ distinction is the only thing that makes the register mean anything - widening
 <td><code>BFQ-46</code></td>
 <td>BF-46 - eleven API v3 variables bypass env.js, one family deletes data</td>
 <td><code>in-progress</code></td>
-<td><code>-</code></td>
+<td><code>bf/config-docs-truth</code></td>
 <td>minor</td>
 <td>1 run + 1 no-gate</td>
 </tr>
@@ -7059,7 +7061,7 @@ distinction is the only thing that makes the register mean anything - widening
 <td><code>BFQ-ENV</code></td>
 <td>BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies</td>
 <td><code>in-progress</code></td>
-<td><code>-</code></td>
+<td><code>bf/config-docs-truth</code></td>
 <td>minor</td>
 <td>4 run + 2 no-gate</td>
 </tr>
@@ -7504,6 +7506,22 @@ distinction is the only thing that makes the register mean anything - widening
 <td>1 run + 1 no-gate</td>
 </tr>
 <tr>
+<td><code>BFQ-156</code></td>
+<td>BF-156 - API v3 auto-prune never handles its delete's result; a failed delete ends the process</td>
+<td><code>blocked</code></td>
+<td><code>bf/autoprune-promise</code></td>
+<td>patch</td>
+<td>0 run + 1 no-gate</td>
+</tr>
+<tr>
+<td><code>BFQ-CONFIG-DOCS</code></td>
+<td>bf/config-docs-truth - the documentation half of BF-46, BF-48, BF-49 and the fixes for BF-50, BF-51, for 15.0.9</td>
+<td><code>ready-to-push</code></td>
+<td><code>bf/config-docs-truth</code></td>
+<td>patch</td>
+<td>1 run + 1 no-gate</td>
+</tr>
+<tr>
 <td><code>BFQ-134</code></td>
 <td>BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open</td>
 <td><code>merged-upstream</code></td>
@@ -7767,7 +7785,7 @@ distinction is the only thing that makes the register mean anything - widening
 <li><code>docs/60-research/remedial/gt3-register-truth-2026-09-15.md</code></li>
 <li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-02: opened as #8797 by the maintainer (head 7dff9f38, MERGEABLE, base dev). 2026-10-02 (session -d4's agent): bf/socket-dedup-zero 7dff9f38, one commit on dev ca6fcfaf (lib/server/websocket.js +26/-15, new tests/websocket.dedup-zero.test.js), not pushed. percent, absolute and duration treat 0 as a value matched exactly; insulin and carbs treat 0 as none ({$in: [0, null]}); '', false and null are still not keys. 22 new tests; reverting websocket.js fails 9 with the record dropped; an exact zero key on all five fields fails the 2 xDrip filler re-sends, zero-or-absent on all five fails the 2 cross-temp cases. Full suite 3556/0/4 (dev ca6fcfaf 3534/0/4; Node 22.23.2, MongoDB 7.0.43, one cell). PR body: reports/phase0-pr-bodies/socket- dedup-zero.md. 2026-10-02 (maintainer, relayed by session -d4): taken into 15.0.9; in RT-0's blocks_on. dev is still ca6fcfaf, so no merge is needed before the push. 2026-10-02 (maintainer, relayed by session -d4): confirm and adopt conditional handling of zero by field and type. The maintainer's reading: a temp basal with 0 is a real value and a bolus with 0 is a real value, but insulin: 0 on a carbs entry is not a match key. A local fix branch is being prepared by -d4's agent in externals/work/crm-bf09 off dev ca6fcfaf, not pushed; whether it goes into 15.0.9 is decided once it is measured. Measured, awaiting the maintainer's decision. docs/60-research/remedial/bf09-dedup-zero-measurement-2026-09-23.md (dev 74fc6619 and 15.0.8, identical): treating zero as a real value fixes 6 dedup cases and changes no control, and bec641ca, the candidate for the old AAPS zero-temp display problem, was rendering only. No fix branch. Decisions: - 2026-09-23 (maintainer): measure first, then decide. The maintainer leans towards treating zero as a real value (a zero temp basal is a real value in AID terms), and the fix must not bring back the temp-basal display problem seen when AAPS issues zero temps seconds apart. Reproduced 2026-09-23 as cases X1 and X2: because a falsy field is left out of the lookup, the lookup can end up keyed on fields another eventType also has, so a zero temp can match a different eventType within the ±2 s window (maxtimediff). Only uploaders using the socket path without NSCLIENT_ID reach this. The register entry names the wrong fields: over 277,690 treatments there are zero zero-valued <code>insulin</code> (0 of 107,732) and zero zero-valued <code>carbs</code> (0 of 12,394); the field that carries falsy values is <code>absolute</code>, 67,521 of 153,315 (44%), the zero temp basal, and <code>duration:0</code> adds 2,094. GT3's reading: a bug, not intent, because the author built an explicit selected/fallback mechanism. tools/queue/gates/bf09-corpus- divergence.js undercounts and needs fixing before its figure is trusted. 2026-09-26 - BF-121's fix (bf/same-time-treatments fc821024, BFQ-121) makes the socket similar match always key on eventType, which fixes X1 and X2; Z2, Z5, P2, B2 and C2 remain. A BF-09 branch will conflict with BF-121's on the similar-match lines.</p>
+<p><strong>Notes.</strong> 2026-10-02 (maintainer, later the same day, relayed by session -d4): DEFERRED until after 15.0.9, reversing the decision to take it in; removed from RT-0's blocks_on. #8797 stays open for the next release. Reasoning: the practical impact is small. The affected path is AAPS NSClient v1 (3.4.2.6; removed on AAPS master in 30fe4591a7), the standalone NSClient app xDrip+ broadcasts to, and the chart's drag-to-move; a temp is lost only when two temps with the same whole-minute duration start within 2 s; no field report. 2026-10-02: opened as #8797 by the maintainer (head 7dff9f38, MERGEABLE, base dev). 2026-10-02 (session -d4's agent): bf/socket-dedup-zero 7dff9f38, one commit on dev ca6fcfaf (lib/server/websocket.js +26/-15, new tests/websocket.dedup- zero.test.js), not pushed. percent, absolute and duration treat 0 as a value matched exactly; insulin and carbs treat 0 as none ({$in: [0, null]}); '', false and null are still not keys. 22 new tests; reverting websocket.js fails 9 with the record dropped; an exact zero key on all five fields fails the 2 xDrip filler re-sends, zero-or-absent on all five fails the 2 cross-temp cases. Full suite 3556/0/4 (dev ca6fcfaf 3534/0/4; Node 22.23.2, MongoDB 7.0.43, one cell). PR body: reports/phase0-pr-bodies/socket-dedup-zero.md. 2026-10-02 (maintainer, relayed by session -d4): taken into 15.0.9; in RT-0's blocks_on. dev is still ca6fcfaf, so no merge is needed before the push. 2026-10-02 (maintainer, relayed by session -d4): confirm and adopt conditional handling of zero by field and type. The maintainer's reading: a temp basal with 0 is a real value and a bolus with 0 is a real value, but insulin: 0 on a carbs entry is not a match key. A local fix branch is being prepared by -d4's agent in externals/work/crm-bf09 off dev ca6fcfaf, not pushed; whether it goes into 15.0.9 is decided once it is measured. Measured, awaiting the maintainer's decision. docs/60-research/remedial/bf09-dedup-zero- measurement-2026-09-23.md (dev 74fc6619 and 15.0.8, identical): treating zero as a real value fixes 6 dedup cases and changes no control, and bec641ca, the candidate for the old AAPS zero-temp display problem, was rendering only. No fix branch. Decisions: - 2026-09-23 (maintainer): measure first, then decide. The maintainer leans towards treating zero as a real value (a zero temp basal is a real value in AID terms), and the fix must not bring back the temp-basal display problem seen when AAPS issues zero temps seconds apart. Reproduced 2026-09-23 as cases X1 and X2: because a falsy field is left out of the lookup, the lookup can end up keyed on fields another eventType also has, so a zero temp can match a different eventType within the ±2 s window (maxtimediff). Only uploaders using the socket path without NSCLIENT_ID reach this. The register entry names the wrong fields: over 277,690 treatments there are zero zero-valued <code>insulin</code> (0 of 107,732) and zero zero-valued <code>carbs</code> (0 of 12,394); the field that carries falsy values is <code>absolute</code>, 67,521 of 153,315 (44%), the zero temp basal, and <code>duration:0</code> adds 2,094. GT3's reading: a bug, not intent, because the author built an explicit selected/fallback mechanism. tools/queue/gates/bf09-corpus-divergence.js undercounts and needs fixing before its figure is trusted. 2026-09-26 - BF-121's fix (bf/same-time-treatments fc821024, BFQ-121) makes the socket similar match always key on eventType, which fixes X1 and X2; Z2, Z5, P2, B2 and C2 remain. A BF-09 branch will conflict with BF-121's on the similar-match lines.</p>
 <h3 id="bfq-10--bf-10---mongod-fatal-asserts-at-dockers-default-nofile1024"><code>BFQ-10</code> &mdash; BF-10 - mongod fatal-asserts at Docker's default nofile=1024<a class="headerlink" href="#bfq-10--bf-10---mongod-fatal-asserts-at-dockers-default-nofile1024" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -9088,7 +9106,7 @@ distinction is the only thing that makes the register mean anything - widening
 </tr>
 <tr>
 <td>branch</td>
-<td><code>-</code></td>
+<td><code>bf/config-docs-truth</code></td>
 </tr>
 <tr>
 <td>base</td>
@@ -9129,7 +9147,7 @@ distinction is the only thing that makes the register mean anything - widening
 <ul>
 <li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-02 (maintainer, relayed by session -d4): a known issue of 15.0.9, named in its release notes and contents (by -d4), and the documentation of the API3_* variables is updated. A local branch is being prepared by -d4's agent in externals/work/crm-bf46-env off dev ca6fcfaf, not pushed; whether it goes into 15.0.9 is decided once it is measured. Kept out of BFQ-ENV deliberately. The other three are a documentation and plumbing residue; this one irreversibly deletes a person's glucose history through a name nobody can look up, with the result unawaited. A reviewer should not have to find it inside a batch whose other members are a README typo and a dead settings key.</p>
+<p><strong>Notes.</strong> 2026-10-02: gate defect found by -d4's agent: config-surface-census.js's api3 arm (:138-142) accepts only <code>await self.storage.deleteManyOr</code>, so it stays red on a correct .then/.catch fix (bf/autoprune-promise). 2026-10-02 (maintainer, relayed by session -d4): the documentation half goes into 15.0.9 as BFQ- CONFIG-DOCS (bf/config-docs-truth); the code half, routing the API3_<em> variables through env.js, is after 15.0.9 and stays here. BF-156 (autoprune result) is carried in the BF-46 known issue of 15.0.9. 2026-10-02: documentation half on bf/config-docs-truth c102d98f with BFQ-ENV (README documents the API v3 settings; swagger text corrected, including a DEVICESTATUS=60 autoprune default the code never had). The code half stays open. BF-156 (autoprune result never handled) was found while doing it. 2026-10-02 (maintainer, relayed by session -d4): a known issue of 15.0.9, named in its release notes and contents (by -d4), and the documentation of the API3_</em> variables is updated. A local branch is being prepared by -d4's agent in externals/work/crm-bf46-env off dev ca6fcfaf, not pushed; whether it goes into 15.0.9 is decided once it is measured. Kept out of BFQ-ENV deliberately. The other three are a documentation and plumbing residue; this one irreversibly deletes a person's glucose history through a name nobody can look up, with the result unawaited. A reviewer should not have to find it inside a batch whose other members are a README typo and a dead settings key.</p>
 <h3 id="bfq-47--bf-47---an-ordinary-subject-edit-destroys-stored-fields-on-todays-release"><code>BFQ-47</code> &mdash; BF-47 - an ordinary subject edit destroys stored fields, on today's release<a class="headerlink" href="#bfq-47--bf-47---an-ordinary-subject-edit-destroys-stored-fields-on-todays-release" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -9219,7 +9237,7 @@ distinction is the only thing that makes the register mean anything - widening
 </tr>
 <tr>
 <td>branch</td>
-<td><code>-</code></td>
+<td><code>bf/config-docs-truth</code></td>
 </tr>
 <tr>
 <td>base</td>
@@ -9267,7 +9285,7 @@ distinction is the only thing that makes the register mean anything - widening
 <ul>
 <li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-02 (maintainer, relayed by session -d4): correct the information for BF-48 to BF-51. Prepared with BFQ-46 by -d4's agent in externals/work/crm- bf46-env off dev ca6fcfaf, not pushed; whether it goes into 15.0.9 is decided once it is measured. Batched because it is one piece of work with one runnable gate in four arms - make the configuration surface tell the truth - and because a reviewer reading any one of them alone would ask about the other three. Split it back by arm if the documentation half lands separately from the plumbing half. BF-46 is deliberately not batched here; see that item.</p>
+<p><strong>Notes.</strong> 2026-10-02 (maintainer, relayed by session -d4): BF-50 and BF-51 and the documentation half of BF-48 and BF-49 go into 15.0.9 as BFQ-CONFIG-DOCS; after 15.0.9 here: env.js routing for WEBHOOK_*, the HSTS alias, and reconciling the Azure template's Node ~22 with cut 1's ~24. 2026-10-02 (session -d4's agent): bf/config-docs-truth c102d98f, five commits (one per id: BF-46, 48, 49, 50, 51) on dev ca6fcfaf, README.md +33/-4, azuredeploy.json, lib/api3/swagger.yaml and swagger.json; no .js change; full suite 3534/0/4 (Node 24.15.0, MongoDB 7.0.43); not pushed; PR body reports/phase0-pr-bodies/config-docs-truth.md. The config-surface-census gate: readme (BF-50) and azure (BF-51) arms red -&gt; green; api3 (BF-46), webhook (BF-48) and hsts (BF-49) stay red until the code half (env.js routing or an alias) is done. Gate defect: the hsts arm reads lib/settings.js from the main clone's working tree whatever --ref says. 2026-10-02 (maintainer, relayed by session -d4): correct the information for BF-48 to BF-51. Prepared with BFQ-46 by -d4's agent in externals/work/crm- bf46-env off dev ca6fcfaf, not pushed; whether it goes into 15.0.9 is decided once it is measured. Batched because it is one piece of work with one runnable gate in four arms - make the configuration surface tell the truth - and because a reviewer reading any one of them alone would ask about the other three. Split it back by arm if the documentation half lands separately from the plumbing half. BF-46 is deliberately not batched here; see that item.</p>
 <h3 id="bfq-52--bf-52---an-age-reminder-whose-20-minute-window-passed-without-a-check-was-never-sent"><code>BFQ-52</code> &mdash; BF-52 - an age reminder whose 20-minute window passed without a check was never sent<a class="headerlink" href="#bfq-52--bf-52---an-age-reminder-whose-20-minute-window-passed-without-a-check-was-never-sent" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -12723,6 +12741,131 @@ distinction is the only thing that makes the register mean anything - widening
 <li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
 </ul>
 <p><strong>Notes.</strong> 2026-10-02: pushed, opened and merged by the maintainer as #8796 (merge ca6fcfaf, 18:09Z, head e20b66ba); the nine test cells passed before the merge, the Docker image check was still running. Decided 2026-10-02 (maintainer): fix for 15.0.9; in RT-0's blocks_on. Found while reviewing bf/regex-limits (BFQ-72), which does not cover it. The audit of the other v1 read callbacks found /profile/current with the same failure (fixed here). /api/v1/food and /api/v1/profile answer null with 200 on a failed read, which does not end the process; left for a later change. PR body: reports/phase0-pr-bodies/activity- read-error.md.</p>
+<h3 id="bfq-156--bf-156---api-v3-auto-prune-never-handles-its-deletes-result-a-failed-delete-ends-the-process"><code>BFQ-156</code> &mdash; BF-156 - API v3 auto-prune never handles its delete's result; a failed delete ends the process<a class="headerlink" href="#bfq-156--bf-156---api-v3-auto-prune-never-handles-its-deletes-result-a-failed-delete-ends-the-process" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>state (claimed)</td>
+<td><code>blocked</code></td>
+</tr>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code></td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>bf/autoprune-promise</code></td>
+</tr>
+<tr>
+<td>base</td>
+<td><code>official/dev@ca6fcfaf</code></td>
+</tr>
+<tr>
+<td>worktree</td>
+<td><code>externals/work/crm-bf156</code></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>patch</code></td>
+</tr>
+<tr>
+<td>review</td>
+<td>maintainer</td>
+</tr>
+<tr>
+<td>ships to operators today</td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td>register</td>
+<td><code>BF-156</code></td>
+</tr>
+<tr>
+<td>blocks on</td>
+<td><code>RT-0</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Blast radius.</strong> lib/api3/generic/collection.js autoPrune: await or .then/.catch the promise deleteManyOr returns, log the count and any error.</p>
+<p><strong>What an operator sees.</strong> Only for sites that turn on automatic deletion of old API v3 records (API3_AUTOPRUNE_...): the log now says how many records were removed, and a failed removal no longer stops Nightscout.</p>
+<p><strong>Why <code>patch</code>.</strong> a background task's result is handled</p>
+<p><strong>Gates.</strong></p>
+<ul>
+<li><strong>NO GATE</strong> &mdash; Reproduced 2026-10-02 in-process by session -d4's agent (real Collection and CachedCollectionStorage, a fake storage layer): the callback never runs and a rejected delete exits the process. Read on dev ca6fcfaf (collection.js:157) and v15.0.8 (:149).</li>
+</ul>
+<p><strong>Evidence.</strong></p>
+<ul>
+<li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
+</ul>
+<p><strong>Notes.</strong> 2026-10-02 (session -d4's agent): bf/autoprune-promise 8e4f7dce, one commit on dev ca6fcfaf (lib/api3/generic/collection.js +11/-10, the returned promise handled with .then/.catch; new tests/api3.autoprune.test.js, 3 tests), not pushed. The deleted count is logged; a failed delete is logged and the process keeps running; nextAutoPrune still advances hourly after a failure. Break-its: the unfixed code fails both behaviour tests, dropping only .catch gives an unhandled rejection, deletedCount for deleted fails the log test, advancing only on success fails the throttle test; outside mocha the unfixed code exits 1. Full suite 3537/0/4 (dev 3534/0/4). No other callback-style calls to async API v3 storage methods. PR body: reports/phase0-pr-bodies/autoprune- promise.md. Not measured, read only: the cached collection looks up at most 1000 ids to invalidate while the delete removes every match (mongoCachedCollection/index.js :119-124); worth a check before this merges. 2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9, and carried in 15.0.9's BF-46 known issue. A fix branch, bf/autoprune-promise, is being prepared by -d4 in externals/work/crm-bf156 for the next release. Filed 2026-10-02. Whether it goes into 15.0.9 is being put to the maintainer by session -d4; not in RT-0's blocks_on until decided.</p>
+<h3 id="bfq-config-docs--bfconfig-docs-truth---the-documentation-half-of-bf-46-bf-48-bf-49-and-the-fixes-for-bf-50-bf-51-for-1509"><code>BFQ-CONFIG-DOCS</code> &mdash; bf/config-docs-truth - the documentation half of BF-46, BF-48, BF-49 and the fixes for BF-50, BF-51, for 15.0.9<a class="headerlink" href="#bfq-config-docs--bfconfig-docs-truth---the-documentation-half-of-bf-46-bf-48-bf-49-and-the-fixes-for-bf-50-bf-51-for-1509" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>state (claimed)</td>
+<td><code>ready-to-push</code></td>
+</tr>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code></td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>bf/config-docs-truth</code></td>
+</tr>
+<tr>
+<td>base</td>
+<td><code>official/dev@ca6fcfaf</code></td>
+</tr>
+<tr>
+<td>worktree</td>
+<td><code>externals/work/crm-bf46-env</code></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>patch</code></td>
+</tr>
+<tr>
+<td>review</td>
+<td>maintainer</td>
+</tr>
+<tr>
+<td>ships to operators today</td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td>register</td>
+<td><code>BF-46</code>, <code>BF-48</code>, <code>BF-49</code>, <code>BF-50</code>, <code>BF-51</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Blast radius.</strong> Documentation only, five commits (one per id) on dev ca6fcfaf: README.md +33/-4 (API v3 settings, webhook settings, the HSTS spelling, ENTRIES_COLLECTION instead of MONGODB_COLLECTION), azuredeploy.json (uses its WEBSITE_NODE_DEFAULT_VERSION parameter), lib/api3/swagger.yaml and swagger.json (corrected settings text). No .js change.</p>
+<p><strong>What an operator sees.</strong> The setup documentation now names the settings Nightscout actually reads, including the API v3 settings and the webhook plugin's, and the Azure deploy template uses the Node version you choose.</p>
+<p><strong>Why <code>patch</code>.</strong> documentation and a deploy template parameter</p>
+<p><strong>Gates.</strong></p>
+<ul>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official cat-file -e c102d98f</code></li>
+<li>The branch head c102d98f exists in the clone (a presence check). The config-surface-census gate's readme (BF-50) and azure (BF-51) arms decide; its api3, webhook and hsts arms stay red until the code half (BFQ-46, BFQ-ENV) is done.</li>
+<li><strong>NO GATE</strong> &mdash; Measured 2026-10-02 by session -d4's agent on c102d98f: full suite 3534/0/4 (Node 24.15.0, MongoDB 7.0.43); readme and azure arms red -&gt; green.</li>
+</ul>
+<p><strong>Evidence.</strong></p>
+<ul>
+<li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
+<li><code>reports/phase0-pr-bodies/config-docs-truth.md</code></li>
+</ul>
+<p><strong>Notes.</strong> Decided 2026-10-02 (maintainer, relayed by session -d4): goes into 15.0.9; in RT-0's blocks_on. Split out of BFQ-46 and BFQ-ENV so that the release waits on this branch only: their code half (env.js routing for API3_<em> and WEBHOOK_</em>, the HSTS alias) is after 15.0.9 and stays on those items. Not pushed.</p>
 <h3 id="bfq-134--bf-134---every-loop-remote-command-leaves-an-apns-connection-and-a-heartbeat-timer-open"><code>BFQ-134</code> &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open<a class="headerlink" href="#bfq-134--bf-134---every-loop-remote-command-leaves-an-apns-connection-and-a-heartbeat-timer-open" title="Permanent link">&para;</a></h3>
 <table>
 <thead>

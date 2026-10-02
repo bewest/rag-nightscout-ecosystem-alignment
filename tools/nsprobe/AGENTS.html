@@ -2960,7 +2960,7 @@ sites, a flattened analysis warehouse, or both. The Nightscout ecosystem alignme
 small corpus. <strong>The data never leaves this machine.</strong> What leaves is a directory of aggregate
 JSON files that you generate with <code>nsprobe</code>, check with <code>nsprobe check</code>, and hand to the
 person you work for. They decide whether to send it and where.</p>
-<p>The questions, and the claim each one tests, are in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/d2752d577e75dad4c8410e4c3cba2818bf3efab6/tools/nsprobe/questions.yaml"><code>questions.yaml</code></a>. Read
+<p>The questions, and the claim each one tests, are in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/fb1a6e9aa739ee970e8da10c03c6349564d61411/tools/nsprobe/questions.yaml"><code>questions.yaml</code></a>. Read
 it first.</p>
 <h2 id="rules-that-do-not-bend">Rules that do not bend<a class="headerlink" href="#rules-that-do-not-bend" title="Permanent link">&para;</a></h2>
 <ol>
@@ -3031,7 +3031,7 @@ dosing-input reports, computed over the holder's corpus. <code>compare</code> pr
 corpus and ours disagree about a claim.</p>
 <h2 id="track-b-a-flattened-warehouse">Track B: a flattened warehouse<a class="headerlink" href="#track-b-a-flattened-warehouse" title="Permanent link">&para;</a></h2>
 <p>If the holder has already flattened Nightscout into analysis tables (one row per loop
-decision, one per treatment), copy <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/d2752d577e75dad4c8410e4c3cba2818bf3efab6/tools/nsprobe/warehouse.example.yaml"><code>warehouse.example.yaml</code></a>, set the
+decision, one per treatment), copy <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/fb1a6e9aa739ee970e8da10c03c6349564d61411/tools/nsprobe/warehouse.example.yaml"><code>warehouse.example.yaml</code></a>, set the
 table and column names, and run:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">NSPROBE_DSN</span><span class="o">=</span>...<span class="w">        </span><span class="c1"># in the shell only</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>python3<span class="w"> </span>-m<span class="w"> </span>nsprobe<span class="w"> </span>warehouse<span class="w"> </span>--config<span class="w"> </span>&lt;config.yaml&gt;<span class="w"> </span>--out<span class="w"> </span>&lt;out&gt;<span class="w"> </span>--contributor<span class="w"> </span>&lt;label&gt;

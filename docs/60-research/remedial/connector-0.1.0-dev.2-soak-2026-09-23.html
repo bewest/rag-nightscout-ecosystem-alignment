@@ -7536,7 +7536,7 @@ MongoDB 7.0.43, Node 22.22.0 in the images. Contributor-facing.</p>
 registered as BF-97 and BF-98, and their fixes (connector #79) are in <code>0.1.0</code>
 (<a href="connector-profile-sync.html">profile duplicate stall</a>). Current defect facts live in the
 <a href="../../30-design/remedial/nightscout-backfix-register.html">backfix register</a>, and item state in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/d2752d577e75dad4c8410e4c3cba2818bf3efab6/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a>.</p>
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/fb1a6e9aa739ee970e8da10c03c6349564d61411/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a>.</p>
 </blockquote>
 <p>The exit criterion was a seeded Nightscout source in the lab, with a second lab Nightscout syncing from it. That ran
 for <strong>4 h 23 min</strong>, with sinks for 4 h 05 min–4 h 23 min and eight controls alongside for 3 h 48 min–4 h 22 min.
@@ -8193,7 +8193,7 @@ Nightscout process stayed between 109 and 127 MiB with no upward trend. RSS/fd d
 <p>The following affect release notes rather than the tag: §3.3 (no updates, deletes or backdated records; not new in
 0.1.0) and §5.3 (string <code>_id</code>s; devicestatus one cycle late).</p>
 <h2 id="11-rerunning-on-010-or-any-later-version">11. Rerunning (on 0.1.0 or any later version)<a class="headerlink" href="#11-rerunning-on-010-or-any-later-version" title="Permanent link">&para;</a></h2>
-<p>Scripts: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/d2752d577e75dad4c8410e4c3cba2818bf3efab6/tools/lab/connector-soak"><code>tools/lab/connector-soak/</code></a>. State goes in <code>$CKSOAK_STATE</code>, outside
+<p>Scripts: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/fb1a6e9aa739ee970e8da10c03c6349564d61411/tools/lab/connector-soak"><code>tools/lab/connector-soak/</code></a>. State goes in <code>$CKSOAK_STATE</code>, outside
 the repository. Secrets are generated there at runtime and never printed. Containers are named <code>cksoak-*</code>, and
 <code>lab.sh down</code> removes only those.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">CKSOAK_STATE</span><span class="o">=</span>/path/outside/repo

@@ -2217,7 +2217,7 @@
 
 
 <h1 id="cgm-remote-monitor-1509--decisions">cgm-remote-monitor 15.0.9 — decisions<a class="headerlink" href="#cgm-remote-monitor-1509--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-02 at <code>3d18bbac</code>.</em></p>
+<p><em>Living document, last changed 2026-10-02 at <code>e61032c5</code>.</em></p>
 <p><em>Contributor-facing. Living record of the maintainer's decisions that shape 15.0.9, taken
 2026-09-22 to 2026-10-02, as of <code>dev</code> <code>ca6fcfaf</code> (2026-10-02). Each row states the decision as it stands. Item state is in
 <code>queue/work-queue.yaml</code>; what 15.0.9 contains and what is still open before the tag is in
@@ -2366,9 +2366,14 @@ shipping release, and this repository is public.</em></p>
 <td>#8797 open</td>
 </tr>
 <tr>
-<td><strong>The configuration documentation branch is in 15.0.9</strong> (2026-10-02): <code>bf/config-docs-truth</code> documents the API v3 settings (BF-46) and the webhook settings (BF-48), states the HSTS setting's spelling (BF-49), replaces <code>MONGODB_COLLECTION</code> with <code>ENTRIES_COLLECTION</code> (BF-50) and sets the Azure template's Node default to <code>~22</code> (BF-51). Documentation only</td>
-<td><code>BFQ-46</code>, <code>BFQ-ENV</code></td>
-<td>branch <code>c102d98f</code>, not yet pushed</td>
+<td><strong>The configuration documentation branch is in 15.0.9</strong> (2026-10-02): <code>bf/config-docs-truth</code> documents the API v3 settings (BF-46) and the webhook settings (BF-48), states the HSTS setting's spelling (BF-49), replaces <code>MONGODB_COLLECTION</code> with <code>ENTRIES_COLLECTION</code> (BF-50) and sets the Azure template's Node default to <code>~22</code> (BF-51); README wording for BF-74 (API v3 <code>settings</code> stored as sent), BF-78 and BF-81 (the access boundary and the roles that need <code>readable</code>) was added the same day for the maintainer to edit. Documentation only</td>
+<td><code>BFQ-CONFIG-DOCS</code></td>
+<td>branch <code>e42144ff</code>, not yet pushed</td>
+</tr>
+<tr>
+<td><strong>BF-94 is in 15.0.9</strong> (2026-10-02): an open page kept showing a temp basal that AndroidAPS v3 or Trio had shortened or cancelled, until the temp's original end; measured in Chromium on <code>dev</code> and 15.0.8, fixed by making the remembered temp per instance and resetting it when the treatments are replaced</td>
+<td><code>BFQ-94</code></td>
+<td>branch <code>2a64c500</code>, not yet pushed</td>
 </tr>
 <tr>
 <td><strong>BF-156 after 15.0.9, carried as a known issue with BF-46</strong> (2026-10-02): it needs an <code>API3_AUTOPRUNE_*</code> setting and a failed delete; a fix that handles the delete's promise is prepared for the next release</td>
