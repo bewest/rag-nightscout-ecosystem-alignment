@@ -260,6 +260,7 @@ The facts the classification rests on, for the record:
 | BF-149 — the Day to Day report draws a Temporary Target or other event cancelled early to its full planned length | open; after 15.0.9 (`BFQ-149`) | carried as a known issue |
 | BF-154 — `node-forge` advisory GHSA-86w9-cpqp-85rv, no fixed release; Nightscout does not call the affected function | open; blocked on an upstream release (`BFQ-154`) | named in the notes under Known issues |
 | BF-09 — in the socket `dbAdd` duplicate check a zero is ignored, so within 2 s a zero temp, 100 % temp, cancel, zero bolus or zero carbs can be taken for another record of the same type and dropped (AndroidAPS NSClient v1, the standalone NSClient app, the chart's drag-to-move) | fixed on #8797 (open); after 15.0.9 by decision (2026-10-02) | unchanged from 15.0.8 |
+| BF-156 — autoprune's delete result is never read: the deleted count is never logged, and a failed delete ends the server process (only where an `API3_AUTOPRUNE_*` setting is on; the same on 15.0.8) | open; after 15.0.9 by decision (2026-10-02), fix being prepared (`BFQ-156`) | carried as a known issue with BF-46 |
 | BF-76 — unbounded `silenceTime` | open, left open deliberately by #8745 | carried as a known issue |
 | BF-92 — a page with no glucose reading presents no server alarm, including device alarms | open; #8755 removes only the handler error | carried as a known issue |
 | BF-95 — an uploader clock running ahead delays the stale-data alarm by about the size of the error | open | carried as a known issue |
@@ -290,10 +291,13 @@ this file does not copy them.
 What the queue tracks is generated, and current, in
 [ROADMAP §1](../../docs/00-overview/ROADMAP.md#1-the-next-release-1509). As of `dev` `ca6fcfaf` (2026-10-02), 15.0.9 waits on:
 
-1. **One full six-cell run on `ca6fcfaf`** (Node 20/22/24 × MongoDB 4.4.24 and 7.0.43, probes,
+1. **`bf/config-docs-truth` (BF-46 documentation, BF-48 to BF-51)**, taken into 15.0.9 on
+   2026-10-02; five commits on `ca6fcfaf`, head `c102d98f`, not yet pushed. README, `azuredeploy.json`
+   and the API v3 swagger text only; full suite 3534/0/4. Merging it moves `dev` past `ca6fcfaf`.
+2. **One full six-cell run on the final head** (Node 20/22/24 × MongoDB 4.4.24 and 7.0.43, probes,
    compressed A/B soak against 15.0.8, as run 020 on `ce30a94d`). What has run since run 020 is
    under [Evidence](#evidence).
-2. **The browser hand checks still owed.**
+3. **The browser hand checks still owed.**
    `node tools/queue/gates/client-unchanged-since-hand-check.js --base ca6fcfaf --with ''` names
    16 paths that differ on the browser side from the hand-checked `8d797ba4`: `.gitignore` and
    `.nycrc.json` (tooling), `lib/api2/index.js`, `lib/api2/notifications-v2.js`,
@@ -317,22 +321,22 @@ What the queue tracks is generated, and current, in
    on a touch screen (#8790, section 5 of the same checklist). #8784 changes what the server sends
    to the page (late or edited v3 treatments carry `mills` in the page data, so the page's IOB and
    COB count them); that was not checked in a browser.
-3. **The version class of #8772, #8775 and #8780**, by the maintainer, who is collecting data:
+4. **The version class of #8772, #8775 and #8780**, by the maintainer, who is collecting data:
    recorded as minor-under-patch exceptions (as #8530) or re-classed ([decisions](decisions.md)).
-4. **Re-approval of #8598 at its final head** (`ca6fcfaf` unless `dev` moves). Both approvals were
+5. **Re-approval of #8598 at its final head** (`ca6fcfaf` unless `dev` moves). Both approvals were
    given on `e3adc91d`. CI on `ca6fcfaf`: 27 checks passed, 3 skipped (2026-10-02).
-5. **The `CHANGELOG.md` question.** `dev` carries a hand-written `## [Unreleased]` section (lines
+6. **The `CHANGELOG.md` question.** `dev` carries a hand-written `## [Unreleased]` section (lines
    5–87 of `git show official/dev:CHANGELOG.md` at `ca6fcfaf`, from 14 commits —
    `git log --no-merges official/master..official/dev -- CHANGELOG.md`), against the rule in
    [`../README.md`](../README.md#open-item-changelog-on-dev) that the changelog is generated at
    release time. No decision on it is recorded.
-6. **BF-154 is named in the release notes** (decided 2026-10-02, maintainer), under Known issues:
+7. **BF-154 is named in the release notes** (decided 2026-10-02, maintainer), under Known issues:
    the `node-forge` advisory behind the 2 high among `npm audit`'s 10 findings on `25fc41d9` (#8796 changes no
    package file, so the figures stand for `ca6fcfaf`), filed as low because Nightscout does not call the affected function ([below](#node-forge-ghsa-86w9-cpqp-85rv)).
    It is not a release blocker: no fixed version exists, and `@parse/node-apn` 8.1.0 (the
    modernization line's version, and the latest) still depends on `node-forge` 1.4.0 exactly, so the
    update waits for an upstream fix and is carried with the modernization work.
-7. **The tag**, by the maintainer.
+8. **The tag**, by the maintainer.
 
 The [release notes](release-notes.md) and [tag message](tag-message.txt) are drafted on `ca6fcfaf`.
 

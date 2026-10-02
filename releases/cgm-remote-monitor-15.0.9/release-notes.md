@@ -1027,6 +1027,15 @@ they got an error before.
 Updated translations from Nightscout's volunteer translators on Crowdin, as of early September
 2026. Later Crowdin updates are not in this release.
 
+### Settings documentation
+
+The README now describes the API v3 settings (every name that starts with `API3_`), the webhook
+plugin and its four `WEBHOOK_` settings, and `ENTRIES_COLLECTION`, and no longer lists
+`MONGODB_COLLECTION`, which does nothing. It also says that `SECURE_HSTS_HEADER_INCLUDESUBDOMAINS`
+is spelled as one word; the spelling with an underscore before `SUBDOMAINS` has no effect. The
+Azure deployment template now uses Node 22 by default instead of a version Nightscout no longer
+runs on.
+
 ### Other fixes
 
 Faster data loading on sites with many treatments; deleted records no longer reappear; failed
@@ -1126,9 +1135,10 @@ and many other software library updates.
   `CUSTOMCONNSTR_` prefix on Azure). If one is set to a number of days, then whenever an app
   saves, changes or deletes a record of that kind through API v3, Nightscout deletes every record
   of that kind older than that many days. The deletion cannot be undone. They do nothing unless
-  set, and this is the same on 15.0.8 and earlier. Check your site's settings for any name that
-  starts with `API3_` and remove one you did not set on purpose. These settings are being
-  documented.
+  set, and this is the same on 15.0.8 and earlier. If a deletion fails (for example, the
+  database is unreachable at that moment), Nightscout stops and must be restarted. Check your
+  site's settings for any name that starts with `API3_` and remove one you did not set on
+  purpose. The README now describes every `API3_` setting.
 - **A page with no glucose reading does not sound or show any server alarm.** When the big
   number reads `---`, a Nightscout page ignores every alarm the server sends, including pump,
   loop, cannula, sensor and insulin-age alarms that have nothing to do with glucose. This is the
