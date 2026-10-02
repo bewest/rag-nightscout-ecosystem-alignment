@@ -448,7 +448,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-tabs__link">
+        <a href="../../site/pages/cgm-remote-monitor-15.0.9-colophon.html" class="md-tabs__link">
           
   
   
@@ -1900,6 +1900,8 @@
       
         
       
+        
+      
     
     
     
@@ -1918,7 +1920,7 @@
   
   
   
-    <a href="../../site/pages/cgm-remote-monitor-15.0.9-journeys-2026-09-27.html" class="md-nav__link">
+    <a href="../../site/pages/cgm-remote-monitor-15.0.9-colophon.html" class="md-nav__link">
       
   
   
@@ -2072,7 +2074,7 @@
 
 
 <h1 id="programme-status--cgm-remote-monitor">Programme status — cgm-remote-monitor<a class="headerlink" href="#programme-status--cgm-remote-monitor" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-02 at <code>f50bbb61</code>.</em></p>
+<p><em>Living document, last changed 2026-10-02 at <code>0f3ca59a</code>.</em></p>
 <p><em>Prepared for the Nightscout project; proposed for Nightscout Foundation stewardship. Contributor-facing; technical throughout.
 Prose revised 2026-10-02 against cgm-remote-monitor <code>official/dev</code> <code>ca6fcfaf</code> and
 <code>official/master</code> <code>92d08342</code> (tag <code>15.0.8</code>). The tables are generated from
@@ -2762,7 +2764,8 @@ each cut needs a reviewer other than its author before it reaches <code>dev</cod
 <code>TRUST_PROXY</code>, merged as <code>4f705217</code>), the named reviewers were the maintainer and Andy. The other SECURITY
 and SAFETY rows still have no individual assigned. <code>BFQ-72</code> (BF-72, an
 unauthenticated request that can occupy the database for minutes, live on 15.0.8 and <code>dev</code>)
-has a disposition decided by the maintainer and held outside version control.</p>
+has a disposition decided by the maintainer. It is held outside this public repository because the
+defect is live on the shipping release (the disclosure rule, <a href="DOCUMENT-CONTROL.html#38-external-and-restricted-documents">DOCUMENT-CONTROL §3.8</a>).</p>
 <p>If you are considering reviewing, <a href="REVIEWER-ONBOARDING.html">REVIEWER-ONBOARDING.md</a>
 is the read-this-first path, and <code>reports/reviewer-packets/</code> has one bounded packet
 per item awaiting review.</p>
@@ -2798,8 +2801,8 @@ expanded in <a href="NEEDS-A-HUMAN.html">NEEDS-A-HUMAN.md</a>.</p>
 </table>
 <p><code>P0-TAG</code> (done: <code>nightscout-connect</code> 0.1.0 released and pinned by #8762) left this table on
 2026-09-24. <code>RT-D3</code> (answered: the drag check passed in automation and by hand, and 15.0.9 ships as numbered),
-<code>BFQ-47</code> (decided: the allow-list is intended; the admin-page fix is in #8754) and <code>BFQ-72</code> (decided
-privately) left this table on 2026-09-23.</p>
+<code>BFQ-47</code> (decided: the allow-list is intended; the admin-page fix is in #8754) and <code>BFQ-72</code> (disposition
+decided; held outside this public repository while the defect is live) left this table on 2026-09-23.</p>
 <hr />
 <h2 id="how-to-check-any-of-this-yourself">How to check any of this yourself<a class="headerlink" href="#how-to-check-any-of-this-yourself" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>make<span class="w"> </span>queue-status<span class="w">          </span><span class="c1"># run every static + unit gate. The measurement.</span>
