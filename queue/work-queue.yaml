@@ -3494,7 +3494,7 @@ items:
     branch: bf/socket-dedup-zero
     base: official/dev@ca6fcfaf
     worktree: externals/work/crm-bf09
-    state: ready-to-push
+    state: in-flight-upstream
     ships_to_operators_today: true
     blast_radius: lib/server/websocket.js:538-566 (the register cites 535-568).
     review: maintainer - this needs a decision on intent before it needs code
@@ -3530,6 +3530,8 @@ items:
       - docs/60-research/remedial/gt3-register-truth-2026-09-15.md
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-02: opened as #8797 by the maintainer (head 7dff9f38,
+      MERGEABLE, base dev).
       2026-10-02 (session -d4's agent): bf/socket-dedup-zero 7dff9f38, one
       commit on dev ca6fcfaf (lib/server/websocket.js +26/-15, new
       tests/websocket.dedup-zero.test.js), not pushed. percent, absolute and

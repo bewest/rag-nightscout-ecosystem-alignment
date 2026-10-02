@@ -55,7 +55,7 @@ release.
 
 | id | what | claimed state | waiting for | PR |
 |---|---|---|---|---|
-| `BFQ-09` | BF-09 - socket dedup truthiness skips a falsy value | `ready-to-push` | Maintainer | &mdash; |
+| `BFQ-09` | BF-09 - socket dedup truthiness skips a falsy value | `in-flight-upstream` | Maintainer | &mdash; |
 
 <!-- END GENERATED: release-waits -->
 

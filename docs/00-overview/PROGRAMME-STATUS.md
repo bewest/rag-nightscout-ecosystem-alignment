@@ -126,7 +126,7 @@ cover more than one `BF-`:
 | `ADV-RETRO` | `merged-upstream` | GHSA-gjhc - loadRetro serves devicestatus to any socket (BF-79) |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | `BFQ-04` | `merged-upstream` | BF-04 - the v1 operator allowlist - superseded by P0-K |
-| `BFQ-09` | `ready-to-push` | BF-09 - socket dedup truthiness skips a falsy value |
+| `BFQ-09` | `in-flight-upstream` | BF-09 - socket dedup truthiness skips a falsy value |
 | `BFQ-10` | `merged-upstream` | BF-10 - mongod fatal-asserts at Docker's default nofile=1024 |
 | `BFQ-100` | `blocked` | BF-100 - devicestatus, food and activity store a hex _id as a string |
 | `BFQ-101` | `blocked` | BF-101 - API v3 id filters miss records stored with a string _id |
@@ -193,14 +193,14 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 
 <!-- BEGIN GENERATED: state-matrix -->
 
-| parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `phase0` | 3 |  |  | 1 |  | 17 |  | 1 |  |  |  | **22** |
-| `release-train` | 5 |  | 5 |  | 5 | 13 | 2 | 1 |  |  | 1 | **32** |
-| `register-open` | 27 | 3 | 3 | 2 | 6 | 49 | 5 |  | 1 | 2 |  | **98** |
-| `tenancy` | 9 |  |  | 1 | 7 |  | 1 |  | 1 |  |  | **19** |
-| `docs-truth` | 7 |  | 1 |  |  |  |  | 2 |  |  |  | **10** |
-| `backfix2` |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
+| parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `phase0` | 3 |  |  | 1 |  |  | 17 |  | 1 |  |  |  | **22** |
+| `release-train` | 5 |  | 5 |  | 5 |  | 13 | 2 | 1 |  |  | 1 | **32** |
+| `register-open` | 27 | 3 | 3 | 1 | 6 | 1 | 49 | 5 |  | 1 | 2 |  | **98** |
+| `tenancy` | 9 |  |  | 1 | 7 |  |  | 1 |  | 1 |  |  | **19** |
+| `docs-truth` | 7 |  | 1 |  |  |  |  |  | 2 |  |  |  | **10** |
+| `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
 
 <!-- END GENERATED: state-matrix -->
 
