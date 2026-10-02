@@ -45,9 +45,9 @@ ORIGINS = [("latent", "found by audit, lab or survey", "--s1"), ("github", "from
 # light and #152125 dark. Light slots 3-5 sit below 3:1 on white, so every
 # chart carries a legend with labels and a table of its values.
 VIZ_CSS = r"""
-:root{--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100;--s5:#e87ba4;--vgrid:#e1e0d9;--vbase:#c3c2b7;--vax:#6b6a65}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--s5:#d55181;--vgrid:#24353a;--vbase:#3a4d52;--vax:#9bb0b3}}
-:root[data-theme="dark"]{--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--s5:#d55181;--vgrid:#24353a;--vbase:#3a4d52;--vax:#9bb0b3}
+:root{--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100;--s5:#e87ba4;--vgrid:#e1e0d9;--vbase:#c3c2b7;--vax:#6b6a65;--vmute:#b9c3c5}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--s5:#d55181;--vgrid:#24353a;--vbase:#3a4d52;--vax:#9bb0b3;--vmute:#4a5d62}}
+:root[data-theme="dark"]{--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--s5:#d55181;--vgrid:#24353a;--vbase:#3a4d52;--vax:#9bb0b3;--vmute:#4a5d62}
 .viz{margin:20px 0 28px;padding:16px 16px 12px;border:1px solid var(--rule);border-radius:8px;background:var(--surface)}
 .viz figcaption{margin:0 0 8px}.viz figcaption strong{display:block;font-size:16px}
 .viz figcaption span{display:block;color:var(--muted);font-size:14px;max-width:72ch}
@@ -196,6 +196,14 @@ def charts(data):
         leg=legend([("dt", "--s1", "cause merged"), ("dt", "--s2", "found and filed"), ("dt", "--s3", "fix merged")]),
         tbl=table(["id", "cause merged", "filed", "fix merged", "family"],
                   [(r["id"], f'#{r["cause_pr"]}, {r["caused"]}', r["filed"], f'#{r["fix_pr"]}, {r["fixed"]}', r["family"]) for r in reg]))
+    oe = data.get("open_entries") or []
+    out["open"] = figure(
+        "open", "The open entries, by what is planned for each",
+        f"All {sum(o['count'] for o in oe)} register entries in 15.0.9's scope that are not closed. "
+        "The highlighted rows are the ones with no decision recorded yet.",
+        "Bar chart of open register entries by disposition",
+        leg=legend([("", "--s1", "no decision recorded yet"), ("", "--vmute", "decided or planned")]),
+        tbl=table(["disposition", "count", "entries"], [(o["disposition"], o["count"], ", ".join(o["ids"])) for o in oe]))
     return out
 
 

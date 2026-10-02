@@ -293,15 +293,47 @@ shipping release is 111 entries until 15.0.9 is tagged and installed.
 
 | figure | value | source |
 |---|---:|---|
-| register entries in scope marked `merged` | 94 (59 latent, 10 github, 9 connector, 9 review, 7 escaped), plus BF-110 `decided` | `defect-arrival.py --json`, by origin and status |
+| register entries in scope marked `merged` | 94 (57 latent, 12 github, 9 connector, 9 review, 7 escaped), plus BF-110 `decided` | `defect-arrival.py --json`, by origin and status |
 | in scope and not closed | 36 | the 10-02 row above; includes BF-07 and BF-63 (`partly merged`) and BF-52 (`fixed` on an unmerged branch) |
-| rows in contents "What is NOT in 15.0.9" | 21 | [contents](contents.md#what-is-not-in-1509) |
+| rows in contents "What is NOT in 15.0.9" | 25 | [contents](contents.md#what-is-not-in-1509) |
 
-The 21 rows are carried in the release notes as known issues, kept by decision, or deferred until
+The 25 rows are carried in the release notes as known issues, kept by decision, or deferred until
 after 15.0.9. One of them is a defect live on 15.0.8 with no fix in 15.0.9: a class of expensive
 search request can occupy the database for minutes (BF-72; its disposition is held privately).
+BF-46 (undocumented `API3_AUTOPRUNE_*` settings that delete old records when set) is a known
+issue by decision of 2026-10-02.
 BF-154 (a dependency advisory with no fixed release, in code Nightscout does not call) is named
 in the release notes as well.
+
+### What the open entries are
+
+Every one of the 36 has a queue item, and every one is present on 15.0.8 or only on unreleased
+branches and tooling, so none is a regression of 15.0.9. Each is in exactly one row below, as
+recorded in the register and `queue/work-queue.yaml` on 2026-10-02.
+
+| disposition | entries | count |
+|---|---|---:|
+| known issue, described in the 15.0.9 notes | BF-44, BF-45, BF-46, BF-67, BF-72, BF-86, BF-92, BF-93, BF-95, BF-124, BF-127, BF-132, BF-137, BF-145, BF-149, BF-152, BF-154 | 17 |
+| fix being prepared, decided 2026-10-02 | BF-09, BF-48, BF-49, BF-50, BF-51 | 5 |
+| partly fixed in 15.0.9, the rest planned | BF-07, BF-52, BF-54, BF-63 | 4 |
+| only on the modernization branches or in test tooling | BF-27, BF-53, BF-55, BF-88, BF-96 | 5 |
+| decided, not yet built | BF-78 | 1 |
+| waiting on a maintainer decision | BF-74, BF-81, BF-94 | 3 |
+| open with no decision or schedule | BF-71 | 1 |
+| **all** | | **36** |
+
+- **Partly fixed:** BF-07's remainder is left by decision; BF-52's fix is ready and ships with
+  BF-92's in a later release; BF-54 has no defect in shipped code and gets its regression test in
+  cut 1's browser suite; BF-63's other half is on cut 4.
+- **Fix being prepared:** BF-09 makes a zero a real value in the live-update duplicate check where
+  it carries meaning (a zero temp basal, a zero bolus); BF-48 to BF-51 correct the documentation
+  and deployment template.
+- **Waiting on a decision:** BF-74 (API v3 `settings` documents are stored without the input
+  cleaning the other collections get), BF-81 (which of two similarly named settings is the access
+  boundary, a wording decision), BF-94 (a module-scope cache in the basal calculation, severity
+  not yet settled).
+
+<!-- chart: open -->
 
 ### Regressions caught before release
 
@@ -362,7 +394,7 @@ risk, the table says what was done and what it does not cover.
 | **A fix introduces a new defect** | Every fix ships with tests (2,001 more passing than 15.0.8). Break-its undo a fix and check that its tests fail for the right reason. The suite runs in six cells of Node and MongoDB versions. An A/B soak runs 15.0.8 and the candidate on the same traffic and flags every difference not explained by an intended change. Seven defects introduced by fixes were caught and fixed before release. | The six-cell run has not been repeated on the final candidate `ca6fcfaf`; the ten merges since run 020 were each checked on one cell or in CI. The soak is compressed (minutes standing for hours) and synthetic. Break-its of most fixes ran on their own branches, not on the integrated tree. |
 | **Behaviour on real devices** | The maintainer walked user journeys in a browser with 15.0.8 side by side (11 scenarios passed). Real sites ran the candidate as the real-time soak: as of 2026-09-29 one Loop, one Trio and one AndroidAPS user ran `7000eb18` for about two days with no errors, and on 2026-10-02 the maintainer reported stable behaviour from AndroidAPS, Trio and Loop users of `dev` through the week. | These reports are informal; how many sites and for how long is not recorded. Browser checks still owed include a remote bolus, LoopCaregiver from its own app, the clock views, the pump pill, alarm labels, reports during a percentage profile switch, the Day to Day report and the Food Editor on a touch screen. |
 | **Security defects** | Fixes for defects live on 15.0.8 are merged: live-update access, the query operator allowlist, login hardening, error replies without internal detail, bounds on two little-used request types, storage errors that ended the process, and dependency advisories. This repository is public, so those defects are described by mechanism and outcome only until a release with the fixes ships. | One such defect has no fix in 15.0.9 (BF-72). Until 15.0.9 is installed, every fixed defect is still present on sites running 15.0.8. `npm audit` on the candidate reports 10 findings, triaged one by one in [contents](contents.md#npm-audit-and-dependabot-triage). |
-| **What's left open** | 21 items are listed in "What is NOT in 15.0.9" and carried in the release notes as known issues or deferred by decision; 36 register entries in scope are not closed. | |
+| **What's left open** | 25 items are listed in "What is NOT in 15.0.9" and carried in the release notes as known issues or deferred by decision. 36 register entries in scope are not closed: 17 known issues, 5 fixes being prepared, 4 partly fixed, 5 only on unreleased branches or tooling, 1 decided and not built, 3 waiting on a maintainer decision, 1 with no decision yet ([§6](#what-the-open-entries-are)). | |
 
 ### What is left open
 

@@ -255,6 +255,10 @@ The facts the classification rests on, for the record:
 |---|---|---|
 | BF-72 — a class of expensive search request can occupy the database for minutes, with no credentials on a default install | open; no fix; disposition decided privately (`BFQ-72`) | described by mechanism only |
 | BF-86 / BF-67 — thresholds in the wrong units (a mmol/L low threshold on a mg/dL site is stored so the low alarm can never fire; an out-of-order threshold is silently rewritten) | open; #8766 (BF-118) fixes only the partial-mmol/L case on a `DISPLAY_UNITS=mmol` site | carried as a known issue in the notes |
+| BF-46 — six undocumented `API3_AUTOPRUNE_<collection>` settings delete records older than a set number of days, permanently, on each API v3 write to that collection; the other `API3_*` settings are undocumented too | open; known issue by decision (2026-10-02); documentation prepared on `bf/config-docs-truth` (queue `BFQ-46`) | carried as a known issue in the notes |
+| BF-93 — a food or quick pick changed elsewhere reaches an open page only when it reloads or reconnects | open (`BFQ-93`) | described in the notes under the bolus calculator |
+| BF-149 — the Day to Day report draws a Temporary Target or other event cancelled early to its full planned length | open; after 15.0.9 (`BFQ-149`) | carried as a known issue |
+| BF-154 — `node-forge` advisory GHSA-86w9-cpqp-85rv, no fixed release; Nightscout does not call the affected function | open; blocked on an upstream release (`BFQ-154`) | named in the notes under Known issues |
 | BF-76 — unbounded `silenceTime` | open, left open deliberately by #8745 | carried as a known issue |
 | BF-92 — a page with no glucose reading presents no server alarm, including device alarms | open; #8755 removes only the handler error | carried as a known issue |
 | BF-95 — an uploader clock running ahead delays the stale-data alarm by about the size of the error | open | carried as a known issue |
