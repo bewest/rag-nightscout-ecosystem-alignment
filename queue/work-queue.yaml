@@ -11324,9 +11324,9 @@ items:
     repo: cgm-remote-monitor
     branch: bf/activity-read-error
     base: official/dev@25fc41d9
-    state: ready-to-push
-    pr: []
-    ships_to_operators_today: true
+    state: merged-upstream
+    pr: [8796]
+    ships_to_operators_today: false
     blast_radius: >
       lib/api/activity/index.js and lib/api/profile/index.js
       (/profile/current) read callbacks: any storage error is answered with
@@ -11343,11 +11343,11 @@ items:
     semver_reason: a failed read answers an error instead of ending the process
     register: [BF-155]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official cat-file -e bf/activity-read-error:tests/api.read-storage-failure.test.js
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e20b66ba origin/dev
         kind: static
         describe: >
-          The branch carries the storage-failure test (a presence check; RED on
-          origin/dev 25fc41d9). The test decides.
+          #8796's head e20b66ba is contained in origin/dev (merged 2026-10-02
+          as ca6fcfaf).
       - no-gate: >
           Reproduced 2026-10-02 on local test servers of v15.0.8 and dev
           25fc41d9; the method is held outside version control while the
@@ -11361,6 +11361,9 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-02: pushed, opened and merged by the maintainer as #8796
+      (merge ca6fcfaf, 18:09Z, head e20b66ba); the nine test cells passed
+      before the merge, the Docker image check was still running.
       Decided 2026-10-02 (maintainer): fix for 15.0.9; in RT-0's blocks_on.
       Found while reviewing bf/regex-limits (BFQ-72), which does not cover it.
       The audit of the other v1 read callbacks found /profile/current with

@@ -1,4 +1,4 @@
-<!-- Draft, not opened. Branch bf/activity-read-error at e20b66ba (one commit on dev 25fc41d9). This comment is hidden on GitHub. -->
+<!-- Body of #8796, branch bf/activity-read-error at e20b66ba (one commit on dev 25fc41d9). This comment is hidden on GitHub. -->
 When a database read fails on `GET /api/v1/activity` or `GET /api/v1/profile/current`, the request now gets an error reply and Nightscout keeps running (BF-155). Before, the failure ended the Nightscout process. One commit on `dev` `25fc41d9`. The same code is in `v15.0.8`, so this is not a regression.
 
 ## What changes for you
