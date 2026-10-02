@@ -104,7 +104,8 @@ If you are running `7000eb18` or a later `dev` build, keep going: your reports s
   branch. Check the commit is `25fc41d9`.
 - **A hosting service that runs Nightscout for you:** ask them whether they offer the test build.
 
-Every change planned for 15.0.9 is now in this build. If `dev` moves to a new commit before the
+One more fix is planned for 15.0.9: a problem reading from the database could stop Nightscout
+until it was restarted, and the fix answers that request with an error and keeps running. If `dev` moves to a new commit before the
 release, these notes will name it.
 
 ---

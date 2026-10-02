@@ -38,7 +38,8 @@ Everything merged since 15.0.8 reaches operators only through 15.0.9 (queue `RT-
 `dev` until it is tagged.
 
 `dev` is at `25fc41d9` (the merge of #8795, 2026-10-02): 92 first-parent merges and 523 commits
-since 15.0.8. Every cgm-remote-monitor PR decided for 15.0.9 is merged; Crowdin #8730 is held out
+since 15.0.8. Every cgm-remote-monitor PR opened for 15.0.9 is merged, and the BF-155 fix (decided 2026-10-02:
+a failed database read on one API v1 request ends the server process) is in progress; Crowdin #8730 is held out
 (BF-132). The last full run is run 020 on `ce30a94d` (2026-09-27), 3473/0/3 in all six cells; each
 PR merged since carries its own evidence, and #8795's head `fdf88f4e`, the same tree as `25fc41d9`,
 passes the full suite, 3532/0/4, on one cell (Node 22, MongoDB 7.0.43). The real-site soak
@@ -61,7 +62,7 @@ release.
 
 Before the tag, and not queue items of their own (they are in `RT-0`'s notes and gates):
 
-1. One full six-cell run on `25fc41d9`
+1. One full six-cell run on the final head (after BF-155's fix merges)
    ([integration record](../30-design/remedial/rc-15.0.9-integration-record.md)).
 2. The browser hand checks still owed: a remote bolus; LoopCaregiver from its own app; clock views;
    the pump pill; alarm level labels; the Bolus Wizard Preview pill and reports during a percentage
@@ -70,7 +71,7 @@ Before the tag, and not queue items of their own (they are in `RT-0`'s notes and
    ([browser record](../60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.md)).
 3. The version class of #8772, #8775 and #8780: a minor change shipped under the patch number as an
    exception, as #8530 was, or a different class. The maintainer is collecting data.
-4. Re-approval of #8598 at `25fc41d9`.
+4. Re-approval of #8598 at its final head.
 5. Settled 2026-10-02 (maintainer): the release notes name BF-154, the `node-forge` advisory
    GHSA-86w9-cpqp-85rv behind the 2 high among `npm audit`'s 10 findings on `25fc41d9`. It has no
    fixed release and Nightscout does not call the affected function (read from the code), so it is

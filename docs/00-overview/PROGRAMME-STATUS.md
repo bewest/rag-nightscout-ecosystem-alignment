@@ -32,7 +32,7 @@ current and the prose is stale.
 #8795, 2026-10-02): 92 first-parent merges and 523 commits since 15.0.8
 (`git rev-list [--first-parent] --count official/master..official/dev`). None of it is released.
 
-- **Merged.** Every cgm-remote-monitor PR decided for 15.0.9; the PR-by-PR list is in
+- **Merged.** Every cgm-remote-monitor PR opened for 15.0.9; the PR-by-PR list is in
   [the release contents](../../releases/cgm-remote-monitor-15.0.9/contents.md). Crowdin #8730 is
   held out (BF-132). The connector fixes are in `nightscout-connect` `0.1.0`, released 2026-09-24,
   which `dev` pins exactly (#8762). The last one in, #8795 (BF-151), stops an unbounded request to
@@ -41,17 +41,18 @@ current and the prose is stale.
   (Node 20, 22 and 24 against MongoDB 4.4.24 and 7.0.43), with an A/B soak against 15.0.8. Each PR
   merged since carries its own evidence (its GitHub CI and a full suite on its branch). #8795's head
   `fdf88f4e` has the same tree as `25fc41d9`, and passes the full suite, 3532/0/4, on one cell
-  (Node 22, MongoDB 7.0.43). A full six-cell run on `25fc41d9` comes next
+  (Node 22, MongoDB 7.0.43). A full six-cell run on the final head (after BF-155's fix merges) comes next
   ([15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md)).
 - **Real-site soak.** `RT-SOAK` is done: the maintainer decided on 2026-09-30 that real sites
   running the candidate count as the soak, and reports (2026-10-02) stable behaviour from Loop, Trio
   and AndroidAPS users on `dev`. The lab's 72 h soak was not run.
 - **Release PR.** #8598 (`dev` → `master`) is at `25fc41d9` and mergeable; its CI on `25fc41d9`:
-  27 checks passed, 3 skipped (2026-10-02). It was approved at `e3adc91d`; re-approval at
-  `25fc41d9` is owed.
+  27 checks passed, 3 skipped (2026-10-02). It was approved at `e3adc91d`; re-approval at its final head is owed.
 - **Version.** Decided: 15.0.9. `RT-VERSION`'s gate measures the modernization cut branches, which
   also declare 15.0.9 and are renumbered when they are rebased; it holds the cuts, not this release.
-- **What remains** before the tag (the queue's `RT-0` has no open blockers) is listed once, in [ROADMAP §1](ROADMAP.md#1-the-next-release-1509).
+- **Still to merge.** BF-155, decided for 15.0.9 on 2026-10-02: a failed database read on one API v1
+  request ends the server process (15.0.8 too); the fix answers with an error and keeps running.
+- **What remains** before the tag, including the queue's open `RT-0` blockers, is listed once, in [ROADMAP §1](ROADMAP.md#1-the-next-release-1509).
 
 The [backfix register](../30-design/remedial/nightscout-backfix-register.md) holds the defect facts;
 `make queue-coverage` proves the queue names every entry that is not fixed.

@@ -26,7 +26,7 @@ corrected (BF-132). Every PR merged to `dev` is `merged`; none is `released`.
 | `package.json` version | `15.0.9` on `dev` — `git show official/dev:package.json \| grep '"version"'` |
 | Connector pin | `nightscout-connect` exactly `0.1.0` from npm on `dev` (#8762); `15.0.8` pins the `v0.0.13` tag tarball — `git show official/<ref>:package.json \| grep nightscout-connect` |
 | Held out | Crowdin #8730 (head `f99c0e54`, open; BF-132) — `gh pr view 8730 --json state,headRefOid` |
-| Release PR | #8598 (`dev` → `master`, head `25fc41d9`, author AndyLow91): open, mergeable, `reviewDecision` `APPROVED`; both approvals (the maintainer, 2026-09-26 00:39Z) were given on `e3adc91d`; re-approval at `25fc41d9` is owed. CI on `25fc41d9`: 27 checks passed, 3 skipped (read 2026-10-02 17:39Z) — `gh pr view 8598 --json state,reviewDecision,reviews`, `gh pr checks 8598` |
+| Release PR | #8598 (`dev` → `master`, head `25fc41d9`, author AndyLow91): open, mergeable, `reviewDecision` `APPROVED`; both approvals (the maintainer, 2026-09-26 00:39Z) were given on `e3adc91d`; re-approval at its final head is owed. CI on `25fc41d9`: 27 checks passed, 3 skipped (read 2026-10-02 17:39Z) — `gh pr view 8598 --json state,reviewDecision,reviews`, `gh pr checks 8598` |
 | Tag | none. No `15.0.9` tag exists |
 
 ## What 15.0.9 contains
@@ -281,13 +281,15 @@ this file does not copy them.
 ## Open items a releaser must settle
 
 What the queue tracks is generated, and current, in
-[ROADMAP §1](../../docs/00-overview/ROADMAP.md#1-the-next-release-1509); queue `RT-0` has no open
-blocker (generated 2026-10-02). As of `dev` `25fc41d9` (2026-10-02), 15.0.9 waits on:
+[ROADMAP §1](../../docs/00-overview/ROADMAP.md#1-the-next-release-1509). As of `dev` `25fc41d9` (2026-10-02), 15.0.9 waits on:
 
-1. **One full six-cell run on `25fc41d9`** (Node 20/22/24 × MongoDB 4.4.24 and 7.0.43, probes,
+1. **The BF-155 fix** (queue `BFQ-155`, decided 2026-10-02): a failed database read on one API v1
+   request ends the server process, on 15.0.8 too; the fix answers with an error and keeps running.
+   Merging it moves `dev` past `25fc41d9`.
+2. **One full six-cell run on the final head (after BF-155's fix merges)** (Node 20/22/24 × MongoDB 4.4.24 and 7.0.43, probes,
    compressed A/B soak against 15.0.8, as run 020 on `ce30a94d`). What has run since run 020 is
    under [Evidence](#evidence).
-2. **The browser hand checks still owed.**
+3. **The browser hand checks still owed.**
    `node tools/queue/gates/client-unchanged-since-hand-check.js --base 25fc41d9 --with ''` names
    16 paths that differ on the browser side from the hand-checked `8d797ba4`: `.gitignore` and
    `.nycrc.json` (tooling), `lib/api2/index.js`, `lib/api2/notifications-v2.js`,
@@ -311,22 +313,22 @@ blocker (generated 2026-10-02). As of `dev` `25fc41d9` (2026-10-02), 15.0.9 wait
    on a touch screen (#8790, section 5 of the same checklist). #8784 changes what the server sends
    to the page (late or edited v3 treatments carry `mills` in the page data, so the page's IOB and
    COB count them); that was not checked in a browser.
-3. **The version class of #8772, #8775 and #8780**, by the maintainer, who is collecting data:
+4. **The version class of #8772, #8775 and #8780**, by the maintainer, who is collecting data:
    recorded as minor-under-patch exceptions (as #8530) or re-classed ([decisions](decisions.md)).
-4. **Re-approval of #8598 at `25fc41d9`.** Both approvals were given on
+5. **Re-approval of #8598 at its final head.** Both approvals were given on
    `e3adc91d`. CI on `25fc41d9`: 27 checks passed, 3 skipped (2026-10-02).
-5. **The `CHANGELOG.md` question.** `dev` carries a hand-written `## [Unreleased]` section (lines
+6. **The `CHANGELOG.md` question.** `dev` carries a hand-written `## [Unreleased]` section (lines
    5–87 of `git show official/dev:CHANGELOG.md` at `25fc41d9`, from 14 commits —
    `git log --no-merges official/master..official/dev -- CHANGELOG.md`), against the rule in
    [`../README.md`](../README.md#open-item-changelog-on-dev) that the changelog is generated at
    release time. No decision on it is recorded.
-6. **BF-154 is named in the release notes** (decided 2026-10-02, maintainer), under Known issues:
+7. **BF-154 is named in the release notes** (decided 2026-10-02, maintainer), under Known issues:
    the `node-forge` advisory behind the 2 high among `npm audit`'s 10 findings on `25fc41d9`, filed
    as low because Nightscout does not call the affected function ([below](#node-forge-ghsa-86w9-cpqp-85rv)).
    It is not a release blocker: no fixed version exists, and `@parse/node-apn` 8.1.0 (the
    modernization line's version, and the latest) still depends on `node-forge` 1.4.0 exactly, so the
    update waits for an upstream fix and is carried with the modernization work.
-7. **The tag**, by the maintainer.
+8. **The tag**, by the maintainer.
 
 The [release notes](release-notes.md) and [tag message](tag-message.txt) are drafted on `25fc41d9`.
 

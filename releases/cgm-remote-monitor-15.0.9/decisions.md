@@ -13,7 +13,7 @@ shipping release, and this repository is public.*
 | decision | queue | as it stands |
 |---|---|---|
 | The `dev` → `master` release is numbered **15.0.9**, the number `dev`'s `package.json` carries (2026-09-22). Reads tolerate the `count` shapes oref0 and GluPredKit send, so 15.0.9 stays a patch (2026-09-24) | `RT-VERSION`, `RT-COUNT-COMPAT` | #8761 merged |
-| **The release goes out through #8598** (`dev` → `master`, opened by AndyLow91) | `RT-0` | open, head `25fc41d9`, mergeable, `reviewDecision` `APPROVED`; both approvals (the maintainer, 2026-09-26 00:39Z) were given on `e3adc91d`, and re-approval at `25fc41d9` is owed; CI on `25fc41d9`: 27 checks passed, 3 skipped (2026-10-02) |
+| **The release goes out through #8598** (`dev` → `master`, opened by AndyLow91) | `RT-0` | open, head `25fc41d9`, mergeable, `reviewDecision` `APPROVED`; both approvals (the maintainer, 2026-09-26 00:39Z) were given on `e3adc91d`, and re-approval at its final head is owed; CI on `25fc41d9`: 27 checks passed, 3 skipped (2026-10-02) |
 | **Backfix 2 ships inside 15.0.9**: `bf2/ops`, `bf2/backports` and `bf2/auth-hardening`, with the subject-edit fix folded into the last (2026-09-23) | `BF2-AUTH` | #8753, #8751, #8754 merged |
 | **Records keep their own `_id` across v1, v3 and the websocket** (BF-99 to BF-102): `bf/object-id-consistency` goes in instead of the narrow profile-only fix, with D1–D4 below (2026-09-23) | `BFQ-102` | #8758 merged (`4d9ecc3b`) |
 | **BF-103 (split drag) goes in if its branch comes back clean**: red on `dev`, green on the branch, a green suite, every break-it red, clean merges with the other 15.0.9 PRs. Otherwise it ships as a known issue (2026-09-23) | `BFQ-103` | clean; #8760 merged |

@@ -111,7 +111,7 @@ Four entry points, easiest first:
    welcome. Among safety items, `BFQ-92` (a page with no
    glucose reading presents no server alarm, including device alarms) has no fix yet.
 3. **The release.** `RT-0` (release PR #8598, 15.0.9) is green on CI and was approved at
-   `e3adc91d`; re-approval at `25fc41d9` is owed. It is 92 first-parent merges (`dev`
+   `e3adc91d`; re-approval at its final head is owed. It is 92 first-parent merges (`dev`
    `25fc41d9`, 2026-10-02); its
    remaining blockers are generated in [ROADMAP §1](ROADMAP.md#1-the-next-release-1509), its
    contents are in [contents.md](../../releases/cgm-remote-monitor-15.0.9/contents.md), and how the
