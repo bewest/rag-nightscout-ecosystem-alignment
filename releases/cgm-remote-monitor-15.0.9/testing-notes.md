@@ -82,8 +82,8 @@ notes.
 
 ## Getting the test build
 
-The test build is the `dev` branch of `nightscout/cgm-remote-monitor` at commit **`25fc41d9`**
-(full: `25fc41d9e39bbdd7fbe5f283da70ccc604daa26e`, 2026-10-02). Its version reads **15.0.9**. Since
+The test build is the `dev` branch of `nightscout/cgm-remote-monitor` at commit **`ca6fcfaf`**
+(full: `ca6fcfaf2a17b3913fa49824859bb11ee963a3c3`, 2026-10-02). Its version reads **15.0.9**. Since
 the earlier test build `7000eb18` it adds:
 
 - the Day to Day report shows events that run past midnight on both days (see 1.7);
@@ -92,21 +92,22 @@ the earlier test build `7000eb18` it adds:
 - error pages and error replies no longer show internal details (see 2.6);
 - a fix that stops one kind of oversized request to two little-used API addresses from making the
   server stop responding for seconds; it is now refused (nothing to test by hand);
+- a fix for a problem reading from the database while answering a request for the activity log or
+  the current profile, which stopped Nightscout until it was restarted; it now answers that request
+  with an error and keeps running (nothing to test by hand);
 - updated versions of several software libraries it uses, with no change to what you see.
 
 If you are running `7000eb18` or a later `dev` build, keep going: your reports still count.
 
-- **Docker:** no image for `25fc41d9` was on Docker Hub when these notes were updated
-  (2026-10-02). `latest_dev` means "the newest `dev`" and moves when `dev` changes, so check which
+- **Docker:** `nightscout/cgm-remote-monitor:dev_ca6fcfaf2a17b3913fa49824859bb11ee963a3c3`. This tag
+  always means exactly this build. `latest_dev` means "the newest `dev`" and moves when `dev` changes. `latest_dev` means "the newest `dev`" and moves when `dev` changes, so check which
   commit it is before relying on it.
 - **Deploying from your own copy of the code** (Heroku, Railway, Northflank, Render, a VPS and
   similar): update your copy's `dev` branch from `nightscout/cgm-remote-monitor` and deploy that
-  branch. Check the commit is `25fc41d9`.
+  branch. Check the commit is `ca6fcfaf`.
 - **A hosting service that runs Nightscout for you:** ask them whether they offer the test build.
 
-One more fix is planned for 15.0.9: a problem reading from the database could stop Nightscout
-until it was restarted, and the fix answers that request with an error and keeps running. If `dev` moves to a new commit before the
-release, these notes will name it.
+If `dev` moves to a new commit before the release, these notes will name it.
 
 ---
 

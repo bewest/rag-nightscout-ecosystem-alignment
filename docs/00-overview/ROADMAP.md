@@ -1,7 +1,7 @@
 # Roadmap — what comes next, and in what order
 
 *Prepared for the Nightscout project; proposed for Nightscout Foundation stewardship. Contributor-facing. Living document: prose dated
-2026-10-02 against cgm-remote-monitor `official/dev` `25fc41d9` and `official/master` `92d08342`
+2026-10-02 against cgm-remote-monitor `official/dev` `ca6fcfaf` and `official/master` `92d08342`
 (tag `15.0.8`). The two order tables are generated from `queue/work-queue.yaml`, and
 `make views-check` fails when they drift.*
 
@@ -37,14 +37,13 @@ Everything merged since 15.0.8 reaches operators only through 15.0.9 (queue `RT-
 #8598), and every later step waits behind it. Operators running 15.0.8 keep every defect fixed on
 `dev` until it is tagged.
 
-`dev` is at `25fc41d9` (the merge of #8795, 2026-10-02): 92 first-parent merges and 523 commits
-since 15.0.8. Every cgm-remote-monitor PR opened for 15.0.9 is merged, and the BF-155 fix (decided 2026-10-02:
-a failed database read on one API v1 request ends the server process) is in progress; Crowdin #8730 is held out
-(BF-132). The last full run is run 020 on `ce30a94d` (2026-09-27), 3473/0/3 in all six cells; each
-PR merged since carries its own evidence, and #8795's head `fdf88f4e`, the same tree as `25fc41d9`,
-passes the full suite, 3532/0/4, on one cell (Node 22, MongoDB 7.0.43). The real-site soak
-(`RT-SOAK`) is done by the maintainer's decision of 2026-09-30. Release PR #8598 is at `25fc41d9`,
-approved at `e3adc91d`; its CI on `25fc41d9`: 27 checks passed, 3 skipped (2026-10-02).
+`dev` is at `ca6fcfaf` (the merge of #8796, 2026-10-02): 93 first-parent merges and 525 commits
+since 15.0.8. Every PR decided for 15.0.9 is merged; Crowdin #8730 is held out (BF-132). The last
+full run is run 020 on `ce30a94d` (2026-09-27), 3473/0/3 in all six cells; each PR merged since
+carries its own evidence, and #8796's head `e20b66ba`, the same tree as `ca6fcfaf`, passes the full
+suite, 3534/0/4, on one cell (Node 22, MongoDB 7.0.43). The real-site soak (`RT-SOAK`) is done by
+the maintainer's decision of 2026-09-30. Release PR #8598 is at `ca6fcfaf`, approved at `e3adc91d`;
+its CI on `ca6fcfaf`: 27 checks passed, 3 skipped (read 2026-10-02 18:15Z).
 
 The version is decided: 15.0.9. `RT-VERSION`'s gate measures the modernization cut branches, which
 also declare 15.0.9 and are renumbered when they are rebased, so it holds the cuts, not this
@@ -62,7 +61,7 @@ release.
 
 Before the tag, and not queue items of their own (they are in `RT-0`'s notes and gates):
 
-1. One full six-cell run on the final head (after BF-155's fix merges)
+1. One full six-cell run on `ca6fcfaf`
    ([integration record](../30-design/remedial/rc-15.0.9-integration-record.md)).
 2. The browser hand checks still owed: a remote bolus; LoopCaregiver from its own app; clock views;
    the pump pill; alarm level labels; the Bolus Wizard Preview pill and reports during a percentage
@@ -71,12 +70,13 @@ Before the tag, and not queue items of their own (they are in `RT-0`'s notes and
    ([browser record](../60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.md)).
 3. The version class of #8772, #8775 and #8780: a minor change shipped under the patch number as an
    exception, as #8530 was, or a different class. The maintainer is collecting data.
-4. Re-approval of #8598 at its final head.
+4. Re-approval of #8598 at its final head (`ca6fcfaf` unless `dev` moves).
 5. Settled 2026-10-02 (maintainer): the release notes name BF-154, the `node-forge` advisory
-   GHSA-86w9-cpqp-85rv behind the 2 high among `npm audit`'s 10 findings on `25fc41d9`. It has no
+   GHSA-86w9-cpqp-85rv behind the 2 high among `npm audit`'s 10 findings on `25fc41d9` (#8796 changes no package
+   file, so the figures stand for `ca6fcfaf`). It has no
    fixed release and Nightscout does not call the affected function (read from the code), so it is
    filed as low and does not block the release ([contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#node-forge-ghsa-86w9-cpqp-85rv)).
-6. The tag, by the maintainer. The release notes and tag message are drafted on `25fc41d9`.
+6. The tag, by the maintainer. The release notes and tag message are drafted on `ca6fcfaf`.
 
 The other 8 `npm audit` findings are triaged in
 [contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#npm-audit-and-dependabot-triage).

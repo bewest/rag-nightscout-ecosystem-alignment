@@ -1030,8 +1030,9 @@ Updated translations from Nightscout's volunteer translators on Crowdin, as of e
 ### Other fixes
 
 Faster data loading on sites with many treatments; deleted records no longer reappear; failed
-treatment searches no longer crash the server; a problem reading from the database no longer stops
-Nightscout until it is restarted (it answers that request with an error and keeps running); clearer error messages when a Loop remote
+treatment searches no longer crash the server; a problem reading from the database while answering a
+request for the activity log or the current profile no longer stops Nightscout until it is
+restarted (it answers that request with an error and keeps running); clearer error messages when a Loop remote
 command fails (the form keeps what you entered); profile switches and unnamed profiles handled
 correctly; a site with no profile no longer shows an alert that cannot be dismissed; the clock
 view shows the worried face for low and falling readings; voice assistants (Alexa, Google Home)
@@ -1266,4 +1267,4 @@ a report from "15.0.9" made before this release is from that channel.
 
 ---
 
-*Draft, 2026-10-02, on the development version 25fc41d9; not yet released.*
+*Draft, 2026-10-02, on the development version ca6fcfaf; not yet released.*

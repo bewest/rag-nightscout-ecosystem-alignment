@@ -1,15 +1,15 @@
 # cgm-remote-monitor 15.0.9 — contents
 
 **Status: DRAFT for maintainer review. Contributor-facing; full technical depth intended.**
-Nothing here is tagged or released. Measured 2026-10-02 against `official/dev` `25fc41d9`
-(merge of #8795) and `official/master` `92d08342` (= tag `15.0.8`, the shipping release), in
+Nothing here is tagged or released. Measured 2026-10-02 against `official/dev` `ca6fcfaf`
+(merge of #8796) and `official/master` `92d08342` (= tag `15.0.8`, the shipping release), in
 `externals/cgm-remote-monitor-official` after `git fetch official`.
 
 > Complements the generated changelog. The changelog is authoritative for *what merged*;
 > this file records what the release is made of, how each figure was measured, and what is
 > unsettled.
 
-15.0.9 is **everything on `dev` at `25fc41d9`**. Every PR the maintainer decided ships in it
+15.0.9 is **everything on `dev` at `ca6fcfaf`**. Every PR the maintainer decided ships in it
 ([decisions](decisions.md)) is merged. Crowdin #8730 is held out because its sync reverts translations `dev`
 corrected (BF-132). Every PR merged to `dev` is `merged`; none is `released`.
 
@@ -19,14 +19,14 @@ corrected (BF-132). Every PR merged to `dev` is `merged`; none is `released`.
 |---|---|
 | Merged part | `official/master..official/dev` |
 | Base (shipping) | `92d08342` = `15.0.8` |
-| `dev` head | `25fc41d9` (merge of #8795, 2026-10-02 17:33Z), tree `e5c8ea6b`, the same tree as #8795's head `fdf88f4e` |
-| Commits on `dev` | 523 — `git rev-list --count official/master..official/dev` |
-| First-parent merges on `dev` | **92** — `git rev-list --first-parent --count official/master..official/dev`; every first-parent commit in the range is a PR merge (`git log --first-parent --format=%s official/master..official/dev \| grep -vc '^Merge pull request'` prints 0) |
-| Diff on `dev` | 302 files, +29531/−1874 — `git diff --shortstat official/master official/dev` |
+| `dev` head | `ca6fcfaf` (merge of #8796, 2026-10-02 18:09Z), tree `0e38a5a7`, the same tree as #8796's head `e20b66ba` |
+| Commits on `dev` | 525 — `git rev-list --count official/master..official/dev` |
+| First-parent merges on `dev` | **93** — `git rev-list --first-parent --count official/master..official/dev`; every first-parent commit in the range is a PR merge (`git log --first-parent --format=%s official/master..official/dev \| grep -vc '^Merge pull request'` prints 0) |
+| Diff on `dev` | 303 files, +29620/−1875 — `git diff --shortstat official/master official/dev` |
 | `package.json` version | `15.0.9` on `dev` — `git show official/dev:package.json \| grep '"version"'` |
 | Connector pin | `nightscout-connect` exactly `0.1.0` from npm on `dev` (#8762); `15.0.8` pins the `v0.0.13` tag tarball — `git show official/<ref>:package.json \| grep nightscout-connect` |
 | Held out | Crowdin #8730 (head `f99c0e54`, open; BF-132) — `gh pr view 8730 --json state,headRefOid` |
-| Release PR | #8598 (`dev` → `master`, head `25fc41d9`, author AndyLow91): open, mergeable, `reviewDecision` `APPROVED`; both approvals (the maintainer, 2026-09-26 00:39Z) were given on `e3adc91d`; re-approval at its final head is owed. CI on `25fc41d9`: 27 checks passed, 3 skipped (read 2026-10-02 17:39Z) — `gh pr view 8598 --json state,reviewDecision,reviews`, `gh pr checks 8598` |
+| Release PR | #8598 (`dev` → `master`, head `ca6fcfaf`, author AndyLow91): open, mergeable, `reviewDecision` `APPROVED`; both approvals (the maintainer, 2026-09-26 00:39Z) were given on `e3adc91d`; re-approval at `ca6fcfaf` is owed. CI on `ca6fcfaf`: 27 checks passed, 3 skipped (read 2026-10-02 18:15Z) — `gh pr view 8598 --json state,reviewDecision,reviews`, `gh pr checks 8598` |
 | Tag | none. No `15.0.9` tag exists |
 
 ## What 15.0.9 contains
@@ -44,7 +44,7 @@ Register ids refer to
 [`docs/30-design/remedial/nightscout-backfix-register.md`](../../docs/30-design/remedial/nightscout-backfix-register.md),
 which is the home of every defect fact; these tables do not restate them.
 
-#### Programme backfix PRs (45), plus #8741
+#### Programme backfix PRs (46), plus #8741
 
 | PR | Merge | Date | Register | What |
 |---|---|---|---|---|
@@ -93,6 +93,7 @@ which is the home of every defect fact; these tables do not restate them.
 | #8793 | `839a1565` | 2026-10-02 | BF-73 | outside `NODE_ENV=development`, an error reply carries the status and a short message, with no stack trace or server paths; the full error is still written to the server log (new `lib/server/error-handler.js`, `lib/server/app.js`). With `NODE_ENV` unset, error pages also stop showing the stack, and a 4xx raised without `err.expose` answers with the standard reason phrase. Live on 15.0.8, so described by mechanism and outcome only. Head `dc64e82d` |
 | #8794 | `a143d507` | 2026-10-02 | BF-153 | dependency refresh: `ip-address`, `fast-uri`, `brace-expansion` and the axios entries under `minimed-connect-to-nightscout` move to their patch releases (`package.json` overrides); the axios dev dependency, `webpack-dev-middleware` and `dompurify` refreshed in the lockfile; 26 lockfile version changes, all patch or minor. `moment` stays 2.30.1 by decision. `npm audit` 20 → 8, no highs (below); the production bundle is byte-identical. Dependabot #8787 and #8789 were closed with a pointer to it. Head `7cb8d0bc` |
 | #8795 | `25fc41d9` | 2026-10-02 | BF-151 | an unbounded request to two little-used API addresses (`/api/v1/times`, `/api/v1/slice`) could stop the server responding for seconds; such a request is now refused with a 400 before any work is done, and ordinary requests are unchanged. `lib/api/entries/index.js` (server only) and `tests/api.entries.test.js`. Live on 15.0.8, so described by mechanism only. Its own CI: 14 passed, 2 skipped. Head `fdf88f4e` |
+| #8796 | `ca6fcfaf` | 2026-10-02 | BF-155 | a failed database read on `GET /api/v1/activity` or `/api/v1/profile/current` ended the server process; it is now answered with a 500 and the server keeps running. `lib/api/activity/index.js` and `lib/api/profile/index.js` (server only) and the new `tests/api.read-storage-failure.test.js`. Live on 15.0.8, so described by mechanism and outcome only. Its own CI: 14 passed, 2 skipped. Head `e20b66ba` |
 | #8741 | `bcd171cb` | 2026-09-20 | — (external contributor) | credential and identifier settings kept as strings (leading `+`, leading zeros) |
 
 **#8754** (`bf2/auth-hardening`, head `bae655a0`, merged as `4f705217`; 34 commits, 25 files,
@@ -271,6 +272,7 @@ The facts the classification rests on, for the record:
 | BF-145 — API v3 PATCH and PUT by the id v3 GET shows miss a record stored with identifier `null`, `""` or `0` (PATCH 404, PUT stores a second copy) | after 15.0.9 (`BFQ-145`); the same on 15.0.8 | carried as a known issue |
 | BF-152 — API v3 `settings` documents are admin-only through search and history but readable by identifier with read permission | after 15.0.9 (2026-10-01, `BFQ-152`); AndroidAPS's follower app reads its settings this way, so which side is the intended contract is a question for the AndroidAPS developers | unchanged from 15.0.8 |
 | `OID-V3-EDIT-MERGE`, `OID-WS-EDIT-MERGE` — an edit through v3 or the websocket of a record stored twice leaves both copies | after 15.0.9 | as described under #8758 |
+| BF-155's other half — a failed database read on `/api/v1/food` or `/api/v1/profile` is answered with `null` and a 200 (the server keeps running) | left for a later change | unchanged from 15.0.8 |
 | `TRUST_PROXY` planned flip | none planned ([versioning policy §5.7](../../docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md#57-compatibility-flags)) | unset is a permanent, documented setting; BF-30 is closed only where an operator sets it |
 
 Other `open` register entries that reach 15.0.9 are listed in the register's §1, and the queue
@@ -281,16 +283,13 @@ this file does not copy them.
 ## Open items a releaser must settle
 
 What the queue tracks is generated, and current, in
-[ROADMAP §1](../../docs/00-overview/ROADMAP.md#1-the-next-release-1509). As of `dev` `25fc41d9` (2026-10-02), 15.0.9 waits on:
+[ROADMAP §1](../../docs/00-overview/ROADMAP.md#1-the-next-release-1509). As of `dev` `ca6fcfaf` (2026-10-02), 15.0.9 waits on:
 
-1. **The BF-155 fix** (queue `BFQ-155`, decided 2026-10-02): a failed database read on one API v1
-   request ends the server process, on 15.0.8 too; the fix answers with an error and keeps running.
-   Merging it moves `dev` past `25fc41d9`.
-2. **One full six-cell run on the final head (after BF-155's fix merges)** (Node 20/22/24 × MongoDB 4.4.24 and 7.0.43, probes,
+1. **One full six-cell run on `ca6fcfaf`** (Node 20/22/24 × MongoDB 4.4.24 and 7.0.43, probes,
    compressed A/B soak against 15.0.8, as run 020 on `ce30a94d`). What has run since run 020 is
    under [Evidence](#evidence).
-3. **The browser hand checks still owed.**
-   `node tools/queue/gates/client-unchanged-since-hand-check.js --base 25fc41d9 --with ''` names
+2. **The browser hand checks still owed.**
+   `node tools/queue/gates/client-unchanged-since-hand-check.js --base ca6fcfaf --with ''` names
    16 paths that differ on the browser side from the hand-checked `8d797ba4`: `.gitignore` and
    `.nycrc.json` (tooling), `lib/api2/index.js`, `lib/api2/notifications-v2.js`,
    `lib/client/clock-client.js`, `lib/data/calcdelta.js`, `lib/data/dataloader.js`,
@@ -313,24 +312,24 @@ What the queue tracks is generated, and current, in
    on a touch screen (#8790, section 5 of the same checklist). #8784 changes what the server sends
    to the page (late or edited v3 treatments carry `mills` in the page data, so the page's IOB and
    COB count them); that was not checked in a browser.
-4. **The version class of #8772, #8775 and #8780**, by the maintainer, who is collecting data:
+3. **The version class of #8772, #8775 and #8780**, by the maintainer, who is collecting data:
    recorded as minor-under-patch exceptions (as #8530) or re-classed ([decisions](decisions.md)).
-5. **Re-approval of #8598 at its final head.** Both approvals were given on
-   `e3adc91d`. CI on `25fc41d9`: 27 checks passed, 3 skipped (2026-10-02).
-6. **The `CHANGELOG.md` question.** `dev` carries a hand-written `## [Unreleased]` section (lines
-   5–87 of `git show official/dev:CHANGELOG.md` at `25fc41d9`, from 14 commits —
+4. **Re-approval of #8598 at its final head** (`ca6fcfaf` unless `dev` moves). Both approvals were
+   given on `e3adc91d`. CI on `ca6fcfaf`: 27 checks passed, 3 skipped (2026-10-02).
+5. **The `CHANGELOG.md` question.** `dev` carries a hand-written `## [Unreleased]` section (lines
+   5–87 of `git show official/dev:CHANGELOG.md` at `ca6fcfaf`, from 14 commits —
    `git log --no-merges official/master..official/dev -- CHANGELOG.md`), against the rule in
    [`../README.md`](../README.md#open-item-changelog-on-dev) that the changelog is generated at
    release time. No decision on it is recorded.
-7. **BF-154 is named in the release notes** (decided 2026-10-02, maintainer), under Known issues:
-   the `node-forge` advisory behind the 2 high among `npm audit`'s 10 findings on `25fc41d9`, filed
-   as low because Nightscout does not call the affected function ([below](#node-forge-ghsa-86w9-cpqp-85rv)).
+6. **BF-154 is named in the release notes** (decided 2026-10-02, maintainer), under Known issues:
+   the `node-forge` advisory behind the 2 high among `npm audit`'s 10 findings on `25fc41d9` (#8796 changes no
+   package file, so the figures stand for `ca6fcfaf`), filed as low because Nightscout does not call the affected function ([below](#node-forge-ghsa-86w9-cpqp-85rv)).
    It is not a release blocker: no fixed version exists, and `@parse/node-apn` 8.1.0 (the
    modernization line's version, and the latest) still depends on `node-forge` 1.4.0 exactly, so the
    update waits for an upstream fix and is carried with the modernization work.
-8. **The tag**, by the maintainer.
+7. **The tag**, by the maintainer.
 
-The [release notes](release-notes.md) and [tag message](tag-message.txt) are drafted on `25fc41d9`.
+The [release notes](release-notes.md) and [tag message](tag-message.txt) are drafted on `ca6fcfaf`.
 
 The real-time soak is done by decision: on 2026-09-30 the maintainer decided that real sites
 running the candidate count as the 24 to 72 h real-time soak, and the lab's 72 h soak
@@ -348,7 +347,7 @@ decided.
 
 **Summary.** 15.0.8 (the release operators run today) had 49 `npm audit` findings (19 high) on
 2026-09-27. On `dev` `25fc41d9` (2026-10-02 17:31Z, npm 11.12.1, `--package-lock-only`), `npm audit`
-reports 10 findings (2 high). The 8 moderate are the 7 left by the 2026-09-27 triage — a deliberate pin
+reports 10 findings (2 high); #8796 changes no package file, so the figures stand for `ca6fcfaf`. The 8 moderate are the 7 left by the 2026-09-27 triage — a deliberate pin
 whose advisories need elements the sanitizer does not allow (tested), the legacy `request` chain,
 loaded only when a legacy bridge is switched on (read from `lib/server/bootevent.js`), and two
 test-only packages — plus `moment`, held at 2.30.1 by decision. The 2 high are one advisory,
@@ -370,7 +369,7 @@ version in cut 5's lockfile. The work that gets there was planned in the open:
 | 2026-10-02 | #8794 (BF-153), advisories published after the 2026-09-27 triage |
 
 Since 15.0.7, 39 merges to `dev` changed the lockfile, 20 of them Dependabot's
-(`git log --first-parent --oneline 15.0.7..official/dev -- package-lock.json`, `25fc41d9`). Alerts on the
+(`git log --first-parent --oneline 15.0.7..official/dev -- package-lock.json`, `ca6fcfaf`). Alerts on the
 default branch fall only when a release merges to `master`; on 2026-09-27, 74 of the 80 open were
 already fixed on `dev` (below).
 
@@ -388,7 +387,7 @@ so `--omit=dev` does not separate build-time from run-time packages.
 | `dev` `7000eb18` (#8786, BF-147) | 7 | 0 | 7 | 0 |
 | `dev` `7000eb18` `--omit=dev` | 5 | 0 | 5 | 0 |
 | `dev` `50bc1084` (#8794's base, as #8794 records) | 20 | 4 | — | — |
-| `dev` `25fc41d9` (2026-10-02 17:31Z; the lockfile #8794 left, #8795 changes no package file) | 10 | 2 | 8 | 0 |
+| `dev` `25fc41d9` (2026-10-02 17:31Z; the lockfile #8794 left; #8795 and #8796 change no package file, so it stands for `ca6fcfaf`) | 10 | 2 | 8 | 0 |
 | `dev` `25fc41d9` `--omit=dev` | 8 | 2 | 6 | 0 |
 | `rh/cut2` `02205d91` | 6 | 0 | 6 | 0 |
 | `rh/cut4` `135faa3b`, `rh/cut35` `cd93d8e8`, cut 5 `b1bdaca0` | 0 | 0 | 0 | 0 |
@@ -486,7 +485,7 @@ No Dependabot pull request is open (2026-10-02); #8787 (webpack-dev-middleware) 
 
 Not blockers by decision; recorded so a green suite is not read as covering them.
 
-- **Test-script coverage.** 77 of the 223 `tests/*.test.js` files on `dev` `25fc41d9` match neither
+- **Test-script coverage.** 77 of the 224 `tests/*.test.js` files on `dev` `ca6fcfaf` match neither
   `npm run test:unit` nor `test:integration` (compare the files against the two globs in
   `git show official/dev:package.json`). Among
   them: `dependency-overrides` (#8786), `report-daytoday-durations` (#8788),
@@ -550,7 +549,7 @@ the user-facing form. Facts the notes must not lose:
   values; `notes: ""` clears; `roles` is not filled in from storage, so removing the last role
   still works.
 - **BF-17 and BF-30 / `TRUST_PROXY` (#8754).** As described under
-  [#8754](#programme-backfix-prs-45-plus-8741), including the Loop remote-command sender address
+  [#8754](#programme-backfix-prs-46-plus-8741), including the Loop remote-command sender address
   that is now stored on remote overrides.
 - **Docker Compose (BF-10, #8753).** `mongo` service gains `ulimits nofile 64000`; without it mongod
   aborted with `Too many open files` (reproduced 2026-09-21 on mongod 7.0.43, register BF-10).
@@ -686,17 +685,22 @@ the user-facing form. Facts the notes must not lose:
 
 - Merged part: per-PR test evidence, ablations and controls are in each PR body and in the
   register entry for each id.
-- **The candidate, `dev` `25fc41d9`** (tree `e5c8ea6b`, the same tree as #8795's head
-  `fdf88f4e`). After a fresh `npm ci` on `fdf88f4e`: full suite 3532 passing, 0 failing, 4 pending
-  (Node 22.23.2, MongoDB 7.0.43, one cell), and #8795's 5 refusal tests fail with `a143d507`'s
-  `lib/api/entries/index.js`. The last full RC run is run 020 on `ce30a94d` (below); it has not been
-  repeated on a later head, and one full six-cell run on `25fc41d9` is owed. Since run 020: #8785 is
+- **The candidate, `dev` `ca6fcfaf`** (tree `0e38a5a7`, the same tree as #8796's head
+  `e20b66ba`). Full suite on `e20b66ba`: 3534 passing, 0 failing, 4 pending (Node 22.23.2,
+  MongoDB 7.0.43, one cell). #8796 (BF-155) changes `lib/api/activity/index.js` and
+  `lib/api/profile/index.js` (server only, no browser-side file) and adds
+  `tests/api.read-storage-failure.test.js`; its own CI: 14 passed, 2 skipped. The last full RC run
+  is run 020 on `ce30a94d` (below); it has not been repeated on a later head, and one full six-cell
+  run on `ca6fcfaf` is owed.
+- **`dev` `25fc41d9`** (tree `e5c8ea6b`, the same tree as #8795's head `fdf88f4e`). After a fresh
+  `npm ci` on `fdf88f4e`: full suite 3532 passing, 0 failing, 4 pending (Node 22.23.2, MongoDB
+  7.0.43, one cell), and #8795's 5 refusal tests fail with `a143d507`'s `lib/api/entries/index.js`. Since run 020: #8785 is
   test-only; #8786 ran its own nine-cell CI with a byte-identical bundle; #8788 local full suite
   3481/0/3; #8791's branch 3485/0/3; #8793's branch 3502/0/3; #8794's branch 3512/0/4 (the added
   pending is the connector's own axios copy, outside the advisory range, which the floor check
   skips), with `npm ci` on Node 20.20.0, 22.23.2 and 24.20.0 and the npm 12 job, and a
   byte-identical bundle. Each PR's own CI on GitHub passed (nine cells for the dependency PRs;
-  14 passed and 2 skipped for #8791, #8794 and #8795).
+  14 passed and 2 skipped for #8791, #8794, #8795 and #8796).
 - **`dev` `3014f883`**: `7000eb18` plus #8788 (BF-148), which changes only
   `lib/report_plugins/daytoday.js` among files a site runs (browser-side, the Day to Day report), adds
   `tests/report-daytoday-durations.test.js` and edits `CHANGELOG.md` and the manual smoke checklist.
@@ -731,8 +735,8 @@ the user-facing form. Facts the notes must not lose:
   fails only on BF-135's intended page-load change.
 - The previous candidate, `dev` `699eb5fa` (tree `0b727dc5`, run 019): 3458 passing, 0 failing,
   3 pending in the same six cells.
-- CI on #8598 at `25fc41d9`: 27 checks passed, 3 skipped (read 2026-10-02 17:39Z); at `a143d507`, `3014f883`,
-  `7000eb18` and `295f1177`, 27 checks passed, 3 skipped. At `e3adc91d`, 27 passed and 3 skipped (Node 20/22/24 × MongoDB 4.4/5.0/6.0, CodeQL, Docker).
+- CI on #8598 at `ca6fcfaf`: 27 checks passed, 3 skipped (read 2026-10-02 18:15Z); at `25fc41d9`,
+  `a143d507`, `3014f883`, `7000eb18` and `295f1177`, 27 checks passed, 3 skipped. At `e3adc91d`, 27 passed and 3 skipped (Node 20/22/24 × MongoDB 4.4/5.0/6.0, CodeQL, Docker).
 - Queue items P0-A…P0-K, P0-T01, ADV-RETRO, ADV-ALARM and ADV-CONFIG hold the gates. A local
   `test:unit` pass does not cover every test file ([Known test gaps](#known-test-gaps)).
 

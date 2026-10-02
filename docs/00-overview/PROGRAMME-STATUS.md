@@ -1,7 +1,7 @@
 # Programme status — cgm-remote-monitor
 
 *Prepared for the Nightscout project; proposed for Nightscout Foundation stewardship. Contributor-facing; technical throughout.
-Prose revised 2026-10-02 against cgm-remote-monitor `official/dev` `25fc41d9` and
+Prose revised 2026-10-02 against cgm-remote-monitor `official/dev` `ca6fcfaf` and
 `official/master` `92d08342` (tag `15.0.8`). The tables are generated from
 `queue/work-queue.yaml`; see [How to check any of this yourself](#how-to-check-any-of-this-yourself).*
 
@@ -28,30 +28,29 @@ current and the prose is stale.
 
 <!-- END GENERATED: horizons -->
 
-**Remedial** — finding and fixing defects that already ship. `dev` is at `25fc41d9` (the merge of
-#8795, 2026-10-02): 92 first-parent merges and 523 commits since 15.0.8
+**Remedial** — finding and fixing defects that already ship. `dev` is at `ca6fcfaf` (the merge of
+#8796, 2026-10-02): 93 first-parent merges and 525 commits since 15.0.8
 (`git rev-list [--first-parent] --count official/master..official/dev`). None of it is released.
 
-- **Merged.** Every cgm-remote-monitor PR opened for 15.0.9; the PR-by-PR list is in
+- **Merged.** Every PR decided for 15.0.9; the PR-by-PR list is in
   [the release contents](../../releases/cgm-remote-monitor-15.0.9/contents.md). Crowdin #8730 is
   held out (BF-132). The connector fixes are in `nightscout-connect` `0.1.0`, released 2026-09-24,
-  which `dev` pins exactly (#8762). The last one in, #8795 (BF-151), stops an unbounded request to
-  two little-used API addresses from making the server unresponsive for seconds.
+  which `dev` pins exactly (#8762). The last one in, #8796 (BF-155): a failed database read on two API
+  v1 requests ended the server process, and now it answers with an error and the server keeps running.
 - **Tests.** The last full run is run 020 on `ce30a94d` (2026-09-27): 3473/0/3 in all six cells
   (Node 20, 22 and 24 against MongoDB 4.4.24 and 7.0.43), with an A/B soak against 15.0.8. Each PR
-  merged since carries its own evidence (its GitHub CI and a full suite on its branch). #8795's head
-  `fdf88f4e` has the same tree as `25fc41d9`, and passes the full suite, 3532/0/4, on one cell
-  (Node 22, MongoDB 7.0.43). A full six-cell run on the final head (after BF-155's fix merges) comes next
+  merged since carries its own evidence (its GitHub CI and a full suite on its branch). #8796's head
+  `e20b66ba` has the same tree as `ca6fcfaf`, and passes the full suite, 3534/0/4, on one cell
+  (Node 22, MongoDB 7.0.43). A full six-cell run on `ca6fcfaf` comes next
   ([15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md)).
 - **Real-site soak.** `RT-SOAK` is done: the maintainer decided on 2026-09-30 that real sites
   running the candidate count as the soak, and reports (2026-10-02) stable behaviour from Loop, Trio
   and AndroidAPS users on `dev`. The lab's 72 h soak was not run.
-- **Release PR.** #8598 (`dev` → `master`) is at `25fc41d9` and mergeable; its CI on `25fc41d9`:
-  27 checks passed, 3 skipped (2026-10-02). It was approved at `e3adc91d`; re-approval at its final head is owed.
+- **Release PR.** #8598 (`dev` → `master`) is at `ca6fcfaf` and mergeable; its CI on `ca6fcfaf`:
+  27 checks passed, 3 skipped (read 2026-10-02 18:15Z).
+  It was approved at `e3adc91d`; re-approval at `ca6fcfaf` is owed.
 - **Version.** Decided: 15.0.9. `RT-VERSION`'s gate measures the modernization cut branches, which
   also declare 15.0.9 and are renumbered when they are rebased; it holds the cuts, not this release.
-- **Still to merge.** BF-155, decided for 15.0.9 on 2026-10-02: a failed database read on one API v1
-  request ends the server process (15.0.8 too); the fix answers with an error and keeps running.
 - **What remains** before the tag, including the queue's open `RT-0` blockers, is listed once, in [ROADMAP §1](ROADMAP.md#1-the-next-release-1509).
 
 The [backfix register](../30-design/remedial/nightscout-backfix-register.md) holds the defect facts;
@@ -64,15 +63,15 @@ then cut 4. The separate deprecation release was dropped (`RT-4`): the MiniMed w
 legacy MiniMed and Dexcom bridge removal onto cut 1, keeping the hard stop at boot
 (BF-61, option A). mmconnect is reported not to work, and Dexcom `BRIDGE_*` settings have
 been served by `nightscout-connect` since 15.0.8, so BF-44/BF-45 are graded low. Nothing on
-the train has shipped. Measured 2026-10-02 against `official/dev` `25fc41d9`:
+the train has shipped. Measured 2026-10-02 against `official/dev` `ca6fcfaf`:
 
 | cut | branch | behind `dev` | conflicting paths |
 |---|---|---:|---:|
-| 1 | `chore/retire-jsdom` | 348 | 11 |
-| 2 | `chore/build-runtime-separation` | 348 | 18 |
-| 3 | `chore/compose-mongodb6` | 348 | 21 |
-| 4 | `chore/mime-exposure-review` | 348 | 35 |
-| 5 | `chore/nightscout-modernization` | 224 | 26 |
+| 1 | `chore/retire-jsdom` | 350 | 11 |
+| 2 | `chore/build-runtime-separation` | 350 | 18 |
+| 3 | `chore/compose-mongodb6` | 350 | 21 |
+| 4 | `chore/mime-exposure-review` | 350 | 35 |
+| 5 | `chore/nightscout-modernization` | 226 | 26 |
 
 Reproduce with `git -C externals/cgm-remote-monitor-official rev-list --count
 official/chore/<branch>..official/dev` and `git merge-tree --write-tree --name-only
@@ -267,7 +266,7 @@ expanded in [NEEDS-A-HUMAN.md](NEEDS-A-HUMAN.md).
 
 | | decision | why it blocks a train |
 |---|---|---|
-| `RT-0` | Release 15.0.9 (PR #8598 at `dev` `25fc41d9`). | Every merged fix reaches operators only through it, and every later cut waits behind it. What remains before the tag is in [ROADMAP §1](ROADMAP.md#1-the-next-release-1509). |
+| `RT-0` | Release 15.0.9 (PR #8598 at `dev` `ca6fcfaf`). | Every merged fix reaches operators only through it, and every later cut waits behind it. What remains before the tag is in [ROADMAP §1](ROADMAP.md#1-the-next-release-1509). |
 | `BFQ-09` | BF-09: is a zero-valued temp basal a real value in the socket dedup? Measured; waits on the maintainer. | It ships to operators now. |
 | `A7A-7` | The clock question inside the alarm path. The maintainer owns it. | It gates alarms under `TENANCY_MODE=multi`. |
 

@@ -97,7 +97,7 @@ releases slowed (both below). Tag dates in cgm-remote-monitor (`git tag --sort=c
 | 15.0.4 | 2026-02-28 | 296 |
 | 15.0.7 | 2026-04-29 | 57 (15.0.5 and 15.0.6 in between) |
 | 15.0.8 | 2026-09-04 | 128 |
-| 15.0.9 | candidate `dev` `25fc41d9` (2026-10-02), not tagged | — |
+| 15.0.9 | candidate `dev` `ca6fcfaf` (2026-10-02), not tagged | — |
 
 **Important work can wait for years.** The MongoDB 5 driver upgrade was first proposed in #7344,
 opened 2022-02-16. The upgrade that shipped was #8421: opened 2026-01-19, merged 2026-03-16, released

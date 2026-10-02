@@ -1,7 +1,7 @@
 # cgm-remote-monitor 15.0.9 — decisions
 
 *Contributor-facing. Living record of the maintainer's decisions that shape 15.0.9, taken
-2026-09-22 to 2026-10-01, as of `dev` `25fc41d9` (2026-10-02). Each row states the decision as it stands. Item state is in
+2026-09-22 to 2026-10-02, as of `dev` `ca6fcfaf` (2026-10-02). Each row states the decision as it stands. Item state is in
 `queue/work-queue.yaml`; what 15.0.9 contains and what is still open before the tag is in
 [contents.md](contents.md); the test evidence is in the
 [15.0.9 integration record](../../docs/30-design/remedial/rc-15.0.9-integration-record.md).
@@ -13,7 +13,7 @@ shipping release, and this repository is public.*
 | decision | queue | as it stands |
 |---|---|---|
 | The `dev` → `master` release is numbered **15.0.9**, the number `dev`'s `package.json` carries (2026-09-22). Reads tolerate the `count` shapes oref0 and GluPredKit send, so 15.0.9 stays a patch (2026-09-24) | `RT-VERSION`, `RT-COUNT-COMPAT` | #8761 merged |
-| **The release goes out through #8598** (`dev` → `master`, opened by AndyLow91) | `RT-0` | open, head `25fc41d9`, mergeable, `reviewDecision` `APPROVED`; both approvals (the maintainer, 2026-09-26 00:39Z) were given on `e3adc91d`, and re-approval at its final head is owed; CI on `25fc41d9`: 27 checks passed, 3 skipped (2026-10-02) |
+| **The release goes out through #8598** (`dev` → `master`, opened by AndyLow91) | `RT-0` | open, head `ca6fcfaf`, mergeable, `reviewDecision` `APPROVED`; both approvals (the maintainer, 2026-09-26 00:39Z) were given on `e3adc91d`, and re-approval at `ca6fcfaf` is owed; CI on `ca6fcfaf`: 27 checks passed, 3 skipped (2026-10-02) |
 | **Backfix 2 ships inside 15.0.9**: `bf2/ops`, `bf2/backports` and `bf2/auth-hardening`, with the subject-edit fix folded into the last (2026-09-23) | `BF2-AUTH` | #8753, #8751, #8754 merged |
 | **Records keep their own `_id` across v1, v3 and the websocket** (BF-99 to BF-102): `bf/object-id-consistency` goes in instead of the narrow profile-only fix, with D1–D4 below (2026-09-23) | `BFQ-102` | #8758 merged (`4d9ecc3b`) |
 | **BF-103 (split drag) goes in if its branch comes back clean**: red on `dev`, green on the branch, a green suite, every break-it red, clean merges with the other 15.0.9 PRs. Otherwise it ships as a known issue (2026-09-23) | `BFQ-103` | clean; #8760 merged |
@@ -32,6 +32,7 @@ shipping release, and this repository is public.*
 | **BF-108 is in 15.0.9** (a v1 filter listing several dates under the date field answered 500, so xDrip4iOS bulk deletes by timestamp removed nothing) (2026-10-01) | `BFQ-108` | #8791 merged (`50bc1084`) |
 | **#8790 is in 15.0.9** (the Food Editor's food list and quick picks scroll by touch on phones; awss1i; BF-150, fixes #8192) (2026-10-01) | `RT-PR-8790` | #8790 merged (`73c9528b`) |
 | **BF-151 and BF-73 are fixed for 15.0.9** (2026-10-01): an unbounded request to two little-used API addresses could stop the server responding for seconds, and is now refused (BF-151); error replies outside development mode no longer carry a stack trace or server paths (BF-73). Both are live on 15.0.8 and described by mechanism only | `BFQ-151`, `BFQ-73` | #8795 merged (`25fc41d9`), #8793 merged (`839a1565`) |
+| **BF-155 is fixed for 15.0.9** (2026-10-02): a failed database read on `GET /api/v1/activity` or `/api/v1/profile/current` ended the server process, and is now answered with a 500 while the server keeps running. Live on 15.0.8 and described by mechanism only. The same read failure on `/api/v1/food` and `/api/v1/profile`, answered with `null` and a 200 without ending the process, is left for a later change | `BFQ-155` | #8796 merged (`ca6fcfaf`) |
 | **BF-153's dependency refresh is taken in on its measured result** (`npm audit` 20 → 8, no highs, production bundle byte-identical); **`moment` stays at 2.30.1**, because no request input reaches `moment.locale` on `dev` and 2.31.0 changes parsing and locale display output (2026-10-01) | `BFQ-153` | #8794 merged (`a143d507`) |
 | **BF-152 is after 15.0.9** (API v3 `settings` documents are admin-only through search and history but readable by identifier with read permission): AndroidAPS's follower app reads its settings by identifier, so which side is the intended contract is a question for the AndroidAPS developers (2026-10-01) | `BFQ-152` | open, not in 15.0.9 |
 | **BF-145 after 15.0.9**: v3 PATCH and PUT by the id v3 GET shows miss a record stored with identifier `null`, `""` or `0` (PATCH 404, PUT stores a second copy); the same on 15.0.8 (2026-09-26) | `BFQ-145` | release notes, Known issues |

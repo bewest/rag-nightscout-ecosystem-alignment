@@ -1,8 +1,8 @@
 cgm-remote-monitor 15.0.9
 
 DRAFT tag body, not applied. Delete this paragraph when the tag is
-cut. Drafted on dev 25fc41d9 (2026-10-02). If dev moves past
-25fc41d9 before the tag, re-measure the counts on the tag
+cut. Drafted on dev ca6fcfaf (2026-10-02). If dev moves past
+ca6fcfaf before the tag, re-measure the counts on the tag
 (git rev-list --first-parent --count 15.0.8..<tag>;
 git rev-list --count 15.0.8..<tag>; git diff --shortstat 15.0.8 <tag>).
 Test evidence: the last full release-candidate run is run 020 on
@@ -11,14 +11,15 @@ MongoDB 4.4.24, 7.0.43). Each later PR passed its own GitHub CI;
 branch suites: #8788 3481/0/3, #8791 3485/0/3, #8793 3502/0/3,
 #8794 3512/0/4 with a byte-identical production bundle (#8786 too),
 #8795 head fdf88f4e 3532/0/4 (one cell, Node 22.23.2, MongoDB
-7.0.43, fresh npm ci), the same tree as 25fc41d9, so it ran on the
-exact candidate tree. Owed: one full six-cell run on 25fc41d9.
-Release PR #8598: both approvals are at e3adc91d; re-approval at
-25fc41d9 owed; its CI on 25fc41d9:
-27 checks passed, 3 skipped (2026-10-02).
+7.0.43, fresh npm ci), #8796 head e20b66ba 3534/0/4 (one cell,
+Node 22.23.2, MongoDB 7.0.43), the same tree as ca6fcfaf, so it
+ran on the exact candidate tree. Owed: one full six-cell run on
+ca6fcfaf. Release PR #8598: both approvals are at e3adc91d;
+re-approval at ca6fcfaf owed; its CI on
+ca6fcfaf: 27 checks passed, 3 skipped (2026-10-02).
 
-15.0.8..dev at 25fc41d9: 92 first-parent PR merges, 523 commits,
-302 files, +29531/-1874. Crowdin #8730 is held out (BF-132).
+15.0.8..dev at ca6fcfaf: 93 first-parent PR merges, 525 commits,
+303 files, +29620/-1875. Crowdin #8730 is held out (BF-132).
 
 Query and API correctness
   #8737 025f1310  schema-driven query coercion; $exists operand;
@@ -75,6 +76,9 @@ Query and API correctness
                   (find[date][$in]) is read one date at a time instead
                   of answering 500, so xDrip4iOS bulk deletes by
                   timestamp remove the listed readings (BF-108)
+  #8796 ca6fcfaf  a failed database read on v1 activity or
+                  profile/current is answered with a 500 instead of
+                  ending the server (BF-155)
 
 Security
   #8744 a9acd313  loadRetro gated on read authorization (BF-79)
