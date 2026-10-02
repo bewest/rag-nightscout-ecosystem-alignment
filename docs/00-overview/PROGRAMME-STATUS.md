@@ -251,7 +251,8 @@ The SECURITY and SAFETY rows name a *kind* of reviewer. For #8754 (login securit
 `TRUST_PROXY`, merged as `4f705217`), the named reviewers were the maintainer and Andy. The other SECURITY
 and SAFETY rows still have no individual assigned. `BFQ-72` (BF-72, an
 unauthenticated request that can occupy the database for minutes, live on 15.0.8 and `dev`)
-has a disposition decided by the maintainer and held outside version control.
+has a disposition decided by the maintainer. It is held outside this public repository because the
+defect is live on the shipping release (the disclosure rule, [DOCUMENT-CONTROL §3.8](DOCUMENT-CONTROL.md#38-external-and-restricted-documents)).
 
 If you are considering reviewing, [REVIEWER-ONBOARDING.md](REVIEWER-ONBOARDING.md)
 is the read-this-first path, and `reports/reviewer-packets/` has one bounded packet
@@ -272,8 +273,8 @@ expanded in [NEEDS-A-HUMAN.md](NEEDS-A-HUMAN.md).
 
 `P0-TAG` (done: `nightscout-connect` 0.1.0 released and pinned by #8762) left this table on
 2026-09-24. `RT-D3` (answered: the drag check passed in automation and by hand, and 15.0.9 ships as numbered),
-`BFQ-47` (decided: the allow-list is intended; the admin-page fix is in #8754) and `BFQ-72` (decided
-privately) left this table on 2026-09-23.
+`BFQ-47` (decided: the allow-list is intended; the admin-page fix is in #8754) and `BFQ-72` (disposition
+decided; held outside this public repository while the defect is live) left this table on 2026-09-23.
 
 ---
 

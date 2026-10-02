@@ -48,8 +48,8 @@ group of people" ([Journal of Diabetes Science and Technology,
 
 **The assets grew in the open, over more than ten years.** #WeAreNotWaiting dates from 2013 and
 OpenAPS from February 2015. On 2026-09-30 the [stack census](../60-research/programme/stack-census-2026-09-30.md)
-counted 63 repositories, from device drivers to vendor-cloud connectors, with 219 distinct human authors committing
-in the last year. 13 of the 63 are held under personal GitHub accounts, and most of the rest sit in
+listed 63 repositories (62 distinct; one fork is kept level with its upstream), from device drivers to vendor-cloud
+connectors, with 219 distinct human authors committing in the last year. 13 of the 63 listings are held under personal GitHub accounts, and most of the rest sit in
 GitHub organisations run by volunteers. A foundation taking stewardship responsibility for these
 assets is how the software behind that evidence keeps working, and how new evidence can be built on
 it.

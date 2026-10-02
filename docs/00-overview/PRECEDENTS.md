@@ -19,7 +19,7 @@ it from gaining control.
 
 | organisation | money comes from | who is paid | commercial role | conformance or quality evidence | size | sourced in |
 |---|---|---|---|---|---|---|
-| **Nightscout ecosystem** | donations to the foundation (amounts not read); commercial hosts pay part of the time of the maintainers who work for them | no shared, published paid role | eight hosted providers listed in the docs; a second server lists one managed instance, run by its creator | per-release records for cgm-remote-monitor 15.0.9; no per-release report in any device or connector repository | 219 human authors across 63 repositories in the year to 2026-09-30; cgm-remote-monitor 11–18 a year, 2021–2025 | [stack census](../60-research/programme/stack-census-2026-09-30.md); sponsored-team §2, §3; collaboration rule 3 |
+| **Nightscout ecosystem** | donations to the foundation (amounts not read); commercial hosts pay part of the time of the maintainers who work for them | no shared, published paid role | eight hosted providers listed in the docs; a second server lists one managed instance, run by its creator | per-release records for cgm-remote-monitor 15.0.9; no per-release report in any device or connector repository | 219 human authors across 62 repositories in the year to 2026-09-30; cgm-remote-monitor 11–18 a year, 2021–2025 | [stack census](../60-research/programme/stack-census-2026-09-30.md); sponsored-team §2, §3; collaboration rule 3 |
 | Apache Software Foundation | not read | not read | companies employ committers but gain no control "irrespective of employing Committers … or sponsorship status" | not read | not read | collaboration §4 |
 | CNCF | events about two-thirds, membership 23.5% (2024) | services (events, infrastructure, audits); project engineers employed by members | certified conformance for vendor offerings against one upstream, and certified service providers | the same open-source conformance application for every offering, renewed yearly; over $3 million on security audits and tooling | 728 members (2024); over 90 certified offerings (2026-10-01) | sponsored-team §6; collaboration §4 |
 | Debian, with Freexian LTS | Debian pays none of its members; LTS funded by sponsors outside the project | LTS contributors, through Freexian | paid long-term support as a separate service with monthly public reports | not read | 1,000 voting developers (2006); 1,030 (2025) | quality-system §7; histories annex §B, §E |
@@ -51,3 +51,19 @@ it from gaining control.
   same upstream with the same public tests; Debian keeps paid support outside the project and
   reports it monthly. The collaboration model's rules 2, 5 and 8 draw on these.
 - **Regulated and DIY tracks can coexist** when each carries its own label (Tidepool Loop).
+
+## Claims about these organisations that the sources do not support
+
+Read 2026-10-02. They circulate in summaries of these organisations; do not cite them without a
+source.
+
+| claim | what the source says |
+|---|---|
+| the Open Home Foundation says its salaried staff give volunteers "more room to make creative contributions" | not found on its [structure](https://www.openhomefoundation.org/structure/), [about](https://www.openhomefoundation.org/about/) or announcement pages |
+| the OSMF hiring rules separate "paid execution" from "paid authority" | a paraphrase. The [Hiring Framework](https://osmfoundation.org/wiki/Hiring_Framework) says the foundation wants "to avoid paid leadership or decision-making positions" |
+| OSMF listed "dependence on paid capacity" among the risks of hiring | not in the [2020 osmf-talk post](https://lists.openstreetmap.org/pipermail/osmf-talk/2020-May/006816.html) that lists the risks |
+| a CNCF "report" found multi-organisation projects reach higher maturity | the source is a [CNCF blog post of 2026-08-26](https://www.cncf.io/blog/2026/08/26/governance-guidance-for-cncf-projects-choosing-the-right-structure-for-your-projects-size-and-stage/) drawing on governance reviews of 72 projects; the 2.07× figure is the *graduation* rate of projects with maintainers from several organisations at sandbox entry (59.1% against 28.6%) |
+| Apache: "if it didn't happen on the mailing list, it didn't happen" | the [Incubator committer guide](https://incubator.apache.org/guides/committer.html) says "If it isn't on the mailing list, it didn't happen." |
+
+OpenMRS's "typically contribute 40–50% of all updates in each OpenMRS release" is on its
+[get involved](https://openmrs.org/get-involved/) page (read 2026-10-02), and is supported.

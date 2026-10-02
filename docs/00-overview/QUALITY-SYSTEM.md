@@ -31,8 +31,8 @@ paid for today.
 
 ## 2. Why the whole stack
 
-The census of 2026-09-30 ([record](../60-research/programme/stack-census-2026-09-30.md)) measured 63
-repositories, 56 of them active in the last year, with 219 human authors between them:
+The census of 2026-09-30 ([record](../60-research/programme/stack-census-2026-09-30.md)) measured 62
+repositories (63 listed; a fork kept level with its upstream counts once), 56 of them active in the last year, with 219 human authors between them:
 
 - **The same work is done many times, separately.** 14 device protocols have 41 independent
   implementations, and for 10 of them no two implementations test against the same bytes. Six code
@@ -221,7 +221,7 @@ drawn from the histories in §7 and the [precedents](PRECEDENTS.md):
    outside priorities either; it goes to whatever its volunteers, or their employers, can fund.
 2. **Fairness.** Debian's objection came from a project of about 1,000 voting developers, and
    Debian later accepted paid long-term support run outside the project (§7). The census counted 219
-   human authors across 63 repositories in the last year, and cgm-remote-monitor had 11 to 18 a year
+   human authors across 62 repositories in the last year, and cgm-remote-monitor had 11 to 18 a year
    from 2021 to 2025 ([sponsored-team proposal §2](SPONSORED-TEAM-PROPOSAL.md#2-why-now)). At that
    scale the question is less who is paid than whether the dated work in §6 gets done.
 3. **Motivation is not bought.** Agreed for the work people choose. Paid roles here cover the work

@@ -158,7 +158,9 @@ follows the procedure piloted on 2026-09-25:
   instance. Security advisory detail is withheld until a release with the fix ships and the
   advisory is published. The withheld text stays in history at a named commit, and the index of
   what is withheld is the [advisory response pack](../30-design/remedial/advisory-response-2026-09/README.md).
-- **Private material**, such as BF-72's disposition, is held outside version control.
+- **Private material**, such as BF-72's disposition, is held outside version control. A page that
+  mentions such material says it is withheld under this rule, so a reader does not take a withheld
+  security decision for an unrecorded one.
 
 ### 3.9 Automated controls
 

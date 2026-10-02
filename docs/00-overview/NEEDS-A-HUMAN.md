@@ -146,7 +146,8 @@ of #8754.
 
 BF-72: an unauthenticated query can occupy the database for minutes. It is live on 15.0.8 and on
 `dev`. Mechanism only is recorded in this public repository. The maintainer has decided its
-disposition; the details are held outside version control.
+disposition; the details are held outside this public repository while the defect is live on the
+shipping release, under the disclosure rule ([DOCUMENT-CONTROL §3.8](DOCUMENT-CONTROL.md#38-external-and-restricted-documents)).
 
 ### `BFQ-09`, `A7A-7` — `unsettled`, which is not the same as open
 
