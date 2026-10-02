@@ -180,7 +180,7 @@ cover more than one `BF-`:
 | `BFQ-98` | `merged-upstream` | BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix does not rep |
 | `BFQ-99` | `blocked` | bf/profile-object-id - a profile posted with its own _id is stored as an ObjectId, and str |
 | `BFQ-CAP01` | `not-started` | CAP-01 - Nightscout cannot be served from a sub-path |
-| `BFQ-CONFIG-DOCS` | `ready-to-push` | bf/config-docs-truth - the documentation half of BF-46, BF-48, BF-49 and the fixes for BF- |
+| `BFQ-CONFIG-DOCS` | `ready-to-push` | bf/config-docs-truth - documentation for BF-46, BF-48, BF-49, BF-74, BF-78, BF-81 and the  |
 | `BFQ-CONNECTOR` | `gate-not-met` | BF-42, BF-43 - master pins the leaking connector, with a violated axios override |
 | `BFQ-ENV` | `in-progress` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies |
 | `BFQ-MINIMED` | `not-started` | BF-44, BF-45, BF-85 - MiniMed ingestion divergences and the CareLink zero reading |

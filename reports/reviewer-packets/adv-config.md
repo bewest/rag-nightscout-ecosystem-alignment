@@ -107,22 +107,24 @@ The router-wide read gate BF-78 is about is present on the shipping release.
 
 ## Notes carried on the item
 
-BF-77 is merged into dev by #8746 (74fc6619, 2026-09-21) and not released. The
-item stays needs-decision for BF-81: its wording (README.md and the swagger
-documents) is the maintainer's to write, and there is no branch. BF-78 is
-decided (below) and not yet built: no branch documents it or adds the boot
-warning. Decisions: - 2026-09-23 (maintainer): BF-78 (the careportal role) is
-documented and warned about at boot; no behaviour change. - 2026-09-21
-(maintainer): BF-81 filed as the shared root of the other two, and BF-77's
-second notice wording for the readable+careportal configuration approved.
-Reproduced on v15.0.8 and dev 59430336, mongod 7.0, with both controls in the
-same run. BF-77: default -> notifyCount 1, title "Nightscout readable by
-world" (positive control); TREATMENTS_AUTH=off -> notifyCount 0 while
-anonymous read is 200 and anonymous POST /api/v1/treatments is 200 with the
-record stored; AUTH_DEFAULT_ROLES=denied -> notifyCount 0, correctly (negative
-control, so absence in the middle row is attributable to the string compare).
-These are documented configurations, not a bypass. BF-78, anonymous POST
-/api/v1/treatments: `readable careportal` 200 stored, `careportal` 401,
+2026-10-02 (maintainer): draft README wording for BF-78 and BF-81 goes into
+15.0.9 on bf/config-docs-truth (BFQ-CONFIG-DOCS); BF-78's boot warning is
+after 15.0.9. BF-77 is merged into dev by #8746 (74fc6619, 2026-09-21) and not
+released. The item stays needs-decision for BF-81: its wording (README.md and
+the swagger documents) is the maintainer's to write, and there is no branch.
+BF-78 is decided (below) and not yet built: no branch documents it or adds the
+boot warning. Decisions: - 2026-09-23 (maintainer): BF-78 (the careportal
+role) is documented and warned about at boot; no behaviour change. -
+2026-09-21 (maintainer): BF-81 filed as the shared root of the other two, and
+BF-77's second notice wording for the readable+careportal configuration
+approved. Reproduced on v15.0.8 and dev 59430336, mongod 7.0, with both
+controls in the same run. BF-77: default -> notifyCount 1, title "Nightscout
+readable by world" (positive control); TREATMENTS_AUTH=off -> notifyCount 0
+while anonymous read is 200 and anonymous POST /api/v1/treatments is 200 with
+the record stored; AUTH_DEFAULT_ROLES=denied -> notifyCount 0, correctly
+(negative control, so absence in the middle row is attributable to the string
+compare). These are documented configurations, not a bypass. BF-78, anonymous
+POST /api/v1/treatments: `readable careportal` 200 stored, `careportal` 401,
 `denied careportal` 401, `denied` 401. BF-81: the configuration surface
 carries two authorization-shaped settings with adjacent names -
 AUTH_DEFAULT_ROLES, which is the boundary, and AUTHENTICATION_PROMPT_ON_LOAD,

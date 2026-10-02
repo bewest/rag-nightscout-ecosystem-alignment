@@ -55,7 +55,7 @@ release.
 
 | id | what | claimed state | waiting for | PR |
 |---|---|---|---|---|
-| `BFQ-CONFIG-DOCS` | bf/config-docs-truth - the documentation half of BF-46, BF-48, BF-49 and the fix | `ready-to-push` | Maintainer | &mdash; |
+| `BFQ-CONFIG-DOCS` | bf/config-docs-truth - documentation for BF-46, BF-48, BF-49, BF-74, BF-78, BF-8 | `ready-to-push` | Maintainer | &mdash; |
 
 <!-- END GENERATED: release-waits -->
 

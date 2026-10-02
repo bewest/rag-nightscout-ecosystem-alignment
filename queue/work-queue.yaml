@@ -7876,6 +7876,9 @@ items:
       - docs/30-design/remedial/advisory-response-2026-09/README.md
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-02 (maintainer): BF-74 is documented, not code-changed: draft
+      README and swagger wording on bf/config-docs-truth (BFQ-CONFIG-DOCS)
+      says API v3 settings are stored as sent and untrusted for display.
       Needs a decision on BF-73 and BF-74 (see review); the metadata
       part is decided and waits on a human step. Both advisories' fixes
       shipped in 15.0.8.
@@ -7991,6 +7994,9 @@ items:
       - docs/30-design/remedial/advisory-response-2026-09/README.md
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-02 (maintainer): draft README wording for BF-78 and BF-81 goes
+      into 15.0.9 on bf/config-docs-truth (BFQ-CONFIG-DOCS); BF-78's boot
+      warning is after 15.0.9.
       BF-77 is merged into dev by #8746 (74fc6619, 2026-09-21) and not
       released. The item stays needs-decision for BF-81: its wording
       (README.md and the swagger documents) is the maintainer's to
@@ -11494,7 +11500,7 @@ items:
       Filed 2026-10-02. Whether it goes into 15.0.9 is being put to the
       maintainer by session -d4; not in RT-0's blocks_on until decided.
   - id: BFQ-CONFIG-DOCS
-    title: "bf/config-docs-truth - the documentation half of BF-46, BF-48, BF-49 and the fixes for BF-50, BF-51, for 15.0.9"
+    title: "bf/config-docs-truth - documentation for BF-46, BF-48, BF-49, BF-74, BF-78, BF-81 and the fixes for BF-50, BF-51, for 15.0.9"
     parcel: register-open
     repo: cgm-remote-monitor
     branch: bf/config-docs-truth
@@ -11504,12 +11510,17 @@ items:
     pr: []
     ships_to_operators_today: true
     blast_radius: >
-      Documentation only, five commits (one per id) on dev ca6fcfaf:
+      Documentation only, eight commits (one per id) on dev ca6fcfaf, head
+      e42144ff:
       README.md +33/-4 (API v3 settings, webhook settings, the HSTS
       spelling, ENTRIES_COLLECTION instead of MONGODB_COLLECTION),
       azuredeploy.json (uses its WEBSITE_NODE_DEFAULT_VERSION parameter),
-      lib/api3/swagger.yaml and swagger.json (corrected settings text). No
-      .js change.
+      lib/api3/swagger.yaml and swagger.json (corrected settings text); and,
+      as draft wording for the maintainer to edit in the PR, BF-81
+      (AUTH_DEFAULT_ROLES is the boundary, AUTHENTICATION_PROMPT_ON_LOAD, the
+      seven roles), BF-78 (careportal, devicestatus-upload and activity do
+      nothing without readable) and BF-74 (API v3 settings are stored as
+      sent). No .js change.
     review: maintainer
     operator_visible: >
       The setup documentation now names the settings Nightscout actually
@@ -11517,12 +11528,12 @@ items:
       Azure deploy template uses the Node version you choose.
     semver: patch
     semver_reason: documentation and a deploy template parameter
-    register: [BF-46, BF-48, BF-49, BF-50, BF-51]
+    register: [BF-46, BF-48, BF-49, BF-50, BF-51, BF-74, BF-78, BF-81]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official cat-file -e c102d98f
+      - run: git -C externals/cgm-remote-monitor-official cat-file -e e42144ff
         kind: static
         describe: >
-          The branch head c102d98f exists in the clone (a presence check). The
+          The branch head e42144ff exists in the clone (a presence check). The
           config-surface-census gate's readme (BF-50) and azure (BF-51) arms
           decide; its api3, webhook and hsts arms stay red until the code half
           (BFQ-46, BFQ-ENV) is done.
@@ -11535,6 +11546,10 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - reports/phase0-pr-bodies/config-docs-truth.md
     notes: >
+      2026-10-02 (maintainer, relayed by session -d4): draft README wording
+      for BF-74, BF-78 and BF-81 added (1c09b22d, b09c0af9, e42144ff), for
+      the maintainer to edit in the PR; full suite 3534/0/4. BF-78's boot
+      warning is after 15.0.9.
       Decided 2026-10-02 (maintainer, relayed by session -d4): goes into
       15.0.9; in RT-0's blocks_on. Split out of BFQ-46 and BFQ-ENV so that
       the release waits on this branch only: their code half (env.js routing

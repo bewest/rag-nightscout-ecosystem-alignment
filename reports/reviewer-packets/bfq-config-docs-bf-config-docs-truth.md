@@ -13,8 +13,8 @@
 
 # Review packet — BFQ-CONFIG-DOCS
 
-**bf/config-docs-truth - the documentation half of BF-46, BF-48, BF-49 and the
-fixes for BF-50, BF-51, for 15.0.9**
+**bf/config-docs-truth - documentation for BF-46, BF-48, BF-49, BF-74, BF-78,
+BF-81 and the fixes for BF-50, BF-51, for 15.0.9**
 
 | | |
 |---|---|
@@ -23,16 +23,20 @@ fixes for BF-50, BF-51, for 15.0.9**
 | base | `official/dev@ca6fcfaf` |
 | claimed state | `ready-to-push` — a claim; `make queue-status ID=BFQ-CONFIG-DOCS` is the measurement |
 | semver | `patch` |
-| register entries | `BF-46`, `BF-48`, `BF-49`, `BF-50`, `BF-51` |
+| register entries | `BF-46`, `BF-48`, `BF-49`, `BF-50`, `BF-51`, `BF-74`, `BF-78`, `BF-81` |
 | operator exposure | **reaches an operator on today's release** |
 
 ## What this changes
 
-Documentation only, five commits (one per id) on dev ca6fcfaf: README.md
-+33/-4 (API v3 settings, webhook settings, the HSTS spelling,
+Documentation only, eight commits (one per id) on dev ca6fcfaf, head e42144ff:
+README.md +33/-4 (API v3 settings, webhook settings, the HSTS spelling,
 ENTRIES_COLLECTION instead of MONGODB_COLLECTION), azuredeploy.json (uses its
 WEBSITE_NODE_DEFAULT_VERSION parameter), lib/api3/swagger.yaml and
-swagger.json (corrected settings text). No .js change.
+swagger.json (corrected settings text); and, as draft wording for the
+maintainer to edit in the PR, BF-81 (AUTH_DEFAULT_ROLES is the boundary,
+AUTHENTICATION_PROMPT_ON_LOAD, the seven roles), BF-78 (careportal,
+devicestatus-upload and activity do nothing without readable) and BF-74 (API
+v3 settings are stored as sent). No .js change.
 
 ## Why that semver
 
@@ -50,9 +54,9 @@ maintainer
 
 ## What was measured
 
-**`git -C externals/cgm-remote-monitor-official cat-file -e c102d98f`** &nbsp;·&nbsp; kind: `static`
+**`git -C externals/cgm-remote-monitor-official cat-file -e e42144ff`** &nbsp;·&nbsp; kind: `static`
 
-The branch head c102d98f exists in the clone (a presence check). The config-
+The branch head e42144ff exists in the clone (a presence check). The config-
 surface-census gate's readme (BF-50) and azure (BF-51) arms decide; its api3,
 webhook and hsts arms stay red until the code half (BFQ-46, BFQ-ENV) is done.
 
@@ -71,10 +75,14 @@ webhook and hsts arms stay red until the code half (BFQ-46, BFQ-ENV) is done.
 
 ## Notes carried on the item
 
-Decided 2026-10-02 (maintainer, relayed by session -d4): goes into 15.0.9; in
-RT-0's blocks_on. Split out of BFQ-46 and BFQ-ENV so that the release waits on
-this branch only: their code half (env.js routing for API3_* and WEBHOOK_*,
-the HSTS alias) is after 15.0.9 and stays on those items. Not pushed.
+2026-10-02 (maintainer, relayed by session -d4): draft README wording for
+BF-74, BF-78 and BF-81 added (1c09b22d, b09c0af9, e42144ff), for the
+maintainer to edit in the PR; full suite 3534/0/4. BF-78's boot warning is
+after 15.0.9. Decided 2026-10-02 (maintainer, relayed by session -d4): goes
+into 15.0.9; in RT-0's blocks_on. Split out of BFQ-46 and BFQ-ENV so that the
+release waits on this branch only: their code half (env.js routing for API3_*
+and WEBHOOK_*, the HSTS alias) is after 15.0.9 and stays on those items. Not
+pushed.
 
 ---
 
