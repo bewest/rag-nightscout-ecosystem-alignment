@@ -5509,10 +5509,10 @@ items:
     title: BF-72 - an unauthenticated $regex can spend minutes of database CPU
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ''
+    branch: bf/regex-limits
     base: origin/dev@59430336
     worktree: externals/work/crm-advisory
-    state: needs-decision
+    state: in-progress
     ships_to_operators_today: true
     blast_radius: >
       No line is wrong, which is why this is needs-decision and not not-started. $regex and
@@ -5591,6 +5591,13 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-02 (maintainer): start the adoption branch for after 15.0.9.
+      bf/regex-limits off dev 25fc41d9 in externals/work/crm-bf72, being
+      built by a background agent: Ruben Sutton's bddbdfe7 and 0182bb07
+      picked with his authorship, then our adjustments as separate commits
+      (time-limit errors answered without driver text; server-built regexes
+      not refused), after a check of which clients send regex filters. Not
+      pushed. Covers GHSA-47gq (API v3 re) as well.
       2026-10-02: a candidate fix exists in the private fork of
       GHSA-r3gv (branch advisory-fix-1, by Ruben Sutton, code2344:
       bddbdfe7 2026-09-23 and 0182bb07 2026-10-02, on v15.0.8 92d08342, not
