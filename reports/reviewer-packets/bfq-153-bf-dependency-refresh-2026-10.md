@@ -11,7 +11,7 @@
   ============================================================================
 -->
 
-# Review packet — BFQ-153
+# Review packet — BFQ-153 (PR #8794)
 
 **BF-153 - dependency advisories published after the 2026-09-27 triage (BF-147
 style refresh)**
@@ -21,7 +21,7 @@ style refresh)**
 | repository | `cgm-remote-monitor` |
 | branch | `bf/dependency-refresh-2026-10` |
 | base | `official/dev@50bc1084` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=BFQ-153` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=BFQ-153` is the measurement |
 | semver | `patch` |
 | register entries | `BF-153` |
 | operator exposure | **reaches an operator on today's release** |
@@ -77,10 +77,14 @@ tests/dependency-overrides.test.js on the installed tree decides).
 
 ## Notes carried on the item
 
-2026-10-01 (maintainer): prepare it; whether it goes into 15.0.9 is decided on
-the measured result. moment stays at 2.30.1 (2026-10-01): no request input
-reaches moment.locale on dev (BF-31), and 2.31.0 changes parsing and locale
-display output. Not in RT-0's blocks_on until decided. Branch bf/dependency-
+2026-10-02: pushed and opened as #8794 by the maintainer (head 7cb8d0bc =
+22d82889 plus a merge of dev 839a1565, which brings only #8793 and touches no
+package file); taken into 15.0.9, so in RT-0's blocks_on. Dependabot #8787 and
+#8789 (against master) to be closed with a pointer once it merges. 2026-10-01
+(maintainer): prepare it; whether it goes into 15.0.9 is decided on the
+measured result. moment stays at 2.30.1 (2026-10-01): no request input reaches
+moment.locale on dev (BF-31), and 2.31.0 changes parsing and locale display
+output. Not in RT-0's blocks_on until decided. Branch bf/dependency-
 refresh-2026-10 22d82889 (one commit on 50bc1084), 26 lockfile version
 changes, all patch or minor; @types/tough-cookie's dev flag, which npm 10 and
 11 both flip on dev's own package.json, is kept as on dev. Not pushed. PR

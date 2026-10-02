@@ -44,10 +44,10 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `not-started` | 51 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-124, BFQ-127, BFQ-137, BFQ-145, BFQ-149, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
 | `in-progress` | 1 | OID-LAB |
 | `gate-not-met` | 11 | RT-REBASE, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
-| `ready-to-push` | 5 | P0-C-REMEDIATE, T30-AUTH, BFQ-151, BFQ-153, WS-LAB |
+| `ready-to-push` | 4 | P0-C-REMEDIATE, T30-AUTH, BFQ-151, WS-LAB |
 | `blocked` | 16 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101 |
-| `in-flight-upstream` | 1 | BFQ-73 |
-| `merged-upstream` | 77 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-125, BFQ-126, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
+| `in-flight-upstream` | 1 | BFQ-153 |
+| `merged-upstream` | 78 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-125, BFQ-126, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-73, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 9 | RT-PROPAGATION, RT-0, T30-RESEARCH, BFQ-72, BFQ-95, ADV-XSS-META, ADV-CONFIG, BFQ-152, DEPENDABOT-CONFIG |
 | `done` | 4 | P0-TAG, DOC-VIEWS, DOC-LINKS, RT-SOAK |
 | `unsettled` | 3 | BFQ-09, A7A-7, BFQ-94 |
@@ -113,7 +113,6 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-147** BF-147 - two package.json overrides hold ajv and request's form-data inside published advisory ranges
 - **BFQ-149** BF-149 - the Day to Day report draws a cancelled or replaced temp target or override for its whole entered duration
 - **BFQ-151** BF-151 - one /api/v1/times or /slice request can block the server for seconds (brace expansion has no bound), for 15.0.9
-- **BFQ-73** BF-73 - error responses carry a stack trace and server paths in production, for 15.0.9
 - **BFQ-153** BF-153 - dependency advisories published after the 2026-09-27 triage (BF-147 style refresh)
 - **BFQ-152** BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission
 - **BFQ-134** BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
@@ -1390,7 +1389,7 @@ that costs.
 | worktree | `externals/cgm-remote-monitor-official` |
 | semver | `minor` |
 | review | maintainer, and at least one human reviewer who is not the author. Release PR #8598 is authored by AndyLow91 and approved twice by the maintainer (2026-09-26 00:39Z) at head e3adc91d. Integration PR #8605 carries the modernization cuts (RT-3), not this release. |
-| blocks on | `RT-VERSION`, `BFQ-102`, `BFQ-114`, `BFQ-118`, `BFQ-119`, `RT-PR-8419`, `RT-PR-8530`, `BFQ-120`, `BFQ-126`, `BFQ-134`, `BFQ-106`, `BFQ-129`, `BFQ-125`, `BFQ-123`, `BFQ-122`, `BFQ-136`, `BFQ-128`, `RT-PR-8778`, `BFQ-80`, `BFQ-121`, `RT-PR-8781`, `BFQ-142`, `BFQ-146`, `RT-PR-8788`, `BFQ-108`, `RT-PR-8790`, `BFQ-151`, `BFQ-73` |
+| blocks on | `RT-VERSION`, `BFQ-102`, `BFQ-114`, `BFQ-118`, `BFQ-119`, `RT-PR-8419`, `RT-PR-8530`, `BFQ-120`, `BFQ-126`, `BFQ-134`, `BFQ-106`, `BFQ-129`, `BFQ-125`, `BFQ-123`, `BFQ-122`, `BFQ-136`, `BFQ-128`, `RT-PR-8778`, `BFQ-80`, `BFQ-121`, `RT-PR-8781`, `BFQ-142`, `BFQ-146`, `RT-PR-8788`, `BFQ-108`, `RT-PR-8790`, `BFQ-151`, `BFQ-73`, `BFQ-153` |
 
 **Blast radius.** 15.0.9 is everything in origin/master..origin/dev: master 92d08342 (tag 15.0.8) to dev 7000eb18 (merge of #8786), measured 2026-09-27: 507 commits, 86 first-parent merges (all PR merges), 297 files, +28363/-1722. Among them the programme's backfix PRs (#8733-#8740 and #8743-#8746 from 2026-09-17 to 2026-09-21; #8748-#8753, #8755-#8757 and #8759 on 2026-09-23; #8760-#8762 and #8754 (with #8763 and #8765 folded in) on 2026-09-24; #8758 and #8766-#8770 on 2026-09-25; #8771-#8777, #8779, #8780, #8783 and #8784 on 2026-09-26; the test-only #8785 and #8786 (BF-147) on 2026-09-27), #8741, #8778 and #8781 from outside contributors on the same work, #8568, #8419 and #8530 carried by the 2026-09-25 decision, the D3 5.16 -> 7.9 chart migration (RT-D3), the opt-in debug logging change (#8726), the connector pin to exactly 0.1.0 (#8762), profile, treatment-query and clock fixes, report and chart fixes, dependency updates and translations. Crowdin #8730 is held out. The candidate is dev 7000eb18: RC run 020 ran on ce30a94d; #8785 changes only tests/boluswizardpreview.test.js, and #8786 changes two dependency overrides and nine locked versions (its own nine-cell CI; the production bundle is byte- identical). Reproduce with `git -C externals/cgm-remote-monitor-official log --first-parent --oneline origin/master..origin/dev` and `git diff --shortstat origin/master origin/dev`.
 
@@ -2194,8 +2193,8 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-147` | BF-147 - two package.json overrides hold ajv and request's form-data inside published advisory ranges | `merged-upstream` | `bf/override-advisory-pins` | patch | 0 run + 1 no-gate |
 | `BFQ-149` | BF-149 - the Day to Day report draws a cancelled or replaced temp target or override for its whole entered duration | `not-started` | `-` | patch | 1 run + 1 no-gate |
 | `BFQ-151` | BF-151 - one /api/v1/times or /slice request can block the server for seconds (brace expansion has no bound), for 15.0.9 | `ready-to-push` | `bf/braces-expansion-cap` | patch | 1 run + 1 no-gate |
-| `BFQ-73` | BF-73 - error responses carry a stack trace and server paths in production, for 15.0.9 | `in-flight-upstream` | `bf/production-error-handler` | patch | 1 run + 1 no-gate |
-| `BFQ-153` | BF-153 - dependency advisories published after the 2026-09-27 triage (BF-147 style refresh) | `ready-to-push` | `bf/dependency-refresh-2026-10` | patch | 1 run + 1 no-gate |
+| `BFQ-73` | BF-73 - error responses carry a stack trace and server paths in production, for 15.0.9 | `merged-upstream` | `bf/production-error-handler` | patch | 1 run + 1 no-gate |
+| `BFQ-153` | BF-153 - dependency advisories published after the 2026-09-27 triage (BF-147 style refresh) | `in-flight-upstream` | `bf/dependency-refresh-2026-10` | patch | 1 run + 1 no-gate |
 | `BFQ-152` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission | `needs-decision` | `-` | n/a | 0 run + 1 no-gate |
 | `DEPENDABOT-CONFIG` | Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev | `needs-decision` | `-` | n/a | 1 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `merged-upstream` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
@@ -4701,14 +4700,14 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/production-error-handler` |
 | base | `official/dev@50bc1084` |
 | worktree | `-` |
 | semver | `patch` |
 | review | maintainer |
-| ships to operators today | **yes** |
+| ships to operators today | no (pre-release) |
 | register | `BF-73` |
 
 **Blast radius.** lib/server/app.js: errorhandler only when NODE_ENV is development; otherwise a final handler that keeps the status, sends a short message without stack or paths, and logs the full error. Tests that boot the app.
@@ -4719,21 +4718,21 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[static]` `git -C externals/cgm-remote-monitor-official cat-file -e bf/production-error-handler:lib/server/error-handler.js`
-  - The branch carries the production error handler (a presence check; RED on origin/dev 50bc1084). The tests decide.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor dc64e82d origin/dev`
+  - #8793's head dc64e82d is contained in origin/dev (merged 2026-10-02 as 839a1565).
 - **NO GATE** &mdash; Measured 2026-10-01 on v15.0.8 and dev 3014f883 (NODE_ENV= production, readable and denied): a malformed body answers 400 with 10 stack frames and the install path, before any auth check. The branch's own tests decide: on dc64e82d (Node 22.23.2, MongoDB 7.0.43) tests/error-handler.test.js 13 cases; the 4 that boot the app fail with 50bc1084's lib/server/app.js (stack in JSON, HTML and text); full suite 3502/0/3 on a fresh database (dev 3489/0/3). Live, NODE_ENV=production and AUTH_DEFAULT_ROLES=denied: a malformed body answers 400 {"error":{"message":"Unexpected end of JSON input", "status":400}}, no stack.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-02: pushed and opened as #8793 by the maintainer (head dc64e82d, MERGEABLE). Advisory reply drafted outside version control. Decided 2026-10-01 (maintainer): fix for 15.0.9; this settles the BF-73 half of ADV-XSS-META's decision. In RT-0's blocks_on. Branch bf/production-error-handler dc64e82d, one commit on dev 50bc1084 (new lib/server/error-handler.js, app.js -5/+3, tests), not pushed. PR body: reports/phase0-pr-bodies/production-error- handler.md. Operator-visible for the release notes: with NODE_ENV unset (some hosts), error pages also stop showing the stack; it is in the server log. A 4xx an app path raises without err.expose now answers with the standard reason phrase instead of its own message. Follow-up, not in this branch: the v1 'Mongo Error' / 'Query Error' replies carry the driver's error text (database host and port when unreachable).
+**Notes.** 2026-10-02: merged into dev by the maintainer as 839a1565 (10:09 PDT). 2026-10-02: pushed and opened as #8793 by the maintainer (head dc64e82d, MERGEABLE). Advisory reply drafted outside version control. Decided 2026-10-01 (maintainer): fix for 15.0.9; this settles the BF-73 half of ADV-XSS-META's decision. In RT-0's blocks_on. Branch bf/production-error-handler dc64e82d, one commit on dev 50bc1084 (new lib/server/error-handler.js, app.js -5/+3, tests), not pushed. PR body: reports/phase0-pr-bodies/production-error- handler.md. Operator-visible for the release notes: with NODE_ENV unset (some hosts), error pages also stop showing the stack; it is in the server log. A 4xx an app path raises without err.expose now answers with the standard reason phrase instead of its own message. Follow-up, not in this branch: the v1 'Mongo Error' / 'Query Error' replies carry the driver's error text (database host and port when unreachable).
 
 ### `BFQ-153` &mdash; BF-153 - dependency advisories published after the 2026-09-27 triage (BF-147 style refresh)
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/dependency-refresh-2026-10` |
 | base | `official/dev@50bc1084` |
@@ -4760,7 +4759,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `releases/cgm-remote-monitor-15.0.9/contents.md`
 
-**Notes.** 2026-10-01 (maintainer): prepare it; whether it goes into 15.0.9 is decided on the measured result. moment stays at 2.30.1 (2026-10-01): no request input reaches moment.locale on dev (BF-31), and 2.31.0 changes parsing and locale display output. Not in RT-0's blocks_on until decided. Branch bf/dependency- refresh-2026-10 22d82889 (one commit on 50bc1084), 26 lockfile version changes, all patch or minor; @types/tough-cookie's dev flag, which npm 10 and 11 both flip on dev's own package.json, is kept as on dev. Not pushed. PR body: reports/phase0-pr-bodies/dependency-refresh-2026-10.md.
+**Notes.** 2026-10-02: pushed and opened as #8794 by the maintainer (head 7cb8d0bc = 22d82889 plus a merge of dev 839a1565, which brings only #8793 and touches no package file); taken into 15.0.9, so in RT-0's blocks_on. Dependabot #8787 and #8789 (against master) to be closed with a pointer once it merges. 2026-10-01 (maintainer): prepare it; whether it goes into 15.0.9 is decided on the measured result. moment stays at 2.30.1 (2026-10-01): no request input reaches moment.locale on dev (BF-31), and 2.31.0 changes parsing and locale display output. Not in RT-0's blocks_on until decided. Branch bf/dependency- refresh-2026-10 22d82889 (one commit on 50bc1084), 26 lockfile version changes, all patch or minor; @types/tough-cookie's dev flag, which npm 10 and 11 both flip on dev's own package.json, is kept as on dev. Not pushed. PR body: reports/phase0-pr-bodies/dependency-refresh-2026-10.md.
 
 ### `BFQ-152` &mdash; BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission
 

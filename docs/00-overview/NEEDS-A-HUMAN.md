@@ -27,11 +27,11 @@ they need is a release, and that is one item — `RT-0` — which is listed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 15 items
+### Maintainer &mdash; 14 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
-| `BFQ-73` | `in-flight-upstream` | BF-73 - error responses carry a stack trace and server paths in production, for  | #8793 |
+| `BFQ-153` | `in-flight-upstream` | BF-153 - dependency advisories published after the 2026-09-27 triage (BF-147 sty | #8794 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `BFQ-152` | `needs-decision` | BF-152 - API v3 settings are admin-only through search and history, readable by  | &mdash; |
@@ -40,7 +40,6 @@ they need is a release, and that is one item — `RT-0` — which is listed.
 | `RT-PROPAGATION` | `needs-decision` | How the release train reaches dev: merge dev into the cuts, or rebase the cuts o | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
 | `BFQ-151` | `ready-to-push` | BF-151 - one /api/v1/times or /slice request can block the server for seconds (b | &mdash; |
-| `BFQ-153` | `ready-to-push` | BF-153 - dependency advisories published after the 2026-09-27 triage (BF-147 sty | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `WS-LAB` | `ready-to-push` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | &mdash; |
@@ -77,7 +76,7 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 
 | PR | id | branch | what it fixes | who should review |
 |---|---|---|---|---|
-| **#8793** | `BFQ-73` | `bf/production-error-handler` | BF-73 - error responses carry a stack trace and server paths | Maintainer |
+| **#8794** | `BFQ-153` | `bf/dependency-refresh-2026-10` | BF-153 - dependency advisories published after the 2026-09-2 | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 

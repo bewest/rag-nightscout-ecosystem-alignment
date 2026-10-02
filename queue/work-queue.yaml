@@ -2891,7 +2891,7 @@ items:
           browser, not by Nightscout's own mocha suite, which cannot see the drag
           clamps (RT-D3 answered 2026-09-24; the suite gap is RT-D3-SUITE on cut
           1). Recording it as a no-gate keeps it from reading as covered.
-    blocks_on: [RT-VERSION, BFQ-102, BFQ-114, BFQ-118, BFQ-119, RT-PR-8419, RT-PR-8530, BFQ-120, BFQ-126, BFQ-134, BFQ-106, BFQ-129, BFQ-125, BFQ-123, BFQ-122, BFQ-136, BFQ-128, RT-PR-8778, BFQ-80, BFQ-121, RT-PR-8781, BFQ-142, BFQ-146, RT-PR-8788, BFQ-108, RT-PR-8790, BFQ-151, BFQ-73]
+    blocks_on: [RT-VERSION, BFQ-102, BFQ-114, BFQ-118, BFQ-119, RT-PR-8419, RT-PR-8530, BFQ-120, BFQ-126, BFQ-134, BFQ-106, BFQ-129, BFQ-125, BFQ-123, BFQ-122, BFQ-136, BFQ-128, RT-PR-8778, BFQ-80, BFQ-121, RT-PR-8781, BFQ-142, BFQ-146, RT-PR-8788, BFQ-108, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153]
     evidence:
       - releases/cgm-remote-monitor-15.0.9/contents.md
       - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
@@ -11028,9 +11028,9 @@ items:
     repo: cgm-remote-monitor
     branch: bf/production-error-handler
     base: official/dev@50bc1084
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8793]
-    ships_to_operators_today: true
+    ships_to_operators_today: false
     blast_radius: >
       lib/server/app.js: errorhandler only when NODE_ENV is development;
       otherwise a final handler that keeps the status, sends a short
@@ -11045,11 +11045,11 @@ items:
     semver_reason: error replies keep their status and message and lose the stack trace
     register: [BF-73]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official cat-file -e bf/production-error-handler:lib/server/error-handler.js
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor dc64e82d origin/dev
         kind: static
         describe: >
-          The branch carries the production error handler (a presence check;
-          RED on origin/dev 50bc1084). The tests decide.
+          #8793's head dc64e82d is contained in origin/dev (merged 2026-10-02
+          as 839a1565).
       - no-gate: >
           Measured 2026-10-01 on v15.0.8 and dev 3014f883 (NODE_ENV=
           production, readable and denied): a malformed body answers 400
@@ -11065,6 +11065,7 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-02: merged into dev by the maintainer as 839a1565 (10:09 PDT).
       2026-10-02: pushed and opened as #8793 by the maintainer (head
       dc64e82d, MERGEABLE). Advisory reply drafted outside version control.
       Decided 2026-10-01 (maintainer): fix for 15.0.9; this settles the
@@ -11084,8 +11085,8 @@ items:
     repo: cgm-remote-monitor
     branch: bf/dependency-refresh-2026-10
     base: official/dev@50bc1084
-    state: ready-to-push
-    pr: []
+    state: in-flight-upstream
+    pr: [8794]
     ships_to_operators_today: true
     blast_radius: >
       package.json overrides (ip-address, fast-uri, brace-expansion, the
@@ -11126,6 +11127,11 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - releases/cgm-remote-monitor-15.0.9/contents.md
     notes: >
+      2026-10-02: pushed and opened as #8794 by the maintainer (head
+      7cb8d0bc = 22d82889 plus a merge of dev 839a1565, which brings only
+      #8793 and touches no package file); taken into 15.0.9, so in RT-0's
+      blocks_on. Dependabot #8787 and #8789 (against master) to be closed
+      with a pointer once it merges.
       2026-10-01 (maintainer): prepare it; whether it goes into 15.0.9 is
       decided on the measured result. moment stays at 2.30.1 (2026-10-01):
       no request input reaches moment.locale on dev (BF-31), and 2.31.0

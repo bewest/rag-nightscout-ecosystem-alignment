@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 128 | 37 | 13 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 128 | 37 | 12 |
 | **Modernization** | `release-train` | 32 | 5 | 2 |
 | **Multitenant** | `tenancy` | 19 | 9 | 3 |
-| | **total** | **181** | **51** | **18** |
+| | **total** | **181** | **51** | **17** |
 
 <!-- END GENERATED: horizons -->
 
@@ -109,7 +109,7 @@ For somebody running Nightscout today:
 
 The size of that, from the register's §1 (the section whose defects reach existing operators) on
 2026-10-01 at `50bc1084`: **109 defects** (BF-12, invalid, and BF-41, closed, excluded) — 27 `open`,
-78 `merged`, 1 `partly merged`, 3 `fixed` (BF-52; BF-151 and BF-73 on their 15.0.9 branches). On 2026-09-26, 97 of the then 100 were present for every self-hoster on
+79 `merged`, 1 `partly merged`, 2 `fixed` (BF-52; BF-151 on its 15.0.9 branch). On 2026-09-26, 97 of the then 100 were present for every self-hoster on
 15.0.8, and BF-80, BF-106 and BF-142 existed only on `dev`; that split has not been re-derived
 since. Re-derive with
 `node tools/queue/gates/register-exposure-legend.js` before quoting it; it moves when entries are
@@ -167,7 +167,7 @@ cover more than one `BF-`:
 | `BFQ-149` | `not-started` | BF-149 - the Day to Day report draws a cancelled or replaced temp target or override for i |
 | `BFQ-151` | `ready-to-push` | BF-151 - one /api/v1/times or /slice request can block the server for seconds (brace expan |
 | `BFQ-152` | `needs-decision` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier |
-| `BFQ-153` | `ready-to-push` | BF-153 - dependency advisories published after the 2026-09-27 triage (BF-147 style refresh |
+| `BFQ-153` | `in-flight-upstream` | BF-153 - dependency advisories published after the 2026-09-27 triage (BF-147 style refresh |
 | `BFQ-40` | `merged-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `gate-not-met` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
 | `BFQ-47` | `merged-upstream` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
@@ -176,7 +176,6 @@ cover more than one `BF-`:
 | `BFQ-69` | `merged-upstream` | BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing |
 | `BFQ-71` | `gate-not-met` | BF-71 - any dateString key drops the default date window, and the window is not a control |
 | `BFQ-72` | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
-| `BFQ-73` | `in-flight-upstream` | BF-73 - error responses carry a stack trace and server paths in production, for 15.0.9 |
 | `BFQ-87` | `merged-upstream` | BF-87 - the root qs override holds the connector below its range and pins the server's que |
 | `BFQ-90` | `merged-upstream` | BF-90 - an alarm at a page with no reading throws in the client |
 | `BFQ-91` | `merged-upstream` | BF-91 - connector capture mode cannot find trace-axios for two sources |
@@ -205,7 +204,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  | 17 |  | 1 |  |  |  | **22** |
 | `release-train` | 5 |  | 5 |  | 5 |  | 13 | 2 | 1 |  |  | 1 | **32** |
-| `register-open` | 27 | 1 | 5 | 3 | 4 | 1 | 45 | 6 |  | 2 | 2 |  | **96** |
+| `register-open` | 27 | 1 | 5 | 2 | 4 | 1 | 46 | 6 |  | 2 | 2 |  | **96** |
 | `tenancy` | 9 |  |  | 1 | 7 |  |  | 1 |  | 1 |  |  | **19** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  | 2 |  |  |  | **10** |
 | `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |

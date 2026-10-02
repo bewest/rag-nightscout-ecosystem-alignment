@@ -1,4 +1,4 @@
-<!-- draft, not opened. Body for branch bf/dependency-refresh-2026-10 at 22d82889 (one commit on dev 50bc1084). This comment is hidden on GitHub. -->
+<!-- Body of #8794, branch bf/dependency-refresh-2026-10 (22d82889, merged with dev 839a1565 as 7cb8d0bc). This comment is hidden on GitHub. -->
 Seven `package.json` override entries move to the patch releases that fix advisories published after the 2026-09-27 triage (BF-147), and the lockfile picks up fixed releases of `webpack-dev-middleware` and `dompurify` within their declared ranges (BF-153). One commit on `dev` `50bc1084`. `npm audit --package-lock-only` (npm 11.12.1) goes from 20 findings (4 high) to 8 (0 high). The production bundle is byte-identical.
 
 ## What changes for you
