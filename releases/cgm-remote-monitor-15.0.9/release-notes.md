@@ -1199,6 +1199,17 @@ and many other software library updates.
   save records this way. The same on 15.0.8.
 - Filters asking "is this value present" understand only `true`, `false`, `1` and `0`.
 - Silencing an alarm from an app has no upper limit on how long it can be silenced for.
+- **A security check of this release reports two "high" findings that do not affect Nightscout.**
+  If you, your hosting service or a security tool run a check such as `npm audit` on 15.0.9, it
+  reports the same published notice twice (GHSA-86w9-cpqp-85rv, tracked by the project as
+  BF-154). The notice concerns how a library called node-forge checks one kind of digital
+  signature. Nightscout does not use that part of the library. node-forge is used only when Loop
+  remote commands are set up, to read your site's own Apple push-notification key and certificate,
+  and nothing in Nightscout asks it to check a signature. The project analysed this in the code,
+  so for Nightscout the finding is a false positive. No fixed version of node-forge has been
+  published yet, and the newer Apple push-notification library planned for the next releases
+  still uses the same version, so the update is deferred to that modernization work and will be
+  made once a fixed version exists. You do not need to do anything.
 
 ### Access tokens stored in plain text
 

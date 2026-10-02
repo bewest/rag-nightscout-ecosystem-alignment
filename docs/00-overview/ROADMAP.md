@@ -71,10 +71,10 @@ Before the tag, and not queue items of their own (they are in `RT-0`'s notes and
 3. The version class of #8772, #8775 and #8780: a minor change shipped under the patch number as an
    exception, as #8530 was, or a different class. The maintainer is collecting data.
 4. Re-approval of #8598 at `25fc41d9`.
-5. Whether the release notes name BF-154, the `node-forge` advisory GHSA-86w9-cpqp-85rv behind the
-   2 high among `npm audit`'s 10 findings on `25fc41d9`. It has no fixed release and Nightscout does
-   not call the affected function (read from the code), so it is filed as low and does not block
-   the release ([contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#node-forge-ghsa-86w9-cpqp-85rv)).
+5. Settled 2026-10-02 (maintainer): the release notes name BF-154, the `node-forge` advisory
+   GHSA-86w9-cpqp-85rv behind the 2 high among `npm audit`'s 10 findings on `25fc41d9`. It has no
+   fixed release and Nightscout does not call the affected function (read from the code), so it is
+   filed as low and does not block the release ([contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#node-forge-ghsa-86w9-cpqp-85rv)).
 6. The tag, by the maintainer. The release notes and tag message are drafted on `25fc41d9`.
 
 The other 8 `npm audit` findings are triaged in

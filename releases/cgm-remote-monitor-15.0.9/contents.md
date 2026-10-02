@@ -320,10 +320,12 @@ blocker (generated 2026-10-02). As of `dev` `25fc41d9` (2026-10-02), 15.0.9 wait
    `git log --no-merges official/master..official/dev -- CHANGELOG.md`), against the rule in
    [`../README.md`](../README.md#open-item-changelog-on-dev) that the changelog is generated at
    release time. No decision on it is recorded.
-6. **Whether the release notes name BF-154**, by the maintainer: the `node-forge` advisory behind
-   the 2 high among `npm audit`'s 10 findings on `25fc41d9`, filed as low because Nightscout does
-   not call the affected function ([below](#node-forge-ghsa-86w9-cpqp-85rv)). It is not a release
-   blocker: no fixed version exists.
+6. **BF-154 is named in the release notes** (decided 2026-10-02, maintainer), under Known issues:
+   the `node-forge` advisory behind the 2 high among `npm audit`'s 10 findings on `25fc41d9`, filed
+   as low because Nightscout does not call the affected function ([below](#node-forge-ghsa-86w9-cpqp-85rv)).
+   It is not a release blocker: no fixed version exists, and `@parse/node-apn` 8.1.0 (the
+   modernization line's version, and the latest) still depends on `node-forge` 1.4.0 exactly, so the
+   update waits for an upstream fix and is carried with the modernization work.
 7. **The tag**, by the maintainer.
 
 The [release notes](release-notes.md) and [tag message](tag-message.txt) are drafted on `25fc41d9`.

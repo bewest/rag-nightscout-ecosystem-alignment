@@ -4849,7 +4849,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Blocked on upstream: node-forge has no release outside the advisory range (2026-10-02). Raised by session -d4 the same day. Whether it is named as a known item in the 15.0.9 notes is the maintainer's call; it is not in RT-0's blocks_on because no change is possible and the vulnerable function is not called.
+**Notes.** 2026-10-02 (maintainer): named in the 15.0.9 release notes under Known issues, as not affecting Nightscout (the affected function is not called; analysed in the code). Deferred to the modernization work: @parse/node-apn 8.1.0, the latest and the modernization line's version, still depends on node-forge 1.4.0 exactly, so the update waits for an upstream fixed release. Blocked on upstream: node-forge has no release outside the advisory range (2026-10-02). Raised by session -d4 the same day. Whether it is named as a known item in the 15.0.9 notes is the maintainer's call; it is not in RT-0's blocks_on because no change is possible and the vulnerable function is not called.
 
 ### `BFQ-134` &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 
