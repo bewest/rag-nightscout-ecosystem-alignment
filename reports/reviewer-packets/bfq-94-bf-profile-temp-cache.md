@@ -78,9 +78,10 @@ commit on dev ca6fcfaf (lib/profilefunctions.js +6/-1; tests/profile-temp-
 cache.test.js, 4 tests, 3 fail on ca6fcfaf; break-it: reset only fails test 3,
 per-instance only fails 1-2). Full suite 3538/0/4. Harness
 tools/lab/bf94-browser/ (run 2 authoritative). PR body: reports/phase0-pr-
-bodies/profile-temp-cache.md. Whether it goes into 15.0.9 is being put to the
-maintainer; not in RT-0's blocks_on. Filed 2026-09-23, a side finding of the
-BF-09 measurement. Not BF-09.
+bodies/profile-temp-cache.md. 2026-10-02 (maintainer, relayed by session -d4):
+taken into 15.0.9; in RT-0's blocks_on. dev is still ca6fcfaf, so no merge
+before the push. Filed 2026-09-23, a side finding of the BF-09 measurement.
+Not BF-09.
 
 ---
 
