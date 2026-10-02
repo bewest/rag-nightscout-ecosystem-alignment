@@ -11010,6 +11010,10 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-02: dev a143d507 (with #8793 and #8794) merged into the branch
+      locally as fdf88f4e, not pushed; fresh npm ci on the new lockfile;
+      full suite 3532/0/4 (dev expected 3525 plus these 7); with
+      a143d507's lib/api/entries/index.js the 5 refusal tests fail again.
       Decided 2026-10-01 (maintainer): fix for 15.0.9. In RT-0's
       blocks_on. Branch bf/braces-expansion-cap 185e003a, one commit on dev
       50bc1084 (lib/api/entries/index.js +57/-2: count_patterns counts from

@@ -75,17 +75,20 @@ origin/dev 50bc1084). The tests decide.
 
 ## Notes carried on the item
 
-Decided 2026-10-01 (maintainer): fix for 15.0.9. In RT-0's blocks_on. Branch
-bf/braces-expansion-cap 185e003a, one commit on dev 50bc1084
-(lib/api/entries/index.js +57/-2: count_patterns counts from braces.parse
-without expanding, cap 2000; a whole day of minutes is 1440, the largest
-documented example 192), not pushed. PR body: reports/phase0-pr-bodies/braces-
-expansion-cap.md. Review notes: the counter reads braces 3.0.3's parse tree
-(ranges, commas, invalid, dollar), so a braces upgrade must re-run these
-tests; a single range over braces' own rangeLimit still answers 500 as on dev.
-Disclosure: the tests necessarily build an input that expands past the cap, so
-opening the PR publishes an easy trigger for 15.0.8; open it close to the tag,
-as #8743 was handled.
+2026-10-02: dev a143d507 (with #8793 and #8794) merged into the branch locally
+as fdf88f4e, not pushed; fresh npm ci on the new lockfile; full suite 3532/0/4
+(dev expected 3525 plus these 7); with a143d507's lib/api/entries/index.js the
+5 refusal tests fail again. Decided 2026-10-01 (maintainer): fix for 15.0.9.
+In RT-0's blocks_on. Branch bf/braces-expansion-cap 185e003a, one commit on
+dev 50bc1084 (lib/api/entries/index.js +57/-2: count_patterns counts from
+braces.parse without expanding, cap 2000; a whole day of minutes is 1440, the
+largest documented example 192), not pushed. PR body: reports/phase0-pr-
+bodies/braces-expansion-cap.md. Review notes: the counter reads braces 3.0.3's
+parse tree (ranges, commas, invalid, dollar), so a braces upgrade must re-run
+these tests; a single range over braces' own rangeLimit still answers 500 as
+on dev. Disclosure: the tests necessarily build an input that expands past the
+cap, so opening the PR publishes an easy trigger for 15.0.8; open it close to
+the tag, as #8743 was handled.
 
 ---
 
