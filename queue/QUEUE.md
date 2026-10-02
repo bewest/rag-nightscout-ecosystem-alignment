@@ -2756,8 +2756,8 @@ distinction is the only thing that makes the register mean anything - widening
 | state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/regex-limits` |
-| base | `origin/dev@59430336` |
-| worktree | `externals/work/crm-advisory` |
+| base | `official/dev@25fc41d9` |
+| worktree | `externals/work/crm-bf72` |
 | semver | `minor` |
 | review | SECURITY, and the same person who answered P0-K's sequencing question, because it is the same advisory. Disclosure-sensitive: a one-request unauthenticated denial of service against a default install, live on 15.0.8 and on dev, with no fix yet. The register describes the mechanism only; the reproducing patterns are deliberately not in any tracked file, and the probe is outside version control. A public issue or PR carrying the reproduction would publish a working attack against every unpatched Nightscout. The disclosure disposition was decided by the maintainer on 2026-09-23 and is held outside version control; the open decision is the fix shape. |
 | ships to operators today | **yes** |

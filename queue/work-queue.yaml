@@ -5510,8 +5510,8 @@ items:
     parcel: register-open
     repo: cgm-remote-monitor
     branch: bf/regex-limits
-    base: origin/dev@59430336
-    worktree: externals/work/crm-advisory
+    base: official/dev@25fc41d9
+    worktree: externals/work/crm-bf72
     state: in-progress
     ships_to_operators_today: true
     blast_radius: >
