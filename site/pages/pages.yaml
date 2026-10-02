@@ -15,7 +15,7 @@ pages:
   nightscout-ecosystem-programme.html:
     kind: living
     sources: [docs/00-overview/ECOSYSTEM-PROGRAMME.md]
-    source_commit: f4f620c2
+    source_commit: 30b384fe
     render: tools/site/render_programme.py
   cgm-remote-monitor-15.0.9-release-readiness-2026-09-27.html:
     kind: snapshot
