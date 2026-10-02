@@ -54,6 +54,12 @@ GENERATED_INDEX = "index.md"
 MARKER = "(not published)"
 IMAGE_MARKER = "(image not published)"
 NOINDEX = '<meta name="robots" content="noindex, nofollow">'
+PAGES_README = "site/pages/README.md"
+# Rich pages are standalone HTML without the site's menu, so each gets a bar
+# back to the site. Paths are relative to site/pages/ (use_directory_urls: false).
+PAGES_BAR = ('<nav aria-label="Site" style="font:13px/1.4 system-ui,-apple-system,\'Segoe UI\',sans-serif;'
+             'padding:8px 16px;border-bottom:1px solid rgba(127,127,127,.35)">'
+             '<a href="../../index.html">Site home</a> &middot; <a href="index.html">All pages</a></nav>')
 AXES = {"disclosure", "health-data", "consent", "correspondence", "noise"}
 # Tabs: top-level folders with at least this many staged pages+images get a
 # tab of their own; smaller ones are grouped under "More".
@@ -540,9 +546,11 @@ class Site:
         head_date, head_sha = git("log", "-1", "--format=%cs %h").split()
         for p in self.pages:
             sp = self.stage_as.get(p, p)
-            write(p, self.search.apply(sp, L.label(p, self.rewrite_markdown(p, raw[p])), L.kind_of(p)))
+            text = self.with_pages_listing(raw[p]) if p == PAGES_README else raw[p]
+            write(p, self.search.apply(sp, L.label(p, self.rewrite_markdown(p, text)), L.kind_of(p)))
         for p in self.passthrough:
             html = raw[p]
+            html = re.sub(r"(<body[^>]*>)", r"\1" + PAGES_BAR, html, count=1, flags=re.I)
             if 'name="robots"' not in html:
                 html, n = re.subn(r"(<head[^>]*>)", r"\1\n" + NOINDEX, html, count=1, flags=re.I)
                 if n == 0:
@@ -579,6 +587,36 @@ class Site:
                 shutil.rmtree(OUT)
             raise SystemExit(f"site: FAIL: {len(P.errors)} participant-ID short form(s) could not be resolved; "
                              f"fix them at the source")
+
+    def with_pages_listing(self, text: str) -> str:
+        """site/pages/README.md with the list of pages first, under its title and status line."""
+        head, sep, rest = text.partition("\n\n")
+        status, sep2, body = rest.partition("\n\n")
+        return head + sep + status + sep2 + self.pages_listing() + "\n## How pages get here\n\n" + body
+
+    def pages_listing(self) -> str:
+        """The generated list of rich pages, appended to site/pages/README.md."""
+        mf = yaml.safe_load((REPO / PASSTHROUGH_DIR / "pages.yaml").read_text(encoding="utf-8")).get("pages") or {}
+        rows = []
+        for p in self.passthrough:
+            html = (REPO / p).read_text(encoding="utf-8", errors="replace")
+            m = re.search(r"<title>(.*?)</title>", html, re.I | re.S)
+            title = (m.group(1).strip() if m else posixpath.basename(p)).replace("|", "\\|")
+            e = mf.get(posixpath.basename(p)) or {}
+            if e.get("kind") == "snapshot":
+                kind = f"record, as of {e.get('as_of')}"
+            else:
+                srcs = e.get("sources") or []
+                when = git("log", "-1", "--format=%cs", "--", *srcs).strip() if srcs else ""
+                kind = f"living, sources last changed {when}" if when else "living"
+            rows.append((title, posixpath.basename(p), kind))
+        rows.sort(key=lambda r: r[0].lower())
+        out = ["Rich pages published on this site: interactive explainers, charts and dated records. "
+               "Each opens on its own, with a bar at the top back to the site. "
+               "*This list is generated at build time from `site/pages/pages.yaml`.*", "",
+               "| page | kind |", "|---|---|"]
+        out += [f"| [{t}]({urllib.parse.quote(f)}) | {k} |" for t, f, k in rows]
+        return "\n".join(out) + "\n"
 
     def children(self, d: str):
         pages = sorted(p for p in self.pages if posixpath.dirname(p) == d)
@@ -679,7 +717,10 @@ class Site:
         for t in top_dirs:
             if t in landing_dirs:
                 continue
-            sub = self.section_nav(t, skip=landing_dirs)
+            # site/pages is the Pages tab below; it is not listed under More as well
+            sub = self.section_nav(t, skip=landing_dirs | {PASSTHROUGH_DIR})
+            if t == posixpath.dirname(PASSTHROUGH_DIR) and len(sub) == 1 and self.passthrough:
+                continue
             if weight[t] >= TAB_MIN:
                 nav.append({t + "/": sub})
             else:
@@ -688,7 +729,7 @@ class Site:
         if roots:
             more.append({"Root files": roots})
         if self.passthrough:
-            pages = []
+            pages = [{"All pages": PAGES_README}] if PAGES_README in self.pages else []
             for p in sorted(self.passthrough):
                 html = (REPO / p).read_text(encoding="utf-8", errors="replace")
                 m = re.search(r"<title>(.*?)</title>", html, re.I | re.S)

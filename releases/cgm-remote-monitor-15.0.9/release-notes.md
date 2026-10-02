@@ -1119,6 +1119,16 @@ and many other software library updates.
 
 ## Known issues — not fixed in this release
 
+- **Settings that nobody can look up can delete old data permanently.** Nightscout's API v3
+  reads six settings that are not in its documentation: `API3_AUTOPRUNE_ENTRIES`,
+  `API3_AUTOPRUNE_TREATMENTS`, `API3_AUTOPRUNE_DEVICESTATUS`, `API3_AUTOPRUNE_PROFILE`,
+  `API3_AUTOPRUNE_FOOD` and `API3_AUTOPRUNE_SETTINGS` (also accepted in lower case, and with a
+  `CUSTOMCONNSTR_` prefix on Azure). If one is set to a number of days, then whenever an app
+  saves, changes or deletes a record of that kind through API v3, Nightscout deletes every record
+  of that kind older than that many days. The deletion cannot be undone. They do nothing unless
+  set, and this is the same on 15.0.8 and earlier. Check your site's settings for any name that
+  starts with `API3_` and remove one you did not set on purpose. These settings are being
+  documented.
 - **A page with no glucose reading does not sound or show any server alarm.** When the big
   number reads `---`, a Nightscout page ignores every alarm the server sends, including pump,
   loop, cannula, sensor and insulin-age alarms that have nothing to do with glucose. This is the

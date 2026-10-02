@@ -205,6 +205,29 @@
     });
   }
 
+  /* horizontal bars, one per category; emphasised rows in the accent, the rest recessive */
+  function hbars(host, rows) {
+    var rowH = 46;
+    var f = frame(host, rows.length * rowH + 30, 8);
+    f.m.r = 40; f.iw = f.W - f.m.l - f.m.r;
+    var max = niceMax(Math.max.apply(null, rows.map(function (r) { return r.value; })));
+    ticks(max).forEach(function (v) {
+      var x = f.m.l + (v / max) * f.iw;
+      el("line", { x1: x, x2: x, y1: f.m.t, y2: f.m.t + rows.length * rowH, "class": v === 0 ? "base" : "grid" }, f.svg);
+      text(f.svg, x, f.m.t + rows.length * rowH + 16, fmt(v), "ax");
+    });
+    rows.forEach(function (r, i) {
+      var top = f.m.t + rowH * i, y = top + 22, w = Math.max(4, (r.value / max) * f.iw), x0 = f.m.l;
+      text(f.svg, x0, top + 14, r.label, "lab", "start");
+      var path = "M" + x0 + "," + y + "H" + (x0 + w - 4) + "Q" + (x0 + w) + "," + y + " " + (x0 + w) + "," + (y + 4) +
+        "V" + (y + 14) + "Q" + (x0 + w) + "," + (y + 18) + " " + (x0 + w - 4) + "," + (y + 18) + "H" + x0 + "Z";
+      el("path", { d: path, "class": "mark", style: "fill:var(" + (r.emph ? "--s1" : "--vmute") + ")" }, f.svg);
+      text(f.svg, x0 + w + 6, y + 13, fmt(r.value), "lab", "start");
+      var hb = el("rect", { x: 0, y: top, width: f.W, height: rowH, "class": "hit" }, f.svg);
+      hit(hb, r.label, [[fmt(r.value), "entries"], ["", r.ids.join(", ")]]);
+    });
+  }
+
   var D = DATA;
   var draw = {
     merges: function (h) {
@@ -236,7 +259,11 @@
           title: function (i) { return r[i].label + " (" + day(r[i].date) + ")"; },
           extra: function (i) { return [["", r[i].kind + (r[i].cells ? ", " + r[i].cells + (r[i].cells === 1 ? " cell" : " cells") : "")]]; } });
     },
-    regressions: function (h) { dotRange(h, D.regressions); }
+    regressions: function (h) { dotRange(h, D.regressions); },
+    open: function (h) {
+      var EMPH = /waiting on a maintainer decision|no decision/;
+      hbars(h, D.open_entries.map(function (o) { return { label: o.disposition, value: o.count, ids: o.ids, emph: EMPH.test(o.disposition) }; }));
+    }
   };
   function render() {
     document.querySelectorAll("[data-chart]").forEach(function (h) { var k = h.getAttribute("data-chart"); if (draw[k]) draw[k](h); });

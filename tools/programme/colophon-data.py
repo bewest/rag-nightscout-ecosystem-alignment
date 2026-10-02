@@ -15,6 +15,7 @@ Usage: python3 tools/programme/colophon-data.py [--range official/master..offici
 Then re-render the page: tools/site/.venv/bin/python tools/site/render_colophon.py
 """
 import collections
+import os
 import datetime as dt
 import json
 import re
@@ -23,7 +24,7 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-CRM = REPO / 'externals/cgm-remote-monitor-official'
+CRM = Path(os.environ.get('CRM_REPO', REPO / 'externals/cgm-remote-monitor-official'))
 COLOPHON = REPO / 'releases/cgm-remote-monitor-15.0.9/colophon.md'
 OUT = REPO / 'releases/cgm-remote-monitor-15.0.9/colophon-data.json'
 YEAR = '2026'
@@ -136,6 +137,23 @@ def main():
         regressions.append({'id': rid, 'cause_pr': int(cpr), 'caused': f'{YEAR}-{cdate}', 'filed': f'{YEAR}-{filed}',
                             'fix_pr': int(fpr), 'fixed': f'{YEAR}-{fdate}', 'family': short(family)})
 
+    # the open entries by disposition
+    _, opn = md_table(text, '| disposition | entries | count |')
+    open_entries = []
+    for disp, entries, count in opn:
+        if disp.startswith('**'):
+            continue
+        ids = re.findall(r'BF-\d+', entries)
+        if len(ids) != int(count):
+            sys.exit(f'colophon-data: {disp!r} lists {len(ids)} ids but says {count}')
+        open_entries.append({'disposition': disp, 'count': len(ids), 'ids': ids})
+    if sum(o['count'] for o in open_entries) != sum(1 for r in scope if not r['closed']):
+        sys.exit('colophon-data: the open-entries table does not cover every open in-scope id')
+    listed = {int(i[3:]) for o in open_entries for i in o['ids']}
+    actual = {r['id'] for r in scope if not r['closed']}
+    if listed != actual:
+        sys.exit(f'colophon-data: open table differs from the register: missing {sorted(actual - listed)}, extra {sorted(listed - actual)}')
+
     it_count = lambda ref: sum(int(l.rsplit(':', 1)[1]) for l in git('grep', '-cE', r'^\s*it\(', ref, '--', 'tests').splitlines())
     data = {
         'measured': dt.date.today().isoformat(),
@@ -157,6 +175,7 @@ def main():
         'checks': [{'date': d, 'label': l} for d, l in CHECKS],
         'runs': runs,
         'regressions': regressions,
+        'open_entries': open_entries,
     }
     OUT.write_text(json.dumps(data, indent=1) + '\n', encoding='utf-8')
     k = data['kpis']
