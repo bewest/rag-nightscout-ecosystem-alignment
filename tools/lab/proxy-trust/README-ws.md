@@ -7,8 +7,7 @@ runner can reuse the AR containers and `ar_up`.
 It fills a gap listed under "Not covered" in `README-ar-chain.md`: WebSocket
 upgrades.
 
-> Not medical advice. This is contributor-facing infrastructure documentation,
-> and it follows the same disclosure rule as `README.md` (mechanism, not recipe).
+> This add-on follows the disclosure rule in `README.md`: mechanism, not recipe.
 
 ## Why sockets need their own cells
 

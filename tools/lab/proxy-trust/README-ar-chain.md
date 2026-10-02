@@ -11,8 +11,7 @@ client ─► L4 LB ──PROXY protocol──► GATEWAY ──► ROUTER ─�
                                     name→origin  name→tenant  tenant→host:port
 ```
 
-> Not medical advice. This is contributor-facing infrastructure documentation,
-> and it follows the same disclosure rule as `README.md` (mechanism, not recipe).
+> This add-on follows the disclosure rule in `README.md`: mechanism, not recipe.
 
 ## Why this shape needs its own cells
 

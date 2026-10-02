@@ -1,12 +1,18 @@
 # `TRUST_PROXY` deployment matrix
 
-*Contributor-facing. Living document; facts dated 2026-09-24. Code anchor: `bf2/auth-delay-dev-order` at
-`f6f361b1` (`lib/server/client-ip.js`, `lib/authorization/delaylist.js`, `lib/authorization/index.js`
-`resolve()`), the fix branch for PR nightscout/cgm-remote-monitor#8754.*
+*Contributor-facing. Living document; status dated 2026-10-02. Code anchors: §1 and the self-hosted rows
+were reproduced on `bf2/auth-delay-dev-order` at `f6f361b1` (`lib/server/client-ip.js`,
+`lib/authorization/delaylist.js`, `lib/authorization/index.js` `resolve()`), the fix branch for
+nightscout/cgm-remote-monitor#8754, and the port rule at `9c6cde72`. Those files changed after both anchors
+(#8765's single policy, BF-80's alarm-socket delay). On dev `7000eb18`, the four auth_request-chain topologies were
+re-measured over HTTP and sockets on 2026-09-30, with the same addresses; the other rows were not re-run on dev.*
 
-**Status.** `TRUST_PROXY`: **open** (PR #8754, not merged to dev, not released). Every Nightscout release up to
-and including 15.0.8 behaves as the "unset" column below and has no setting to change it. Nothing here is
-fixed for operators until it is released.
+**Status.** `TRUST_PROXY`: **merged to dev, not released.** #8754 merged on 2026-09-24 as `4f705217`, and
+#8765 (`bae655a0`) followed the same day. #8765 makes every part of Nightscout that reads a client address use
+one policy compiled from `TRUST_PROXY`, and lets an explicit setting accept an `X-Forwarded-For` entry that
+carries a port. The 15.0.9 candidate is dev `7000eb18`, dev is at `25fc41d9`, and 15.0.9 is not tagged. Every
+Nightscout release up to and including 15.0.8 behaves as the "unset" column below and has no setting to
+change it. Nothing here is fixed for operators until 15.0.9 is released.
 
 This page maps each deployment shape to the `TRUST_PROXY` value it needs, what a correct and an incorrect
 setting look like, and how to fix the incorrect one. Platform claims are research, not measurement; each

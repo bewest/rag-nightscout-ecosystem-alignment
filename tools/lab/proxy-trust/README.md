@@ -15,8 +15,6 @@ All numbers here were reproduced live on **2026-09-24** against:
 | PR (TRUST_PROXY) | `bf2/auth-hardening` | `81623f9b` (PR head `280eccbe` is this + a dev merge; `lib/server/client-ip.js` is byte-identical) |
 | delay-order revert (O4b; O2 across all header families) | `bf2/auth-delay-dev-order` | `f6f361b1` (`lib/server/client-ip.js` identical to `81623f9b` and unchanged at `607d51b0`) |
 
-> Not medical advice. This is contributor-facing infrastructure documentation.
-
 ## What TRUST_PROXY does (from the code under test)
 
 `lib/server/client-ip.js` compiles `TRUST_PROXY` into how the address is resolved:
