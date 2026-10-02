@@ -31,21 +31,21 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 182 |
+| items | 183 |
 | runnable gates | 248 |
-| explicit `no-gate:` markers | 237 |
+| explicit `no-gate:` markers | 238 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 237 of the 485 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 238 of the 486 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
 | `not-started` | 51 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-124, BFQ-127, BFQ-137, BFQ-145, BFQ-149, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
-| `in-progress` | 2 | BFQ-72, OID-LAB |
+| `in-progress` | 2 | BFQ-155, OID-LAB |
 | `gate-not-met` | 11 | RT-REBASE, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
-| `blocked` | 17 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-154 |
+| `blocked` | 18 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, BFQ-72, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-154 |
 | `merged-upstream` | 80 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-125, BFQ-126, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 8 | RT-PROPAGATION, RT-0, T30-RESEARCH, BFQ-95, ADV-XSS-META, ADV-CONFIG, BFQ-152, DEPENDABOT-CONFIG |
 | `done` | 4 | P0-TAG, DOC-VIEWS, DOC-LINKS, RT-SOAK |
@@ -113,6 +113,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-149** BF-149 - the Day to Day report draws a cancelled or replaced temp target or override for its whole entered duration
 - **BFQ-152** BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission
 - **BFQ-154** BF-154 - node-forge 1.4.0 (pinned in overrides) is inside an advisory range with no fixed release
+- **BFQ-155** BF-155 - a failed storage read on GET /api/v1/activity ends the server process, for 15.0.9
 - **BFQ-134** BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 - **BFQ-129** BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500
 - **BFQ-133** BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one (fixed by BF-146's #8784), merged for 15.0.9
@@ -1387,7 +1388,7 @@ that costs.
 | worktree | `externals/cgm-remote-monitor-official` |
 | semver | `minor` |
 | review | maintainer, and at least one human reviewer who is not the author. Release PR #8598 is authored by AndyLow91 and approved twice by the maintainer (2026-09-26 00:39Z) at head e3adc91d. Integration PR #8605 carries the modernization cuts (RT-3), not this release. |
-| blocks on | `BFQ-102`, `BFQ-114`, `BFQ-118`, `BFQ-119`, `RT-PR-8419`, `RT-PR-8530`, `BFQ-120`, `BFQ-126`, `BFQ-134`, `BFQ-106`, `BFQ-129`, `BFQ-125`, `BFQ-123`, `BFQ-122`, `BFQ-136`, `BFQ-128`, `RT-PR-8778`, `BFQ-80`, `BFQ-121`, `RT-PR-8781`, `BFQ-142`, `BFQ-146`, `RT-PR-8788`, `BFQ-108`, `RT-PR-8790`, `BFQ-151`, `BFQ-73`, `BFQ-153` |
+| blocks on | `BFQ-102`, `BFQ-114`, `BFQ-118`, `BFQ-119`, `RT-PR-8419`, `RT-PR-8530`, `BFQ-120`, `BFQ-126`, `BFQ-134`, `BFQ-106`, `BFQ-129`, `BFQ-125`, `BFQ-123`, `BFQ-122`, `BFQ-136`, `BFQ-128`, `RT-PR-8778`, `BFQ-80`, `BFQ-121`, `RT-PR-8781`, `BFQ-142`, `BFQ-146`, `RT-PR-8788`, `BFQ-108`, `RT-PR-8790`, `BFQ-151`, `BFQ-73`, `BFQ-153`, `BFQ-155` |
 
 **Blast radius.** 15.0.9 is everything in origin/master..origin/dev: master 92d08342 (tag 15.0.8) to dev 7000eb18 (merge of #8786), measured 2026-09-27: 507 commits, 86 first-parent merges (all PR merges), 297 files, +28363/-1722. Among them the programme's backfix PRs (#8733-#8740 and #8743-#8746 from 2026-09-17 to 2026-09-21; #8748-#8753, #8755-#8757 and #8759 on 2026-09-23; #8760-#8762 and #8754 (with #8763 and #8765 folded in) on 2026-09-24; #8758 and #8766-#8770 on 2026-09-25; #8771-#8777, #8779, #8780, #8783 and #8784 on 2026-09-26; the test-only #8785 and #8786 (BF-147) on 2026-09-27), #8741, #8778 and #8781 from outside contributors on the same work, #8568, #8419 and #8530 carried by the 2026-09-25 decision, the D3 5.16 -> 7.9 chart migration (RT-D3), the opt-in debug logging change (#8726), the connector pin to exactly 0.1.0 (#8762), profile, treatment-query and clock fixes, report and chart fixes, dependency updates and translations. Crowdin #8730 is held out. The candidate is dev 7000eb18: RC run 020 ran on ce30a94d; #8785 changes only tests/boluswizardpreview.test.js, and #8786 changes two dependency overrides and nine locked versions (its own nine-cell CI; the production bundle is byte- identical). Reproduce with `git -C externals/cgm-remote-monitor-official log --first-parent --oneline origin/master..origin/dev` and `git diff --shortstat origin/master origin/dev`.
 
@@ -2108,7 +2109,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 97 items
+`parcel: register-open` &mdash; 98 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2133,7 +2134,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-CAP01` | CAP-01 - Nightscout cannot be served from a sub-path | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `BFQ-69` | BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing | `merged-upstream` | `bf3/quickpick-rebuild` | patch | 3 run + 1 no-gate |
 | `BFQ-71` | BF-71 - any dateString key drops the default date window, and the window is not a control | `gate-not-met` | `-` | patch | 2 run + 2 no-gate |
-| `BFQ-72` | BF-72 - an unauthenticated $regex can spend minutes of database CPU | `in-progress` | `bf/regex-limits` | minor | 1 run + 3 no-gate |
+| `BFQ-72` | BF-72 - an unauthenticated $regex can spend minutes of database CPU | `blocked` | `bf/regex-limits` | minor | 1 run + 3 no-gate |
 | `BFQ-40` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion | `merged-upstream` | `-` | minor | 1 run |
 | `BFQ-41` | BF-41 - a reading dated ahead of the clock silences the stale-data alarm (closed, does not reproduce) | `closed` | `-` | n/a | 1 run + 1 no-gate |
 | `BFQ-87` | BF-87 - the root qs override holds the connector below its range and pins the server's query parser | `merged-upstream` | `bf/qs-6.16` | patch | 3 run + 1 no-gate |
@@ -2196,6 +2197,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-152` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission | `needs-decision` | `-` | n/a | 0 run + 1 no-gate |
 | `DEPENDABOT-CONFIG` | Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev | `needs-decision` | `-` | n/a | 1 run + 1 no-gate |
 | `BFQ-154` | BF-154 - node-forge 1.4.0 (pinned in overrides) is inside an advisory range with no fixed release | `blocked` | `-` | patch | 0 run + 1 no-gate |
+| `BFQ-155` | BF-155 - a failed storage read on GET /api/v1/activity ends the server process, for 15.0.9 | `in-progress` | `bf/activity-read-error` | patch | 0 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `merged-upstream` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
 | `WS-LAB` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | `ready-to-push` | `main` | n/a | 1 run + 1 no-gate |
@@ -2755,7 +2757,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `blocked` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/regex-limits` |
 | base | `official/dev@25fc41d9` |
@@ -2764,6 +2766,7 @@ distinction is the only thing that makes the register mean anything - widening
 | review | SECURITY, and the same person who answered P0-K's sequencing question, because it is the same advisory. Disclosure-sensitive: a one-request unauthenticated denial of service against a default install, live on 15.0.8 and on dev, with no fix yet. The register describes the mechanism only; the reproducing patterns are deliberately not in any tracked file, and the probe is outside version control. A public issue or PR carrying the reproduction would publish a working attack against every unpatched Nightscout. The disclosure disposition was decided by the maintainer on 2026-09-23 and is held outside version control; the open decision is the fix shape. |
 | ships to operators today | **yes** |
 | register | `BF-72` |
+| blocks on | `RT-0` |
 
 **Blast radius.** No line is wrong, which is why this is needs-decision and not not-started. $regex and $options are in lib/server/query-operator-allowlist.js FIELD_OPERATORS by design, and lib/server/query.js promotes a treatments text field to a regex as a documented search affordance. A fix changes what the search affordance accepts, so its blast radius is every client that sends a pattern - which the 14-project census counted as source, not runtime.
 
@@ -2783,7 +2786,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-02 (maintainer): start the adoption branch for after 15.0.9. bf/regex- limits off dev 25fc41d9 in externals/work/crm-bf72, being built by a background agent: Ruben Sutton's bddbdfe7 and 0182bb07 picked with his authorship, then our adjustments as separate commits (time-limit errors answered without driver text; server-built regexes not refused), after a check of which clients send regex filters. Not pushed. Covers GHSA-47gq (API v3 re) as well. 2026-10-02: a candidate fix exists in the private fork of GHSA-r3gv (branch advisory-fix-1, by Ruben Sutton, code2344: bddbdfe7 2026-09-23 and 0182bb07 2026-10-02, on v15.0.8 92d08342, not on dev): a pattern check through the safe-regex package (length 512, two nested-quantifier heuristics) on v1 $regex, v1 regex shorthand and v3 re, answered 400, plus maxTimeMS on cursors whose query has a regex (5 s for caller filters, 30 s for server ones; settable by environment). It needs a rebase onto dev (query.js changed under it: operator allowlist, BF-108) and a check of which clients send regex filters, since the heuristic refuses patterns rather than bounding them. Adopting his commits keeps his authorship in the history. 2026-10-01: API v3's re filter operator is the same class (reported privately 2026-09-28); measured directly on mongod 7.0.43, one count over 20 000 documents of backtracking- prone text took 49.6 s, 9 ms on short text. Any fix here (for example a server-side time limit on find queries) should cover both APIs. After 15.0.9. Open on 15.0.8 and on dev (bf72-regex-operand-bounded.js fails on origin/dev 153e5658, 2026-09-24); no fix branch. The disclosure disposition was decided by the maintainer on 2026-09-23 and its details are held outside version control. What remains open is the fix shape: which bound on the $regex operand (see the no-gates), a decision about the search affordance's contract. Found 2026-09-21 while re-measuring the security advisory's third proof of concept, which the advisory frames as $regex data extraction. On the shipped `readable` default that is close to vacuous - entries, treatments and devicestatus are the three collections prep_storage admits, all three are already readable, and the API returns whole documents, so a regex oracle reveals nothing a plain read does not. What the same operator does do is cost the database, which the advisory does not describe. #8743 (P0-K, merged 2026-09-18) did not narrow $regex, because the client census found real clients sending it, so this is not a regression from that branch and is not fixed by it.
+**Notes.** 2026-10-02 (maintainer): DEFERRED until after 15.0.9; not in RT-0's blocks_on. Branch bf/regex-limits d359f00b (on dev 25fc41d9, not pushed): Ruben Sutton's 5f71598b and 4cfe9132 with his authorship, then ours 49a48506 (/times and /slice), 3910948b (400 for a refused pattern, 503 at the time limit, v1 and v3, no driver text) and d359f00b (/count). Full suite 3562/0/4 against dev 3532/0/4; the new tests fail on dev's files and on his commits alone. No known client sends $regex or v3 re; the patterns Nightscout's Reports page and oref0 send pass the check. Adds safe-regex 2.1.1 (MIT). Time limit checked on MongoDB 4.4.24 and 7.0.43. Not covered: deletes with a regex filter. PR body draft in the session scratchpad. 2026-10-02 (maintainer): start the adoption branch for after 15.0.9. bf/regex-limits off dev 25fc41d9 in externals/work/crm-bf72, being built by a background agent: Ruben Sutton's bddbdfe7 and 0182bb07 picked with his authorship, then our adjustments as separate commits (time-limit errors answered without driver text; server-built regexes not refused), after a check of which clients send regex filters. Not pushed. Covers GHSA-47gq (API v3 re) as well. 2026-10-02: a candidate fix exists in the private fork of GHSA-r3gv (branch advisory-fix-1, by Ruben Sutton, code2344: bddbdfe7 2026-09-23 and 0182bb07 2026-10-02, on v15.0.8 92d08342, not on dev): a pattern check through the safe-regex package (length 512, two nested-quantifier heuristics) on v1 $regex, v1 regex shorthand and v3 re, answered 400, plus maxTimeMS on cursors whose query has a regex (5 s for caller filters, 30 s for server ones; settable by environment). It needs a rebase onto dev (query.js changed under it: operator allowlist, BF-108) and a check of which clients send regex filters, since the heuristic refuses patterns rather than bounding them. Adopting his commits keeps his authorship in the history. 2026-10-01: API v3's re filter operator is the same class (reported privately 2026-09-28); measured directly on mongod 7.0.43, one count over 20 000 documents of backtracking-prone text took 49.6 s, 9 ms on short text. Any fix here (for example a server-side time limit on find queries) should cover both APIs. After 15.0.9. Open on 15.0.8 and on dev (bf72-regex- operand-bounded.js fails on origin/dev 153e5658, 2026-09-24); no fix branch. The disclosure disposition was decided by the maintainer on 2026-09-23 and its details are held outside version control. What remains open is the fix shape: which bound on the $regex operand (see the no-gates), a decision about the search affordance's contract. Found 2026-09-21 while re-measuring the security advisory's third proof of concept, which the advisory frames as $regex data extraction. On the shipped `readable` default that is close to vacuous - entries, treatments and devicestatus are the three collections prep_storage admits, all three are already readable, and the API returns whole documents, so a regex oracle reveals nothing a plain read does not. What the same operator does do is cost the database, which the advisory does not describe. #8743 (P0-K, merged 2026-09-18) did not narrow $regex, because the client census found real clients sending it, so this is not a regression from that branch and is not fixed by it.
 
 ### `BFQ-40` &mdash; BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion
 
@@ -4850,6 +4853,36 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
 **Notes.** 2026-10-02 (maintainer): named in the 15.0.9 release notes under Known issues, as not affecting Nightscout (the affected function is not called; analysed in the code). Deferred to the modernization work: @parse/node-apn 8.1.0, the latest and the modernization line's version, still depends on node-forge 1.4.0 exactly, so the update waits for an upstream fixed release. Blocked on upstream: node-forge has no release outside the advisory range (2026-10-02). Raised by session -d4 the same day. Whether it is named as a known item in the 15.0.9 notes is the maintainer's call; it is not in RT-0's blocks_on because no change is possible and the vulnerable function is not called.
+
+### `BFQ-155` &mdash; BF-155 - a failed storage read on GET /api/v1/activity ends the server process, for 15.0.9
+
+| | |
+|---|---|
+| state (claimed) | `in-progress` |
+| repo | `cgm-remote-monitor` |
+| branch | `bf/activity-read-error` |
+| base | `official/dev@25fc41d9` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-155` |
+
+**Blast radius.** lib/api/activity/index.js read callback: answer any storage error instead of reading a null result; the same check on other v1 read callbacks that format results without checking the error.
+
+**What an operator sees.** A problem reading from the database could stop Nightscout until it was restarted. It now answers that request with an error and keeps running.
+
+**Why `patch`.** a failed read answers an error instead of ending the process
+
+**Gates.**
+
+- **NO GATE** &mdash; Reproduced 2026-10-02 on local test servers of v15.0.8 and dev 25fc41d9; the method is held outside version control while the defect is live on 15.0.8. The branch's tests decide, using a stubbed storage failure.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Decided 2026-10-02 (maintainer): fix for 15.0.9; in RT-0's blocks_on. Found while reviewing bf/regex-limits (BFQ-72), which does not cover it.
 
 ### `BFQ-134` &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 

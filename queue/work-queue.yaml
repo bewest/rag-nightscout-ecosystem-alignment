@@ -2893,7 +2893,7 @@ items:
           browser, not by Nightscout's own mocha suite, which cannot see the drag
           clamps (RT-D3 answered 2026-09-24; the suite gap is RT-D3-SUITE on cut
           1). Recording it as a no-gate keeps it from reading as covered.
-    blocks_on: [BFQ-102, BFQ-114, BFQ-118, BFQ-119, RT-PR-8419, RT-PR-8530, BFQ-120, BFQ-126, BFQ-134, BFQ-106, BFQ-129, BFQ-125, BFQ-123, BFQ-122, BFQ-136, BFQ-128, RT-PR-8778, BFQ-80, BFQ-121, RT-PR-8781, BFQ-142, BFQ-146, RT-PR-8788, BFQ-108, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153]
+    blocks_on: [BFQ-102, BFQ-114, BFQ-118, BFQ-119, RT-PR-8419, RT-PR-8530, BFQ-120, BFQ-126, BFQ-134, BFQ-106, BFQ-129, BFQ-125, BFQ-123, BFQ-122, BFQ-136, BFQ-128, RT-PR-8778, BFQ-80, BFQ-121, RT-PR-8781, BFQ-142, BFQ-146, RT-PR-8788, BFQ-108, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155]
     evidence:
       - releases/cgm-remote-monitor-15.0.9/contents.md
       - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
@@ -5512,7 +5512,7 @@ items:
     branch: bf/regex-limits
     base: official/dev@25fc41d9
     worktree: externals/work/crm-bf72
-    state: in-progress
+    state: blocked
     ships_to_operators_today: true
     blast_radius: >
       No line is wrong, which is why this is needs-decision and not not-started. $regex and
@@ -5587,10 +5587,21 @@ items:
           documents is small; a real entries collection is far larger and the cost grows
           with it. Nothing here measures a real deployment, and nothing should - rule 0
           forbids pointing this at anyone's instance.
-    blocks_on: []
+    blocks_on: [RT-0]
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-02 (maintainer): DEFERRED until after 15.0.9; not in RT-0's
+      blocks_on. Branch bf/regex-limits d359f00b (on dev 25fc41d9, not
+      pushed): Ruben Sutton's 5f71598b and 4cfe9132 with his authorship,
+      then ours 49a48506 (/times and /slice), 3910948b (400 for a refused
+      pattern, 503 at the time limit, v1 and v3, no driver text) and
+      d359f00b (/count). Full suite 3562/0/4 against dev 3532/0/4; the new
+      tests fail on dev's files and on his commits alone. No known client
+      sends $regex or v3 re; the patterns Nightscout's Reports page and
+      oref0 send pass the check. Adds safe-regex 2.1.1 (MIT). Time limit
+      checked on MongoDB 4.4.24 and 7.0.43. Not covered: deletes with a
+      regex filter. PR body draft in the session scratchpad.
       2026-10-02 (maintainer): start the adoption branch for after 15.0.9.
       bf/regex-limits off dev 25fc41d9 in externals/work/crm-bf72, being
       built by a background agent: Ruben Sutton's bddbdfe7 and 0182bb07
@@ -11307,6 +11318,39 @@ items:
       named as a known item in the 15.0.9 notes is the maintainer's call;
       it is not in RT-0's blocks_on because no change is possible and the
       vulnerable function is not called.
+  - id: BFQ-155
+    title: "BF-155 - a failed storage read on GET /api/v1/activity ends the server process, for 15.0.9"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: bf/activity-read-error
+    base: official/dev@25fc41d9
+    state: in-progress
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/api/activity/index.js read callback: answer any storage error
+      instead of reading a null result; the same check on other v1 read
+      callbacks that format results without checking the error.
+    review: maintainer
+    operator_visible: >
+      A problem reading from the database could stop Nightscout until it
+      was restarted. It now answers that request with an error and keeps
+      running.
+    semver: patch
+    semver_reason: a failed read answers an error instead of ending the process
+    register: [BF-155]
+    gates:
+      - no-gate: >
+          Reproduced 2026-10-02 on local test servers of v15.0.8 and dev
+          25fc41d9; the method is held outside version control while the
+          defect is live on 15.0.8. The branch's tests decide, using a stubbed
+          storage failure.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Decided 2026-10-02 (maintainer): fix for 15.0.9; in RT-0's blocks_on.
+      Found while reviewing bf/regex-limits (BFQ-72), which does not cover it.
   - id: RT-PR-8781
     title: "#8781 - treatment retries keep srvCreated, empty identities match, history clock survives a restart (AndyLow91; BF-141, BF-143, BF-144), merged for 15.0.9"
     parcel: release-train
