@@ -11,6 +11,8 @@ the [integration record](../../docs/30-design/remedial/rc-15.0.9-integration-rec
 counts and links; it does not restate those files. The dated snapshot this page replaces as the
 current figures is [paving the cowpaths, 2026-09-27](../../docs/60-research/programme/paving-the-cowpaths-2026-09-27.md).*
 
+The same page with charts of these figures: [How 15.0.9 was made, with charts](../../site/pages/cgm-remote-monitor-15.0.9-colophon.html).
+
 Unless a row says otherwise, `git` commands run in `externals/cgm-remote-monitor-official` and the
 range `R` is `official/master..official/dev`.
 
@@ -26,6 +28,8 @@ the checks still owed before the tag are listed in [§8](#what-is-left-open) and
 |---|---|---|
 | time frame | 2026-09-04 (15.0.8's commit date, and the first merge) to 2026-10-02 | `git log --first-parent --format=%ad --date=short R \| sort \| sed -n '1p;$p'`; `git log -1 --format=%ad --date=short 15.0.8` |
 
+<!-- chart: kpis -->
+
 ## 2. Size
 
 | figure | value | command |
@@ -35,6 +39,8 @@ the checks still owed before the tag are listed in [§8](#what-is-left-open) and
 | files | 303 of 891 on `dev` changed: 128 added, 172 modified, 1 deleted (`tests/loop-server.test.js`), 2 renamed | `git diff --name-status official/master official/dev`; `git ls-tree -r --name-only official/dev \| wc -l` |
 | lines | +29,620 / −1,875 | `git diff --shortstat official/master official/dev` |
 | new modules under `lib/` | 18 | `git diff --name-status official/master official/dev -- lib \| grep -c '^A'` |
+
+<!-- chart: merges -->
 
 By directory (files changed / files on `dev`, lines):
 
@@ -159,6 +165,8 @@ then held out).
 | cells (blank: not recorded) | 2 | | | 6 | 6 | 12 | 6 | 6 | 6 | 6 | 6 | 6 | 6 | 6 | 6 | 6 | 6 | 6 | 6 |
 | passing | 2480 | 2416 | 2421 | 2508 | 2520 | 2534 | 3015 | 3028 | 3046 | 3066 | 3090 | 3094 | 3097 | 3106 | 3139 | 3170 | 3396 | 3458 | 3473 |
 
+<!-- chart: tests -->
+
 After run 020, each merge was checked on its own branch, one cell (Node 22.23.2, MongoDB 7.0.43
 unless stated), from the [integration record §After run 020](../../docs/30-design/remedial/rc-15.0.9-integration-record.md#after-run-020)
 and [contents §Evidence](contents.md#evidence):
@@ -229,20 +237,23 @@ What else defines the contract 15.0.9 is held to:
 ### Arrival by origin
 
 Command: `python3 tools/programme/defect-arrival.py` (about 35 s). A defect's filing date is the
-first commit under `docs/` that mentions its id. Origins are the snapshot's id lists; an id filed
-after 2026-09-27 counts as `latent` until classified, so BF-148 and BF-150, which fix GitHub issues
-#8223 and #8192, count as `latent` here. Closed means the register status is `merged`, `closed` or
+first commit under `docs/` that mentions its id. Origins are the snapshot's id lists, with BF-148 and BF-150 (GitHub issues #8223 and #8192) added
+to `github`; an id not in a list counts as `latent`. Closed means the register status is `merged`, `closed` or
 `decided`.
 
 | origin | ids | closed | meaning |
 |---|---:|---:|---|
-| latent | 93 | 59 | present on 15.0.8, found by audit, lab, survey or review of an outside PR |
-| github | 12 | 10 | reproduced from upstream GitHub issues (BF-107, BF-118–128) |
+| latent | 91 | 57 | present on 15.0.8, found by audit, lab, survey or review of an outside PR |
+| github | 14 | 12 | reproduced from upstream GitHub issues (BF-107, BF-118–128, BF-148, BF-150) |
 | connector | 9 | 9 | eight in nightscout-connect 0.1.0, which 15.0.9 pins exactly; BF-43 by the axios override (#8565) |
 | review | 10 | 10 | found in review of #8758 before it merged; nine fixed on the branch, BF-110 kept by decision |
 | escaped | 7 | 7 | introduced on `dev` by a merged fix PR ([below](#regressions-caught-before-release)) |
 | seam, cuts, invalid | 24 | — | not part of 15.0.9 |
 | **all** | **155** | | |
+
+<!-- chart: arrival -->
+
+<!-- chart: burnup -->
 
 Per day, to 2026-10-02 (open and closed count only the 131 ids in scope):
 
@@ -260,8 +271,8 @@ Per day, to 2026-10-02 (open and closed count only the 131 ids in scope):
 | 09-24 | 0 | 0 | 0 | 5 | 0 | 0 | 5 | 5 | 40 |
 | 09-25 | 5 | 11 | 0 | 5 | 0 | 0 | 21 | 19 | 42 |
 | 09-26 | 8 | 0 | 0 | 0 | 5 | 0 | 13 | 19 | 36 |
-| 09-27 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 36 |
-| 09-30 | 2 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 37 |
+| 09-27 | 0 | 1 | 0 | 0 | 0 | 0 | 1 | 1 | 36 |
+| 09-30 | 1 | 1 | 0 | 0 | 0 | 0 | 2 | 1 | 37 |
 | 10-01 | 4 | 0 | 0 | 0 | 0 | 0 | 4 | 2 | 39 |
 | 10-02 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 4 | 36 |
 
@@ -308,6 +319,8 @@ described as introduced on `dev`, and 10 merges have landed since the last regre
 | BF-143 | #8780, 09-26 | 09-26 | #8781, 09-26 | empty values: `""`, `null` and absent treated differently |
 | BF-144 | #8775, 09-26 | 09-26 | #8781, 09-26 | state held in the process and lost on restart |
 | BF-80 | #8745, 09-21 | 09-21 | #8779, 09-26 | coupling to shared state (the failed-login delay list) |
+
+<!-- chart: regressions -->
 
 Each family is explained in the
 [snapshot §6](../../docs/60-research/programme/paving-the-cowpaths-2026-09-27.md#6-the-regressions).

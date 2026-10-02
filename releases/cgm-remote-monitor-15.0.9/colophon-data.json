@@ -1,0 +1,813 @@
+{
+ "measured": "2026-10-02",
+ "range": {
+  "base": "92d08342",
+  "tip": "ca6fcfaf",
+  "spec": "official/master..official/dev"
+ },
+ "repo_commit": "2f1a2970",
+ "kpis": {
+  "pr_merges": 93,
+  "commits": 525,
+  "non_merge_commits": 325,
+  "it_calls": {
+   "base": 1288,
+   "tip": 2332
+  },
+  "passing": {
+   "base": 1533,
+   "tip": 3534
+  },
+  "defect_ids": 155,
+  "defect_ids_in_scope": 131,
+  "regressions_caught": 7
+ },
+ "merges_per_day": [
+  {
+   "date": "2026-09-04",
+   "count": 5,
+   "prs": [
+    8597,
+    8516,
+    8590,
+    8589,
+    8587
+   ]
+  },
+  {
+   "date": "2026-09-05",
+   "count": 21,
+   "prs": [
+    8601,
+    8599,
+    8567,
+    8588,
+    8602,
+    8583,
+    8586,
+    8582,
+    8581,
+    8579,
+    8578,
+    8577,
+    8576,
+    8575,
+    8573,
+    8571,
+    8566,
+    8565,
+    8550,
+    8544,
+    8529
+   ]
+  },
+  {
+   "date": "2026-09-06",
+   "count": 6,
+   "prs": [
+    8603,
+    8697,
+    8699,
+    8701,
+    8702,
+    7338
+   ]
+  },
+  {
+   "date": "2026-09-07",
+   "count": 0,
+   "prs": []
+  },
+  {
+   "date": "2026-09-08",
+   "count": 0,
+   "prs": []
+  },
+  {
+   "date": "2026-09-09",
+   "count": 1,
+   "prs": [
+    8726
+   ]
+  },
+  {
+   "date": "2026-09-10",
+   "count": 0,
+   "prs": []
+  },
+  {
+   "date": "2026-09-11",
+   "count": 0,
+   "prs": []
+  },
+  {
+   "date": "2026-09-12",
+   "count": 0,
+   "prs": []
+  },
+  {
+   "date": "2026-09-13",
+   "count": 0,
+   "prs": []
+  },
+  {
+   "date": "2026-09-14",
+   "count": 0,
+   "prs": []
+  },
+  {
+   "date": "2026-09-15",
+   "count": 0,
+   "prs": []
+  },
+  {
+   "date": "2026-09-16",
+   "count": 0,
+   "prs": []
+  },
+  {
+   "date": "2026-09-17",
+   "count": 1,
+   "prs": [
+    8733
+   ]
+  },
+  {
+   "date": "2026-09-18",
+   "count": 4,
+   "prs": [
+    8737,
+    8738,
+    8734,
+    8743
+   ]
+  },
+  {
+   "date": "2026-09-19",
+   "count": 0,
+   "prs": []
+  },
+  {
+   "date": "2026-09-20",
+   "count": 6,
+   "prs": [
+    8729,
+    8741,
+    8740,
+    8735,
+    8736,
+    8739
+   ]
+  },
+  {
+   "date": "2026-09-21",
+   "count": 4,
+   "prs": [
+    8732,
+    8744,
+    8745,
+    8746
+   ]
+  },
+  {
+   "date": "2026-09-22",
+   "count": 0,
+   "prs": []
+  },
+  {
+   "date": "2026-09-23",
+   "count": 11,
+   "prs": [
+    8752,
+    8750,
+    8759,
+    8757,
+    8749,
+    8748,
+    8755,
+    8756,
+    8753,
+    8751,
+    8760
+   ]
+  },
+  {
+   "date": "2026-09-24",
+   "count": 3,
+   "prs": [
+    8761,
+    8762,
+    8754
+   ]
+  },
+  {
+   "date": "2026-09-25",
+   "count": 9,
+   "prs": [
+    8530,
+    8766,
+    8767,
+    8758,
+    8568,
+    8768,
+    8769,
+    8419,
+    8770
+   ]
+  },
+  {
+   "date": "2026-09-26",
+   "count": 13,
+   "prs": [
+    8771,
+    8772,
+    8773,
+    8774,
+    8775,
+    8776,
+    8777,
+    8779,
+    8778,
+    8780,
+    8781,
+    8783,
+    8784
+   ]
+  },
+  {
+   "date": "2026-09-27",
+   "count": 2,
+   "prs": [
+    8785,
+    8786
+   ]
+  },
+  {
+   "date": "2026-09-28",
+   "count": 0,
+   "prs": []
+  },
+  {
+   "date": "2026-09-29",
+   "count": 0,
+   "prs": []
+  },
+  {
+   "date": "2026-09-30",
+   "count": 1,
+   "prs": [
+    8788
+   ]
+  },
+  {
+   "date": "2026-10-01",
+   "count": 2,
+   "prs": [
+    8790,
+    8791
+   ]
+  },
+  {
+   "date": "2026-10-02",
+   "count": 4,
+   "prs": [
+    8793,
+    8794,
+    8795,
+    8796
+   ]
+  }
+ ],
+ "defects": [
+  {
+   "date": "2026-09-14",
+   "filed": {
+    "latent": 15,
+    "github": 0,
+    "connector": 1,
+    "review": 0,
+    "escaped": 0
+   },
+   "filed_out_of_scope": 1,
+   "filed_cum": 16,
+   "closed_cum": 0
+  },
+  {
+   "date": "2026-09-15",
+   "filed": {
+    "latent": 12,
+    "github": 0,
+    "connector": 1,
+    "review": 0,
+    "escaped": 0
+   },
+   "filed_out_of_scope": 9,
+   "filed_cum": 29,
+   "closed_cum": 0
+  },
+  {
+   "date": "2026-09-16",
+   "filed": {
+    "latent": 17,
+    "github": 0,
+    "connector": 3,
+    "review": 0,
+    "escaped": 0
+   },
+   "filed_out_of_scope": 11,
+   "filed_cum": 49,
+   "closed_cum": 1
+  },
+  {
+   "date": "2026-09-17",
+   "filed": {
+    "latent": 1,
+    "github": 0,
+    "connector": 0,
+    "review": 0,
+    "escaped": 0
+   },
+   "filed_out_of_scope": 0,
+   "filed_cum": 50,
+   "closed_cum": 1
+  },
+  {
+   "date": "2026-09-18",
+   "filed": {
+    "latent": 1,
+    "github": 0,
+    "connector": 0,
+    "review": 0,
+    "escaped": 0
+   },
+   "filed_out_of_scope": 0,
+   "filed_cum": 51,
+   "closed_cum": 16
+  },
+  {
+   "date": "2026-09-19",
+   "filed": {
+    "latent": 0,
+    "github": 0,
+    "connector": 0,
+    "review": 0,
+    "escaped": 0
+   },
+   "filed_out_of_scope": 0,
+   "filed_cum": 51,
+   "closed_cum": 16
+  },
+  {
+   "date": "2026-09-20",
+   "filed": {
+    "latent": 0,
+    "github": 0,
+    "connector": 0,
+    "review": 0,
+    "escaped": 0
+   },
+   "filed_out_of_scope": 0,
+   "filed_cum": 51,
+   "closed_cum": 25
+  },
+  {
+   "date": "2026-09-21",
+   "filed": {
+    "latent": 10,
+    "github": 0,
+    "connector": 0,
+    "review": 0,
+    "escaped": 1
+   },
+   "filed_out_of_scope": 0,
+   "filed_cum": 62,
+   "closed_cum": 29
+  },
+  {
+   "date": "2026-09-22",
+   "filed": {
+    "latent": 8,
+    "github": 0,
+    "connector": 3,
+    "review": 0,
+    "escaped": 0
+   },
+   "filed_out_of_scope": 3,
+   "filed_cum": 73,
+   "closed_cum": 29
+  },
+  {
+   "date": "2026-09-23",
+   "filed": {
+    "latent": 8,
+    "github": 1,
+    "connector": 1,
+    "review": 0,
+    "escaped": 1
+   },
+   "filed_out_of_scope": 0,
+   "filed_cum": 84,
+   "closed_cum": 44
+  },
+  {
+   "date": "2026-09-24",
+   "filed": {
+    "latent": 0,
+    "github": 0,
+    "connector": 0,
+    "review": 5,
+    "escaped": 0
+   },
+   "filed_out_of_scope": 0,
+   "filed_cum": 89,
+   "closed_cum": 49
+  },
+  {
+   "date": "2026-09-25",
+   "filed": {
+    "latent": 5,
+    "github": 11,
+    "connector": 0,
+    "review": 5,
+    "escaped": 0
+   },
+   "filed_out_of_scope": 0,
+   "filed_cum": 110,
+   "closed_cum": 68
+  },
+  {
+   "date": "2026-09-26",
+   "filed": {
+    "latent": 8,
+    "github": 0,
+    "connector": 0,
+    "review": 0,
+    "escaped": 5
+   },
+   "filed_out_of_scope": 0,
+   "filed_cum": 123,
+   "closed_cum": 87
+  },
+  {
+   "date": "2026-09-27",
+   "filed": {
+    "latent": 0,
+    "github": 1,
+    "connector": 0,
+    "review": 0,
+    "escaped": 0
+   },
+   "filed_out_of_scope": 0,
+   "filed_cum": 124,
+   "closed_cum": 88
+  },
+  {
+   "date": "2026-09-28",
+   "filed": {
+    "latent": 0,
+    "github": 0,
+    "connector": 0,
+    "review": 0,
+    "escaped": 0
+   },
+   "filed_out_of_scope": 0,
+   "filed_cum": 124,
+   "closed_cum": 88
+  },
+  {
+   "date": "2026-09-29",
+   "filed": {
+    "latent": 0,
+    "github": 0,
+    "connector": 0,
+    "review": 0,
+    "escaped": 0
+   },
+   "filed_out_of_scope": 0,
+   "filed_cum": 124,
+   "closed_cum": 88
+  },
+  {
+   "date": "2026-09-30",
+   "filed": {
+    "latent": 1,
+    "github": 1,
+    "connector": 0,
+    "review": 0,
+    "escaped": 0
+   },
+   "filed_out_of_scope": 0,
+   "filed_cum": 126,
+   "closed_cum": 89
+  },
+  {
+   "date": "2026-10-01",
+   "filed": {
+    "latent": 4,
+    "github": 0,
+    "connector": 0,
+    "review": 0,
+    "escaped": 0
+   },
+   "filed_out_of_scope": 0,
+   "filed_cum": 130,
+   "closed_cum": 91
+  },
+  {
+   "date": "2026-10-02",
+   "filed": {
+    "latent": 1,
+    "github": 0,
+    "connector": 0,
+    "review": 0,
+    "escaped": 0
+   },
+   "filed_out_of_scope": 0,
+   "filed_cum": 131,
+   "closed_cum": 95
+  }
+ ],
+ "checks": [
+  {
+   "date": "2026-09-14",
+   "label": "code audit"
+  },
+  {
+   "date": "2026-09-21",
+   "label": "security advisory review"
+  },
+  {
+   "date": "2026-09-22",
+   "label": "client census (40 clients)"
+  },
+  {
+   "date": "2026-09-23",
+   "label": "client replay lab"
+  },
+  {
+   "date": "2026-09-24",
+   "label": "review of #8758"
+  },
+  {
+   "date": "2026-09-25",
+   "label": "GitHub issue triage"
+  },
+  {
+   "date": "2026-09-26",
+   "label": "release-candidate runs, soak, journey lab"
+  },
+  {
+   "date": "2026-10-01",
+   "label": "triage of new reports and advisories"
+  }
+ ],
+ "runs": [
+  {
+   "label": "run bf2",
+   "date": "2026-09-23",
+   "passing": 2480,
+   "cells": 2,
+   "kind": "release-candidate run"
+  },
+  {
+   "label": "run a",
+   "date": "2026-09-23",
+   "passing": 2416,
+   "cells": null,
+   "kind": "release-candidate run"
+  },
+  {
+   "label": "run b",
+   "date": "2026-09-23",
+   "passing": 2421,
+   "cells": null,
+   "kind": "release-candidate run"
+  },
+  {
+   "label": "run c",
+   "date": "2026-09-23",
+   "passing": 2508,
+   "cells": 6,
+   "kind": "release-candidate run"
+  },
+  {
+   "label": "run d",
+   "date": "2026-09-23",
+   "passing": 2520,
+   "cells": 6,
+   "kind": "release-candidate run"
+  },
+  {
+   "label": "run e",
+   "date": "2026-09-23",
+   "passing": 2534,
+   "cells": 12,
+   "kind": "release-candidate run"
+  },
+  {
+   "label": "run 36b",
+   "date": "2026-09-23",
+   "passing": 3015,
+   "cells": 6,
+   "kind": "release-candidate run"
+  },
+  {
+   "label": "run 59",
+   "date": "2026-09-23",
+   "passing": 3028,
+   "cells": 6,
+   "kind": "release-candidate run"
+  },
+  {
+   "label": "run 010",
+   "date": "2026-09-24",
+   "passing": 3046,
+   "cells": 6,
+   "kind": "release-candidate run"
+  },
+  {
+   "label": "run 011",
+   "date": "2026-09-25",
+   "passing": 3066,
+   "cells": 6,
+   "kind": "release-candidate run"
+  },
+  {
+   "label": "run 012",
+   "date": "2026-09-25",
+   "passing": 3090,
+   "cells": 6,
+   "kind": "release-candidate run"
+  },
+  {
+   "label": "run 013",
+   "date": "2026-09-25",
+   "passing": 3094,
+   "cells": 6,
+   "kind": "release-candidate run"
+  },
+  {
+   "label": "run 014",
+   "date": "2026-09-25",
+   "passing": 3097,
+   "cells": 6,
+   "kind": "release-candidate run"
+  },
+  {
+   "label": "run 015",
+   "date": "2026-09-25",
+   "passing": 3106,
+   "cells": 6,
+   "kind": "release-candidate run"
+  },
+  {
+   "label": "run 016",
+   "date": "2026-09-25",
+   "passing": 3139,
+   "cells": 6,
+   "kind": "release-candidate run"
+  },
+  {
+   "label": "run 017",
+   "date": "2026-09-25",
+   "passing": 3170,
+   "cells": 6,
+   "kind": "release-candidate run"
+  },
+  {
+   "label": "run 018",
+   "date": "2026-09-26",
+   "passing": 3396,
+   "cells": 6,
+   "kind": "release-candidate run"
+  },
+  {
+   "label": "run 019",
+   "date": "2026-09-27",
+   "passing": 3458,
+   "cells": 6,
+   "kind": "release-candidate run"
+  },
+  {
+   "label": "run 020",
+   "date": "2026-09-27",
+   "passing": 3473,
+   "cells": 6,
+   "kind": "release-candidate run"
+  },
+  {
+   "label": "#8786",
+   "date": "2026-09-27",
+   "passing": 3478,
+   "cells": 9,
+   "kind": "one merge, its own branch or CI"
+  },
+  {
+   "label": "#8788",
+   "date": "2026-09-30",
+   "passing": 3481,
+   "cells": 1,
+   "kind": "one merge, its own branch or CI"
+  },
+  {
+   "label": "#8791",
+   "date": "2026-10-01",
+   "passing": 3485,
+   "cells": 1,
+   "kind": "one merge, its own branch or CI"
+  },
+  {
+   "label": "#8793",
+   "date": "2026-10-02",
+   "passing": 3502,
+   "cells": 1,
+   "kind": "one merge, its own branch or CI"
+  },
+  {
+   "label": "#8794",
+   "date": "2026-10-02",
+   "passing": 3512,
+   "cells": 1,
+   "kind": "one merge, its own branch or CI"
+  },
+  {
+   "label": "#8795",
+   "date": "2026-10-02",
+   "passing": 3532,
+   "cells": 1,
+   "kind": "one merge, its own branch or CI"
+  },
+  {
+   "label": "#8796",
+   "date": "2026-10-02",
+   "passing": 3534,
+   "cells": 1,
+   "kind": "one merge, its own branch or CI"
+  }
+ ],
+ "regressions": [
+  {
+   "id": "BF-106",
+   "cause_pr": 8737,
+   "caused": "2026-09-18",
+   "filed": "2026-09-23",
+   "fix_pr": 8771,
+   "fixed": "2026-09-26",
+   "family": "a rule applied on one path and not its siblings"
+  },
+  {
+   "id": "BF-140",
+   "cause_pr": 8758,
+   "caused": "2026-09-25",
+   "filed": "2026-09-26",
+   "fix_pr": 8778,
+   "fixed": "2026-09-26",
+   "family": "a rule applied on one path and not its siblings"
+  },
+  {
+   "id": "BF-142",
+   "cause_pr": 8758,
+   "caused": "2026-09-25",
+   "filed": "2026-09-26",
+   "fix_pr": 8783,
+   "fixed": "2026-09-26",
+   "family": "a rule applied on one path and not its siblings"
+  },
+  {
+   "id": "BF-141",
+   "cause_pr": 8780,
+   "caused": "2026-09-26",
+   "filed": "2026-09-26",
+   "fix_pr": 8781,
+   "fixed": "2026-09-26",
+   "family": "empty values: \"\", null and absent treated differently"
+  },
+  {
+   "id": "BF-143",
+   "cause_pr": 8780,
+   "caused": "2026-09-26",
+   "filed": "2026-09-26",
+   "fix_pr": 8781,
+   "fixed": "2026-09-26",
+   "family": "empty values: \"\", null and absent treated differently"
+  },
+  {
+   "id": "BF-144",
+   "cause_pr": 8775,
+   "caused": "2026-09-26",
+   "filed": "2026-09-26",
+   "fix_pr": 8781,
+   "fixed": "2026-09-26",
+   "family": "state held in the process and lost on restart"
+  },
+  {
+   "id": "BF-80",
+   "cause_pr": 8745,
+   "caused": "2026-09-21",
+   "filed": "2026-09-21",
+   "fix_pr": 8779,
+   "fixed": "2026-09-26",
+   "family": "coupling to shared state (the failed-login delay list)"
+  }
+ ]
+}

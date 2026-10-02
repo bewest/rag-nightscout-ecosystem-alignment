@@ -25,7 +25,7 @@ ORIGIN = {
     'connector': {8, 34, 42, 43, 85, 89, 91, 97, 98},
     'review': {109, 110, 111, 112, 113, 115, 116, 117, 130, 131},
     'escaped': {80, 106, 140, 141, 142, 143, 144},
-    'github': {107} | set(range(118, 129)),
+    'github': {107, 148, 150} | set(range(118, 129)),
 }
 OUT_OF_SCOPE = {'invalid', 'seam', 'cuts'}
 CLOSED = ('merged', 'closed', 'decided')
