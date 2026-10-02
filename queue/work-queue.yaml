@@ -6114,6 +6114,9 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-02: gate defect found by -d4's agent: config-surface-census.js's
+      api3 arm (:138-142) accepts only `await self.storage.deleteManyOr`, so
+      it stays red on a correct .then/.catch fix (bf/autoprune-promise).
       2026-10-02 (maintainer, relayed by session -d4): the documentation
       half goes into 15.0.9 as BFQ-CONFIG-DOCS (bf/config-docs-truth); the
       code half, routing the API3_* variables through env.js, is after
@@ -11469,6 +11472,21 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-02 (session -d4's agent): bf/autoprune-promise 8e4f7dce, one
+      commit on dev ca6fcfaf (lib/api3/generic/collection.js +11/-10, the
+      returned promise handled with .then/.catch; new
+      tests/api3.autoprune.test.js, 3 tests), not pushed. The deleted count
+      is logged; a failed delete is logged and the process keeps running;
+      nextAutoPrune still advances hourly after a failure. Break-its: the
+      unfixed code fails both behaviour tests, dropping only .catch gives an
+      unhandled rejection, deletedCount for deleted fails the log test,
+      advancing only on success fails the throttle test; outside mocha the
+      unfixed code exits 1. Full suite 3537/0/4 (dev 3534/0/4). No other
+      callback-style calls to async API v3 storage methods. PR body:
+      reports/phase0-pr-bodies/autoprune-promise.md. Not measured, read
+      only: the cached collection looks up at most 1000 ids to invalidate
+      while the delete removes every match (mongoCachedCollection/index.js
+      :119-124); worth a check before this merges.
       2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after
       15.0.9, and carried in 15.0.9's BF-46 known issue. A fix branch,
       bf/autoprune-promise, is being prepared by -d4 in

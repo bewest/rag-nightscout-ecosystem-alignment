@@ -104,8 +104,8 @@ If a defect marked `fixed` or `merged` exists in 15.0.8, anyone running 15.0.8 s
 
 The size of that, from the register's §1 (the section whose defects reach existing operators),
 measured 2026-10-02 with `node tools/queue/gates/register-exposure-legend.js`: **112 defects**
-(BF-12, invalid, and BF-41, closed, excluded) — 25 `open`, 82 `merged`, 1 `partly merged`,
-4 `fixed` (BF-52; BF-09, BF-50 and BF-51 on unmerged branches). A few were introduced and repaired on `dev` before any release (BF-80, BF-106 and
+(BF-12, invalid, and BF-41, closed, excluded) — 24 `open`, 82 `merged`, 1 `partly merged`,
+5 `fixed` (BF-52; BF-09, BF-50, BF-51 and BF-156 on unmerged branches). A few were introduced and repaired on `dev` before any release (BF-80, BF-106 and
 BF-142, as of 2026-09-26), so they never reached 15.0.8. The count moves when entries are filed or
 merged; re-run the gate before quoting it.
 
