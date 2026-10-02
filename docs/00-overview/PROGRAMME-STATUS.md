@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 130 | 37 | 8 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 130 | 37 | 9 |
 | **Modernization** | `release-train` | 32 | 5 | 2 |
 | **Multitenant** | `tenancy` | 19 | 9 | 3 |
-| | **total** | **183** | **51** | **13** |
+| | **total** | **183** | **51** | **14** |
 
 <!-- END GENERATED: horizons -->
 
@@ -104,8 +104,8 @@ If a defect marked `fixed` or `merged` exists in 15.0.8, anyone running 15.0.8 s
 
 The size of that, from the register's §1 (the section whose defects reach existing operators),
 measured 2026-10-02 with `node tools/queue/gates/register-exposure-legend.js`: **111 defects**
-(BF-12, invalid, and BF-41, closed, excluded) — 27 `open`, 82 `merged`, 1 `partly merged`,
-1 `fixed` (BF-52). A few were introduced and repaired on `dev` before any release (BF-80, BF-106 and
+(BF-12, invalid, and BF-41, closed, excluded) — 26 `open`, 82 `merged`, 1 `partly merged`,
+2 `fixed` (BF-52; BF-09 on `bf/socket-dedup-zero`). A few were introduced and repaired on `dev` before any release (BF-80, BF-106 and
 BF-142, as of 2026-09-26), so they never reached 15.0.8. The count moves when entries are filed or
 merged; re-run the gate before quoting it.
 
@@ -126,7 +126,7 @@ cover more than one `BF-`:
 | `ADV-RETRO` | `merged-upstream` | GHSA-gjhc - loadRetro serves devicestatus to any socket (BF-79) |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | `BFQ-04` | `merged-upstream` | BF-04 - the v1 operator allowlist - superseded by P0-K |
-| `BFQ-09` | `in-progress` | BF-09 - socket dedup truthiness skips a falsy value |
+| `BFQ-09` | `ready-to-push` | BF-09 - socket dedup truthiness skips a falsy value |
 | `BFQ-10` | `merged-upstream` | BF-10 - mongod fatal-asserts at Docker's default nofile=1024 |
 | `BFQ-100` | `blocked` | BF-100 - devicestatus, food and activity store a hex _id as a string |
 | `BFQ-101` | `blocked` | BF-101 - API v3 id filters miss records stored with a string _id |
@@ -197,7 +197,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  | 17 |  | 1 |  |  |  | **22** |
 | `release-train` | 5 |  | 5 |  | 5 | 13 | 2 | 1 |  |  | 1 | **32** |
-| `register-open` | 27 | 4 | 3 | 1 | 6 | 49 | 5 |  | 1 | 2 |  | **98** |
+| `register-open` | 27 | 3 | 3 | 2 | 6 | 49 | 5 |  | 1 | 2 |  | **98** |
 | `tenancy` | 9 |  |  | 1 | 7 |  | 1 |  | 1 |  |  | **19** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  | 2 |  |  |  | **10** |
 | `backfix2` |  |  |  |  |  | 2 |  |  |  |  |  | **2** |

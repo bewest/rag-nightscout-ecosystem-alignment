@@ -3491,10 +3491,10 @@ items:
     title: BF-09 - socket dedup truthiness skips a falsy value
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
+    branch: bf/socket-dedup-zero
     base: official/dev@ca6fcfaf
     worktree: externals/work/crm-bf09
-    state: in-progress
+    state: ready-to-push
     ships_to_operators_today: true
     blast_radius: lib/server/websocket.js:538-566 (the register cites 535-568).
     review: maintainer - this needs a decision on intent before it needs code
@@ -3530,6 +3530,17 @@ items:
       - docs/60-research/remedial/gt3-register-truth-2026-09-15.md
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-02 (session -d4's agent): bf/socket-dedup-zero 7dff9f38, one
+      commit on dev ca6fcfaf (lib/server/websocket.js +26/-15, new
+      tests/websocket.dedup-zero.test.js), not pushed. percent, absolute and
+      duration treat 0 as a value matched exactly; insulin and carbs treat 0
+      as none ({$in: [0, null]}); '', false and null are still not keys. 22
+      new tests; reverting websocket.js fails 9 with the record dropped; an
+      exact zero key on all five fields fails the 2 xDrip filler re-sends,
+      zero-or-absent on all five fails the 2 cross-temp cases. Full suite
+      3556/0/4 (dev ca6fcfaf 3534/0/4; Node 22.23.2, MongoDB 7.0.43, one
+      cell). PR body: reports/phase0-pr-bodies/socket-dedup-zero.md. Not in
+      RT-0's blocks_on until the maintainer decides.
       2026-10-02 (maintainer, relayed by session -d4): confirm and adopt
       conditional handling of zero by field and type. The maintainer's
       reading: a temp basal with 0 is a real value and a bolus with 0 is a
