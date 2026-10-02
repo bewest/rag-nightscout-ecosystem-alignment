@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/releases/cgm-remote-monitor-15.0.9/contents.html">
       
       
-        <link rel="prev" href="index.html">
+        <link rel="prev" href="colophon.html">
       
       
         <link rel="next" href="decisions.html">
@@ -842,6 +842,8 @@
       
         
       
+        
+      
     
     
     
@@ -894,6 +896,34 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="colophon.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How 15.0.9 was made
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
               
             
               
@@ -2249,7 +2279,7 @@
 
 
 <h1 id="cgm-remote-monitor-1509--contents">cgm-remote-monitor 15.0.9 — contents<a class="headerlink" href="#cgm-remote-monitor-1509--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-02 at <code>f50bbb61</code>.</em></p>
+<p><em>Living document, last changed 2026-10-02 at <code>2f1a2970</code>.</em></p>
 <p><strong>Status: DRAFT for maintainer review. Contributor-facing; full technical depth intended.</strong>
 Nothing here is tagged or released. Measured 2026-10-02 against <code>official/dev</code> <code>ca6fcfaf</code>
 (merge of #8796) and <code>official/master</code> <code>92d08342</code> (= tag <code>15.0.8</code>, the shipping release), in
@@ -3240,7 +3270,7 @@ this file does not copy them.</p>
    update waits for an upstream fix and is carried with the modernization work.</li>
 <li><strong>The tag</strong>, by the maintainer.</li>
 </ol>
-<p>The <a href="release-notes.html">release notes</a> and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f59547fc12dfe197585d884ff052e4bbec5970c7/releases/cgm-remote-monitor-15.0.9/tag-message.txt">tag message</a> are drafted on <code>ca6fcfaf</code>.</p>
+<p>The <a href="release-notes.html">release notes</a> and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/2f1a29707b2d4e87951ce40754466cdd67743ba1/releases/cgm-remote-monitor-15.0.9/tag-message.txt">tag message</a> are drafted on <code>ca6fcfaf</code>.</p>
 <p>The real-time soak is done by decision: on 2026-09-30 the maintainer decided that real sites
 running the candidate count as the 24 to 72 h real-time soak, and the lab's 72 h soak
 (<code>lab.sh soak --hours 72</code>) is not run. Recorded reports: as of 2026-09-29, one Loop, one Trio and
@@ -3737,6 +3767,7 @@ the user-facing form. Facts the notes must not lose:</p>
 </ul>
 <h2 id="evidence">Evidence<a class="headerlink" href="#evidence" title="Permanent link">&para;</a></h2>
 <ul>
+<li>Release-cycle statistics, method and materials: <a href="colophon.html">How 15.0.9 was made</a>.</li>
 <li>Merged part: per-PR test evidence, ablations and controls are in each PR body and in the
   register entry for each id.</li>
 <li><strong>The candidate, <code>dev</code> <code>ca6fcfaf</code></strong> (tree <code>0e38a5a7</code>, the same tree as #8796's head

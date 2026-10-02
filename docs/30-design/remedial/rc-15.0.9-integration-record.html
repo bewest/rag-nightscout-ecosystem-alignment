@@ -4532,7 +4532,7 @@
 
 
 <h1 id="1509-integration-record">15.0.9 integration record<a class="headerlink" href="#1509-integration-record" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-02 at <code>f50bbb61</code>.</em></p>
+<p><em>Living document, last changed 2026-10-02 at <code>2f1a2970</code>.</em></p>
 <p><em>Contributor-facing. Living record of how the cgm-remote-monitor 15.0.9 candidate was assembled
 and tested. Item state is in <code>queue/work-queue.yaml</code> (<code>RT-0</code>); defect facts are in the
 <a href="nightscout-backfix-register.html">backfix register</a>; release contents are in
@@ -5703,8 +5703,8 @@ from that version only in <code>docs/releasing.md</code>.</p>
 <a href="../../60-research/remedial/connector-profile-sync.html">connector profile sync</a>.
 Update-on-change is active only against a sink that has #8758.</p>
 <h2 id="run-history">Run history<a class="headerlink" href="#run-history" title="Permanent link">&para;</a></h2>
-<p>Each record is kept at the commit shown. Suite results are passing/failing/pending, and every run
-had 0 failing. Before run 011, runs used <code>npm test</code>. Runs 011 to 015 use CI's <code>test-ci</code> + <code>test:core</code>. Runs 016 to 020 use <code>npm test</code>; runs 017 to 020 also run the <code>test-ci</code> form in one cell.</p>
+<p>Each record is kept at the commit shown. Suite results are passing/failing/pending. Every run
+had 0 failing except run 016, where the Crowdin merge failed 4 to 5 language tests (BF-132). Before run 011, runs used <code>npm test</code>. Runs 011 to 015 use CI's <code>test-ci</code> + <code>test:core</code>. Runs 016 to 020 use <code>npm test</code>; runs 017 to 020 also run the <code>test-ci</code> form in one cell.</p>
 <table>
 <thead>
 <tr>
