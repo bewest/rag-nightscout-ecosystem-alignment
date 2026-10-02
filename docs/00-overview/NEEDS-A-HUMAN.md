@@ -2,7 +2,7 @@
 
 *Contributor-facing. The subset of the work queue where no further engineering
 advances anything — a person has to push, decide, or review. Prose revised
-2026-09-30 against cgm-remote-monitor `origin/dev` `3014f883` and nightscout-connect
+2026-10-02 against cgm-remote-monitor `official/dev` `25fc41d9` and nightscout-connect
 `official/main` `4dde1ec` (tag `v0.1.0`); tables generated.*
 
 This page lists only the items whose claimed state means **the next move belongs to
@@ -27,11 +27,10 @@ they need is a release, and that is one item — `RT-0` — which is listed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 13 items
+### Maintainer &mdash; 12 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
-| `BFQ-151` | `in-flight-upstream` | BF-151 - one /api/v1/times or /slice request can block the server for seconds (b | #8795 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `BFQ-152` | `needs-decision` | BF-152 - API v3 settings are admin-only through search and history, readable by  | &mdash; |
@@ -57,12 +56,6 @@ they need is a release, and that is one item — `RT-0` — which is listed.
 |---|---|---|---|
 | `A7A-7` | `unsettled` | §7a item 7 - the clock question | &mdash; |
 
-### SECURITY reviewer &mdash; 1 item
-
-| id | claimed state | what it is | PR |
-|---|---|---|---|
-| `BFQ-72` | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU | &mdash; |
-
 <!-- END GENERATED: needs-a-human -->
 
 ---
@@ -75,23 +68,10 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 
 | PR | id | branch | what it fixes | who should review |
 |---|---|---|---|---|
-| **#8795** | `BFQ-151` | `bf/braces-expansion-cap` | BF-151 - one /api/v1/times or /slice request can block the s | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 
-Every cgm-remote-monitor PR decided for 15.0.9 is merged into `dev` (`3014f883`, 2026-09-30, the merge of #8788), and
-none is released. The one exception is Crowdin #8730, which the maintainer held out because its sync
-reverts translations `dev` corrected (BF-132). The PR-by-PR list is in
-[the release contents](../../releases/cgm-remote-monitor-15.0.9/contents.md). `dev` itself is the
-candidate. Run 020 on `ce30a94d` gave 3473/0/3 on Node 20, 22 and 24 against MongoDB 4.4.24 and
-7.0.43. It stands for `295f1177`, whose one further merge (#8785) changes only a test file; #8786
-(BF-147, dependency overrides) is covered by its own nine-cell CI and a byte-identical production
-bundle ([15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md)). The
-real-time soak (`RT-SOAK`) is done: on 2026-09-30 the maintainer decided that real sites running the
-candidate count for it, and reported no visible regression so far. Browser hand
-checks are still owed at the final candidate: files they covered have changed since the hand check
-at `8d797ba4` (`client-unchanged-since-hand-check.js` names 14; RT-0). The 2026-09-26 walk on
-`ff93fa94` covered part of them, and [ROADMAP §1](ROADMAP.md#1-the-next-release-1509) lists the rest.
+Every PR decided for 15.0.9 is merged; `RT-0` below gives the release's state.
 
 The connector half is released. On 2026-09-24 the maintainer merged `nightscout-connect` #70
 (`dev` → `main`, `4dde1ec`) and tagged `main` `v0.1.0`. npm's `latest` is `0.1.0`, with
@@ -108,25 +88,41 @@ Engineering cannot advance these. Each needs somebody to choose.
 
 ### `RT-D3` — answered for 15.0.9
 
-The version question was settled with `RT-VERSION` (15.0.9 ships as numbered), and the drag check
+The version is decided (15.0.9 ships as numbered), and the drag check
 passed on 2026-09-23 in automation and by hand: mouse in mg/dL and mmol/L, and touch, the same as
 15.0.8. The hand check found BF-103 (a split drag keeps the old time, so IOB and COB ignore the move),
 which is on 15.0.8 as well and is tracked as `BFQ-103`.
 
 ### `RT-0` — release 15.0.9
 
-The most consequential row on this page. 15.0.9 (`origin/master..origin/dev`) is 87 first-parent merges
-(`git rev-list --first-parent --count origin/master..origin/dev`, 2026-09-30); `master` is 509 commits
-behind `dev`. Until 15.0.9 ships, every one of those fixes exists in code and protects nobody. They
-include the fixes for two published-advisory defects that survive `AUTH_DEFAULT_ROLES=denied`,
-GHSA-gjhc (BF-79, #8744) and GHSA-8849 (BF-75/76, #8745), the boot notice for world-readable sites
-(#8746), and the two backported security fixes (BF-104, BF-105, #8751); every instance on 15.0.8 is
-still exposed to all of them. Release PR #8598 is at `dev` `3014f883`. It was approved at `e3adc91d`
-(two approvals by the maintainer; the PR's author is Andy), and re-approval at its final head is
-owed. What 15.0.9 still waits on is generated from the queue in
-[ROADMAP §1](ROADMAP.md#1-the-next-release-1509); what it contains and leaves broken is in
-[contents.md](../../releases/cgm-remote-monitor-15.0.9/contents.md), and the test evidence is in the
-[15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md).
+The most consequential row on this page. `dev` is at `25fc41d9` (the merge of #8795, 2026-10-02):
+92 first-parent merges and 523 commits since 15.0.8
+(`git rev-list [--first-parent] --count official/master..official/dev`). Until 15.0.9 ships, every
+one of those fixes exists in code and protects nobody. They include the fixes for two
+published-advisory defects that survive `AUTH_DEFAULT_ROLES=denied`, GHSA-gjhc (BF-79, #8744) and
+GHSA-8849 (BF-75/76, #8745), the boot notice for world-readable sites (#8746), and the two
+backported security fixes (BF-104, BF-105, #8751); every instance on 15.0.8 is still exposed to all
+of them.
+
+- **Merged.** Every cgm-remote-monitor PR decided for 15.0.9, the last being #8795 (BF-151); the list is in
+  [contents.md](../../releases/cgm-remote-monitor-15.0.9/contents.md), which also says what the
+  release leaves broken. Crowdin #8730 is held out because its sync reverts translations `dev`
+  corrected (BF-132).
+- **Tests.** The last full run is run 020 on `ce30a94d` (2026-09-27): 3473/0/3 in all six cells
+  (Node 20, 22 and 24 against MongoDB 4.4.24 and 7.0.43), with an A/B soak against 15.0.8. Each PR
+  merged since carries its own evidence (its GitHub CI and a full suite on its branch). #8795's head
+  `fdf88f4e` has the same tree as `25fc41d9`, and passes the full suite, 3532/0/4, on one cell
+  (Node 22, MongoDB 7.0.43). A full six-cell run on `25fc41d9` comes next
+  ([15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md)).
+- **Real-site soak.** `RT-SOAK` is done: the maintainer decided on 2026-09-30 that real sites
+  running the candidate count as the soak, and reports (2026-10-02) stable behaviour from Loop, Trio
+  and AndroidAPS users on `dev`. The lab's 72 h soak was not run.
+- **Release PR.** #8598 (`dev` → `master`) is at `25fc41d9` and mergeable; its CI on `25fc41d9`:
+  27 checks passed, 3 skipped (2026-10-02). It was approved at `e3adc91d`; re-approval at
+  `25fc41d9` is owed.
+- **Version.** Decided: 15.0.9. `RT-VERSION`'s gate measures the modernization cut branches, which
+  also declare 15.0.9 and are renumbered when they are rebased; it holds the cuts, not this release.
+- **What remains** before the tag (the queue's `RT-0` has no open blockers) is listed once, in [ROADMAP §1](ROADMAP.md#1-the-next-release-1509).
 
 ### `P0-TAG` — done: `nightscout-connect` 0.1.0 is released
 

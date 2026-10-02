@@ -1,7 +1,7 @@
 # Nightscout 15.0.9 — testing notes for the release candidate
 
-**DRAFT — prepared for maintainer review before it is shared.** Living document: the "reported so
-far" line and the test build change as reports arrive. Last updated 2026-09-30.
+**DRAFT — prepared for maintainer review before it is shared.** Kept current as reports arrive and
+as the test build changes. Last updated 2026-10-02.
 
 *For people who would like to help test the next Nightscout release before it comes out. Part 1 is
 for people who **use** a Nightscout site, for themselves or a family member. Part 2 is for people who
@@ -12,9 +12,14 @@ team.*
 
 ## Where testing stands
 
-As of 2026-09-29: **one Loop, one Trio and one AndroidAPS user have each run the test build for about
-two days, with no errors and no changes in behaviour.** Nobody has yet tried to provoke the unusual
-cases. That is what these notes ask for. The release notes list what changed:
+- As of 2026-09-29, one Loop, one Trio and one AndroidAPS user had each run the test build of that
+  time (`7000eb18`) for about two days, with no errors and no changes in behaviour.
+- On 2026-10-02 the maintainer reported that AndroidAPS, Trio and Loop users running the `dev`
+  branch had reported stable, unsurprising behaviour all week. These reports are informal; how many
+  sites and for how long is not recorded.
+- Nobody has yet reported trying the unusual cases on purpose. That is what these notes ask for.
+
+The release notes list what changed:
 [release notes](release-notes.md). These notes pick out the changes that need someone with a
 particular setup to try them.
 
@@ -77,19 +82,30 @@ notes.
 
 ## Getting the test build
 
-The test build is the `dev` branch of `nightscout/cgm-remote-monitor` at commit **`3014f883`**
-(full: `3014f883a1f2def76841776a20a275569e0f5799`). Its version reads **15.0.9**. It differs from the
-previous test build, `7000eb18`, only in the Day to Day report (events that run past midnight show on
-both days; see 1.7). If you are running `7000eb18`, keep going: your reports still count.
+The test build is the `dev` branch of `nightscout/cgm-remote-monitor` at commit **`25fc41d9`**
+(full: `25fc41d9e39bbdd7fbe5f283da70ccc604daa26e`, 2026-10-02). Its version reads **15.0.9**. Since
+the earlier test build `7000eb18` it adds:
 
-- **Docker:** `nightscout/cgm-remote-monitor:dev_3014f883a1f2def76841776a20a275569e0f5799`. This tag
-  always means exactly this build. `latest_dev` means "the newest `dev`" and moves when `dev` changes.
+- the Day to Day report shows events that run past midnight on both days (see 1.7);
+- the Food Editor's lists scroll by touch on phones (see 1.8);
+- xDrip4iOS can delete readings from your site in bulk (see 2.4);
+- error pages and error replies no longer show internal details (see 2.6);
+- a fix that stops one kind of oversized request to two little-used API addresses from making the
+  server stop responding for seconds; it is now refused (nothing to test by hand);
+- updated versions of several software libraries it uses, with no change to what you see.
+
+If you are running `7000eb18` or a later `dev` build, keep going: your reports still count.
+
+- **Docker:** no image for `25fc41d9` was on Docker Hub when these notes were updated
+  (2026-10-02). `latest_dev` means "the newest `dev`" and moves when `dev` changes, so check which
+  commit it is before relying on it.
 - **Deploying from your own copy of the code** (Heroku, Railway, Northflank, Render, a VPS and
   similar): update your copy's `dev` branch from `nightscout/cgm-remote-monitor` and deploy that
-  branch. Check the commit is `3014f883`.
+  branch. Check the commit is `25fc41d9`.
 - **A hosting service that runs Nightscout for you:** ask them whether they offer the test build.
 
-If `dev` moves on to a new commit, these notes will name the new one.
+Every change planned for 15.0.9 is now in this build. If `dev` moves to a new commit before the
+release, these notes will name it.
 
 ---
 
@@ -189,9 +205,25 @@ These alerts could never fire before. Check them when the situation happens anyw
   are expected to change**, because filters now return the right records. Tell us if a number
   changed in a way you can't explain, with the report name and date range, not the data itself.
 - The treatments report can now be filtered by treatment type.
-- **Day to day** (build `3014f883` only): an event that lasts a while and runs past midnight, such
+- **Day to day** (builds from `3014f883` on): an event that lasts a while and runs past midnight, such
   as an exercise at 22:00 for four hours, should show on both days and stay inside each day's chart.
   A temporary target cancelled early is still drawn for the full time it was set for (a known issue).
+
+## 1.8 Food Editor on a phone or tablet
+
+The Food Editor (menu → Food Editor, or `/food` after your site's address; the menu item shows when
+you are signed in with admin access) keeps your saved foods and **quick picks** (groups of foods you
+can pick in one go in the bolus calculator). On 15.0.8 its lists
+could not be scrolled with a finger on a touch screen. With some foods and quick picks saved:
+
+- On a phone or tablet, swipe up on a food in the list. **Working looks like:** the list scrolls to
+  the foods below.
+- Swipe up on a quick pick. **Working looks like:** the page scrolls.
+- On a computer with a mouse: drag a food onto a quick pick (the food is added to it), and drag a
+  quick pick by the empty end of its title line above another (the order changes). This should work
+  as it did on 15.0.8.
+
+Tell us your phone or tablet and browser if a swipe does not scroll.
 
 ---
 
@@ -246,6 +278,7 @@ The replay lab reproduced these, but no one has run the real thing against the t
 | **nightscout-reporter** (the current app), **Sugarmate**, **python-nightscout**, home-made scripts, spreadsheets | whatever you use them for | same results as on 15.0.8; any `Bad count` or "unsupported operator" error is from the [corrections](release-notes.md#corrections-requests-answered-differently): report the tool, its version and the request's shape (not its data) |
 | **xDrip+, xDrip4iOS, Loop, tconnectsync** on a site with records from 15.0.6 or earlier, or copied from another site | edit and delete an old record from the app | the record updates in place or is deleted, with no second copy |
 | **Bulk-delete tools** | a delete by a list of more than 20 ids | on 15.0.8 this failed and deleted nothing; on 15.0.9 it deletes every match. Check that is what you meant |
+| **xDrip4iOS** (build `50bc1084` or later) | readings xDrip4iOS deletes from your site in bulk | the readings are removed from the site. On 15.0.8 these deletes answered with a server error and removed nothing; deletes of one reading or of a time range already worked |
 
 ## 2.5 Setup changes
 
@@ -268,3 +301,7 @@ The replay lab reproduced these, but no one has run the real thing against the t
 - `API v1: … (logged once)` deprecation lines: which one, and which client you think sent it.
 - Any line that mentions a refused alarm silence, a refused filter condition, or `Bad count`.
 - Any error followed by the site restarting.
+- **Error pages and error replies** now give only the status and a short message, unless the site
+  runs with `NODE_ENV=development`; the full error is still written to the server log. If you used to
+  read errors in the browser or in a tool's output, read the server log instead. Tell us if an error
+  you need to see no longer reaches the log.

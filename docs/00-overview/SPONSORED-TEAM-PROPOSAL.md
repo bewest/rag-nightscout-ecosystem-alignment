@@ -97,7 +97,7 @@ releases slowed (both below). Tag dates in cgm-remote-monitor (`git tag --sort=c
 | 15.0.4 | 2026-02-28 | 296 |
 | 15.0.7 | 2026-04-29 | 57 (15.0.5 and 15.0.6 in between) |
 | 15.0.8 | 2026-09-04 | 128 |
-| 15.0.9 | candidate `3014f883` (2026-09-30), not tagged | — |
+| 15.0.9 | candidate `dev` `25fc41d9` (2026-10-02), not tagged | — |
 
 **Important work can wait for years.** The MongoDB 5 driver upgrade was first proposed in #7344,
 opened 2022-02-16. The upgrade that shipped was #8421: opened 2026-01-19, merged 2026-03-16, released
@@ -152,7 +152,7 @@ not a volunteer's ([collaboration model §3](COLLABORATION-MODEL.md#3-needs-we-c
 **2026 shows what steady attention produces.** Five releases so far this year. For 15.0.9 alone
 ([quality record](../60-research/programme/paving-the-cowpaths-2026-09-27.md), measured on `295f1177`): 85 pull requests
 merged in 23 days, 146 defects filed and 87 of the 122 in scope closed, and the full test suite grown
-from 1,533 passing tests on 15.0.8 to 3,473 on `295f1177`. The candidate `7000eb18` adds one more
+from 1,533 passing tests on 15.0.8 to 3,473 on `295f1177`. The next merge, `7000eb18`, added one more
 (#8786, BF-147); its CI passed 3,478 tests in all nine cells. Before any release is tagged, 19
 integration runs, a comparison soak against 15.0.8, browser checks against a simulated household and
 a census of client behaviour were all completed.

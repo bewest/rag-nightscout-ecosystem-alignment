@@ -1,17 +1,13 @@
 # Nightscout 15.0.9 — release notes
 
-**DRAFT — not yet released. Prepared for maintainer review; the wording may change.**
-**The version number is settled: 15.0.9.**
+**Draft: 15.0.9 is not yet released, and the wording may change before it is.**
 
-*For people who run a Nightscout site for themselves or a family member. Nightscout is not a
-medical device, and nothing in these notes is medical advice or advice about insulin doses.
-Where a change could affect decisions about your therapy, talk it through with your care team.*
+*For people who run a Nightscout site for themselves or a family member. Nightscout is a
+secondary display, nothing in these notes is advice about insulin doses, and you should talk
+with your care team before changing therapy settings.*
 
-> These notes complement the automatically generated changelog. The changelog lists what
-> changed; these notes say what you will **notice**, what you must **do**, what to **check
-> afterwards**, and what is **still broken**. If the two disagree, the changelog is right about
-> *what changed* and these notes are right about *what it means for you*, and the disagreement
-> is worth reporting.
+The changelog lists every change; these notes say what you will notice, what you must do, what
+to check afterwards, and what is still not fixed.
 
 This is a bug-fix and security release. Most of what is in it is something that should
 already have worked. A few fixes change what you see on screen, some change which alarms can
@@ -468,6 +464,17 @@ security advisories are published.
    older `TREATMENTS_AUTH=off` setting, anyone with your address can read your data **and add
    treatments** without logging in. That is what the setting does and this release does not
    change it — but the admin warning that should tell you this was never shown. It is now.
+9. **Error replies no longer show technical details about where Nightscout is installed.** When
+   Nightscout hit an unexpected error, the error page or reply it sent back included a technical
+   trace that names folders on the computer or service where Nightscout runs, and anyone who
+   could reach your site could see it. It did not include your readings, treatments or
+   `API_SECRET`. Error replies now carry only the error code and a short message, sometimes a
+   standard phrase such as "Bad Request"; the full details still go to your server log, where
+   you or someone helping you can read them. This applies to every site that does not set
+   `NODE_ENV=development`, including sites where `NODE_ENV` is not set at all: on those, the
+   error pages you see in a browser also stop showing the trace.
+10. **A kind of request to two little-used API addresses could make Nightscout stop responding
+    for several seconds, and it is now refused.** Nothing you see changes.
 
 **What to do:** upgrade. If you rely on `AUTH_DEFAULT_ROLES=denied` to keep your data private,
 this release is the one that makes the live-update connection respect it. If you use
@@ -543,11 +550,6 @@ your data). **If your glucose data stops arriving, use your meter or CGM app and
 routine while it is sorted out.**
 
 ### Asking for a number of records (`count`)
-
-<!-- #8761 (bf/count-client-compat), merged 2026-09-24 as f1591069. Decided 2026-09-24 (maintainer,
-     relayed via -59; RT-COUNT-COMPAT): tolerate the two shapes real clients send (oref0, GluPredKit)
-     and keep 15.0.9 a patch; see the semver policy, section 3.2. Checked against official/dev
-     153e5658: lib/api/index.js validateCount, lib/server/count.js, lib/server/env.js, README. -->
 
 Apps add `count` to a request to say how many records they want back, for example "the last 10
 readings". On 15.0.8, a request for **zero** records could send back your **entire** history,
@@ -871,12 +873,11 @@ through newer-API results could skip some records and repeat others.
 **What you will notice:** reports, dashboards and tools that use these filters may show
 different numbers — often many more records than before.
 
-> **Earlier results may have under- or over-reported delivered therapy.** If you have used a
-> report or tool built on these filters to look back at insulin, carbs or temp basals, the
-> numbers it showed may have been wrong. Nothing stored in your database was wrong; the
-> question was being asked wrongly. This is not medical advice. If a corrected figure changes
-> your understanding of a past period, discuss it with your care team rather than acting on it
-> alone.
+**Earlier results may have under- or over-reported delivered therapy.** If you have used a
+report or tool built on these filters to look back at insulin, carbs or temp basals, the numbers
+it showed may have been wrong. Nothing stored in your database was wrong; the question was being
+asked wrongly. This is not medical advice. If a corrected figure changes your understanding of a
+past period, discuss it with your care team rather than acting on it alone.
 
 For a filter asking whether a value is present, only `true`, `false`, `1` and `0` are
 understood. Other spellings, such as `null` or leaving the value empty, still mean "has the
@@ -1002,6 +1003,25 @@ entered at 22:00 for four hours shows from 22:00 to midnight on the first day an
 the day it started and ran off the edge of that day's chart. Events that start and end on the same
 day look the same as before.
 
+### Food Editor scrolls on phones
+
+On a phone, the food list in the Food Editor could not be scrolled by swiping: it has room for
+two or three foods, and a swipe that started on a food did nothing, so the rest of the list
+could not be reached. A swipe that started on a quick pick did not scroll the page either. Both
+now scroll. Dragging a food into a quick pick and reordering quick picks still need a mouse, as
+before.
+
+### Bulk deletes from xDrip4iOS remove the readings
+
+xDrip4iOS can delete glucose readings from your site in bulk by listing the time of each
+reading. Nightscout answered every such request with an error and deleted nothing, so readings
+you deleted in the app stayed on your site, in the chart and in reports. Nightscout now deletes
+the listed readings, and only those. No reading was changed or lost: the readings that stayed
+were ones the app meant to remove. Readings you deleted in xDrip4iOS before upgrading are still
+on your site; delete them again from the app, or in Nightscout, if you want them gone. Other
+apps that ask for several readings or treatments by their times at once now get them, where
+they got an error before.
+
 ### Translations
 
 Updated translations from Nightscout's volunteer translators on Crowdin, as of early September
@@ -1025,8 +1045,10 @@ against it; a filter listing more than 20 values (for example, "these 30 records
 where 15.0.8 refused it with an error, so a tool that deletes records by such a list now deletes
 them; each Loop remote command (override, carbs or bolus) now closes its connection to Apple's push
 service when the push is done, where 15.0.8 kept every one open until the server restarted, so a
-busy site accumulated connections and memory; updated translations and many
-software library updates.
+busy site accumulated connections and memory; more software libraries are updated to versions
+that clear security notices published against them in late September, with no change in how
+Nightscout works (none of them changes what your browser loads); updated translations
+and many other software library updates.
 
 ---
 
@@ -1232,6 +1254,4 @@ a report from "15.0.9" made before this release is from that channel.
 
 ---
 
-*DRAFT, 2026-09-26. Requires maintainer review before publishing. Nightscout is not a medical
-device, and nothing in these notes is medical advice or guidance about insulin dosing. Where a
-change here could affect decisions about your therapy, discuss it with your care team.*
+*Draft, 2026-10-02, on the development version 25fc41d9; not yet released.*

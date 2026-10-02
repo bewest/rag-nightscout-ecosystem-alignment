@@ -1,18 +1,17 @@
 # cgm-remote-monitor 15.0.9 — contents
 
 **Status: DRAFT for maintainer review. Contributor-facing; full technical depth intended.**
-Nothing here is tagged or released. Measured 2026-09-30 against `official/dev` `3014f883`
-(merge of #8788) and `official/master` `92d08342` (= tag `15.0.8`, the shipping release), in
+Nothing here is tagged or released. Measured 2026-10-02 against `official/dev` `25fc41d9`
+(merge of #8795) and `official/master` `92d08342` (= tag `15.0.8`, the shipping release), in
 `externals/cgm-remote-monitor-official` after `git fetch official`.
 
 > Complements the generated changelog. The changelog is authoritative for *what merged*;
 > this file records what the release is made of, how each figure was measured, and what is
 > unsettled.
 
-15.0.9 is **everything on `dev` at `3014f883`**. Every PR the maintainer decided ships in it
-([decisions](decisions.md)) is merged, except Crowdin #8730, which the maintainer held out on
-2026-09-25 because its sync reverts translations `dev` corrected (BF-132). Every PR merged to `dev`
-is `merged`; none is `released`.
+15.0.9 is **everything on `dev` at `25fc41d9`**. Every PR the maintainer decided ships in it
+([decisions](decisions.md)) is merged. Crowdin #8730 is held out because its sync reverts translations `dev`
+corrected (BF-132). Every PR merged to `dev` is `merged`; none is `released`.
 
 ## Identity
 
@@ -20,14 +19,14 @@ is `merged`; none is `released`.
 |---|---|
 | Merged part | `official/master..official/dev` |
 | Base (shipping) | `92d08342` = `15.0.8` |
-| `dev` head | `3014f883` (merge of #8788, 2026-09-30 22:38Z), tree `3549306b`, the same tree as #8788's head `bbc6e75e` |
-| Commits on `dev` | 509 — `git rev-list --count official/master..official/dev` |
-| First-parent merges on `dev` | **87** — `git rev-list --first-parent --count official/master..official/dev`; every first-parent commit in the range is a PR merge (`git log --first-parent --format=%s official/master..official/dev \| grep -vc '^Merge pull request'` prints 0) |
-| Diff on `dev` | 298 files, +28617/−1819 — `git diff --shortstat official/master official/dev` |
+| `dev` head | `25fc41d9` (merge of #8795, 2026-10-02 17:33Z), tree `e5c8ea6b`, the same tree as #8795's head `fdf88f4e` |
+| Commits on `dev` | 523 — `git rev-list --count official/master..official/dev` |
+| First-parent merges on `dev` | **92** — `git rev-list --first-parent --count official/master..official/dev`; every first-parent commit in the range is a PR merge (`git log --first-parent --format=%s official/master..official/dev \| grep -vc '^Merge pull request'` prints 0) |
+| Diff on `dev` | 302 files, +29531/−1874 — `git diff --shortstat official/master official/dev` |
 | `package.json` version | `15.0.9` on `dev` — `git show official/dev:package.json \| grep '"version"'` |
 | Connector pin | `nightscout-connect` exactly `0.1.0` from npm on `dev` (#8762); `15.0.8` pins the `v0.0.13` tag tarball — `git show official/<ref>:package.json \| grep nightscout-connect` |
 | Held out | Crowdin #8730 (head `f99c0e54`, open; BF-132) — `gh pr view 8730 --json state,headRefOid` |
-| Release PR | #8598 (`dev` → `master`, head `3014f883`, author AndyLow91): open, mergeable, `reviewDecision` `APPROVED`; both approvals (the maintainer, 2026-09-26 00:39Z) were given on `e3adc91d`. CI on `3014f883`: 27 checks passed, 3 skipped (read 2026-09-30) — `gh pr view 8598 --json state,reviewDecision,reviews`, `gh pr checks 8598` |
+| Release PR | #8598 (`dev` → `master`, head `25fc41d9`, author AndyLow91): open, mergeable, `reviewDecision` `APPROVED`; both approvals (the maintainer, 2026-09-26 00:39Z) were given on `e3adc91d`; re-approval at `25fc41d9` is owed. CI on `25fc41d9`: 27 checks passed, 3 skipped (read 2026-10-02 17:39Z) — `gh pr view 8598 --json state,reviewDecision,reviews`, `gh pr checks 8598` |
 | Tag | none. No `15.0.9` tag exists |
 
 ## What 15.0.9 contains
@@ -36,7 +35,7 @@ is `merged`; none is `released`.
 
 | PR | branch | head | diff | register | why |
 |---|---|---|---|---|---|
-| #8730 | `nightscout:crowdin_incoming` | `f99c0e54` | 32 files, +518/−454 | BF-132 | Crowdin translation updates. Decided 2026-09-25 (maintainer) to carry, then held out the same day: the sync puts back translations `dev` corrected (for example Traditional Chinese "ml" shown as grams). A reconciled translations branch is an option |
+| #8730 | `nightscout:crowdin_incoming` | `f99c0e54` | 32 files, +518/−454 | BF-132 | Crowdin translation updates. Held out by the maintainer (2026-09-25): the sync puts back translations `dev` corrected (for example Traditional Chinese "ml" shown as grams). A reconciled translations branch is an option |
 
 ### Merged to `dev`
 
@@ -45,7 +44,7 @@ Register ids refer to
 [`docs/30-design/remedial/nightscout-backfix-register.md`](../../docs/30-design/remedial/nightscout-backfix-register.md),
 which is the home of every defect fact; these tables do not restate them.
 
-#### Programme backfix PRs (40), plus #8741
+#### Programme backfix PRs (45), plus #8741
 
 | PR | Merge | Date | Register | What |
 |---|---|---|---|---|
@@ -90,6 +89,10 @@ which is the home of every defect fact; these tables do not restate them.
 | #8784 | `ce30a94d` | 2026-09-26 | BF-146, BF-133 | `lib/api3/storage/mongoCachedCollection/index.js` `updateInCache`: treatments and device status written through API v3 pass through `ddata.processRawDataForRuntime`, the helper the v1 emitters use, before they enter the in-memory cache, so they carry `mills` (and `endmills` where the helper adds it); nothing stored changes, entries are passed on as before. A late or edited v3 treatment counts in the treatment-based IOB and COB on the server and in the page data; the dataloader's sort puts treatments in time order, so the COB total and `cob.lastCarbs` follow time (BF-133); a late v3 device status is placed by time in the in-memory `GET /api/v1/devicestatus`. The same code is on 15.0.8. Heads `db99bba4` (treatments), `d235bdf6` (device status) |
 | #8785 | `295f1177` | 2026-09-27 | — | test only. `tests/boluswizardpreview.test.js`: the sandbox reads the same `now` the test data is stamped with (`sbx.time = now` after `serverInit`; `clientInit(ctx, now, data)`), so two IOB tests no longer fail (49.95 against 50) when the test files before this one take more than about a minute. Nothing that runs on a site changes. Head `a9b77d1e` |
 | #8786 | `7000eb18` | 2026-09-27 | BF-147 | `package.json` overrides: `ajv@^6` 6.12.6 → 6.14.0 and `request > form-data` 2.5.5 → 2.5.6; lockfile refresh of `browserslist`, `baseline-browser-mapping` and `postcss-selector-parser` within their ranges (9 versions, patch or minor); new `tests/dependency-overrides.test.js`. `npm audit` 17 → 7, no highs. The production bundle is byte-identical. Head `64a9cc13` |
+| #8791 | `50bc1084` | 2026-10-01 | BF-108 | a v1 filter listing several dates under the date field is read one date at a time; on 15.0.8 it answered 500, so xDrip4iOS bulk deletes by timestamp removed nothing. `lib/server/query.js` only, server-side. Head `ee1ba31f` |
+| #8793 | `839a1565` | 2026-10-02 | BF-73 | outside `NODE_ENV=development`, an error reply carries the status and a short message, with no stack trace or server paths; the full error is still written to the server log (new `lib/server/error-handler.js`, `lib/server/app.js`). With `NODE_ENV` unset, error pages also stop showing the stack, and a 4xx raised without `err.expose` answers with the standard reason phrase. Live on 15.0.8, so described by mechanism and outcome only. Head `dc64e82d` |
+| #8794 | `a143d507` | 2026-10-02 | BF-153 | dependency refresh: `ip-address`, `fast-uri`, `brace-expansion` and the axios entries under `minimed-connect-to-nightscout` move to their patch releases (`package.json` overrides); the axios dev dependency, `webpack-dev-middleware` and `dompurify` refreshed in the lockfile; 26 lockfile version changes, all patch or minor. `moment` stays 2.30.1 by decision. `npm audit` 20 → 8, no highs (below); the production bundle is byte-identical. Dependabot #8787 and #8789 were closed with a pointer to it. Head `7cb8d0bc` |
+| #8795 | `25fc41d9` | 2026-10-02 | BF-151 | an unbounded request to two little-used API addresses (`/api/v1/times`, `/api/v1/slice`) could stop the server responding for seconds; such a request is now refused with a 400 before any work is done, and ordinary requests are unchanged. `lib/api/entries/index.js` (server only) and `tests/api.entries.test.js`. Live on 15.0.8, so described by mechanism only. Its own CI: 14 passed, 2 skipped. Head `fdf88f4e` |
 | #8741 | `bcd171cb` | 2026-09-20 | — (external contributor) | credential and identifier settings kept as strings (leading `+`, leading zeros) |
 
 **#8754** (`bf2/auth-hardening`, head `bae655a0`, merged as `4f705217`; 34 commits, 25 files,
@@ -165,6 +168,7 @@ no multi-hour soak and no source outage.
 | #8589 | `2af0aed9` | 2026-09-04 | report page built once per page load |
 | #8590 | `101f51a0` | 2026-09-04 | treatments table filter by event type |
 | #8788 | `3014f883` | 2026-09-30 | BF-148, by awss1i (fixes #8223): the Day to Day report draws an event with a duration (Exercise, Note, OpenAPS Offline, Temporary Override, and other events such as a Temporary Target) on every day it covers, clipped to each day, with its label centred on the part shown; events that began the day before a shown day are drawn from `datastorage.treatments`. `lib/report_plugins/daytoday.js` (the five band copies become `appendDurationBand`), `tests/report-daytoday-durations.test.js` (jsdom), `CHANGELOG.md`, `docs/test-specs/manual-smoke-checklist.md`. Head `bbc6e75e`; 4 files, +254/−97. It makes BF-149 (cancellations not applied to report bands, as on 15.0.8) visible on the next day's chart |
+| #8790 | `73c9528b` | 2026-10-01 | BF-150, by awss1i (fixes #8192): on a phone, the Food Editor's food list and quick picks scroll by touch (`touch-action: auto` on the two drag-handle selectors in `static/css/food.css`). Dragging a food into a quick pick and reordering quick picks still use the mouse, as before. Adds `tests/food-editor-touch-scroll.test.js`, a `CHANGELOG.md` entry and section 5 of `docs/test-specs/manual-smoke-checklist.md`. Head `1298c9ed`; 4 files, +217/−0 |
 | #8530 | `c3d42d4e` | 2026-09-25 | a `48` choice in the main (focus) chart's hour selector, between `24` and `...` (one line in `views/index.html`); no default changes. Carried by the 2026-09-25 decision |
 | #8568 | `99689bf9` | 2026-09-25 | BF-114: `lib/data/ddata.js` ends an AAPS open-ended loop disable at the next running-mode record from the same source, so the offline marker no longer keeps the "not looping" and pump alerts off after re-enable; covers the released-AAPS shape and, with the follow-up `1fd09446`, the AAPS development-build shape (`originalDuration` 0, a 10-year duration). Carried by the 2026-09-25 decision |
 | #8419 | `96a2c948` | 2026-09-25 | tests only: iOS Loop push-notification and websocket integration tests (`tests/loopnotifications.test.js`, replacing `tests/loop-server.test.js`), fixtures, `.nycrc.json`; head `8cffc05e` includes the maintainer's hook cleanup. Carried by the 2026-09-25 decision |
@@ -191,7 +195,7 @@ no multi-hour soak and no source outage.
 | #8582 | `1156aafd` | PostCSS 8.5.28 |
 | #8586 | `d6e90d00` | brace-expansion (all compatible majors) |
 
-All merged 2026-09-05. #8749 (qs) and #8786 (BF-147, the `ajv` and `form-data` overrides) are in the backfix table above.
+All merged 2026-09-05. #8749 (qs), #8786 (BF-147, the `ajv` and `form-data` overrides) and #8794 (BF-153, the 2026-10-01 refresh) are in the backfix table above.
 
 #### Translations
 
@@ -214,7 +218,8 @@ The outside contributors whose PRs the 2026-09-25 decision carries into 15.0.9, 
 - **lejcey** — #8568, the AAPS loop-status timeline fix
 - **je-l** — #8419, the iOS Loop push-notification and websocket tests
 - **alanshurafa** — #8530, the 48-hour chart choice
-- **awss1i** — #8788, Day to Day events past midnight (merged 2026-09-30)
+- **awss1i** — #8788, Day to Day events past midnight (merged 2026-09-30), and #8790, the Food
+  Editor on phones (merged 2026-10-01)
 
 ## Version number: 15.0.9
 
@@ -222,7 +227,7 @@ Decided 2026-09-22 (queue `RT-VERSION`; [decisions](decisions.md)). The release 
 `dev`'s `package.json` already carries. #8738 (as amended by #8748 and #8761), #8743 and #8754's
 subject/role field allow-list ship as **declared corrections** in the release notes.
 
-Decided 2026-09-24 (maintainer, relayed via -59; queue `RT-COUNT-COMPAT`): tolerate the count shapes
+Decided 2026-09-24 (maintainer; queue `RT-COUNT-COMPAT`): tolerate the count shapes
 real clients send and keep 15.0.9 a patch. #8761 implements it: `API_V1_COUNT_LEADING_NUMBER` and
 `API_V1_COUNT_ZERO_WINDOW`, each on by default (`lib/server/env.js`), expected to default to `false`
 in a future release.
@@ -264,6 +269,7 @@ The facts the classification rests on, for the record:
 | BF-137 — with several IFTTT Maker keys an alarm's calls run out of order and a failed key is not retried | after 15.0.9 (`BFQ-137`) | unchanged from 15.0.8 |
 | BF-142's list case — a record whose identifier is a list (`[null]`, `[""]`, `["", "other"]`) cannot be deleted through API v3, where 15.0.8 deleted it; v3 GET shows the list as its identifier | kept by decision (2026-09-26, #8783) | carried as a known issue |
 | BF-145 — API v3 PATCH and PUT by the id v3 GET shows miss a record stored with identifier `null`, `""` or `0` (PATCH 404, PUT stores a second copy) | after 15.0.9 (`BFQ-145`); the same on 15.0.8 | carried as a known issue |
+| BF-152 — API v3 `settings` documents are admin-only through search and history but readable by identifier with read permission | after 15.0.9 (2026-10-01, `BFQ-152`); AndroidAPS's follower app reads its settings this way, so which side is the intended contract is a question for the AndroidAPS developers | unchanged from 15.0.8 |
 | `OID-V3-EDIT-MERGE`, `OID-WS-EDIT-MERGE` — an edit through v3 or the websocket of a record stored twice leaves both copies | after 15.0.9 | as described under #8758 |
 | `TRUST_PROXY` planned flip | none planned ([versioning policy §5.7](../../docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md#57-compatibility-flags)) | unset is a permanent, documented setting; BF-30 is closed only where an operator sets it |
 
@@ -275,74 +281,75 @@ this file does not copy them.
 ## Open items a releaser must settle
 
 What the queue tracks is generated, and current, in
-[ROADMAP §1](../../docs/00-overview/ROADMAP.md#1-the-next-release-1509). As generated on
-2026-09-26 it lists one open blocker of queue `RT-0`, `RT-VERSION`, whose red gate is on the cut
-branches, which are renumbered when they are rebased. Beside that:
+[ROADMAP §1](../../docs/00-overview/ROADMAP.md#1-the-next-release-1509); queue `RT-0` has no open
+blocker (generated 2026-10-02). As of `dev` `25fc41d9` (2026-10-02), 15.0.9 waits on:
 
-1. **The browser checks.** `node tools/queue/gates/client-unchanged-since-hand-check.js --base 3014f883 --with ''`
-   names 15 files changed since the hand-checked `8d797ba4` (12 on `e3adc91d`; #8773 adds
-   `lib/levels.js`, #8774 adds `lib/profilefunctions.js` and #8788 adds `lib/report_plugins/daytoday.js`; #8781, #8783, #8784 and #8785 add none). #8786 adds no file; the gate also lists the 11 package entries it changes (the two overrides and nine locked versions), and the production bundle built from `295f1177` and from `7000eb18` is byte-identical, so they need no hand check. The browser-side ones need the checks
-   repeated by hand: the Loop remote-command path (`lib/api2/index.js`,
-   `lib/api2/notifications-v2.js`, a remote override, carbs and bolus from careportal and
-   LoopCaregiver each needing a 200 and a delivered push), the clock views
-   (`lib/client/clock-client.js`), the page data load (`lib/data/ddata.js`, `lib/data/calcdelta.js`,
-   `lib/data/dataloader.js`, a first load and live updates, including a treatment deleted while the
-   page is open), the pump pill (`lib/plugins/pump.js`), the profile editor, `lib/settings.js`,
-   `views/index.html`, the alarm level labels (`lib/levels.js`) and, during an AAPS percentage
-   Profile Switch, the basal line, Bolus Wizard Preview pill and reports (`lib/profilefunctions.js`;
-   #8774's body records these as not measured in a browser).
+1. **One full six-cell run on `25fc41d9`** (Node 20/22/24 × MongoDB 4.4.24 and 7.0.43, probes,
+   compressed A/B soak against 15.0.8, as run 020 on `ce30a94d`). What has run since run 020 is
+   under [Evidence](#evidence).
+2. **The browser hand checks still owed.**
+   `node tools/queue/gates/client-unchanged-since-hand-check.js --base 25fc41d9 --with ''` names
+   16 paths that differ on the browser side from the hand-checked `8d797ba4`: `.gitignore` and
+   `.nycrc.json` (tooling), `lib/api2/index.js`, `lib/api2/notifications-v2.js`,
+   `lib/client/clock-client.js`, `lib/data/calcdelta.js`, `lib/data/dataloader.js`,
+   `lib/data/ddata.js`, `lib/levels.js`, `lib/plugins/pump.js`, `lib/profile/profileeditor.js`,
+   `lib/profilefunctions.js`, `lib/report_plugins/daytoday.js`, `lib/settings.js`,
+   `static/css/food.css` (#8790) and `views/index.html`. It also lists the package entries #8786
+   and #8794 change; the production bundle built before and after each is byte-identical, so they
+   need no hand check.
    **Done by hand on `ff93fa94` on 2026-09-26** (the maintainer in Chrome, the journey lab playing
    the phones, 15.0.8 side by side; [browser record](../../docs/60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.md)):
    careportal Temporary Override, Remote Carbs and Temporary Override Cancel each delivered a push
    to the right device (the drawer closes silently on success, as on 15.0.8); the page data load,
    first load and live updates, including an AAPS delete and a Reports delete while the page was
    open; the Profile Editor; during a 150% AAPS Profile Switch, the basal pill, ISF and carb ratio.
-   No regression was found. **Still owed:** a remote bolus; LoopCaregiver from its own app (only
-   scripted); the clock views; the pump pill; the alarm level labels (`lib/levels.js`); the Bolus
-   Wizard Preview pill and the reports during a percentage switch; the Day to Day report (#8788),
-   by the new "Day to Day events with a duration past midnight" section of
-   `docs/test-specs/manual-smoke-checklist.md`. #8781, #8783, #8784, #8785 and #8786
-   (after `ff93fa94`) change no browser-side file. #8784 changes what the server sends to the page (late or
-   edited v3 treatments now carry `mills` in the page data, so the page's IOB and COB count them);
-   that was not checked in a browser.
-2. **The 24 to 72 h real-time soak** on `7000eb18`: **done**; #8788 (browser-side, the Day to Day report) came after it. Run 020's compressed A/B soak against 15.0.8 is
-   in the [integration record](../../docs/30-design/remedial/rc-15.0.9-integration-record.md).
-   Real sites are running the candidate (the `dev_7000eb18…` image or the `dev` branch at
-   `7000eb18`, per the [testing notes](testing-notes.md)). On 2026-09-30 the maintainer decided
-   that these real-site runs count as the real-time soak, and reported that they have shown no
-   visible regression so far. The testing notes record, as of 2026-09-29, one Loop, one Trio and one AndroidAPS user running `7000eb18` for about two days with no errors ([testing notes](testing-notes.md#where-testing-stands)); no later count is recorded. The lab
-   real-time soak (`lab.sh soak --hours 72`) was not run.
-   **The `npm audit` triage is done** ([below](#npm-audit-and-dependabot-triage), 2026-09-27): of
-   the 17 findings (1 low, 13 moderate, 3 high) on `295f1177`, 10 are cleared by BF-147's fix (two
-   override values and a lockfile refresh), merged as #8786 (`7000eb18`); `dev` now audits at 7,
-   all moderate, and `3014f883` is the same (#8788 changes no package file). The other 7 are a deliberate pin, legacy ingestion and dev dependencies, all
-   removed on the modernization line.
-3. **Hand-written `CHANGELOG.md` `[Unreleased]` section on dev** (lines 5–75 of
-   `git show official/dev:CHANGELOG.md` at `4f705217`; `git log --no-merges official/master..official/dev -- CHANGELOG.md`)
-   against the stated rule that the changelog is generated at release time. See
-   [`../README.md`](../README.md#open-item-changelog-on-dev).
-4. **Re-approval of #8598 at the final head and the semver decision**, by the maintainer (the
-   approvals were given on `e3adc91d`; the version class of #8772, #8775 and #8780 is undecided,
-   see [decisions](decisions.md)).
-5. **Whether the BF-108 fix goes in**, by the maintainer. A v1 filter listing two or more dates
-   under the date field answers 500, so xDrip4iOS bulk deletes remove nothing (on 15.0.8 too). The
-   fix is one commit on `3014f883`, branch `bf/date-filter-list` `350f6f09`, PR #8791
-   (opened 2026-10-01, CI 14 passed and 2 skipped; queue `BFQ-108`). Taking it moves
-   `dev` once more; it changes `lib/server/query.js` only, server-side, so no browser check.
-6. **The tag**, by the maintainer.
+   No regression was found.
+   **Still owed:** a remote bolus; LoopCaregiver from its own app (only scripted); the clock views;
+   the pump pill; the alarm level labels (`lib/levels.js`); the Bolus Wizard Preview pill and the
+   reports during a percentage switch; the Day to Day report (#8788, the "Day to Day events with a
+   duration past midnight" section of `docs/test-specs/manual-smoke-checklist.md`); the Food Editor
+   on a touch screen (#8790, section 5 of the same checklist). #8784 changes what the server sends
+   to the page (late or edited v3 treatments carry `mills` in the page data, so the page's IOB and
+   COB count them); that was not checked in a browser.
+3. **The version class of #8772, #8775 and #8780**, by the maintainer, who is collecting data:
+   recorded as minor-under-patch exceptions (as #8530) or re-classed ([decisions](decisions.md)).
+4. **Re-approval of #8598 at `25fc41d9`.** Both approvals were given on
+   `e3adc91d`. CI on `25fc41d9`: 27 checks passed, 3 skipped (2026-10-02).
+5. **The `CHANGELOG.md` question.** `dev` carries a hand-written `## [Unreleased]` section (lines
+   5–87 of `git show official/dev:CHANGELOG.md` at `25fc41d9`, from 14 commits —
+   `git log --no-merges official/master..official/dev -- CHANGELOG.md`), against the rule in
+   [`../README.md`](../README.md#open-item-changelog-on-dev) that the changelog is generated at
+   release time. No decision on it is recorded.
+6. **Triage of GHSA-86w9-cpqp-85rv** (`node-forge`, high, no fixed release, reviewed by GitHub on
+   2026-10-01), by the maintainer: the 2 high among `npm audit`'s 10 findings on `25fc41d9`. The
+   reading of how Nightscout uses `node-forge` is [below](#node-forge-ghsa-86w9-cpqp-85rv).
+7. **The tag**, by the maintainer.
 
-#8598's two approvals were given on `e3adc91d`; its head is now `3014f883`. The release notes and
-tag body are drafted for `3014f883`.
+The [release notes](release-notes.md) and [tag message](tag-message.txt) are drafted on `25fc41d9`.
 
-Housekeeping: Dependabot #8747 targets `master` with an axios bump `dev` already contains (#8565);
-it is moot once #8598 merges.
+The real-time soak is done by decision: on 2026-09-30 the maintainer decided that real sites
+running the candidate count as the 24 to 72 h real-time soak, and the lab's 72 h soak
+(`lab.sh soak --hours 72`) is not run. Recorded reports: as of 2026-09-29, one Loop, one Trio and
+one AndroidAPS user ran `7000eb18` for about two days with no errors
+([testing notes](testing-notes.md#where-testing-stands)); on 2026-10-02 the maintainer reported
+anecdotal reports from AndroidAPS, Trio and Loop users of stable behaviour on the `dev` branch
+through the week. No rig count or duration is recorded beyond that.
+
+`RT-VERSION`'s gate is red on the modernization cut branches, which also say 15.0.9 and are
+renumbered when they are rebased; it does not hold the `dev` → `master` release, whose number is
+decided.
 
 ## `npm audit` and Dependabot triage
 
-**Summary.** 15.0.8 (the release operators run today) has 49 `npm audit` findings (19 high). 15.0.9
-(`dev` `7000eb18`) has 7, all moderate: a deliberate pin whose advisories need elements the sanitizer does not allow
-(tested), the legacy `request` chain, loaded only when a legacy bridge is switched on (read from
-`lib/server/bootevent.js`), and two test-only packages. **After the
+**Summary.** 15.0.8 (the release operators run today) had 49 `npm audit` findings (19 high) on
+2026-09-27. On `dev` `25fc41d9` (2026-10-02 17:31Z, npm 11.12.1, `--package-lock-only`), `npm audit`
+reports 10 findings (2 high). The 8 moderate are the 7 left by the 2026-09-27 triage — a deliberate pin
+whose advisories need elements the sanitizer does not allow (tested), the legacy `request` chain,
+loaded only when a legacy bridge is switched on (read from `lib/server/bootevent.js`), and two
+test-only packages — plus `moment`, held at 2.30.1 by decision. The 2 high are one advisory,
+GHSA-86w9-cpqp-85rv against `node-forge` 1.4.0 (reviewed by GitHub 2026-10-01 21:09Z, no fixed
+release), counted once for `node-forge` and once for `@parse/node-apn` above it; its triage is
+[below](#node-forge-ghsa-86w9-cpqp-85rv). **After the
 modernization pass (cut 4 onward, including cut 5 `b1bdaca0`) there are none:** `npm audit` reports
 0 findings with dev dependencies included, and none of the 80 open Dependabot alerts matches a
 version in cut 5's lockfile. The work that gets there was planned in the open:
@@ -355,14 +362,16 @@ version in cut 5's lockfile. The work that gets there was planned in the open:
 | 2026-06-28 | #8518 (development and test tooling) |
 | 2026-09-05 | 15 Dependabot updates merged together (above); the modernization branch begins (`6a6dd7a5`, with `docs/plans/nightscout-modernization.md`), 498 commits by Andy Low to `b1bdaca0` (2026-09-21) |
 | 2026-09-23 to 27 | #8749 (qs, BF-87) and #8786 (BF-147) |
+| 2026-10-02 | #8794 (BF-153), advisories published after the 2026-09-27 triage |
 
-Since 15.0.7, 38 merges to `dev` changed the lockfile, 20 of them Dependabot's
-(`git log --first-parent --oneline 15.0.7..official/dev -- package-lock.json`). Alerts on the
-default branch fall only when a release merges to `master`; 74 of the 80 open today are already
-fixed on `dev` (below).
+Since 15.0.7, 39 merges to `dev` changed the lockfile, 20 of them Dependabot's
+(`git log --first-parent --oneline 15.0.7..official/dev -- package-lock.json`, `25fc41d9`). Alerts on the
+default branch fall only when a release merges to `master`; on 2026-09-27, 74 of the 80 open were
+already fixed on `dev` (below).
 
-Measured 2026-09-27 on `official/dev` `295f1177` and `7000eb18` with `npm audit --package-lock-only` (npm 11.12.1,
-advisory data as of that day). Build tooling (webpack, its loaders, `browserslist`) is in
+Measured with `npm audit --package-lock-only` (npm 11.12.1), advisory data as of the date given:
+2026-09-27 for `v15.0.8`, `295f1177`, `7000eb18` and the cut branches; 2026-10-01 and 2026-10-02 for
+`50bc1084` and `a143d507` (the same lockfile as `25fc41d9`). Build tooling (webpack, its loaders, `browserslist`) is in
 `dependencies`, not `devDependencies`, because the bundle is built at install time (`postinstall`),
 so `--omit=dev` does not separate build-time from run-time packages.
 
@@ -373,6 +382,9 @@ so `--omit=dev` does not separate build-time from run-time packages.
 | `dev` `295f1177` `--omit=dev` | 13 | 3 | 9 | 1 |
 | `dev` `7000eb18` (#8786, BF-147) | 7 | 0 | 7 | 0 |
 | `dev` `7000eb18` `--omit=dev` | 5 | 0 | 5 | 0 |
+| `dev` `50bc1084` (#8794's base, as #8794 records) | 20 | 4 | — | — |
+| `dev` `25fc41d9` (2026-10-02 17:31Z; the lockfile #8794 left, #8795 changes no package file) | 10 | 2 | 8 | 0 |
+| `dev` `25fc41d9` `--omit=dev` | 8 | 2 | 6 | 0 |
 | `rh/cut2` `02205d91` | 6 | 0 | 6 | 0 |
 | `rh/cut4` `135faa3b`, `rh/cut35` `cd93d8e8`, cut 5 `b1bdaca0` | 0 | 0 | 0 | 0 |
 
@@ -422,6 +434,29 @@ In short: two override values and a refresh of three build-tool packages, 9 lock
 (patch or minor), `npm audit` 17 → 7, bundle builds, suite 3473/0/3 on one cell (Node 24.15.0,
 MongoDB 7.0.43). It merged to `dev` as #8786 (`7000eb18`, 2026-09-27).
 
+### The BF-153 refresh (#8794)
+
+Advisories published after the 2026-09-27 triage put axios 0.33.0, brace-expansion,
+webpack-dev-middleware 8.0.3, fast-uri 3.1.7, ip-address 10.7.0, dompurify 3.4.14 and moment
+2.30.1 inside advisory ranges on `dev` `50bc1084` (20 findings, 4 high). None is reached at runtime
+with attacker input (2026-10-01 triage, [register BF-153](../../docs/30-design/remedial/nightscout-backfix-register.md)).
+#8794 moves the overrides to the fixed patch releases and refreshes the lockfile in the style of
+BF-147: 26 lockfile version changes, all patch or minor; `npm audit` 20 → 8, no highs; the
+production bundle is byte-identical; full suite on its branch 3512/0/4, `npm ci` on Node 20.20.0,
+22.23.2 and 24.20.0 and the npm 12 job. `moment` stays at 2.30.1 by decision (2026-10-01): no
+request input reaches `moment.locale` on `dev` (BF-31), and 2.31.0 changes parsing and locale
+display output. It merged to `dev` as `a143d507` (2026-10-02).
+
+### `node-forge` (GHSA-86w9-cpqp-85rv)
+
+`node-forge` 1.4.0 is pinned exactly in `package.json` `overrides` on both `v15.0.8` and `dev`.
+GHSA-86w9-cpqp-85rv (high, every version up to 1.4.0, no fixed release) is about RSA PKCS#1 v1.5
+signature verification accepting a malformed signature. Nightscout loads `node-forge` only through
+`@parse/node-apn` 5.2.3 (`lib/server/loop.js`, Loop remote commands). Read from its
+`lib/credentials/certificate/`, it calls `node-forge` to parse the site's own APNs key and
+certificate (PEM and PKCS#12) and to fingerprint the key, and makes no signature-verification call.
+That is a reading, not a test; the maintainer decides whether it is recorded as not reachable.
+
 ### Dependabot
 
 Dependabot's 80 open alerts on `nightscout/cgm-remote-monitor` (2026-09-27) are measured against
@@ -437,18 +472,18 @@ against every version of that package in both lockfiles:
   sanitize-html 2, csv-parse 2 (the manifest and the lockfile), uuid and request.
 - Every alert matches a version on `master`; none is stale.
 
-No Dependabot pull request is open (2026-09-27).
+No Dependabot pull request is open (2026-10-02); #8787 (webpack-dev-middleware) and #8789
+(moment) were closed with a pointer to #8794.
 
 ## Known test gaps
 
 Not blockers by decision; recorded so a green suite is not read as covering them.
 
-- **Test-script coverage.** 75 of the 221 `tests/*.test.js` files on `dev` `3014f883` match neither
+- **Test-script coverage.** 77 of the 223 `tests/*.test.js` files on `dev` `25fc41d9` match neither
   `npm run test:unit` nor `test:integration` (compare the files against the two globs in
-  `git show official/dev:package.json`; 66 of 190 on `4f705217`, 69 of 205 on `e3adc91d`, 72 of 216
-  on `ff93fa94`, 73 of 219 on `295f1177`, 74 of 220 on `7000eb18`; #8786 adds `dependency-overrides`, #8788
-  `report-daytoday-durations`). Among
-  them: `query.operands`, `boluscalc.quickpick`, `boluscalc.quickpick-rebuild`, `booterror`,
+  `git show official/dev:package.json`). Among
+  them: `dependency-overrides` (#8786), `report-daytoday-durations` (#8788),
+  `food-editor-touch-scroll` (#8790), `error-handler` (#8793), `dependency-brace-expansion`, `query.operands`, `boluscalc.quickpick`, `boluscalc.quickpick-rebuild`, `booterror`,
   `client.alarm-no-reading`, `treatmenttime`, `debug-logging`, `dependency-d3`, #8754's `authdelay`,
   `authsubjects` and `client-ip`, and 2026-09-26's `maker-level-names` (#8773),
   `profile-switch-percentage` (#8774), `soft-deleted.jl1` (#8775) and #8781's
@@ -457,7 +492,7 @@ Not blockers by decision; recorded so a green suite is not read as covering them
   `test:unit` is not evidence for those fixes.
 - **D3 drag clamps.** `TEST=dependency-d3` passes with both treatment-drag clamps in
   `lib/client/renderer.js` deleted, so the suite does not exercise that boundary. RT-D3 was
-  answered 2026-09-24 (maintainer, session -6a): the drag check passed by hand and in automation
+  answered 2026-09-24 (maintainer): the drag check passed by hand and in automation
   ([browser evidence](../../docs/60-research/modernization/rt-d3-and-alarm-browser-evidence-2026-09-22.md));
   the suite gap is queue `RT-D3-SUITE`.
 - **`/alarm` under `AUTH_DEFAULT_ROLES=denied`.** No automated test drives the client path. Checked
@@ -508,7 +543,7 @@ the user-facing form. Facts the notes must not lose:
   values; `notes: ""` clears; `roles` is not filled in from storage, so removing the last role
   still works.
 - **BF-17 and BF-30 / `TRUST_PROXY` (#8754).** As described under
-  [#8754](#programme-backfix-prs-40-plus-8741), including the Loop remote-command sender address
+  [#8754](#programme-backfix-prs-45-plus-8741), including the Loop remote-command sender address
   that is now stored on remote overrides.
 - **Docker Compose (BF-10, #8753).** `mongo` service gains `ulimits nofile 64000`; without it mongod
   aborted with `Too many open files` (reproduced 2026-09-21 on mongod 7.0.43, register BF-10).
@@ -626,12 +661,36 @@ the user-facing form. Facts the notes must not lose:
   or replaced temporary target, and likely an override ended early, is drawn for its entered length,
   as on 15.0.8) now also shows on the next day's chart; the notes carry it as a known issue. The notes
   carry the change under "Other changes you may notice".
+- **Food Editor on phones (#8790, BF-150).** The food list and quick picks scroll by touch. Dragging
+  a food into a quick pick and reordering quick picks still use the mouse.
+- **Several dates in one v1 filter (#8791, BF-108).** A v1 filter listing several dates under the
+  date field answers with the matching records instead of 500, so bulk deletes by timestamp (as
+  xDrip4iOS sends) delete.
+- **Times and slice requests (#8795, BF-151).** A request to `/api/v1/times` or `/api/v1/slice`
+  that would take the server seconds to answer is refused with a 400; ordinary requests are
+  unchanged. Mechanism only in public text.
+- **Error replies (#8793, BF-73).** Outside `NODE_ENV=development`, an error reply carries the
+  status and a short message, with no stack trace or server paths; the full error is still in the
+  server log. With `NODE_ENV` unset, error pages also stop showing the stack, and a 4xx raised
+  without `err.expose` answers with the standard reason phrase. Mechanism and outcome only in
+  public text.
 
 ## Evidence
 
 - Merged part: per-PR test evidence, ablations and controls are in each PR body and in the
   register entry for each id.
-- **The candidate, `dev` `3014f883`**: `7000eb18` plus #8788 (BF-148), which changes only
+- **The candidate, `dev` `25fc41d9`** (tree `e5c8ea6b`, the same tree as #8795's head
+  `fdf88f4e`). After a fresh `npm ci` on `fdf88f4e`: full suite 3532 passing, 0 failing, 4 pending
+  (Node 22.23.2, MongoDB 7.0.43, one cell), and #8795's 5 refusal tests fail with `a143d507`'s
+  `lib/api/entries/index.js`. The last full RC run is run 020 on `ce30a94d` (below); it has not been
+  repeated on a later head, and one full six-cell run on `25fc41d9` is owed. Since run 020: #8785 is
+  test-only; #8786 ran its own nine-cell CI with a byte-identical bundle; #8788 local full suite
+  3481/0/3; #8791's branch 3485/0/3; #8793's branch 3502/0/3; #8794's branch 3512/0/4 (the added
+  pending is the connector's own axios copy, outside the advisory range, which the floor check
+  skips), with `npm ci` on Node 20.20.0, 22.23.2 and 24.20.0 and the npm 12 job, and a
+  byte-identical bundle. Each PR's own CI on GitHub passed (nine cells for the dependency PRs;
+  14 passed and 2 skipped for #8791, #8794 and #8795).
+- **`dev` `3014f883`**: `7000eb18` plus #8788 (BF-148), which changes only
   `lib/report_plugins/daytoday.js` among files a site runs (browser-side, the Day to Day report), adds
   `tests/report-daytoday-durations.test.js` and edits `CHANGELOG.md` and the manual smoke checklist.
   Full suite on its head `bbc6e75e` (same tree): 3481 passing, 0 failing, 3 pending (Node 22.23.2,
@@ -665,11 +724,11 @@ the user-facing form. Facts the notes must not lose:
   fails only on BF-135's intended page-load change.
 - The previous candidate, `dev` `699eb5fa` (tree `0b727dc5`, run 019): 3458 passing, 0 failing,
   3 pending in the same six cells.
-- CI on #8598 at `3014f883`: 27 checks passed, 3 skipped (read 2026-09-30); at `7000eb18` and `295f1177`, 27 checks passed, 3 skipped. At `e3adc91d` it was
-  27 green and 3 skipped (Node 20/22/24 × MongoDB 4.4/5.0/6.0, CodeQL, Docker).
-- Queue items P0-A…P0-K, P0-T01, ADV-RETRO, ADV-ALARM and ADV-CONFIG hold the gates. Do not treat
-  a local `test:unit` pass as coverage ([Known test gaps](#known-test-gaps)).
+- CI on #8598 at `25fc41d9`: 27 checks passed, 3 skipped (read 2026-10-02 17:39Z); at `a143d507`, `3014f883`,
+  `7000eb18` and `295f1177`, 27 checks passed, 3 skipped. At `e3adc91d`, 27 passed and 3 skipped (Node 20/22/24 × MongoDB 4.4/5.0/6.0, CodeQL, Docker).
+- Queue items P0-A…P0-K, P0-T01, ADV-RETRO, ADV-ALARM and ADV-CONFIG hold the gates. A local
+  `test:unit` pass does not cover every test file ([Known test gaps](#known-test-gaps)).
 
 ---
 
-*Draft, 2026-09-30. Requires maintainer review before release. Nothing tagged or published.*
+*Draft, 2026-10-02. Requires maintainer review before release. Nothing tagged or published.*

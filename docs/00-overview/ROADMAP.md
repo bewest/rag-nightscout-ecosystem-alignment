@@ -1,7 +1,7 @@
 # Roadmap — what comes next, and in what order
 
 *Prepared for the Nightscout project; proposed for Nightscout Foundation stewardship. Contributor-facing. Living document: prose dated
-2026-09-30 against cgm-remote-monitor `origin/dev` `3014f883` and `origin/master` `92d08342`
+2026-10-02 against cgm-remote-monitor `official/dev` `25fc41d9` and `official/master` `92d08342`
 (tag `15.0.8`). The two order tables are generated from `queue/work-queue.yaml`, and
 `make views-check` fails when they drift.*
 
@@ -37,29 +37,47 @@ Everything merged since 15.0.8 reaches operators only through 15.0.9 (queue `RT-
 #8598), and every later step waits behind it. Operators running 15.0.8 keep every defect fixed on
 `dev` until it is tagged.
 
+`dev` is at `25fc41d9` (the merge of #8795, 2026-10-02): 92 first-parent merges and 523 commits
+since 15.0.8. Every cgm-remote-monitor PR decided for 15.0.9 is merged; Crowdin #8730 is held out
+(BF-132). The last full run is run 020 on `ce30a94d` (2026-09-27), 3473/0/3 in all six cells; each
+PR merged since carries its own evidence, and #8795's head `fdf88f4e`, the same tree as `25fc41d9`,
+passes the full suite, 3532/0/4, on one cell (Node 22, MongoDB 7.0.43). The real-site soak
+(`RT-SOAK`) is done by the maintainer's decision of 2026-09-30. Release PR #8598 is at `25fc41d9`,
+approved at `e3adc91d`; its CI on `25fc41d9`: 27 checks passed, 3 skipped (2026-10-02).
+
+The version is decided: 15.0.9. `RT-VERSION`'s gate measures the modernization cut branches, which
+also declare 15.0.9 and are renumbered when they are rebased, so it holds the cuts, not this
+release.
+
 **What 15.0.9 still waits on**, generated from `RT-0`'s open blockers:
 
 <!-- BEGIN GENERATED: release-waits -->
 
 | id | what | claimed state | waiting for | PR |
 |---|---|---|---|---|
-| `BFQ-151` | BF-151 - one /api/v1/times or /slice request can block the server for seconds (b | `in-flight-upstream` | Maintainer | #8795 |
+| &mdash; | nothing open blocks `RT-0` | | | |
 
 <!-- END GENERATED: release-waits -->
 
-Also before the tag, and not queue items of their own (they are in `RT-0`'s notes and gates):
-the rest of the browser checks (the Loop remote-command checks that #8764 made necessary were done
-by hand on `ff93fa94` on 2026-09-26, except a remote bolus and LoopCaregiver from its app; see
-[the browser record](../60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.md), and the Day to Day
-report #8788 changed, by the smoke checklist's new section), the semver decision, the release notes,
-re-approval of #8598 at its final head (it was approved at `e3adc91d` and is at `3014f883`), a
-review of #8598 by someone other than the author, and the maintainer's tag. The last full test run
-is run 020 on `ce30a94d`; it stands for `295f1177` (test-only #8785), and #8786's dependency change
-on `7000eb18` is covered by its own nine-cell CI and a byte-identical bundle, and #8788's Day to Day
-change on `3014f883` by a local full suite on its head (3481/0/3) and its CI, not by run 020
-([integration record](../30-design/remedial/rc-15.0.9-integration-record.md)). The real-time soak (`RT-SOAK`) is done: on 2026-09-30 the maintainer decided that real sites running
-the candidate `7000eb18` count for it, and reported no visible regression so far; #8788 came after it. The `npm audit`
-triage is done ([contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#npm-audit-and-dependabot-triage)).
+Before the tag, and not queue items of their own (they are in `RT-0`'s notes and gates):
+
+1. One full six-cell run on `25fc41d9`
+   ([integration record](../30-design/remedial/rc-15.0.9-integration-record.md)).
+2. The browser hand checks still owed: a remote bolus; LoopCaregiver from its own app; clock views;
+   the pump pill; alarm level labels; the Bolus Wizard Preview pill and reports during a percentage
+   switch; the Day to Day report (#8788, smoke checklist §3); the Food Editor on a touch screen
+   (#8790, smoke checklist §5). The rest was checked by hand on `ff93fa94` on 2026-09-26
+   ([browser record](../60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.md)).
+3. The version class of #8772, #8775 and #8780: a minor change shipped under the patch number as an
+   exception, as #8530 was, or a different class. The maintainer is collecting data.
+4. Re-approval of #8598 at `25fc41d9`.
+5. Triage of GHSA-86w9-cpqp-85rv, a high advisory against `node-forge` (no fixed release,
+   reviewed by GitHub on 2026-10-01), the 2 high among `npm audit`'s 10 findings on `25fc41d9`
+   ([contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#node-forge-ghsa-86w9-cpqp-85rv)).
+6. The tag, by the maintainer. The release notes and tag message are drafted on `25fc41d9`.
+
+The other 8 `npm audit` findings are triaged in
+[contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#npm-audit-and-dependabot-triage).
 
 | for | read |
 |---|---|
@@ -97,6 +115,7 @@ rebase cut 1 is right after 15.0.9 is tagged, while `dev` is quiet.
 | 1 | `OID-STORAGE-HELPER` | One storage-level rule for writes by _id instead of six hand-written copies | `not-started` | &mdash; |
 | 1 | `OID-V3-EDIT-MERGE` | API v3 PUT and PATCH of a record stored twice by _id leave both copies; make an  | `not-started` | &mdash; |
 | 1 | `OID-WS-EDIT-MERGE` | Websocket dbUpdate of a record stored twice by _id edits both copies and leaves  | `not-started` | &mdash; |
+| 1 | `RT-0` | Release 15.0.9 | `needs-decision` | &mdash; |
 | 1 | `RT-BOOTERROR` | BF-63 - the page that reports a boot error crashes on cut 4's boot errors | `gate-not-met` | &mdash; |
 | 1 | `RT-CONNECT-PIN-CUTS` | BF-65 - cuts 1-3 ship the leaking connector to upgraders first | `gate-not-met` | &mdash; |
 | 1 | `RT-PR-8730` | #8730 - Crowdin translation updates, held out of 15.0.9 (BF-132) | `gate-not-met` | &mdash; |
@@ -104,13 +123,12 @@ rebase cut 1 is right after 15.0.9 is tagged, while `dev` is quiet.
 | 1 | `RT-REBASE` | Cuts 1-5 are far behind dev and all five conflict | `gate-not-met` | &mdash; |
 | 1 | `RT-VERSION` | Two artefacts claim version 15.0.9 with different Node floors | `not-started` | &mdash; |
 | 2 | `OID-MIGRATION` | Opt-in migration that stores every string _id as the ObjectId it names, then ret | `not-started` | `OID-PREVALENCE` |
-| 2 | `RT-0` | Release 15.0.9 | `needs-decision` | `BFQ-151` |
-| 3 | `RT-1` | Cut 1 - chore/retire-jsdom | `blocked` | `RT-0`, `RT-REBASE` |
-| 4 | `RT-2` | Cut 2 - chore/build-runtime-separation | `blocked` | `RT-1` |
-| 4 | `RT-D3-SUITE` | The treatment-drag clamps get a regression test in cut 1's real-browser suite | `blocked` | `RT-1` |
-| 4 | `RT-NODE-FLOOR-TESTED` | BF-58, BF-59 - the enforced Node floor is not the Node anything exercises | `gate-not-met` | `RT-1` |
-| 5 | `RT-3` | Cuts 3+5 combined - dependency release | `blocked` | `RT-2` |
-| 6 | `RT-5` | Cut 4 - chore/mime-exposure-review, the one to slow down on | `blocked` | `RT-3` |
+| 2 | `RT-1` | Cut 1 - chore/retire-jsdom | `blocked` | `RT-0`, `RT-REBASE` |
+| 3 | `RT-2` | Cut 2 - chore/build-runtime-separation | `blocked` | `RT-1` |
+| 3 | `RT-D3-SUITE` | The treatment-drag clamps get a regression test in cut 1's real-browser suite | `blocked` | `RT-1` |
+| 3 | `RT-NODE-FLOOR-TESTED` | BF-58, BF-59 - the enforced Node floor is not the Node anything exercises | `gate-not-met` | `RT-1` |
+| 4 | `RT-3` | Cuts 3+5 combined - dependency release | `blocked` | `RT-2` |
+| 5 | `RT-5` | Cut 4 - chore/mime-exposure-review, the one to slow down on | `blocked` | `RT-3` |
 
 <!-- END GENERATED: road-release-train -->
 
@@ -151,18 +169,18 @@ Until then, the order below is the order of development, not of release.
 | 1 | `T30-RESEARCH` | T3.0 part 1 - enumerate the per-tenant configuration surface | `needs-decision` | &mdash; |
 | 1 | `T30-SCHEMA-CRED` | T3.0 part 2a - device and data-path credential storage in platform.sql | `not-started` | &mdash; |
 | 1 | `T43` | T4.3 - ns-realtime, LISTEN per served tenant | `not-started` | &mdash; |
+| 2 | `SEAM-REFRESH` | Refresh the seam chain once after 15.0.9, onto the base the release train leaves | `blocked` | `RT-0`, `RT-PROPAGATION` |
 | 2 | `T30-SCHEMA-CONFIG` | T3.0 part 2b - per-tenant configuration table, and where human identity lives | `not-started` | `T30-RESEARCH`, `T30-ORY-PROOF` |
-| 3 | `SEAM-REFRESH` | Refresh the seam chain once after 15.0.9, onto the base the release train leaves | `blocked` | `RT-0`, `RT-PROPAGATION` |
 | 3 | `T30-WIRING` | T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT | `not-started` | `T30-SCHEMA-CRED`, `T30-SCHEMA-CONFIG` |
 | 3 | `T32-REM` | T3.2 remainder - platform.sql carries no config, secret or signing key | `blocked` | `T30-SCHEMA-CRED`, `T30-SCHEMA-CONFIG` |
+| 3 | `WRITE-CONTRACT` | One write step behind the storage interface: _id form, srv dates, soft delete, r | `blocked` | `SEAM-REFRESH` |
+| 4 | `BFQ-CAP02` | CAP-02 - no importer, and no Mongo to PostgreSQL loader | `not-started` | `T30-SCHEMA-CRED`, `T30-SCHEMA-CONFIG`, `WRITE-CONTRACT` |
 | 4 | `T31-REM` | T3.1 remainder - per-tenant signing key replaces the install-wide one | `blocked` | `T30-WIRING` |
 | 4 | `T33-REM` | T3.3 remainder - the shared enclave, and language/levels per tenant | `blocked` | `T30-WIRING` |
 | 4 | `T44` | T4.4 - ns-evaluator, the per-tenant evaluation loop | `not-started` | `T30-WIRING` |
-| 4 | `WRITE-CONTRACT` | One write step behind the storage interface: _id form, srv dates, soft delete, r | `blocked` | `SEAM-REFRESH` |
 | 5 | `A7A-3` | §7a item 3 - a per-tenant error boundary | `not-started` | `T44` |
 | 5 | `A7A-4` | §7a item 4 - a health signal for a silent per-tenant outage | `not-started` | `T44` |
 | 5 | `BFQ-66` | BF-66 - the deployment's own tokens fail its own tenant check | `blocked` | `T30-WIRING`, `T31-REM`, `SEAM-REFRESH` |
-| 5 | `BFQ-CAP02` | CAP-02 - no importer, and no Mongo to PostgreSQL loader | `not-started` | `T30-SCHEMA-CRED`, `T30-SCHEMA-CONFIG`, `WRITE-CONTRACT` |
 | 6 | `A7A-GATE` | The alarms-on gate itself - nothing here may be marked done by inference | `blocked` | `T44`, `A7A-3`, `A7A-4`, `A7A-7` |
 
 <!-- END GENERATED: road-tenancy -->

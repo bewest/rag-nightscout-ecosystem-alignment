@@ -1,6 +1,6 @@
 # Release assets
 
-*Contributor-facing. Status 2026-09-22: every file under this directory is a DRAFT. Nothing
+*Contributor-facing. Status 2026-10-02: every file under this directory is a DRAFT. Nothing
 here has been tagged or published.*
 
 This directory holds the **tag messages, release notes and contents records** for releases
@@ -8,7 +8,7 @@ of `cgm-remote-monitor` and `nightscout-connect`, one directory per release.
 
 | Directory | Describes | Status |
 |---|---|---|
-| [`cgm-remote-monitor-15.0.9/`](cgm-remote-monitor-15.0.9/) | `official/master..official/dev` at `74fc6619` (48 merged PRs) plus eight additions not yet on `dev` (candidate rc `rc/15.0.9-additions-c` `b9c9828b`), unreleased | draft; version 15.0.9 settled; connector pin waits on the `v0.1.0` tag |
+| [`cgm-remote-monitor-15.0.9/`](cgm-remote-monitor-15.0.9/) | `official/master..official/dev` at `25fc41d9` (92 merged PRs, 2026-10-02); unreleased | draft; version 15.0.9 decided; connector pinned exactly to the released `0.1.0` (#8762); what remains is in [ROADMAP §1](../docs/00-overview/ROADMAP.md#1-the-next-release-1509) |
 | [`nightscout-connect-v0.0.14/`](nightscout-connect-v0.0.14/) | the retired local tag `v0.0.14` (`649a7de`) | **superseded**: no 0.0.14 will be published; the line is `0.1.0` (queue P0-TAG) |
 | [`_template/`](_template/) | copy to start a new release directory | — |
 
@@ -83,12 +83,12 @@ criterion 10.
 
 ## Version numbers here are proposals
 
-Every number in this directory is a **proposal**. The analysis behind them is
+15.0.9 is decided (`RT-D3` answered; `nightscout-connect` `0.1.0` released 2026-09-24, `P0-TAG`).
+Every other number in this directory is a **proposal**. The analysis behind them is
 [`docs/60-research/modernization/gt4-semver-classification-2026-09-15.md`](../docs/60-research/modernization/gt4-semver-classification-2026-09-15.md)
 (classification) and the versioning policy above. **Both are drafts awaiting maintainer
 adoption.** The directory name is the planned number; each `contents.md` states the facts
-that bear on the number. Queue items RT-VERSION and RT-D3 (`cgm-remote-monitor`) and P0-TAG
-(`nightscout-connect`) hold the open decisions.
+that bear on the number.
 
 ### Reserved slots for releases whose numbers are not settled
 

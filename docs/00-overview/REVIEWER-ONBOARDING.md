@@ -1,8 +1,8 @@
 # Reviewer onboarding — read this first
 
 *Contributor-facing. Written for somebody who has never seen this repository and
-is considering reviewing work in it. Prose revised 2026-09-30 against
-cgm-remote-monitor `origin/dev` `3014f883` and `origin/master` `92d08342` (tag
+is considering reviewing work in it. Prose revised 2026-10-02 against
+cgm-remote-monitor `official/dev` `25fc41d9` and `official/master` `92d08342` (tag
 `15.0.8`).*
 
 Thank you for looking. What you would be taking on, so you can decide quickly:
@@ -88,11 +88,10 @@ that is the thing to be suspicious of.
 **5. Neither `fixed` nor `merged` means released.** In the register, `fixed` means
 repaired on a branch that has not been merged; `merged` means merged into
 `origin/dev` and not released; `released` means in a tagged release operators run.
-No programme fix is released: `origin/master` is 345 commits behind `dev`
-(2026-09-23) and the shipping tag is 15.0.8. The register's open count is therefore
-not "the defects still shipping". As computed from the register's §1 on 2026-09-23,
-**73 defects reach every self-hoster on 15.0.8**: of the 75 in §1, 25 are open (two of
-them, BF-80 and BF-106, exist only on `dev`), 42 merged, 1 partly merged and 7 fixed on a branch. See [PROGRAMME-STATUS.md](PROGRAMME-STATUS.md#status-words-merged-is-not-released).
+No programme fix is released: `official/master` is 523 commits behind `dev`
+(2026-10-02) and the shipping tag is 15.0.8. The register's open count is therefore
+not "the defects still shipping": of the 109 defects in the register's §1 (2026-10-02), 26 are
+open, 81 merged, 1 partly merged and 1 fixed on a branch. See [PROGRAMME-STATUS.md](PROGRAMME-STATUS.md#status-words-merged-is-not-released).
 
 ---
 
@@ -102,8 +101,8 @@ Four entry points, easiest first:
 
 1. **An open pull request.** [NEEDS-A-HUMAN.md](NEEDS-A-HUMAN.md) lists them with a
    one-line description, and `reports/reviewer-packets/` has a bounded packet for
-   each item awaiting review. Every 15.0.9 pull request opened so far is merged into `dev`
-   and none is released; the largest is #8758 (records keep their own `_id` across API v1, v3 and the
+   each item awaiting review. Every 15.0.9 pull request is merged into `dev`, and none is
+   released; the largest is #8758 (records keep their own `_id` across API v1, v3 and the
    websocket, a change to core data paths), and a review of its evidence is still useful
    after the fact. The connector's fixes are released as
    `nightscout-connect` `0.1.0` (2026-09-24), which `dev` pins exactly (#8762).
@@ -111,8 +110,9 @@ Four entry points, easiest first:
    merged into `dev` but not released; a second pair of eyes on its evidence is still
    welcome. Among safety items, `BFQ-92` (a page with no
    glucose reading presents no server alarm, including device alarms) has no fix yet.
-3. **The release.** `RT-0` (release PR #8598, 15.0.9) is green on CI and approved. It is
-   87 first-parent merges (`dev` `3014f883`, 2026-09-30); its
+3. **The release.** `RT-0` (release PR #8598, 15.0.9) is green on CI and was approved at
+   `e3adc91d`; re-approval at `25fc41d9` is owed. It is 92 first-parent merges (`dev`
+   `25fc41d9`, 2026-10-02); its
    remaining blockers are generated in [ROADMAP §1](ROADMAP.md#1-the-next-release-1509), its
    contents are in [contents.md](../../releases/cgm-remote-monitor-15.0.9/contents.md), and how the
    candidate was tested is in the

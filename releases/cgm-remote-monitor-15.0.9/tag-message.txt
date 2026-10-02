@@ -1,12 +1,25 @@
 cgm-remote-monitor 15.0.9
 
 DRAFT tag body, not applied. Delete this paragraph when the tag is
-cut. If dev moves past 3014f883 before the tag, re-measure the counts
+cut. Drafted on dev 25fc41d9 (2026-10-02). If dev moves past
+25fc41d9 before the tag, re-measure the counts on the tag
 (git rev-list --first-parent --count 15.0.8..<tag>;
 git rev-list --count 15.0.8..<tag>; git diff --shortstat 15.0.8 <tag>).
+Test evidence: the last full release-candidate run is run 020 on
+ce30a94d (2026-09-27), 3473/0/3 in all six cells (Node 20/22/24 x
+MongoDB 4.4.24, 7.0.43). Each later PR passed its own GitHub CI;
+branch suites: #8788 3481/0/3, #8791 3485/0/3, #8793 3502/0/3,
+#8794 3512/0/4 with a byte-identical production bundle (#8786 too),
+#8795 head fdf88f4e 3532/0/4 (one cell, Node 22.23.2, MongoDB
+7.0.43, fresh npm ci), the same tree as 25fc41d9, so it ran on the
+exact candidate tree. Owed: one full six-cell run on 25fc41d9, and
+triage of the node-forge advisory GHSA-86w9-cpqp-85rv.
+Release PR #8598: both approvals are at e3adc91d; re-approval at
+25fc41d9 owed; its CI on 25fc41d9:
+27 checks passed, 3 skipped (2026-10-02).
 
-15.0.8..dev at 3014f883: 87 first-parent PR merges, 509 commits,
-298 files, +28617/-1819. Crowdin #8730 is held out (BF-132).
+15.0.8..dev at 25fc41d9: 92 first-parent PR merges, 523 commits,
+302 files, +29531/-1874. Crowdin #8730 is held out (BF-132).
 
 Query and API correctness
   #8737 025f1310  schema-driven query coercion; $exists operand;
@@ -59,6 +72,10 @@ Query and API correctness
                   time order (COB total, last carbs), a late v3 device
                   status is placed by time in the v1 read (BF-146
                   BF-133)
+  #8791 50bc1084  a v1 list of dates under the date field
+                  (find[date][$in]) is read one date at a time instead
+                  of answering 500, so xDrip4iOS bulk deletes by
+                  timestamp remove the listed readings (BF-108)
 
 Security
   #8744 a9acd313  loadRetro gated on read authorization (BF-79)
@@ -85,6 +102,14 @@ Security
                   do (BF-80, dev-only regression)
   #8769 fbaa4a2a  a subject or role without a name is refused, and one
                   already stored no longer stops the server (BF-126)
+  #8793 839a1565  outside NODE_ENV=development (including unset),
+                  error replies carry the status and a short message,
+                  no stack trace or server paths; a 4xx not marked
+                  safe to show gets the standard reason phrase; the
+                  full error is still logged (BF-73)
+  #8795 25fc41d9  an unbounded request to two little-used v1
+                  addresses is refused before the work starts
+                  (BF-151)
 
 Alarms and client
   #8766 e812a68c  mmol sites: each BG_ threshold read on its own
@@ -132,6 +157,9 @@ Alarms and client
   #8699 6fbff0ec  clock view low-and-falling
   #8701 5a09befd  profile-switch schedule preprocessing
   #8702 ca35f2a3  unnamed profiles preserved
+  #8790 73c9528b  Food Editor food list and quick picks scroll by
+                  touch on phones; mouse drag and reorder unchanged
+                  (BF-150, #8192)
 
 Performance and cache
   #8733 77d153d2  remove quadratic treatment scans
@@ -166,6 +194,11 @@ Dependencies
   #8786 7000eb18  ajv 6.12.6 -> 6.14.0 and request's form-data
                   2.5.5 -> 2.5.6 overrides; build-tool lockfile
                   refresh (BF-147)
+  #8794 a143d507  ip-address, fast-uri, brace-expansion and
+                  minimed-connect-to-nightscout's axios overrides to
+                  their patch releases; webpack-dev-middleware and
+                  dompurify refreshed in the lockfile; moment stays
+                  2.30.1; production bundle byte-identical (BF-153)
   #8573 e7c0cd6f  D3 5.16 -> 7.9.0
   #8529 #8544 #8550 #8565 #8566 #8571 #8575 #8576 #8577 #8578
   #8579 #8581 #8582 #8586  (UUID, jsdom/ws, Babel, Axios, Socket.IO,
@@ -208,8 +241,12 @@ stop counting; v1 records carry srvModified and srvCreated; IFTTT
 applets renamed to translated names must be renamed back; AAPS
 percentage switches show scaled values; late or edited AndroidAPS
 treatments count in Nightscout's own IOB and COB, and a COB total
-that was too high can drop; MongoDB 4.4
-deprecated; legacy mmconnect and DEXCOM_BRIDGE_USE_LEGACY to be
+that was too high can drop; a v1 list of dates under the date field
+works, so xDrip4iOS bulk deletes remove readings; error replies
+carry no stack trace or server paths unless NODE_ENV=development,
+so with NODE_ENV unset error pages also lose the stack; an
+unbounded request to two little-used v1 addresses answers 400;
+MongoDB 4.4 deprecated; legacy mmconnect and DEXCOM_BRIDGE_USE_LEGACY to be
 retired.
 
 Not in this release: BF-86/BF-67 threshold units on mg/dL sites and
