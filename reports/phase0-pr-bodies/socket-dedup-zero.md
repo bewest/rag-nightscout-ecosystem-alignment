@@ -84,7 +84,7 @@ No existing test changes.
 
 `NODE_ENV=test npx env-cmd -f ./my.test.env mocha --timeout 5000 --require ./tests/hooks.js --exit ./tests/*.test.js`, fresh database, Node 22.23.2, MongoDB 7.0.43 read from the server: **3556 passing, 0 failing, 4 pending**. `ca6fcfaf` is 3534/0/4 on the same form; the difference is the 22 new tests.
 
-### Harness (alignment repo, `tools/remedial/bf3/bf09-dedup-zero.js`, with six cases added)
+### Harness (alignment repo, `tools/remedial/bf3/bf09-dedup-zero.js`; cases Q1, Q2, T1 and R1–R3 added on 2026-10-02)
 
 Each case is sent over an authorized socket as `dbAdd` to the tree's real server, and the treatments are read back. Stored records and, separately, every sent record are rendered through the tree's `profilefunctions` (`getBasalRenderTimes` / `getTempBasal`, the path `renderer.js` takes) on a 1.0 U/h profile; "drawn Δs" counts the seconds where the drawn line differs from the line for every sent record.
 

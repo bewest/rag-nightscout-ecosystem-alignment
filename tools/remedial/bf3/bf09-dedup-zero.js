@@ -18,6 +18,15 @@
  *              smallest change that makes 0 a key and leaves '', false,
  *              null and absent as they are.
  *
+ * BF09_NO_VARIANT=1 runs the shipped arm only. Use it on a tree that already
+ * carries a BF-09 fix (bf/socket-dedup-zero), where the zero-real rewrite
+ * finds no truthiness tests to change and refuses to run.
+ *
+ * Cases Q1, Q2, T1 and R1-R3 were added on 2026-10-02 with the fix: a 100 %
+ * temp and a zero temp against the other kind of temp, a temporary-target
+ * cancel, and the xDrip+ filler shapes (insulin 0 on a carb entry, carbs 0 on
+ * a bolus) that must still match their stored copy.
+ *
  * For every case the harness records what each arm STORED, then renders the
  * temp-basal line from the stored records through the tree's own
  * ddata.processTreatments -> profilefunctions.updateTreatments ->
@@ -66,6 +75,12 @@ const CASES = [
   { id: 'C1', about: 'carbs 0 entry, then a 20 g entry 1 s later (zero never occurs in the corpus)', sends: [{ at: 0, eventType: 'Carb Correction', enteredBy: 'bf09-harness', carbs: 0 }, { at: 1 * SEC, eventType: 'Carb Correction', enteredBy: 'bf09-harness', carbs: 20 }] },
   { id: 'B2', about: '1 U bolus, then an insulin 0 bolus 1 s later', sends: [{ at: 0, eventType: 'Correction Bolus', enteredBy: 'bf09-harness', insulin: 1 }, { at: 1 * SEC, eventType: 'Correction Bolus', enteredBy: 'bf09-harness', insulin: 0 }] },
   { id: 'C2', about: '20 g entry, then a carbs 0 entry 1 s later', sends: [{ at: 0, eventType: 'Carb Correction', enteredBy: 'bf09-harness', carbs: 20 }, { at: 1 * SEC, eventType: 'Carb Correction', enteredBy: 'bf09-harness', carbs: 0 }] },
+  { id: 'Q1', about: '1.2 U/h absolute temp, then a 100% temp (percent 0) 1 s later, same duration', sends: [tb(0, { absolute: 1.2, duration: 30 }), tb(1 * SEC, { percent: 0, duration: 30 })] },
+  { id: 'Q2', about: '150% temp (percent 50), then a zero temp (absolute 0) 1 s later, same duration', sends: [tb(0, { percent: 50, duration: 30 }), tb(1 * SEC, { absolute: 0, duration: 30 })] },
+  { id: 'T1', about: 'Temporary Target, then a target cancel (duration 0) 1 s later', sends: [{ at: 0, eventType: 'Temporary Target', enteredBy: 'bf09-harness', duration: 30, targetTop: 140, targetBottom: 140, units: 'mg/dl' }, { at: 1 * SEC, eventType: 'Temporary Target', enteredBy: 'bf09-harness', duration: 0 }] },
+  { id: 'R1', about: 'filler: 20 g entry without insulin, then the xDrip+ shape (insulin 0, carbs 20) 1 s later - expect 1', sends: [{ at: 0, eventType: 'Carb Correction', enteredBy: 'bf09-harness', carbs: 20 }, { at: 1 * SEC, eventType: 'Carb Correction', enteredBy: 'bf09-harness', insulin: 0, carbs: 20 }] },
+  { id: 'R2', about: 'filler: 1 U bolus without carbs, then the xDrip+ shape (insulin 1, carbs 0) 1 s later - expect 1', sends: [{ at: 0, eventType: 'Correction Bolus', enteredBy: 'bf09-harness', insulin: 1 }, { at: 1 * SEC, eventType: 'Correction Bolus', enteredBy: 'bf09-harness', insulin: 1, carbs: 0 }] },
+  { id: 'R3', about: 'Meal Bolus 2 U + 20 g, then 0 U + 20 g 1 s later', sends: [{ at: 0, eventType: 'Meal Bolus', enteredBy: 'bf09-harness', insulin: 2, carbs: 20 }, { at: 1 * SEC, eventType: 'Meal Bolus', enteredBy: 'bf09-harness', insulin: 0, carbs: 20 }] },
   { id: 'P2', about: 'percent-mode 150% temp (percent 50), then a 100% temp (percent 0) 1 s later, same duration', sends: [tb(0, { percent: 50, duration: 30 }), tb(1 * SEC, { percent: 0, duration: 30 })] }
 ];
 
@@ -216,9 +231,10 @@ async function main () {
   process.env.NODE_ENV = 'test';
   let head = 'unknown'; try { head = execFileSync('git', ['-C', tree, 'rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).trim(); } catch (e) { /* not a checkout */ }
 
-  const variant = buildZeroRealTree(tree);
-  const arms = { shipped: runArm(tree), 'zero-real': runArm(variant.dir) };
-  fs.rmSync(variant.dir, { recursive: true, force: true });
+  const noVariant = process.env.BF09_NO_VARIANT === '1';
+  const variant = noVariant ? { replaced: 'n/a (BF09_NO_VARIANT)' } : buildZeroRealTree(tree);
+  const arms = noVariant ? { shipped: runArm(tree) } : { shipped: runArm(tree), 'zero-real': runArm(variant.dir) };
+  if (!noVariant) fs.rmSync(variant.dir, { recursive: true, force: true });
 
   const render = renderer(tree);
   const rows = [];
