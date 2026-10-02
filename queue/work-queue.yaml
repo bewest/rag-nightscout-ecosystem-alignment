@@ -10989,9 +10989,9 @@ items:
     repo: cgm-remote-monitor
     branch: bf/braces-expansion-cap
     base: official/dev@50bc1084
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8795]
-    ships_to_operators_today: true
+    ships_to_operators_today: false
     blast_radius: >
       lib/api/entries/index.js prep_patterns: refuse a prefix or pattern
       whose expansion exceeds a fixed number of results, before expanding
@@ -11006,11 +11006,11 @@ items:
     semver_reason: an unbounded request is refused; every request within the limit answers as before
     register: [BF-151]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official grep -q MAX_BRACE_PATTERNS bf/braces-expansion-cap -- lib/api/entries/index.js
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor fdf88f4e origin/dev
         kind: static
         describe: >
-          The branch's prep_patterns carries the cap (a presence check; RED on
-          origin/dev 50bc1084). The tests decide.
+          #8795's head fdf88f4e is contained in origin/dev (merged 2026-10-02
+          as 25fc41d9).
       - no-gate: >
           The measurement needs a booted server and is held outside version
           control while the defect is live on 15.0.8 (the report is
@@ -11027,6 +11027,8 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-02: merged into dev by the maintainer as 25fc41d9 (17:33Z), CI
+      14 passed and 2 skipped.
       2026-10-02: pushed and opened as #8795 by the maintainer (head
       fdf88f4e).
       2026-10-02: dev a143d507 (with #8793 and #8794) merged into the branch
