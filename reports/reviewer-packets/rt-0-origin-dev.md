@@ -143,7 +143,7 @@ dev descends from master with no divergence to reconcile
 
 ## Blocked on
 
-`RT-VERSION`, `BFQ-102`, `BFQ-114`, `BFQ-118`, `BFQ-119`, `RT-PR-8419`, `RT-PR-8530`, `BFQ-120`, `BFQ-126`, `BFQ-134`, `BFQ-106`, `BFQ-129`, `BFQ-125`, `BFQ-123`, `BFQ-122`, `BFQ-136`, `BFQ-128`, `RT-PR-8778`, `BFQ-80`, `BFQ-121`, `RT-PR-8781`, `BFQ-142`, `BFQ-146`, `RT-PR-8788`, `BFQ-108`, `RT-PR-8790`, `BFQ-151`, `BFQ-73`, `BFQ-153`
+`BFQ-102`, `BFQ-114`, `BFQ-118`, `BFQ-119`, `RT-PR-8419`, `RT-PR-8530`, `BFQ-120`, `BFQ-126`, `BFQ-134`, `BFQ-106`, `BFQ-129`, `BFQ-125`, `BFQ-123`, `BFQ-122`, `BFQ-136`, `BFQ-128`, `RT-PR-8778`, `BFQ-80`, `BFQ-121`, `RT-PR-8781`, `BFQ-142`, `BFQ-146`, `RT-PR-8788`, `BFQ-108`, `RT-PR-8790`, `BFQ-151`, `BFQ-73`, `BFQ-153`
 
 ## Evidence
 
@@ -154,16 +154,19 @@ dev descends from master with no divergence to reconcile
 
 ## Notes carried on the item
 
-2026-10-01 - #8790 (awss1i, BF-150, Food Editor touch scrolling) and #8791
-(BF-108) merged into dev (73c9528b, 50bc1084); dev is 50bc1084, 515 commits
-and 89 first-parent merges ahead of master. Release PR #8598 at 50bc1084,
-mergeable, 27 passed and 3 skipped, APPROVED (approvals at e3adc91d). Decided
-the same day (maintainer): BF-151 (GHSA-phrf) and BF-73 (GHSA-2m9c) are fixed
-for 15.0.9 (BFQ-151, BFQ-73 added to blocks_on); the BF-153 dependency refresh
-is prepared and decided on its result; moment stays at 2.30.1. BF-152
-(GHSA-25pr) is after 15.0.9 (AndroidAPS contract question). GHSA-cg6f
-duplicates GHSA-r3gv, fixed on dev by #8743. The 15.0.9 records are re-
-anchored once these merge. 2026-09-30 - #8788 (awss1i, BF-148, Day to Day
+2026-10-02 (maintainer): RT-VERSION is removed from blocks_on. The dev to
+master version is decided (15.0.9); RT-VERSION's red gate measures the
+modernization cut tips, which are renumbered when rebased, so it holds the
+cuts, not this release. 2026-10-01 - #8790 (awss1i, BF-150, Food Editor touch
+scrolling) and #8791 (BF-108) merged into dev (73c9528b, 50bc1084); dev is
+50bc1084, 515 commits and 89 first-parent merges ahead of master. Release PR
+#8598 at 50bc1084, mergeable, 27 passed and 3 skipped, APPROVED (approvals at
+e3adc91d). Decided the same day (maintainer): BF-151 (GHSA-phrf) and BF-73
+(GHSA-2m9c) are fixed for 15.0.9 (BFQ-151, BFQ-73 added to blocks_on); the
+BF-153 dependency refresh is prepared and decided on its result; moment stays
+at 2.30.1. BF-152 (GHSA-25pr) is after 15.0.9 (AndroidAPS contract question).
+GHSA-cg6f duplicates GHSA-r3gv, fixed on dev by #8743. The 15.0.9 records are
+re-anchored once these merge. 2026-09-30 - #8788 (awss1i, BF-148, Day to Day
 report) merged into dev as 3014f883 (22:38Z, tree 3549306b = head bbc6e75e);
 RT-PR-8788 added to blocks_on. dev is 3014f883: 509 commits and 87 first-
 parent merges ahead of master, 298 files, +28617/-1819. Release PR #8598 is at

@@ -2147,6 +2147,8 @@ items:
     evidence:
       - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
     notes: >
+      2026-10-02 (maintainer): no longer in RT-0's blocks_on; this item
+      holds the cuts (RT-1 onward), not 15.0.9.
       The version is decided; the gate is red on the cut tips. The dev
       to master release is 15.0.9 (dev package.json says 15.0.9 at
       153e5658). Each modernization cut still declares 15.0.9 too, which
@@ -2891,13 +2893,17 @@ items:
           browser, not by Nightscout's own mocha suite, which cannot see the drag
           clamps (RT-D3 answered 2026-09-24; the suite gap is RT-D3-SUITE on cut
           1). Recording it as a no-gate keeps it from reading as covered.
-    blocks_on: [RT-VERSION, BFQ-102, BFQ-114, BFQ-118, BFQ-119, RT-PR-8419, RT-PR-8530, BFQ-120, BFQ-126, BFQ-134, BFQ-106, BFQ-129, BFQ-125, BFQ-123, BFQ-122, BFQ-136, BFQ-128, RT-PR-8778, BFQ-80, BFQ-121, RT-PR-8781, BFQ-142, BFQ-146, RT-PR-8788, BFQ-108, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153]
+    blocks_on: [BFQ-102, BFQ-114, BFQ-118, BFQ-119, RT-PR-8419, RT-PR-8530, BFQ-120, BFQ-126, BFQ-134, BFQ-106, BFQ-129, BFQ-125, BFQ-123, BFQ-122, BFQ-136, BFQ-128, RT-PR-8778, BFQ-80, BFQ-121, RT-PR-8781, BFQ-142, BFQ-146, RT-PR-8788, BFQ-108, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153]
     evidence:
       - releases/cgm-remote-monitor-15.0.9/contents.md
       - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
       - docs/60-research/remedial/manual-lab-15.0.9-rc-2026-09-23.md
       - docs/30-design/remedial/rc-15.0.9-integration-record.md
     notes: >
+      2026-10-02 (maintainer): RT-VERSION is removed from blocks_on. The
+      dev to master version is decided (15.0.9); RT-VERSION's red gate
+      measures the modernization cut tips, which are renumbered when
+      rebased, so it holds the cuts, not this release.
       2026-10-01 - #8790 (awss1i, BF-150, Food Editor touch scrolling) and
       #8791 (BF-108) merged into dev (73c9528b, 50bc1084); dev is 50bc1084,
       515 commits and 89 first-parent merges ahead of master. Release PR
