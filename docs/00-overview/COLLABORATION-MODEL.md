@@ -73,7 +73,7 @@ Three things follow:
 
 Each rule in §5 comes from one of these. Every figure and quote below was read from the
 organisation's own page on 2026-09-29 unless the row gives another date. One table of every
-precedent the overview proposals cite, with each community's size, is in [PRECEDENTS](PRECEDENTS.md). More histories (OpenSSL after Heartbleed, xz-utils, curl, Debian's paid
+precedent the overview proposals cite, with each community's size, is in [PRECEDENTS](perspective/PRECEDENTS.md). More histories (OpenSSL after Heartbleed, xz-utils, curl, Debian's paid
 long-term support and Dunc-Tank, KernelCI, ELISA and Zephyr, Tidepool Loop) are in the
 [quality-system proposal §7](QUALITY-SYSTEM.md#7-histories-that-map), sourced on 2026-09-30.
 

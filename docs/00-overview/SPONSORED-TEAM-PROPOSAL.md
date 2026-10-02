@@ -1,13 +1,11 @@
 # A sponsored maintenance team for the Nightscout ecosystem — proposal
 
 *For the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community.
+**Recommendation** (part 3 of the overview; [how the overview is organised](README.md)).
 **DRAFT PROPOSAL for discussion.** Written 2026-09-27 against this repository at `de46efc1` and
-cgm-remote-monitor `official/dev` `295f1177`; figures re-measured against this repository at `55926206`
-and `official/dev` `7000eb18` (the merge of #8786) the same day. Added 2026-09-29: the cross-project
-release and contributor figures and the dated-work paragraph in §2, the OpenStreetMap and SQLite rows
-in §6, and the vendor-change table in §6a. Added 2026-09-30: §1a, with the published clinical evidence
-and the case for a research commons. Added 2026-10-01: CNCF's conformance and service-provider
-programmes in §6, and option E (companies paying for assurance) in §7. Where it touches employment,
+cgm-remote-monitor `official/dev` `295f1177`; revised through 2026-10-02. The facts it relies on are
+on the [evidence page](observations/ECOSYSTEM-EVIDENCE.md), and the comparisons in
+[perspective](perspective/INFRASTRUCTURE-TRANSITION.md). Where it touches employment,
 contracting, tax or the foundation's exempt status, it needs review by the foundation's counsel and
 accountant before any decision rests on it (§9). Nothing here is decided.*
 
@@ -29,30 +27,19 @@ here.]**
 
 ## 1a. What is at stake
 
-**Open-source AID has published evidence behind it.** Abstracts read on PubMed, 2026-09-30:
+The facts this section relies on are on the [evidence page](observations/ECOSYSTEM-EVIDENCE.md).
 
-| study | design | what it found | caveats the authors state or the design implies |
-|---|---|---|---|
-| CREATE ([Burnside et al., NEJM 2022;387:869–881](https://www.nejm.org/doi/full/10.1056/NEJMoa2203913)) | randomised controlled trial, 97 children and adults, 24 weeks; AndroidAPS 2.8 with the OpenAPS 0.7.0 algorithm against a sensor-augmented pump | time in range rose from 61.2% to 71.2% with AID and fell from 57.7% to 54.5% in the control group (adjusted difference 14 percentage points, 95% CI 9.2–18.8); no severe hypoglycaemia or DKA in either group | the comparator was a pump without automation, not a commercial AID system; two AID participants withdrew because of connectivity issues |
-| Loop observational study ([Lum et al., Diabetes Technol Ther 2021;23:367–375](https://pubmed.ncbi.nlm.nih.gov/33226840/)) | prospective, real-world, 558 adults and children, 6 months | time in range rose from 67% to 73%; time below 54 mg/dL fell slightly | people who chose to start Loop themselves; no control group |
-| Canadian comparison ([Wu et al., Diabetes Technol Ther 2025;27:517–526](https://pubmed.ncbi.nlm.nih.gov/40100927/)) | prospective, observational non-inferiority study, 26 open-source and 52 commercial AID users, 12 weeks | open-source non-inferior on 24-hour time in range (78.3% against 71.2%) | open-source users spent more time below 3.9 mmol/L (3.9% against 1.8%, "yet within the recommended range"); not randomised |
-| Systematic review ([Knoll et al., Diabet Med 2022;39:e14741](https://pubmed.ncbi.nlm.nih.gov/34773301/)) | 21 real-world studies, 2018–2021 | improvements "observed in open-source and commercially developed AID systems alike" | real-world studies; most were of one commercial system |
+**Open-source AID has published evidence behind it.** It improved time in range over pump therapy in
+a randomised trial and, in real-world comparisons, matched or exceeded commercial systems on time in
+range, with differences in time below range that matter for some people
+([evidence §6](observations/ECOSYSTEM-EVIDENCE.md#6-published-clinical-evidence-for-open-source-aid),
+with each study's caveats).
 
-So the evidence shows that open-source AID beat pump therapy in a randomised trial, and that in
-real-world comparisons it matches or exceeds commercial systems on time in range, with differences
-in time below range that matter for some people. No randomised head-to-head trial against commercial
-AID systems has been published among the studies read here. The people in the real-world studies
-chose these systems themselves, and the authors of one comparison describe them as "a very selected
-group of people" ([Journal of Diabetes Science and Technology,
-2024](https://pmc.ncbi.nlm.nih.gov/articles/PMC11571566/)).
-
-**The assets grew in the open, over more than ten years.** #WeAreNotWaiting dates from 2013 and
-OpenAPS from February 2015. On 2026-09-30 the [stack census](../60-research/programme/stack-census-2026-09-30.md)
-listed 63 repositories (62 distinct; one fork is kept level with its upstream), from device drivers to vendor-cloud
-connectors, with 219 distinct human authors committing in the last year. 13 of the 63 listings are held under personal GitHub accounts, and most of the rest sit in
-GitHub organisations run by volunteers. A foundation taking stewardship responsibility for these
-assets is how the software behind that evidence keeps working, and how new evidence can be built on
-it.
+**The assets grew in the open, over more than ten years**, across 62 repositories from device
+drivers to vendor-cloud connectors, most of them in GitHub organisations run by volunteers or under
+personal accounts ([evidence §1](observations/ECOSYSTEM-EVIDENCE.md#1-what-the-ecosystem-consists-of)).
+A foundation taking stewardship responsibility for these assets is how the software behind that
+evidence keeps working, and how new evidence can be built on it.
 
 **Today the cost falls on people with diabetes and individual maintainers.** Their own time pays for
 the review, releases, vendor changes and security response of §3. After the xz-utils backdoor in
@@ -62,7 +49,7 @@ funded by the foundation would move that cost off the people the software serves
 
 **Better evidence needs a shared commons.** Which system does better, for whom and in which
 circumstances (children, pregnancy, exercise, different pumps and sensors, different settings) is
-the question the studies above cannot yet answer. The
+the question the published studies cannot yet answer. The
 [Nightscout datalake proposal](https://bewest.github.io/ns-data-proposal/) is the route to that
 evidence. It proposes consented data from many sites, governed research extracts, and a
 methods-review step before any clinical claim is published. Its current pilot outputs are a
@@ -77,101 +64,39 @@ the studies or make clinical claims.
 
 ## 2. Why now
 
-**The ecosystem depends on one shared server.** Nightscout is a secondary display for CGM and pump
-data, and it is also the place where many other apps read and write that data. The 15.0.9 client
-survey mapped 40 client repositories against 15 parts of the API
-([consumer impact](../60-research/remedial/consumer-impact-15.0.9-2026-09-23.md)). Loop, Trio,
-AndroidAPS, xDrip+, caregiver apps, watch faces and reporting tools all rely on how the server
-actually behaves. A change there reaches every one of them.
+**The ecosystem depends on one shared server.** Many other apps read and write their data through
+it, and a change there reaches every one of them; a second server implements the same API
+([evidence §2](observations/ECOSYSTEM-EVIDENCE.md#2-what-depends-on-the-shared-server)).
 
-**Releases have come in long gaps, here and across the ecosystem.** The other main projects have had
-gaps of the same length in the same years, and in cgm-remote-monitor the contributors left before
-releases slowed (both below). Tag dates in cgm-remote-monitor (`git tag --sort=creatordate`):
-
-| release | tagged | days since the previous release |
-|---|---|---:|
-| 14.2.6 | 2022-09-30 | 295 |
-| 15.0.0 | 2023-10-18 | 383 |
-| 15.0.2 | 2023-10-25 | 5 |
-| 15.0.3 | 2025-05-08 | 561 |
-| 15.0.4 | 2026-02-28 | 296 |
-| 15.0.7 | 2026-04-29 | 57 (15.0.5 and 15.0.6 in between) |
-| 15.0.8 | 2026-09-04 | 128 |
-| 15.0.9 | candidate `dev` `ca6fcfaf` (2026-10-02), not tagged | — |
-
-**Important work can wait for years.** The MongoDB 5 driver upgrade was first proposed in #7344,
-opened 2022-02-16. The upgrade that shipped was #8421: opened 2026-01-19, merged 2026-03-16, released
-in 15.0.7 on 2026-04-29 (`mongodb` `^3.6.0` → `^5.9.2`). #7344 was closed as superseded on
-2026-05-01. Hosting providers retire old database versions on their own schedule, so a site's
-database driver is not optional maintenance.
-
-**The same long waits appear across the ecosystem.** Longest gaps between stable GitHub releases in
-the main projects (`gh api repos/<owner>/<repo>/releases`, measured 2026-09-29):
-
-| project | longest gaps between stable releases | recent releases |
-|---|---|---|
-| cgm-remote-monitor | 383 days (2022–23), 561 (2023–25), 296 (2025–26), from the tag table above | 5 in 2026 |
-| AndroidAPS | 443 days (Aug 2022–Oct 2023), 306 (Feb–Dec 2024) | 6 in 2025, 8 in 2026 |
-| Loop | 323 days (2020–21), 284 (2022–23), 297 (2023–24) | 15 since April 2025, now published from LoopWorkspace |
-| Trio | 255 days (Aug 2025–Apr 2026) | 8 in 2026, including 1.0 |
-| xDrip+ | 422 days (2019–20), 234 (2024–25) | pre-release builds at least every 45 days since 2016 |
-| oref0 | 951 days (2019–22); none since v0.7.1 in June 2022 | its algorithm is now maintained inside AndroidAPS and Trio |
-
-Commits / distinct author emails per year (all branches, merge commits and bots excluded, from this
-workspace's clones fetched 2026-09-09 to 2026-09-23, so 2026 is partial; Loop is the Loop app plus
-LoopKit; Trio is left out because its history before 2024 is FreeAPS X's):
-
-| project | 2018 | 2019 | 2020 | 2021 | 2022 | 2023 | 2024 | 2025 | 2026 |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| cgm-remote-monitor | 440/49 | 310/47 | 193/34 | 220/18 | 67/14 | 169/16 | 50/11 | 115/13 | 1050/27 |
-| AndroidAPS | 1993/50 | 1465/42 | 1653/42 | 2041/32 | 1531/34 | 1563/36 | 566/24 | 916/33 | 2944/28 |
-| Loop + LoopKit | 114/6 | 275/16 | 757/21 | 327/8 | 360/25 | 516/25 | 425/12 | 442/17 | 324/13 |
-| xDrip+ | 1217/28 | 832/18 | 402/17 | 791/23 | 832/17 | 640/16 | 480/13 | 408/19 | 521/16 |
-
-In cgm-remote-monitor the number of people committing fell first, from 47 in 2019 to 18 in 2021 and
-11 in 2024; the years of one release a year followed. AndroidAPS's lowest year, 2024, is also the
-year of its 306-day gap. Loop's commits held steady through its gaps, which suggests its waits were
-on testing and release rather than on code. The 2026 cgm-remote-monitor figure includes
-agent-written commits (§3).
-
-Dates do not show causes. Several gaps coincide with large rewrites and with Apple and Google
-platform changes. xDrip+ could not be built with current Android tools from September 2019 to
-December 2020 ([#1012](https://github.com/NightscoutFoundation/xDrip/issues/1012)), because of
-toolchain changes the project did not control. What the record shows is that every main project has
-had the same long waits, and that most of them released more often in 2025–26 as capacity returned.
+**Releases have come in long gaps, here and across the ecosystem.** Every main project has had gaps
+of similar length in the same years, and in cgm-remote-monitor the number of people committing fell
+before releases slowed ([evidence §3](observations/ECOSYSTEM-EVIDENCE.md#3-releases-and-contributors-across-the-main-projects)).
 A gap in one project's history, read on its own, says little about the diligence of the people who
 maintain it. Set beside the others and the contributor counts, it reads as the same work carried by
 fewer people. Each project's maintainers are the right people to say what held their releases (§9).
 
-**Much of the coming work is already dated.** Between now and the end of 2027 the ecosystem meets
-Apple's medical-device status declaration (early 2027) and Xcode 27 upload requirement (April 2027),
-Android developer verification for all installations (2027), Node 22 and Heroku-22 end of life on
-the same day (2027-04-30), and MongoDB 7.0 end of life (2027-08-31), each on the vendor's calendar,
-not a volunteer's ([collaboration model §3](COLLABORATION-MODEL.md#3-needs-we-can-predict)).
+**Important work can wait for years.** The MongoDB 5 driver upgrade was first proposed in 2022 and
+shipped in 2026, while hosting providers retire old database versions on their own schedule
+([evidence §3](observations/ECOSYSTEM-EVIDENCE.md#3-releases-and-contributors-across-the-main-projects)).
 
-**2026 shows what steady attention produces.** Five releases so far this year. For 15.0.9 alone
-([quality record](../60-research/programme/paving-the-cowpaths-2026-09-27.md), measured on `295f1177`): 85 pull requests
-merged in 23 days, 146 defects filed and 87 of the 122 in scope closed, and the full test suite grown
-from 1,533 passing tests on 15.0.8 to 3,473 on `295f1177`. The next merge, `7000eb18`, added one more
-(#8786, BF-147); its CI passed 3,478 tests in all nine cells. Before any release is tagged, 19
-integration runs, a comparison soak against 15.0.8, browser checks against a simulated household and
-a census of client behaviour were all completed.
+**Much of the coming work is already dated.** Between now and the end of 2027 the ecosystem meets
+Apple's medical-device status declaration, Xcode 27, Android developer verification for all
+installations, Node 22 and Heroku-22 end of life, and MongoDB 7.0 end of life, each on the vendor's
+calendar, not a volunteer's ([evidence §5](observations/ECOSYSTEM-EVIDENCE.md#5-work-that-arrives-on-other-organisations-calendars)).
+
+**2026 shows what steady attention produces.** Five releases so far this year, and a 15.0.9
+candidate built, tested and recorded in four weeks
+([how 15.0.9 was made](../../releases/cgm-remote-monitor-15.0.9/colophon.md)).
 
 ## 3. Where the time goes
 
 Much of the engineering in 2026 was done with AI coding agents under a maintainer's direction. That
 changed what limits progress. Writing a fix is now the cheap part. The steps that still need a
-person are the ones this proposal would fund:
-
-| work that needs a person | measured 2026-09-27 |
-|---|---|
-| review | 144 of the 172 items in the work queue route review to the maintainer; 75 of them are not yet merged or closed (`queue/work-queue.yaml`, `review` field) |
-| specialist review | 21 items ask for a security or safety reviewer; 14 are open, most of them in the multitenancy and alarm work. The queue names the kind of reviewer, not a person |
-| decisions | 7 items wait on a decision (`needs-decision`), plus the release decisions themselves ([needs a human](NEEDS-A-HUMAN.md)) |
-| hand checks | the 15.0.9 browser walk was done by the maintainer; six checks are still owed before the tag ([contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#open-items-a-releaser-must-settle)) |
-| checks on real systems | no real Loop, Trio, AndroidAPS or xDrip+ setup has yet run against the 15.0.9 candidate |
-| dependency alerts | 80 Dependabot alerts are open against `master`, the last release; 74 of them are already fixed on `dev` and close only when a release ships (measured on `dev` `7000eb18`). 38 merges since 15.0.7 changed the lockfile, 20 of them Dependabot's. Each remaining finding needs a person to establish whether Nightscout reaches it: the 15.0.9 triage took 17 findings to 7, and the modernization line to 0 ([triage](../../releases/cgm-remote-monitor-15.0.9/contents.md#npm-audit-and-dependabot-triage)) |
-| backlog | 35 open pull requests (18 opened in 2026, the oldest in 2021) and 102 open issues in cgm-remote-monitor (`gh pr list`, `gh issue list`, 2026-09-27) |
+person are the ones this proposal would fund: review, specialist security and safety review,
+decisions, hand checks, checks on real client systems, dependency-alert triage and the backlog
+([evidence §4](observations/ECOSYSTEM-EVIDENCE.md#4-where-the-maintenance-time-goes-today); the
+current review load is the generated table on
+[PROGRAMME-STATUS](PROGRAMME-STATUS.md#the-two-constraints-neither-of-them-engineering)).
 
 Today all of this depends on a few people. Some of them are paid for part of their time by the
 commercial hosts they work for, on terms each host sets, and those arrangements differ in scope,
@@ -187,7 +112,7 @@ A starting shape. The board and maintainers would settle the final one.
 |---|---|---|
 | **Release and review lead** | reviews pull requests, keeps the release process running on a published schedule, tags releases with the maintainers | review and release are where work waits (§3) |
 | **Ecosystem compatibility engineer** | keeps the census of client apps current; runs the real-system checks with Loop, Trio, AndroidAPS and xDrip+ builders; turns what clients actually send into tests; watches the vendor clouds the connectors log into and keeps a connector test lab that any server can use | a server change reaches every client (§2), and a vendor change reaches every server (§6a) |
-| **Quality and security lead** (part time at first) | triages security reports and dependency alerts, keeps the defect register and test records, is the named reviewer for security and safety items | 21 items ask for a kind of reviewer no one is assigned to be |
+| **Quality and security lead** (part time at first) | triages security reports and dependency alerts, keeps the defect register and test records, is the named reviewer for security and safety items | the SECURITY and SAFETY items in the reviewer-load table name a kind of reviewer, and most name no individual |
 
 Beyond cgm-remote-monitor, the [stack census](../60-research/programme/stack-census-2026-09-30.md)
 estimates a shared quality kit for the device drivers and vendor-cloud connectors at 167–388
@@ -241,52 +166,31 @@ What they have in common:
   they track the same upstream with the same public tests (CNCF). One codebase serves people who
   build and run their own tools and companies that use its evidence in their own quality systems.
 - One table of every precedent these proposals cite, with the size of each community beside it, is
-  in [PRECEDENTS](PRECEDENTS.md).
+  in [PRECEDENTS](perspective/PRECEDENTS.md).
 
 ## 6a. More than one server
 
-Nightscout is no longer the only server that speaks its API. Nocturne
-([`nightscout/nocturne`](https://github.com/nightscout/nocturne)) is a second implementation, in
-.NET with PostgreSQL. xDrip+ ships an uploader for it
-([adoption roadmap](../30-design/nightscout-adoption-roadmap-2026-09-11.md)). Its typed event model
-has been used as a reference in this repository's own data-model work
-([primitive coverage](../30-design/platform/nightscout-primitive-coverage-2026-09-11.md)).
-Its web interface is its own design, with its own visual language, not a copy of Nightscout's
-real-time display, so for operators it is an alternative, and choosing it is each operator's decision.
+Nightscout is no longer the only server that speaks its API. Nocturne is a second implementation,
+with its own design and visual language, so for operators it is an alternative, and choosing it is
+each operator's decision ([evidence §2](observations/ECOSYSTEM-EVIDENCE.md#2-what-depends-on-the-shared-server)).
 
 A second server makes this proposal more necessary, not less:
 
-- **Client apps depend on behaviour, not on which server provides it.** On 2026-09-23 Nocturne
-  (`42275c81`, v0.2.x) matched the 15.0.9 candidate on the count and filter fixes, and differed on
-  eight measured behaviours ([consumer impact §6](../60-research/remedial/consumer-impact-15.0.9-2026-09-23.md#6-nocturne-parity)).
-  Its parity suite runs against Nightscout 15.0.3. A shared, current description of the API and a
-  test suite that any server can run keep the apps working on both. This is the WHATWG pattern in §6:
-  several implementations, one living standard, and shared tests.
+- **Client apps depend on behaviour, not on which server provides it.** The two servers already
+  differ on eight measured behaviours, and Nocturne's parity suite targets an older Nightscout. A
+  shared, current description of the API and a test suite that any server can run keep the apps
+  working on both. This is the WHATWG pattern in §6: several implementations, one living standard,
+  and shared tests.
 - **Building a server and keeping one current are different jobs.** Volunteers built both
   servers. Keeping them current includes work whose timing neither project sets: the vendor clouds
   that the CGM and pump connectors log into. When a vendor changes its service, glucose data stops
-  arriving at the site until a fix ships. Changes the vendors forced, from the connectors' commit
-  histories and issue trackers:
-
-  | vendor | change the connector had to follow | where |
-  |---|---|---|
-  | Abbott LibreLinkUp | version header raised to 4.7.0, June 2023 | nightscout-librelink-up |
-  | Abbott LibreLinkUp | requests blocked by Cloudflare from late March 2024; fixed 2024-04-02 ([#128](https://github.com/timoschlueter/nightscout-librelink-up/issues/128), 39 comments) | nightscout-librelink-up |
-  | Abbott LibreLinkUp | version header raised to 4.12.0, November 2024; China region added, March 2025 | nightscout-librelink-up |
-  | Abbott LibreLinkUp | "October 2025 changes", 2025-10-21 (`f52d929`) | nightscout-connect |
-  | Abbott LibreLinkUp | new response shape and login handling, 2026-09-22 (`370d9f4`) | nightscout-connect |
-  | Medtronic CareLink | OAuth and token-refresh changes, December 2020; care-partner login error 400, June 2023 | minimed-connect-to-nightscout, now deprecated |
-  | Dexcom Share | trend field changed from a number to a string, November 2021 | share2nightscout-bridge, now deprecated in favour of nightscout-connect |
-
-  Nocturne carries its own connectors for the same vendors (Dexcom, FreeStyle for LibreLinkUp,
-  CareLink, and others; `externals/nocturne/src/Connectors` at `42275c81`), and pins the same
-  LibreLinkUp version header, 4.16.0. Each vendor change therefore reaches both servers. A second
-  server adds implementations of this work; it does not remove the work or let anyone schedule it.
-  A connector test lab and one person watching the vendor clouds (§4) would serve both.
-- **The existing sites still need maintenance.** Operators run cgm-remote-monitor on MongoDB today,
-  with its own settings, data and hosting. Moving to another server is a migration each operator
-  chooses. Until they choose it, their site needs the releases, security fixes and driver upgrades
-  described in §2.
+  arriving at the site until a fix ships. Both servers carry connectors for the same vendors, so each
+  vendor change reaches both ([evidence §5](observations/ECOSYSTEM-EVIDENCE.md#5-work-that-arrives-on-other-organisations-calendars)).
+  A second server adds implementations of this work; it does not remove the work or let anyone
+  schedule it. A connector test lab and one person watching the vendor clouds (§4) would serve both.
+- **The existing sites still need maintenance.** Moving to another server is a migration each
+  operator chooses. Until they choose it, their site needs the releases, security fixes and driver
+  upgrades described in §2.
 - **The roles in §4 serve the whole ecosystem.** The compatibility engineer and the quality and
   security lead would keep the client census, the conformance tests and the security triage open to
   every implementation.

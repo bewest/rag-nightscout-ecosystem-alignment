@@ -1,9 +1,11 @@
 # Precedents the overview proposals cite
 
 *For the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community.
-Living page, written 2026-10-01 against this repository at `1644125b`. One table of every
-organisation that the [sponsored-team](SPONSORED-TEAM-PROPOSAL.md),
-[collaboration](COLLABORATION-MODEL.md) and [quality-system](QUALITY-SYSTEM.md) proposals cite. Each
+**Perspective** (part 2 of the overview; [how the overview is organised](../README.md)). Living page,
+written 2026-10-01 against this repository at `1644125b`, moved here 2026-10-02. The frame these
+precedents are read in is [when a DIY ecosystem becomes infrastructure](INFRASTRUCTURE-TRANSITION.md). One table of every
+organisation that the [sponsored-team](../SPONSORED-TEAM-PROPOSAL.md),
+[collaboration](../COLLABORATION-MODEL.md) and [quality-system](../QUALITY-SYSTEM.md) proposals cite. Each
 row is sourced where the "sourced in" column points, and figures carry the date they were read
 there; re-check them at the source before quoting. "not read" means no figure has been read from a
 source, not that none exists.*
@@ -19,7 +21,7 @@ it from gaining control.
 
 | organisation | money comes from | who is paid | commercial role | conformance or quality evidence | size | sourced in |
 |---|---|---|---|---|---|---|
-| **Nightscout ecosystem** | donations to the foundation (amounts not read); commercial hosts pay part of the time of the maintainers who work for them | no shared, published paid role | eight hosted providers listed in the docs; a second server lists one managed instance, run by its creator | per-release records for cgm-remote-monitor 15.0.9; no per-release report in any device or connector repository | 219 human authors across 62 repositories in the year to 2026-09-30; cgm-remote-monitor 11–18 a year, 2021–2025 | [stack census](../60-research/programme/stack-census-2026-09-30.md); sponsored-team §2, §3; collaboration rule 3 |
+| **Nightscout ecosystem** | donations to the foundation (amounts not read); commercial hosts pay part of the time of the maintainers who work for them | no shared, published paid role | eight hosted providers listed in the docs; a second server lists one managed instance, run by its creator | per-release records for cgm-remote-monitor 15.0.9; no per-release report in any device or connector repository | 219 human authors across 62 repositories in the year to 2026-09-30; cgm-remote-monitor 11–18 a year, 2021–2025 | [stack census](../../60-research/programme/stack-census-2026-09-30.md); sponsored-team §2, §3; collaboration rule 3 |
 | Apache Software Foundation | not read | not read | companies employ committers but gain no control "irrespective of employing Committers … or sponsorship status" | not read | not read | collaboration §4 |
 | CNCF | events about two-thirds, membership 23.5% (2024) | services (events, infrastructure, audits); project engineers employed by members | certified conformance for vendor offerings against one upstream, and certified service providers | the same open-source conformance application for every offering, renewed yearly; over $3 million on security audits and tooling | 728 members (2024); over 90 certified offerings (2026-10-01) | sponsored-team §6; collaboration §4 |
 | Debian, with Freexian LTS | Debian pays none of its members; LTS funded by sponsors outside the project | LTS contributors, through Freexian | paid long-term support as a separate service with monthly public reports | not read | 1,000 voting developers (2006); 1,030 (2025) | quality-system §7; histories annex §B, §E |

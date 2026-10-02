@@ -10,20 +10,21 @@ home: tools/site/landing/home.md
 sections:
   - title: Overview
     dir: docs/00-overview
-    index: tools/site/landing/docs-00-overview.md
+    # README.md is the section index; it presents the three parts
+    # (observations/, perspective/, then the proposals). The subdirectories
+    # follow the pages below as sub-sections.
     pages:
       - REVIEWER-ONBOARDING.md
       - mission.md
-      - ECOSYSTEM-PROGRAMME.md
       - PROGRAMME-STATUS.md
       - ROADMAP.md
       - NEEDS-A-HUMAN.md
       - DEFINITION-OF-DONE.md
       - DOCUMENT-CONTROL.md
+      - ECOSYSTEM-PROGRAMME.md
       - SPONSORED-TEAM-PROPOSAL.md
       - COLLABORATION-MODEL.md
       - QUALITY-SYSTEM.md
-      - PRECEDENTS.md
   - title: Releases
     dir: releases
     pages:

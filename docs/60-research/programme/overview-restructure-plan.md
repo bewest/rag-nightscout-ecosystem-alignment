@@ -62,14 +62,14 @@ questions:
 | step | what | state | commit |
 |---|---|---|---|
 | 0 | Fixes found by the 2026-10-02 source check: BFQ-72's withheld disposition, the census repository count, unsupported precedent claims | done | `0f3ca59a` |
-| 1 | This plan | done | this commit |
+| 1 | This plan | done | `e3d7b65c` |
 | 2 | Draft HISTORY | in progress | |
 | 3 | Draft GOVERNANCE-TODAY | in progress | |
-| 4 | Draft ECOSYSTEM-EVIDENCE, moving evidence out of the proposals; one home per figure, generated where a generator exists | not started | |
-| 5 | Part 2: move PRECEDENTS, add case studies on the §4 template, write INFRASTRUCTURE-TRANSITION | not started | |
-| 6 | Slim the four proposals to cite parts 1–2; refresh their stale figures by pointing at the one home | not started | |
+| 4 | Draft ECOSYSTEM-EVIDENCE, moving evidence out of the proposals; one home per figure, generated where a generator exists | drafted: census, client survey, cross-project releases and contributors, maintenance time (review load links to the generated table), vendor calendar and connector changes, clinical studies | this commit |
+| 5 | Part 2: move PRECEDENTS, add case studies on the §4 template, write INFRASTRUCTURE-TRANSITION | PRECEDENTS moved and INFRASTRUCTURE-TRANSITION drafted (every outside quote re-read at source 2026-10-02); case studies on the template still to do | this commit |
+| 6 | Slim the four proposals to cite parts 1–2; refresh their stale figures by pointing at the one home | SPONSORED-TEAM-PROPOSAL done (359 → 266 lines; §1a, §2, §3, §6a cite the evidence page); COLLABORATION-MODEL, QUALITY-SYSTEM, ECOSYSTEM-PROGRAMME to do | this commit |
 | 7 | COLLABORATION-MODEL §7: a range of governance options, from "remain informal" to a cross-project technical council (proposed) | not started | |
-| 8 | Landing page and site nav in three parts | not started | |
+| 8 | Landing page and site nav in three parts | `docs/00-overview/README.md` is the section index in three parts; the hand-written landing file it replaces is removed; nav lists the operational pages, then the proposals, then the two subdirectories | this commit |
 | 9 | Gates: `make docs-links` (with a restored dead link shown red), `make views-check`, `make site`; contradiction sweep across the overview | not started | |
 | 10 | Maintainer review points (§6) | open | |
 

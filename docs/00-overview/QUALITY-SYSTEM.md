@@ -213,7 +213,7 @@ Some people argue the ecosystem should have no paid maintainers. The strongest f
 
 Each of these protects something every stakeholder wants: independence, fairness, and a community
 that owns its tools. §8.1 asks that every objection get a written answer, so each has one here,
-drawn from the histories in §7 and the [precedents](PRECEDENTS.md):
+drawn from the histories in §7 and the [precedents](perspective/PRECEDENTS.md):
 
 1. **Independence.** The risk is real, and the answer is structural rather than an absence of money:
    no payment decided by one person, paid people never approving their own work, and no deciding
