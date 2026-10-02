@@ -1,8 +1,8 @@
 # Static site (MkDocs Material)
 
 *Contributor-facing.* Builds a browsable copy of this repository's
-documentation. It is deployed only by the maintainer, from a local build, as an
-orphan `gh-pages` branch (see [Publishing](#publishing)). Every page carries
+documentation. It is deployed only by the maintainer, from a local build, on the
+`gh-pages` branch (see [Publishing](#publishing)). Every page carries
 `<meta name="robots" content="noindex, nofollow">` and the site root serves a
 `robots.txt` with `Disallow: /`.
 
@@ -163,12 +163,21 @@ for private drafts. Every page needs an entry in `site/pages/pages.yaml`:
 
 `make site-publish` refuses unless the working tree is clean, `HEAD` is on a
 remote branch (`git branch -r --contains HEAD`), `SITE_PSEUDONYM_KEY` is set
-and `make site-check` passes. It then copies `build/site/` plus `.nojekyll`
-into the worktree `../rag-alignment-gh-pages` (created on first use) and makes
-the ONLY commit of a fresh orphan `gh-pages` branch, with the source sha and
-build date in its message. It prints the force-push command; it never pushes.
+and `make site-check` passes. It then fetches `origin/gh-pages`, copies
+`build/site/` plus `.nojekyll` into the worktree `../rag-alignment-gh-pages`
+(created on first use), and commits it as one new commit whose parent is
+`origin/gh-pages`, with the source sha and build date in its message. It prints
+a plain `git push`, which is a fast-forward; if someone published in between,
+the push is rejected rather than overwriting their build, and re-running
+`make site-publish` builds on theirs. A build identical to `origin/gh-pages`
+is not committed. It never pushes.
 
 - `make site-publish DRY_RUN=1` skips the remote check and stages the files in
   the worktree without committing.
+- `make site-publish PURGE=1` makes the build the only commit of a fresh orphan
+  `gh-pages` instead, so earlier builds leave the branch's history (for removing
+  something that should not have been published; copies may already exist
+  elsewhere). It prints `git push --force-with-lease` against the `gh-pages` it
+  fetched.
 - One-time repository setting: **Settings → Pages → Build and deployment →
   Deploy from a branch → `gh-pages` / `(root)`**.

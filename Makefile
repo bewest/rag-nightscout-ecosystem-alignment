@@ -92,9 +92,10 @@ help:
 	@echo "  make site-check    - Build, then fail unless every page is noindex and"
 	@echo "                        robots.txt disallows all"
 	@echo "  make site-clean    - Remove the site build output"
-	@echo "  make site-publish  - Build, check, and commit build/site as the single commit of"
-	@echo "                        an orphan gh-pages branch in ../rag-alignment-gh-pages;"
-	@echo "                        prints the push command. DRY_RUN=1 stages without committing"
+	@echo "  make site-publish  - Build, check, and commit build/site on top of origin/gh-pages"
+	@echo "                        in ../rag-alignment-gh-pages; prints a plain push command."
+	@echo "                        DRY_RUN=1 stages without committing; PURGE=1 makes a fresh"
+	@echo "                        one-commit orphan instead (needs a force-push, with a lease)"
 	@echo ""
 	@echo "  make help       - Show this help message"
 	@echo ""
@@ -1066,4 +1067,4 @@ site-clean:
 	rm -rf build/site-src build/site build/site-nav.yaml build/site-report.json build/site-mkdocs.log
 
 site-publish: $(SITE_STAMP)
-	DRY_RUN="$(DRY_RUN)" tools/site/publish.sh
+	DRY_RUN="$(DRY_RUN)" PURGE="$(PURGE)" tools/site/publish.sh
