@@ -116,25 +116,34 @@ same ablation.
 
 ## Notes carried on the item
 
-2026-10-01: API v3's re filter operator is the same class (reported privately
-2026-09-28); measured directly on mongod 7.0.43, one count over 20 000
-documents of backtracking-prone text took 49.6 s, 9 ms on short text. Any fix
-here (for example a server-side time limit on find queries) should cover both
-APIs. After 15.0.9. Open on 15.0.8 and on dev (bf72-regex-operand-bounded.js
-fails on origin/dev 153e5658, 2026-09-24); no fix branch. The disclosure
-disposition was decided by the maintainer on 2026-09-23 and its details are
-held outside version control. What remains open is the fix shape: which bound
-on the $regex operand (see the no-gates), a decision about the search
-affordance's contract. Found 2026-09-21 while re-measuring the security
-advisory's third proof of concept, which the advisory frames as $regex data
-extraction. On the shipped `readable` default that is close to vacuous -
-entries, treatments and devicestatus are the three collections prep_storage
-admits, all three are already readable, and the API returns whole documents,
-so a regex oracle reveals nothing a plain read does not. What the same
-operator does do is cost the database, which the advisory does not describe.
-#8743 (P0-K, merged 2026-09-18) did not narrow $regex, because the client
-census found real clients sending it, so this is not a regression from that
-branch and is not fixed by it.
+2026-10-02: a candidate fix exists in the private fork of GHSA-r3gv (branch
+advisory-fix-1, by Ruben Sutton, code2344: bddbdfe7 2026-09-23 and 0182bb07
+2026-10-02, on v15.0.8 92d08342, not on dev): a pattern check through the
+safe-regex package (length 512, two nested-quantifier heuristics) on v1
+$regex, v1 regex shorthand and v3 re, answered 400, plus maxTimeMS on cursors
+whose query has a regex (5 s for caller filters, 30 s for server ones;
+settable by environment). It needs a rebase onto dev (query.js changed under
+it: operator allowlist, BF-108) and a check of which clients send regex
+filters, since the heuristic refuses patterns rather than bounding them.
+Adopting his commits keeps his authorship in the history. 2026-10-01: API v3's
+re filter operator is the same class (reported privately 2026-09-28); measured
+directly on mongod 7.0.43, one count over 20 000 documents of backtracking-
+prone text took 49.6 s, 9 ms on short text. Any fix here (for example a
+server-side time limit on find queries) should cover both APIs. After 15.0.9.
+Open on 15.0.8 and on dev (bf72-regex-operand-bounded.js fails on origin/dev
+153e5658, 2026-09-24); no fix branch. The disclosure disposition was decided
+by the maintainer on 2026-09-23 and its details are held outside version
+control. What remains open is the fix shape: which bound on the $regex operand
+(see the no-gates), a decision about the search affordance's contract. Found
+2026-09-21 while re-measuring the security advisory's third proof of concept,
+which the advisory frames as $regex data extraction. On the shipped `readable`
+default that is close to vacuous - entries, treatments and devicestatus are
+the three collections prep_storage admits, all three are already readable, and
+the API returns whole documents, so a regex oracle reveals nothing a plain
+read does not. What the same operator does do is cost the database, which the
+advisory does not describe. #8743 (P0-K, merged 2026-09-18) did not narrow
+$regex, because the client census found real clients sending it, so this is
+not a regression from that branch and is not fixed by it.
 
 ---
 

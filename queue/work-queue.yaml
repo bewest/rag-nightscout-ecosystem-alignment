@@ -5585,6 +5585,17 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-02: a candidate fix exists in the private fork of
+      GHSA-r3gv (branch advisory-fix-1, by Ruben Sutton, code2344:
+      bddbdfe7 2026-09-23 and 0182bb07 2026-10-02, on v15.0.8 92d08342, not
+      on dev): a pattern check through the safe-regex package (length 512,
+      two nested-quantifier heuristics) on v1 $regex, v1 regex shorthand
+      and v3 re, answered 400, plus maxTimeMS on cursors whose query has a
+      regex (5 s for caller filters, 30 s for server ones; settable by
+      environment). It needs a rebase onto dev (query.js changed under it:
+      operator allowlist, BF-108) and a check of which clients send regex
+      filters, since the heuristic refuses patterns rather than bounding
+      them. Adopting his commits keeps his authorship in the history.
       2026-10-01: API v3's re filter operator is the same class (reported
       privately 2026-09-28); measured directly on mongod 7.0.43, one count
       over 20 000 documents of backtracking-prone text took 49.6 s, 9 ms on
@@ -11180,6 +11191,12 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-02: the private fork of GHSA-25pr has a fix by Ruben Sutton
+      (code2344, 28d1efa6, on v15.0.8): a shared requiredReadPermission
+      that makes read by identifier and lastModified demand
+      api:settings:admin, as search and history do. That is the gating
+      choice, which breaks AAPSClient followers with read tokens; it is not
+      taken until the AndroidAPS question is answered.
       After 15.0.9. The question for the AndroidAPS developers: is
       settings meant to be readable by a follower's read token (then search
       and history are the inconsistent side), or admin-only (then AAPSClient
