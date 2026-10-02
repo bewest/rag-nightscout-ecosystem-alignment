@@ -1,0 +1,3341 @@
+{
+ "label": "dev-persist",
+ "scenario": "cancel-trio",
+ "hist": false,
+ "db": "bf94_dev_persist_cancel_trio",
+ "a": {
+  "at": "2026-10-02T22:53:48.354Z",
+  "len": 13
+ },
+ "change_at": "2026-10-02T23:03:21.158Z",
+ "b_at": "2026-10-02T23:02:21.158Z",
+ "expect": 1,
+ "stored": [
+  {
+   "created_at": "2026-10-02T22:53:48.354Z",
+   "duration": 9,
+   "absolute": 2
+  }
+ ],
+ "before": {
+  "pill": "T: 2.000U",
+  "line": 2,
+  "fn": 2
+ },
+ "update_arrived_s": 2,
+ "updates": [
+  {
+   "t": 1790982201178,
+   "delta": true,
+   "tr": [
+    {
+     "a": "new",
+     "dur": 9,
+     "mills": 1790981628354
+    }
+   ]
+  }
+ ],
+ "live_samples": 129,
+ "live_pill_values": [
+  "T: 2.000U",
+  "1.000U"
+ ],
+ "live_line_values": [
+  2,
+  1
+ ],
+ "live_fn_values": [
+  2,
+  1
+ ],
+ "stale_pill_samples": 109,
+ "stale_line_samples": 109,
+ "stale_fn_samples": 103,
+ "stale_pill_last_dt": 218,
+ "live_last": {
+  "now": 1790982459621,
+  "pill": "1.000U",
+  "line": 1,
+  "fn": {
+   "total": 1,
+   "t": null
+  },
+  "list": [
+   {
+    "mills": 1790981628354,
+    "duration": 9,
+    "endmills": 1790982168354,
+    "absolute": 2
+   }
+  ],
+  "lastUpdated": 1790982201174,
+  "updates": 1,
+  "dt": 258,
+  "arrived": true
+ },
+ "fresh": {
+  "pill": "1.000U",
+  "line": 1,
+  "fn": 1
+ },
+ "reloaded": {
+  "pill": "1.000U",
+  "line": 1,
+  "fn": 1
+ },
+ "pageErrors": [],
+ "samples": [
+  {
+   "now": 1790982201168,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 13,
+     "endmills": 1790982408354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201062,
+   "updates": 0,
+   "dt": 0,
+   "arrived": false
+  },
+  {
+   "now": 1790982203170,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 2,
+   "arrived": true
+  },
+  {
+   "now": 1790982205173,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 4,
+   "arrived": true
+  },
+  {
+   "now": 1790982207177,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 6,
+   "arrived": true
+  },
+  {
+   "now": 1790982209179,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 8,
+   "arrived": true
+  },
+  {
+   "now": 1790982211208,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 10,
+   "arrived": true
+  },
+  {
+   "now": 1790982213212,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 12,
+   "arrived": true
+  },
+  {
+   "now": 1790982215216,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 14,
+   "arrived": true
+  },
+  {
+   "now": 1790982217218,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 16,
+   "arrived": true
+  },
+  {
+   "now": 1790982219220,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 18,
+   "arrived": true
+  },
+  {
+   "now": 1790982221222,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 20,
+   "arrived": true
+  },
+  {
+   "now": 1790982223226,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 22,
+   "arrived": true
+  },
+  {
+   "now": 1790982225228,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 24,
+   "arrived": true
+  },
+  {
+   "now": 1790982227231,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 26,
+   "arrived": true
+  },
+  {
+   "now": 1790982229232,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 28,
+   "arrived": true
+  },
+  {
+   "now": 1790982231236,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 30,
+   "arrived": true
+  },
+  {
+   "now": 1790982233240,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 32,
+   "arrived": true
+  },
+  {
+   "now": 1790982235244,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 34,
+   "arrived": true
+  },
+  {
+   "now": 1790982237248,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 36,
+   "arrived": true
+  },
+  {
+   "now": 1790982239251,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 38,
+   "arrived": true
+  },
+  {
+   "now": 1790982241255,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 40,
+   "arrived": true
+  },
+  {
+   "now": 1790982243259,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 42,
+   "arrived": true
+  },
+  {
+   "now": 1790982245263,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 44,
+   "arrived": true
+  },
+  {
+   "now": 1790982247266,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 46,
+   "arrived": true
+  },
+  {
+   "now": 1790982249270,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 48,
+   "arrived": true
+  },
+  {
+   "now": 1790982251272,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 50,
+   "arrived": true
+  },
+  {
+   "now": 1790982253276,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 52,
+   "arrived": true
+  },
+  {
+   "now": 1790982255279,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 54,
+   "arrived": true
+  },
+  {
+   "now": 1790982257282,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 56,
+   "arrived": true
+  },
+  {
+   "now": 1790982259284,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 58,
+   "arrived": true
+  },
+  {
+   "now": 1790982261287,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 60,
+   "arrived": true
+  },
+  {
+   "now": 1790982263291,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 62,
+   "arrived": true
+  },
+  {
+   "now": 1790982265294,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 64,
+   "arrived": true
+  },
+  {
+   "now": 1790982267298,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 66,
+   "arrived": true
+  },
+  {
+   "now": 1790982269300,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 68,
+   "arrived": true
+  },
+  {
+   "now": 1790982271304,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 70,
+   "arrived": true
+  },
+  {
+   "now": 1790982273308,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 72,
+   "arrived": true
+  },
+  {
+   "now": 1790982275311,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 74,
+   "arrived": true
+  },
+  {
+   "now": 1790982277315,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 76,
+   "arrived": true
+  },
+  {
+   "now": 1790982279317,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 78,
+   "arrived": true
+  },
+  {
+   "now": 1790982281320,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 80,
+   "arrived": true
+  },
+  {
+   "now": 1790982283324,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 82,
+   "arrived": true
+  },
+  {
+   "now": 1790982285328,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 84,
+   "arrived": true
+  },
+  {
+   "now": 1790982287332,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 86,
+   "arrived": true
+  },
+  {
+   "now": 1790982289334,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 88,
+   "arrived": true
+  },
+  {
+   "now": 1790982291338,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 90,
+   "arrived": true
+  },
+  {
+   "now": 1790982293341,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 92,
+   "arrived": true
+  },
+  {
+   "now": 1790982295344,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 94,
+   "arrived": true
+  },
+  {
+   "now": 1790982297348,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 96,
+   "arrived": true
+  },
+  {
+   "now": 1790982299352,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 98,
+   "arrived": true
+  },
+  {
+   "now": 1790982301354,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 100,
+   "arrived": true
+  },
+  {
+   "now": 1790982303357,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 102,
+   "arrived": true
+  },
+  {
+   "now": 1790982305359,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 104,
+   "arrived": true
+  },
+  {
+   "now": 1790982307363,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 106,
+   "arrived": true
+  },
+  {
+   "now": 1790982309366,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 108,
+   "arrived": true
+  },
+  {
+   "now": 1790982311369,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 110,
+   "arrived": true
+  },
+  {
+   "now": 1790982313373,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 112,
+   "arrived": true
+  },
+  {
+   "now": 1790982315377,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 114,
+   "arrived": true
+  },
+  {
+   "now": 1790982317381,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 116,
+   "arrived": true
+  },
+  {
+   "now": 1790982319385,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 118,
+   "arrived": true
+  },
+  {
+   "now": 1790982321387,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 120,
+   "arrived": true
+  },
+  {
+   "now": 1790982323391,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 122,
+   "arrived": true
+  },
+  {
+   "now": 1790982325394,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 124,
+   "arrived": true
+  },
+  {
+   "now": 1790982327397,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 126,
+   "arrived": true
+  },
+  {
+   "now": 1790982329400,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 128,
+   "arrived": true
+  },
+  {
+   "now": 1790982331404,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 130,
+   "arrived": true
+  },
+  {
+   "now": 1790982333407,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 132,
+   "arrived": true
+  },
+  {
+   "now": 1790982335412,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 134,
+   "arrived": true
+  },
+  {
+   "now": 1790982337416,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 136,
+   "arrived": true
+  },
+  {
+   "now": 1790982339419,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 138,
+   "arrived": true
+  },
+  {
+   "now": 1790982341423,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 140,
+   "arrived": true
+  },
+  {
+   "now": 1790982343427,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 142,
+   "arrived": true
+  },
+  {
+   "now": 1790982345431,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 144,
+   "arrived": true
+  },
+  {
+   "now": 1790982347434,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 146,
+   "arrived": true
+  },
+  {
+   "now": 1790982349437,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 148,
+   "arrived": true
+  },
+  {
+   "now": 1790982351440,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 150,
+   "arrived": true
+  },
+  {
+   "now": 1790982353442,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 152,
+   "arrived": true
+  },
+  {
+   "now": 1790982355444,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 154,
+   "arrived": true
+  },
+  {
+   "now": 1790982357447,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 156,
+   "arrived": true
+  },
+  {
+   "now": 1790982359450,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 158,
+   "arrived": true
+  },
+  {
+   "now": 1790982361454,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 160,
+   "arrived": true
+  },
+  {
+   "now": 1790982363457,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 162,
+   "arrived": true
+  },
+  {
+   "now": 1790982365461,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 164,
+   "arrived": true
+  },
+  {
+   "now": 1790982367465,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 166,
+   "arrived": true
+  },
+  {
+   "now": 1790982369469,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 168,
+   "arrived": true
+  },
+  {
+   "now": 1790982371473,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 170,
+   "arrived": true
+  },
+  {
+   "now": 1790982373477,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 172,
+   "arrived": true
+  },
+  {
+   "now": 1790982375481,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 174,
+   "arrived": true
+  },
+  {
+   "now": 1790982377484,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 176,
+   "arrived": true
+  },
+  {
+   "now": 1790982379487,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 178,
+   "arrived": true
+  },
+  {
+   "now": 1790982381489,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 180,
+   "arrived": true
+  },
+  {
+   "now": 1790982383493,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 182,
+   "arrived": true
+  },
+  {
+   "now": 1790982385497,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 184,
+   "arrived": true
+  },
+  {
+   "now": 1790982387501,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 186,
+   "arrived": true
+  },
+  {
+   "now": 1790982389504,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 188,
+   "arrived": true
+  },
+  {
+   "now": 1790982391508,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 190,
+   "arrived": true
+  },
+  {
+   "now": 1790982393512,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 192,
+   "arrived": true
+  },
+  {
+   "now": 1790982395516,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 194,
+   "arrived": true
+  },
+  {
+   "now": 1790982397518,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 196,
+   "arrived": true
+  },
+  {
+   "now": 1790982399522,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 198,
+   "arrived": true
+  },
+  {
+   "now": 1790982401525,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 200,
+   "arrived": true
+  },
+  {
+   "now": 1790982403527,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 202,
+   "arrived": true
+  },
+  {
+   "now": 1790982405529,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 204,
+   "arrived": true
+  },
+  {
+   "now": 1790982407533,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 2,
+    "t": {
+     "mills": 1790981628354,
+     "endmills": 1790982408354,
+     "duration": 13,
+     "absolute": 2
+    }
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 206,
+   "arrived": true
+  },
+  {
+   "now": 1790982409536,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 1,
+    "t": null
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 208,
+   "arrived": true
+  },
+  {
+   "now": 1790982411540,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 1,
+    "t": null
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 210,
+   "arrived": true
+  },
+  {
+   "now": 1790982413544,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 1,
+    "t": null
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 212,
+   "arrived": true
+  },
+  {
+   "now": 1790982415547,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 1,
+    "t": null
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 214,
+   "arrived": true
+  },
+  {
+   "now": 1790982417551,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 1,
+    "t": null
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 216,
+   "arrived": true
+  },
+  {
+   "now": 1790982419554,
+   "pill": "T: 2.000U",
+   "line": 2,
+   "fn": {
+    "total": 1,
+    "t": null
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 218,
+   "arrived": true
+  },
+  {
+   "now": 1790982421558,
+   "pill": "1.000U",
+   "line": 1,
+   "fn": {
+    "total": 1,
+    "t": null
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 220,
+   "arrived": true
+  },
+  {
+   "now": 1790982423562,
+   "pill": "1.000U",
+   "line": 1,
+   "fn": {
+    "total": 1,
+    "t": null
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 222,
+   "arrived": true
+  },
+  {
+   "now": 1790982425566,
+   "pill": "1.000U",
+   "line": 1,
+   "fn": {
+    "total": 1,
+    "t": null
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 224,
+   "arrived": true
+  },
+  {
+   "now": 1790982427570,
+   "pill": "1.000U",
+   "line": 1,
+   "fn": {
+    "total": 1,
+    "t": null
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 226,
+   "arrived": true
+  },
+  {
+   "now": 1790982429572,
+   "pill": "1.000U",
+   "line": 1,
+   "fn": {
+    "total": 1,
+    "t": null
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 228,
+   "arrived": true
+  },
+  {
+   "now": 1790982431575,
+   "pill": "1.000U",
+   "line": 1,
+   "fn": {
+    "total": 1,
+    "t": null
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 230,
+   "arrived": true
+  },
+  {
+   "now": 1790982433579,
+   "pill": "1.000U",
+   "line": 1,
+   "fn": {
+    "total": 1,
+    "t": null
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 232,
+   "arrived": true
+  },
+  {
+   "now": 1790982435583,
+   "pill": "1.000U",
+   "line": 1,
+   "fn": {
+    "total": 1,
+    "t": null
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 234,
+   "arrived": true
+  },
+  {
+   "now": 1790982437585,
+   "pill": "1.000U",
+   "line": 1,
+   "fn": {
+    "total": 1,
+    "t": null
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 236,
+   "arrived": true
+  },
+  {
+   "now": 1790982439589,
+   "pill": "1.000U",
+   "line": 1,
+   "fn": {
+    "total": 1,
+    "t": null
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 238,
+   "arrived": true
+  },
+  {
+   "now": 1790982441592,
+   "pill": "1.000U",
+   "line": 1,
+   "fn": {
+    "total": 1,
+    "t": null
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 240,
+   "arrived": true
+  },
+  {
+   "now": 1790982443594,
+   "pill": "1.000U",
+   "line": 1,
+   "fn": {
+    "total": 1,
+    "t": null
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 242,
+   "arrived": true
+  },
+  {
+   "now": 1790982445598,
+   "pill": "1.000U",
+   "line": 1,
+   "fn": {
+    "total": 1,
+    "t": null
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 244,
+   "arrived": true
+  },
+  {
+   "now": 1790982447601,
+   "pill": "1.000U",
+   "line": 1,
+   "fn": {
+    "total": 1,
+    "t": null
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 246,
+   "arrived": true
+  },
+  {
+   "now": 1790982449605,
+   "pill": "1.000U",
+   "line": 1,
+   "fn": {
+    "total": 1,
+    "t": null
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 248,
+   "arrived": true
+  },
+  {
+   "now": 1790982451607,
+   "pill": "1.000U",
+   "line": 1,
+   "fn": {
+    "total": 1,
+    "t": null
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 250,
+   "arrived": true
+  },
+  {
+   "now": 1790982453611,
+   "pill": "1.000U",
+   "line": 1,
+   "fn": {
+    "total": 1,
+    "t": null
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 252,
+   "arrived": true
+  },
+  {
+   "now": 1790982455613,
+   "pill": "1.000U",
+   "line": 1,
+   "fn": {
+    "total": 1,
+    "t": null
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 254,
+   "arrived": true
+  },
+  {
+   "now": 1790982457617,
+   "pill": "1.000U",
+   "line": 1,
+   "fn": {
+    "total": 1,
+    "t": null
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 256,
+   "arrived": true
+  },
+  {
+   "now": 1790982459621,
+   "pill": "1.000U",
+   "line": 1,
+   "fn": {
+    "total": 1,
+    "t": null
+   },
+   "list": [
+    {
+     "mills": 1790981628354,
+     "duration": 9,
+     "endmills": 1790982168354,
+     "absolute": 2
+    }
+   ],
+   "lastUpdated": 1790982201174,
+   "updates": 1,
+   "dt": 258,
+   "arrived": true
+  }
+ ],
+ "verdict": "STALE"
+}
