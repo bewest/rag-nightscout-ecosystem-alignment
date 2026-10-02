@@ -176,7 +176,7 @@ cover more than one `BF-`:
 | `BFQ-69` | `merged-upstream` | BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing |
 | `BFQ-71` | `gate-not-met` | BF-71 - any dateString key drops the default date window, and the window is not a control |
 | `BFQ-72` | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
-| `BFQ-73` | `ready-to-push` | BF-73 - error responses carry a stack trace and server paths in production, for 15.0.9 |
+| `BFQ-73` | `in-flight-upstream` | BF-73 - error responses carry a stack trace and server paths in production, for 15.0.9 |
 | `BFQ-87` | `merged-upstream` | BF-87 - the root qs override holds the connector below its range and pins the server's que |
 | `BFQ-90` | `merged-upstream` | BF-90 - an alarm at a page with no reading throws in the client |
 | `BFQ-91` | `merged-upstream` | BF-91 - connector capture mode cannot find trace-axios for two sources |
@@ -201,14 +201,14 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 
 <!-- BEGIN GENERATED: state-matrix -->
 
-| parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `phase0` | 3 |  |  | 1 |  | 17 |  | 1 |  |  |  | **22** |
-| `release-train` | 5 |  | 5 |  | 5 | 13 | 2 | 1 |  |  | 1 | **32** |
-| `register-open` | 27 | 1 | 5 | 4 | 4 | 45 | 6 |  | 2 | 2 |  | **96** |
-| `tenancy` | 9 |  |  | 1 | 7 |  | 1 |  | 1 |  |  | **19** |
-| `docs-truth` | 7 |  | 1 |  |  |  |  | 2 |  |  |  | **10** |
-| `backfix2` |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
+| parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `phase0` | 3 |  |  | 1 |  |  | 17 |  | 1 |  |  |  | **22** |
+| `release-train` | 5 |  | 5 |  | 5 |  | 13 | 2 | 1 |  |  | 1 | **32** |
+| `register-open` | 27 | 1 | 5 | 3 | 4 | 1 | 45 | 6 |  | 2 | 2 |  | **96** |
+| `tenancy` | 9 |  |  | 1 | 7 |  |  | 1 |  | 1 |  |  | **19** |
+| `docs-truth` | 7 |  | 1 |  |  |  |  |  | 2 |  |  |  | **10** |
+| `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
 
 <!-- END GENERATED: state-matrix -->
 

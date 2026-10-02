@@ -11,7 +11,7 @@
   ============================================================================
 -->
 
-# Review packet — BFQ-73
+# Review packet — BFQ-73 (PR #8793)
 
 **BF-73 - error responses carry a stack trace and server paths in production,
 for 15.0.9**
@@ -21,7 +21,7 @@ for 15.0.9**
 | repository | `cgm-remote-monitor` |
 | branch | `bf/production-error-handler` |
 | base | `official/dev@50bc1084` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=BFQ-73` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=BFQ-73` is the measurement |
 | semver | `patch` |
 | register entries | `BF-73` |
 | operator exposure | **reaches an operator on today's release** |
@@ -74,16 +74,18 @@ origin/dev 50bc1084). The tests decide.
 
 ## Notes carried on the item
 
-Decided 2026-10-01 (maintainer): fix for 15.0.9; this settles the BF-73 half
-of ADV-XSS-META's decision. In RT-0's blocks_on. Branch bf/production-error-
-handler dc64e82d, one commit on dev 50bc1084 (new lib/server/error-handler.js,
-app.js -5/+3, tests), not pushed. PR body: reports/phase0-pr-
-bodies/production-error-handler.md. Operator-visible for the release notes:
-with NODE_ENV unset (some hosts), error pages also stop showing the stack; it
-is in the server log. A 4xx an app path raises without err.expose now answers
-with the standard reason phrase instead of its own message. Follow-up, not in
-this branch: the v1 'Mongo Error' / 'Query Error' replies carry the driver's
-error text (database host and port when unreachable).
+2026-10-02: pushed and opened as #8793 by the maintainer (head dc64e82d,
+MERGEABLE). Advisory reply drafted outside version control. Decided 2026-10-01
+(maintainer): fix for 15.0.9; this settles the BF-73 half of ADV-XSS-META's
+decision. In RT-0's blocks_on. Branch bf/production-error-handler dc64e82d,
+one commit on dev 50bc1084 (new lib/server/error-handler.js, app.js -5/+3,
+tests), not pushed. PR body: reports/phase0-pr-bodies/production-error-
+handler.md. Operator-visible for the release notes: with NODE_ENV unset (some
+hosts), error pages also stop showing the stack; it is in the server log. A
+4xx an app path raises without err.expose now answers with the standard reason
+phrase instead of its own message. Follow-up, not in this branch: the v1
+'Mongo Error' / 'Query Error' replies carry the driver's error text (database
+host and port when unreachable).
 
 ---
 

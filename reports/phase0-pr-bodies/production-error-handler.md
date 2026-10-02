@@ -1,4 +1,4 @@
-<!-- draft, not opened. Branch bf/production-error-handler at dc64e82d (one commit on dev 50bc1084). -->
+<!-- Body of #8793, branch bf/production-error-handler at dc64e82d (one commit on dev 50bc1084). This comment is hidden on GitHub. -->
 An error that reaches express's final handler no longer sends the client a stack trace or file paths from the server, unless the site runs with `NODE_ENV=development` (BF-73). One commit on `dev` `50bc1084`. The same code is in `v15.0.8`; the guard has been commented out since 2015 (`469d8687`, first in 0.7.0), so this is not a regression.
 
 ## What changes for you

@@ -11028,8 +11028,8 @@ items:
     repo: cgm-remote-monitor
     branch: bf/production-error-handler
     base: official/dev@50bc1084
-    state: ready-to-push
-    pr: []
+    state: in-flight-upstream
+    pr: [8793]
     ships_to_operators_today: true
     blast_radius: >
       lib/server/app.js: errorhandler only when NODE_ENV is development;
@@ -11065,6 +11065,8 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-02: pushed and opened as #8793 by the maintainer (head
+      dc64e82d, MERGEABLE). Advisory reply drafted outside version control.
       Decided 2026-10-01 (maintainer): fix for 15.0.9; this settles the
       BF-73 half of ADV-XSS-META's decision. In RT-0's blocks_on. Branch
       bf/production-error-handler dc64e82d, one commit on dev 50bc1084 (new
