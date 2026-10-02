@@ -38,6 +38,9 @@ under **More**.
 - [The Nightscout ecosystem programme](site/pages/nightscout-ecosystem-programme.html):
   the pieces of work across the ecosystem, placed as five layers of one
   programme.
+- [How 15.0.9 was made](site/pages/cgm-remote-monitor-15.0.9-colophon.html): the
+  release cycle's figures, with charts of merges, defects found and closed,
+  test runs and the regressions caught before release.
 
 ## Record or Living
 

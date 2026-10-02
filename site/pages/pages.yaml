@@ -23,3 +23,8 @@ pages:
   cgm-remote-monitor-15.0.9-journeys-2026-09-27.html:
     kind: snapshot
     as_of: 2026-09-27
+  cgm-remote-monitor-15.0.9-colophon.html:
+    kind: living
+    sources: [releases/cgm-remote-monitor-15.0.9/colophon.md, releases/cgm-remote-monitor-15.0.9/colophon-data.json]
+    source_commit: 8b0fb51f
+    render: tools/site/render_colophon.py
