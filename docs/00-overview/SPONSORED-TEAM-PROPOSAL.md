@@ -139,34 +139,20 @@ Out of scope for the team:
 
 ## 6. How other open-source organisations do this
 
-Gathered 2026-09-27 from each organisation's own pages and IRS Form 990 summaries on ProPublica.
-Figures are for the year shown. Re-check each against its source before quoting it (§9).
+How Zig, the Haskell Foundation, CNCF, WHATWG, W3C, the PSF, the Sovereign Tech Fellowship,
+OpenStreetMap and SQLite fund and staff their work is in
+[PRECEDENTS: how other organisations fund and staff the work](perspective/PRECEDENTS.md#how-other-organisations-fund-and-staff-the-work),
+read from each organisation's own pages and IRS Form 990 summaries. What this proposal takes from
+them:
 
-| organisation | how money comes in | who is paid, to do what | who decides | what it suggests for us |
-|---|---|---|---|---|
-| [Zig Software Foundation](https://ziglang.org/zsf/) (US 501(c)(3), 2020) | donations almost entirely: FY2025 revenue $921,832, 100% contributions ([990](https://projects.propublica.org/nonprofits/organizations/845105214)); 2024 income $670,673 from GitHub Sponsors and a few large donors ([2024 report](https://ziglang.org/news/2025-financials/)) | one fulltime employee plus hourly contractors; of $520,749 spent in 2024, $306,362 went to contractors and $154,263 to the employee, "92% of our money in 2024 paying contributors" in the report's words ([2024 report](https://ziglang.org/news/2025-financials/)) | a three-person board; no published technical governance document | the closest match: small, lean, nearly all money goes to code. It rests on one lead and a few large donors |
-| [Haskell Foundation](https://haskell.foundation/) (2020; funds held through Haskell.org, Inc., a 501(c)(3); [merger announced 2024](https://blog.haskell.org/haskell-foundation-and-committee-merger/), completion not verified) | corporate sponsorship tiers from $15k to $100k+ a year; sponsors sit on an advisory board ([donations](https://haskell.foundation/donations/)); Haskell.org, Inc. FY2024 revenue $136,256 ([990](https://projects.propublica.org/nonprofits/organizations/475236502)) | one executive director from 2024; a DevOps role restructured after a 2024 shortfall ([post](https://discourse.haskell.org/t/devops-at-the-haskell-foundation/9654)); from mid-2026 no director and a volunteer technical committee directing most spending ([2026 update](https://discourse.haskell.org/t/haskell-foundation-2026-update/14136)) | a 12-member board; existing technical committees keep their authority | sponsor income did not reliably cover a director plus an engineer; fund engineering first, administration second |
-| [CNCF](https://www.cncf.io/) (a directed fund of the Linux Foundation, a 501(c)(6), 2015) | 2024: events about two-thirds, membership 23.5%, training 7.5%; 728 members ([annual report 2024, p. 26](https://www.cncf.io/wp-content/uploads/2025/04/CNCF-Annual-Report-2024_v2.pdf)); dues up to $350k a year ([join](https://www.cncf.io/about/join/)) | pays for services (events, infrastructure, security audits, mentoring), not core developers; project engineers are employed by member companies. Commercial support grows around one upstream: "every vendor's version of Kubernetes supports the required APIs", checked by "the identical open source conformance application" any user can run, renewed yearly, over 90 certified offerings ([conformance](https://www.cncf.io/training/certification/software-conformance/)); certified service providers are CNCF members with three or more certified engineers ([KCSP](https://www.cncf.io/training/certification/kcsp/)), both read 2026-10-01 | a governing board sets budget; a technical oversight committee admits projects and tracks their maturity; projects keep their own governance ([charter](https://github.com/cncf/foundation/blob/main/charter.md) §9(c)) | its scale of membership does not transfer. What does: companies sell support for one open codebase and prove conformance with the same public tests everyone runs, so commercial support adds to the commons instead of forking it ([collaboration model](COLLABORATION-MODEL.md) rules 5 and 8) |
-| [WHATWG](https://whatwg.org/faq) (2004; steering group since 2017) | no published budget | editors work on the standards; they are understood to be employed by browser vendors (not verified) | a steering group of organisations that build a major browser engine ([agreement](https://whatwg.org/sg-agreement)); a feature needs two or more engines | authority follows the people who implement. Our equivalent is the app builders whose clients depend on the server |
-| [W3C](https://www.w3.org/about/) (US 501(c)(3) since 2023) | mainly membership dues: FY2024 revenue $8.71M ([990](https://projects.propublica.org/nonprofits/organizations/844023862)); 335+ members | about 50 staff who coordinate and edit; members' employees do the technical work | a board, an advisory board, a technical architecture group; working groups decide by consensus | stable staff funding, but the overhead suits many paying members, not a small community |
-| [PSF Developers-in-Residence](https://www.python.org/psf/developersinresidence/) (Python) | each seat paid for by a named sponsor; the first began in July 2021 ([announcement](https://pyfound.blogspot.com/2021/07/ukasz-langa-is-inaugural-cpython.html)) | four residents today; the work is triage, reviews, build monitoring and security response in support of the volunteer core team | the core developers and their elected steering council | the nearest model to §4's roles: paid people doing the review and release work volunteers find hardest to sustain. Each seat lasts only as long as its sponsor |
-| [Sovereign Tech Fellowship](https://www.sovereign.tech/programs/fellowship) (German federal funding) | public money, competitive | up to 12 fellows, freelance or employed (up to three two-year posts at €64k–€82k a year), working on their own projects | the fellows' own projects | a possible grant source for option C; it supplements a plan, it cannot anchor one |
-| [OpenStreetMap Foundation](https://osmfoundation.org/wiki/Strategic_Plan) | donations and memberships | "Given that volunteer work has not proven to be sufficient in the past, support through paid development is necessary" for the core software ([strategic plan](https://osmfoundation.org/wiki/Strategic_Plan)); its scope is "needs that require an organization, and gaps that can not be filled by OSM's volunteer driven community" ([mission](https://osmfoundation.org/wiki/Mission_Statement)) | an elected board; it offers no commercial services and endorses no company | the same reasoning as §3: pay for the gaps volunteers cannot fill, and stay neutral among the companies that build on the commons |
-| [SQLite](https://sqlite.org/consortium.html) (public domain; developers employed by Hwaci) | companies buy assurance: consortium membership ($150K a year on the [support page](https://sqlite.org/prosupport.html)), support contracts, test runs in the customer's configuration | a small fulltime team; every release is tested to 100% MC/DC coverage ([TH3](https://sqlite.org/th3.html)) | "technical control and direction of SQLite remains with the SQLite architect and developers" | companies with their own quality and legal obligations will pay for evidence, fixes on the line they run and a support horizon, not for control. Its closed-contribution policy does not fit a community project ([collaboration model §4a](COLLABORATION-MODEL.md#4a-sqlite-paying-for-assurance-not-control)) |
-
-What they have in common:
-
-- Where paid staff exist, the volunteer or project maintainers keep technical authority.
-- Money tied to one sponsor or a few donors is the usual weak point.
+- Where paid staff exist, the volunteer or project maintainers keep technical authority; §5 keeps
+  it so here.
+- Money tied to one sponsor or a few donors is the usual weak point; option C and E (§7) spread it.
 - The smallest organisations that pay for code (Zig, the PSF residencies) spend almost all of it on
-  engineering work and very little on administration.
-- Companies that build on the commons pay for work and assurance, not for control (OpenStreetMap,
-  SQLite). The rules that would keep it so here are in [COLLABORATION-MODEL](COLLABORATION-MODEL.md) §5.
-- Free users and paying companies get the same releases (SQLite), and commercial offerings prove
-  they track the same upstream with the same public tests (CNCF). One codebase serves people who
-  build and run their own tools and companies that use its evidence in their own quality systems.
-- One table of every precedent these proposals cite, with the size of each community beside it, is
-  in [PRECEDENTS](perspective/PRECEDENTS.md).
+  engineering; §4 is three engineering roles.
+- Companies that build on the commons pay for work and assurance, not for control, and commercial
+  offerings prove they track the same upstream with the same public tests; the rules that would keep
+  it so here are in [COLLABORATION-MODEL](COLLABORATION-MODEL.md) §5.
 
 ## 6a. More than one server
 

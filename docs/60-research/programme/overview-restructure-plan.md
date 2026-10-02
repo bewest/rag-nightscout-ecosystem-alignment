@@ -66,8 +66,8 @@ questions:
 | 2 | Draft HISTORY | in progress | |
 | 3 | Draft GOVERNANCE-TODAY | in progress | |
 | 4 | Draft ECOSYSTEM-EVIDENCE, moving evidence out of the proposals; one home per figure, generated where a generator exists | drafted: census, client survey, cross-project releases and contributors, maintenance time (review load links to the generated table), vendor calendar and connector changes, clinical studies | this commit |
-| 5 | Part 2: move PRECEDENTS, add case studies on the §4 template, write INFRASTRUCTURE-TRANSITION | PRECEDENTS moved and INFRASTRUCTURE-TRANSITION drafted (every outside quote re-read at source 2026-10-02); case studies on the template still to do | this commit |
-| 6 | Slim the four proposals to cite parts 1–2; refresh their stale figures by pointing at the one home | SPONSORED-TEAM-PROPOSAL done (359 → 266 lines; §1a, §2, §3, §6a cite the evidence page); COLLABORATION-MODEL, QUALITY-SYSTEM, ECOSYSTEM-PROGRAMME to do | this commit |
+| 5 | Part 2: move PRECEDENTS, add case studies on the §4 template, write INFRASTRUCTURE-TRANSITION | PRECEDENTS moved, and now holds the comparison tables the proposals carried (collaboration §4 rules and §4a SQLite, sponsored-team §6 funding, quality-system §7 histories), each proposal keeping its heading, a pointer and its own reading; INFRASTRUCTURE-TRANSITION drafted; case studies on the template still to do | `6e4137b4`, this commit |
+| 6 | Slim the four proposals to cite parts 1–2; refresh their stale figures by pointing at the one home | all four labelled part 3; SPONSORED-TEAM-PROPOSAL 359 → 249 lines, COLLABORATION-MODEL 246 → 196 (§3 calendar and §4 tables), QUALITY-SYSTEM 317 → 307 (§7 table); ECOSYSTEM-PROGRAMME's 63 and 138-of-172 now cite the evidence page and the generated table | `6e4137b4`, this commit |
 | 7 | COLLABORATION-MODEL §7: a range of governance options, from "remain informal" to a cross-project technical council (proposed) | not started | |
 | 8 | Landing page and site nav in three parts | `docs/00-overview/README.md` is the section index in three parts; the hand-written landing file it replaces is removed; nav lists the operational pages, then the proposals, then the two subdirectories | this commit |
 | 9 | Gates: `make docs-links` (with a restored dead link shown red), `make views-check`, `make site`; contradiction sweep across the overview | not started | |
@@ -86,8 +86,7 @@ questions:
 
 ## 7. Figures found stale while planning
 
-These are corrected in step 6 by pointing at the one home of each figure, not by copying the new
-value:
+Corrected in step 6 by pointing at the one home of each figure, not by copying the new value:
 
 - SPONSORED-TEAM-PROPOSAL §3: "144 of the 172 items … route review to the maintainer" (measured
   2026-09-27); PROGRAMME-STATUS's generated table now reads 149 of 183.

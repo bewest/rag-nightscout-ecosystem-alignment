@@ -1,7 +1,8 @@
 # The Nightscout ecosystem programme — one page for the whole
 
 *Prepared for the Nightscout project; proposed for Nightscout Foundation stewardship. For the
-foundation board, the maintainers of the ecosystem projects, and the community. **DRAFT PROPOSAL
+foundation board, the maintainers of the ecosystem projects, and the community. **Recommendation**
+(part 3 of the overview; [how the overview is organised](README.md)). **DRAFT PROPOSAL
 for discussion.** Written 2026-09-29 against this repository at `37beb699` and cgm-remote-monitor
 `official/dev` `7000eb18`. The parts on consent, research access, cross-border data and regulatory
 terms need review by the foundation's counsel and a privacy or quality professional before any
@@ -61,8 +62,8 @@ and connectors that bring a person's data back out of vendor clouds. This is whe
 starts: the data holder's ability to get their own data, in a form they can compute on, and to hand
 that job to tools and helpers they choose.
 
-The [stack census of 2026-09-30](../60-research/programme/stack-census-2026-09-30.md) measured 63
-repositories across these parts of the stack. 14 device protocols have 41 independent
+The [stack census of 2026-09-30](../60-research/programme/stack-census-2026-09-30.md) measured 62
+repositories across these parts of the stack ([evidence §1](observations/ECOSYSTEM-EVIDENCE.md#1-what-the-ecosystem-consists-of)). 14 device protocols have 41 independent
 implementations; six code bases log in to Dexcom Share and five to LibreLinkUp; and no device or
 connector repository publishes a per-release test report. The
 [quality-system proposal](QUALITY-SYSTEM.md) proposes a shared kit for every layer: vector corpora,
@@ -83,9 +84,9 @@ and hosting. The work on it runs in three horizons ([PROGRAMME-STATUS](PROGRAMME
   single-tenant Nightscout on MongoDB stays first-class permanently (decisions D1 and D4,
   [execution plan](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md)).
 
-What bounds this layer is review capacity. In the generated table on PROGRAMME-STATUS (measured
-2026-09-27), 138 of 172 queue items route review to the maintainer alone, and the SECURITY and SAFETY
-reviewer rows mostly name no individual
+What bounds this layer is review capacity. The generated reviewer-load table on PROGRAMME-STATUS
+shows most queue items routing review to the maintainer, and the SECURITY and SAFETY reviewer rows
+mostly naming no individual
 ([the two constraints](PROGRAMME-STATUS.md#the-two-constraints-neither-of-them-engineering)). The
 [sponsored-team proposal](SPONSORED-TEAM-PROPOSAL.md) is the request that addresses this.
 
@@ -250,5 +251,5 @@ recorded decision.
 
 **To verify before this page is quoted:** the standards' status and dates in §5 were read from their
 publishers' pages on 2026-09-29. The datalake proposal's terms in §6 were read from its published
-page the same day. The 138-of-172 figure in §3 is generated and changes with the queue; quote the
-current table, not this page.
+page the same day. The review load in §3 is a generated table on PROGRAMME-STATUS; quote the current
+table, not this page.

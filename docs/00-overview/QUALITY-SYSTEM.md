@@ -1,7 +1,8 @@
 # Enough quality management across the Nightscout ecosystem — proposal
 
 *For the maintainers of the ecosystem projects, the Nightscout Foundation board, the companies that
-host or build on Nightscout, and the community. **DRAFT PROPOSAL for discussion, requiring review by
+host or build on Nightscout, and the community. **Recommendation** (part 3 of the overview;
+[how the overview is organised](README.md)). **DRAFT PROPOSAL for discussion, requiring review by
 the maintainers and by a quality-management professional before it is adopted.** Where it touches
 vendor terms of use, device regulation or funding agreements, it also needs review by the
 foundation's counsel (§10). Written 2026-09-30 against this repository at `df5e2ade` and the
@@ -31,7 +32,8 @@ paid for today.
 
 ## 2. Why the whole stack
 
-The census of 2026-09-30 ([record](../60-research/programme/stack-census-2026-09-30.md)) measured 62
+The census of 2026-09-30 ([record](../60-research/programme/stack-census-2026-09-30.md); summarised
+with the other observations in [evidence §1](observations/ECOSYSTEM-EVIDENCE.md#1-what-the-ecosystem-consists-of)) measured 62
 repositories (63 listed; a fork kept level with its upstream counts once), 56 of them active in the last year, with 219 human authors between them:
 
 - **The same work is done many times, separately.** 14 device protocols have 41 independent
@@ -160,23 +162,13 @@ Funding routes found (sources: [histories annex §C](../60-research/programme/st
 
 ## 7. Histories that map
 
-Each row is sourced in the [histories annex §B](../60-research/programme/stack-census-2026-09-30/histories.md#b-histories).
-Apache, CNCF, the Open Home Foundation's partner rule, OpenStreetMap, OpenMRS, openEHR, OHDSI and
-SQLite's pricing are in [COLLABORATION-MODEL §4](COLLABORATION-MODEL.md#4-what-other-open-source-organisations-do);
-Zig, the Haskell Foundation, WHATWG, W3C and the PSF are in
-[sponsored-team proposal §6](SPONSORED-TEAM-PROPOSAL.md#6-how-other-open-source-organisations-do-this).
-
-| history | the situation | what changed | what maps here |
-|---|---|---|---|
-| OpenSSL after Heartbleed (2014) | about US$2,000 a year in donations; two volunteer developers | two developers funded full-time per role, then written release, security and support policies, and review of all code; in 2024 a foundation and a corporation as co-equal entities | money turned into a working project through named roles plus written policies, not money alone |
-| xz-utils (2024) | an "unpaid hobby project" with one maintainer | CISA: "the burden of security shouldn't fall on an individual open source maintainer"; OpenSSF: support for maintainers is "the primary deterrent" | reproducible release artefacts; maintainer rights earned through trust, with review by a second person |
-| curl | one lead, employed by a company that sells curl support | a project-held donation fund spent on named work; time-boxed public grants whose scope the project wrote; a bug bounty ended when paying per report drew noise | the closest match to one commercial host paying a maintainer; add a project-held fund and public grants |
-| Debian and Freexian LTS | a volunteer project that pays none of its own members; 1,030 voting developers in April 2025 ([vote 2025/001](https://www.debian.org/vote/2025/vote_001)) | paid long-term support run as a separate service, funded outside the project, with monthly public reports | paid work the volunteer project accepts: separate, outside its governance, reported |
-| Debian's Dunc-Tank (2006) | a plan to pay two release managers for a month each, organised with the project leader, in a project of 1,000 voting developers ([vote 2006/006](https://www.debian.org/vote/2006/vote_006)) | the project said it "does not object" but the experiment was not its decision; the lesson drawn in 2019 was "don't let the DPL decide alone who gets paid" | never let one person decide who is paid |
-| Home Assistant / Open Home Foundation | a founder-linked company paid the maintainers for years | a foundation with a published profit-share rule for partners, supporting "more than 50 full-time employees"; staff moved to the foundation in 2025 | the closest structural match to Nightscout; it took six years to formalise |
-| KernelCI | a spare-time test lab from 2014 | a member-funded Linux Foundation project from 2019 | pooled device and connector labs |
-| ELISA and Zephyr | open source used where safety evidence is needed | shared tools so a company can certify its own system; a limited certification scope; rules brought in by stages | two labels: the project provides evidence; any certification is the certifier's |
-| Tidepool Loop (FDA 510(k) K203689, 2023-01-23) | DIY Loop, built by volunteers | a nonprofit took it through clearance with its own paid team and a community observational study; the DIY project continued alongside | regulated and DIY tracks coexist, each with its own label |
+OpenSSL after Heartbleed, xz-utils, curl, Debian's paid long-term support and Dunc-Tank, the Open
+Home Foundation, KernelCI, ELISA and Zephyr, and Tidepool Loop are in
+[PRECEDENTS: histories](perspective/PRECEDENTS.md#histories), each with what maps to this
+proposal; sources are in the [histories annex §B](../60-research/programme/stack-census-2026-09-30/histories.md#b-histories).
+The two this proposal leans on most: OpenSSL turned money into a working project through named roles
+plus written policies, not money alone; and Debian's lesson from 2006 is never to let one person
+decide who is paid.
 
 ## 8. Agreeing the requirements
 
