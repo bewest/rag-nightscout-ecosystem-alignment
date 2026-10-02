@@ -79,6 +79,9 @@ Query and API correctness
   #8796 ca6fcfaf  a failed database read on v1 activity or
                   profile/current is answered with a 500 instead of
                   ending the server (BF-155)
+  #8797 (open)    a zero temp basal, 100 % temp, cancel, zero bolus or
+                  zero carbs sent over the socket within 2 s of another
+                  record is kept instead of dropped as its copy (BF-09)
 
 Security
   #8744 a9acd313  loadRetro gated on read authorization (BF-79)

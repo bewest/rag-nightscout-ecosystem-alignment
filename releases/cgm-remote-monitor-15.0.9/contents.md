@@ -289,10 +289,14 @@ this file does not copy them.
 What the queue tracks is generated, and current, in
 [ROADMAP §1](../../docs/00-overview/ROADMAP.md#1-the-next-release-1509). As of `dev` `ca6fcfaf` (2026-10-02), 15.0.9 waits on:
 
-1. **One full six-cell run on `ca6fcfaf`** (Node 20/22/24 × MongoDB 4.4.24 and 7.0.43, probes,
+1. **#8797 (BF-09)**, open (head `7dff9f38`, one commit on `ca6fcfaf`), taken into 15.0.9 on
+   2026-10-02: in the socket `dbAdd` duplicate check a zero is a value for `percent`, `absolute`
+   and `duration`, and means none for `insulin` and `carbs`. Branch suite 3556/0/4 (Node 22.23.2,
+   MongoDB 7.0.43, one cell). Merging it moves `dev` past `ca6fcfaf`.
+2. **One full six-cell run on the final head** (Node 20/22/24 × MongoDB 4.4.24 and 7.0.43, probes,
    compressed A/B soak against 15.0.8, as run 020 on `ce30a94d`). What has run since run 020 is
    under [Evidence](#evidence).
-2. **The browser hand checks still owed.**
+3. **The browser hand checks still owed.**
    `node tools/queue/gates/client-unchanged-since-hand-check.js --base ca6fcfaf --with ''` names
    16 paths that differ on the browser side from the hand-checked `8d797ba4`: `.gitignore` and
    `.nycrc.json` (tooling), `lib/api2/index.js`, `lib/api2/notifications-v2.js`,
@@ -316,22 +320,22 @@ What the queue tracks is generated, and current, in
    on a touch screen (#8790, section 5 of the same checklist). #8784 changes what the server sends
    to the page (late or edited v3 treatments carry `mills` in the page data, so the page's IOB and
    COB count them); that was not checked in a browser.
-3. **The version class of #8772, #8775 and #8780**, by the maintainer, who is collecting data:
+4. **The version class of #8772, #8775 and #8780**, by the maintainer, who is collecting data:
    recorded as minor-under-patch exceptions (as #8530) or re-classed ([decisions](decisions.md)).
-4. **Re-approval of #8598 at its final head** (`ca6fcfaf` unless `dev` moves). Both approvals were
+5. **Re-approval of #8598 at its final head** (`ca6fcfaf` unless `dev` moves). Both approvals were
    given on `e3adc91d`. CI on `ca6fcfaf`: 27 checks passed, 3 skipped (2026-10-02).
-5. **The `CHANGELOG.md` question.** `dev` carries a hand-written `## [Unreleased]` section (lines
+6. **The `CHANGELOG.md` question.** `dev` carries a hand-written `## [Unreleased]` section (lines
    5–87 of `git show official/dev:CHANGELOG.md` at `ca6fcfaf`, from 14 commits —
    `git log --no-merges official/master..official/dev -- CHANGELOG.md`), against the rule in
    [`../README.md`](../README.md#open-item-changelog-on-dev) that the changelog is generated at
    release time. No decision on it is recorded.
-6. **BF-154 is named in the release notes** (decided 2026-10-02, maintainer), under Known issues:
+7. **BF-154 is named in the release notes** (decided 2026-10-02, maintainer), under Known issues:
    the `node-forge` advisory behind the 2 high among `npm audit`'s 10 findings on `25fc41d9` (#8796 changes no
    package file, so the figures stand for `ca6fcfaf`), filed as low because Nightscout does not call the affected function ([below](#node-forge-ghsa-86w9-cpqp-85rv)).
    It is not a release blocker: no fixed version exists, and `@parse/node-apn` 8.1.0 (the
    modernization line's version, and the latest) still depends on `node-forge` 1.4.0 exactly, so the
    update waits for an upstream fix and is carried with the modernization work.
-7. **The tag**, by the maintainer.
+8. **The tag**, by the maintainer.
 
 The [release notes](release-notes.md) and [tag message](tag-message.txt) are drafted on `ca6fcfaf`.
 

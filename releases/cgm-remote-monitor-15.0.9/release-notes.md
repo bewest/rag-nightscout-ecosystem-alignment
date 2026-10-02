@@ -361,6 +361,24 @@ again, or an updated version of it, still updates the one record. Entries lost b
 are not brought back. Some cases are still stored as one; see
 [Known issues](#known-issues--not-fixed-in-this-release).
 
+### A zero temp basal or a cancel sent over the live connection is no longer dropped
+
+When a treatment arrived over Nightscout's live connection within 2 seconds of another, Nightscout
+compared the two to avoid storing a repeat, and it ignored any value of zero while doing so. So a
+zero temp basal (the basal pause an AID app sets) sent a second after a different temp of the same
+length was taken for that temp and thrown away. The chart then showed the earlier rate for the
+whole temp while the pump was delivering no basal. The same could happen to a cancel, a 100 % temp,
+and an entry of 0 units or 0 g after one with an amount. The AID app and the pump kept their own
+correct records.
+
+Now a zero counts. For temp basal rates and lengths, including cancels, zero is a real value. For
+insulin and carbs, zero means none: an entry of 0 units is not taken for one of 1 unit, and an app
+that fills in `insulin: 0` on a carb entry is still recognised when it sends that entry again.
+This affects AndroidAPS with its older NSClient connection (v1), the older standalone NSClient app
+that xDrip+ can send treatments to, and dragging a treatment on Nightscout's own chart. Loop, Trio,
+xDrip4iOS and AndroidAPS with the NSClient v3 connection use a different route and are not
+affected. Entries dropped before this update are not brought back.
+
 ### Late or edited AndroidAPS entries now count in insulin and carbs on board
 
 Nightscout works out its own **insulin on board** (IOB: insulin from earlier doses that is still
