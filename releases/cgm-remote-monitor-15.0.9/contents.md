@@ -320,9 +320,10 @@ blocker (generated 2026-10-02). As of `dev` `25fc41d9` (2026-10-02), 15.0.9 wait
    `git log --no-merges official/master..official/dev -- CHANGELOG.md`), against the rule in
    [`../README.md`](../README.md#open-item-changelog-on-dev) that the changelog is generated at
    release time. No decision on it is recorded.
-6. **Triage of GHSA-86w9-cpqp-85rv** (`node-forge`, high, no fixed release, reviewed by GitHub on
-   2026-10-01), by the maintainer: the 2 high among `npm audit`'s 10 findings on `25fc41d9`. The
-   reading of how Nightscout uses `node-forge` is [below](#node-forge-ghsa-86w9-cpqp-85rv).
+6. **Whether the release notes name BF-154**, by the maintainer: the `node-forge` advisory behind
+   the 2 high among `npm audit`'s 10 findings on `25fc41d9`, filed as low because Nightscout does
+   not call the affected function ([below](#node-forge-ghsa-86w9-cpqp-85rv)). It is not a release
+   blocker: no fixed version exists.
 7. **The tag**, by the maintainer.
 
 The [release notes](release-notes.md) and [tag message](tag-message.txt) are drafted on `25fc41d9`.
@@ -348,8 +349,8 @@ whose advisories need elements the sanitizer does not allow (tested), the legacy
 loaded only when a legacy bridge is switched on (read from `lib/server/bootevent.js`), and two
 test-only packages — plus `moment`, held at 2.30.1 by decision. The 2 high are one advisory,
 GHSA-86w9-cpqp-85rv against `node-forge` 1.4.0 (reviewed by GitHub 2026-10-01 21:09Z, no fixed
-release), counted once for `node-forge` and once for `@parse/node-apn` above it; its triage is
-[below](#node-forge-ghsa-86w9-cpqp-85rv). **After the
+release), counted once for `node-forge` and once for `@parse/node-apn` above it; it is register BF-154
+([below](#node-forge-ghsa-86w9-cpqp-85rv)). **After the
 modernization pass (cut 4 onward, including cut 5 `b1bdaca0`) there are none:** `npm audit` reports
 0 findings with dev dependencies included, and none of the 80 open Dependabot alerts matches a
 version in cut 5's lockfile. The work that gets there was planned in the open:
@@ -455,7 +456,9 @@ signature verification accepting a malformed signature. Nightscout loads `node-f
 `@parse/node-apn` 5.2.3 (`lib/server/loop.js`, Loop remote commands). Read from its
 `lib/credentials/certificate/`, it calls `node-forge` to parse the site's own APNs key and
 certificate (PEM and PKCS#12) and to fingerprint the key, and makes no signature-verification call.
-That is a reading, not a test; the maintainer decides whether it is recorded as not reachable.
+`npm ls node-forge` shows it under `@parse/node-apn` only, and `lib/` makes no call to it. This is
+read from the code, not tested. Filed as BF-154 (low, open; queue `BFQ-154`, blocked on an upstream
+release).
 
 ### Dependabot
 
