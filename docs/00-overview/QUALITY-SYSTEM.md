@@ -214,7 +214,7 @@ drawn from the histories in §7 and the [precedents](perspective/PRECEDENTS.md):
 2. **Fairness.** Debian's objection came from a project of about 1,000 voting developers, and
    Debian later accepted paid long-term support run outside the project (§7). The census counted 219
    human authors across 62 repositories in the last year, and cgm-remote-monitor had 11 to 18 a year
-   from 2021 to 2025 ([sponsored-team proposal §2](SPONSORED-TEAM-PROPOSAL.md#2-why-now)). At that
+   from 2021 to 2025 ([evidence §3](observations/ECOSYSTEM-EVIDENCE.md#3-releases-and-contributors-across-the-main-projects)). At that
    scale the question is less who is paid than whether the dated work in §6 gets done.
 3. **Motivation is not bought.** Agreed for the work people choose. Paid roles here cover the work
    that waits: review queues, releases, vendor changes, security response. A maintainer who does not

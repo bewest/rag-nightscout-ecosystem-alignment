@@ -146,7 +146,7 @@ What SQLite sells, and what stays constant across every tier, is in
 - A commercial edition that differs from the public one, or evidence that decides a public release
   kept private.
 - Influence in proportion to money given.
-- Payment decided by one person (Debian's lesson from 2006, [QUALITY-SYSTEM §7](QUALITY-SYSTEM.md#7-histories-that-map)).
+- Payment decided by one person (Debian's lesson from 2006, [PRECEDENTS](perspective/PRECEDENTS.md#debian-dunc-tank-2006-and-paid-long-term-support-2014)).
 - Decisions that exist only in private channels.
 - A maturity level read as a statement that software is safe for dosing decisions.
 - Any account of past disagreements in place of measured needs.

@@ -45,7 +45,7 @@ evidence keeps working, and how new evidence can be built on it.
 **Today the cost falls on people with diabetes and individual maintainers.** Their own time pays for
 the review, releases, vendor changes and security response of §3. After the xz-utils backdoor in
 2024, CISA wrote that "the burden of security shouldn't fall on an individual open source
-maintainer" ([QUALITY-SYSTEM §7](QUALITY-SYSTEM.md#7-histories-that-map)). Full-time stewards
+maintainer" ([PRECEDENTS: histories](perspective/PRECEDENTS.md#histories)). Full-time stewards
 funded by the foundation would move that cost off the people the software serves.
 
 **Better evidence needs a shared commons.** Which system does better, for whom and in which
@@ -59,7 +59,7 @@ Its research agenda lists comparative outcome studies across systems as a later 
 commons, with what a comparison needs before it is published: a registered protocol, a design that
 accounts for who chooses which system, aggregate results only, and review by the maintainers of each
 system compared. The OHDSI network's rule (data stays at each site; only aggregate results are shared,
-[COLLABORATION-MODEL §4](COLLABORATION-MODEL.md#4-what-other-open-source-organisations-do)) is one
+[PRECEDENTS](perspective/PRECEDENTS.md#rules-other-organisations-use)) is one
 tested model. The team in §4 keeps the software and records such studies rely on; it does not run
 the studies or make clinical claims.
 

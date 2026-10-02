@@ -76,7 +76,7 @@ The volunteer-only view, in its strongest form, and the rules other projects use
 with paid work, are in [QUALITY-SYSTEM §8.2](../QUALITY-SYSTEM.md#82-the-volunteer-only-view-stated-fairly)
 and the [histories annex §E](../../60-research/programme/stack-census-2026-09-30/histories.md#e-the-volunteer-only-position-steelman-and-reconciliations).
 Debian's 2006 experiment in paying release managers, and what that project drew from it, is in
-[QUALITY-SYSTEM §7](../QUALITY-SYSTEM.md#7-histories-that-map).
+[PRECEDENTS](PRECEDENTS.md#debian-dunc-tank-2006-and-paid-long-term-support-2014).
 
 ## 5. What this frame does not show
 
