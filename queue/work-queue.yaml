@@ -11266,6 +11266,41 @@ items:
       when master moves. Security-update PRs follow the default branch and
       dependabot.yml's target-branch does not change that, so turning them
       off and relying on (1) and (2) is the way to stop PRs against master.
+  - id: BFQ-154
+    title: "BF-154 - node-forge 1.4.0 (pinned in overrides) is inside an advisory range with no fixed release"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@25fc41d9
+    state: blocked
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      package.json overrides node-forge, when a fixed release exists; or
+      replacing @parse/node-apn's forge use upstream.
+    review: maintainer
+    operator_visible: ""
+    semver: patch
+    semver_reason: a dependency version
+    register: [BF-154]
+    gates:
+      - no-gate: >
+          npm audit depends on the advisory database on the day it runs.
+          2026-10-02 (npm 11.12.1, --package-lock-only) on dev 25fc41d9: 10
+          findings, 2 high, both GHSA-86w9-cpqp-85rv (node-forge <= 1.4.0, no
+          fixed version; counted for node-forge and @parse/node-apn).
+          Reachability read from the code: @parse/node-apn 5.2.3 uses forge to
+          parse the site's own APNs credentials and fingerprint the key, and
+          never calls signature verification.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Blocked on upstream: node-forge has no release outside the advisory
+      range (2026-10-02). Raised by session -d4 the same day. Whether it is
+      named as a known item in the 15.0.9 notes is the maintainer's call;
+      it is not in RT-0's blocks_on because no change is possible and the
+      vulnerable function is not called.
   - id: RT-PR-8781
     title: "#8781 - treatment retries keep srvCreated, empty identities match, history clock survives a restart (AndyLow91; BF-141, BF-143, BF-144), merged for 15.0.9"
     parcel: release-train

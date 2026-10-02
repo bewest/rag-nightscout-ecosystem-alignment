@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 181 |
+| items | 182 |
 | runnable gates | 248 |
-| explicit `no-gate:` markers | 236 |
+| explicit `no-gate:` markers | 237 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 236 of the 484 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 237 of the 485 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -45,7 +45,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `in-progress` | 2 | BFQ-72, OID-LAB |
 | `gate-not-met` | 11 | RT-REBASE, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
-| `blocked` | 16 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101 |
+| `blocked` | 17 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-154 |
 | `merged-upstream` | 80 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-125, BFQ-126, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 8 | RT-PROPAGATION, RT-0, T30-RESEARCH, BFQ-95, ADV-XSS-META, ADV-CONFIG, BFQ-152, DEPENDABOT-CONFIG |
 | `done` | 4 | P0-TAG, DOC-VIEWS, DOC-LINKS, RT-SOAK |
@@ -112,6 +112,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-147** BF-147 - two package.json overrides hold ajv and request's form-data inside published advisory ranges
 - **BFQ-149** BF-149 - the Day to Day report draws a cancelled or replaced temp target or override for its whole entered duration
 - **BFQ-152** BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission
+- **BFQ-154** BF-154 - node-forge 1.4.0 (pinned in overrides) is inside an advisory range with no fixed release
 - **BFQ-134** BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 - **BFQ-129** BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500
 - **BFQ-133** BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one (fixed by BF-146's #8784), merged for 15.0.9
@@ -2107,7 +2108,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 96 items
+`parcel: register-open` &mdash; 97 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2194,6 +2195,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-153` | BF-153 - dependency advisories published after the 2026-09-27 triage (BF-147 style refresh) | `merged-upstream` | `bf/dependency-refresh-2026-10` | patch | 1 run + 1 no-gate |
 | `BFQ-152` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission | `needs-decision` | `-` | n/a | 0 run + 1 no-gate |
 | `DEPENDABOT-CONFIG` | Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev | `needs-decision` | `-` | n/a | 1 run + 1 no-gate |
+| `BFQ-154` | BF-154 - node-forge 1.4.0 (pinned in overrides) is inside an advisory range with no fixed release | `blocked` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `merged-upstream` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
 | `WS-LAB` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | `ready-to-push` | `main` | n/a | 1 run + 1 no-gate |
@@ -4818,6 +4820,36 @@ distinction is the only thing that makes the register mean anything - widening
 - `releases/cgm-remote-monitor-15.0.9/contents.md`
 
 **Notes.** Raised by the maintainer 2026-10-01 ("I wonder if dependabot is configured correctly; it produces a lot of noise that gets taken out of context"). Options, none decided: (1) a dependabot.yml with version updates targeting dev, grouped, on a schedule, so routine bumps arrive where work happens; (2) keep alerts, and dismiss each one that is fixed on dev or not reachable, with GitHub's dismissal reason and a comment linking the triage, so the alert list shows the project's assessment; (3) release more often, since alerts close only when master moves. Security-update PRs follow the default branch and dependabot.yml's target-branch does not change that, so turning them off and relying on (1) and (2) is the way to stop PRs against master.
+
+### `BFQ-154` &mdash; BF-154 - node-forge 1.4.0 (pinned in overrides) is inside an advisory range with no fixed release
+
+| | |
+|---|---|
+| state (claimed) | `blocked` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@25fc41d9` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-154` |
+
+**Blast radius.** package.json overrides node-forge, when a fixed release exists; or replacing @parse/node-apn's forge use upstream.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `patch`.** a dependency version
+
+**Gates.**
+
+- **NO GATE** &mdash; npm audit depends on the advisory database on the day it runs. 2026-10-02 (npm 11.12.1, --package-lock-only) on dev 25fc41d9: 10 findings, 2 high, both GHSA-86w9-cpqp-85rv (node-forge <= 1.4.0, no fixed version; counted for node-forge and @parse/node-apn). Reachability read from the code: @parse/node-apn 5.2.3 uses forge to parse the site's own APNs credentials and fingerprint the key, and never calls signature verification.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Blocked on upstream: node-forge has no release outside the advisory range (2026-10-02). Raised by session -d4 the same day. Whether it is named as a known item in the 15.0.9 notes is the maintainer's call; it is not in RT-0's blocks_on because no change is possible and the vulnerable function is not called.
 
 ### `BFQ-134` &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 
