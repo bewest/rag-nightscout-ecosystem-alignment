@@ -2893,7 +2893,7 @@ items:
           browser, not by Nightscout's own mocha suite, which cannot see the drag
           clamps (RT-D3 answered 2026-09-24; the suite gap is RT-D3-SUITE on cut
           1). Recording it as a no-gate keeps it from reading as covered.
-    blocks_on: [BFQ-102, BFQ-114, BFQ-118, BFQ-119, RT-PR-8419, RT-PR-8530, BFQ-120, BFQ-126, BFQ-134, BFQ-106, BFQ-129, BFQ-125, BFQ-123, BFQ-122, BFQ-136, BFQ-128, RT-PR-8778, BFQ-80, BFQ-121, RT-PR-8781, BFQ-142, BFQ-146, RT-PR-8788, BFQ-108, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-09]
+    blocks_on: [BFQ-102, BFQ-114, BFQ-118, BFQ-119, RT-PR-8419, RT-PR-8530, BFQ-120, BFQ-126, BFQ-134, BFQ-106, BFQ-129, BFQ-125, BFQ-123, BFQ-122, BFQ-136, BFQ-128, RT-PR-8778, BFQ-80, BFQ-121, RT-PR-8781, BFQ-142, BFQ-146, RT-PR-8788, BFQ-108, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155]
     evidence:
       - releases/cgm-remote-monitor-15.0.9/contents.md
       - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
@@ -3533,6 +3533,14 @@ items:
       - docs/60-research/remedial/gt3-register-truth-2026-09-15.md
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-02 (maintainer, later the same day, relayed by session -d4):
+      DEFERRED until after 15.0.9, reversing the decision to take it in;
+      removed from RT-0's blocks_on. #8797 stays open for the next release.
+      Reasoning: the practical impact is small. The affected path is AAPS
+      NSClient v1 (3.4.2.6; removed on AAPS master in 30fe4591a7), the
+      standalone NSClient app xDrip+ broadcasts to, and the chart's
+      drag-to-move; a temp is lost only when two temps with the same
+      whole-minute duration start within 2 s; no field report.
       2026-10-02: opened as #8797 by the maintainer (head 7dff9f38,
       MERGEABLE, base dev).
       2026-10-02 (session -d4's agent): bf/socket-dedup-zero 7dff9f38, one
