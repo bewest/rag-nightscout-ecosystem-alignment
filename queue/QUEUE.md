@@ -44,10 +44,10 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `not-started` | 49 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
 | `in-progress` | 4 | BFQ-46, BFQ-ENV, BFQ-127, OID-LAB |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
-| `ready-to-push` | 4 | P0-C-REMEDIATE, T30-AUTH, BFQ-124, WS-LAB |
+| `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
 | `blocked` | 23 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, BFQ-72, BFQ-52, BFQ-93, BFQ-95, BFQ-67, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-152, BFQ-154, BFQ-156 |
 | `in-flight-upstream` | 1 | BFQ-09 |
-| `merged-upstream` | 83 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-125, BFQ-126, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
+| `merged-upstream` | 84 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 6 | RT-PROPAGATION, RT-0, T30-RESEARCH, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG |
 | `done` | 4 | P0-TAG, DOC-VIEWS, DOC-LINKS, RT-SOAK |
 | `unsettled` | 1 | A7A-7 |
@@ -101,7 +101,6 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-121** BF-121 - two carb entries at the same time are stored as one, and the carbs of one are lost (issue #8185)
 - **BFQ-122** BF-122 - records written, changed or deleted through API v1 never appear in API v3 history (issue #8244); BF-135 - a record AndroidAPS deletes keeps counting
 - **BFQ-123** BF-123 - an AndroidAPS Profile Switch percentage is ignored in the basal, ISF and carb ratio Nightscout shows (issue #7771)
-- **BFQ-124** BF-124 - the treatment tooltip converts a BG already in display units (issue #5940)
 - **BFQ-125** BF-125 - IFTTT Maker alarm events use translated level names; a failed call re-sends every check (issue #8104)
 - **BFQ-126** BF-126 - an authorization subject without a name ends the server at every boot (issue #7110)
 - **BFQ-127** BF-127 - clock views opened from the menu are blank for a token viewer on a site that denies anonymous reads (issue #7377)
@@ -2181,7 +2180,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-121` | BF-121 - two carb entries at the same time are stored as one, and the carbs of one are lost (issue #8185) | `merged-upstream` | `bf/same-time-treatments` | minor | 1 run + 3 no-gate |
 | `BFQ-122` | BF-122 - records written, changed or deleted through API v1 never appear in API v3 history (issue #8244); BF-135 - a record AndroidAPS deletes keeps counting | `merged-upstream` | `bf/v1-writes-v3-history` | minor | 2 run + 2 no-gate |
 | `BFQ-123` | BF-123 - an AndroidAPS Profile Switch percentage is ignored in the basal, ISF and carb ratio Nightscout shows (issue #7771) | `merged-upstream` | `bf/profile-switch-percentage` | patch | 1 run + 2 no-gate |
-| `BFQ-124` | BF-124 - the treatment tooltip converts a BG already in display units (issue #5940) | `ready-to-push` | `bf/tooltip-bg-units` | patch | 1 run + 1 no-gate |
+| `BFQ-124` | BF-124 - the treatment tooltip converts a BG already in display units (issue #5940) | `merged-upstream` | `bf/tooltip-bg-units` | patch | 1 run + 1 no-gate |
 | `BFQ-125` | BF-125 - IFTTT Maker alarm events use translated level names; a failed call re-sends every check (issue #8104) | `merged-upstream` | `bf/maker-level-names` | patch | 1 run + 1 no-gate |
 | `BFQ-126` | BF-126 - an authorization subject without a name ends the server at every boot (issue #7110) | `merged-upstream` | `bf/authsubject-nameless` | patch | 1 run + 1 no-gate |
 | `BFQ-127` | BF-127 - clock views opened from the menu are blank for a token viewer on a site that denies anonymous reads (issue #7377) | `in-progress` | `bf/clock-token-link` | patch | 1 run + 1 no-gate |
@@ -4316,14 +4315,14 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/tooltip-bg-units` |
 | base | `official/dev@74942ec6` |
 | worktree | `externals/work/crm-bf124` |
 | semver | `patch` |
 | review | maintainer |
-| ships to operators today | **yes** |
+| ships to operators today | no (pre-release) |
 | register | `BF-124` |
 
 **Blast radius.** lib/client/renderer.js treatmentTooltip (a few lines) and a jsdom test. Changes only the BG number in the chart tooltip of treatments with carbs or insulin; stored data and the API are unchanged.
@@ -4343,7 +4342,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `tools/lab/triage-2026-09/tooltip-bg-units.js`
 
-**Notes.** 2026-10-03 (session -d4's agent): bf/tooltip-bg-units affbc8fd, one commit on dev 74942ec6 (lib/client/renderer.js +13/-3; new tests/client.renderer.tooltip-units.test.js, 14 tests, 7 fail on 74942ec6 with the register's numbers; mutation checks fail the controls). Chromium, careportal Meal Bolus BG 5 on an mmol/L site with an mg/dL profile: dev shows 0.3, the branch 5, three runs each. Full suite 3552/0/4 (Node 22.23.2, MongoDB 7.0.43). Not pushed. Side findings: BF-157 (bubble position, filed); an occasional first-load redirect to /profile in the harness on both trees, possibly JL-2, not investigated. 2026-10-02 (maintainer, relayed by session -d4): FIX IN 15.0.9; in RT-0's blocks_on. Local branch bf/tooltip-bg-units being prepared by -d4's agent in externals/work/crm-bf124 off dev 74942ec6, not pushed. Filed 2026-09-25 from the GitHub issue triage (issue #5940, opened 2020-09-01). Client-side only. The BG Check tooltip (addTreatmentCircles) prints the stored value and is not affected.
+**Notes.** 2026-10-03: merged into dev by the maintainer as #8801 (merge 68262e86, 00:37Z, head affbc8fd); CI read 13 passed, 1 pending, 2 skipped. 2026-10-03 (session -d4's agent): bf/tooltip-bg-units affbc8fd, one commit on dev 74942ec6 (lib/client/renderer.js +13/-3; new tests/client.renderer.tooltip- units.test.js, 14 tests, 7 fail on 74942ec6 with the register's numbers; mutation checks fail the controls). Chromium, careportal Meal Bolus BG 5 on an mmol/L site with an mg/dL profile: dev shows 0.3, the branch 5, three runs each. Full suite 3552/0/4 (Node 22.23.2, MongoDB 7.0.43). Not pushed. Side findings: BF-157 (bubble position, filed); an occasional first-load redirect to /profile in the harness on both trees, possibly JL-2, not investigated. 2026-10-02 (maintainer, relayed by session -d4): FIX IN 15.0.9; in RT-0's blocks_on. Local branch bf/tooltip-bg-units being prepared by -d4's agent in externals/work/crm-bf124 off dev 74942ec6, not pushed. Filed 2026-09-25 from the GitHub issue triage (issue #5940, opened 2020-09-01). Client-side only. The BG Check tooltip (addTreatmentCircles) prints the stored value and is not affected.
 
 ### `BFQ-125` &mdash; BF-125 - IFTTT Maker alarm events use translated level names; a failed call re-sends every check (issue #8104)
 

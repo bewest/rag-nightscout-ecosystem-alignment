@@ -10130,9 +10130,9 @@ items:
     branch: bf/tooltip-bg-units
     base: official/dev@74942ec6
     worktree: externals/work/crm-bf124
-    state: ready-to-push
-    pr: []
-    ships_to_operators_today: true
+    state: merged-upstream
+    pr: [8801]
+    ships_to_operators_today: false
     blast_radius: >
       lib/client/renderer.js treatmentTooltip (a few lines) and a jsdom
       test. Changes only the BG number in the chart tooltip of treatments
@@ -10171,6 +10171,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/triage-2026-09/tooltip-bg-units.js
     notes: >
+      2026-10-03: merged into dev by the maintainer as #8801 (merge 68262e86,
+      00:37Z, head affbc8fd); CI read 13 passed, 1 pending, 2 skipped.
       2026-10-03 (session -d4's agent): bf/tooltip-bg-units affbc8fd, one
       commit on dev 74942ec6 (lib/client/renderer.js +13/-3; new
       tests/client.renderer.tooltip-units.test.js, 14 tests, 7 fail on
