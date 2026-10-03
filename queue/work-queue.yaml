@@ -10338,7 +10338,7 @@ items:
     branch: bf/clock-token-link
     base: official/dev@74942ec6
     worktree: externals/work/crm-bf127
-    state: in-progress
+    state: ready-to-push
     pr: []
     ships_to_operators_today: true
     blast_radius: >
@@ -10380,6 +10380,21 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/triage-2026-09/clock-token-link.js
     notes: >
+      2026-10-03 (session -d4's agent): bf/clock-token-link 60d5951e = fix
+      9238fd32 on 74942ec6, merged with dev 68262e86 (no conflicts); 6 files
+      +237/-1: the Clock menu links (browser-settings.js) and
+      clock-config.html's link carry the page's own ?token= (URL-encoded
+      once, nothing without a token, no storage); clock-client.js shows "Not
+      authorized" on a 401 from properties, clock.html re-checks on a script
+      error; tests/clock-token-link.test.js, 8 tests; reverting each of the
+      three files fails its own tests. Chromium, denied site, readable
+      token: dev's Clock, Color and Simple are blank, the branch draws 123,
+      no token shows the message. Full suite 3560/0/4 on 60d5951e (dev
+      68262e86 3552 plus 8; api.count-parameter needs an empty database).
+      Not pushed. Pre-existing, unchanged: curly quotes in the configurator
+      link's target; the main page sometimes redirects to /profile without
+      the token before the profile arrives, seen by two agents today
+      (BFQ-124's and this), possibly JL-2's race.
       2026-10-02 (maintainer, relayed by session -d4): FIX IN 15.0.9; in RT-0's blocks_on.
       Local branch bf/clock-token-link being prepared by -d4's agent in externals/work/crm-bf127 off
       dev 74942ec6, not pushed. Approach: the main page appends its own
