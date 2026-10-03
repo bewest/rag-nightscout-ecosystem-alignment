@@ -1,4 +1,4 @@
-<!-- Draft body, branch bf/profile-temp-cache at 2a64c500 (one commit on dev ca6fcfaf). Local only: not pushed, no PR opened. This comment is hidden on GitHub. -->
+<!-- Draft body, branch bf/profile-temp-cache at a06e75d6 (fix 2a64c500 on dev ca6fcfaf, merged with dev f105f688). Not pushed, no PR opened. This comment is hidden on GitHub. -->
 An open Nightscout page could keep showing a temp basal after it had been cancelled or replaced (BF-94). The page's profile code remembered the last temp basal it had looked up, and that memory survived new data. This change resets it whenever the page receives new treatments, and makes it belong to one profile instance instead of the whole module. One commit on `dev` `ca6fcfaf`. The same defect is on 15.0.8 (`92d08342`), and it behaves the same way there.
 
 ## What changes for you
@@ -83,4 +83,4 @@ In the AAPS v3 rows the PATCH and the POST arrive as two updates. The one sample
 
 On `ca6fcfaf`, tests 1-3 fail (`expected 2 to be 0`, the cancelled temp still returned, `expected 1.5 to be 2`) and test 4 passes. Removing only the reset fails tests 1 and 2. Restoring only the module-scoped variable fails test 3.
 
-Full suite on this branch (MongoDB 7.0.43, Node 22.23.2): 3538 passing, 0 failing, 4 pending. On `ca6fcfaf` it is 3534/0/4; the four extra tests are the new file.
+Full suite on this branch (MongoDB 7.0.43, Node 22.23.2): 3538 passing, 0 failing, 4 pending. On `ca6fcfaf` it is 3534/0/4; the four extra tests are the new file. After merging `dev` `f105f688` (#8799, documentation only) the branch is `a06e75d6`: full suite 3538/0/4 again (MongoDB 7.0.43, Node 24.15.0).
