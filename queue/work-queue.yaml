@@ -6633,8 +6633,9 @@ items:
     branch: bf/profile-temp-cache
     base: official/dev@ca6fcfaf
     worktree: externals/work/crm-bf94-fix
-    state: ready-to-push
-    ships_to_operators_today: true
+    state: merged-upstream
+    pr: [8800]
+    ships_to_operators_today: false
     blast_radius: >
       lib/profilefunctions.js:19 (module-scope prevBasalTreatment), :455-456 (the
       early return in tempBasalTreatment), updateTreatments at :292-311 (clears
@@ -6664,6 +6665,9 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/bf09-dedup-zero-measurement-2026-09-23.md
     notes: >
+      2026-10-03: merged into dev by the maintainer as #8800 (merge 74942ec6,
+      00:04Z, head a06e75d6); dev's tree 5671b8d3 is a06e75d6's, so the
+      3538/0/4 suite ran on the exact candidate tree.
       2026-10-02 (session -d4): official/dev f105f688 merged into the branch
       locally as a06e75d6 (clean; differs from dev only in
       lib/profilefunctions.js and the new test); related tests 131 passing;
