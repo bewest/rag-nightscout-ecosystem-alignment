@@ -10370,7 +10370,7 @@ items:
     branch: bf/clock-token-link
     base: official/dev@74942ec6
     worktree: externals/work/crm-bf127
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8802]
     ships_to_operators_today: true
     blast_radius: >
@@ -10412,6 +10412,10 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/triage-2026-09/clock-token-link.js
     notes: >
+      Merged 2026-10-03 01:00Z as #8802 (merge 1ad03e29, head b13b7a3a); not
+      released, goes into 15.0.9. CodeQL passed on b13b7a3a: alert 126 fixed,
+      alert 127 (raised on an older merge ref) dismissed as a false positive
+      by the maintainer.
       2026-10-03: the maintainer opened PR #8802 at 60d5951e. CodeQL fails it
       with two js/xss-through-dom alerts (126, 127) at
       views/clockviews/clock-config.html:38 and :68: the config link puts the

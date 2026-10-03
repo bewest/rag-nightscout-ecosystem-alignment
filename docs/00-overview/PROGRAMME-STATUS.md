@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 136 | 38 | 7 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 136 | 38 | 6 |
 | **Modernization** | `release-train` | 32 | 5 | 2 |
 | **Multitenant** | `tenancy` | 19 | 9 | 3 |
-| | **total** | **189** | **52** | **12** |
+| | **total** | **189** | **52** | **11** |
 
 <!-- END GENERATED: horizons -->
 
@@ -107,7 +107,7 @@ If a defect marked `fixed` or `merged` exists in 15.0.8, anyone running 15.0.8 s
 The size of that, from the register's §1 (the section whose defects reach existing operators),
 measured 2026-10-03 with `node tools/queue/gates/register-exposure-legend.js`: **114 defects**
 (BF-12, invalid, BF-41, closed, and BF-71, closed as working as intended, excluded) — 22 `open`,
-87 `merged`, 1 `partly merged`, 4 `fixed` (BF-52; BF-09, BF-127 and BF-156 on unmerged branches). A few were introduced and repaired on `dev` before any release (BF-80, BF-106 and
+88 `merged`, 1 `partly merged`, 3 `fixed` (BF-52; BF-09 and BF-156 on unmerged branches). A few were introduced and repaired on `dev` before any release (BF-80, BF-106 and
 BF-142, as of 2026-09-26), so they never reached 15.0.8. The count moves when entries are filed or
 merged; re-run the gate before quoting it.
 
@@ -148,7 +148,7 @@ cover more than one `BF-`:
 | `BFQ-123` | `merged-upstream` | BF-123 - an AndroidAPS Profile Switch percentage is ignored in the basal, ISF and carb rat |
 | `BFQ-125` | `merged-upstream` | BF-125 - IFTTT Maker alarm events use translated level names; a failed call re-sends every |
 | `BFQ-126` | `merged-upstream` | BF-126 - an authorization subject without a name ends the server at every boot (issue #711 |
-| `BFQ-127` | `in-flight-upstream` | BF-127 - clock views opened from the menu are blank for a token viewer on a site that deni |
+| `BFQ-127` | `merged-upstream` | BF-127 - clock views opened from the menu are blank for a token viewer on a site that deni |
 | `BFQ-128` | `merged-upstream` | BF-128 - /pebble on an mmol site returns the delta in mmol when mg/dL is asked for (issue  |
 | `BFQ-129` | `merged-upstream` | BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500 |
 | `BFQ-133` | `merged-upstream` | BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one |
@@ -201,7 +201,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  | 17 |  | 1 |  |  |  | **22** |
 | `release-train` | 5 |  | 5 |  | 5 |  | 13 | 2 | 1 |  |  | 1 | **32** |
-| `register-open` | 28 | 3 | 1 | 1 | 11 | 2 | 52 | 3 |  |  | 3 |  | **104** |
+| `register-open` | 28 | 3 | 1 | 1 | 11 | 1 | 53 | 3 |  |  | 3 |  | **104** |
 | `tenancy` | 9 |  |  | 1 | 7 |  |  | 1 |  | 1 |  |  | **19** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  | 2 |  |  |  | **10** |
 | `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |

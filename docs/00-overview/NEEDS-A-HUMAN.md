@@ -27,12 +27,11 @@ they need is a release, and that is one item — `RT-0` — which is listed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 10 items
+### Maintainer &mdash; 9 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `BFQ-09` | `in-flight-upstream` | BF-09 - socket dedup truthiness skips a falsy value | #8797 |
-| `BFQ-127` | `in-flight-upstream` | BF-127 - clock views opened from the menu are blank for a token viewer on a site | #8802 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `DEPENDABOT-CONFIG` | `needs-decision` | Dependabot runs with no configuration: security PRs target master, and alerts co | &mdash; |
@@ -67,7 +66,6 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 | PR | id | branch | what it fixes | who should review |
 |---|---|---|---|---|
 | **#8797** | `BFQ-09` | `bf/socket-dedup-zero` | BF-09 - socket dedup truthiness skips a falsy value | Maintainer |
-| **#8802** | `BFQ-127` | `bf/clock-token-link` | BF-127 - clock views opened from the menu are blank for a to | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 
