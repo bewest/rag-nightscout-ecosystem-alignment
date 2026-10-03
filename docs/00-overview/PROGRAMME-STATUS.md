@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 132 | 37 | 10 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 132 | 37 | 9 |
 | **Modernization** | `release-train` | 32 | 5 | 2 |
 | **Multitenant** | `tenancy` | 19 | 9 | 3 |
-| | **total** | **185** | **51** | **15** |
+| | **total** | **185** | **51** | **14** |
 
 <!-- END GENERATED: horizons -->
 
@@ -104,8 +104,8 @@ If a defect marked `fixed` or `merged` exists in 15.0.8, anyone running 15.0.8 s
 
 The size of that, from the register's §1 (the section whose defects reach existing operators),
 measured 2026-10-02 with `node tools/queue/gates/register-exposure-legend.js`: **112 defects**
-(BF-12, invalid, and BF-41, closed, excluded) — 23 `open`, 82 `merged`, 1 `partly merged`,
-6 `fixed` (BF-52; BF-09, BF-50, BF-51, BF-94 and BF-156 on unmerged branches). A few were introduced and repaired on `dev` before any release (BF-80, BF-106 and
+(BF-12, invalid, and BF-41, closed, excluded) — 23 `open`, 84 `merged`, 1 `partly merged`,
+4 `fixed` (BF-52; BF-09, BF-94 and BF-156 on unmerged branches). A few were introduced and repaired on `dev` before any release (BF-80, BF-106 and
 BF-142, as of 2026-09-26), so they never reached 15.0.8. The count moves when entries are filed or
 merged; re-run the gate before quoting it.
 
@@ -180,7 +180,6 @@ cover more than one `BF-`:
 | `BFQ-98` | `merged-upstream` | BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix does not rep |
 | `BFQ-99` | `blocked` | bf/profile-object-id - a profile posted with its own _id is stored as an ObjectId, and str |
 | `BFQ-CAP01` | `not-started` | CAP-01 - Nightscout cannot be served from a sub-path |
-| `BFQ-CONFIG-DOCS` | `ready-to-push` | bf/config-docs-truth - documentation for BF-46, BF-48, BF-49, BF-74, BF-78, BF-81 and the  |
 | `BFQ-CONNECTOR` | `gate-not-met` | BF-42, BF-43 - master pins the leaking connector, with a violated axios override |
 | `BFQ-ENV` | `in-progress` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies |
 | `BFQ-MINIMED` | `not-started` | BF-44, BF-45, BF-85 - MiniMed ingestion divergences and the CareLink zero reading |
@@ -199,7 +198,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  | 17 |  | 1 |  |  |  | **22** |
 | `release-train` | 5 |  | 5 |  | 5 |  | 13 | 2 | 1 |  |  | 1 | **32** |
-| `register-open` | 27 | 3 | 3 | 3 | 7 | 1 | 49 | 5 |  |  | 2 |  | **100** |
+| `register-open` | 27 | 3 | 3 | 2 | 7 | 1 | 50 | 5 |  |  | 2 |  | **100** |
 | `tenancy` | 9 |  |  | 1 | 7 |  |  | 1 |  | 1 |  |  | **19** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  | 2 |  |  |  | **10** |
 | `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |

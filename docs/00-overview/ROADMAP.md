@@ -55,7 +55,6 @@ release.
 
 | id | what | claimed state | waiting for | PR |
 |---|---|---|---|---|
-| `BFQ-CONFIG-DOCS` | bf/config-docs-truth - documentation for BF-46, BF-48, BF-49, BF-74, BF-78, BF-8 | `ready-to-push` | Maintainer | &mdash; |
 | `BFQ-94` | BF-94 - a kept profile instance can return a temp basal that has been replaced | `ready-to-push` | Maintainer | &mdash; |
 
 <!-- END GENERATED: release-waits -->
@@ -125,7 +124,7 @@ rebase cut 1 is right after 15.0.9 is tagged, while `dev` is quiet.
 | 1 | `RT-REBASE` | Cuts 1-5 are far behind dev and all five conflict | `gate-not-met` | &mdash; |
 | 1 | `RT-VERSION` | Two artefacts claim version 15.0.9 with different Node floors | `not-started` | &mdash; |
 | 2 | `OID-MIGRATION` | Opt-in migration that stores every string _id as the ObjectId it names, then ret | `not-started` | `OID-PREVALENCE` |
-| 2 | `RT-0` | Release 15.0.9 | `needs-decision` | `BFQ-CONFIG-DOCS`, `BFQ-94` |
+| 2 | `RT-0` | Release 15.0.9 | `needs-decision` | `BFQ-94` |
 | 3 | `RT-1` | Cut 1 - chore/retire-jsdom | `blocked` | `RT-0`, `RT-REBASE` |
 | 4 | `RT-2` | Cut 2 - chore/build-runtime-separation | `blocked` | `RT-1` |
 | 4 | `RT-D3-SUITE` | The treatment-drag clamps get a regression test in cut 1's real-browser suite | `blocked` | `RT-1` |
