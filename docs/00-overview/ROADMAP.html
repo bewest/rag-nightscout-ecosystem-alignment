@@ -2176,9 +2176,9 @@
 
 
 <h1 id="roadmap--what-comes-next-and-in-what-order">Roadmap — what comes next, and in what order<a class="headerlink" href="#roadmap--what-comes-next-and-in-what-order" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-02 at <code>e9f85e91</code>.</em></p>
+<p><em>Living document, last changed 2026-10-02 at <code>b91eb768</code>.</em></p>
 <p><em>Prepared for the Nightscout project; proposed for Nightscout Foundation stewardship. Contributor-facing. Living document: prose dated
-2026-10-03 against cgm-remote-monitor <code>official/dev</code> <code>74942ec6</code> and <code>official/master</code> <code>92d08342</code>
+2026-10-03 against cgm-remote-monitor <code>official/dev</code> <code>1ad03e29</code> and <code>official/master</code> <code>92d08342</code>
 (tag <code>15.0.8</code>). The two order tables are generated from <code>queue/work-queue.yaml</code>, and
 <code>make views-check</code> fails when they drift.</em></p>
 <p>This page gives the order of the work ahead. It records no decisions itself. The decisions
@@ -2226,13 +2226,14 @@ not measurements.</p>
 <p>Everything merged since 15.0.8 reaches operators only through 15.0.9 (queue <code>RT-0</code>, release PR</p>
 <h1 id="8598-and-every-later-step-waits-behind-it-operators-running-1508-keep-every-defect-fixed-on">8598), and every later step waits behind it. Operators running 15.0.8 keep every defect fixed on<a class="headerlink" href="#8598-and-every-later-step-waits-behind-it-operators-running-1508-keep-every-defect-fixed-on" title="Permanent link">&para;</a></h1>
 <p><code>dev</code> until it is tagged.</p>
-<p><code>dev</code> is at <code>74942ec6</code> (the merge of #8800, 2026-10-03): 95 first-parent merges and 537 commits
-since 15.0.8. Every PR decided for 15.0.9 is merged except the fixes for BF-124 and BF-127, decided 2026-10-02 and on branches being prepared (queue <code>BFQ-124</code>, <code>BFQ-127</code>); Crowdin #8730 is held out (BF-132). The last
-full run is run 020 on <code>ce30a94d</code> (2026-09-27), 3473/0/3 in all six cells; each PR merged since
-carries its own evidence, and #8800's head <code>a06e75d6</code>, the same tree as <code>74942ec6</code>, passes the full
-suite, 3538/0/4, on one cell (Node 24, MongoDB 7.0.43). The real-site soak (<code>RT-SOAK</code>) is done by
-the maintainer's decision of 2026-09-30. Release PR #8598 is at <code>74942ec6</code>, approved at <code>e3adc91d</code>;
-its CI on <code>74942ec6</code>: 27 checks passed, 3 skipped (read 2026-10-03 00:21Z).</p>
+<p><code>dev</code> is at <code>1ad03e29</code> (the merge of #8802, 2026-10-03): 97 first-parent merges and 543 commits
+since 15.0.8. Every PR decided for 15.0.9 is merged, including the fixes for BF-124 (#8801) and
+BF-127 (#8802); Crowdin #8730 is held out (BF-132). The last full run is run 020 on <code>ce30a94d</code>
+(2026-09-27), 3473/0/3 in all six cells; each PR merged since carries its own evidence, and #8802's
+head <code>b13b7a3a</code>, the same tree as <code>1ad03e29</code>, passes the full suite, 3563/0/4, on one cell (Node 24,
+MongoDB 7.0.43). Run 021, the six-cell run on <code>1ad03e29</code>, is in progress. The real-site soak
+(<code>RT-SOAK</code>) is done by the maintainer's decision of 2026-09-30. Release PR #8598 is at <code>1ad03e29</code>,
+approved at <code>e3adc91d</code>; its CI on <code>1ad03e29</code>: 27 checks passed, 3 skipped (read 2026-10-03 01:16Z).</p>
 <p>The version is decided: 15.0.9. <code>RT-VERSION</code>'s gate measures the modernization cut branches, which
 also declare 15.0.9 and are renumbered when they are rebased, so it holds the cuts, not this
 release.</p>
@@ -2251,18 +2252,11 @@ release.</p>
 </thead>
 <tbody>
 <tr>
-<td><code>BFQ-124</code></td>
-<td>BF-124 - the treatment tooltip converts a BG already in display units (issue #59</td>
-<td><code>in-progress</code></td>
-<td>Maintainer</td>
 <td>&mdash;</td>
-</tr>
-<tr>
-<td><code>BFQ-127</code></td>
-<td>BF-127 - clock views opened from the menu are blank for a token viewer on a site</td>
-<td><code>in-progress</code></td>
-<td>Maintainer</td>
-<td>&mdash;</td>
+<td>nothing open blocks <code>RT-0</code></td>
+<td></td>
+<td></td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -2270,30 +2264,28 @@ release.</p>
 
 <p>Before the tag, and not queue items of their own (they are in <code>RT-0</code>'s notes and gates):</p>
 <ol>
-<li>The fixes for BF-124 (the treatment tooltip's BG units) and BF-127 (a clock view opened from
-   the menu is blank for a token viewer on a site that requires sign-in), decided for 15.0.9 on
-   2026-10-02; the branches are being prepared on <code>74942ec6</code> and are not pushed (<code>BFQ-124</code>,
-   <code>BFQ-127</code> above).</li>
-<li>One full six-cell run on the final head
-   (<a href="../30-design/remedial/rc-15.0.9-integration-record.html">integration record</a>).</li>
+<li>One full six-cell run on the final head, <code>1ad03e29</code> (run 021, in progress;
+   <a href="../30-design/remedial/rc-15.0.9-integration-record.html">integration record</a>).</li>
 <li>The browser hand checks still owed: a remote bolus; LoopCaregiver from its own app; clock views;
    the pump pill; alarm level labels; the Bolus Wizard Preview pill and reports during a percentage
    switch; the Day to Day report (#8788, smoke checklist §3); the Food Editor on a touch screen
    (#8790, smoke checklist §5); an AndroidAPS (API v3) or Trio temp basal cancelled while a page is
-   open (#8800, BF-94; <code>tools/lab/bf94-browser</code> drives it in Chromium). The rest was checked by hand on <code>ff93fa94</code> on 2026-09-26
+   open (#8800, BF-94; <code>tools/lab/bf94-browser</code> drives it in Chromium); a treatment's BG in the
+   chart tooltip on an mmol/L site with an mg/dL profile (#8801, BF-124); a clock view opened from
+   the menu with an access token on a site that requires sign-in (#8802, BF-127). The rest was checked by hand on <code>ff93fa94</code> on 2026-09-26
    (<a href="../60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.html">browser record</a>).</li>
 <li>The version class of #8772, #8775 and #8780: a minor change shipped under the patch number as an
    exception, as #8530 was, or a different class. The maintainer is collecting data.</li>
-<li>Re-approval of #8598 at its final head.</li>
+<li>Re-approval of #8598 at its final head, <code>1ad03e29</code>.</li>
 <li>Settled 2026-10-02 (maintainer): the release notes name BF-154, the <code>node-forge</code> advisory
-   GHSA-86w9-cpqp-85rv behind the 2 high among <code>npm audit</code>'s 10 findings on <code>25fc41d9</code> (#8796, #8799 and #8800
-   change no package file, so the figures stand for <code>74942ec6</code>). It has no
+   GHSA-86w9-cpqp-85rv behind the 2 high among <code>npm audit</code>'s 10 findings on <code>25fc41d9</code> (#8796,
+   #8799, #8800, #8801 and #8802 change no package file, so the figures stand for <code>1ad03e29</code>). It has no
    fixed release and Nightscout does not call the affected function (read from the code), so it is
    filed as low and does not block the release (<a href="../../releases/cgm-remote-monitor-15.0.9/contents.html#node-forge-ghsa-86w9-cpqp-85rv">contents</a>).</li>
 <li>The <code>CHANGELOG.md</code> question: <code>dev</code> carries a hand-written <code>## [Unreleased]</code> section against the
    rule that the changelog is generated at release time; no decision is recorded
    (<a href="../../releases/cgm-remote-monitor-15.0.9/contents.html#open-items-a-releaser-must-settle">contents</a>).</li>
-<li>The tag, by the maintainer. The release notes and tag message are drafted on <code>74942ec6</code>.</li>
+<li>The tag, by the maintainer. The release notes and tag message are drafted on <code>1ad03e29</code>.</li>
 </ol>
 <p>The other 8 <code>npm audit</code> findings are triaged in
 <a href="../../releases/cgm-remote-monitor-15.0.9/contents.html#npm-audit-and-dependabot-triage">contents</a>.</p>
@@ -2406,6 +2398,13 @@ rebase cut 1 is right after 15.0.9 is tagged, while <code>dev</code> is quiet.</
 </tr>
 <tr>
 <td style="text-align: right;">1</td>
+<td><code>RT-0</code></td>
+<td>Release 15.0.9</td>
+<td><code>needs-decision</code></td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
 <td><code>RT-BOOTERROR</code></td>
 <td>BF-63 - the page that reports a boot error crashes on cut 4's boot errors</td>
 <td><code>gate-not-met</code></td>
@@ -2455,48 +2454,41 @@ rebase cut 1 is right after 15.0.9 is tagged, while <code>dev</code> is quiet.</
 </tr>
 <tr>
 <td style="text-align: right;">2</td>
-<td><code>RT-0</code></td>
-<td>Release 15.0.9</td>
-<td><code>needs-decision</code></td>
-<td><code>BFQ-124</code>, <code>BFQ-127</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">3</td>
 <td><code>RT-1</code></td>
 <td>Cut 1 - chore/retire-jsdom</td>
 <td><code>blocked</code></td>
 <td><code>RT-0</code>, <code>RT-REBASE</code></td>
 </tr>
 <tr>
-<td style="text-align: right;">4</td>
+<td style="text-align: right;">3</td>
 <td><code>RT-2</code></td>
 <td>Cut 2 - chore/build-runtime-separation</td>
 <td><code>blocked</code></td>
 <td><code>RT-1</code></td>
 </tr>
 <tr>
-<td style="text-align: right;">4</td>
+<td style="text-align: right;">3</td>
 <td><code>RT-D3-SUITE</code></td>
 <td>The treatment-drag clamps get a regression test in cut 1's real-browser suite</td>
 <td><code>blocked</code></td>
 <td><code>RT-1</code></td>
 </tr>
 <tr>
-<td style="text-align: right;">4</td>
+<td style="text-align: right;">3</td>
 <td><code>RT-NODE-FLOOR-TESTED</code></td>
 <td>BF-58, BF-59 - the enforced Node floor is not the Node anything exercises</td>
 <td><code>gate-not-met</code></td>
 <td><code>RT-1</code></td>
 </tr>
 <tr>
-<td style="text-align: right;">5</td>
+<td style="text-align: right;">4</td>
 <td><code>RT-3</code></td>
 <td>Cuts 3+5 combined - dependency release</td>
 <td><code>blocked</code></td>
 <td><code>RT-2</code></td>
 </tr>
 <tr>
-<td style="text-align: right;">6</td>
+<td style="text-align: right;">5</td>
 <td><code>RT-5</code></td>
 <td>Cut 4 - chore/mime-exposure-review, the one to slow down on</td>
 <td><code>blocked</code></td>
@@ -2588,17 +2580,17 @@ Until then, the order below is the order of development, not of release.</p>
 </tr>
 <tr>
 <td style="text-align: right;">2</td>
-<td><code>T30-SCHEMA-CONFIG</code></td>
-<td>T3.0 part 2b - per-tenant configuration table, and where human identity lives</td>
-<td><code>not-started</code></td>
-<td><code>T30-RESEARCH</code>, <code>T30-ORY-PROOF</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">3</td>
 <td><code>SEAM-REFRESH</code></td>
 <td>Refresh the seam chain once after 15.0.9, onto the base the release train leaves</td>
 <td><code>blocked</code></td>
 <td><code>RT-0</code>, <code>RT-PROPAGATION</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td><code>T30-SCHEMA-CONFIG</code></td>
+<td>T3.0 part 2b - per-tenant configuration table, and where human identity lives</td>
+<td><code>not-started</code></td>
+<td><code>T30-RESEARCH</code>, <code>T30-ORY-PROOF</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">3</td>
@@ -2613,6 +2605,20 @@ Until then, the order below is the order of development, not of release.</p>
 <td>T3.2 remainder - platform.sql carries no config, secret or signing key</td>
 <td><code>blocked</code></td>
 <td><code>T30-SCHEMA-CRED</code>, <code>T30-SCHEMA-CONFIG</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td><code>WRITE-CONTRACT</code></td>
+<td>One write step behind the storage interface: _id form, srv dates, soft delete, r</td>
+<td><code>blocked</code></td>
+<td><code>SEAM-REFRESH</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td><code>BFQ-CAP02</code></td>
+<td>CAP-02 - no importer, and no Mongo to PostgreSQL loader</td>
+<td><code>not-started</code></td>
+<td><code>T30-SCHEMA-CRED</code>, <code>T30-SCHEMA-CONFIG</code>, <code>WRITE-CONTRACT</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">4</td>
@@ -2636,13 +2642,6 @@ Until then, the order below is the order of development, not of release.</p>
 <td><code>T30-WIRING</code></td>
 </tr>
 <tr>
-<td style="text-align: right;">4</td>
-<td><code>WRITE-CONTRACT</code></td>
-<td>One write step behind the storage interface: _id form, srv dates, soft delete, r</td>
-<td><code>blocked</code></td>
-<td><code>SEAM-REFRESH</code></td>
-</tr>
-<tr>
 <td style="text-align: right;">5</td>
 <td><code>A7A-3</code></td>
 <td>§7a item 3 - a per-tenant error boundary</td>
@@ -2662,13 +2661,6 @@ Until then, the order below is the order of development, not of release.</p>
 <td>BF-66 - the deployment's own tokens fail its own tenant check</td>
 <td><code>blocked</code></td>
 <td><code>T30-WIRING</code>, <code>T31-REM</code>, <code>SEAM-REFRESH</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">5</td>
-<td><code>BFQ-CAP02</code></td>
-<td>CAP-02 - no importer, and no Mongo to PostgreSQL loader</td>
-<td><code>not-started</code></td>
-<td><code>T30-SCHEMA-CRED</code>, <code>T30-SCHEMA-CONFIG</code>, <code>WRITE-CONTRACT</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">6</td>

@@ -1522,6 +1522,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#clock-pages-opened-from-the-menu-on-sites-that-need-a-login" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Clock pages opened from the menu on sites that need a login
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#a-user-without-a-name-no-longer-stops-your-site" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1625,6 +1636,17 @@
     <span class="md-ellipsis">
       
         An open page shows a cancelled temp basal as cancelled
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-glucose-value-in-a-treatments-pop-up-on-the-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The glucose value in a treatment's pop-up on the chart
       
     </span>
   </a>
@@ -3241,6 +3263,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#clock-pages-opened-from-the-menu-on-sites-that-need-a-login" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Clock pages opened from the menu on sites that need a login
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#a-user-without-a-name-no-longer-stops-your-site" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3351,6 +3384,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#the-glucose-value-in-a-treatments-pop-up-on-the-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The glucose value in a treatment's pop-up on the chart
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#other-fixes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3445,7 +3489,7 @@
 
 
 <h1 id="nightscout-1509--release-notes">Nightscout 15.0.9 — release notes<a class="headerlink" href="#nightscout-1509--release-notes" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-02 at <code>e9f85e91</code>.</em></p>
+<p><em>Living document, last changed 2026-10-02 at <code>528d5a29</code>.</em></p>
 <p><strong>Draft: 15.0.9 is not yet released, and the wording may change before it is.</strong></p>
 <p><em>For people who run a Nightscout site for themselves or a family member. Nightscout is a
 secondary display, nothing in these notes is advice about insulin doses, and you should talk
@@ -4343,6 +4387,15 @@ of day kept changing. In this release the page keeps working out the reading's a
 checks fail, and turns grey once the reading is old, as it does when readings simply stop.</p>
 <p>A clock page is a display, not an alarm. Keep the alarms on your phone, CGM app or receiver
 switched on. This is not medical advice.</p>
+<h3 id="clock-pages-opened-from-the-menu-on-sites-that-need-a-login">Clock pages opened from the menu on sites that need a login<a class="headerlink" href="#clock-pages-opened-from-the-menu-on-sites-that-need-a-login" title="Permanent link">&para;</a></h3>
+<p>Some sites are set up so that nobody can see them without logging in. On such a site, someone can
+still be given read-only access with an <strong>access token</strong> (see the words list at the top) added to
+the site's address. On 15.0.8, if that person then picked a clock page from the <strong>Clock</strong> menu, the
+clock stayed blank: the menu did not pass the token on, so the site refused the clock's requests,
+and nothing on the page said why. The menu links now carry the token, so the clock shows your
+readings. If the site refuses a clock page anyway, the page now says it is not authorized instead
+of staying blank. Opening a clock directly with <code>?token=</code> in its address worked before and still
+does.</p>
 <h3 id="a-user-without-a-name-no-longer-stops-your-site">A user without a name no longer stops your site<a class="headerlink" href="#a-user-without-a-name-no-longer-stops-your-site" title="Permanent link">&para;</a></h3>
 <p>If a tool created a user or role on the admin page without a name, Nightscout stopped, and
 stopped again at every restart, until that record was removed from the database by hand. Only
@@ -4415,6 +4468,13 @@ Nightscout page that was already open could keep showing the old rate in the bas
 the chart: for about a quarter of a minute when another temp followed, and until the temp's planned
 end when it was simply cancelled. The pump and the app had the right value, and reloading the page
 showed it. An open page now shows the change as soon as it arrives.</p>
+<h3 id="the-glucose-value-in-a-treatments-pop-up-on-the-chart">The glucose value in a treatment's pop-up on the chart<a class="headerlink" href="#the-glucose-value-in-a-treatments-pop-up-on-the-chart" title="Permanent link">&para;</a></h3>
+<p>When you point at (or tap) a carb or insulin entry on the chart, a small box (a tooltip) shows its
+details, including a blood glucose (BG) value if one was entered with it. On a site set to show
+mmol/L whose profile (your basal, carb ratio and sensitivity settings) is saved in mg/dL, or the
+other way round, that box converted the BG even when it was already in your site's units: for example, a BG entered as 5 on an mmol/L site showed as
+0.3. The box now converts from the units the BG was saved in, so it shows the
+number you entered. Only that box changes; the saved entries were always right and are not changed.</p>
 <h3 id="other-fixes">Other fixes<a class="headerlink" href="#other-fixes" title="Permanent link">&para;</a></h3>
 <p>Faster data loading on sites with many treatments; deleted records no longer reappear; failed
 treatment searches no longer crash the server; a problem reading from the database while answering a
@@ -4656,7 +4716,7 @@ corrections of behaviour that was never intended, not as new features, and nothi
 depends on the number. Sites that follow the development channel may already report <code>15.0.9</code>;
 a report from "15.0.9" made before this release is from that channel.</p>
 <hr />
-<p><em>Draft, 2026-10-03, on the development version 74942ec6; not yet released.</em></p>
+<p><em>Draft, 2026-10-03, on the development version 1ad03e29; not yet released.</em></p>
 
 
 

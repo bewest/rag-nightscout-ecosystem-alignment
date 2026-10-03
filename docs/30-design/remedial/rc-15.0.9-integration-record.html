@@ -4538,47 +4538,46 @@
 
 
 <h1 id="1509-integration-record">15.0.9 integration record<a class="headerlink" href="#1509-integration-record" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-02 at <code>e9f85e91</code>.</em></p>
+<p><em>Living document, last changed 2026-10-02 at <code>528d5a29</code>.</em></p>
 <p><em>Contributor-facing. Living record of how the cgm-remote-monitor 15.0.9 candidate was assembled
 and tested. Item state is in <code>queue/work-queue.yaml</code> (<code>RT-0</code>); defect facts are in the
 <a href="nightscout-backfix-register.html">backfix register</a>; release contents are in
 <a href="../../../releases/cgm-remote-monitor-15.0.9/contents.html">releases/cgm-remote-monitor-15.0.9</a>.
 Several units fix defects that are live on the shipping release (15.0.8, <code>official/master</code>
 <code>92d08342</code>), so this record describes mechanisms only.</em></p>
-<p><strong>Where the candidate stands, 2026-10-03.</strong> The candidate is <code>official/dev</code> <code>74942ec6</code> (tree
-<code>5671b8d3</code>, package version 15.0.9), merged 2026-10-03 00:04Z. 15.0.8..<code>74942ec6</code>: 537 commits, 95
-first-parent merges, 307 files, +29757/−1931 (<code>git rev-list --count</code>, <code>--first-parent --count</code> and <code>git diff --shortstat</code>
-<code>official/master official/dev</code>). There is no <code>15.0.9</code> tag. Every PR decided for 15.0.9 is merged except the fixes for BF-124 and BF-127, decided 2026-10-02 and on branches being prepared (queue <code>BFQ-124</code>, <code>BFQ-127</code>);
+<p><strong>Where the candidate stands, 2026-10-03.</strong> The candidate is <code>official/dev</code> <code>1ad03e29</code> (tree
+<code>7d16c516</code>, package version 15.0.9), merged 2026-10-03 01:00Z. 15.0.8..<code>1ad03e29</code>: 543 commits, 97
+first-parent merges, 313 files, +30210/−1935 (<code>git rev-list --count</code>, <code>--first-parent --count</code> and <code>git diff --shortstat</code>
+<code>official/master official/dev</code>). There is no <code>15.0.9</code> tag. Every PR decided for 15.0.9 is merged;
 Crowdin #8730 (BF-132) is held out.</p>
 <ul>
 <li><strong>Current full run: run 020 on <code>ce30a94d</code> (2026-09-27).</strong> 3473/0/3 (passing/failing/pending) in
   all six cells, Node 20/22/24 × MongoDB 4.4.24 and 7.0.43; probes; break-its of #8784; a compressed
   A/B soak against 15.0.8. It has not been repeated on a later head.</li>
-<li><strong>Merged after run 020:</strong> #8785, #8786, #8788, #8790, #8791, #8793, #8794, #8795, #8796, #8799 and #8800, each checked
+<li><strong>Merged after run 020:</strong> #8785, #8786, #8788, #8790, #8791, #8793, #8794, #8795, #8796, #8799, #8800, #8801 and #8802, each checked
   on its own; see <a href="#after-run-020">After run 020</a>.</li>
-<li><strong>Full suite on the candidate tree, one cell:</strong> #8800's head <code>a06e75d6</code> has the same tree as
-  <code>74942ec6</code> (<code>5671b8d3</code>). On it the full suite gave 3538/0/4 (Node 24.15.0, MongoDB 7.0.43,
-  2026-10-02).</li>
-<li><strong>Next run:</strong> the full six-cell run on <code>74942ec6</code>.</li>
+<li><strong>Full suite on the candidate tree, one cell:</strong> #8802's head <code>b13b7a3a</code> has the same tree as
+  <code>1ad03e29</code> (<code>7d16c516</code>). On it the full suite gave 3563/0/4 (Node 24.15.0, MongoDB 7.0.43,
+  fresh database, 2026-10-02).</li>
+<li><strong>Next run:</strong> run 021, the full six-cell run on <code>1ad03e29</code>, is in progress.</li>
 <li><strong>Real-time soak (RT-SOAK):</strong> done on real sites, by the maintainer's decision of 2026-09-30; the
   lab's 72 h soak was not run. Reports: as of 2026-09-29, one Loop, one Trio and one AndroidAPS user
   ran <code>7000eb18</code> for about two days with no errors; on 2026-10-02 the maintainer reported AndroidAPS,
   Trio and Loop users of the <code>dev</code> branch seeing stable, unsurprising behaviour all week. No rig
   count or duration is recorded beyond that.</li>
 <li><strong><code>npm audit</code> on <code>25fc41d9</code></strong> (2026-10-02 17:31Z, npm 11.12.1, <code>--package-lock-only</code>, counting
-  packages with a finding): 10, 2 high; 8 with <code>--omit=dev</code>. #8796, #8799 and #8800 change no package
-  file, so the figures stand for <code>74942ec6</code>. The 2 high are one advisory against
+  packages with a finding): 10, 2 high; 8 with <code>--omit=dev</code>. No PR merged since changes a package
+  file, so the figures stand for <code>1ad03e29</code>. The 2 high are one advisory against
   <code>node-forge</code> (GHSA-86w9-cpqp-85rv, reviewed by GitHub 2026-10-01, no fixed release), filed
   as BF-154 (low: Nightscout does not call the affected function, read from the code); the other 8
   are triaged. Triage:
   <a href="../../../releases/cgm-remote-monitor-15.0.9/contents.html#npm-audit-and-dependabot-triage">contents</a>.</li>
-<li><strong>Still owed before the tag:</strong> the fixes for BF-124 and BF-127, decided for 15.0.9 on 2026-10-02,
-  on branches being prepared (queue <code>BFQ-124</code>, <code>BFQ-127</code>); the six-cell run on the final head; the browser hand checks listed under
+<li><strong>Still owed before the tag:</strong> run 021 (in progress); the browser hand checks listed under
   <a href="#what-the-current-run-does-not-cover">What the current run does not cover</a>; the version class of
-  #8772, #8775 and #8780; re-approval of the release PR #8598 at <code>74942ec6</code> (its two approvals
+  #8772, #8775 and #8780; re-approval of the release PR #8598 at <code>1ad03e29</code> (its two approvals
   were given on <code>e3adc91d</code>); the tag, by the maintainer. The release notes name BF-154 (<code>node-forge</code>) under Known issues (decided 2026-10-02). #8598's head
-  is <code>74942ec6</code>; its CI there: 27 checks passed, 3 skipped (read 2026-10-03 00:21Z). The release notes and tag
-  message are drafted on <code>74942ec6</code>.</li>
+  is <code>1ad03e29</code>; its CI there: 27 checks passed, 3 skipped (read 2026-10-03 01:16Z). The release notes and tag
+  message are drafted on <code>1ad03e29</code>.</li>
 </ul>
 <p>This record has five parts:</p>
 <ul>
@@ -4697,6 +4696,22 @@ each was checked on its own, as below. Each PR's own CI on GitHub passed.</p>
 <td><code>lib/profilefunctions.js</code> (browser and server)</td>
 <td>full suite 3538/0/4 on the same tree, one cell; CI 14 passed, 2 skipped</td>
 </tr>
+<tr>
+<td>#8801</td>
+<td><code>68262e86</code></td>
+<td>2026-10-03 00:37Z</td>
+<td>BF-124</td>
+<td><code>lib/client/renderer.js</code> (browser)</td>
+<td>full suite 3552/0/4 on its tree, one cell; tests fail with the old renderer; CI 14 passed, 2 skipped; hand check owed</td>
+</tr>
+<tr>
+<td>#8802</td>
+<td><code>1ad03e29</code></td>
+<td>2026-10-03 01:00Z</td>
+<td>BF-127</td>
+<td><code>lib/client/browser-settings.js</code>, <code>lib/client/clock-client.js</code>, <code>views/clockviews/clock.html</code>, <code>clock-config.html</code>, <code>clock-shared.css</code> (browser)</td>
+<td>full suite 3563/0/4 on the same tree, one cell; tests fail with <code>68262e86</code>'s page; CI 13 passed, 2 skipped, CodeQL passed; hand check owed</td>
+</tr>
 </tbody>
 </table>
 <h3 id="8785-295f1177">#8785, <code>295f1177</code><a class="headerlink" href="#8785-295f1177" title="Permanent link">&para;</a></h3>
@@ -4809,6 +4824,32 @@ basal that AndroidAPS (API v3) or Trio had shortened or cancelled until the temp
 that harness. Checks: full suite 3538/0/4 on <code>a06e75d6</code> (Node 24.15.0, MongoDB 7.0.43,
 one cell, 2026-10-02) and on <code>2a64c500</code> (Node 22.23.2); #8800's CI 14 passed, 2 skipped. A check by
 hand in a browser is owed (below).</p>
+<h3 id="8801-bf-124-68262e86">#8801 (BF-124), <code>68262e86</code><a class="headerlink" href="#8801-bf-124-68262e86" title="Permanent link">&para;</a></h3>
+<h1 id="8801-merged-into-dev-as-68262e86-2026-10-03-0037z-head-affbc8fd-the-fix-on-dev">8801 merged into <code>dev</code> as <code>68262e86</code> (2026-10-03 00:37Z, head <code>affbc8fd</code>, the fix on <code>dev</code><a class="headerlink" href="#8801-merged-into-dev-as-68262e86-2026-10-03-0037z-head-affbc8fd-the-fix-on-dev" title="Permanent link">&para;</a></h1>
+<p><code>74942ec6</code>). The chart tooltip of a treatment with carbs or insulin converted its BG whenever the
+display units differed from the profile's units, ignoring the units the record was saved in, so on
+an mmol/L site with an mg/dL profile a careportal BG of 5 showed as 0.3. <code>lib/client/renderer.js</code>
+now converts from the record's own units, falling back to the profile's; the new
+<code>tests/client.renderer.tooltip-units.test.js</code> has 14 tests, 7 of which fail on <code>74942ec6</code>. Display
+only; no stored data changes. Checks: full suite 3552/0/4 (Node 22.23.2, MongoDB 7.0.43, one
+cell); in Chromium a careportal Meal Bolus with BG 5 on an mmol/L site with an mg/dL profile shows
+0.3 on <code>dev</code> and 5 on the branch; #8801's CI 14 passed, 2 skipped. A check by hand in a browser is
+owed (below).</p>
+<h3 id="8802-bf-127-1ad03e29">#8802 (BF-127), <code>1ad03e29</code><a class="headerlink" href="#8802-bf-127-1ad03e29" title="Permanent link">&para;</a></h3>
+<h1 id="8802-merged-into-dev-as-1ad03e29-2026-10-03-0100z-head-b13b7a3a-tree-7d16c516-the">8802 merged into <code>dev</code> as <code>1ad03e29</code> (2026-10-03 01:00Z, head <code>b13b7a3a</code>, tree <code>7d16c516</code>, the<a class="headerlink" href="#8802-merged-into-dev-as-1ad03e29-2026-10-03-0100z-head-b13b7a3a-tree-7d16c516-the" title="Permanent link">&para;</a></h1>
+<p>same tree as its head; <code>b13b7a3a</code> is the fix <code>9238fd32</code> and the CodeQL fix on <code>dev</code> <code>68262e86</code>). On
+a site that denies anonymous reads, a clock view opened from the Clock menu by a viewer using an
+access token was blank, because the menu links were plain paths and the clock page read a token
+only from its own address. The menu links now carry the page's token
+(<code>lib/client/browser-settings.js</code>); a clock whose requests are answered 401 says "Not authorized"
+(<code>lib/client/clock-client.js</code>, <code>views/clockviews/clock.html</code>, <code>clock-shared.css</code>); and the clock
+designer's link URL-encodes the face and the token (<code>views/clockviews/clock-config.html</code>; CodeQL
+<code>js/xss-through-dom</code> alert 126 fixed, alert 127 dismissed by the maintainer as a false positive).
+The new <code>tests/clock-token-link.test.js</code> has 11 tests, which fail with <code>68262e86</code>'s page. Checks:
+full suite 3563/0/4 on <code>b13b7a3a</code> (Node 24.15.0, MongoDB 7.0.43, one cell, fresh database,
+2026-10-02); in Chromium on a denied site with a readable token, the three clocks are blank on
+<code>68262e86</code> and draw on the branch; #8802's CI 13 passed, 2 skipped, CodeQL passed. A check by hand
+in a browser is owed (below).</p>
 <h3 id="browser-hand-check-gate-on-a143d507">Browser hand-check gate on <code>a143d507</code><a class="headerlink" href="#browser-hand-check-gate-on-a143d507" title="Permanent link">&para;</a></h3>
 <p><code>node tools/queue/gates/client-unchanged-since-hand-check.js</code> on <code>a143d507</code> names 16 paths that
 differ on the browser side from the hand-checked <code>8d797ba4</code>: <code>.gitignore</code>, <code>.nycrc.json</code> (tooling),
@@ -4820,7 +4861,11 @@ differ on the browser side from the hand-checked <code>8d797ba4</code>: <code>.g
 those need no hand check). #8795 and #8796, merged after this reading, change only server files, and
 the gate on <code>ca6fcfaf</code> (2026-10-02) names the same 16 paths. On <code>74942ec6</code> (2026-10-03) it names 17:
 the same 16 and <code>azuredeploy.json</code> (#8799, the Azure deployment template, not browser code).
-<code>lib/profilefunctions.js</code> was already in the list; #8800 changes it again.</p>
+<code>lib/profilefunctions.js</code> was already in the list; #8800 changes it again. On <code>1ad03e29</code>
+(2026-10-03) it names 22: those 17, <code>lib/client/renderer.js</code> (#8801), and
+<code>lib/client/browser-settings.js</code>, <code>views/clockviews/clock-config.html</code>,
+<code>views/clockviews/clock-shared.css</code> and <code>views/clockviews/clock.html</code> (#8802); <code>lib/client/clock-client.js</code>
+was already in the list.</p>
 <h2 id="current-run">Current run<a class="headerlink" href="#current-run" title="Permanent link">&para;</a></h2>
 <p><strong>2026-09-27. Run 020: <code>origin/dev</code> <code>ce30a94d</code>, run 019's <code>699eb5fa</code> plus #8784 (BF-146, which
 also fixes BF-133).</strong></p>
@@ -6116,9 +6161,9 @@ compared:</p>
 </ul>
 <h2 id="what-the-current-run-does-not-cover">What the current run does not cover<a class="headerlink" href="#what-the-current-run-does-not-cover" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>The merges after run 020</strong> (#8785 to #8800) are covered by their own checks, listed under
+<li><strong>The merges after run 020</strong> (#8785 to #8802) are covered by their own checks, listed under
   <a href="#after-run-020">After run 020</a>, and the candidate tree by one full-suite cell, not by a full
-  six-cell run. That run is owed on <code>74942ec6</code>.</li>
+  six-cell run. Run 021, that run on <code>1ad03e29</code>, is in progress.</li>
 <li><strong>The lab's 24 to 72 h real-time soak was not run.</strong> Real sites running the candidate stand in for
   it (maintainer, 2026-09-30). The reports recorded are those under "Where the candidate stands" at the top of this
   record; no other data from those sites is in it. The compressed A/B soak is under <a href="#soak-toolslabrc-soak">Soak</a>.</li>
@@ -6127,12 +6172,15 @@ compared:</p>
   <a href="../../../releases/cgm-remote-monitor-15.0.9/contents.html#npm-audit-and-dependabot-triage">contents</a>.</li>
 <li><strong>Browser hand checks.</strong> The browser walk ran on <code>ff93fa94</code> (2026-09-26,
   <a href="../../60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.html">browser record</a>); the gate on
-  <code>74942ec6</code> names the 16 paths it named on <code>a143d507</code> and <code>azuredeploy.json</code> (see <a href="#browser-hand-check-gate-on-a143d507">After run 020</a>). Still owed:
+  <code>1ad03e29</code> names 22 paths: the 16 it named on <code>a143d507</code>, <code>azuredeploy.json</code>, and the five
+  browser files #8801 and #8802 add (see <a href="#browser-hand-check-gate-on-a143d507">After run 020</a>). Still owed:
   a remote bolus; LoopCaregiver from its own app; clock views; the pump pill; alarm level labels; the
   Bolus Wizard Preview pill and reports during a percentage profile switch; the Day to Day report
   (#8788, smoke checklist section 3, "Day to Day events with a duration past midnight"); the Food Editor on a touch screen (#8790, smoke checklist
   section 5); an AndroidAPS (API v3) or Trio temp basal cancelled while a page is open (#8800, BF-94;
-  <code>tools/lab/bf94-browser</code> drives it in Chromium). #8784 changes the page data for late or edited v3 treatments (they now carry <code>mills</code>,
+  <code>tools/lab/bf94-browser</code> drives it in Chromium); a treatment tooltip on an mmol/L site with an
+  mg/dL profile (#8801, BF-124); a clock opened from the menu with a token on a site that requires
+  sign-in, and a refused clock saying so (#8802, BF-127). #8784 changes the page data for late or edited v3 treatments (they now carry <code>mills</code>,
   so the page's own IOB and COB count them); that was measured in the page data sent over the socket
   by #8784's test, not in a browser.</li>
 <li><strong>BF-146 beyond the server's in-memory data</strong> was not measured: chart placement (the renderer

@@ -6614,7 +6614,7 @@
 
 
 <h1 id="overview-restructure-observations-perspective-recommendations--plan-and-progress">Overview restructure: observations, perspective, recommendations — plan and progress<a class="headerlink" href="#overview-restructure-observations-perspective-recommendations--plan-and-progress" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-02 at <code>d1bab40e</code>.</em></p>
+<p><em>Living document, last changed 2026-10-02 at <code>5ca36a94</code>.</em></p>
 <p><em>Contributor- and maintainer-facing. </em><em>Living plan</em><em>, started 2026-10-02 against this repository at
 <code>0f3ca59a</code>. It records the plan for reorganising <code>docs/00-overview</code> and the progress of each step.
 The maintainer asked for it on 2026-10-02. Decisions in it are the maintainer's unless a row says
@@ -6805,8 +6805,14 @@ questions:</p>
 <tr>
 <td>10</td>
 <td>Maintainer review points (§6)</td>
-<td>open</td>
-<td></td>
+<td>two decided 2026-10-02 (roles throughout; 990-N left out); naming the requesters and the foundation-only facts still open</td>
+<td><code>d1bab40e</code></td>
+</tr>
+<tr>
+<td>11</td>
+<td>Keep the overview accurate as 15.0.9 moves</td>
+<td>the overview no longer pins the candidate's <code>dev</code> head: HISTORY, ECOSYSTEM-EVIDENCE and ECOSYSTEM-PROGRAMME point at ROADMAP §1 and the colophon, which are kept current with the release. <strong>After BF-124 and BF-127 merge</strong> (queue <code>BFQ-124</code>, <code>BFQ-127</code>, the last two 15.0.9 blockers): check the overview with <code>grep -rnE '&lt;old dev head&gt;' docs/00-overview</code>, confirm ROADMAP §1, PROGRAMME-STATUS and the colophon are re-measured on the new head, re-render <code>site/pages</code> pages whose sources changed, run <code>make docs-links views-check site</code>, push, and republish. <strong>When 15.0.9 is tagged:</strong> add the tag date to ECOSYSTEM-EVIDENCE §3's tag table and to HISTORY §4</td>
+<td>in place; post-merge pass pending</td>
 </tr>
 </tbody>
 </table>

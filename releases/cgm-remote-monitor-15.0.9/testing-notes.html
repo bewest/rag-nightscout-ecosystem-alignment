@@ -2217,7 +2217,7 @@
 
 
 <h1 id="nightscout-1509--testing-notes-for-the-release-candidate">Nightscout 15.0.9 — testing notes for the release candidate<a class="headerlink" href="#nightscout-1509--testing-notes-for-the-release-candidate" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-02 at <code>e9f85e91</code>.</em></p>
+<p><em>Living document, last changed 2026-10-02 at <code>528d5a29</code>.</em></p>
 <p><strong>DRAFT — prepared for maintainer review before it is shared.</strong> Kept current as reports arrive and
 as the test build changes. Last updated 2026-10-03.</p>
 <p><em>For people who would like to help test the next Nightscout release before it comes out. Part 1 is
@@ -2325,8 +2325,8 @@ particular setup to try them.</p>
 described: the <a href="release-notes.html#known-issues--not-fixed-in-this-release">known issues</a> in the release
 notes.</p>
 <h2 id="getting-the-test-build">Getting the test build<a class="headerlink" href="#getting-the-test-build" title="Permanent link">&para;</a></h2>
-<p>The test build is the <code>dev</code> branch of <code>nightscout/cgm-remote-monitor</code> at commit <strong><code>74942ec6</code></strong>
-(full: <code>74942ec6f5035f06a9d9d6de9bcc71e72da0de56</code>, 2026-10-03). Its version reads <strong>15.0.9</strong>. Since
+<p>The test build is the <code>dev</code> branch of <code>nightscout/cgm-remote-monitor</code> at commit <strong><code>1ad03e29</code></strong>
+(full: <code>1ad03e29e7f49df9028d7d9bf6eea2c8963918ad</code>, 2026-10-03). Its version reads <strong>15.0.9</strong>. Since
 the earlier test build <code>7000eb18</code> it adds:</p>
 <ul>
 <li>the Day to Day report shows events that run past midnight on both days (see 1.7);</li>
@@ -2340,18 +2340,22 @@ the earlier test build <code>7000eb18</code> it adds:</p>
   with an error and keeps running (nothing to test by hand);</li>
 <li>a page that is already open shows a temp basal that AndroidAPS or Trio cancels or shortens as
   cancelled or shortened, without reloading (see 1.9);</li>
+<li>the small box that pops up over a carb or insulin entry on the chart shows a blood glucose value
+  in the units it was entered in (see 1.2);</li>
+<li>on a site that needs a login, a clock page opened from the menu by someone using an access token
+  shows the readings instead of staying blank (see 1.5);</li>
 <li>the setup guide (README) describes the settings the code reads, including the API v3 settings
   (nothing to test by hand; see the release notes);</li>
 <li>updated versions of several software libraries it uses, with no change to what you see.</li>
 </ul>
 <p>If you are running <code>7000eb18</code> or a later <code>dev</code> build, keep going: your reports still count.</p>
 <ul>
-<li><strong>Docker:</strong> <code>nightscout/cgm-remote-monitor:dev_74942ec6f5035f06a9d9d6de9bcc71e72da0de56</code>. This tag
+<li><strong>Docker:</strong> <code>nightscout/cgm-remote-monitor:dev_1ad03e29e7f49df9028d7d9bf6eea2c8963918ad</code>. This tag
   always means exactly this build. <code>latest_dev</code> means "the newest <code>dev</code>" and moves when <code>dev</code> changes,
   so check which commit it is before relying on it.</li>
 <li><strong>Deploying from your own copy of the code</strong> (Heroku, Railway, Northflank, Render, a VPS and
   similar): update your copy's <code>dev</code> branch from <code>nightscout/cgm-remote-monitor</code> and deploy that
-  branch. Check the commit is <code>74942ec6</code>.</li>
+  branch. Check the commit is <code>1ad03e29</code>.</li>
 <li><strong>A hosting service that runs Nightscout for you:</strong> ask them whether they offer the test build.</li>
 </ul>
 <p>If <code>dev</code> moves to a new commit before the release, these notes will name it.</p>
@@ -2384,6 +2388,10 @@ so on some sites <strong>low alarms start working</strong> where they never did.
    <code>Threshold bgTargetTop 8.5 taken as mmol/L, converted to 153 mg/dl</code>, one for each level.</li>
 <li>Over the next days: did a low alarm go off that never used to, or did "Warning HIGH" on in-range
    readings stop? Either can be the fix. Tell us which, and tell whoever receives your alerts.</li>
+<li>If you enter a blood glucose (BG) value together with carbs or insulin in the careportal, point
+   at (or tap) that entry on the chart. <strong>Working looks like:</strong> the small box that pops up shows the
+   BG you entered. This matters most if your profile (basal, carb ratio and sensitivity settings) is
+   saved in mg/dL, as some apps upload it; on 15.0.8 such a site could show 5 as 0.3.</li>
 </ol>
 <h2 id="13-androidaps">1.3 AndroidAPS<a class="headerlink" href="#13-androidaps" title="Permanent link">&para;</a></h2>
 <p>See <a href="release-notes.html#androidaps-the-careportal-and-caregivers">AndroidAPS, the careportal and caregivers</a>.</p>
@@ -2418,9 +2426,11 @@ to check:</p>
 <h2 id="15-followers-clocks-and-watch-faces">1.5 Followers, clocks and watch faces<a class="headerlink" href="#15-followers-clocks-and-watch-faces" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>Clock views</strong> (menu → Clock, or <code>/clock/…</code>): they should show when their reading is old, including
-  after the page loses its connection. If your site needs a login, a clock opened from the menu can
-  be blank on this test build (a fix for 15.0.9 is being prepared); opening it directly with a
-  token in the address should work.</li>
+  after the page loses its connection.</li>
+<li><strong>Clock views on a site that needs a login</strong>, if you open your site with an access token in its
+  address (<code>?token=…</code>): pick a clock from the menu. <strong>Working looks like:</strong> the clock shows your
+  readings. If the site refuses the clock (for example, the token does not allow reading), the page
+  should say it is not authorized rather than stay blank.</li>
 <li><strong>Watch faces</strong> that read your site: the change since the last reading (delta) and any bolus
   estimate should look right <strong>without</strong> any adjustment. If you had set up a watch face to multiply
   or divide by 18, undo that and tell us whether the numbers are right.</li>
