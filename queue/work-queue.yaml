@@ -2893,7 +2893,7 @@ items:
           browser, not by Nightscout's own mocha suite, which cannot see the drag
           clamps (RT-D3 answered 2026-09-24; the suite gap is RT-D3-SUITE on cut
           1). Recording it as a no-gate keeps it from reading as covered.
-    blocks_on: [BFQ-102, BFQ-114, BFQ-118, BFQ-119, RT-PR-8419, RT-PR-8530, BFQ-120, BFQ-126, BFQ-134, BFQ-106, BFQ-129, BFQ-125, BFQ-123, BFQ-122, BFQ-136, BFQ-128, RT-PR-8778, BFQ-80, BFQ-121, RT-PR-8781, BFQ-142, BFQ-146, RT-PR-8788, BFQ-108, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-94]
+    blocks_on: [BFQ-102, BFQ-114, BFQ-118, BFQ-119, RT-PR-8419, RT-PR-8530, BFQ-120, BFQ-126, BFQ-134, BFQ-106, BFQ-129, BFQ-125, BFQ-123, BFQ-122, BFQ-136, BFQ-128, RT-PR-8778, BFQ-80, BFQ-121, RT-PR-8781, BFQ-142, BFQ-146, RT-PR-8788, BFQ-108, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-94, BFQ-124, BFQ-127]
     evidence:
       - releases/cgm-remote-monitor-15.0.9/contents.md
       - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
@@ -5457,7 +5457,7 @@ items:
     branch: ''
     base: origin/dev@59430336
     worktree: externals/work/crm-advisory
-    state: gate-not-met
+    state: closed
     ships_to_operators_today: true
     blast_radius: >
       lib/server/query.js - the guard at :98, `!dateValue && !query.dateString`, and the
@@ -5527,6 +5527,10 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-02 (maintainer, relayed by session -d4): CLOSED as working as intended. The default
+      count and date window are bounds that a query can remove or reset on
+      demand; that a dateString key or an explicit window replaces them is the
+      intended behaviour. The item and its gate are kept as the record.
       Open, low severity, no fix branch. The gate is red by design until
       a fix lands. There is no privilege boundary here: `opts.deltaAgo`
       is a paging default whose own source comment is `// TODO:
@@ -6586,7 +6590,7 @@ items:
     branch: ""
     base: origin/dev@74fc6619
     worktree: externals/cgm-remote-monitor-official
-    state: not-started
+    state: blocked
     ships_to_operators_today: true
     blast_radius: >
       lib/data/calcdelta.js - compressArrays covers sgvs, treatments, mbgs, cals
@@ -6617,11 +6621,15 @@ items:
           bf3/quickpick-rebuild (evidence section 4). A unit gate would call
           calcdelta with a changed food array and assert the delta carries it; it
           does not exist yet.
-    blocks_on: []
+    blocks_on: [RT-0]
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/bf69-quickpick-rebuild-2026-09-23.md
     notes: >
+      2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9.
+      dev 74942ec6 still leaves food out of calcdelta's compressibleArrays
+      (lib/data/calcdelta.js:106); #8756 (BF-69) only rebuilds the quick-pick
+      chooser when the drawer opens.
       Filed 2026-09-23 from the BF-69 work (evidence section 8.1). An edited carb
       total on an existing quick pick takes the same path and was not run
       separately.
@@ -6694,7 +6702,7 @@ items:
     branch: ""
     base: origin/dev@74fc6619
     worktree: externals/cgm-remote-monitor-official
-    state: needs-decision
+    state: blocked
     ships_to_operators_today: true
     blast_radius: >
       lib/sandbox.js lastEntry, lib/plugins/timeago.js checkStatus. v1 entries
@@ -6718,11 +6726,14 @@ items:
           Characterised by tools/remedial/bf3/bf41-real-sandbox.js cases F7 and F8
           (it always exits 0 - a characterisation, not a gate). A gate needs the
           decided product first, because which way it should go red depends on it.
-    blocks_on: []
+    blocks_on: [RT-0]
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/bf41-future-reading-2026-09-23.md
     notes: >
+      2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9.
+      Long-standing, and an uploader sending future-dated data is visible to
+      the site operator to fix. Stays a known issue.
       Open, needs a design decision; 15.0.9 carries it as a known issue.
       Filed 2026-09-23 from the BF-41 measurement (F7/F8) when BF-41 was
       closed. One option is a notice for readings that arrive already
@@ -6767,7 +6778,7 @@ items:
     branch: ""
     base: origin/dev@a8888f0d
     worktree: externals/cgm-remote-monitor-official
-    state: gate-not-met
+    state: blocked
     ships_to_operators_today: true
     blast_radius: >
       lib/settings.js verifyThresholds(), four branches. Unconditional at
@@ -6813,11 +6824,15 @@ items:
           the value changes; the defect is that the only evidence is stdout.
           Grep over lib/client/ and views/ finds no surface that reports the
           rewrite, and building one is the fix, not the measurement.
-    blocks_on: []
+    blocks_on: [RT-0]
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/e4-queue-register-reconciliation-2026-09-15.md
     notes: >
+      2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9.
+      The default is mg/dL, and a site kept in mg/dL with thresholds entered
+      in mmol/L is unlikely without the site being meant as mmol/L. BF-67 and
+      BF-86 stay known issues in the 15.0.9 release notes.
       Open, no branch; it needs a product decision with a safety
       dimension before code (see review). The register's BF-67 text is
       inaccurate in one respect, measured while building the gate: a
@@ -10112,9 +10127,10 @@ items:
     title: "BF-124 - the treatment tooltip converts a BG already in display units (issue #5940)"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
-    base: origin/dev@4f705217
-    state: not-started
+    branch: bf/tooltip-bg-units
+    base: official/dev@74942ec6
+    worktree: externals/work/crm-bf124
+    state: in-progress
     pr: []
     ships_to_operators_today: true
     blast_radius: >
@@ -10155,6 +10171,9 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/triage-2026-09/tooltip-bg-units.js
     notes: >
+      2026-10-02 (maintainer, relayed by session -d4): FIX IN 15.0.9; in RT-0's blocks_on.
+      Local branch bf/tooltip-bg-units being prepared by -d4's agent in externals/work/crm-bf124 off
+      dev 74942ec6, not pushed.
       Filed 2026-09-25 from the GitHub issue triage (issue #5940, opened
       2020-09-01). Client-side only. The BG Check tooltip (addTreatmentCircles)
       prints the stored value and is not affected.
@@ -10304,9 +10323,10 @@ items:
     title: "BF-127 - clock views opened from the menu are blank for a token viewer on a site that denies anonymous reads (issue #7377)"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: origin/dev
-    base: origin/dev@4f705217
-    state: not-started
+    branch: bf/clock-token-link
+    base: official/dev@74942ec6
+    worktree: externals/work/crm-bf127
+    state: in-progress
     pr: []
     ships_to_operators_today: true
     blast_radius: >
@@ -10348,6 +10368,11 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/triage-2026-09/clock-token-link.js
     notes: >
+      2026-10-02 (maintainer, relayed by session -d4): FIX IN 15.0.9; in RT-0's blocks_on.
+      Local branch bf/clock-token-link being prepared by -d4's agent in externals/work/crm-bf127 off
+      dev 74942ec6, not pushed. Approach: the main page appends its own
+      ?token= to the Clock menu links, and the clock shows a message on a 401
+      instead of drawing nothing.
       Filed 2026-09-25 from the GitHub triage (issue #7377, opened
       2022-03-16). Shares its silence with the #7036 entry: a clock whose
       fetch is refused draws nothing and says nothing. Whether to copy a
@@ -11295,7 +11320,7 @@ items:
     repo: cgm-remote-monitor
     branch: ""
     base: official/dev@50bc1084
-    state: needs-decision
+    state: blocked
     pr: []
     ships_to_operators_today: true
     blast_radius: >
@@ -11314,10 +11339,12 @@ items:
           search and history 403, read by identifier 200, readable and
           denied. AndroidAPS's AAPSClient reads its running configuration
           by identifier (plugins/sync nsclientV3 LoadSettingsRunner).
-    blocks_on: []
+    blocks_on: [RT-0]
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9.
+      Needs more research on AndroidAPS's use of settings first.
       2026-10-02: the private fork of GHSA-25pr has a fix by Ruben Sutton
       (code2344, 28d1efa6, on v15.0.8): a shared requiredReadPermission
       that makes read by identifier and lastModified demand

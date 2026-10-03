@@ -41,17 +41,17 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 51 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-124, BFQ-127, BFQ-137, BFQ-145, BFQ-149, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
-| `in-progress` | 3 | BFQ-46, BFQ-ENV, OID-LAB |
-| `gate-not-met` | 9 | RT-REBASE, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
+| `not-started` | 48 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
+| `in-progress` | 5 | BFQ-46, BFQ-ENV, BFQ-124, BFQ-127, OID-LAB |
+| `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
-| `blocked` | 19 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, BFQ-72, BFQ-52, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-154, BFQ-156 |
+| `blocked` | 23 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, BFQ-72, BFQ-52, BFQ-93, BFQ-95, BFQ-67, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-152, BFQ-154, BFQ-156 |
 | `in-flight-upstream` | 1 | BFQ-09 |
 | `merged-upstream` | 83 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-125, BFQ-126, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
-| `needs-decision` | 8 | RT-PROPAGATION, RT-0, T30-RESEARCH, BFQ-95, ADV-XSS-META, ADV-CONFIG, BFQ-152, DEPENDABOT-CONFIG |
+| `needs-decision` | 6 | RT-PROPAGATION, RT-0, T30-RESEARCH, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG |
 | `done` | 4 | P0-TAG, DOC-VIEWS, DOC-LINKS, RT-SOAK |
 | `unsettled` | 1 | A7A-7 |
-| `closed` | 2 | BFQ-41, BFQ-141 |
+| `closed` | 3 | BFQ-71, BFQ-41, BFQ-141 |
 | `answered` | 1 | RT-D3 |
 
 ### Reaches an operator on today's release
@@ -1388,7 +1388,7 @@ that costs.
 | worktree | `externals/cgm-remote-monitor-official` |
 | semver | `minor` |
 | review | maintainer, and at least one human reviewer who is not the author. Release PR #8598 is authored by AndyLow91 and approved twice by the maintainer (2026-09-26 00:39Z) at head e3adc91d. Integration PR #8605 carries the modernization cuts (RT-3), not this release. |
-| blocks on | `BFQ-102`, `BFQ-114`, `BFQ-118`, `BFQ-119`, `RT-PR-8419`, `RT-PR-8530`, `BFQ-120`, `BFQ-126`, `BFQ-134`, `BFQ-106`, `BFQ-129`, `BFQ-125`, `BFQ-123`, `BFQ-122`, `BFQ-136`, `BFQ-128`, `RT-PR-8778`, `BFQ-80`, `BFQ-121`, `RT-PR-8781`, `BFQ-142`, `BFQ-146`, `RT-PR-8788`, `BFQ-108`, `RT-PR-8790`, `BFQ-151`, `BFQ-73`, `BFQ-153`, `BFQ-155`, `BFQ-CONFIG-DOCS`, `BFQ-94` |
+| blocks on | `BFQ-102`, `BFQ-114`, `BFQ-118`, `BFQ-119`, `RT-PR-8419`, `RT-PR-8530`, `BFQ-120`, `BFQ-126`, `BFQ-134`, `BFQ-106`, `BFQ-129`, `BFQ-125`, `BFQ-123`, `BFQ-122`, `BFQ-136`, `BFQ-128`, `RT-PR-8778`, `BFQ-80`, `BFQ-121`, `RT-PR-8781`, `BFQ-142`, `BFQ-146`, `RT-PR-8788`, `BFQ-108`, `RT-PR-8790`, `BFQ-151`, `BFQ-73`, `BFQ-153`, `BFQ-155`, `BFQ-CONFIG-DOCS`, `BFQ-94`, `BFQ-124`, `BFQ-127` |
 
 **Blast radius.** 15.0.9 is everything in origin/master..origin/dev: master 92d08342 (tag 15.0.8) to dev 7000eb18 (merge of #8786), measured 2026-09-27: 507 commits, 86 first-parent merges (all PR merges), 297 files, +28363/-1722. Among them the programme's backfix PRs (#8733-#8740 and #8743-#8746 from 2026-09-17 to 2026-09-21; #8748-#8753, #8755-#8757 and #8759 on 2026-09-23; #8760-#8762 and #8754 (with #8763 and #8765 folded in) on 2026-09-24; #8758 and #8766-#8770 on 2026-09-25; #8771-#8777, #8779, #8780, #8783 and #8784 on 2026-09-26; the test-only #8785 and #8786 (BF-147) on 2026-09-27), #8741, #8778 and #8781 from outside contributors on the same work, #8568, #8419 and #8530 carried by the 2026-09-25 decision, the D3 5.16 -> 7.9 chart migration (RT-D3), the opt-in debug logging change (#8726), the connector pin to exactly 0.1.0 (#8762), profile, treatment-query and clock fixes, report and chart fixes, dependency updates and translations. Crowdin #8730 is held out. The candidate is dev 7000eb18: RC run 020 ran on ce30a94d; #8785 changes only tests/boluswizardpreview.test.js, and #8786 changes two dependency overrides and nine locked versions (its own nine-cell CI; the production bundle is byte- identical). Reproduce with `git -C externals/cgm-remote-monitor-official log --first-parent --oneline origin/master..origin/dev` and `git diff --shortstat origin/master origin/dev`.
 
@@ -2133,7 +2133,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-20` | BF-20 - scalarize() converts a Date bound to an ISO string | `not-started` | `seam/t1-2-storage-interface` | n/a | 0 run + 1 no-gate |
 | `BFQ-CAP01` | CAP-01 - Nightscout cannot be served from a sub-path | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `BFQ-69` | BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing | `merged-upstream` | `bf3/quickpick-rebuild` | patch | 3 run + 1 no-gate |
-| `BFQ-71` | BF-71 - any dateString key drops the default date window, and the window is not a control | `gate-not-met` | `-` | patch | 2 run + 2 no-gate |
+| `BFQ-71` | BF-71 - any dateString key drops the default date window, and the window is not a control | `closed` | `-` | patch | 2 run + 2 no-gate |
 | `BFQ-72` | BF-72 - an unauthenticated $regex can spend minutes of database CPU | `blocked` | `bf/regex-limits` | minor | 1 run + 3 no-gate |
 | `BFQ-40` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion | `merged-upstream` | `-` | minor | 1 run |
 | `BFQ-41` | BF-41 - a reading dated ahead of the clock silences the stale-data alarm (closed, does not reproduce) | `closed` | `-` | n/a | 1 run + 1 no-gate |
@@ -2146,11 +2146,11 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-52` | BF-52 - an age reminder whose 20-minute window passed without a check was never sent | `blocked` | `bf3/age-push-once` | patch | 2 run + 1 no-gate |
 | `BFQ-90` | BF-90 - an alarm at a page with no reading throws in the client | `merged-upstream` | `bf3/alarm-no-reading` | patch | 1 run + 2 no-gate |
 | `BFQ-92` | BF-92 - a page with no glucose reading never presents a server alarm, including device alarms | `not-started` | `-` | minor | 0 run + 1 no-gate |
-| `BFQ-93` | BF-93 - food changes never reach an open page | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `BFQ-93` | BF-93 - food changes never reach an open page | `blocked` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-94` | BF-94 - a kept profile instance can return a temp basal that has been replaced | `merged-upstream` | `bf/profile-temp-cache` | patch | 0 run + 1 no-gate |
-| `BFQ-95` | BF-95 - an uploader clock running ahead delays the stale-data alarm | `needs-decision` | `-` | minor | 0 run + 1 no-gate |
+| `BFQ-95` | BF-95 - an uploader clock running ahead delays the stale-data alarm | `blocked` | `-` | minor | 0 run + 1 no-gate |
 | `BFQ-96` | BF-96 - the headless test fixture's bundle cache key is an un-normalised path | `not-started` | `-` | n/a | 0 run + 1 no-gate |
-| `BFQ-67` | BF-67, BF-86 - alarm thresholds quietly changed, or quietly kept when they cannot work | `gate-not-met` | `-` | minor | 1 run + 1 no-gate |
+| `BFQ-67` | BF-67, BF-86 - alarm thresholds quietly changed, or quietly kept when they cannot work | `blocked` | `-` | minor | 1 run + 1 no-gate |
 | `ADV-RETRO` | GHSA-gjhc - loadRetro serves devicestatus to any socket (BF-79) | `merged-upstream` | `bf/ws-loadretro-auth` | patch | 2 run + 1 no-gate |
 | `ADV-ALARM` | GHSA-8849 - /alarm broadcasts to the whole namespace (BF-75, BF-76) | `merged-upstream` | `bf/alarm-socket-scope` | minor | 2 run + 2 no-gate |
 | `ADV-XSS-META` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | `needs-decision` | `-` | n/a | 2 run + 1 no-gate |
@@ -2180,10 +2180,10 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-121` | BF-121 - two carb entries at the same time are stored as one, and the carbs of one are lost (issue #8185) | `merged-upstream` | `bf/same-time-treatments` | minor | 1 run + 3 no-gate |
 | `BFQ-122` | BF-122 - records written, changed or deleted through API v1 never appear in API v3 history (issue #8244); BF-135 - a record AndroidAPS deletes keeps counting | `merged-upstream` | `bf/v1-writes-v3-history` | minor | 2 run + 2 no-gate |
 | `BFQ-123` | BF-123 - an AndroidAPS Profile Switch percentage is ignored in the basal, ISF and carb ratio Nightscout shows (issue #7771) | `merged-upstream` | `bf/profile-switch-percentage` | patch | 1 run + 2 no-gate |
-| `BFQ-124` | BF-124 - the treatment tooltip converts a BG already in display units (issue #5940) | `not-started` | `-` | patch | 1 run + 1 no-gate |
+| `BFQ-124` | BF-124 - the treatment tooltip converts a BG already in display units (issue #5940) | `in-progress` | `bf/tooltip-bg-units` | patch | 1 run + 1 no-gate |
 | `BFQ-125` | BF-125 - IFTTT Maker alarm events use translated level names; a failed call re-sends every check (issue #8104) | `merged-upstream` | `bf/maker-level-names` | patch | 1 run + 1 no-gate |
 | `BFQ-126` | BF-126 - an authorization subject without a name ends the server at every boot (issue #7110) | `merged-upstream` | `bf/authsubject-nameless` | patch | 1 run + 1 no-gate |
-| `BFQ-127` | BF-127 - clock views opened from the menu are blank for a token viewer on a site that denies anonymous reads (issue #7377) | `not-started` | `origin/dev` | patch | 1 run + 1 no-gate |
+| `BFQ-127` | BF-127 - clock views opened from the menu are blank for a token viewer on a site that denies anonymous reads (issue #7377) | `in-progress` | `bf/clock-token-link` | patch | 1 run + 1 no-gate |
 | `BFQ-128` | BF-128 - /pebble on an mmol site returns the delta in mmol when mg/dL is asked for (issue #6220); BF-138 - /pebble in the other units computes the Bolus Wizard Preview against the wrong settings; BF-139 - /pebble scales readings other requests share | `merged-upstream` | `bf/pebble-delta-units` | patch | 1 run + 2 no-gate |
 | `BFQ-136` | BF-136 - API v3 refuses an AndroidAPS write that lands on a record written through v1 (Field app cannot be modified), and AndroidAPS drops it | `merged-upstream` | `bf/api3-app-field-v1-records` | patch | 1 run + 3 no-gate |
 | `BFQ-80` | BF-80 - an alarm viewer with no credential is held by the failed-login delay of its address (the cost of BF-75's fix) | `merged-upstream` | `bf/alarm-anonymous-no-delay` | patch | 1 run + 2 no-gate |
@@ -2194,7 +2194,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-151` | BF-151 - one /api/v1/times or /slice request can block the server for seconds (brace expansion has no bound), for 15.0.9 | `merged-upstream` | `bf/braces-expansion-cap` | patch | 1 run + 1 no-gate |
 | `BFQ-73` | BF-73 - error responses carry a stack trace and server paths in production, for 15.0.9 | `merged-upstream` | `bf/production-error-handler` | patch | 1 run + 1 no-gate |
 | `BFQ-153` | BF-153 - dependency advisories published after the 2026-09-27 triage (BF-147 style refresh) | `merged-upstream` | `bf/dependency-refresh-2026-10` | patch | 1 run + 1 no-gate |
-| `BFQ-152` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission | `needs-decision` | `-` | n/a | 0 run + 1 no-gate |
+| `BFQ-152` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission | `blocked` | `-` | n/a | 0 run + 1 no-gate |
 | `DEPENDABOT-CONFIG` | Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev | `needs-decision` | `-` | n/a | 1 run + 1 no-gate |
 | `BFQ-154` | BF-154 - node-forge 1.4.0 (pinned in overrides) is inside an advisory range with no fixed release | `blocked` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-155` | BF-155 - a failed storage read on GET /api/v1/activity ends the server process, for 15.0.9 | `merged-upstream` | `bf/activity-read-error` | patch | 1 run + 1 no-gate |
@@ -2724,7 +2724,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `gate-not-met` |
+| state (claimed) | `closed` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
 | base | `origin/dev@59430336` |
@@ -2753,7 +2753,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Open, low severity, no fix branch. The gate is red by design until a fix lands. There is no privilege boundary here: `opts.deltaAgo` is a paging default whose own source comment is `// TODO: discuss/consensus on right value/ENV?`, and the allowlisted find[date][$gte]=0 reaches the same records on the same authorisation. P0-K's review note and the register's BF-04 detail block say so; the merged PR #8743 body still describes it as a bypass. Why it is still worth fixing: two spellings of one intent are not equivalent when one silently removes the bound, and BFQ-72 is the case where the size of the scan a single anonymous request can cause is the entire finding. Filed 2026-09-21.
+**Notes.** 2026-10-02 (maintainer, relayed by session -d4): CLOSED as working as intended. The default count and date window are bounds that a query can remove or reset on demand; that a dateString key or an explicit window replaces them is the intended behaviour. The item and its gate are kept as the record. Open, low severity, no fix branch. The gate is red by design until a fix lands. There is no privilege boundary here: `opts.deltaAgo` is a paging default whose own source comment is `// TODO: discuss/consensus on right value/ENV?`, and the allowlisted find[date][$gte]=0 reaches the same records on the same authorisation. P0-K's review note and the register's BF-04 detail block say so; the merged PR #8743 body still describes it as a bypass. Why it is still worth fixing: two spellings of one intent are not equivalent when one silently removes the bound, and BFQ-72 is the case where the size of the scan a single anonymous request can cause is the entire finding. Filed 2026-09-21.
 
 ### `BFQ-72` &mdash; BF-72 - an unauthenticated $regex can spend minutes of database CPU
 
@@ -3176,7 +3176,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `blocked` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
 | base | `origin/dev@74fc6619` |
@@ -3185,6 +3185,7 @@ distinction is the only thing that makes the register mean anything - widening
 | review | maintainer |
 | ships to operators today | **yes** |
 | register | `BF-93` |
+| blocks on | `RT-0` |
 
 **Blast radius.** lib/data/calcdelta.js - compressArrays covers sgvs, treatments, mbgs, cals and devicestatus, deleteSkippables covers profiles, and food is in neither. The same on 15.0.8.
 
@@ -3201,7 +3202,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/60-research/remedial/bf69-quickpick-rebuild-2026-09-23.md`
 
-**Notes.** Filed 2026-09-23 from the BF-69 work (evidence section 8.1). An edited carb total on an existing quick pick takes the same path and was not run separately.
+**Notes.** 2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9. dev 74942ec6 still leaves food out of calcdelta's compressibleArrays (lib/data/calcdelta.js:106); #8756 (BF-69) only rebuilds the quick-pick chooser when the drawer opens. Filed 2026-09-23 from the BF-69 work (evidence section 8.1). An edited carb total on an existing quick pick takes the same path and was not run separately.
 
 ### `BFQ-94` &mdash; BF-94 - a kept profile instance can return a temp basal that has been replaced
 
@@ -3238,7 +3239,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `needs-decision` |
+| state (claimed) | `blocked` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
 | base | `origin/dev@74fc6619` |
@@ -3247,6 +3248,7 @@ distinction is the only thing that makes the register mean anything - widening
 | review | maintainer - a design decision before code |
 | ships to operators today | **yes** |
 | register | `BF-95` |
+| blocks on | `RT-0` |
 
 **Blast radius.** lib/sandbox.js lastEntry, lib/plugins/timeago.js checkStatus. v1 entries store no server-receipt time (lib/server/entries.js:118-126), so an arrival-based check needs new data.
 
@@ -3263,7 +3265,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/60-research/remedial/bf41-future-reading-2026-09-23.md`
 
-**Notes.** Open, needs a design decision; 15.0.9 carries it as a known issue. Filed 2026-09-23 from the BF-41 measurement (F7/F8) when BF-41 was closed. One option is a notice for readings that arrive already ahead of the clock (evidence section 5, option 3). BF-44 (BFQ-MINIMED) is a shipping source of forward skew.
+**Notes.** 2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9. Long-standing, and an uploader sending future-dated data is visible to the site operator to fix. Stays a known issue. Open, needs a design decision; 15.0.9 carries it as a known issue. Filed 2026-09-23 from the BF-41 measurement (F7/F8) when BF-41 was closed. One option is a notice for readings that arrive already ahead of the clock (evidence section 5, option 3). BF-44 (BFQ-MINIMED) is a shipping source of forward skew.
 
 ### `BFQ-96` &mdash; BF-96 - the headless test fixture's bundle cache key is an un-normalised path
 
@@ -3300,7 +3302,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `gate-not-met` |
+| state (claimed) | `blocked` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
 | base | `origin/dev@a8888f0d` |
@@ -3309,6 +3311,7 @@ distinction is the only thing that makes the register mean anything - widening
 | review | maintainer, and it is a decision with a safety dimension before it is code. Refusing a contradictory threshold set, correcting it and announcing it, and unit-checking the input are three different products. |
 | ships to operators today | **yes** |
 | register | `BF-67`, `BF-86` |
+| blocks on | `RT-0` |
 
 **Blast radius.** lib/settings.js verifyThresholds(), four branches. Unconditional at settings load on every deployment.
 
@@ -3327,7 +3330,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/60-research/remedial/e4-queue-register-reconciliation-2026-09-15.md`
 
-**Notes.** Open, no branch; it needs a product decision with a safety dimension before code (see review). The register's BF-67 text is inaccurate in one respect, measured while building the gate: a BG_LOW of 3.9 does not become bgTargetBottom - 1 = 79. The low check is `bgLow >= bgTargetBottom`, so a value far below the band passes through untouched and BG_LOW=3.9 is stored as 3.9. The low-side rewrite is real from the other direction (BG_LOW=90 -> 79). The residue no entry owns: a low alarm set to 3.9 mg/dL can never fire, and is stored with no warning of any kind. Also relevant to T3.0: the per-tenant configuration spec proposes a CHECK constraint as a backstop for this, and it is not one - a partial override leaves absent paths SQL NULL, the AND chain evaluates to NULL rather than FALSE, and PostgreSQL accepts the row.
+**Notes.** 2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9. The default is mg/dL, and a site kept in mg/dL with thresholds entered in mmol/L is unlikely without the site being meant as mmol/L. BF-67 and BF-86 stay known issues in the 15.0.9 release notes. Open, no branch; it needs a product decision with a safety dimension before code (see review). The register's BF-67 text is inaccurate in one respect, measured while building the gate: a BG_LOW of 3.9 does not become bgTargetBottom - 1 = 79. The low check is `bgLow >= bgTargetBottom`, so a value far below the band passes through untouched and BG_LOW=3.9 is stored as 3.9. The low-side rewrite is real from the other direction (BG_LOW=90 -> 79). The residue no entry owns: a low alarm set to 3.9 mg/dL can never fire, and is stored with no warning of any kind. Also relevant to T3.0: the per-tenant configuration spec proposes a CHECK constraint as a backstop for this, and it is not one - a partial override leaves absent paths SQL NULL, the AND chain evaluates to NULL rather than FALSE, and PostgreSQL accepts the row.
 
 ### `ADV-RETRO` &mdash; GHSA-gjhc - loadRetro serves devicestatus to any socket (BF-79)
 
@@ -4311,11 +4314,11 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
-| base | `origin/dev@4f705217` |
-| worktree | `-` |
+| branch | `bf/tooltip-bg-units` |
+| base | `official/dev@74942ec6` |
+| worktree | `externals/work/crm-bf124` |
 | semver | `patch` |
 | review | maintainer |
 | ships to operators today | **yes** |
@@ -4338,7 +4341,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `tools/lab/triage-2026-09/tooltip-bg-units.js`
 
-**Notes.** Filed 2026-09-25 from the GitHub issue triage (issue #5940, opened 2020-09-01). Client-side only. The BG Check tooltip (addTreatmentCircles) prints the stored value and is not affected.
+**Notes.** 2026-10-02 (maintainer, relayed by session -d4): FIX IN 15.0.9; in RT-0's blocks_on. Local branch bf/tooltip-bg-units being prepared by -d4's agent in externals/work/crm-bf124 off dev 74942ec6, not pushed. Filed 2026-09-25 from the GitHub issue triage (issue #5940, opened 2020-09-01). Client-side only. The BG Check tooltip (addTreatmentCircles) prints the stored value and is not affected.
 
 ### `BFQ-125` &mdash; BF-125 - IFTTT Maker alarm events use translated level names; a failed call re-sends every check (issue #8104)
 
@@ -4410,11 +4413,11 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `origin/dev` |
-| base | `origin/dev@4f705217` |
-| worktree | `-` |
+| branch | `bf/clock-token-link` |
+| base | `official/dev@74942ec6` |
+| worktree | `externals/work/crm-bf127` |
 | semver | `patch` |
 | review | maintainer |
 | ships to operators today | **yes** |
@@ -4437,7 +4440,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `tools/lab/triage-2026-09/clock-token-link.js`
 
-**Notes.** Filed 2026-09-25 from the GitHub triage (issue #7377, opened 2022-03-16). Shares its silence with the #7036 entry: a clock whose fetch is refused draws nothing and says nothing. Whether to copy a token into more URLs is a maintainer decision.
+**Notes.** 2026-10-02 (maintainer, relayed by session -d4): FIX IN 15.0.9; in RT-0's blocks_on. Local branch bf/clock-token-link being prepared by -d4's agent in externals/work/crm-bf127 off dev 74942ec6, not pushed. Approach: the main page appends its own ?token= to the Clock menu links, and the clock shows a message on a 401 instead of drawing nothing. Filed 2026-09-25 from the GitHub triage (issue #7377, opened 2022-03-16). Shares its silence with the #7036 entry: a clock whose fetch is refused draws nothing and says nothing. Whether to copy a token into more URLs is a maintainer decision.
 
 ### `BFQ-128` &mdash; BF-128 - /pebble on an mmol site returns the delta in mmol when mg/dL is asked for (issue #6220); BF-138 - /pebble in the other units computes the Bolus Wizard Preview against the wrong settings; BF-139 - /pebble scales readings other requests share
 
@@ -4769,7 +4772,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `needs-decision` |
+| state (claimed) | `blocked` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
 | base | `official/dev@50bc1084` |
@@ -4778,6 +4781,7 @@ distinction is the only thing that makes the register mean anything - widening
 | review | maintainer |
 | ships to operators today | **yes** |
 | register | `BF-152` |
+| blocks on | `RT-0` |
 
 **Blast radius.** lib/api3/generic/read/operation.js (or a per-collection permission map shared by search, history and read), if the decision is to gate.
 
@@ -4793,7 +4797,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-02: the private fork of GHSA-25pr has a fix by Ruben Sutton (code2344, 28d1efa6, on v15.0.8): a shared requiredReadPermission that makes read by identifier and lastModified demand api:settings:admin, as search and history do. That is the gating choice, which breaks AAPSClient followers with read tokens; it is not taken until the AndroidAPS question is answered. After 15.0.9. The question for the AndroidAPS developers: is settings meant to be readable by a follower's read token (then search and history are the inconsistent side), or admin-only (then AAPSClient needs a token change first)?
+**Notes.** 2026-10-02 (maintainer, relayed by session -d4): DEFERRED until after 15.0.9. Needs more research on AndroidAPS's use of settings first. 2026-10-02: the private fork of GHSA-25pr has a fix by Ruben Sutton (code2344, 28d1efa6, on v15.0.8): a shared requiredReadPermission that makes read by identifier and lastModified demand api:settings:admin, as search and history do. That is the gating choice, which breaks AAPSClient followers with read tokens; it is not taken until the AndroidAPS question is answered. After 15.0.9. The question for the AndroidAPS developers: is settings meant to be readable by a follower's read token (then search and history are the inconsistent side), or admin-only (then AAPSClient needs a token change first)?
 
 ### `DEPENDABOT-CONFIG` &mdash; Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev
 
