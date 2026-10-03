@@ -60,7 +60,7 @@ Tag dates in cgm-remote-monitor (`git tag --sort=creatordate`):
 | 15.0.4 | 2026-02-28 | 296 |
 | 15.0.7 | 2026-04-29 | 57 (15.0.5 and 15.0.6 in between) |
 | 15.0.8 | 2026-09-04 | 128 |
-| 15.0.9 | candidate `dev` `ca6fcfaf` (2026-10-02), not tagged; [how it was made](../../../releases/cgm-remote-monitor-15.0.9/colophon.md) | — |
+| 15.0.9 | candidate on `dev`, not tagged; current head in [ROADMAP §1](../ROADMAP.md#1-the-next-release-1509), [how it was made](../../../releases/cgm-remote-monitor-15.0.9/colophon.md) | — |
 
 Longest gaps between stable GitHub releases in the main projects
 (`gh api repos/<owner>/<repo>/releases`, measured 2026-09-29):
@@ -116,7 +116,7 @@ maintainer's direction. The steps that still need a person:
 | hand checks and real-system checks | the checks owed before the 15.0.9 tag ([contents](../../../releases/cgm-remote-monitor-15.0.9/contents.md#open-items-a-releaser-must-settle)); on 2026-09-27 no real Loop, Trio, AndroidAPS or xDrip+ setup had yet run against the candidate |
 | dependency alerts | measured on `dev` `7000eb18` (2026-09-27): 80 Dependabot alerts open against `master`, the last release, 74 of them already fixed on `dev` and closing only when a release ships; each remaining finding needs a person to establish whether Nightscout reaches it ([triage](../../../releases/cgm-remote-monitor-15.0.9/contents.md#npm-audit-and-dependabot-triage)) |
 | backlog | 35 open pull requests (18 opened in 2026, the oldest in 2021) and 102 open issues in cgm-remote-monitor (`gh pr list`, `gh issue list`, 2026-09-27) |
-| the 15.0.9 release itself | [how 15.0.9 was made](../../../releases/cgm-remote-monitor-15.0.9/colophon.md): merges, commits, tests, defect arrival and process controls, measured on `ca6fcfaf` |
+| the 15.0.9 release itself | [how 15.0.9 was made](../../../releases/cgm-remote-monitor-15.0.9/colophon.md): merges, commits, tests, defect arrival and process controls, measured on the candidate head it names |
 
 **Who pays for this time.** Some of the people doing this work are paid for part of their time by
 the commercial hosts they work for, on terms each host sets; those arrangements differ in scope,

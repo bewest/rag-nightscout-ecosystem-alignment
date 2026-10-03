@@ -84,7 +84,7 @@ could not be established that way is listed in §5 rather than given a date.*
 | 2026-04-29 | cgm-remote-monitor 15.0.7 ships the MongoDB 5 driver (#8421); #7344 is closed as superseded on 2026-05-01 | tags; GitHub |
 | 2026-09-04 | cgm-remote-monitor 15.0.8 is tagged | tags |
 | 2026-09-24 | nightscout-connect 0.1.0 is released | tags |
-| 2026-10-02 | the 15.0.9 candidate is `dev` `ca6fcfaf`, not tagged ([how 15.0.9 was made](../../../releases/cgm-remote-monitor-15.0.9/colophon.md)) | `git log` |
+| 2026-09 to now | 15.0.9 is prepared as a release candidate on `dev`, not yet tagged; its current head and what it waits on are in [ROADMAP §1](../ROADMAP.md#1-the-next-release-1509), and how it was made in the [colophon](../../../releases/cgm-remote-monitor-15.0.9/colophon.md) | ROADMAP §1 |
 
 The cross-project release and contributor record for these years is in
 [ECOSYSTEM-EVIDENCE §3](ECOSYSTEM-EVIDENCE.md#3-releases-and-contributors-across-the-main-projects).
