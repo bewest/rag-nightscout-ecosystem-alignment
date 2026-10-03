@@ -4538,44 +4538,47 @@
 
 
 <h1 id="1509-integration-record">15.0.9 integration record<a class="headerlink" href="#1509-integration-record" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-02 at <code>2f1a2970</code>.</em></p>
+<p><em>Living document, last changed 2026-10-02 at <code>e9f85e91</code>.</em></p>
 <p><em>Contributor-facing. Living record of how the cgm-remote-monitor 15.0.9 candidate was assembled
 and tested. Item state is in <code>queue/work-queue.yaml</code> (<code>RT-0</code>); defect facts are in the
 <a href="nightscout-backfix-register.html">backfix register</a>; release contents are in
 <a href="../../../releases/cgm-remote-monitor-15.0.9/contents.html">releases/cgm-remote-monitor-15.0.9</a>.
 Several units fix defects that are live on the shipping release (15.0.8, <code>official/master</code>
 <code>92d08342</code>), so this record describes mechanisms only.</em></p>
-<p><strong>Where the candidate stands, 2026-10-02.</strong> The candidate is <code>official/dev</code> <code>ca6fcfaf</code> (tree
-<code>0e38a5a7</code>, package version 15.0.9), merged 2026-10-02 18:09Z. 15.0.8..<code>ca6fcfaf</code>: 525 commits, 93
-first-parent merges, 303 files, +29620/−1875 (<code>git rev-list --count</code>, <code>--first-parent --count</code> and <code>git diff --shortstat</code>
-<code>official/master official/dev</code>). There is no <code>15.0.9</code> tag. Every PR decided for 15.0.9 is merged;
+<p><strong>Where the candidate stands, 2026-10-03.</strong> The candidate is <code>official/dev</code> <code>74942ec6</code> (tree
+<code>5671b8d3</code>, package version 15.0.9), merged 2026-10-03 00:04Z. 15.0.8..<code>74942ec6</code>: 537 commits, 95
+first-parent merges, 307 files, +29757/−1931 (<code>git rev-list --count</code>, <code>--first-parent --count</code> and <code>git diff --shortstat</code>
+<code>official/master official/dev</code>). There is no <code>15.0.9</code> tag. Every PR decided for 15.0.9 is merged except the fixes for BF-124 and BF-127, decided 2026-10-02 and on branches being prepared (queue <code>BFQ-124</code>, <code>BFQ-127</code>);
 Crowdin #8730 (BF-132) is held out.</p>
 <ul>
 <li><strong>Current full run: run 020 on <code>ce30a94d</code> (2026-09-27).</strong> 3473/0/3 (passing/failing/pending) in
   all six cells, Node 20/22/24 × MongoDB 4.4.24 and 7.0.43; probes; break-its of #8784; a compressed
   A/B soak against 15.0.8. It has not been repeated on a later head.</li>
-<li><strong>Merged after run 020:</strong> #8785, #8786, #8788, #8790, #8791, #8793, #8794, #8795 and #8796, each checked
+<li><strong>Merged after run 020:</strong> #8785, #8786, #8788, #8790, #8791, #8793, #8794, #8795, #8796, #8799 and #8800, each checked
   on its own; see <a href="#after-run-020">After run 020</a>.</li>
-<li><strong>Full suite on the candidate tree, one cell:</strong> #8796's head <code>e20b66ba</code> has the same tree as
-  <code>ca6fcfaf</code> (<code>0e38a5a7</code>). On it the full suite gave 3534/0/4 (Node 22.23.2, MongoDB 7.0.43).</li>
-<li><strong>Next run:</strong> the full six-cell run on <code>ca6fcfaf</code>.</li>
+<li><strong>Full suite on the candidate tree, one cell:</strong> #8800's head <code>a06e75d6</code> has the same tree as
+  <code>74942ec6</code> (<code>5671b8d3</code>). On it the full suite gave 3538/0/4 (Node 24.15.0, MongoDB 7.0.43,
+  2026-10-02).</li>
+<li><strong>Next run:</strong> the full six-cell run on <code>74942ec6</code>.</li>
 <li><strong>Real-time soak (RT-SOAK):</strong> done on real sites, by the maintainer's decision of 2026-09-30; the
   lab's 72 h soak was not run. Reports: as of 2026-09-29, one Loop, one Trio and one AndroidAPS user
   ran <code>7000eb18</code> for about two days with no errors; on 2026-10-02 the maintainer reported AndroidAPS,
   Trio and Loop users of the <code>dev</code> branch seeing stable, unsurprising behaviour all week. No rig
   count or duration is recorded beyond that.</li>
 <li><strong><code>npm audit</code> on <code>25fc41d9</code></strong> (2026-10-02 17:31Z, npm 11.12.1, <code>--package-lock-only</code>, counting
-  packages with a finding): 10, 2 high; 8 with <code>--omit=dev</code>. #8796 changes no package file, so the
-  figures stand for <code>ca6fcfaf</code>. The 2 high are one advisory against
+  packages with a finding): 10, 2 high; 8 with <code>--omit=dev</code>. #8796, #8799 and #8800 change no package
+  file, so the figures stand for <code>74942ec6</code>. The 2 high are one advisory against
   <code>node-forge</code> (GHSA-86w9-cpqp-85rv, reviewed by GitHub 2026-10-01, no fixed release), filed
   as BF-154 (low: Nightscout does not call the affected function, read from the code); the other 8
   are triaged. Triage:
   <a href="../../../releases/cgm-remote-monitor-15.0.9/contents.html#npm-audit-and-dependabot-triage">contents</a>.</li>
-<li><strong>Still owed before the tag:</strong> the six-cell run on <code>ca6fcfaf</code>; the browser hand checks listed under
+<li><strong>Still owed before the tag:</strong> the fixes for BF-124 and BF-127, decided for 15.0.9 on 2026-10-02,
+  on branches being prepared (queue <code>BFQ-124</code>, <code>BFQ-127</code>); the six-cell run on the final head; the browser hand checks listed under
   <a href="#what-the-current-run-does-not-cover">What the current run does not cover</a>; the version class of
-  #8772, #8775 and #8780; re-approval of the release PR #8598 at <code>ca6fcfaf</code> (its two approvals
+  #8772, #8775 and #8780; re-approval of the release PR #8598 at <code>74942ec6</code> (its two approvals
   were given on <code>e3adc91d</code>); the tag, by the maintainer. The release notes name BF-154 (<code>node-forge</code>) under Known issues (decided 2026-10-02). #8598's head
-  is <code>ca6fcfaf</code>; its CI there: 27 checks passed, 3 skipped (read 2026-10-02 18:15Z). The release notes and tag message are drafted on <code>ca6fcfaf</code>.</li>
+  is <code>74942ec6</code>; its CI there: 27 checks passed, 3 skipped (read 2026-10-03 00:21Z). The release notes and tag
+  message are drafted on <code>74942ec6</code>.</li>
 </ul>
 <p>This record has five parts:</p>
 <ul>
@@ -4678,6 +4681,22 @@ each was checked on its own, as below. Each PR's own CI on GitHub passed.</p>
 <td><code>lib/api/activity/index.js</code>, <code>lib/api/profile/index.js</code></td>
 <td>full suite 3534/0/4 on the same tree, one cell</td>
 </tr>
+<tr>
+<td>#8799</td>
+<td><code>f105f688</code></td>
+<td>2026-10-02 23:58Z</td>
+<td>BF-46, BF-48 to BF-51, BF-74, BF-78, BF-81 (documentation)</td>
+<td><code>azuredeploy.json</code> (the Azure deployment template); otherwise README and the API v3 swagger text</td>
+<td>CI 14 passed, 2 skipped; branch full suite 3534/0/4</td>
+</tr>
+<tr>
+<td>#8800</td>
+<td><code>74942ec6</code></td>
+<td>2026-10-03 00:04Z</td>
+<td>BF-94</td>
+<td><code>lib/profilefunctions.js</code> (browser and server)</td>
+<td>full suite 3538/0/4 on the same tree, one cell; CI 14 passed, 2 skipped</td>
+</tr>
 </tbody>
 </table>
 <h3 id="8785-295f1177">#8785, <code>295f1177</code><a class="headerlink" href="#8785-295f1177" title="Permanent link">&para;</a></h3>
@@ -4771,6 +4790,25 @@ adds <code>tests/api.read-storage-failure.test.js</code>. BF-155 is live on 15.0
 given here. Checks on <code>e20b66ba</code>: full suite 3534/0/4 (Node 22.23.2, MongoDB 7.0.43, one cell).</p>
 <h1 id="8796s-ci-14-passed-2-skipped-apiv1food-and-apiv1profile-answer-null-with-a-200-on-a">8796's CI 14 passed, 2 skipped. <code>/api/v1/food</code> and <code>/api/v1/profile</code> answer <code>null</code> with a 200 on a<a class="headerlink" href="#8796s-ci-14-passed-2-skipped-apiv1food-and-apiv1profile-answer-null-with-a-200-on-a" title="Permanent link">&para;</a></h1>
 <p>failed read, which does not end the process; that is left for a later change.</p>
+<h3 id="8799-documentation-f105f688">#8799 (documentation), <code>f105f688</code><a class="headerlink" href="#8799-documentation-f105f688" title="Permanent link">&para;</a></h3>
+<h1 id="8799-merged-into-dev-as-f105f688-2026-10-02-2358z-head-e42144ff-tree-dbe5eca0-the-same">8799 merged into <code>dev</code> as <code>f105f688</code> (2026-10-02 23:58Z, head <code>e42144ff</code>, tree <code>dbe5eca0</code>, the same<a class="headerlink" href="#8799-merged-into-dev-as-f105f688-2026-10-02-2358z-head-e42144ff-tree-dbe5eca0-the-same" title="Permanent link">&para;</a></h1>
+<p>tree as its head). README and <code>azuredeploy.json</code> describe the settings the code reads: the API v3
+settings, including the <code>API3_AUTOPRUNE_&lt;collection&gt;</code> settings that delete older records (BF-46),
+the webhook settings (BF-48), the HSTS setting's spelling (BF-49), <code>ENTRIES_COLLECTION</code> (BF-50), the
+Azure template's Node default (BF-51), the default roles and the login prompt (BF-78, BF-81); the API
+v3 swagger text states that <code>settings</code> records are stored as sent (BF-74). No JavaScript file
+changes. Checks: the branch full suite 3534/0/4 (one cell); #8799's CI 14 passed, 2 skipped.</p>
+<h3 id="8800-bf-94-74942ec6">#8800 (BF-94), <code>74942ec6</code><a class="headerlink" href="#8800-bf-94-74942ec6" title="Permanent link">&para;</a></h3>
+<h1 id="8800-merged-into-dev-as-74942ec6-2026-10-03-0004z-head-a06e75d6-tree-5671b8d3-the-same">8800 merged into <code>dev</code> as <code>74942ec6</code> (2026-10-03 00:04Z, head <code>a06e75d6</code>, tree <code>5671b8d3</code>, the same<a class="headerlink" href="#8800-merged-into-dev-as-74942ec6-2026-10-03-0004z-head-a06e75d6-tree-5671b8d3-the-same" title="Permanent link">&para;</a></h1>
+<p>tree as its head; <code>a06e75d6</code> is the fix <code>2a64c500</code> with <code>dev</code> <code>f105f688</code> merged in). The browser kept
+the last temp basal it looked up in a module-level variable, so an open page went on showing a temp
+basal that AndroidAPS (API v3) or Trio had shortened or cancelled until the temp's original end.
+<code>lib/profilefunctions.js</code> now keeps it per instance and resets it in <code>updateTreatments</code>; the new
+<code>tests/profile-temp-cache.test.js</code> covers it. Measured in Chromium (<code>tools/lab/bf94-browser</code>):
+<code>ca6fcfaf</code> and <code>v15.0.8</code> show the stale temp alike, and the fixed tree clears every stale case in
+that harness. Checks: full suite 3538/0/4 on <code>a06e75d6</code> (Node 24.15.0, MongoDB 7.0.43,
+one cell, 2026-10-02) and on <code>2a64c500</code> (Node 22.23.2); #8800's CI 14 passed, 2 skipped. A check by
+hand in a browser is owed (below).</p>
 <h3 id="browser-hand-check-gate-on-a143d507">Browser hand-check gate on <code>a143d507</code><a class="headerlink" href="#browser-hand-check-gate-on-a143d507" title="Permanent link">&para;</a></h3>
 <p><code>node tools/queue/gates/client-unchanged-since-hand-check.js</code> on <code>a143d507</code> names 16 paths that
 differ on the browser side from the hand-checked <code>8d797ba4</code>: <code>.gitignore</code>, <code>.nycrc.json</code> (tooling),
@@ -4780,7 +4818,9 @@ differ on the browser side from the hand-checked <code>8d797ba4</code>: <code>.g
 <code>lib/report_plugins/daytoday.js</code>, <code>lib/settings.js</code>, <code>static/css/food.css</code> (#8790) and
 <code>views/index.html</code>, plus the package entries #8786 and #8794 change (the bundle is byte-identical, so
 those need no hand check). #8795 and #8796, merged after this reading, change only server files, and
-the gate on <code>ca6fcfaf</code> (2026-10-02) names the same 16 paths.</p>
+the gate on <code>ca6fcfaf</code> (2026-10-02) names the same 16 paths. On <code>74942ec6</code> (2026-10-03) it names 17:
+the same 16 and <code>azuredeploy.json</code> (#8799, the Azure deployment template, not browser code).
+<code>lib/profilefunctions.js</code> was already in the list; #8800 changes it again.</p>
 <h2 id="current-run">Current run<a class="headerlink" href="#current-run" title="Permanent link">&para;</a></h2>
 <p><strong>2026-09-27. Run 020: <code>origin/dev</code> <code>ce30a94d</code>, run 019's <code>699eb5fa</code> plus #8784 (BF-146, which
 also fixes BF-133).</strong></p>
@@ -6076,9 +6116,9 @@ compared:</p>
 </ul>
 <h2 id="what-the-current-run-does-not-cover">What the current run does not cover<a class="headerlink" href="#what-the-current-run-does-not-cover" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>The merges after run 020</strong> (#8785 to #8796) are covered by their own checks, listed under
+<li><strong>The merges after run 020</strong> (#8785 to #8800) are covered by their own checks, listed under
   <a href="#after-run-020">After run 020</a>, and the candidate tree by one full-suite cell, not by a full
-  six-cell run. That run is owed on <code>ca6fcfaf</code>.</li>
+  six-cell run. That run is owed on <code>74942ec6</code>.</li>
 <li><strong>The lab's 24 to 72 h real-time soak was not run.</strong> Real sites running the candidate stand in for
   it (maintainer, 2026-09-30). The reports recorded are those under "Where the candidate stands" at the top of this
   record; no other data from those sites is in it. The compressed A/B soak is under <a href="#soak-toolslabrc-soak">Soak</a>.</li>
@@ -6087,11 +6127,12 @@ compared:</p>
   <a href="../../../releases/cgm-remote-monitor-15.0.9/contents.html#npm-audit-and-dependabot-triage">contents</a>.</li>
 <li><strong>Browser hand checks.</strong> The browser walk ran on <code>ff93fa94</code> (2026-09-26,
   <a href="../../60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.html">browser record</a>); the gate on
-  <code>ca6fcfaf</code> names the same 16 paths as on <code>a143d507</code> (see <a href="#browser-hand-check-gate-on-a143d507">After run 020</a>). Still owed:
+  <code>74942ec6</code> names the 16 paths it named on <code>a143d507</code> and <code>azuredeploy.json</code> (see <a href="#browser-hand-check-gate-on-a143d507">After run 020</a>). Still owed:
   a remote bolus; LoopCaregiver from its own app; clock views; the pump pill; alarm level labels; the
   Bolus Wizard Preview pill and reports during a percentage profile switch; the Day to Day report
   (#8788, smoke checklist section 3, "Day to Day events with a duration past midnight"); the Food Editor on a touch screen (#8790, smoke checklist
-  section 5). #8784 changes the page data for late or edited v3 treatments (they now carry <code>mills</code>,
+  section 5); an AndroidAPS (API v3) or Trio temp basal cancelled while a page is open (#8800, BF-94;
+  <code>tools/lab/bf94-browser</code> drives it in Chromium). #8784 changes the page data for late or edited v3 treatments (they now carry <code>mills</code>,
   so the page's own IOB and COB count them); that was measured in the page data sent over the socket
   by #8784's test, not in a browser.</li>
 <li><strong>BF-146 beyond the server's in-memory data</strong> was not measured: chart placement (the renderer

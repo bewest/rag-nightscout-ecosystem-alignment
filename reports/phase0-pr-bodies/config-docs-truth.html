@@ -1520,6 +1520,8 @@
       
         
       
+        
+      
     
     
     
@@ -2386,6 +2388,39 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#bf-81--the-two-authorization-shaped-settings-1c09b22d" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BF-81 · the two authorization-shaped settings (1c09b22d)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bf-78--careportal-as-a-default-role-b09c0af9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BF-78 · careportal as a default role (b09c0af9)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bf-74--the-api-v3-settings-collection-e42144ff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BF-74 · the API v3 settings collection (e42144ff)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2821,6 +2856,34 @@
   
   
     <li class="md-nav__item">
+      <a href="profile-temp-cache.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Profile temp cache
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="qs-6.16.html" class="md-nav__link">
         
   
@@ -3029,12 +3092,6 @@
       
         
           
-        
-      
-        
-      
-        
-      
         
       
         
@@ -3736,6 +3793,39 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#bf-81--the-two-authorization-shaped-settings-1c09b22d" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BF-81 · the two authorization-shaped settings (1c09b22d)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bf-78--careportal-as-a-default-role-b09c0af9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BF-78 · careportal as a default role (b09c0af9)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bf-74--the-api-v3-settings-collection-e42144ff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BF-74 · the API v3 settings collection (e42144ff)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3810,9 +3900,9 @@
 
   <h1>Config docs truth</h1>
 
-<p><em>Living document, last changed 2026-10-02 at <code>54c88cd4</code>.</em></p>
-<!-- Draft body, branch bf/config-docs-truth at c102d98f (five commits on dev ca6fcfaf). Local only: not pushed, no PR opened. This comment is hidden on GitHub. -->
-<p>The documentation and configuration information now match what the code reads: the API v3 settings (BF-46), the webhook plugin's settings (BF-48), the HSTS sub-domains spelling (BF-49), the entries collection name (BF-50) and the Azure template's Node version (BF-51). Five commits on <code>dev</code> <code>ca6fcfaf</code>, one per register id. No <code>.js</code> file changes, so Nightscout's behaviour does not change, with one exception: a new Azure deployment from <code>azuredeploy.json</code> now gets the Node version its form asks for.</p>
+<p><em>Living document, last changed 2026-10-02 at <code>4da4e21d</code>.</em></p>
+<!-- Draft body, branch bf/config-docs-truth at e42144ff (eight commits on dev ca6fcfaf). Local only: not pushed, no PR opened. This comment is hidden on GitHub. -->
+<p>The documentation and configuration information now match what the code reads: the API v3 settings (BF-46), the webhook plugin's settings (BF-48), the HSTS sub-domains spelling (BF-49), the entries collection name (BF-50), the Azure template's Node version (BF-51), the API v3 <code>settings</code> collection (BF-74), and the default roles and login prompt (BF-78 and BF-81, the documentation half). Eight commits on <code>dev</code> <code>ca6fcfaf</code>, one per register id. No <code>.js</code> file changes, so Nightscout's behaviour does not change, with one exception: a new Azure deployment from <code>azuredeploy.json</code> now gets the Node version its form asks for.</p>
 <h2 id="what-changes-for-you">What changes for you<a class="headerlink" href="#what-changes-for-you" title="Permanent link">&para;</a></h2>
 <p><em>A plain-language summary for people who run their own Nightscout site, for themselves or for a family member. Nothing here is medical advice.</em></p>
 <p><strong>What was wrong.</strong> Some settings that Nightscout reads were not written down anywhere an operator would look, and some that were written down were wrong:</p>
@@ -3822,9 +3912,12 @@
 <li><strong>HSTS sub-domains setting.</strong> The setting is <code>SECURE_HSTS_HEADER_INCLUDESUBDOMAINS</code>, with <code>INCLUDESUBDOMAINS</code> as one word. Spelled with an underscore before <code>SUBDOMAINS</code>, it does nothing. The README already used the working spelling but did not say the other one fails.</li>
 <li><strong><code>MONGODB_COLLECTION</code>.</strong> The README listed it as a required setting. Nightscout has never read it. The settings that do pick the collection for CGM entries are <code>ENTRIES_COLLECTION</code> and the older <code>MONGO_COLLECTION</code>.</li>
 <li><strong>Azure one-click deployment.</strong> The template asked for a Node version but always used Node 8.11.1, whatever you entered. The README told Azure users to use Node 16.16.0. Neither version is supported any more.</li>
+<li><strong>Who can see your data without logging in.</strong> That is decided by <code>AUTH_DEFAULT_ROLES</code> alone. A second setting, <code>AUTHENTICATION_PROMPT_ON_LOAD</code>, only makes the web page ask for a login when it opens; it does not stop anyone seeing your data. The README did not mention the second setting at all, and did not say which one controls access.</li>
+<li><strong>The <code>careportal</code> role.</strong> The README said <code>AUTH_DEFAULT_ROLES</code> accepts "any valid role name". Setting it to <code>careportal</code>, or <code>denied careportal</code>, looks as if it lets family members add treatments without a token while keeping your data private. It does neither: every such entry is refused, and Nightscout gives no warning. The same is true of the <code>devicestatus-upload</code> and <code>activity</code> roles. Visitors can add treatments without a token only with <code>readable careportal</code>, which also lets anyone read all your data. The old <code>TREATMENTS_AUTH=off</code> setting works by adding <code>careportal</code> to the same list.</li>
+<li><strong>API v3 <code>settings</code>.</strong> Apps can keep their own configuration in Nightscout's API v3 <code>settings</code> collection. Nightscout removes unsafe HTML from text written to the other API v3 collections, but stores <code>settings</code> exactly as sent. Nightscout's own pages never show it, so this matters only to apps that display it.</li>
 </ul>
-<p><strong>What this change does.</strong> The README now lists each of these settings with its default, the spellings Nightscout accepts, and what it does. For the <code>API3_AUTOPRUNE_</code> settings it says plainly what is deleted, when, and that it cannot be undone. The Azure template now uses the Node version on its form, which defaults to Node 22.</p>
-<p><strong>Do you need to do anything?</strong> Check whether any <code>API3_AUTOPRUNE_</code> setting is set on your site. Look in your hosting service's settings, which may be called Config Vars, environment variables or app settings. If one is set and you did not mean it to be, remove it and restart Nightscout. Records already deleted cannot be brought back by Nightscout, so if you need them, restore them from your own database backup. If you set <code>MONGODB_COLLECTION</code>, it never had any effect: your entries are in the collection named by <code>ENTRIES_COLLECTION</code> or <code>MONGO_COLLECTION</code>, or in <code>entries</code> if neither is set. Otherwise, no.</p>
+<p><strong>What this change does.</strong> The README now lists each of these settings with its default, the spellings Nightscout accepts, and what it does. For the <code>API3_AUTOPRUNE_</code> settings it says plainly what is deleted, when, and that it cannot be undone. The Azure template now uses the Node version on its form, which defaults to Node 22. The README now says that <code>AUTH_DEFAULT_ROLES</code> is the setting that controls access, lists each role Nightscout comes with and what it allows, says which combinations work, and documents <code>AUTHENTICATION_PROMPT_ON_LOAD</code> as a prompt only. It says that <code>settings</code> is stored as sent, so apps that display it must treat it as untrusted. Nightscout's behaviour does not change; a startup warning for a default role that does nothing is planned separately.</p>
+<p><strong>Do you need to do anything?</strong> Check whether any <code>API3_AUTOPRUNE_</code> setting is set on your site. Look in your hosting service's settings, which may be called Config Vars, environment variables or app settings. If one is set and you did not mean it to be, remove it and restart Nightscout. Records already deleted cannot be brought back by Nightscout, so if you need them, restore them from your own database backup. If you set <code>MONGODB_COLLECTION</code>, it never had any effect: your entries are in the collection named by <code>ENTRIES_COLLECTION</code> or <code>MONGO_COLLECTION</code>, or in <code>entries</code> if neither is set. If you set <code>AUTH_DEFAULT_ROLES</code> to <code>careportal</code>, <code>devicestatus-upload</code> or <code>activity</code>, alone or with <code>denied</code>, your data is private but those roles do nothing; to let visitors add treatments without a token you would have to use <code>readable careportal</code>, which makes your data readable by anyone with your site's address. If you set <code>AUTHENTICATION_PROMPT_ON_LOAD</code> to keep your data private, it does not: set <code>AUTH_DEFAULT_ROLES</code> to <code>denied</code> instead. Otherwise, no.</p>
 <h2 id="technical-detail">Technical detail<a class="headerlink" href="#technical-detail" title="Permanent link">&para;</a></h2>
 <h3 id="bf-46--the-api-v3-settings-ae41d611">BF-46 · the API v3 settings (<code>ae41d611</code>)<a class="headerlink" href="#bf-46--the-api-v3-settings-ae41d611" title="Permanent link">&para;</a></h3>
 <p>What the code reads, at <code>ca6fcfaf</code>:</p>
@@ -3854,6 +3947,67 @@
 <li>Node 20 reached end of life on 2026-04-30.</li>
 </ul>
 <p>The README's Azure note asked for <code>16.16.0</code>, which <code>engines</code> no longer allows. It now asks for <code>~22</code>, and its garbled first sentence is repaired. The template still parses as JSON. This is the one change here that affects a deployment: a new one-click Azure deployment gets the Node version on its form rather than 8.11.1. Existing Azure sites keep their own app settings.</p>
+<h3 id="bf-81--the-two-authorization-shaped-settings-1c09b22d">BF-81 · the two authorization-shaped settings (<code>1c09b22d</code>)<a class="headerlink" href="#bf-81--the-two-authorization-shaped-settings-1c09b22d" title="Permanent link">&para;</a></h3>
+<p>What the code reads, at <code>ca6fcfaf</code> (this branch changes no <code>.js</code>):</p>
+<ul>
+<li><code>lib/settings.js:39</code> <code>authDefaultRoles: 'readable'</code>; <code>lib/authorization/defaultroles.js:12-14</code> splits the value on commas, spaces and colons; <code>lib/authorization/index.js:19</code> parses it once at startup, and <code>:166-174</code> and <code>:240-241</code> give exactly those roles' permissions to a caller with no secret or token.</li>
+<li><code>lib/authorization/storage.js:231-239</code> ships seven roles: <code>admin</code> (<code>*</code>), <code>denied</code> (none), <code>status-only</code> (<code>api:status:read</code>), <code>readable</code> (<code>*:*:read</code>), <code>careportal</code> (<code>api:treatments:create</code>), <code>devicestatus-upload</code> (<code>api:devicestatus:create</code>), <code>activity</code> (<code>api:activity:create</code>). <code>:264-269</code> adds each one only when no stored role has that name, so a role of the same name created on the admin page replaces it.</li>
+<li><code>lib/api3/security.js:29-32</code>: API v3 answers 401 when there is no bearer token, so the default roles do not apply there while <code>API3_SECURITY_ENABLE</code> is on.</li>
+<li><code>lib/server/env.js:206-209</code>: <code>TREATMENTS_AUTH</code> set to <code>off</code> or <code>false</code> (any case, <code>readENVTruthy</code> <code>:245-249</code>) appends <code>' careportal'</code> to <code>authDefaultRoles</code> after the other settings are read. Measured in process: <code>TREATMENTS_AUTH=FALSE AUTH_DEFAULT_ROLES=denied</code> resolves to <code>"denied careportal"</code>.</li>
+<li><code>AUTHENTICATION_PROMPT_ON_LOAD</code>, <code>lib/settings.js:74,114</code> (default <code>false</code>, <code>mapTruthy</code>). It is read in two places. <code>lib/client/index.js:1166-1172</code>: when the alarm subscription fails, the page opens the login dialog. <code>lib/api3/alarmSocket.js:202-206</code>: a web <code>subscribe</code> without <code>secret</code> or <code>jwtToken</code> is answered with a failure instead of being resolved, which is what makes the page prompt. That path never calls <code>applyReadEntitlement</code>, so the connect-time admission at <code>:126-129</code>, which follows <code>AUTH_DEFAULT_ROLES</code>, is unchanged. Neither place grants or removes a permission. The README had no entry for this setting before this branch (<code>git log -S</code> finds none).</li>
+</ul>
+<p>The README's <code>AUTH_DEFAULT_ROLES</code> entry now says it is the access boundary, lists the seven roles with their permissions, and keeps the existing <code>denied</code> and <code>status-only</code> sentences. <code>TREATMENTS_AUTH</code> says it appends to the list. <code>AUTHENTICATION_PROMPT_ON_LOAD</code> gets an entry next to them. The <code>/alarm</code> socket protocol is not specified here; that is separate.</p>
+<h3 id="bf-78--careportal-as-a-default-role-b09c0af9">BF-78 · <code>careportal</code> as a default role (<code>b09c0af9</code>)<a class="headerlink" href="#bf-78--careportal-as-a-default-role-b09c0af9" title="Permanent link">&para;</a></h3>
+<p><code>lib/api/treatments/index.js:26</code> gates the whole router on <code>api:treatments:read</code>, before the create route at <code>:146</code>. <code>lib/api/devicestatus/index.js:48</code> and <code>lib/api/activity/index.js:25</code> do the same for their create routes (<code>:180</code>, <code>:106</code>). Measured in process at this branch's head (code identical to <code>ca6fcfaf</code>), anonymous requests, MongoDB 7.0.43:</p>
+<table>
+<thead>
+<tr>
+<th><code>AUTH_DEFAULT_ROLES</code></th>
+<th><code>POST /api/treatments/</code></th>
+<th><code>GET /api/treatments.json</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>readable</code></td>
+<td>401</td>
+<td>200</td>
+</tr>
+<tr>
+<td><code>careportal</code></td>
+<td>401</td>
+<td>401</td>
+</tr>
+<tr>
+<td><code>denied careportal</code></td>
+<td>401</td>
+<td>401</td>
+</tr>
+<tr>
+<td><code>denied</code></td>
+<td>401</td>
+<td>401</td>
+</tr>
+<tr>
+<td><code>readable careportal</code></td>
+<td>200</td>
+<td>200</td>
+</tr>
+<tr>
+<td>unset, <code>TREATMENTS_AUTH=off</code></td>
+<td>200</td>
+<td>200</td>
+</tr>
+<tr>
+<td><code>denied</code>, <code>TREATMENTS_AUTH=off</code></td>
+<td>401</td>
+<td>401</td>
+</tr>
+</tbody>
+</table>
+<p><code>devicestatus-upload</code> and <code>activity</code> alone: <code>POST /api/devicestatus/</code> and <code>POST /api/activity/</code> both 401; with <code>readable</code> added, each role's own create answers 200. The README says that these three roles do nothing as default roles unless <code>readable</code> is also listed, that the refusal is a 401 with no startup warning, and that <code>readable careportal</code> is the working combination and also opens reads. The boot warning decided on 2026-09-23 is code and is not made here.</p>
+<h3 id="bf-74--the-api-v3-settings-collection-e42144ff">BF-74 · the API v3 <code>settings</code> collection (<code>e42144ff</code>)<a class="headerlink" href="#bf-74--the-api-v3-settings-collection-e42144ff" title="Permanent link">&para;</a></h3>
+<p><code>lib/api3/shared/writePurifier.js:3-9</code> lists <code>devicestatus</code>, <code>entries</code>, <code>food</code>, <code>profile</code> and <code>treatments</code>; <code>lib/api3/index.js:67</code> enables those and <code>settings</code>. Create, update and patch call <code>purifyWritableDocument</code> (<code>create/operation.js:35</code>, <code>update/operation.js:32,47</code>, <code>patch/operation.js:27</code>), which returns a <code>settings</code> document untouched. Measured with the shipping purifier: a string <code>&lt;img src=x onerror=alert(1)&gt;</code> comes back as <code>&lt;img src="x" /&gt;</code> for the five collections and unchanged for <code>settings</code>. No file under <code>lib/client/</code>, <code>lib/report_plugins/</code>, <code>lib/admin_plugins/</code> or <code>views/</code> reads API v3 <code>settings</code>. The README's API v3 section gains a paragraph saying <code>settings</code> is app storage that Nightscout's pages do not show, stored as sent, so apps that display it must treat it as untrusted. The swagger <code>Settings</code> schema description (<code>swagger.yaml</code> and the same text in <code>swagger.json</code>) says the same and points at that section. Whether to purify <code>settings</code> is not decided here.</p>
 <h2 id="gates">Gates<a class="headerlink" href="#gates" title="Permanent link">&para;</a></h2>
 <p>The gates are <code>tools/queue/gates/config-surface-census.js</code> in the alignment repository, five arms. They ran with <code>--ref</code> and with <code>QUEUE_GATE_ROOT</code> pointing at this worktree, so that the <code>hsts</code> arm, which <code>require</code>s <code>lib/settings.js</code> from the working tree rather than from <code>--ref</code>, measures this branch.</p>
 <table>
@@ -3900,11 +4054,12 @@
 </table>
 <p>Each arm's control is green on both refs. To show that the README half of <code>api3</code> and <code>webhook</code> is met, both arms were re-run with <code>--envjs</code> pointing at a copy of <code>ca6fcfaf</code>'s <code>env.js</code> with the fourteen names appended as a comment. Against <code>ca6fcfaf</code>'s README, every name is still reported absent (10 of 10 and 4 of 4). Against this branch's README, none is (0 of 10, 0 of 4). The <code>api3</code> deletion check stays red either way.</p>
 <h2 id="tests">Tests<a class="headerlink" href="#tests" title="Permanent link">&para;</a></h2>
-<p>No test file is added or changed. No test reads <code>README.md</code> or <code>azuredeploy.json</code>. The one README-derived check, <code>tests/plugins.test.js</code>, reads the <code>ENABLE</code> feature list, and this branch does not touch it.</p>
+<p>No test file is added or changed. No test reads <code>README.md</code>, <code>azuredeploy.json</code> or the swagger files. The one README-derived check, <code>tests/plugins.test.js</code>, reads the <code>ENABLE</code> feature list, and this branch does not touch it.</p>
 <h3 id="validation-node-24150-mongodb-7043-in-a-dedicated-container">Validation (Node 24.15.0, MongoDB 7.0.43 in a dedicated container)<a class="headerlink" href="#validation-node-24150-mongodb-7043-in-a-dedicated-container" title="Permanent link">&para;</a></h3>
 <ul>
 <li><code>npm ci</code> clean.</li>
 <li>Full suite (<code>ci.test.env</code> form, at <code>c102d98f</code>): 3534 passing, 0 failing, 4 pending. The base <code>ca6fcfaf</code> was not re-run on this machine; no test was added or removed.</li>
+<li>Full suite again at <code>e42144ff</code>: 3534 passing, 0 failing, 4 pending.</li>
 <li><code>azuredeploy.json</code> and <code>lib/api3/swagger.json</code> parse as JSON, and <code>lib/api3/swagger.yaml</code> parses with <code>js-yaml</code>. The two swagger descriptions are identical, and <code>git diff --check</code> is clean.</li>
 </ul>
 <h2 id="open-points">Open points<a class="headerlink" href="#open-points" title="Permanent link">&para;</a></h2>
@@ -3912,6 +4067,7 @@
 <li><strong>The autoprune delete, unawaited (BF-156; a separate fix, after 15.0.9).</strong> Reproduced in process, without MongoDB, using the shipping <code>Collection</code> and <code>CachedCollectionStorage</code> with only the Mongo layer faked. <code>collection.js:157</code> passes a callback that <code>deleteManyOr</code> (async, one argument) never calls, so the "Auto-pruned N documents" line is never logged. When the delete rejects, the rejection is unhandled, and on Node 24 the process exits with code 1. A database error during an autoprune would therefore end the server. Recommended fix: <code>.then</code>/<code>.catch</code> on the returned promise. This is a code change and is not made here.</li>
 <li><strong>Routing <code>API3_*</code> and <code>WEBHOOK_*</code> through <code>env.js</code>.</strong> This is what the <code>api3</code> and <code>webhook</code> arms still measure. It is a configuration-surface change, and minor under semver.</li>
 <li><strong>An alias for <code>SECURE_HSTS_HEADER_INCLUDE_SUBDOMAINS</code>.</strong> This would be a one-line change in <code>lib/server/env.js</code>, not in <code>settings.js</code>. A deployment that already sets the underscored name would start sending <code>includeSubDomains</code>, so it changes behaviour, and it is left for a decision.</li>
+<li><strong>The BF-78 boot warning.</strong> Decided 2026-09-23: warn at startup when a default role does nothing, with no behaviour change. It is code, and comes later.</li>
 <li><strong>Azure <code>~22</code>.</strong> Not checked against a live Azure deployment: the runtimes Azure offers were not looked up. The <code>rt/cut1</code> line uses <code>~24</code>, and the two will meet when cut 1 is rebased.</li>
 </ul>
 

@@ -2639,11 +2639,11 @@
 
 
 <h1 id="how-1509-was-made">How 15.0.9 was made<a class="headerlink" href="#how-1509-was-made" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-02 at <code>e61032c5</code>.</em></p>
-<p><em>Contributor- and maintainer-facing. Living record, measured 2026-10-02 against cgm-remote-monitor
-<code>official/dev</code> <code>ca6fcfaf</code> (the 15.0.9 candidate, release PR #8598) and <code>official/master</code> <code>92d08342</code>
+<p><em>Living document, last changed 2026-10-02 at <code>e9f85e91</code>.</em></p>
+<p><em>Contributor- and maintainer-facing. Living record, measured 2026-10-03 against cgm-remote-monitor
+<code>official/dev</code> <code>74942ec6</code> (the 15.0.9 candidate, release PR #8598) and <code>official/master</code> <code>92d08342</code>
 (tag <code>15.0.8</code>, the shipping release), in <code>externals/cgm-remote-monitor-official</code> after
-<code>git fetch official</code>, and this repository at <code>a4a85fd1</code>; re-measure before quoting. Nothing here is
+<code>git fetch official</code>, and this repository at <code>4c39d082</code>; re-measure before quoting. Nothing here is
 tagged or released. What 15.0.9 contains is in <a href="contents.html">contents.md</a>, the maintainer's
 decisions in <a href="decisions.html">decisions.md</a>, defect facts in the
 <a href="../../docs/30-design/remedial/nightscout-backfix-register.html">backfix register</a>, and test runs in
@@ -2655,7 +2655,7 @@ current figures is <a href="../../docs/60-research/programme/paving-the-cowpaths
 range <code>R</code> is <code>official/master..official/dev</code>.</p>
 <h2 id="1-what-1509-is">1. What 15.0.9 is<a class="headerlink" href="#1-what-1509-is" title="Permanent link">&para;</a></h2>
 <p>15.0.9 is the next release of Nightscout's server and web app (cgm-remote-monitor). It is
-everything merged to the <code>dev</code> branch from 15.0.8 (2026-09-04) to <code>ca6fcfaf</code> (2026-10-02): mostly
+everything merged to the <code>dev</code> branch from 15.0.8 (2026-09-04) to <code>74942ec6</code> (2026-10-03 00:04Z): mostly
 fixes for defects present in 15.0.8, with dependency updates and translations. It is not tagged;
 the checks still owed before the tag are listed in <a href="#what-is-left-open">§8</a> and in
 <a href="contents.html#open-items-a-releaser-must-settle">contents §Open items</a>.</p>
@@ -2670,7 +2670,7 @@ the checks still owed before the tag are listed in <a href="#what-is-left-open">
 <tbody>
 <tr>
 <td>time frame</td>
-<td>2026-09-04 (15.0.8's commit date, and the first merge) to 2026-10-02</td>
+<td>2026-09-04 (15.0.8's commit date, and the first merge) to 2026-10-02, the last merge's date in its committer's time zone (2026-10-03 00:04Z)</td>
 <td><code>git log --first-parent --format=%ad --date=short R \| sort \| sed -n '1p;$p'</code>; <code>git log -1 --format=%ad --date=short 15.0.8</code></td>
 </tr>
 </tbody>
@@ -2689,22 +2689,22 @@ the checks still owed before the tag are listed in <a href="#what-is-left-open">
 <tbody>
 <tr>
 <td>PR merges</td>
-<td>93; every first-parent commit in the range is a PR merge</td>
+<td>95; every first-parent commit in the range is a PR merge</td>
 <td><code>git rev-list --first-parent --count R</code>; <code>git log --first-parent --merges --format=%h R \| wc -l</code></td>
 </tr>
 <tr>
 <td>commits</td>
-<td>525 (325 non-merge, 17 author names)</td>
+<td>537 (334 non-merge, 17 author names)</td>
 <td><code>git rev-list [--no-merges] --count R</code>; <code>git log --no-merges --format=%an R \| sort -u \| wc -l</code></td>
 </tr>
 <tr>
 <td>files</td>
-<td>303 of 891 on <code>dev</code> changed: 128 added, 172 modified, 1 deleted (<code>tests/loop-server.test.js</code>), 2 renamed</td>
+<td>307 of 892 on <code>dev</code> changed: 129 added, 175 modified, 1 deleted (<code>tests/loop-server.test.js</code>), 2 renamed</td>
 <td><code>git diff --name-status official/master official/dev</code>; <code>git ls-tree -r --name-only official/dev \| wc -l</code></td>
 </tr>
 <tr>
 <td>lines</td>
-<td>+29,620 / −1,875</td>
+<td>+29,757 / −1,931</td>
 <td><code>git diff --shortstat official/master official/dev</code></td>
 </tr>
 <tr>
@@ -2728,13 +2728,13 @@ the checks still owed before the tag are listed in <a href="#what-is-left-open">
 <tbody>
 <tr>
 <td><code>tests</code></td>
-<td style="text-align: right;">139 / 317</td>
-<td style="text-align: right;">+21,072 / −132</td>
+<td style="text-align: right;">140 / 318</td>
+<td style="text-align: right;">+21,152 / −132</td>
 </tr>
 <tr>
 <td><code>lib</code></td>
-<td style="text-align: right;">102 / 241</td>
-<td style="text-align: right;">+5,058 / −882</td>
+<td style="text-align: right;">104 / 241</td>
+<td style="text-align: right;">+5,068 / −928</td>
 </tr>
 <tr>
 <td><code>translations</code></td>
@@ -2743,8 +2743,8 @@ the checks still owed before the tag are listed in <a href="#what-is-left-open">
 </tr>
 <tr>
 <td>root files</td>
-<td style="text-align: right;">10 / 30</td>
-<td style="text-align: right;">+1,562 / −851 (<code>package-lock.json</code> +1,357 / −815)</td>
+<td style="text-align: right;">11 / 30</td>
+<td style="text-align: right;">+1,609 / −861 (<code>package-lock.json</code> +1,357 / −815)</td>
 </tr>
 <tr>
 <td><code>docs</code></td>
@@ -2817,15 +2817,15 @@ the checks still owed before the tag are listed in <a href="#what-is-left-open">
 </tr>
 <tr>
 <td>09-30 – 10-02</td>
-<td style="text-align: right;">7</td>
-<td>#8788, #8790 (outside contributor), #8791, #8793–#8796</td>
+<td style="text-align: right;">9</td>
+<td>#8788, #8790 (outside contributor), #8791, #8793–#8796, #8799, #8800</td>
 </tr>
 </tbody>
 </table>
 <h2 id="3-contributions">3. Contributions<a class="headerlink" href="#3-contributions" title="Permanent link">&para;</a></h2>
 <h3 id="pr-merges-by-pr-author">PR merges by PR author<a class="headerlink" href="#pr-merges-by-pr-author" title="Permanent link">&para;</a></h3>
 <p>Command: the PR number from each first-parent subject
-(<code>git log --first-parent --format=%s R | grep -oE '#[0-9]+'</code>), then one GraphQL query for all 93
+(<code>git log --first-parent --format=%s R | grep -oE '#[0-9]+'</code>), then one GraphQL query for all 95
 (<code>gh api graphql</code>, <code>pullRequest(number:N){author{login} headRepositoryOwner{login}}</code> on
 <code>nightscout/cgm-remote-monitor</code>), equivalent to <code>gh pr view N --json author</code> for each.</p>
 <table>
@@ -2839,8 +2839,8 @@ the checks still owed before the tag are listed in <a href="#what-is-left-open">
 <tbody>
 <tr>
 <td>bewest</td>
-<td style="text-align: right;">50</td>
-<td>branches in <code>nightscout/cgm-remote-monitor</code>: the 46 programme backfix PRs in <a href="contents.html#programme-backfix-prs-46-plus-8741">contents</a>, three connector pins (#8752, #8759, #8762) and #8750</td>
+<td style="text-align: right;">52</td>
+<td>branches in <code>nightscout/cgm-remote-monitor</code>: the 48 programme backfix PRs in <a href="contents.html#programme-backfix-prs-48-plus-8741">contents</a>, three connector pins (#8752, #8759, #8762) and #8750</td>
 </tr>
 <tr>
 <td>dependabot</td>
@@ -2974,7 +2974,7 @@ each changes is in <a href="contents.html#other-fixes-external-and-upstream-cont
 <tbody>
 <tr>
 <td>bewest</td>
-<td style="text-align: right;">123</td>
+<td style="text-align: right;">132</td>
 </tr>
 <tr>
 <td>Crowdin syncs (sulkaharo's account)</td>
@@ -2994,7 +2994,7 @@ each changes is in <a href="contents.html#other-fixes-external-and-upstream-cont
 </tr>
 <tr>
 <td><strong>total</strong></td>
-<td style="text-align: right;"><strong>325</strong> non-merge commits</td>
+<td style="text-align: right;"><strong>334</strong> non-merge commits</td>
 </tr>
 </tbody>
 </table>
@@ -3013,37 +3013,37 @@ each changes is in <a href="contents.html#other-fixes-external-and-upstream-cont
 <tr>
 <td><code>it(</code> calls under <code>tests/</code></td>
 <td style="text-align: right;">1,288</td>
-<td style="text-align: right;">2,332</td>
+<td style="text-align: right;">2,336</td>
 <td><code>git grep -cE '^\s*it\(' &lt;ref&gt; -- tests</code>, summed</td>
 </tr>
 <tr>
 <td><code>*.test.js</code> files under <code>tests/</code></td>
 <td style="text-align: right;">157</td>
-<td style="text-align: right;">250</td>
+<td style="text-align: right;">251</td>
 <td><code>git ls-tree -r --name-only &lt;ref&gt; tests \| grep -c '\.test\.js$'</code></td>
 </tr>
 <tr>
 <td>of them at <code>tests/*.test.js</code> (what <code>npm test</code> runs)</td>
 <td style="text-align: right;">133</td>
-<td style="text-align: right;">224</td>
+<td style="text-align: right;">225</td>
 <td><code>git ls-tree --name-only &lt;ref&gt; tests/ \| grep -c '\.test\.js$'</code></td>
 </tr>
 <tr>
 <td>lines, <code>tests/</code></td>
 <td style="text-align: right;">—</td>
-<td style="text-align: right;">+21,072 / −132 (139 files; 99 added)</td>
+<td style="text-align: right;">+21,152 / −132 (140 files; 100 added)</td>
 <td><code>git diff --shortstat official/master official/dev -- tests</code></td>
 </tr>
 <tr>
 <td>lines, <code>lib/</code></td>
 <td style="text-align: right;">—</td>
-<td style="text-align: right;">+5,058 / −882 (102 files)</td>
+<td style="text-align: right;">+5,068 / −928 (104 files)</td>
 <td><code>git diff --shortstat official/master official/dev -- lib</code></td>
 </tr>
 <tr>
 <td>passing / failing / pending, full suite</td>
 <td style="text-align: right;">1533 / 0 / 3</td>
-<td style="text-align: right;">3534 / 0 / 4</td>
+<td style="text-align: right;">3538 / 0 / 4</td>
 <td>below</td>
 </tr>
 </tbody>
@@ -3055,12 +3055,12 @@ two rows differ.</p>
   24.15.0, a fresh <code>mongo:7.0.43</code> container with <code>--ulimit nofile=64000:64000</code>), with
   <code>NODE_ENV=test npx env-cmd -f &lt;env&gt; mocha --timeout 5000 --require ./tests/hooks.js --exit ./tests/*.test.js</code>
   (<a href="../../docs/60-research/programme/paving-the-cowpaths-2026-09-27.html#4-delta-in-testing">snapshot §4</a>).</li>
-<li><strong>Candidate: 3534/0/4</strong> on #8796's head <code>e20b66ba</code>, which has the same tree as <code>ca6fcfaf</code>
-  (<code>0e38a5a7</code>), Node 22.23.2, MongoDB 7.0.43, one cell, 2026-10-02
-  (<a href="contents.html#evidence">contents §Evidence</a>). 2,001 more passing tests than 15.0.8 (2.31×).</li>
+<li><strong>Candidate: 3538/0/4</strong> on #8800's head <code>a06e75d6</code>, which has the same tree as <code>74942ec6</code>
+  (<code>5671b8d3</code>), Node 24.15.0, MongoDB 7.0.43, one cell, 2026-10-02
+  (<a href="contents.html#evidence">contents §Evidence</a>). 2,005 more passing tests than 15.0.8 (2.31×).</li>
 <li><strong>Last six-cell run: run 020 on <code>ce30a94d</code>, 3473/0/3</strong> (2026-09-27; Node 20.20.0 / 22.23.2 /
-  24.20.0 × MongoDB 4.4.24 / 7.0.43). <strong>The six-cell run on <code>ca6fcfaf</code> is owed.</strong></li>
-<li>CI on #8598 at <code>ca6fcfaf</code>: 27 checks passed, 3 skipped (<a href="contents.html#identity">contents §Identity</a>).</li>
+  24.20.0 × MongoDB 4.4.24 / 7.0.43). <strong>The six-cell run on the final head is owed.</strong></li>
+<li>CI on #8598 at <code>74942ec6</code>: 27 checks passed, 3 skipped (read 2026-10-03 00:21Z; <a href="contents.html#identity">contents §Identity</a>).</li>
 </ul>
 <h3 id="run-history">Run history<a class="headerlink" href="#run-history" title="Permanent link">&para;</a></h3>
 <p>From the <a href="../../docs/30-design/remedial/rc-15.0.9-integration-record.html#run-history">integration record's run history</a>.
@@ -3215,6 +3215,16 @@ and <a href="contents.html#evidence">contents §Evidence</a>:</p>
 <td><code>e20b66ba</code>, same tree</td>
 <td>3534/0/4</td>
 </tr>
+<tr>
+<td>#8799 <code>f105f688</code></td>
+<td>branch (documentation and the Azure template only)</td>
+<td>3534/0/4</td>
+</tr>
+<tr>
+<td>#8800 <code>74942ec6</code></td>
+<td><code>a06e75d6</code>, same tree (Node 24.15.0)</td>
+<td>3538/0/4</td>
+</tr>
 </tbody>
 </table>
 <p>How each unit adds to the count, step by step with titles compared, is in the integration record
@@ -3262,8 +3272,8 @@ and <a href="contents.html#evidence">contents §Evidence</a>:</p>
 </tr>
 <tr>
 <td>focused labs</td>
-<td>records found, edited and deleted by their own <code>_id</code> (object-id); client address behind real proxies (proxy-trust); Nightscout-to-Nightscout connector sync (connector-soak); AAPS loop re-enable (aaps-offline); APNs connections left open (apns-shutdown)</td>
-<td style="text-align: right;">5</td>
+<td>records found, edited and deleted by their own <code>_id</code> (object-id); client address behind real proxies (proxy-trust); Nightscout-to-Nightscout connector sync (connector-soak); AAPS loop re-enable (aaps-offline); APNs connections left open (apns-shutdown); an open page's basal display after a temp basal is edited (bf94-browser)</td>
+<td style="text-align: right;">6</td>
 <td><code>tools/lab/&lt;name&gt;/</code></td>
 </tr>
 <tr>
@@ -3286,7 +3296,7 @@ and <a href="contents.html#evidence">contents §Evidence</a>:</p>
 </tr>
 </tbody>
 </table>
-<p>Commands: <code>git ls-files tools/lab | wc -l</code> (96 files in 7 directories); <code>git ls-files tools/review/probes | wc -l</code> (18);
+<p>Commands: <code>git ls-files tools/lab | wc -l</code> (333 files in 8 directories, 237 of them bf94-browser's recorded results); <code>git ls-files tools/review/probes | wc -l</code> (18);
 <code>ls tools/queue/gates | wc -l</code>; the expected-difference count is <code>len(diffs)</code> in
 <code>tools/lab/rc-soak/expected-diffs.json</code>. Run 020 ran 1 new probe and repeated 21 of run 019's.
 One further probe is kept untracked because its defect's details stay out of the public tree.</p>
@@ -3389,7 +3399,7 @@ to <code>github</code>; an id not in a list counts as <code>latent</code>. Close
 <tr>
 <td>latent</td>
 <td style="text-align: right;">92</td>
-<td style="text-align: right;">57</td>
+<td style="text-align: right;">61</td>
 <td>present on 15.0.8, found by audit, lab, survey or review of an outside PR</td>
 </tr>
 <tr>
@@ -3434,7 +3444,7 @@ to <code>github</code>; an id not in a list counts as <code>latent</code>. Close
 
 <!-- chart: burnup -->
 
-<p>Per day, to 2026-10-02 (open and closed count only the 132 ids in scope):</p>
+<p>Per day, to 2026-10-03 (open and closed count only the 132 ids in scope):</p>
 <table>
 <thead>
 <tr>
@@ -3640,8 +3650,20 @@ to <code>github</code>; an id not in a list counts as <code>latent</code>. Close
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">2</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">37</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">34</td>
+</tr>
+<tr>
+<td>10-03</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">33</td>
 </tr>
 </tbody>
 </table>
@@ -3651,9 +3673,10 @@ Of the ids filed 09-30 to 10-02, BF-149 was found in review of #8788, and BF-153
 dependency advisory triage (<a href="contents.html#npm-audit-and-dependabot-triage">contents</a>); BF-155 in review of
 the BF-72 branch, and BF-156 while documenting the API v3 settings (BF-46).</p>
 <h3 id="register-totals">Register totals<a class="headerlink" href="#register-totals" title="Permanent link">&para;</a></h3>
-<p><code>node tools/queue/gates/register-exposure-legend.js</code> parses 154 status cells, 113 in §1 and 41 in
-§1b/§1c. In §1: 28 <code>open</code>, 1 <code>fixed</code> (on an unmerged branch), 82 <code>merged</code> (in <code>dev</code>, not
-released), 2 invalid, 0 <code>landed</code>. The gate exits 1 by design while nothing is released: every
+<p><code>node tools/queue/gates/register-exposure-legend.js</code> parses 155 status cells, 114 in §1 and 41 in
+§1b/§1c. In §1: 23 <code>open</code> (BF-07, partly merged, counted under open), 3 <code>fixed</code> (on unmerged
+branches: BF-52, BF-09, BF-156), 85 <code>merged</code> (in <code>dev</code>, not released), 3 not counted (BF-12,
+invalid; BF-41 and BF-71, closed), 0 <code>landed</code>. The gate exits 1 by design while nothing is released: every
 <code>fixed</code> and <code>merged</code> entry is still present for anyone running 15.0.8, so the exposure on the
 shipping release is 111 entries until 15.0.9 is tagged and installed.</p>
 <h3 id="what-1509-closes-and-what-it-carries">What 15.0.9 closes, and what it carries<a class="headerlink" href="#what-1509-closes-and-what-it-carries" title="Permanent link">&para;</a></h3>
@@ -3668,32 +3691,32 @@ shipping release is 111 entries until 15.0.9 is tagged and installed.</p>
 <tbody>
 <tr>
 <td>register entries in scope marked <code>merged</code></td>
-<td style="text-align: right;">94 (57 latent, 12 github, 9 connector, 9 review, 7 escaped), plus BF-110 <code>decided</code></td>
+<td style="text-align: right;">97 (60 latent, 12 github, 9 connector, 9 review, 7 escaped), plus BF-110 <code>decided</code> and BF-71 <code>closed</code></td>
 <td><code>defect-arrival.py --json</code>, by origin and status</td>
 </tr>
 <tr>
 <td>in scope and not closed</td>
-<td style="text-align: right;">37</td>
-<td>the 10-02 row above; includes BF-07 and BF-63 (<code>partly merged</code>) and BF-52 (<code>fixed</code> on an unmerged branch)</td>
+<td style="text-align: right;">33</td>
+<td>the 10-03 row above; includes BF-07 and BF-63 (<code>partly merged</code>) and BF-52, BF-09 and BF-156 (<code>fixed</code> on unmerged branches)</td>
 </tr>
 <tr>
 <td>rows in contents "What is NOT in 15.0.9"</td>
-<td style="text-align: right;">27</td>
+<td style="text-align: right;">25</td>
 <td><a href="contents.html#what-is-not-in-1509">contents</a></td>
 </tr>
 </tbody>
 </table>
-<p>The 27 rows are carried in the release notes as known issues, kept by decision, or deferred until
+<p>The 25 rows are carried in the release notes as known issues, kept by decision, or deferred until
 after 15.0.9. One of them is a defect live on 15.0.8 with no fix in 15.0.9: a class of expensive
 search request can occupy the database for minutes (BF-72; its disposition is held privately).
-BF-46 (undocumented <code>API3_AUTOPRUNE_*</code> settings that delete old records when set) is a known
-issue by decision of 2026-10-02.
+BF-46 (<code>API3_AUTOPRUNE_*</code> settings that delete old records when set) is a known issue by decision
+of 2026-10-02; #8799 documents the settings in 15.0.9.
 BF-154 (a dependency advisory with no fixed release, in code Nightscout does not call) is named
 in the release notes as well.</p>
 <h3 id="what-the-open-entries-are">What the open entries are<a class="headerlink" href="#what-the-open-entries-are" title="Permanent link">&para;</a></h3>
-<p>Every one of the 37 has a queue item, and every one is present on 15.0.8 or only on unreleased
+<p>Every one of the 33 has a queue item, and every one is present on 15.0.8 or only on unreleased
 branches and tooling, so none is a regression of 15.0.9. Each is in exactly one row below, as
-recorded in the register and <code>queue/work-queue.yaml</code> on 2026-10-02.</p>
+recorded in the register and <code>queue/work-queue.yaml</code> on 2026-10-03.</p>
 <table>
 <thead>
 <tr>
@@ -3705,18 +3728,18 @@ recorded in the register and <code>queue/work-queue.yaml</code> on 2026-10-02.</
 <tbody>
 <tr>
 <td>known issue, described in the 15.0.9 notes</td>
-<td>BF-44, BF-45, BF-46, BF-67, BF-72, BF-86, BF-92, BF-93, BF-95, BF-124, BF-127, BF-132, BF-137, BF-145, BF-149, BF-152, BF-154, BF-156</td>
-<td style="text-align: right;">18</td>
+<td>BF-44, BF-45, BF-46, BF-67, BF-72, BF-86, BF-92, BF-93, BF-95, BF-132, BF-137, BF-145, BF-149, BF-152, BF-154, BF-156</td>
+<td style="text-align: right;">16</td>
 </tr>
 <tr>
-<td>documentation fix going into 15.0.9</td>
-<td>BF-48, BF-49, BF-50, BF-51, BF-74, BF-78, BF-81</td>
-<td style="text-align: right;">7</td>
+<td>documentation merged for 15.0.9, code half later</td>
+<td>BF-48, BF-49, BF-74, BF-78, BF-81</td>
+<td style="text-align: right;">5</td>
 </tr>
 <tr>
 <td>fix going into 15.0.9</td>
-<td>BF-94</td>
-<td style="text-align: right;">1</td>
+<td>BF-124, BF-127</td>
+<td style="text-align: right;">2</td>
 </tr>
 <tr>
 <td>fix prepared, after 15.0.9</td>
@@ -3734,14 +3757,9 @@ recorded in the register and <code>queue/work-queue.yaml</code> on 2026-10-02.</
 <td style="text-align: right;">5</td>
 </tr>
 <tr>
-<td>open with no decision or schedule</td>
-<td>BF-71</td>
-<td style="text-align: right;">1</td>
-</tr>
-<tr>
 <td><strong>all</strong></td>
 <td></td>
-<td style="text-align: right;"><strong>37</strong></td>
+<td style="text-align: right;"><strong>33</strong></td>
 </tr>
 </tbody>
 </table>
@@ -3749,24 +3767,25 @@ recorded in the register and <code>queue/work-queue.yaml</code> on 2026-10-02.</
 <li><strong>Partly fixed:</strong> BF-07's remainder is left by decision; BF-52's fix is ready and ships with
   BF-92's in a later release; BF-54 has no defect in shipped code and gets its regression test in
   cut 1's browser suite; BF-63's other half is on cut 4.</li>
-<li><strong>Documentation fix going into 15.0.9</strong> (<code>bf/config-docs-truth</code>): BF-48 to BF-51 correct the README
-  and the Azure deployment template; BF-74 says API v3 <code>settings</code> documents are stored as sent;
-  BF-78 and BF-81 say which setting is the access boundary and which roles need <code>readable</code>. BF-48,
-  BF-49 and BF-78 (its boot warning) keep a code half for later.</li>
-<li><strong>Fix going into 15.0.9:</strong> BF-94, an open page kept showing a cancelled or shortened temp basal
-  sent by AndroidAPS v3 or Trio (<code>bf/profile-temp-cache</code>).</li>
+<li><strong>Documentation merged for 15.0.9, code half later</strong> (#8799): BF-48 and BF-49 correct the README
+  on the webhook settings and the HSTS setting's spelling; BF-74 says API v3 <code>settings</code> documents are
+  stored as sent; BF-78 and BF-81 say which setting is the access boundary and which roles need
+  <code>readable</code>. Each keeps a code half for after 15.0.9 (for BF-78, its boot warning). #8799 closed
+  BF-50 and BF-51, and #8800 closed BF-94.</li>
 <li><strong>Fix prepared, after 15.0.9:</strong> BF-09 makes a zero a real value in the live-update duplicate check
   where it carries meaning (a zero temp basal, a zero bolus), in #8797, deferred by decision because
   the path is AndroidAPS's legacy NSClient v1 and the trigger is two records within 2 s.</li>
-<li><strong>No decision yet:</strong> BF-71 (any <code>dateString</code> filter drops the default date window); it belongs
-  with BF-72's work after 15.0.9.</li>
+<li><strong>Fix going into 15.0.9:</strong> BF-124 (a treatment tooltip's BG in the wrong units) and BF-127 (a
+  clock view opened from the menu is blank for a token viewer on a site that requires sign-in),
+  decided 2026-10-02; their branches are being prepared and are not merged.</li>
+<li><strong>Closed:</strong> BF-71 was closed on 2026-10-02 as working as intended and is not counted here.</li>
 </ul>
 <!-- chart: open -->
 
 <h3 id="regressions-caught-before-release">Regressions caught before release<a class="headerlink" href="#regressions-caught-before-release" title="Permanent link">&para;</a></h3>
 <p>Seven defects were introduced on <code>dev</code> by merged fix PRs. All seven are absent from 15.0.8 and fixed
 on <code>dev</code>; none reached a release. No register entry filed after 2026-09-27 (BF-147 to BF-156) is
-described as introduced on <code>dev</code>, and 10 merges have landed since the last regression fixes
+described as introduced on <code>dev</code>, and 12 merges have landed since the last regression fixes
 (#8781, #8783 on 09-26) with no new one found.</p>
 <table>
 <thead>
@@ -3872,8 +3891,8 @@ claim of conformity with any standard.</p>
 </tr>
 <tr>
 <td>work control</td>
-<td>183 queue items in 6 parcels, 249 runnable gates and 238 explicit <code>no-gate: &lt;reason&gt;</code> markers; 38 gate scripts</td>
-<td><code>make queue-validate</code>; <code>ls tools/queue/gates \| wc -l</code>; <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/fb1a6e9aa739ee970e8da10c03c6349564d61411/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></td>
+<td>185 queue items in 6 parcels, 250 runnable gates and 240 explicit <code>no-gate: &lt;reason&gt;</code> markers; 38 gate scripts</td>
+<td><code>make queue-validate</code>; <code>ls tools/queue/gates \| wc -l</code>; <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7abac51711195318ce124bfce8fe88b54426c72a/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></td>
 </tr>
 <tr>
 <td>review</td>
@@ -3892,7 +3911,7 @@ claim of conformity with any standard.</p>
 </tr>
 </tbody>
 </table>
-<p><code>make queue-status</code> (2026-10-02) reports PASS 90, FAIL 37, UNMEASURED 56 across the 183 items. FAIL
+<p><code>make queue-status</code> (2026-10-03) reports PASS 89, FAIL 39, UNMEASURED 57 across the 185 items. FAIL
 means a gate ran and said no; many are items not started or blocked, whose gate is their
 acceptance test. UNMEASURED means nothing ran.</p>
 <h2 id="8-how-this-builds-confidence">8. How this builds confidence<a class="headerlink" href="#8-how-this-builds-confidence" title="Permanent link">&para;</a></h2>
@@ -3916,13 +3935,13 @@ risk, the table says what was done and what it does not cover.</p>
 </tr>
 <tr>
 <td><strong>A fix introduces a new defect</strong></td>
-<td>Every fix ships with tests (2,001 more passing than 15.0.8). Break-its undo a fix and check that its tests fail for the right reason. The suite runs in six cells of Node and MongoDB versions. An A/B soak runs 15.0.8 and the candidate on the same traffic and flags every difference not explained by an intended change. Seven defects introduced by fixes were caught and fixed before release.</td>
-<td>The six-cell run has not been repeated on the final candidate <code>ca6fcfaf</code>; the ten merges since run 020 were each checked on one cell or in CI. The soak is compressed (minutes standing for hours) and synthetic. Break-its of most fixes ran on their own branches, not on the integrated tree.</td>
+<td>Every fix ships with tests (2,005 more passing than 15.0.8). Break-its undo a fix and check that its tests fail for the right reason. The suite runs in six cells of Node and MongoDB versions. An A/B soak runs 15.0.8 and the candidate on the same traffic and flags every difference not explained by an intended change. Seven defects introduced by fixes were caught and fixed before release.</td>
+<td>The six-cell run has not been repeated on the final candidate <code>74942ec6</code>; the eleven merges since run 020 were each checked on one cell or in CI. The soak is compressed (minutes standing for hours) and synthetic. Break-its of most fixes ran on their own branches, not on the integrated tree.</td>
 </tr>
 <tr>
 <td><strong>Behaviour on real devices</strong></td>
 <td>The maintainer walked user journeys in a browser with 15.0.8 side by side (11 scenarios passed). Real sites ran the candidate as the real-time soak: as of 2026-09-29 one Loop, one Trio and one AndroidAPS user ran <code>7000eb18</code> for about two days with no errors, and on 2026-10-02 the maintainer reported stable behaviour from AndroidAPS, Trio and Loop users of <code>dev</code> through the week.</td>
-<td>These reports are informal; how many sites and for how long is not recorded. Browser checks still owed include a remote bolus, LoopCaregiver from its own app, the clock views, the pump pill, alarm labels, reports during a percentage profile switch, the Day to Day report and the Food Editor on a touch screen.</td>
+<td>These reports are informal; how many sites and for how long is not recorded. Browser checks still owed include a remote bolus, LoopCaregiver from its own app, the clock views, the pump pill, alarm labels, reports during a percentage profile switch, the Day to Day report, the Food Editor on a touch screen, and a temp basal cancelled while a page is open (BF-94).</td>
 </tr>
 <tr>
 <td><strong>Security defects</strong></td>
@@ -3931,17 +3950,18 @@ risk, the table says what was done and what it does not cover.</p>
 </tr>
 <tr>
 <td><strong>What's left open</strong></td>
-<td>27 items are listed in "What is NOT in 15.0.9" and carried in the release notes as known issues or deferred by decision. 37 register entries in scope are not closed: 18 known issues, 7 with a documentation fix and 1 with a code fix going into 15.0.9, 1 with a fix prepared for after 15.0.9, 4 partly fixed, 5 only on unreleased branches or tooling, 1 with no decision yet (<a href="#what-the-open-entries-are">§6</a>).</td>
+<td>25 items are listed in "What is NOT in 15.0.9" and carried in the release notes as known issues or deferred by decision. 33 register entries in scope are not closed: 16 known issues, 5 whose documentation is merged for 15.0.9 with a code half later, 2 with a fix going into 15.0.9 (branches being prepared), 1 with a fix prepared for after 15.0.9, 4 partly fixed, 5 only on unreleased branches or tooling (<a href="#what-the-open-entries-are">§6</a>).</td>
 <td></td>
 </tr>
 </tbody>
 </table>
 <h3 id="what-is-left-open">What is left open<a class="headerlink" href="#what-is-left-open" title="Permanent link">&para;</a></h3>
-<p>Before the tag (<a href="contents.html#open-items-a-releaser-must-settle">contents §Open items</a>): the six-cell
-run on <code>ca6fcfaf</code>; the browser hand checks above; the version class of #8772, #8775 and #8780;
+<p>Before the tag (<a href="contents.html#open-items-a-releaser-must-settle">contents §Open items</a>):
+the fixes for BF-124 and BF-127 (decided 2026-10-02, branches being prepared); the six-cell run on
+the final head; the browser hand checks above; the version class of #8772, #8775 and #8780;
 re-approval of #8598 at its final head (both approvals were given on <code>e3adc91d</code>); the
 <code>CHANGELOG.md</code> question; and the tag. The lab's 72-hour soak was not run, by decision.
-Known test gaps are in <a href="contents.html#known-test-gaps">contents §Known test gaps</a>: 77 of the 224
+Known test gaps are in <a href="contents.html#known-test-gaps">contents §Known test gaps</a>: 78 of the 225
 <code>tests/*.test.js</code> files are reached only by <code>npm test</code> / <code>test-ci</code>.</p>
 <h2 id="9-materials">9. Materials<a class="headerlink" href="#9-materials" title="Permanent link">&para;</a></h2>
 <p>Repository material used for the census-to-tests loop, counted with <code>git ls-files &lt;dir&gt; | wc -l</code>
@@ -3983,7 +4003,7 @@ and generated files):</p>
 </tr>
 <tr>
 <td><code>tools/lab/</code></td>
-<td style="text-align: right;">96 files, 7 labs</td>
+<td style="text-align: right;">333 files, 8 labs</td>
 <td><code>git ls-files tools/lab \| wc -l</code></td>
 </tr>
 <tr>
@@ -4003,7 +4023,7 @@ and generated files):</p>
 <li><a href="contents.html">contents.md</a>, <a href="decisions.html">decisions.md</a>, <a href="testing-notes.html">testing-notes.md</a>, <a href="release-notes.html">release-notes.md</a></li>
 <li><a href="../../docs/30-design/remedial/rc-15.0.9-integration-record.html">15.0.9 integration record</a></li>
 <li><a href="../../docs/30-design/remedial/nightscout-backfix-register.html">backfix register</a></li>
-<li><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/fb1a6e9aa739ee970e8da10c03c6349564d61411/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></li>
+<li><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7abac51711195318ce124bfce8fe88b54426c72a/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></li>
 <li><a href="../../specs/quirks/index.html">quirks registry</a></li>
 <li><a href="../../docs/60-research/remedial/consumer-impact-15.0.9-2026-09-23.html">consumer impact</a> and <a href="../../reports/consumer-impact-15.0.9/lab-results.html">replay lab results</a></li>
 <li><a href="../../docs/60-research/remedial/journey-map-15.0.9.html">journey map</a> and <a href="../../docs/60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.html">browser record</a></li>

@@ -2217,9 +2217,9 @@
 
 
 <h1 id="nightscout-1509--testing-notes-for-the-release-candidate">Nightscout 15.0.9 — testing notes for the release candidate<a class="headerlink" href="#nightscout-1509--testing-notes-for-the-release-candidate" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-02 at <code>f50bbb61</code>.</em></p>
+<p><em>Living document, last changed 2026-10-02 at <code>e9f85e91</code>.</em></p>
 <p><strong>DRAFT — prepared for maintainer review before it is shared.</strong> Kept current as reports arrive and
-as the test build changes. Last updated 2026-10-02.</p>
+as the test build changes. Last updated 2026-10-03.</p>
 <p><em>For people who would like to help test the next Nightscout release before it comes out. Part 1 is
 for people who </em><em>use</em><em> a Nightscout site, for themselves or a family member. Part 2 is for people who
 </em><em>run</em><em> a site (set up its hosting and settings) or write apps and scripts that talk to it. Nightscout
@@ -2325,8 +2325,8 @@ particular setup to try them.</p>
 described: the <a href="release-notes.html#known-issues--not-fixed-in-this-release">known issues</a> in the release
 notes.</p>
 <h2 id="getting-the-test-build">Getting the test build<a class="headerlink" href="#getting-the-test-build" title="Permanent link">&para;</a></h2>
-<p>The test build is the <code>dev</code> branch of <code>nightscout/cgm-remote-monitor</code> at commit <strong><code>ca6fcfaf</code></strong>
-(full: <code>ca6fcfaf2a17b3913fa49824859bb11ee963a3c3</code>, 2026-10-02). Its version reads <strong>15.0.9</strong>. Since
+<p>The test build is the <code>dev</code> branch of <code>nightscout/cgm-remote-monitor</code> at commit <strong><code>74942ec6</code></strong>
+(full: <code>74942ec6f5035f06a9d9d6de9bcc71e72da0de56</code>, 2026-10-03). Its version reads <strong>15.0.9</strong>. Since
 the earlier test build <code>7000eb18</code> it adds:</p>
 <ul>
 <li>the Day to Day report shows events that run past midnight on both days (see 1.7);</li>
@@ -2338,16 +2338,20 @@ the earlier test build <code>7000eb18</code> it adds:</p>
 <li>a fix for a problem reading from the database while answering a request for the activity log or
   the current profile, which stopped Nightscout until it was restarted; it now answers that request
   with an error and keeps running (nothing to test by hand);</li>
+<li>a page that is already open shows a temp basal that AndroidAPS or Trio cancels or shortens as
+  cancelled or shortened, without reloading (see 1.9);</li>
+<li>the setup guide (README) describes the settings the code reads, including the API v3 settings
+  (nothing to test by hand; see the release notes);</li>
 <li>updated versions of several software libraries it uses, with no change to what you see.</li>
 </ul>
 <p>If you are running <code>7000eb18</code> or a later <code>dev</code> build, keep going: your reports still count.</p>
 <ul>
-<li><strong>Docker:</strong> <code>nightscout/cgm-remote-monitor:dev_ca6fcfaf2a17b3913fa49824859bb11ee963a3c3</code>. This tag
-  always means exactly this build. <code>latest_dev</code> means "the newest <code>dev</code>" and moves when <code>dev</code> changes. <code>latest_dev</code> means "the newest <code>dev</code>" and moves when <code>dev</code> changes, so check which
-  commit it is before relying on it.</li>
+<li><strong>Docker:</strong> <code>nightscout/cgm-remote-monitor:dev_74942ec6f5035f06a9d9d6de9bcc71e72da0de56</code>. This tag
+  always means exactly this build. <code>latest_dev</code> means "the newest <code>dev</code>" and moves when <code>dev</code> changes,
+  so check which commit it is before relying on it.</li>
 <li><strong>Deploying from your own copy of the code</strong> (Heroku, Railway, Northflank, Render, a VPS and
   similar): update your copy's <code>dev</code> branch from <code>nightscout/cgm-remote-monitor</code> and deploy that
-  branch. Check the commit is <code>ca6fcfaf</code>.</li>
+  branch. Check the commit is <code>74942ec6</code>.</li>
 <li><strong>A hosting service that runs Nightscout for you:</strong> ask them whether they offer the test build.</li>
 </ul>
 <p>If <code>dev</code> moves to a new commit before the release, these notes will name it.</p>
@@ -2415,7 +2419,8 @@ to check:</p>
 <ul>
 <li><strong>Clock views</strong> (menu → Clock, or <code>/clock/…</code>): they should show when their reading is old, including
   after the page loses its connection. If your site needs a login, a clock opened from the menu can
-  be blank (a known issue); opening it directly with a token in the address should work.</li>
+  be blank on this test build (a fix for 15.0.9 is being prepared); opening it directly with a
+  token in the address should work.</li>
 <li><strong>Watch faces</strong> that read your site: the change since the last reading (delta) and any bolus
   estimate should look right <strong>without</strong> any adjustment. If you had set up a watch face to multiply
   or divide by 18, undo that and tell us whether the numbers are right.</li>
@@ -2458,6 +2463,20 @@ could not be scrolled with a finger on a touch screen. With some foods and quick
   as it did on 15.0.8.</li>
 </ul>
 <p>Tell us your phone or tablet and browser if a swipe does not scroll.</p>
+<h2 id="19-androidaps-nsclient-v3-and-trio-a-cancelled-temp-basal-on-an-open-page">1.9 AndroidAPS (NSClient v3) and Trio: a cancelled temp basal on an open page<a class="headerlink" href="#19-androidaps-nsclient-v3-and-trio-a-cancelled-temp-basal-on-an-open-page" title="Permanent link">&para;</a></h2>
+<p>On 15.0.8, when AndroidAPS (connected through NSClient v3) or Trio cancelled or shortened a temp
+basal (a temporary change to the background insulin rate), a Nightscout page that was already open
+could keep showing the old rate in the basal box and on the chart, until the temp's planned end.
+Reloading the page showed the right value. Check this when your app cancels a temp basal anyway;
+do not change any setting to make it happen.</p>
+<ul>
+<li>Keep your site open in a browser while your app is looping. When the app cancels a temp basal (it
+  shows the scheduled basal again), look at the basal box and the chart on the open page.
+  <strong>Working looks like:</strong> as soon as the change reaches your site, the page shows the scheduled
+  rate again, without reloading.</li>
+<li>If the page still shows the old temp rate after a few minutes, reload it and note whether the
+  reload changes what it shows. Tell us your app and its version.</li>
+</ul>
 <hr />
 <h1 id="part-2-for-people-who-run-a-site-or-write-tools-that-use-it">Part 2: for people who run a site, or write tools that use it<a class="headerlink" href="#part-2-for-people-who-run-a-site-or-write-tools-that-use-it" title="Permanent link">&para;</a></h1>
 <p>Contributor detail on what changed is in <a href="contents.html">contents</a> and the
