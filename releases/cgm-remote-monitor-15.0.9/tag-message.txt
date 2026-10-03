@@ -115,6 +115,9 @@ Security
                   (BF-151)
 
 Alarms and client
+  (open)          an open page shows a temp basal shortened or
+                  cancelled by AAPS v3 or Trio, instead of the old
+                  rate until its original end (BF-94)
   #8766 e812a68c  mmol sites: each BG_ threshold read on its own
                   (below 30 = mmol/L, converted; 30 or more = mg/dL,
                   kept), so low alarms fire when only some are set in
@@ -215,6 +218,8 @@ Tests
                   timing flake)
 
 Translations, docs, version
+  (open)          README and azuredeploy.json describe the settings the
+                  code reads (BF-46, BF-48 to BF-51, BF-74, BF-78, BF-81)
   #8599 #8603  Crowdin
   #8516 85fed44b  README: MongoDB 4.4 not supported
   #8750 1f9a9d10  README: MongoDB 4.4 deprecated, still tested

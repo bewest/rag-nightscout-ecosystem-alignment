@@ -1034,7 +1034,19 @@ plugin and its four `WEBHOOK_` settings, and `ENTRIES_COLLECTION`, and no longer
 `MONGODB_COLLECTION`, which does nothing. It also says that `SECURE_HSTS_HEADER_INCLUDESUBDOMAINS`
 is spelled as one word; the spelling with an underscore before `SUBDOMAINS` has no effect. The
 Azure deployment template now uses Node 22 by default instead of a version Nightscout no longer
-runs on.
+runs on. `AUTH_DEFAULT_ROLES` is now described as the setting that decides who can see or change your
+data without logging in, with what each built-in role allows; `AUTHENTICATION_PROMPT_ON_LOAD` only
+makes the page ask for a login and grants nothing. The roles `careportal`, `devicestatus-upload` and
+`activity` do nothing in `AUTH_DEFAULT_ROLES` unless `readable` is also there. API v3 `settings`
+records are stored exactly as sent, so an app that displays them must treat them as untrusted.
+
+### An open page shows a cancelled temp basal as cancelled
+
+When AndroidAPS (with its NSClient v3 connection) or Trio shortened or cancelled a temp basal, a
+Nightscout page that was already open could keep showing the old rate in the basal display and on
+the chart: for about a quarter of a minute when another temp followed, and until the temp's planned
+end when it was simply cancelled. The pump and the app had the right value, and reloading the page
+showed it. An open page now shows the change as soon as it arrives.
 
 ### Other fixes
 

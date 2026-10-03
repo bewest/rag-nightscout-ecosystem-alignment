@@ -243,19 +243,19 @@ to `github`; an id not in a list counts as `latent`. Closed means the register s
 
 | origin | ids | closed | meaning |
 |---|---:|---:|---|
-| latent | 91 | 57 | present on 15.0.8, found by audit, lab, survey or review of an outside PR |
+| latent | 92 | 57 | present on 15.0.8, found by audit, lab, survey or review of an outside PR |
 | github | 14 | 12 | reproduced from upstream GitHub issues (BF-107, BF-118–128, BF-148, BF-150) |
 | connector | 9 | 9 | eight in nightscout-connect 0.1.0, which 15.0.9 pins exactly; BF-43 by the axios override (#8565) |
 | review | 10 | 10 | found in review of #8758 before it merged; nine fixed on the branch, BF-110 kept by decision |
 | escaped | 7 | 7 | introduced on `dev` by a merged fix PR ([below](#regressions-caught-before-release)) |
 | seam, cuts, invalid | 24 | — | not part of 15.0.9 |
-| **all** | **155** | | |
+| **all** | **156** | | |
 
 <!-- chart: arrival -->
 
 <!-- chart: burnup -->
 
-Per day, to 2026-10-02 (open and closed count only the 131 ids in scope):
+Per day, to 2026-10-02 (open and closed count only the 132 ids in scope):
 
 | date | latent | github | connector | review | escaped | not in 15.0.9 | filed | closed | open |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -274,12 +274,13 @@ Per day, to 2026-10-02 (open and closed count only the 131 ids in scope):
 | 09-27 | 0 | 1 | 0 | 0 | 0 | 0 | 1 | 1 | 36 |
 | 09-30 | 1 | 1 | 0 | 0 | 0 | 0 | 2 | 1 | 37 |
 | 10-01 | 4 | 0 | 0 | 0 | 0 | 0 | 4 | 2 | 39 |
-| 10-02 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 4 | 36 |
+| 10-02 | 2 | 0 | 0 | 0 | 0 | 0 | 2 | 4 | 37 |
 
 The checks first run on each day are in the
 [snapshot §5](../../docs/60-research/programme/paving-the-cowpaths-2026-09-27.md#5-defect-arrival).
 Of the ids filed 09-30 to 10-02, BF-149 was found in review of #8788, and BF-153 and BF-154 in the
-dependency advisory triage ([contents](contents.md#npm-audit-and-dependabot-triage)).
+dependency advisory triage ([contents](contents.md#npm-audit-and-dependabot-triage)); BF-155 in review of
+the BF-72 branch, and BF-156 while documenting the API v3 settings (BF-46).
 
 ### Register totals
 
@@ -294,7 +295,7 @@ shipping release is 111 entries until 15.0.9 is tagged and installed.
 | figure | value | source |
 |---|---:|---|
 | register entries in scope marked `merged` | 94 (57 latent, 12 github, 9 connector, 9 review, 7 escaped), plus BF-110 `decided` | `defect-arrival.py --json`, by origin and status |
-| in scope and not closed | 36 | the 10-02 row above; includes BF-07 and BF-63 (`partly merged`) and BF-52 (`fixed` on an unmerged branch) |
+| in scope and not closed | 37 | the 10-02 row above; includes BF-07 and BF-63 (`partly merged`) and BF-52 (`fixed` on an unmerged branch) |
 | rows in contents "What is NOT in 15.0.9" | 27 | [contents](contents.md#what-is-not-in-1509) |
 
 The 27 rows are carried in the release notes as known issues, kept by decision, or deferred until
@@ -307,41 +308,42 @@ in the release notes as well.
 
 ### What the open entries are
 
-Every one of the 36 has a queue item, and every one is present on 15.0.8 or only on unreleased
+Every one of the 37 has a queue item, and every one is present on 15.0.8 or only on unreleased
 branches and tooling, so none is a regression of 15.0.9. Each is in exactly one row below, as
 recorded in the register and `queue/work-queue.yaml` on 2026-10-02.
 
 | disposition | entries | count |
 |---|---|---:|
-| known issue, described in the 15.0.9 notes | BF-44, BF-45, BF-46, BF-67, BF-72, BF-86, BF-92, BF-93, BF-95, BF-124, BF-127, BF-132, BF-137, BF-145, BF-149, BF-152, BF-154 | 17 |
-| documentation fix going into 15.0.9 | BF-48, BF-49, BF-50, BF-51 | 4 |
+| known issue, described in the 15.0.9 notes | BF-44, BF-45, BF-46, BF-67, BF-72, BF-86, BF-92, BF-93, BF-95, BF-124, BF-127, BF-132, BF-137, BF-145, BF-149, BF-152, BF-154, BF-156 | 18 |
+| documentation fix going into 15.0.9 | BF-48, BF-49, BF-50, BF-51, BF-74, BF-78, BF-81 | 7 |
+| fix going into 15.0.9 | BF-94 | 1 |
 | fix prepared, after 15.0.9 | BF-09 | 1 |
 | partly fixed in 15.0.9, the rest planned | BF-07, BF-52, BF-54, BF-63 | 4 |
 | only on the modernization branches or in test tooling | BF-27, BF-53, BF-55, BF-88, BF-96 | 5 |
-| decided, not yet built | BF-78 | 1 |
-| waiting on a maintainer decision | BF-74, BF-81, BF-94 | 3 |
 | open with no decision or schedule | BF-71 | 1 |
-| **all** | | **36** |
+| **all** | | **37** |
 
 - **Partly fixed:** BF-07's remainder is left by decision; BF-52's fix is ready and ships with
   BF-92's in a later release; BF-54 has no defect in shipped code and gets its regression test in
   cut 1's browser suite; BF-63's other half is on cut 4.
-- **Documentation fix going into 15.0.9:** BF-48 to BF-51 correct the README and the Azure deployment
-  template (`bf/config-docs-truth`); BF-48 and BF-49 keep a code half for later.
+- **Documentation fix going into 15.0.9** (`bf/config-docs-truth`): BF-48 to BF-51 correct the README
+  and the Azure deployment template; BF-74 says API v3 `settings` documents are stored as sent;
+  BF-78 and BF-81 say which setting is the access boundary and which roles need `readable`. BF-48,
+  BF-49 and BF-78 (its boot warning) keep a code half for later.
+- **Fix going into 15.0.9:** BF-94, an open page kept showing a cancelled or shortened temp basal
+  sent by AndroidAPS v3 or Trio (`bf/profile-temp-cache`).
 - **Fix prepared, after 15.0.9:** BF-09 makes a zero a real value in the live-update duplicate check
   where it carries meaning (a zero temp basal, a zero bolus), in #8797, deferred by decision because
   the path is AndroidAPS's legacy NSClient v1 and the trigger is two records within 2 s.
-- **Waiting on a decision:** BF-74 (API v3 `settings` documents are stored without the input
-  cleaning the other collections get), BF-81 (which of two similarly named settings is the access
-  boundary, a wording decision), BF-94 (a module-scope cache in the basal calculation, severity
-  not yet settled).
+- **No decision yet:** BF-71 (any `dateString` filter drops the default date window); it belongs
+  with BF-72's work after 15.0.9.
 
 <!-- chart: open -->
 
 ### Regressions caught before release
 
 Seven defects were introduced on `dev` by merged fix PRs. All seven are absent from 15.0.8 and fixed
-on `dev`; none reached a release. No register entry filed after 2026-09-27 (BF-147 to BF-155) is
+on `dev`; none reached a release. No register entry filed after 2026-09-27 (BF-147 to BF-156) is
 described as introduced on `dev`, and 10 merges have landed since the last regression fixes
 (#8781, #8783 on 09-26) with no new one found.
 
@@ -397,7 +399,7 @@ risk, the table says what was done and what it does not cover.
 | **A fix introduces a new defect** | Every fix ships with tests (2,001 more passing than 15.0.8). Break-its undo a fix and check that its tests fail for the right reason. The suite runs in six cells of Node and MongoDB versions. An A/B soak runs 15.0.8 and the candidate on the same traffic and flags every difference not explained by an intended change. Seven defects introduced by fixes were caught and fixed before release. | The six-cell run has not been repeated on the final candidate `ca6fcfaf`; the ten merges since run 020 were each checked on one cell or in CI. The soak is compressed (minutes standing for hours) and synthetic. Break-its of most fixes ran on their own branches, not on the integrated tree. |
 | **Behaviour on real devices** | The maintainer walked user journeys in a browser with 15.0.8 side by side (11 scenarios passed). Real sites ran the candidate as the real-time soak: as of 2026-09-29 one Loop, one Trio and one AndroidAPS user ran `7000eb18` for about two days with no errors, and on 2026-10-02 the maintainer reported stable behaviour from AndroidAPS, Trio and Loop users of `dev` through the week. | These reports are informal; how many sites and for how long is not recorded. Browser checks still owed include a remote bolus, LoopCaregiver from its own app, the clock views, the pump pill, alarm labels, reports during a percentage profile switch, the Day to Day report and the Food Editor on a touch screen. |
 | **Security defects** | Fixes for defects live on 15.0.8 are merged: live-update access, the query operator allowlist, login hardening, error replies without internal detail, bounds on two little-used request types, storage errors that ended the process, and dependency advisories. This repository is public, so those defects are described by mechanism and outcome only until a release with the fixes ships. | One such defect has no fix in 15.0.9 (BF-72). Until 15.0.9 is installed, every fixed defect is still present on sites running 15.0.8. `npm audit` on the candidate reports 10 findings, triaged one by one in [contents](contents.md#npm-audit-and-dependabot-triage). |
-| **What's left open** | 27 items are listed in "What is NOT in 15.0.9" and carried in the release notes as known issues or deferred by decision. 36 register entries in scope are not closed: 17 known issues, 4 with a documentation fix going into 15.0.9, 1 with a fix prepared for after 15.0.9, 4 partly fixed, 5 only on unreleased branches or tooling, 1 decided and not built, 3 waiting on a maintainer decision, 1 with no decision yet ([§6](#what-the-open-entries-are)). | |
+| **What's left open** | 27 items are listed in "What is NOT in 15.0.9" and carried in the release notes as known issues or deferred by decision. 37 register entries in scope are not closed: 18 known issues, 7 with a documentation fix and 1 with a code fix going into 15.0.9, 1 with a fix prepared for after 15.0.9, 4 partly fixed, 5 only on unreleased branches or tooling, 1 with no decision yet ([§6](#what-the-open-entries-are)). | |
 
 ### What is left open
 

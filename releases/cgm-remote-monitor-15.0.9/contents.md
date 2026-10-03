@@ -255,7 +255,7 @@ The facts the classification rests on, for the record:
 |---|---|---|
 | BF-72 — a class of expensive search request can occupy the database for minutes, with no credentials on a default install | open; no fix; disposition decided privately (`BFQ-72`) | described by mechanism only |
 | BF-86 / BF-67 — thresholds in the wrong units (a mmol/L low threshold on a mg/dL site is stored so the low alarm can never fire; an out-of-order threshold is silently rewritten) | open; #8766 (BF-118) fixes only the partial-mmol/L case on a `DISPLAY_UNITS=mmol` site | carried as a known issue in the notes |
-| BF-46 — six undocumented `API3_AUTOPRUNE_<collection>` settings delete records older than a set number of days, permanently, on each API v3 write to that collection; the other `API3_*` settings are undocumented too | open; known issue by decision (2026-10-02); documentation prepared on `bf/config-docs-truth` (queue `BFQ-46`) | carried as a known issue in the notes |
+| BF-46 — six undocumented `API3_AUTOPRUNE_<collection>` settings delete records older than a set number of days, permanently, on each API v3 write to that collection; the other `API3_*` settings are undocumented too | open; known issue by decision (2026-10-02); documentation in 15.0.9 on `bf/config-docs-truth` (queue `BFQ-CONFIG-DOCS`) | carried as a known issue in the notes |
 | BF-93 — a food or quick pick changed elsewhere reaches an open page only when it reloads or reconnects | open (`BFQ-93`) | described in the notes under the bolus calculator |
 | BF-149 — the Day to Day report draws a Temporary Target or other event cancelled early to its full planned length | open; after 15.0.9 (`BFQ-149`) | carried as a known issue |
 | BF-154 — `node-forge` advisory GHSA-86w9-cpqp-85rv, no fixed release; Nightscout does not call the affected function | open; blocked on an upstream release (`BFQ-154`) | named in the notes under Known issues |
@@ -291,13 +291,20 @@ this file does not copy them.
 What the queue tracks is generated, and current, in
 [ROADMAP §1](../../docs/00-overview/ROADMAP.md#1-the-next-release-1509). As of `dev` `ca6fcfaf` (2026-10-02), 15.0.9 waits on:
 
-1. **`bf/config-docs-truth` (BF-46 documentation, BF-48 to BF-51)**, taken into 15.0.9 on
-   2026-10-02; five commits on `ca6fcfaf`, head `c102d98f`, not yet pushed. README, `azuredeploy.json`
-   and the API v3 swagger text only; full suite 3534/0/4. Merging it moves `dev` past `ca6fcfaf`.
-2. **One full six-cell run on the final head** (Node 20/22/24 × MongoDB 4.4.24 and 7.0.43, probes,
+1. **`bf/config-docs-truth` (documentation for BF-46, BF-48 to BF-51, BF-74, BF-78, BF-81)**, taken
+   into 15.0.9 on 2026-10-02; eight commits on `ca6fcfaf`, head `e42144ff`, not yet pushed (queue
+   `BFQ-CONFIG-DOCS`). README, `azuredeploy.json` and the API v3 swagger text only; full suite
+   3534/0/4.
+2. **`bf/profile-temp-cache` (BF-94)**, taken into 15.0.9 on 2026-10-02; one commit on `ca6fcfaf`,
+   head `2a64c500`, not yet pushed (queue `BFQ-94`). The browser kept the last temp basal it looked
+   up in a module-scope variable, so an open page showed a temp that AndroidAPS v3 or Trio had
+   shortened or cancelled, until the temp's original end; the variable is now per instance and
+   reset when the treatments are replaced. Measured in Chromium on `ca6fcfaf` and `v15.0.8`
+   (`tools/lab/bf94-browser`); full suite 3538/0/4. Merging these moves `dev` past `ca6fcfaf`.
+3. **One full six-cell run on the final head** (Node 20/22/24 × MongoDB 4.4.24 and 7.0.43, probes,
    compressed A/B soak against 15.0.8, as run 020 on `ce30a94d`). What has run since run 020 is
    under [Evidence](#evidence).
-3. **The browser hand checks still owed.**
+4. **The browser hand checks still owed.**
    `node tools/queue/gates/client-unchanged-since-hand-check.js --base ca6fcfaf --with ''` names
    16 paths that differ on the browser side from the hand-checked `8d797ba4`: `.gitignore` and
    `.nycrc.json` (tooling), `lib/api2/index.js`, `lib/api2/notifications-v2.js`,
@@ -321,22 +328,22 @@ What the queue tracks is generated, and current, in
    on a touch screen (#8790, section 5 of the same checklist). #8784 changes what the server sends
    to the page (late or edited v3 treatments carry `mills` in the page data, so the page's IOB and
    COB count them); that was not checked in a browser.
-4. **The version class of #8772, #8775 and #8780**, by the maintainer, who is collecting data:
+5. **The version class of #8772, #8775 and #8780**, by the maintainer, who is collecting data:
    recorded as minor-under-patch exceptions (as #8530) or re-classed ([decisions](decisions.md)).
-5. **Re-approval of #8598 at its final head** (`ca6fcfaf` unless `dev` moves). Both approvals were
+6. **Re-approval of #8598 at its final head** (`ca6fcfaf` unless `dev` moves). Both approvals were
    given on `e3adc91d`. CI on `ca6fcfaf`: 27 checks passed, 3 skipped (2026-10-02).
-6. **The `CHANGELOG.md` question.** `dev` carries a hand-written `## [Unreleased]` section (lines
+7. **The `CHANGELOG.md` question.** `dev` carries a hand-written `## [Unreleased]` section (lines
    5–87 of `git show official/dev:CHANGELOG.md` at `ca6fcfaf`, from 14 commits —
    `git log --no-merges official/master..official/dev -- CHANGELOG.md`), against the rule in
    [`../README.md`](../README.md#open-item-changelog-on-dev) that the changelog is generated at
    release time. No decision on it is recorded.
-7. **BF-154 is named in the release notes** (decided 2026-10-02, maintainer), under Known issues:
+8. **BF-154 is named in the release notes** (decided 2026-10-02, maintainer), under Known issues:
    the `node-forge` advisory behind the 2 high among `npm audit`'s 10 findings on `25fc41d9` (#8796 changes no
    package file, so the figures stand for `ca6fcfaf`), filed as low because Nightscout does not call the affected function ([below](#node-forge-ghsa-86w9-cpqp-85rv)).
    It is not a release blocker: no fixed version exists, and `@parse/node-apn` 8.1.0 (the
    modernization line's version, and the latest) still depends on `node-forge` 1.4.0 exactly, so the
    update waits for an upstream fix and is carried with the modernization work.
-8. **The tag**, by the maintainer.
+9. **The tag**, by the maintainer.
 
 The [release notes](release-notes.md) and [tag message](tag-message.txt) are drafted on `ca6fcfaf`.
 

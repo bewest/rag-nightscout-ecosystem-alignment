@@ -5,7 +5,7 @@
   "tip": "ca6fcfaf",
   "spec": "official/master..official/dev"
  },
- "repo_commit": "5fec2842",
+ "repo_commit": "135c9839",
  "kpis": {
   "pr_merges": 93,
   "commits": 525,
@@ -18,8 +18,8 @@
    "base": 1533,
    "tip": 3534
   },
-  "defect_ids": 155,
-  "defect_ids_in_scope": 131,
+  "defect_ids": 156,
+  "defect_ids_in_scope": 132,
   "regressions_caught": 7
  },
  "merges_per_day": [
@@ -516,14 +516,14 @@
   {
    "date": "2026-10-02",
    "filed": {
-    "latent": 1,
+    "latent": 2,
     "github": 0,
     "connector": 0,
     "review": 0,
     "escaped": 0
    },
    "filed_out_of_scope": 0,
-   "filed_cum": 131,
+   "filed_cum": 132,
    "closed_cum": 95
   }
  ],
@@ -813,7 +813,7 @@
  "open_entries": [
   {
    "disposition": "known issue, described in the 15.0.9 notes",
-   "count": 17,
+   "count": 18,
    "ids": [
     "BF-44",
     "BF-45",
@@ -831,17 +831,28 @@
     "BF-145",
     "BF-149",
     "BF-152",
-    "BF-154"
+    "BF-154",
+    "BF-156"
    ]
   },
   {
    "disposition": "documentation fix going into 15.0.9",
-   "count": 4,
+   "count": 7,
    "ids": [
     "BF-48",
     "BF-49",
     "BF-50",
-    "BF-51"
+    "BF-51",
+    "BF-74",
+    "BF-78",
+    "BF-81"
+   ]
+  },
+  {
+   "disposition": "fix going into 15.0.9",
+   "count": 1,
+   "ids": [
+    "BF-94"
    ]
   },
   {
@@ -870,22 +881,6 @@
     "BF-55",
     "BF-88",
     "BF-96"
-   ]
-  },
-  {
-   "disposition": "decided, not yet built",
-   "count": 1,
-   "ids": [
-    "BF-78"
-   ]
-  },
-  {
-   "disposition": "waiting on a maintainer decision",
-   "count": 3,
-   "ids": [
-    "BF-74",
-    "BF-81",
-    "BF-94"
    ]
   },
   {
