@@ -55,7 +55,7 @@ release.
 
 | id | what | claimed state | waiting for | PR |
 |---|---|---|---|---|
-| `BFQ-127` | BF-127 - clock views opened from the menu are blank for a token viewer on a site | `ready-to-push` | Maintainer | &mdash; |
+| `BFQ-127` | BF-127 - clock views opened from the menu are blank for a token viewer on a site | `in-flight-upstream` | Maintainer | #8802 |
 
 <!-- END GENERATED: release-waits -->
 

@@ -32,12 +32,12 @@ they need is a release, and that is one item — `RT-0` — which is listed.
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `BFQ-09` | `in-flight-upstream` | BF-09 - socket dedup truthiness skips a falsy value | #8797 |
+| `BFQ-127` | `in-flight-upstream` | BF-127 - clock views opened from the menu are blank for a token viewer on a site | #8802 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `DEPENDABOT-CONFIG` | `needs-decision` | Dependabot runs with no configuration: security PRs target master, and alerts co | &mdash; |
 | `RT-PROPAGATION` | `needs-decision` | How the release train reaches dev: merge dev into the cuts, or rebase the cuts o | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
-| `BFQ-127` | `ready-to-push` | BF-127 - clock views opened from the menu are blank for a token viewer on a site | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `WS-LAB` | `ready-to-push` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | &mdash; |
@@ -67,6 +67,7 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 | PR | id | branch | what it fixes | who should review |
 |---|---|---|---|---|
 | **#8797** | `BFQ-09` | `bf/socket-dedup-zero` | BF-09 - socket dedup truthiness skips a falsy value | Maintainer |
+| **#8802** | `BFQ-127` | `bf/clock-token-link` | BF-127 - clock views opened from the menu are blank for a to | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 

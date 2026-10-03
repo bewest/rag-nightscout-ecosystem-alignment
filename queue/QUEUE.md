@@ -31,22 +31,22 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 186 |
+| items | 187 |
 | runnable gates | 250 |
-| explicit `no-gate:` markers | 241 |
+| explicit `no-gate:` markers | 242 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 241 of the 491 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 242 of the 492 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 49 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
+| `not-started` | 50 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
 | `in-progress` | 3 | BFQ-46, BFQ-ENV, OID-LAB |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
-| `ready-to-push` | 4 | P0-C-REMEDIATE, T30-AUTH, BFQ-127, WS-LAB |
+| `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
 | `blocked` | 23 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, BFQ-72, BFQ-52, BFQ-93, BFQ-95, BFQ-67, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-152, BFQ-154, BFQ-156 |
-| `in-flight-upstream` | 1 | BFQ-09 |
+| `in-flight-upstream` | 2 | BFQ-09, BFQ-127 |
 | `merged-upstream` | 84 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 6 | RT-PROPAGATION, RT-0, T30-RESEARCH, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG |
 | `done` | 4 | P0-TAG, DOC-VIEWS, DOC-LINKS, RT-SOAK |
@@ -2109,7 +2109,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 101 items
+`parcel: register-open` &mdash; 102 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2150,6 +2150,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-94` | BF-94 - a kept profile instance can return a temp basal that has been replaced | `merged-upstream` | `bf/profile-temp-cache` | patch | 0 run + 1 no-gate |
 | `BFQ-95` | BF-95 - an uploader clock running ahead delays the stale-data alarm | `blocked` | `-` | minor | 0 run + 1 no-gate |
 | `BFQ-96` | BF-96 - the headless test fixture's bundle cache key is an un-normalised path | `not-started` | `-` | n/a | 0 run + 1 no-gate |
+| `BFQ-158` | BF-158 - the count=0 tests assume an empty database | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `BFQ-67` | BF-67, BF-86 - alarm thresholds quietly changed, or quietly kept when they cannot work | `blocked` | `-` | minor | 1 run + 1 no-gate |
 | `ADV-RETRO` | GHSA-gjhc - loadRetro serves devicestatus to any socket (BF-79) | `merged-upstream` | `bf/ws-loadretro-auth` | patch | 2 run + 1 no-gate |
 | `ADV-ALARM` | GHSA-8849 - /alarm broadcasts to the whole namespace (BF-75, BF-76) | `merged-upstream` | `bf/alarm-socket-scope` | minor | 2 run + 2 no-gate |
@@ -2183,7 +2184,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-124` | BF-124 - the treatment tooltip converts a BG already in display units (issue #5940) | `merged-upstream` | `bf/tooltip-bg-units` | patch | 1 run + 1 no-gate |
 | `BFQ-125` | BF-125 - IFTTT Maker alarm events use translated level names; a failed call re-sends every check (issue #8104) | `merged-upstream` | `bf/maker-level-names` | patch | 1 run + 1 no-gate |
 | `BFQ-126` | BF-126 - an authorization subject without a name ends the server at every boot (issue #7110) | `merged-upstream` | `bf/authsubject-nameless` | patch | 1 run + 1 no-gate |
-| `BFQ-127` | BF-127 - clock views opened from the menu are blank for a token viewer on a site that denies anonymous reads (issue #7377) | `ready-to-push` | `bf/clock-token-link` | patch | 1 run + 1 no-gate |
+| `BFQ-127` | BF-127 - clock views opened from the menu are blank for a token viewer on a site that denies anonymous reads (issue #7377) | `in-flight-upstream` | `bf/clock-token-link` | patch | 1 run + 1 no-gate |
 | `BFQ-128` | BF-128 - /pebble on an mmol site returns the delta in mmol when mg/dL is asked for (issue #6220); BF-138 - /pebble in the other units computes the Bolus Wizard Preview against the wrong settings; BF-139 - /pebble scales readings other requests share | `merged-upstream` | `bf/pebble-delta-units` | patch | 1 run + 2 no-gate |
 | `BFQ-136` | BF-136 - API v3 refuses an AndroidAPS write that lands on a record written through v1 (Field app cannot be modified), and AndroidAPS drops it | `merged-upstream` | `bf/api3-app-field-v1-records` | patch | 1 run + 3 no-gate |
 | `BFQ-80` | BF-80 - an alarm viewer with no credential is held by the failed-login delay of its address (the cost of BF-75's fix) | `merged-upstream` | `bf/alarm-anonymous-no-delay` | patch | 1 run + 2 no-gate |
@@ -3298,6 +3299,36 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/60-research/remedial/bf90-alarm-no-reading-2026-09-23.md`
 
 **Notes.** Filed 2026-09-23 from the BF-90 work; found, not fixed. The candidate fix (path.resolve in the shim) is unverified.
+
+### `BFQ-158` &mdash; BF-158 - the count=0 tests assume an empty database
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `origin/dev@68262e86` |
+| worktree | `externals/cgm-remote-monitor-official` |
+| semver | `n/a` |
+| review | maintainer |
+| ships to operators today | no (pre-release) |
+| register | `BF-158` |
+
+**Blast radius.** tests/api.count-parameter.test.js only; test code, nothing an operator runs.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** test only
+
+**Gates.**
+
+- **NO GATE** &mdash; Seen by session -d4's BF-127 agent: 6 failures on a reused database, passing on an empty one. The proof for the fix is to run the file twice against the same database without clearing it: dev fails the second run, the fix passes both.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Filed 2026-10-03. The "a read with count=0" block clears treatments, devicestatus, profile and activity in after but not in before. Fix: clear them in before too. The maintainer wants it fixed so the test is not flaky (2026-10-02); not decided for 15.0.9.
 
 ### `BFQ-67` &mdash; BF-67, BF-86 - alarm thresholds quietly changed, or quietly kept when they cannot work
 
@@ -4414,7 +4445,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/clock-token-link` |
 | base | `official/dev@74942ec6` |
@@ -4441,7 +4472,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `tools/lab/triage-2026-09/clock-token-link.js`
 
-**Notes.** 2026-10-03 (session -d4's agent): bf/clock-token-link 60d5951e = fix 9238fd32 on 74942ec6, merged with dev 68262e86 (no conflicts); 6 files +237/-1: the Clock menu links (browser-settings.js) and clock-config.html's link carry the page's own ?token= (URL-encoded once, nothing without a token, no storage); clock-client.js shows "Not authorized" on a 401 from properties, clock.html re-checks on a script error; tests/clock-token-link.test.js, 8 tests; reverting each of the three files fails its own tests. Chromium, denied site, readable token: dev's Clock, Color and Simple are blank, the branch draws 123, no token shows the message. Full suite 3560/0/4 on 60d5951e (dev 68262e86 3552 plus 8; api.count-parameter needs an empty database). Not pushed. Pre- existing, unchanged: curly quotes in the configurator link's target; the main page sometimes redirects to /profile without the token before the profile arrives, seen by two agents today (BFQ-124's and this), possibly JL-2's race. 2026-10-02 (maintainer, relayed by session -d4): FIX IN 15.0.9; in RT-0's blocks_on. Local branch bf/clock-token-link being prepared by -d4's agent in externals/work/crm-bf127 off dev 74942ec6, not pushed. Approach: the main page appends its own ?token= to the Clock menu links, and the clock shows a message on a 401 instead of drawing nothing. Filed 2026-09-25 from the GitHub triage (issue #7377, opened 2022-03-16). Shares its silence with the #7036 entry: a clock whose fetch is refused draws nothing and says nothing. Whether to copy a token into more URLs is a maintainer decision.
+**Notes.** 2026-10-03: the maintainer opened PR #8802 at 60d5951e. CodeQL fails it with two js/xss-through-dom alerts (126, 127) at views/clockviews/clock- config.html:38 and :68: the config link puts the raw page token and the face text into href. Session -d4 is adding a commit that decodes and then URL- encodes both, with a test; the push to the PR branch is the maintainer's. 2026-10-03 (session -d4's agent): bf/clock-token-link 60d5951e = fix 9238fd32 on 74942ec6, merged with dev 68262e86 (no conflicts); 6 files +237/-1: the Clock menu links (browser-settings.js) and clock-config.html's link carry the page's own ?token= (URL-encoded once, nothing without a token, no storage); clock-client.js shows "Not authorized" on a 401 from properties, clock.html re-checks on a script error; tests/clock-token-link.test.js, 8 tests; reverting each of the three files fails its own tests. Chromium, denied site, readable token: dev's Clock, Color and Simple are blank, the branch draws 123, no token shows the message. Full suite 3560/0/4 on 60d5951e (dev 68262e86 3552 plus 8; api.count-parameter needs an empty database). Not pushed. Pre- existing, unchanged: curly quotes in the configurator link's target; the main page sometimes redirects to /profile without the token before the profile arrives, seen by two agents today (BFQ-124's and this), possibly JL-2's race. 2026-10-02 (maintainer, relayed by session -d4): FIX IN 15.0.9; in RT-0's blocks_on. Local branch bf/clock-token-link being prepared by -d4's agent in externals/work/crm-bf127 off dev 74942ec6, not pushed. Approach: the main page appends its own ?token= to the Clock menu links, and the clock shows a message on a 401 instead of drawing nothing. Filed 2026-09-25 from the GitHub triage (issue #7377, opened 2022-03-16). Shares its silence with the #7036 entry: a clock whose fetch is refused draws nothing and says nothing. Whether to copy a token into more URLs is a maintainer decision.
 
 ### `BFQ-128` &mdash; BF-128 - /pebble on an mmol site returns the delta in mmol when mg/dL is asked for (issue #6220); BF-138 - /pebble in the other units computes the Bolus Wizard Preview against the wrong settings; BF-139 - /pebble scales readings other requests share
 

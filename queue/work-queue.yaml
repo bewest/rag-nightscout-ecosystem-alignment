@@ -6771,6 +6771,38 @@ items:
       Filed 2026-09-23 from the BF-90 work; found, not fixed. The candidate fix
       (path.resolve in the shim) is unverified.
 
+  - id: BFQ-158
+    title: BF-158 - the count=0 tests assume an empty database
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: origin/dev@68262e86
+    worktree: externals/cgm-remote-monitor-official
+    state: not-started
+    ships_to_operators_today: false
+    blast_radius: >
+      tests/api.count-parameter.test.js only; test code, nothing an operator
+      runs.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: test only
+    register: [BF-158]
+    gates:
+      - no-gate: >
+          Seen by session -d4's BF-127 agent: 6 failures on a reused database,
+          passing on an empty one. The proof for the fix is to run the file twice
+          against the same database without clearing it: dev fails the second
+          run, the fix passes both.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Filed 2026-10-03. The "a read with count=0" block clears treatments,
+      devicestatus, profile and activity in after but not in before. Fix:
+      clear them in before too. The maintainer wants it fixed so the test is
+      not flaky (2026-10-02); not decided for 15.0.9.
+
   - id: BFQ-67
     title: BF-67, BF-86 - alarm thresholds quietly changed, or quietly kept when they cannot work
     parcel: register-open
@@ -10338,8 +10370,8 @@ items:
     branch: bf/clock-token-link
     base: official/dev@74942ec6
     worktree: externals/work/crm-bf127
-    state: ready-to-push
-    pr: []
+    state: in-flight-upstream
+    pr: [8802]
     ships_to_operators_today: true
     blast_radius: >
       views/index.html clock menu links, or lib/client code that builds
@@ -10380,6 +10412,12 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/triage-2026-09/clock-token-link.js
     notes: >
+      2026-10-03: the maintainer opened PR #8802 at 60d5951e. CodeQL fails it
+      with two js/xss-through-dom alerts (126, 127) at
+      views/clockviews/clock-config.html:38 and :68: the config link puts the
+      raw page token and the face text into href. Session -d4 is adding a
+      commit that decodes and then URL-encodes both, with a test; the push to
+      the PR branch is the maintainer's.
       2026-10-03 (session -d4's agent): bf/clock-token-link 60d5951e = fix
       9238fd32 on 74942ec6, merged with dev 68262e86 (no conflicts); 6 files
       +237/-1: the Clock menu links (browser-settings.js) and

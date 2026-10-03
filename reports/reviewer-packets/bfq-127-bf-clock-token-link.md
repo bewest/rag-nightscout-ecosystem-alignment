@@ -11,7 +11,7 @@
   ============================================================================
 -->
 
-# Review packet — BFQ-127
+# Review packet — BFQ-127 (PR #8802)
 
 **BF-127 - clock views opened from the menu are blank for a token viewer on a
 site that denies anonymous reads (issue #7377)**
@@ -21,7 +21,7 @@ site that denies anonymous reads (issue #7377)**
 | repository | `cgm-remote-monitor` |
 | branch | `bf/clock-token-link` |
 | base | `official/dev@74942ec6` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=BFQ-127` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=BFQ-127` is the measurement |
 | semver | `patch` |
 | register entries | `BF-127` |
 | operator exposure | **reaches an operator on today's release** |
@@ -78,6 +78,11 @@ so the probe below decides.
 
 ## Notes carried on the item
 
+2026-10-03: the maintainer opened PR #8802 at 60d5951e. CodeQL fails it with
+two js/xss-through-dom alerts (126, 127) at views/clockviews/clock-
+config.html:38 and :68: the config link puts the raw page token and the face
+text into href. Session -d4 is adding a commit that decodes and then URL-
+encodes both, with a test; the push to the PR branch is the maintainer's.
 2026-10-03 (session -d4's agent): bf/clock-token-link 60d5951e = fix 9238fd32
 on 74942ec6, merged with dev 68262e86 (no conflicts); 6 files +237/-1: the
 Clock menu links (browser-settings.js) and clock-config.html's link carry the

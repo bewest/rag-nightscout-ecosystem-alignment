@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 133 | 35 | 7 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 134 | 36 | 7 |
 | **Modernization** | `release-train` | 32 | 5 | 2 |
 | **Multitenant** | `tenancy` | 19 | 9 | 3 |
-| | **total** | **186** | **49** | **12** |
+| | **total** | **187** | **50** | **12** |
 
 <!-- END GENERATED: horizons -->
 
@@ -148,7 +148,7 @@ cover more than one `BF-`:
 | `BFQ-123` | `merged-upstream` | BF-123 - an AndroidAPS Profile Switch percentage is ignored in the basal, ISF and carb rat |
 | `BFQ-125` | `merged-upstream` | BF-125 - IFTTT Maker alarm events use translated level names; a failed call re-sends every |
 | `BFQ-126` | `merged-upstream` | BF-126 - an authorization subject without a name ends the server at every boot (issue #711 |
-| `BFQ-127` | `ready-to-push` | BF-127 - clock views opened from the menu are blank for a token viewer on a site that deni |
+| `BFQ-127` | `in-flight-upstream` | BF-127 - clock views opened from the menu are blank for a token viewer on a site that deni |
 | `BFQ-128` | `merged-upstream` | BF-128 - /pebble on an mmol site returns the delta in mmol when mg/dL is asked for (issue  |
 | `BFQ-129` | `merged-upstream` | BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500 |
 | `BFQ-133` | `merged-upstream` | BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one |
@@ -199,7 +199,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  | 17 |  | 1 |  |  |  | **22** |
 | `release-train` | 5 |  | 5 |  | 5 |  | 13 | 2 | 1 |  |  | 1 | **32** |
-| `register-open` | 25 | 3 | 1 | 2 | 11 | 1 | 52 | 3 |  |  | 3 |  | **101** |
+| `register-open` | 26 | 3 | 1 | 1 | 11 | 2 | 52 | 3 |  |  | 3 |  | **102** |
 | `tenancy` | 9 |  |  | 1 | 7 |  |  | 1 |  | 1 |  |  | **19** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  | 2 |  |  |  | **10** |
 | `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
@@ -238,14 +238,14 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 152 | 82% |
+| Maintainer | 153 | 82% |
 | SECURITY reviewer | 15 | 8% |
 | Maintainer + a second human | 7 | 4% |
 | SAFETY reviewer | 6 | 3% |
 | Whoever edits it next | 3 | 2% |
 | Unassigned | 2 | 1% |
 | Upstream reviewers | 1 | 1% |
-| **total** | **186** | |
+| **total** | **187** | |
 
 <!-- END GENERATED: reviewer-load -->
 
