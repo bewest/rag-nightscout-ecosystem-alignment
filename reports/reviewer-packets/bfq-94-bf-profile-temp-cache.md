@@ -73,18 +73,19 @@ maintainer
 
 2026-10-02 (session -d4): official/dev f105f688 merged into the branch locally
 as a06e75d6 (clean; differs from dev only in lib/profilefunctions.js and the
-new test); related tests 131 passing; full suite on the merged tree pending.
-Not pushed, no PR yet. 2026-10-02 (session -d4): measured in a browser and
-fixed. Severity: moderate, display only (basal pill and line keep a cancelled
-or shortened temp on an open page; a reload is right). Branch bf/profile-temp-
-cache 2a64c500, one commit on dev ca6fcfaf (lib/profilefunctions.js +6/-1;
-tests/profile-temp-cache.test.js, 4 tests, 3 fail on ca6fcfaf; break-it: reset
-only fails test 3, per-instance only fails 1-2). Full suite 3538/0/4. Harness
-tools/lab/bf94-browser/ (run 2 authoritative). PR body: reports/phase0-pr-
-bodies/profile-temp-cache.md. 2026-10-02 (maintainer, relayed by session -d4):
-taken into 15.0.9; in RT-0's blocks_on. dev is still ca6fcfaf, so no merge
-before the push. Filed 2026-09-23, a side finding of the BF-09 measurement.
-Not BF-09.
+new test); related tests 131 passing; full suite on the merged tree 3538/0/4
+(Node 24.15.0, MongoDB 7.0.43; dev f105f688 is documentation-only over
+ca6fcfaf, whose baseline is 3534). Not pushed, no PR yet. 2026-10-02 (session
+-d4): measured in a browser and fixed. Severity: moderate, display only (basal
+pill and line keep a cancelled or shortened temp on an open page; a reload is
+right). Branch bf/profile-temp-cache 2a64c500, one commit on dev ca6fcfaf
+(lib/profilefunctions.js +6/-1; tests/profile-temp-cache.test.js, 4 tests, 3
+fail on ca6fcfaf; break-it: reset only fails test 3, per-instance only fails
+1-2). Full suite 3538/0/4. Harness tools/lab/bf94-browser/ (run 2
+authoritative). PR body: reports/phase0-pr-bodies/profile-temp-cache.md.
+2026-10-02 (maintainer, relayed by session -d4): taken into 15.0.9; in RT-0's
+blocks_on. dev is still ca6fcfaf, so no merge before the push. Filed
+2026-09-23, a side finding of the BF-09 measurement. Not BF-09.
 
 ---
 
