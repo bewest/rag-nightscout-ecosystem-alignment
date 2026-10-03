@@ -55,7 +55,7 @@ release.
 
 | id | what | claimed state | waiting for | PR |
 |---|---|---|---|---|
-| `BFQ-124` | BF-124 - the treatment tooltip converts a BG already in display units (issue #59 | `in-progress` | Maintainer | &mdash; |
+| `BFQ-124` | BF-124 - the treatment tooltip converts a BG already in display units (issue #59 | `ready-to-push` | Maintainer | &mdash; |
 | `BFQ-127` | BF-127 - clock views opened from the menu are blank for a token viewer on a site | `in-progress` | Maintainer | &mdash; |
 
 <!-- END GENERATED: release-waits -->

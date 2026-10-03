@@ -31,20 +31,20 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 185 |
+| items | 186 |
 | runnable gates | 250 |
-| explicit `no-gate:` markers | 240 |
+| explicit `no-gate:` markers | 241 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 240 of the 490 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 241 of the 491 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 48 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
-| `in-progress` | 5 | BFQ-46, BFQ-ENV, BFQ-124, BFQ-127, OID-LAB |
+| `not-started` | 49 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
+| `in-progress` | 4 | BFQ-46, BFQ-ENV, BFQ-127, OID-LAB |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
-| `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
+| `ready-to-push` | 4 | P0-C-REMEDIATE, T30-AUTH, BFQ-124, WS-LAB |
 | `blocked` | 23 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, BFQ-72, BFQ-52, BFQ-93, BFQ-95, BFQ-67, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-152, BFQ-154, BFQ-156 |
 | `in-flight-upstream` | 1 | BFQ-09 |
 | `merged-upstream` | 83 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-125, BFQ-126, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
@@ -114,6 +114,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-152** BF-152 - API v3 settings are admin-only through search and history, readable by identifier with read permission
 - **BFQ-154** BF-154 - node-forge 1.4.0 (pinned in overrides) is inside an advisory range with no fixed release
 - **BFQ-156** BF-156 - API v3 auto-prune never handles its delete's result; a failed delete ends the process
+- **BFQ-157** BF-157 - a treatment's glucose bubble is placed as mg/dL when its units are spelled mmol/L
 - **BFQ-134** BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 - **BFQ-129** BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500
 - **BFQ-133** BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one (fixed by BF-146's #8784), merged for 15.0.9
@@ -2109,7 +2110,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 100 items
+`parcel: register-open` &mdash; 101 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2180,7 +2181,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-121` | BF-121 - two carb entries at the same time are stored as one, and the carbs of one are lost (issue #8185) | `merged-upstream` | `bf/same-time-treatments` | minor | 1 run + 3 no-gate |
 | `BFQ-122` | BF-122 - records written, changed or deleted through API v1 never appear in API v3 history (issue #8244); BF-135 - a record AndroidAPS deletes keeps counting | `merged-upstream` | `bf/v1-writes-v3-history` | minor | 2 run + 2 no-gate |
 | `BFQ-123` | BF-123 - an AndroidAPS Profile Switch percentage is ignored in the basal, ISF and carb ratio Nightscout shows (issue #7771) | `merged-upstream` | `bf/profile-switch-percentage` | patch | 1 run + 2 no-gate |
-| `BFQ-124` | BF-124 - the treatment tooltip converts a BG already in display units (issue #5940) | `in-progress` | `bf/tooltip-bg-units` | patch | 1 run + 1 no-gate |
+| `BFQ-124` | BF-124 - the treatment tooltip converts a BG already in display units (issue #5940) | `ready-to-push` | `bf/tooltip-bg-units` | patch | 1 run + 1 no-gate |
 | `BFQ-125` | BF-125 - IFTTT Maker alarm events use translated level names; a failed call re-sends every check (issue #8104) | `merged-upstream` | `bf/maker-level-names` | patch | 1 run + 1 no-gate |
 | `BFQ-126` | BF-126 - an authorization subject without a name ends the server at every boot (issue #7110) | `merged-upstream` | `bf/authsubject-nameless` | patch | 1 run + 1 no-gate |
 | `BFQ-127` | BF-127 - clock views opened from the menu are blank for a token viewer on a site that denies anonymous reads (issue #7377) | `in-progress` | `bf/clock-token-link` | patch | 1 run + 1 no-gate |
@@ -2200,6 +2201,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-155` | BF-155 - a failed storage read on GET /api/v1/activity ends the server process, for 15.0.9 | `merged-upstream` | `bf/activity-read-error` | patch | 1 run + 1 no-gate |
 | `BFQ-156` | BF-156 - API v3 auto-prune never handles its delete's result; a failed delete ends the process | `blocked` | `bf/autoprune-promise` | patch | 0 run + 1 no-gate |
 | `BFQ-CONFIG-DOCS` | bf/config-docs-truth - documentation for BF-46, BF-48, BF-49, BF-74, BF-78, BF-81 and the fixes for BF-50, BF-51, for 15.0.9 | `merged-upstream` | `bf/config-docs-truth` | patch | 1 run + 1 no-gate |
+| `BFQ-157` | BF-157 - a treatment's glucose bubble is placed as mg/dL when its units are spelled mmol/L | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `merged-upstream` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
 | `WS-LAB` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | `ready-to-push` | `main` | n/a | 1 run + 1 no-gate |
@@ -4314,7 +4316,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/tooltip-bg-units` |
 | base | `official/dev@74942ec6` |
@@ -4341,7 +4343,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `tools/lab/triage-2026-09/tooltip-bg-units.js`
 
-**Notes.** 2026-10-02 (maintainer, relayed by session -d4): FIX IN 15.0.9; in RT-0's blocks_on. Local branch bf/tooltip-bg-units being prepared by -d4's agent in externals/work/crm-bf124 off dev 74942ec6, not pushed. Filed 2026-09-25 from the GitHub issue triage (issue #5940, opened 2020-09-01). Client-side only. The BG Check tooltip (addTreatmentCircles) prints the stored value and is not affected.
+**Notes.** 2026-10-03 (session -d4's agent): bf/tooltip-bg-units affbc8fd, one commit on dev 74942ec6 (lib/client/renderer.js +13/-3; new tests/client.renderer.tooltip-units.test.js, 14 tests, 7 fail on 74942ec6 with the register's numbers; mutation checks fail the controls). Chromium, careportal Meal Bolus BG 5 on an mmol/L site with an mg/dL profile: dev shows 0.3, the branch 5, three runs each. Full suite 3552/0/4 (Node 22.23.2, MongoDB 7.0.43). Not pushed. Side findings: BF-157 (bubble position, filed); an occasional first-load redirect to /profile in the harness on both trees, possibly JL-2, not investigated. 2026-10-02 (maintainer, relayed by session -d4): FIX IN 15.0.9; in RT-0's blocks_on. Local branch bf/tooltip-bg-units being prepared by -d4's agent in externals/work/crm-bf124 off dev 74942ec6, not pushed. Filed 2026-09-25 from the GitHub issue triage (issue #5940, opened 2020-09-01). Client-side only. The BG Check tooltip (addTreatmentCircles) prints the stored value and is not affected.
 
 ### `BFQ-125` &mdash; BF-125 - IFTTT Maker alarm events use translated level names; a failed call re-sends every check (issue #8104)
 
@@ -4955,6 +4957,36 @@ distinction is the only thing that makes the register mean anything - widening
 - `reports/phase0-pr-bodies/config-docs-truth.md`
 
 **Notes.** 2026-10-02: opened and merged by the maintainer as #8799 (merge f105f688, 23:58Z, head e42144ff), CI 14 passed and 2 skipped. 2026-10-02 (maintainer, relayed by session -d4): draft README wording for BF-74, BF-78 and BF-81 added (1c09b22d, b09c0af9, e42144ff), for the maintainer to edit in the PR; full suite 3534/0/4. BF-78's boot warning is after 15.0.9. Decided 2026-10-02 (maintainer, relayed by session -d4): goes into 15.0.9; in RT-0's blocks_on. Split out of BFQ-46 and BFQ-ENV so that the release waits on this branch only: their code half (env.js routing for API3_* and WEBHOOK_*, the HSTS alias) is after 15.0.9 and stays on those items. Not pushed.
+
+### `BFQ-157` &mdash; BF-157 - a treatment's glucose bubble is placed as mg/dL when its units are spelled mmol/L
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@74942ec6` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-157` |
+
+**Blast radius.** lib/report_plugins/utils.js:69-77 and lib/data/treatmenttocurve.js:66: read the units with the same normalisation BF-124's fix uses.
+
+**What an operator sees.** On a site that shows mmol/L, a treatment saved with its glucose in "mmol/L" could be drawn in the wrong place on the chart. The number itself is not affected.
+
+**Why `patch`.** a display position
+
+**Gates.**
+
+- **NO GATE** &mdash; Read, not run: the exact comparison is confirmed in the code on dev 74942ec6. A browser or renderer measurement is owed before a fix.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Filed 2026-10-03 from session -d4's BF-124 work. Not decided for 15.0.9.
 
 ### `BFQ-134` &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 

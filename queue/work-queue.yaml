@@ -10130,7 +10130,7 @@ items:
     branch: bf/tooltip-bg-units
     base: official/dev@74942ec6
     worktree: externals/work/crm-bf124
-    state: in-progress
+    state: ready-to-push
     pr: []
     ships_to_operators_today: true
     blast_radius: >
@@ -10171,6 +10171,16 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/lab/triage-2026-09/tooltip-bg-units.js
     notes: >
+      2026-10-03 (session -d4's agent): bf/tooltip-bg-units affbc8fd, one
+      commit on dev 74942ec6 (lib/client/renderer.js +13/-3; new
+      tests/client.renderer.tooltip-units.test.js, 14 tests, 7 fail on
+      74942ec6 with the register's numbers; mutation checks fail the
+      controls). Chromium, careportal Meal Bolus BG 5 on an mmol/L site with
+      an mg/dL profile: dev shows 0.3, the branch 5, three runs each. Full
+      suite 3552/0/4 (Node 22.23.2, MongoDB 7.0.43). Not pushed. Side
+      findings: BF-157 (bubble position, filed); an occasional first-load
+      redirect to /profile in the harness on both trees, possibly JL-2, not
+      investigated.
       2026-10-02 (maintainer, relayed by session -d4): FIX IN 15.0.9; in RT-0's blocks_on.
       Local branch bf/tooltip-bg-units being prepared by -d4's agent in externals/work/crm-bf124 off
       dev 74942ec6, not pushed.
@@ -11606,6 +11616,35 @@ items:
       the release waits on this branch only: their code half (env.js routing
       for API3_* and WEBHOOK_*, the HSTS alias) is after 15.0.9 and stays on
       those items. Not pushed.
+  - id: BFQ-157
+    title: "BF-157 - a treatment's glucose bubble is placed as mg/dL when its units are spelled mmol/L"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@74942ec6
+    state: not-started
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/report_plugins/utils.js:69-77 and lib/data/treatmenttocurve.js:66:
+      read the units with the same normalisation BF-124's fix uses.
+    review: maintainer
+    operator_visible: >
+      On a site that shows mmol/L, a treatment saved with its glucose in
+      "mmol/L" could be drawn in the wrong place on the chart. The number
+      itself is not affected.
+    semver: patch
+    semver_reason: a display position
+    register: [BF-157]
+    gates:
+      - no-gate: >
+          Read, not run: the exact comparison is confirmed in the code on dev
+          74942ec6. A browser or renderer measurement is owed before a fix.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Filed 2026-10-03 from session -d4's BF-124 work. Not decided for 15.0.9.
   - id: RT-PR-8781
     title: "#8781 - treatment retries keep srvCreated, empty identities match, history clock survives a restart (AndyLow91; BF-141, BF-143, BF-144), merged for 15.0.9"
     parcel: release-train
