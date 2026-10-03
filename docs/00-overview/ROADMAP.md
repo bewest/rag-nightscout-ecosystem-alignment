@@ -1,7 +1,7 @@
 # Roadmap — what comes next, and in what order
 
 *Prepared for the Nightscout project; proposed for Nightscout Foundation stewardship. Contributor-facing. Living document: prose dated
-2026-10-03 against cgm-remote-monitor `official/dev` `74942ec6` and `official/master` `92d08342`
+2026-10-03 against cgm-remote-monitor `official/dev` `1ad03e29` and `official/master` `92d08342`
 (tag `15.0.8`). The two order tables are generated from `queue/work-queue.yaml`, and
 `make views-check` fails when they drift.*
 
