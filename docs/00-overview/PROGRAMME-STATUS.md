@@ -105,9 +105,9 @@ image; that is not a release. `RT-0` (release 15.0.9) is the item that changes t
 If a defect marked `fixed` or `merged` exists in 15.0.8, anyone running 15.0.8 still has it.
 
 The size of that, from the register's §1 (the section whose defects reach existing operators),
-measured 2026-10-03 with `node tools/queue/gates/register-exposure-legend.js`: **111 defects**
+measured 2026-10-03 with `node tools/queue/gates/register-exposure-legend.js`: **112 defects**
 (BF-12, invalid, BF-41, closed, and BF-71, closed as working as intended, excluded) — 22 `open`,
-85 `merged`, 1 `partly merged`, 3 `fixed` (BF-52; BF-09 and BF-156 on unmerged branches). A few were introduced and repaired on `dev` before any release (BF-80, BF-106 and
+85 `merged`, 1 `partly merged`, 4 `fixed` (BF-52; BF-09, BF-124 and BF-156 on unmerged branches). A few were introduced and repaired on `dev` before any release (BF-80, BF-106 and
 BF-142, as of 2026-09-26), so they never reached 15.0.8. The count moves when entries are filed or
 merged; re-run the gate before quoting it.
 
