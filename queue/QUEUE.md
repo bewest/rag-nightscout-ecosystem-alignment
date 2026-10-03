@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 187 |
+| items | 189 |
 | runnable gates | 250 |
-| explicit `no-gate:` markers | 242 |
+| explicit `no-gate:` markers | 244 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 242 of the 492 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 244 of the 494 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 50 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
+| `not-started` | 52 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
 | `in-progress` | 3 | BFQ-46, BFQ-ENV, OID-LAB |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
@@ -114,6 +114,8 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-154** BF-154 - node-forge 1.4.0 (pinned in overrides) is inside an advisory range with no fixed release
 - **BFQ-156** BF-156 - API v3 auto-prune never handles its delete's result; a failed delete ends the process
 - **BFQ-157** BF-157 - a treatment's glucose bubble is placed as mg/dL when its units are spelled mmol/L
+- **BFQ-159** BF-159 - the main page sometimes leaves for the Profile Editor while a profile exists, without the token
+- **BFQ-160** BF-160 - the clock designer's link target is written with curly quotes
 - **BFQ-134** BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 - **BFQ-129** BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500
 - **BFQ-133** BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one (fixed by BF-146's #8784), merged for 15.0.9
@@ -2109,7 +2111,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 102 items
+`parcel: register-open` &mdash; 104 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2202,6 +2204,8 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-156` | BF-156 - API v3 auto-prune never handles its delete's result; a failed delete ends the process | `blocked` | `bf/autoprune-promise` | patch | 0 run + 1 no-gate |
 | `BFQ-CONFIG-DOCS` | bf/config-docs-truth - documentation for BF-46, BF-48, BF-49, BF-74, BF-78, BF-81 and the fixes for BF-50, BF-51, for 15.0.9 | `merged-upstream` | `bf/config-docs-truth` | patch | 1 run + 1 no-gate |
 | `BFQ-157` | BF-157 - a treatment's glucose bubble is placed as mg/dL when its units are spelled mmol/L | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `BFQ-159` | BF-159 - the main page sometimes leaves for the Profile Editor while a profile exists, without the token | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `BFQ-160` | BF-160 - the clock designer's link target is written with curly quotes | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `merged-upstream` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
 | `WS-LAB` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | `ready-to-push` | `main` | n/a | 1 run + 1 no-gate |
@@ -5017,6 +5021,67 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
 **Notes.** Filed 2026-10-03 from session -d4's BF-124 work. Not decided for 15.0.9.
+
+### `BFQ-159` &mdash; BF-159 - the main page sometimes leaves for the Profile Editor while a profile exists, without the token
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@68262e86` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-159` |
+
+**Blast radius.** lib/client/renderer.js:1103-1111, the basal-render check that sends the page to /profile; the fix is to wait for the profile before deciding there is none, and to keep the page's token on the redirect.
+
+**What an operator sees.** Sometimes, when Nightscout's main page loads, it says it is sending you to the Profile Editor to create a profile even though you have one. On a site that needs a token to view, the Profile Editor then opens without the token.
+
+**Why `patch`.** a client-side load-order fix
+
+**Gates.**
+
+- **NO GATE** &mdash; Seen, not isolated: 5 of 10 automated loads redirected (tools/lab/triage-2026-09/results-bf124/, dev 74942ec6 and BF-124's branch). A gate would load the page repeatedly with a profile in effect and count redirects; the token loss needs a run on a denied site.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `tools/lab/triage-2026-09/results-bf124/browser-probe.js`
+
+**Notes.** Filed 2026-10-03 from session -d4's BF-124 and BF-127 browser runs. After 15.0.9 (maintainer, 2026-10-03). The same check is at renderer.js:1072 on v15.0.8; whether 15.0.8 shows the redirect as often is not measured.
+
+### `BFQ-160` &mdash; BF-160 - the clock designer's link target is written with curly quotes
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@68262e86` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-160` |
+
+**Blast radius.** views/clockviews/clock-config.html:27, one attribute: straight quotes around _blank.
+
+**What an operator sees.** The clock designer's "Open my clock view!" link reuses one window instead of opening a new tab each time.
+
+**Why `patch`.** markup fix
+
+**Gates.**
+
+- **NO GATE** &mdash; Read, not run: the curly quotes are in the file on dev 68262e86 and v15.0.8. A gate would grep the attribute for straight quotes.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Filed 2026-10-03 from session -d4's BF-127 work. After 15.0.9 (maintainer, 2026-10-03). PR #8802 edits the same file (the link's href), so a fix should go on top of it once it merges.
 
 ### `BFQ-134` &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 

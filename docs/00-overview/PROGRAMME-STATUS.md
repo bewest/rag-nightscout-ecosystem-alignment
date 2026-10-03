@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 134 | 36 | 7 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 136 | 38 | 7 |
 | **Modernization** | `release-train` | 32 | 5 | 2 |
 | **Multitenant** | `tenancy` | 19 | 9 | 3 |
-| | **total** | **187** | **50** | **12** |
+| | **total** | **189** | **52** | **12** |
 
 <!-- END GENERATED: horizons -->
 
@@ -105,8 +105,8 @@ image; that is not a release. `RT-0` (release 15.0.9) is the item that changes t
 If a defect marked `fixed` or `merged` exists in 15.0.8, anyone running 15.0.8 still has it.
 
 The size of that, from the register's §1 (the section whose defects reach existing operators),
-measured 2026-10-03 with `node tools/queue/gates/register-exposure-legend.js`: **112 defects**
-(BF-12, invalid, BF-41, closed, and BF-71, closed as working as intended, excluded) — 20 `open`,
+measured 2026-10-03 with `node tools/queue/gates/register-exposure-legend.js`: **114 defects**
+(BF-12, invalid, BF-41, closed, and BF-71, closed as working as intended, excluded) — 22 `open`,
 87 `merged`, 1 `partly merged`, 4 `fixed` (BF-52; BF-09, BF-127 and BF-156 on unmerged branches). A few were introduced and repaired on `dev` before any release (BF-80, BF-106 and
 BF-142, as of 2026-09-26), so they never reached 15.0.8. The count moves when entries are filed or
 merged; re-run the gate before quoting it.
@@ -164,6 +164,8 @@ cover more than one `BF-`:
 | `BFQ-154` | `blocked` | BF-154 - node-forge 1.4.0 (pinned in overrides) is inside an advisory range with no fixed  |
 | `BFQ-156` | `blocked` | BF-156 - API v3 auto-prune never handles its delete's result; a failed delete ends the pro |
 | `BFQ-157` | `not-started` | BF-157 - a treatment's glucose bubble is placed as mg/dL when its units are spelled mmol/L |
+| `BFQ-159` | `not-started` | BF-159 - the main page sometimes leaves for the Profile Editor while a profile exists, wit |
+| `BFQ-160` | `not-started` | BF-160 - the clock designer's link target is written with curly quotes |
 | `BFQ-40` | `merged-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `in-progress` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
 | `BFQ-47` | `merged-upstream` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
@@ -199,7 +201,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  | 17 |  | 1 |  |  |  | **22** |
 | `release-train` | 5 |  | 5 |  | 5 |  | 13 | 2 | 1 |  |  | 1 | **32** |
-| `register-open` | 26 | 3 | 1 | 1 | 11 | 2 | 52 | 3 |  |  | 3 |  | **102** |
+| `register-open` | 28 | 3 | 1 | 1 | 11 | 2 | 52 | 3 |  |  | 3 |  | **104** |
 | `tenancy` | 9 |  |  | 1 | 7 |  |  | 1 |  | 1 |  |  | **19** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  | 2 |  |  |  | **10** |
 | `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
@@ -238,14 +240,14 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 153 | 82% |
+| Maintainer | 155 | 82% |
 | SECURITY reviewer | 15 | 8% |
 | Maintainer + a second human | 7 | 4% |
 | SAFETY reviewer | 6 | 3% |
 | Whoever edits it next | 3 | 2% |
 | Unassigned | 2 | 1% |
 | Upstream reviewers | 1 | 1% |
-| **total** | **187** | |
+| **total** | **189** | |
 
 <!-- END GENERATED: reviewer-load -->
 

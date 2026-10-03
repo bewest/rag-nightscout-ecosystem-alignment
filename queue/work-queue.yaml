@@ -11700,6 +11700,72 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
       Filed 2026-10-03 from session -d4's BF-124 work. Not decided for 15.0.9.
+  - id: BFQ-159
+    title: "BF-159 - the main page sometimes leaves for the Profile Editor while a profile exists, without the token"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@68262e86
+    state: not-started
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/client/renderer.js:1103-1111, the basal-render check that sends the
+      page to /profile; the fix is to wait for the profile before deciding
+      there is none, and to keep the page's token on the redirect.
+    review: maintainer
+    operator_visible: >
+      Sometimes, when Nightscout's main page loads, it says it is sending you
+      to the Profile Editor to create a profile even though you have one. On a
+      site that needs a token to view, the Profile Editor then opens without
+      the token.
+    semver: patch
+    semver_reason: a client-side load-order fix
+    register: [BF-159]
+    gates:
+      - no-gate: >
+          Seen, not isolated: 5 of 10 automated loads redirected
+          (tools/lab/triage-2026-09/results-bf124/, dev 74942ec6 and BF-124's
+          branch). A gate would load the page repeatedly with a profile in effect
+          and count redirects; the token loss needs a run on a denied site.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - tools/lab/triage-2026-09/results-bf124/browser-probe.js
+    notes: >
+      Filed 2026-10-03 from session -d4's BF-124 and BF-127 browser runs. After
+      15.0.9 (maintainer, 2026-10-03). The same check is at renderer.js:1072
+      on v15.0.8; whether 15.0.8 shows the redirect as often is not measured.
+  - id: BFQ-160
+    title: "BF-160 - the clock designer's link target is written with curly quotes"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@68262e86
+    state: not-started
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      views/clockviews/clock-config.html:27, one attribute: straight quotes
+      around _blank.
+    review: maintainer
+    operator_visible: >
+      The clock designer's "Open my clock view!" link reuses one window
+      instead of opening a new tab each time.
+    semver: patch
+    semver_reason: markup fix
+    register: [BF-160]
+    gates:
+      - no-gate: >
+          Read, not run: the curly quotes are in the file on dev 68262e86 and
+          v15.0.8. A gate would grep the attribute for straight quotes.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Filed 2026-10-03 from session -d4's BF-127 work. After 15.0.9
+      (maintainer, 2026-10-03). PR #8802 edits the same file (the link's
+      href), so a fix should go on top of it once it merges.
   - id: RT-PR-8781
     title: "#8781 - treatment retries keep srvCreated, empty identities match, history clock survives a restart (AndyLow91; BF-141, BF-143, BF-144), merged for 15.0.9"
     parcel: release-train
