@@ -2,7 +2,7 @@
 
 *Contributor-facing. The subset of the work queue where no further engineering
 advances anything — a person has to push, decide, or review. Prose revised
-2026-10-02 against cgm-remote-monitor `official/dev` `ca6fcfaf` and nightscout-connect
+2026-10-03 against cgm-remote-monitor `official/dev` `74942ec6` and nightscout-connect
 `official/main` `4dde1ec` (tag `v0.1.0`); tables generated.*
 
 This page lists only the items whose claimed state means **the next move belongs to
@@ -27,19 +27,16 @@ they need is a release, and that is one item — `RT-0` — which is listed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 12 items
+### Maintainer &mdash; 9 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `BFQ-09` | `in-flight-upstream` | BF-09 - socket dedup truthiness skips a falsy value | #8797 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
-| `BFQ-152` | `needs-decision` | BF-152 - API v3 settings are admin-only through search and history, readable by  | &mdash; |
-| `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm | &mdash; |
 | `DEPENDABOT-CONFIG` | `needs-decision` | Dependabot runs with no configuration: security PRs target master, and alerts co | &mdash; |
 | `RT-PROPAGATION` | `needs-decision` | How the release train reaches dev: merge dev into the cuts, or rebase the cuts o | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
-| `BFQ-94` | `ready-to-push` | BF-94 - a kept profile instance can return a temp basal that has been replaced | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `WS-LAB` | `ready-to-push` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | &mdash; |
@@ -72,7 +69,8 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 
 <!-- END GENERATED: open-prs -->
 
-Every PR decided for 15.0.9 is merged; `RT-0` below gives the release's state.
+Every PR decided for 15.0.9 is merged except the fixes for BF-124 and BF-127, whose branches are
+being prepared; `RT-0` below gives the release's state.
 
 The connector half is released. On 2026-09-24 the maintainer merged `nightscout-connect` #70
 (`dev` → `main`, `4dde1ec`) and tagged `main` `v0.1.0`. npm's `latest` is `0.1.0`, with
@@ -96,8 +94,8 @@ which is on 15.0.8 as well and is tracked as `BFQ-103`.
 
 ### `RT-0` — release 15.0.9
 
-The most consequential row on this page. `dev` is at `ca6fcfaf` (the merge of #8796, 2026-10-02):
-93 first-parent merges and 525 commits since 15.0.8
+The most consequential row on this page. `dev` is at `74942ec6` (the merge of #8800, 2026-10-03):
+95 first-parent merges and 537 commits since 15.0.8
 (`git rev-list [--first-parent] --count official/master..official/dev`). Until 15.0.9 ships, every
 one of those fixes exists in code and protects nobody. They include the fixes for two
 published-advisory defects that survive `AUTH_DEFAULT_ROLES=denied`, GHSA-gjhc (BF-79, #8744) and
@@ -105,22 +103,22 @@ GHSA-8849 (BF-75/76, #8745), the boot notice for world-readable sites (#8746), a
 backported security fixes (BF-104, BF-105, #8751); every instance on 15.0.8 is still exposed to all
 of them.
 
-- **Merged.** Every PR decided for 15.0.9, the last being #8796 (BF-155); the list is in
+- **Merged.** Every PR decided for 15.0.9 except the fixes for BF-124 and BF-127, decided 2026-10-02 and on branches being prepared (queue `BFQ-124`, `BFQ-127`), the last being #8800 (BF-94); the list is in
   [contents.md](../../releases/cgm-remote-monitor-15.0.9/contents.md), which also says what the
   release leaves broken. Crowdin #8730 is held out because its sync reverts translations `dev`
   corrected (BF-132).
 - **Tests.** The last full run is run 020 on `ce30a94d` (2026-09-27): 3473/0/3 in all six cells
   (Node 20, 22 and 24 against MongoDB 4.4.24 and 7.0.43), with an A/B soak against 15.0.8. Each PR
-  merged since carries its own evidence (its GitHub CI and a full suite on its branch). #8796's head
-  `e20b66ba` has the same tree as `ca6fcfaf`, and passes the full suite, 3534/0/4, on one cell
-  (Node 22, MongoDB 7.0.43). A full six-cell run on `ca6fcfaf` comes next
+  merged since carries its own evidence (its GitHub CI and a full suite on its branch). #8800's head
+  `a06e75d6` has the same tree as `74942ec6`, and passes the full suite, 3538/0/4, on one cell
+  (Node 24, MongoDB 7.0.43). A full six-cell run on `74942ec6` comes next
   ([15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md)).
 - **Real-site soak.** `RT-SOAK` is done: the maintainer decided on 2026-09-30 that real sites
   running the candidate count as the soak, and reports (2026-10-02) stable behaviour from Loop, Trio
   and AndroidAPS users on `dev`. The lab's 72 h soak was not run.
-- **Release PR.** #8598 (`dev` → `master`) is at `ca6fcfaf` and mergeable; its CI on `ca6fcfaf`:
-  27 checks passed, 3 skipped (read 2026-10-02 18:15Z).
-  It was approved at `e3adc91d`; re-approval at `ca6fcfaf` is owed.
+- **Release PR.** #8598 (`dev` → `master`) is at `74942ec6` and mergeable; its CI on `74942ec6`:
+  27 checks passed, 3 skipped (read 2026-10-03 00:21Z).
+  It was approved at `e3adc91d`; re-approval at `74942ec6` is owed.
 - **Version.** Decided: 15.0.9. `RT-VERSION`'s gate measures the modernization cut branches, which
   also declare 15.0.9 and are renumbered when they are rebased; it holds the cuts, not this release.
 - **What remains** before the tag, including the queue's open `RT-0` blockers, is listed once, in [ROADMAP §1](ROADMAP.md#1-the-next-release-1509).

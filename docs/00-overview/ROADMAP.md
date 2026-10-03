@@ -1,7 +1,7 @@
 # Roadmap — what comes next, and in what order
 
 *Prepared for the Nightscout project; proposed for Nightscout Foundation stewardship. Contributor-facing. Living document: prose dated
-2026-10-02 against cgm-remote-monitor `official/dev` `ca6fcfaf` and `official/master` `92d08342`
+2026-10-03 against cgm-remote-monitor `official/dev` `74942ec6` and `official/master` `92d08342`
 (tag `15.0.8`). The two order tables are generated from `queue/work-queue.yaml`, and
 `make views-check` fails when they drift.*
 
@@ -37,13 +37,13 @@ Everything merged since 15.0.8 reaches operators only through 15.0.9 (queue `RT-
 #8598), and every later step waits behind it. Operators running 15.0.8 keep every defect fixed on
 `dev` until it is tagged.
 
-`dev` is at `ca6fcfaf` (the merge of #8796, 2026-10-02): 93 first-parent merges and 525 commits
-since 15.0.8. Every PR decided for 15.0.9 is merged; Crowdin #8730 is held out (BF-132). The last
+`dev` is at `74942ec6` (the merge of #8800, 2026-10-03): 95 first-parent merges and 537 commits
+since 15.0.8. Every PR decided for 15.0.9 is merged except the fixes for BF-124 and BF-127, decided 2026-10-02 and on branches being prepared (queue `BFQ-124`, `BFQ-127`); Crowdin #8730 is held out (BF-132). The last
 full run is run 020 on `ce30a94d` (2026-09-27), 3473/0/3 in all six cells; each PR merged since
-carries its own evidence, and #8796's head `e20b66ba`, the same tree as `ca6fcfaf`, passes the full
-suite, 3534/0/4, on one cell (Node 22, MongoDB 7.0.43). The real-site soak (`RT-SOAK`) is done by
-the maintainer's decision of 2026-09-30. Release PR #8598 is at `ca6fcfaf`, approved at `e3adc91d`;
-its CI on `ca6fcfaf`: 27 checks passed, 3 skipped (read 2026-10-02 18:15Z).
+carries its own evidence, and #8800's head `a06e75d6`, the same tree as `74942ec6`, passes the full
+suite, 3538/0/4, on one cell (Node 24, MongoDB 7.0.43). The real-site soak (`RT-SOAK`) is done by
+the maintainer's decision of 2026-09-30. Release PR #8598 is at `74942ec6`, approved at `e3adc91d`;
+its CI on `74942ec6`: 27 checks passed, 3 skipped (read 2026-10-03 00:21Z).
 
 The version is decided: 15.0.9. `RT-VERSION`'s gate measures the modernization cut branches, which
 also declare 15.0.9 and are renumbered when they are rebased, so it holds the cuts, not this
@@ -55,28 +55,37 @@ release.
 
 | id | what | claimed state | waiting for | PR |
 |---|---|---|---|---|
-| `BFQ-94` | BF-94 - a kept profile instance can return a temp basal that has been replaced | `ready-to-push` | Maintainer | &mdash; |
+| `BFQ-124` | BF-124 - the treatment tooltip converts a BG already in display units (issue #59 | `in-progress` | Maintainer | &mdash; |
+| `BFQ-127` | BF-127 - clock views opened from the menu are blank for a token viewer on a site | `in-progress` | Maintainer | &mdash; |
 
 <!-- END GENERATED: release-waits -->
 
 Before the tag, and not queue items of their own (they are in `RT-0`'s notes and gates):
 
-1. One full six-cell run on `ca6fcfaf`
+1. The fixes for BF-124 (the treatment tooltip's BG units) and BF-127 (a clock view opened from
+   the menu is blank for a token viewer on a site that requires sign-in), decided for 15.0.9 on
+   2026-10-02; the branches are being prepared on `74942ec6` and are not pushed (`BFQ-124`,
+   `BFQ-127` above).
+2. One full six-cell run on the final head
    ([integration record](../30-design/remedial/rc-15.0.9-integration-record.md)).
-2. The browser hand checks still owed: a remote bolus; LoopCaregiver from its own app; clock views;
+3. The browser hand checks still owed: a remote bolus; LoopCaregiver from its own app; clock views;
    the pump pill; alarm level labels; the Bolus Wizard Preview pill and reports during a percentage
    switch; the Day to Day report (#8788, smoke checklist §3); the Food Editor on a touch screen
-   (#8790, smoke checklist §5). The rest was checked by hand on `ff93fa94` on 2026-09-26
+   (#8790, smoke checklist §5); an AndroidAPS (API v3) or Trio temp basal cancelled while a page is
+   open (#8800, BF-94; `tools/lab/bf94-browser` drives it in Chromium). The rest was checked by hand on `ff93fa94` on 2026-09-26
    ([browser record](../60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.md)).
-3. The version class of #8772, #8775 and #8780: a minor change shipped under the patch number as an
+4. The version class of #8772, #8775 and #8780: a minor change shipped under the patch number as an
    exception, as #8530 was, or a different class. The maintainer is collecting data.
-4. Re-approval of #8598 at its final head (`ca6fcfaf` unless `dev` moves).
-5. Settled 2026-10-02 (maintainer): the release notes name BF-154, the `node-forge` advisory
-   GHSA-86w9-cpqp-85rv behind the 2 high among `npm audit`'s 10 findings on `25fc41d9` (#8796 changes no package
-   file, so the figures stand for `ca6fcfaf`). It has no
+5. Re-approval of #8598 at its final head.
+6. Settled 2026-10-02 (maintainer): the release notes name BF-154, the `node-forge` advisory
+   GHSA-86w9-cpqp-85rv behind the 2 high among `npm audit`'s 10 findings on `25fc41d9` (#8796, #8799 and #8800
+   change no package file, so the figures stand for `74942ec6`). It has no
    fixed release and Nightscout does not call the affected function (read from the code), so it is
    filed as low and does not block the release ([contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#node-forge-ghsa-86w9-cpqp-85rv)).
-6. The tag, by the maintainer. The release notes and tag message are drafted on `ca6fcfaf`.
+7. The `CHANGELOG.md` question: `dev` carries a hand-written `## [Unreleased]` section against the
+   rule that the changelog is generated at release time; no decision is recorded
+   ([contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#open-items-a-releaser-must-settle)).
+8. The tag, by the maintainer. The release notes and tag message are drafted on `74942ec6`.
 
 The other 8 `npm audit` findings are triaged in
 [contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#npm-audit-and-dependabot-triage).
@@ -124,7 +133,7 @@ rebase cut 1 is right after 15.0.9 is tagged, while `dev` is quiet.
 | 1 | `RT-REBASE` | Cuts 1-5 are far behind dev and all five conflict | `gate-not-met` | &mdash; |
 | 1 | `RT-VERSION` | Two artefacts claim version 15.0.9 with different Node floors | `not-started` | &mdash; |
 | 2 | `OID-MIGRATION` | Opt-in migration that stores every string _id as the ObjectId it names, then ret | `not-started` | `OID-PREVALENCE` |
-| 2 | `RT-0` | Release 15.0.9 | `needs-decision` | `BFQ-94` |
+| 2 | `RT-0` | Release 15.0.9 | `needs-decision` | `BFQ-124`, `BFQ-127` |
 | 3 | `RT-1` | Cut 1 - chore/retire-jsdom | `blocked` | `RT-0`, `RT-REBASE` |
 | 4 | `RT-2` | Cut 2 - chore/build-runtime-separation | `blocked` | `RT-1` |
 | 4 | `RT-D3-SUITE` | The treatment-drag clamps get a regression test in cut 1's real-browser suite | `blocked` | `RT-1` |

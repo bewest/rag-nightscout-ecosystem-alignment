@@ -1,7 +1,7 @@
 # Nightscout 15.0.9 — testing notes for the release candidate
 
 **DRAFT — prepared for maintainer review before it is shared.** Kept current as reports arrive and
-as the test build changes. Last updated 2026-10-02.
+as the test build changes. Last updated 2026-10-03.
 
 *For people who would like to help test the next Nightscout release before it comes out. Part 1 is
 for people who **use** a Nightscout site, for themselves or a family member. Part 2 is for people who
@@ -82,8 +82,8 @@ notes.
 
 ## Getting the test build
 
-The test build is the `dev` branch of `nightscout/cgm-remote-monitor` at commit **`ca6fcfaf`**
-(full: `ca6fcfaf2a17b3913fa49824859bb11ee963a3c3`, 2026-10-02). Its version reads **15.0.9**. Since
+The test build is the `dev` branch of `nightscout/cgm-remote-monitor` at commit **`74942ec6`**
+(full: `74942ec6f5035f06a9d9d6de9bcc71e72da0de56`, 2026-10-03). Its version reads **15.0.9**. Since
 the earlier test build `7000eb18` it adds:
 
 - the Day to Day report shows events that run past midnight on both days (see 1.7);
@@ -95,16 +95,20 @@ the earlier test build `7000eb18` it adds:
 - a fix for a problem reading from the database while answering a request for the activity log or
   the current profile, which stopped Nightscout until it was restarted; it now answers that request
   with an error and keeps running (nothing to test by hand);
+- a page that is already open shows a temp basal that AndroidAPS or Trio cancels or shortens as
+  cancelled or shortened, without reloading (see 1.9);
+- the setup guide (README) describes the settings the code reads, including the API v3 settings
+  (nothing to test by hand; see the release notes);
 - updated versions of several software libraries it uses, with no change to what you see.
 
 If you are running `7000eb18` or a later `dev` build, keep going: your reports still count.
 
-- **Docker:** `nightscout/cgm-remote-monitor:dev_ca6fcfaf2a17b3913fa49824859bb11ee963a3c3`. This tag
-  always means exactly this build. `latest_dev` means "the newest `dev`" and moves when `dev` changes. `latest_dev` means "the newest `dev`" and moves when `dev` changes, so check which
-  commit it is before relying on it.
+- **Docker:** `nightscout/cgm-remote-monitor:dev_74942ec6f5035f06a9d9d6de9bcc71e72da0de56`. This tag
+  always means exactly this build. `latest_dev` means "the newest `dev`" and moves when `dev` changes,
+  so check which commit it is before relying on it.
 - **Deploying from your own copy of the code** (Heroku, Railway, Northflank, Render, a VPS and
   similar): update your copy's `dev` branch from `nightscout/cgm-remote-monitor` and deploy that
-  branch. Check the commit is `ca6fcfaf`.
+  branch. Check the commit is `74942ec6`.
 - **A hosting service that runs Nightscout for you:** ask them whether they offer the test build.
 
 If `dev` moves to a new commit before the release, these notes will name it.
@@ -181,7 +185,8 @@ to check:
 
 - **Clock views** (menu → Clock, or `/clock/…`): they should show when their reading is old, including
   after the page loses its connection. If your site needs a login, a clock opened from the menu can
-  be blank (a known issue); opening it directly with a token in the address should work.
+  be blank on this test build (a fix for 15.0.9 is being prepared); opening it directly with a
+  token in the address should work.
 - **Watch faces** that read your site: the change since the last reading (delta) and any bolus
   estimate should look right **without** any adjustment. If you had set up a watch face to multiply
   or divide by 18, undo that and tell us whether the numbers are right.
@@ -226,6 +231,21 @@ could not be scrolled with a finger on a touch screen. With some foods and quick
   as it did on 15.0.8.
 
 Tell us your phone or tablet and browser if a swipe does not scroll.
+
+## 1.9 AndroidAPS (NSClient v3) and Trio: a cancelled temp basal on an open page
+
+On 15.0.8, when AndroidAPS (connected through NSClient v3) or Trio cancelled or shortened a temp
+basal (a temporary change to the background insulin rate), a Nightscout page that was already open
+could keep showing the old rate in the basal box and on the chart, until the temp's planned end.
+Reloading the page showed the right value. Check this when your app cancels a temp basal anyway;
+do not change any setting to make it happen.
+
+- Keep your site open in a browser while your app is looping. When the app cancels a temp basal (it
+  shows the scheduled basal again), look at the basal box and the chart on the open page.
+  **Working looks like:** as soon as the change reaches your site, the page shows the scheduled
+  rate again, without reloading.
+- If the page still shows the old temp rate after a few minutes, reload it and note whether the
+  reload changes what it shows. Tell us your app and its version.
 
 ---
 

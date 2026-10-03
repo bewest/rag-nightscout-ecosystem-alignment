@@ -2,21 +2,21 @@
  "measured": "2026-10-02",
  "range": {
   "base": "92d08342",
-  "tip": "ca6fcfaf",
+  "tip": "74942ec6",
   "spec": "official/master..official/dev"
  },
- "repo_commit": "135c9839",
+ "repo_commit": "4c39d082",
  "kpis": {
-  "pr_merges": 93,
-  "commits": 525,
-  "non_merge_commits": 325,
+  "pr_merges": 95,
+  "commits": 537,
+  "non_merge_commits": 334,
   "it_calls": {
    "base": 1288,
-   "tip": 2332
+   "tip": 2336
   },
   "passing": {
    "base": 1533,
-   "tip": 3534
+   "tip": 3538
   },
   "defect_ids": 156,
   "defect_ids_in_scope": 132,
@@ -269,12 +269,14 @@
   },
   {
    "date": "2026-10-02",
-   "count": 4,
+   "count": 6,
    "prs": [
     8793,
     8794,
     8795,
-    8796
+    8796,
+    8799,
+    8800
    ]
   }
  ],
@@ -524,7 +526,20 @@
    },
    "filed_out_of_scope": 0,
    "filed_cum": 132,
-   "closed_cum": 95
+   "closed_cum": 98
+  },
+  {
+   "date": "2026-10-03",
+   "filed": {
+    "latent": 0,
+    "github": 0,
+    "connector": 0,
+    "review": 0,
+    "escaped": 0
+   },
+   "filed_out_of_scope": 0,
+   "filed_cum": 132,
+   "closed_cum": 99
   }
  ],
  "checks": [
@@ -743,6 +758,20 @@
    "passing": 3534,
    "cells": 1,
    "kind": "one merge, its own branch or CI"
+  },
+  {
+   "label": "#8799",
+   "date": "2026-10-02",
+   "passing": 3534,
+   "cells": 1,
+   "kind": "one merge, its own branch or CI"
+  },
+  {
+   "label": "#8800",
+   "date": "2026-10-02",
+   "passing": 3538,
+   "cells": 1,
+   "kind": "one merge, its own branch or CI"
   }
  ],
  "regressions": [
@@ -813,7 +842,7 @@
  "open_entries": [
   {
    "disposition": "known issue, described in the 15.0.9 notes",
-   "count": 18,
+   "count": 16,
    "ids": [
     "BF-44",
     "BF-45",
@@ -824,8 +853,6 @@
     "BF-92",
     "BF-93",
     "BF-95",
-    "BF-124",
-    "BF-127",
     "BF-132",
     "BF-137",
     "BF-145",
@@ -836,13 +863,11 @@
    ]
   },
   {
-   "disposition": "documentation fix going into 15.0.9",
-   "count": 7,
+   "disposition": "documentation merged for 15.0.9, code half later",
+   "count": 5,
    "ids": [
     "BF-48",
     "BF-49",
-    "BF-50",
-    "BF-51",
     "BF-74",
     "BF-78",
     "BF-81"
@@ -850,9 +875,10 @@
   },
   {
    "disposition": "fix going into 15.0.9",
-   "count": 1,
+   "count": 2,
    "ids": [
-    "BF-94"
+    "BF-124",
+    "BF-127"
    ]
   },
   {
@@ -881,13 +907,6 @@
     "BF-55",
     "BF-88",
     "BF-96"
-   ]
-  },
-  {
-   "disposition": "open with no decision or schedule",
-   "count": 1,
-   "ids": [
-    "BF-71"
    ]
   }
  ]

@@ -1,7 +1,7 @@
 # Programme status — cgm-remote-monitor
 
 *Prepared for the Nightscout project; proposed for Nightscout Foundation stewardship. Contributor-facing; technical throughout.
-Prose revised 2026-10-02 against cgm-remote-monitor `official/dev` `ca6fcfaf` and
+Prose revised 2026-10-03 against cgm-remote-monitor `official/dev` `74942ec6` and
 `official/master` `92d08342` (tag `15.0.8`). The tables are generated from
 `queue/work-queue.yaml`; see [How to check any of this yourself](#how-to-check-any-of-this-yourself).*
 
@@ -21,34 +21,36 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 132 | 37 | 9 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 132 | 34 | 6 |
 | **Modernization** | `release-train` | 32 | 5 | 2 |
 | **Multitenant** | `tenancy` | 19 | 9 | 3 |
-| | **total** | **185** | **51** | **14** |
+| | **total** | **185** | **48** | **11** |
 
 <!-- END GENERATED: horizons -->
 
-**Remedial** — finding and fixing defects that already ship. `dev` is at `ca6fcfaf` (the merge of
-#8796, 2026-10-02): 93 first-parent merges and 525 commits since 15.0.8
+**Remedial** — finding and fixing defects that already ship. `dev` is at `74942ec6` (the merge of
+#8800, 2026-10-03): 95 first-parent merges and 537 commits since 15.0.8
 (`git rev-list [--first-parent] --count official/master..official/dev`). None of it is released.
 
-- **Merged.** Every PR decided for 15.0.9; the PR-by-PR list is in
+- **Merged.** Every PR decided for 15.0.9 except the fixes for BF-124 and BF-127, decided 2026-10-02 and on branches being prepared (queue `BFQ-124`, `BFQ-127`); the PR-by-PR list is in
   [the release contents](../../releases/cgm-remote-monitor-15.0.9/contents.md). Crowdin #8730 is
   held out (BF-132). The connector fixes are in `nightscout-connect` `0.1.0`, released 2026-09-24,
-  which `dev` pins exactly (#8762). The last one in, #8796 (BF-155): a failed database read on two API
-  v1 requests ended the server process, and now it answers with an error and the server keeps running.
+  which `dev` pins exactly (#8762). The last one in, #8800 (BF-94): an open page kept showing a temp basal
+  that AndroidAPS (API v3) or Trio had shortened or cancelled until its original end; it now shows
+  the change when it arrives. #8799 before it documents the settings the code reads (BF-46, BF-48
+  to BF-51, BF-74, BF-78, BF-81).
 - **Tests.** The last full run is run 020 on `ce30a94d` (2026-09-27): 3473/0/3 in all six cells
   (Node 20, 22 and 24 against MongoDB 4.4.24 and 7.0.43), with an A/B soak against 15.0.8. Each PR
-  merged since carries its own evidence (its GitHub CI and a full suite on its branch). #8796's head
-  `e20b66ba` has the same tree as `ca6fcfaf`, and passes the full suite, 3534/0/4, on one cell
-  (Node 22, MongoDB 7.0.43). A full six-cell run on `ca6fcfaf` comes next
+  merged since carries its own evidence (its GitHub CI and a full suite on its branch). #8800's head
+  `a06e75d6` has the same tree as `74942ec6`, and passes the full suite, 3538/0/4, on one cell
+  (Node 24, MongoDB 7.0.43). A full six-cell run on `74942ec6` comes next
   ([15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md)).
 - **Real-site soak.** `RT-SOAK` is done: the maintainer decided on 2026-09-30 that real sites
   running the candidate count as the soak, and reports (2026-10-02) stable behaviour from Loop, Trio
   and AndroidAPS users on `dev`. The lab's 72 h soak was not run.
-- **Release PR.** #8598 (`dev` → `master`) is at `ca6fcfaf` and mergeable; its CI on `ca6fcfaf`:
-  27 checks passed, 3 skipped (read 2026-10-02 18:15Z).
-  It was approved at `e3adc91d`; re-approval at `ca6fcfaf` is owed.
+- **Release PR.** #8598 (`dev` → `master`) is at `74942ec6` and mergeable; its CI on `74942ec6`:
+  27 checks passed, 3 skipped (read 2026-10-03 00:21Z).
+  It was approved at `e3adc91d`; re-approval at `74942ec6` is owed.
 - **Version.** Decided: 15.0.9. `RT-VERSION`'s gate measures the modernization cut branches, which
   also declare 15.0.9 and are renumbered when they are rebased; it holds the cuts, not this release.
 - **What remains** before the tag, including the queue's open `RT-0` blockers, is listed once, in [ROADMAP §1](ROADMAP.md#1-the-next-release-1509).
@@ -63,15 +65,15 @@ then cut 4. The separate deprecation release was dropped (`RT-4`): the MiniMed w
 legacy MiniMed and Dexcom bridge removal onto cut 1, keeping the hard stop at boot
 (BF-61, option A). mmconnect is reported not to work, and Dexcom `BRIDGE_*` settings have
 been served by `nightscout-connect` since 15.0.8, so BF-44/BF-45 are graded low. Nothing on
-the train has shipped. Measured 2026-10-02 against `official/dev` `ca6fcfaf`:
+the train has shipped. Measured 2026-10-03 against `official/dev` `74942ec6`:
 
 | cut | branch | behind `dev` | conflicting paths |
 |---|---|---:|---:|
-| 1 | `chore/retire-jsdom` | 350 | 11 |
-| 2 | `chore/build-runtime-separation` | 350 | 18 |
-| 3 | `chore/compose-mongodb6` | 350 | 21 |
-| 4 | `chore/mime-exposure-review` | 350 | 35 |
-| 5 | `chore/nightscout-modernization` | 226 | 26 |
+| 1 | `chore/retire-jsdom` | 362 | 12 |
+| 2 | `chore/build-runtime-separation` | 362 | 19 |
+| 3 | `chore/compose-mongodb6` | 362 | 22 |
+| 4 | `chore/mime-exposure-review` | 362 | 36 |
+| 5 | `chore/nightscout-modernization` | 238 | 27 |
 
 Reproduce with `git -C externals/cgm-remote-monitor-official rev-list --count
 official/chore/<branch>..official/dev` and `git merge-tree --write-tree --name-only
@@ -96,16 +98,16 @@ replacement.
 **In the backfix register, neither `fixed` nor `merged` means an operator is safe.**
 `fixed` means repaired on a branch that has not been merged. `merged` means merged
 into `origin/dev` and not released. `released` means in a tagged release operators
-run, and no programme fix is released: `official/master` is 523 commits behind `dev`
+run, and no programme fix is released: `official/master` is 537 commits behind `dev`
 (`git -C externals/cgm-remote-monitor-official rev-list --count official/master..official/dev`,
-2026-10-02) and the shipping tag is 15.0.8. Merging to `dev` publishes a Docker Hub
+2026-10-03) and the shipping tag is 15.0.8. Merging to `dev` publishes a Docker Hub
 image; that is not a release. `RT-0` (release 15.0.9) is the item that changes this.
 If a defect marked `fixed` or `merged` exists in 15.0.8, anyone running 15.0.8 still has it.
 
 The size of that, from the register's §1 (the section whose defects reach existing operators),
-measured 2026-10-02 with `node tools/queue/gates/register-exposure-legend.js`: **112 defects**
-(BF-12, invalid, and BF-41, closed, excluded) — 23 `open`, 84 `merged`, 1 `partly merged`,
-4 `fixed` (BF-52; BF-09, BF-94 and BF-156 on unmerged branches). A few were introduced and repaired on `dev` before any release (BF-80, BF-106 and
+measured 2026-10-03 with `node tools/queue/gates/register-exposure-legend.js`: **111 defects**
+(BF-12, invalid, BF-41, closed, and BF-71, closed as working as intended, excluded) — 22 `open`,
+85 `merged`, 1 `partly merged`, 3 `fixed` (BF-52; BF-09 and BF-156 on unmerged branches). A few were introduced and repaired on `dev` before any release (BF-80, BF-106 and
 BF-142, as of 2026-09-26), so they never reached 15.0.8. The count moves when entries are filed or
 merged; re-run the gate before quoting it.
 
@@ -144,10 +146,10 @@ cover more than one `BF-`:
 | `BFQ-121` | `merged-upstream` | BF-121 - two carb entries at the same time are stored as one, and the carbs of one are los |
 | `BFQ-122` | `merged-upstream` | BF-122 - records written, changed or deleted through API v1 never appear in API v3 history |
 | `BFQ-123` | `merged-upstream` | BF-123 - an AndroidAPS Profile Switch percentage is ignored in the basal, ISF and carb rat |
-| `BFQ-124` | `not-started` | BF-124 - the treatment tooltip converts a BG already in display units (issue #5940) |
+| `BFQ-124` | `in-progress` | BF-124 - the treatment tooltip converts a BG already in display units (issue #5940) |
 | `BFQ-125` | `merged-upstream` | BF-125 - IFTTT Maker alarm events use translated level names; a failed call re-sends every |
 | `BFQ-126` | `merged-upstream` | BF-126 - an authorization subject without a name ends the server at every boot (issue #711 |
-| `BFQ-127` | `not-started` | BF-127 - clock views opened from the menu are blank for a token viewer on a site that deni |
+| `BFQ-127` | `in-progress` | BF-127 - clock views opened from the menu are blank for a token viewer on a site that deni |
 | `BFQ-128` | `merged-upstream` | BF-128 - /pebble on an mmol site returns the delta in mmol when mg/dL is asked for (issue  |
 | `BFQ-129` | `merged-upstream` | BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500 |
 | `BFQ-133` | `merged-upstream` | BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one |
@@ -159,24 +161,23 @@ cover more than one `BF-`:
 | `BFQ-146` | `merged-upstream` | BF-146 - API v3 treatments are held in the server's memory without mills: a late or edited |
 | `BFQ-147` | `merged-upstream` | BF-147 - two package.json overrides hold ajv and request's form-data inside published advi |
 | `BFQ-149` | `not-started` | BF-149 - the Day to Day report draws a cancelled or replaced temp target or override for i |
-| `BFQ-152` | `needs-decision` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier |
+| `BFQ-152` | `blocked` | BF-152 - API v3 settings are admin-only through search and history, readable by identifier |
 | `BFQ-154` | `blocked` | BF-154 - node-forge 1.4.0 (pinned in overrides) is inside an advisory range with no fixed  |
 | `BFQ-156` | `blocked` | BF-156 - API v3 auto-prune never handles its delete's result; a failed delete ends the pro |
 | `BFQ-40` | `merged-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `in-progress` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
 | `BFQ-47` | `merged-upstream` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
 | `BFQ-52` | `blocked` | BF-52 - an age reminder whose 20-minute window passed without a check was never sent |
-| `BFQ-67` | `gate-not-met` | BF-67, BF-86 - alarm thresholds quietly changed, or quietly kept when they cannot work |
+| `BFQ-67` | `blocked` | BF-67, BF-86 - alarm thresholds quietly changed, or quietly kept when they cannot work |
 | `BFQ-69` | `merged-upstream` | BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing |
-| `BFQ-71` | `gate-not-met` | BF-71 - any dateString key drops the default date window, and the window is not a control |
+| `BFQ-71` | `closed` | BF-71 - any dateString key drops the default date window, and the window is not a control |
 | `BFQ-72` | `blocked` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
 | `BFQ-87` | `merged-upstream` | BF-87 - the root qs override holds the connector below its range and pins the server's que |
 | `BFQ-90` | `merged-upstream` | BF-90 - an alarm at a page with no reading throws in the client |
 | `BFQ-91` | `merged-upstream` | BF-91 - connector capture mode cannot find trace-axios for two sources |
 | `BFQ-92` | `not-started` | BF-92 - a page with no glucose reading never presents a server alarm, including device ala |
-| `BFQ-93` | `not-started` | BF-93 - food changes never reach an open page |
-| `BFQ-94` | `ready-to-push` | BF-94 - a kept profile instance can return a temp basal that has been replaced |
-| `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm |
+| `BFQ-93` | `blocked` | BF-93 - food changes never reach an open page |
+| `BFQ-95` | `blocked` | BF-95 - an uploader clock running ahead delays the stale-data alarm |
 | `BFQ-98` | `merged-upstream` | BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix does not rep |
 | `BFQ-99` | `blocked` | bf/profile-object-id - a profile posted with its own _id is stored as an ObjectId, and str |
 | `BFQ-CAP01` | `not-started` | CAP-01 - Nightscout cannot be served from a sub-path |
@@ -198,7 +199,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  | 17 |  | 1 |  |  |  | **22** |
 | `release-train` | 5 |  | 5 |  | 5 |  | 13 | 2 | 1 |  |  | 1 | **32** |
-| `register-open` | 27 | 3 | 3 | 2 | 7 | 1 | 50 | 5 |  |  | 2 |  | **100** |
+| `register-open` | 24 | 5 | 1 | 1 | 11 | 1 | 51 | 3 |  |  | 3 |  | **100** |
 | `tenancy` | 9 |  |  | 1 | 7 |  |  | 1 |  | 1 |  |  | **19** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  | 2 |  |  |  | **10** |
 | `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
@@ -268,7 +269,7 @@ expanded in [NEEDS-A-HUMAN.md](NEEDS-A-HUMAN.md).
 
 | | decision | why it blocks a train |
 |---|---|---|
-| `RT-0` | Release 15.0.9 (PR #8598 at `dev` `ca6fcfaf`). | Every merged fix reaches operators only through it, and every later cut waits behind it. What remains before the tag is in [ROADMAP §1](ROADMAP.md#1-the-next-release-1509). |
+| `RT-0` | Release 15.0.9 (PR #8598 at `dev` `74942ec6`). | Every merged fix reaches operators only through it, and every later cut waits behind it. What remains before the tag is in [ROADMAP §1](ROADMAP.md#1-the-next-release-1509). |
 | `BFQ-09` | BF-09: is a zero-valued temp basal a real value in the socket dedup? Measured; waits on the maintainer. | It ships to operators now. |
 | `A7A-7` | The clock question inside the alarm path. The maintainer owns it. | It gates alarms under `TENANCY_MODE=multi`. |
 

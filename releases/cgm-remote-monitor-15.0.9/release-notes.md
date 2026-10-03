@@ -1194,9 +1194,6 @@ and many other software library updates.
   minute with the same amount are stored as one, because nothing tells them apart from pressing
   Save twice. A bolus and carbs that AndroidAPS records in the same thousandth of a second, both as
   "Meal Bolus", can also be stored as one.
-- **A treatment's pop-up on the chart can show its glucose in the wrong units** when your profile
-  and your site use different units (one mg/dL, the other mmol/L). This affects only that pop-up;
-  what is stored and calculated is not changed.
 - **The careportal can fill in "Entered By" with the word `undefined`.** If you save a careportal
   entry with Entered By left empty, the next time you open the careportal that field shows
   `undefined`, and entries are saved as entered by "undefined" unless you clear or change it.
@@ -1219,10 +1216,6 @@ and many other software library updates.
   command from the careportal or LoopCaregiver can still go to the old phone**, and Nightscout
   answers as if it was sent. After changing phones, check on the phone in use that a remote
   command arrived before relying on it. This is not medical advice. The same happens on 15.0.8.
-- **A clock view opened from the menu can be blank** on a site that requires sign-in
-  (`AUTH_DEFAULT_ROLES=denied`) when you opened Nightscout with an access token in the address.
-  Opening the clock's own address with the token (`/clock/<face>?token=…`) works. A clock view is
-  a display, not an alarm.
 - **A record whose identity was saved as a list cannot be deleted through API v3**, which
   AndroidAPS uses. 15.0.8 deleted it. Nightscout shows such a record's list as its identity, and
   this release deletes a record only by the identity Nightscout shows for it. No commonly used app
@@ -1299,4 +1292,4 @@ a report from "15.0.9" made before this release is from that channel.
 
 ---
 
-*Draft, 2026-10-02, on the development version ca6fcfaf; not yet released.*
+*Draft, 2026-10-03, on the development version 74942ec6; not yet released.*
