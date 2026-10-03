@@ -2,24 +2,24 @@
  "measured": "2026-10-02",
  "range": {
   "base": "92d08342",
-  "tip": "74942ec6",
-  "spec": "official/master..official/dev"
+  "tip": "1ad03e29",
+  "spec": "official/master..1ad03e29"
  },
- "repo_commit": "4c39d082",
+ "repo_commit": "89922349",
  "kpis": {
-  "pr_merges": 95,
-  "commits": 537,
-  "non_merge_commits": 334,
+  "pr_merges": 97,
+  "commits": 543,
+  "non_merge_commits": 337,
   "it_calls": {
    "base": 1288,
-   "tip": 2336
+   "tip": 2361
   },
   "passing": {
    "base": 1533,
-   "tip": 3538
+   "tip": 3563
   },
-  "defect_ids": 156,
-  "defect_ids_in_scope": 132,
+  "defect_ids": 160,
+  "defect_ids_in_scope": 136,
   "regressions_caught": 7
  },
  "merges_per_day": [
@@ -269,14 +269,16 @@
   },
   {
    "date": "2026-10-02",
-   "count": 6,
+   "count": 8,
    "prs": [
     8793,
     8794,
     8795,
     8796,
     8799,
-    8800
+    8800,
+    8801,
+    8802
    ]
   }
  ],
@@ -518,14 +520,14 @@
   {
    "date": "2026-10-02",
    "filed": {
-    "latent": 2,
+    "latent": 6,
     "github": 0,
     "connector": 0,
     "review": 0,
     "escaped": 0
    },
    "filed_out_of_scope": 0,
-   "filed_cum": 132,
+   "filed_cum": 136,
    "closed_cum": 98
   },
   {
@@ -538,8 +540,8 @@
     "escaped": 0
    },
    "filed_out_of_scope": 0,
-   "filed_cum": 132,
-   "closed_cum": 99
+   "filed_cum": 136,
+   "closed_cum": 101
   }
  ],
  "checks": [
@@ -772,6 +774,20 @@
    "passing": 3538,
    "cells": 1,
    "kind": "one merge, its own branch or CI"
+  },
+  {
+   "label": "#8801",
+   "date": "2026-10-02",
+   "passing": 3552,
+   "cells": 1,
+   "kind": "one merge, its own branch or CI"
+  },
+  {
+   "label": "#8802",
+   "date": "2026-10-02",
+   "passing": 3563,
+   "cells": 1,
+   "kind": "one merge, its own branch or CI"
   }
  ],
  "regressions": [
@@ -874,14 +890,6 @@
    ]
   },
   {
-   "disposition": "fix going into 15.0.9",
-   "count": 2,
-   "ids": [
-    "BF-124",
-    "BF-127"
-   ]
-  },
-  {
    "disposition": "fix prepared, after 15.0.9",
    "count": 1,
    "ids": [
@@ -900,13 +908,29 @@
   },
   {
    "disposition": "only on the modernization branches or in test tooling",
-   "count": 5,
+   "count": 6,
    "ids": [
     "BF-27",
     "BF-53",
     "BF-55",
     "BF-88",
-    "BF-96"
+    "BF-96",
+    "BF-158"
+   ]
+  },
+  {
+   "disposition": "found in the BF-124 and BF-127 work, after 15.0.9 by decision",
+   "count": 2,
+   "ids": [
+    "BF-159",
+    "BF-160"
+   ]
+  },
+  {
+   "disposition": "found in the BF-124 work, not decided for 15.0.9",
+   "count": 1,
+   "ids": [
+    "BF-157"
    ]
   }
  ]

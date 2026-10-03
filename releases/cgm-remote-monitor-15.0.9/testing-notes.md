@@ -82,8 +82,8 @@ notes.
 
 ## Getting the test build
 
-The test build is the `dev` branch of `nightscout/cgm-remote-monitor` at commit **`74942ec6`**
-(full: `74942ec6f5035f06a9d9d6de9bcc71e72da0de56`, 2026-10-03). Its version reads **15.0.9**. Since
+The test build is the `dev` branch of `nightscout/cgm-remote-monitor` at commit **`1ad03e29`**
+(full: `1ad03e29e7f49df9028d7d9bf6eea2c8963918ad`, 2026-10-03). Its version reads **15.0.9**. Since
 the earlier test build `7000eb18` it adds:
 
 - the Day to Day report shows events that run past midnight on both days (see 1.7);
@@ -97,18 +97,22 @@ the earlier test build `7000eb18` it adds:
   with an error and keeps running (nothing to test by hand);
 - a page that is already open shows a temp basal that AndroidAPS or Trio cancels or shortens as
   cancelled or shortened, without reloading (see 1.9);
+- the small box that pops up over a carb or insulin entry on the chart shows a blood glucose value
+  in the units it was entered in (see 1.2);
+- on a site that needs a login, a clock page opened from the menu by someone using an access token
+  shows the readings instead of staying blank (see 1.5);
 - the setup guide (README) describes the settings the code reads, including the API v3 settings
   (nothing to test by hand; see the release notes);
 - updated versions of several software libraries it uses, with no change to what you see.
 
 If you are running `7000eb18` or a later `dev` build, keep going: your reports still count.
 
-- **Docker:** `nightscout/cgm-remote-monitor:dev_74942ec6f5035f06a9d9d6de9bcc71e72da0de56`. This tag
+- **Docker:** `nightscout/cgm-remote-monitor:dev_1ad03e29e7f49df9028d7d9bf6eea2c8963918ad`. This tag
   always means exactly this build. `latest_dev` means "the newest `dev`" and moves when `dev` changes,
   so check which commit it is before relying on it.
 - **Deploying from your own copy of the code** (Heroku, Railway, Northflank, Render, a VPS and
   similar): update your copy's `dev` branch from `nightscout/cgm-remote-monitor` and deploy that
-  branch. Check the commit is `74942ec6`.
+  branch. Check the commit is `1ad03e29`.
 - **A hosting service that runs Nightscout for you:** ask them whether they offer the test build.
 
 If `dev` moves to a new commit before the release, these notes will name it.
@@ -148,6 +152,10 @@ so on some sites **low alarms start working** where they never did. See
    `Threshold bgTargetTop 8.5 taken as mmol/L, converted to 153 mg/dl`, one for each level.
 4. Over the next days: did a low alarm go off that never used to, or did "Warning HIGH" on in-range
    readings stop? Either can be the fix. Tell us which, and tell whoever receives your alerts.
+5. If you enter a blood glucose (BG) value together with carbs or insulin in the careportal, point
+   at (or tap) that entry on the chart. **Working looks like:** the small box that pops up shows the
+   BG you entered. This matters most if your profile (basal, carb ratio and sensitivity settings) is
+   saved in mg/dL, as some apps upload it; on 15.0.8 such a site could show 5 as 0.3.
 
 ## 1.3 AndroidAPS
 
@@ -184,9 +192,11 @@ to check:
 ## 1.5 Followers, clocks and watch faces
 
 - **Clock views** (menu → Clock, or `/clock/…`): they should show when their reading is old, including
-  after the page loses its connection. If your site needs a login, a clock opened from the menu can
-  be blank on this test build (a fix for 15.0.9 is being prepared); opening it directly with a
-  token in the address should work.
+  after the page loses its connection.
+- **Clock views on a site that needs a login**, if you open your site with an access token in its
+  address (`?token=…`): pick a clock from the menu. **Working looks like:** the clock shows your
+  readings. If the site refuses the clock (for example, the token does not allow reading), the page
+  should say it is not authorized rather than stay blank.
 - **Watch faces** that read your site: the change since the last reading (delta) and any bolus
   estimate should look right **without** any adjustment. If you had set up a watch face to multiply
   or divide by 18, undo that and tell us whether the numbers are right.

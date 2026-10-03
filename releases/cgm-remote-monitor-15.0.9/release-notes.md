@@ -958,6 +958,17 @@ checks fail, and turns grey once the reading is old, as it does when readings si
 A clock page is a display, not an alarm. Keep the alarms on your phone, CGM app or receiver
 switched on. This is not medical advice.
 
+### Clock pages opened from the menu on sites that need a login
+
+Some sites are set up so that nobody can see them without logging in. On such a site, someone can
+still be given read-only access with an **access token** (see the words list at the top) added to
+the site's address. On 15.0.8, if that person then picked a clock page from the **Clock** menu, the
+clock stayed blank: the menu did not pass the token on, so the site refused the clock's requests,
+and nothing on the page said why. The menu links now carry the token, so the clock shows your
+readings. If the site refuses a clock page anyway, the page now says it is not authorized instead
+of staying blank. Opening a clock directly with `?token=` in its address worked before and still
+does.
+
 ### A user without a name no longer stops your site
 
 If a tool created a user or role on the admin page without a name, Nightscout stopped, and
@@ -1047,6 +1058,15 @@ Nightscout page that was already open could keep showing the old rate in the bas
 the chart: for about a quarter of a minute when another temp followed, and until the temp's planned
 end when it was simply cancelled. The pump and the app had the right value, and reloading the page
 showed it. An open page now shows the change as soon as it arrives.
+
+### The glucose value in a treatment's pop-up on the chart
+
+When you point at (or tap) a carb or insulin entry on the chart, a small box (a tooltip) shows its
+details, including a blood glucose (BG) value if one was entered with it. On a site set to show
+mmol/L whose profile (your basal, carb ratio and sensitivity settings) is saved in mg/dL, or the
+other way round, that box converted the BG even when it was already in your site's units: for example, a BG entered as 5 on an mmol/L site showed as
+0.3. The box now converts from the units the BG was saved in, so it shows the
+number you entered. Only that box changes; the saved entries were always right and are not changed.
 
 ### Other fixes
 
@@ -1292,4 +1312,4 @@ a report from "15.0.9" made before this release is from that channel.
 
 ---
 
-*Draft, 2026-10-03, on the development version 74942ec6; not yet released.*
+*Draft, 2026-10-03, on the development version 1ad03e29; not yet released.*

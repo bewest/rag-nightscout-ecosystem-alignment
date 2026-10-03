@@ -1,15 +1,15 @@
 # cgm-remote-monitor 15.0.9 — contents
 
 **Status: DRAFT for maintainer review. Contributor-facing; full technical depth intended.**
-Nothing here is tagged or released. Measured 2026-10-03 against `official/dev` `74942ec6`
-(merge of #8800) and `official/master` `92d08342` (= tag `15.0.8`, the shipping release), in
+Nothing here is tagged or released. Measured 2026-10-03 against `official/dev` `1ad03e29`
+(merge of #8802) and `official/master` `92d08342` (= tag `15.0.8`, the shipping release), in
 `externals/cgm-remote-monitor-official` after `git fetch official`.
 
 > Complements the generated changelog. The changelog is authoritative for *what merged*;
 > this file records what the release is made of, how each figure was measured, and what is
 > unsettled.
 
-15.0.9 is **everything on `dev` at `74942ec6`**, plus the fixes for BF-124 and BF-127, decided 2026-10-02 and on branches being prepared (queue `BFQ-124`, `BFQ-127`). Every other PR the
+15.0.9 is **everything on `dev` at `1ad03e29`**. Every PR the
 maintainer decided ships in it ([decisions](decisions.md)) is merged. Crowdin #8730 is held out because its sync reverts translations `dev`
 corrected (BF-132). Every PR merged to `dev` is `merged`; none is `released`.
 
@@ -19,14 +19,14 @@ corrected (BF-132). Every PR merged to `dev` is `merged`; none is `released`.
 |---|---|
 | Merged part | `official/master..official/dev` |
 | Base (shipping) | `92d08342` = `15.0.8` |
-| `dev` head | `74942ec6` (merge of #8800, 2026-10-03 00:04Z), tree `5671b8d3`, the same tree as #8800's head `a06e75d6` |
-| Commits on `dev` | 537 — `git rev-list --count official/master..official/dev` |
-| First-parent merges on `dev` | **95** — `git rev-list --first-parent --count official/master..official/dev`; every first-parent commit in the range is a PR merge (`git log --first-parent --format=%s official/master..official/dev \| grep -vc '^Merge pull request'` prints 0) |
-| Diff on `dev` | 307 files, +29757/−1931 — `git diff --shortstat official/master official/dev` |
+| `dev` head | `1ad03e29` (merge of #8802, 2026-10-03 01:00Z), tree `7d16c516`, the same tree as #8802's head `b13b7a3a` |
+| Commits on `dev` | 543 — `git rev-list --count official/master..official/dev` |
+| First-parent merges on `dev` | **97** — `git rev-list --first-parent --count official/master..official/dev`; every first-parent commit in the range is a PR merge (`git log --first-parent --format=%s official/master..official/dev \| grep -vc '^Merge pull request'` prints 0) |
+| Diff on `dev` | 313 files, +30210/−1935 — `git diff --shortstat official/master official/dev` |
 | `package.json` version | `15.0.9` on `dev` — `git show official/dev:package.json \| grep '"version"'` |
 | Connector pin | `nightscout-connect` exactly `0.1.0` from npm on `dev` (#8762); `15.0.8` pins the `v0.0.13` tag tarball — `git show official/<ref>:package.json \| grep nightscout-connect` |
 | Held out | Crowdin #8730 (head `f99c0e54`, open; BF-132) — `gh pr view 8730 --json state,headRefOid` |
-| Release PR | #8598 (`dev` → `master`, head `74942ec6`, author AndyLow91): open, mergeable, `reviewDecision` `APPROVED`; both approvals (the maintainer, 2026-09-26 00:39Z) were given on `e3adc91d`; re-approval at `74942ec6` is owed. CI on `74942ec6`: 27 checks passed, 3 skipped (read 2026-10-03 00:21Z) — `gh pr view 8598 --json state,reviewDecision,reviews`, `gh pr checks 8598` |
+| Release PR | #8598 (`dev` → `master`, head `1ad03e29`, author AndyLow91): open, mergeable, `reviewDecision` `APPROVED`; both approvals (the maintainer, 2026-09-26 00:39Z) were given on `e3adc91d`; re-approval at `1ad03e29` is owed. CI on `1ad03e29`: 27 checks passed, 3 skipped (read 2026-10-03 01:16Z) — `gh pr view 8598 --json state,reviewDecision,reviews`, `gh pr checks 8598` |
 | Tag | none. No `15.0.9` tag exists |
 
 ## What 15.0.9 contains
@@ -44,7 +44,7 @@ Register ids refer to
 [`docs/30-design/remedial/nightscout-backfix-register.md`](../../docs/30-design/remedial/nightscout-backfix-register.md),
 which is the home of every defect fact; these tables do not restate them.
 
-#### Programme backfix PRs (48), plus #8741
+#### Programme backfix PRs (50), plus #8741
 
 | PR | Merge | Date | Register | What |
 |---|---|---|---|---|
@@ -96,6 +96,8 @@ which is the home of every defect fact; these tables do not restate them.
 | #8796 | `ca6fcfaf` | 2026-10-02 | BF-155 | a failed database read on `GET /api/v1/activity` or `/api/v1/profile/current` ended the server process; it is now answered with a 500 and the server keeps running. `lib/api/activity/index.js` and `lib/api/profile/index.js` (server only) and the new `tests/api.read-storage-failure.test.js`. Live on 15.0.8, so described by mechanism and outcome only. Its own CI: 14 passed, 2 skipped. Head `e20b66ba` |
 | #8799 | `f105f688` | 2026-10-02 | BF-46, BF-48, BF-49, BF-50, BF-51, BF-74, BF-78, BF-81 (documentation) | README and `azuredeploy.json` describe the settings the code reads: the `API3_*` settings, including the six `API3_AUTOPRUNE_<collection>` settings that permanently delete older records (BF-46), the webhook settings (BF-48), the HSTS setting's spelling (BF-49), `ENTRIES_COLLECTION` (BF-50), the supported Node versions (BF-51), the default roles and the login prompt (BF-78, BF-81); the API v3 swagger text states that the `settings` collection is stored as sent (BF-74). No code changes; BF-50 and BF-51 are closed by it, the others keep their code half open. Its own CI: 14 passed, 2 skipped. Head `e42144ff` |
 | #8800 | `74942ec6` | 2026-10-03 | BF-94 | the browser kept the last temp basal it looked up in a module-level variable, so an open page went on showing a temp basal that AndroidAPS (API v3) or Trio had shortened or cancelled until the temp's original end; `lib/profilefunctions.js` now keeps it per instance and resets it when the treatments are replaced (`updateTreatments`), and the new `tests/profile-temp-cache.test.js` covers it. Measured in Chromium (`tools/lab/bf94-browser`): `ca6fcfaf` and `v15.0.8` show the stale temp alike, and the fixed tree clears every stale case in that harness. Its own CI: 14 passed, 2 skipped. Head `a06e75d6` (`2a64c500` merged with `dev` `f105f688`) |
+| #8801 | `68262e86` | 2026-10-03 | BF-124 | fixes #5940. The chart tooltip of a treatment with carbs or insulin converted its BG whenever the display units differed from the profile's units, ignoring the units the record was saved in, so on an mmol/L site with an mg/dL profile a careportal BG of 5 showed as 0.3 (and 90 as 1621 the other way round). `lib/client/renderer.js` `treatmentTooltip` now converts from the record's own `units` (any spelling containing `mmol` read as mmol/L), falling back to the profile's units when the record has none; the new `tests/client.renderer.tooltip-units.test.js` (14 tests, 7 of which fail on `74942ec6`) covers it. Display only: no stored data changes. Its own CI: 14 passed, 2 skipped. Head `affbc8fd`; 2 files, +162/−3 |
+| #8802 | `1ad03e29` | 2026-10-03 | BF-127 | fixes #7377. On a site that denies anonymous reads, a clock view opened from the Clock menu by a viewer using an access token was blank: the menu links were plain paths and the clock page looked for a token only in its own address. The four Clock menu links now carry the page's token, URL-encoded (`lib/client/browser-settings.js`); a clock whose requests are answered 401 says "Not authorized" instead of drawing nothing (`lib/client/clock-client.js`, `views/clockviews/clock.html`, `clock-shared.css`), and the clock designer's "Open my clock view!" link URL-encodes the face and the token (`views/clockviews/clock-config.html`; CodeQL `js/xss-through-dom` alert 126 fixed, alert 127 dismissed by the maintainer as a false positive). New `tests/clock-token-link.test.js` (11 tests). Measured in Chromium on a denied site with a readable token: the three clocks are blank on `68262e86` and draw on the branch. Its own CI: 13 passed, 2 skipped, CodeQL passed. Head `b13b7a3a` (`9238fd32` and the CodeQL fix); 6 files, +291/−1 |
 | #8741 | `bcd171cb` | 2026-09-20 | — (external contributor) | credential and identifier settings kept as strings (leading `+`, leading zeros) |
 
 **#8754** (`bf2/auth-hardening`, head `bae655a0`, merged as `4f705217`; 34 commits, 25 files,
@@ -262,7 +264,7 @@ The facts the classification rests on, for the record:
 | BF-149 — the Day to Day report draws a Temporary Target or other event cancelled early to its full planned length | open; after 15.0.9 (`BFQ-149`) | carried as a known issue |
 | BF-154 — `node-forge` advisory GHSA-86w9-cpqp-85rv, no fixed release; Nightscout does not call the affected function | open; blocked on an upstream release (`BFQ-154`) | named in the notes under Known issues |
 | BF-09 — in the socket `dbAdd` duplicate check a zero is ignored, so within 2 s a zero temp, 100 % temp, cancel, zero bolus or zero carbs can be taken for another record of the same type and dropped (AndroidAPS NSClient v1, the standalone NSClient app, the chart's drag-to-move) | fixed on #8797 (open); after 15.0.9 by decision (2026-10-02) | unchanged from 15.0.8 |
-| BF-156 — autoprune's delete result is never read: the deleted count is never logged, and a failed delete ends the server process (only where an `API3_AUTOPRUNE_*` setting is on; the same on 15.0.8) | open; after 15.0.9 by decision (2026-10-02), fix being prepared (`BFQ-156`) | carried as a known issue with BF-46 |
+| BF-156 — autoprune's delete result is never read: the deleted count is never logged, and a failed delete ends the server process (only where an `API3_AUTOPRUNE_*` setting is on; the same on 15.0.8) | fixed on the local branch `bf/autoprune-promise` (`BFQ-156`); after 15.0.9 by decision (2026-10-02) | carried as a known issue with BF-46 |
 | BF-76 — unbounded `silenceTime` | open, left open deliberately by #8745 | carried as a known issue |
 | BF-92 — a page with no glucose reading presents no server alarm, including device alarms | open; #8755 removes only the handler error | carried as a known issue |
 | BF-95 — an uploader clock running ahead delays the stale-data alarm by about the size of the error | open; after 15.0.9 by decision (2026-10-02, `BFQ-95`) | carried as a known issue |
@@ -289,27 +291,23 @@ this file does not copy them.
 ## Open items a releaser must settle
 
 What the queue tracks is generated, and current, in
-[ROADMAP §1](../../docs/00-overview/ROADMAP.md#1-the-next-release-1509). As of `dev` `74942ec6` (2026-10-03), 15.0.9 waits on:
+[ROADMAP §1](../../docs/00-overview/ROADMAP.md#1-the-next-release-1509). As of `dev` `1ad03e29` (2026-10-03), 15.0.9 waits on:
 
-1. **The fixes for BF-124 and BF-127**, decided for 15.0.9 on 2026-10-02: the treatment tooltip's
-   BG units (`bf/tooltip-bg-units`, queue `BFQ-124`) and a clock view opened from the menu that is
-   blank for a token viewer on a site that requires sign-in (`bf/clock-token-link`, queue
-   `BFQ-127`). Both branches are being prepared on `dev` `74942ec6` and are not pushed; merging them
-   moves `dev` past `74942ec6`, and the figures here are re-measured then.
-2. **One full six-cell run on the final head** (Node 20/22/24 × MongoDB 4.4.24 and 7.0.43, probes,
-   compressed A/B soak against 15.0.8, as run 020 on `ce30a94d`). What has run since run 020 is
-   under [Evidence](#evidence).
-3. **The browser hand checks still owed.**
-   `node tools/queue/gates/client-unchanged-since-hand-check.js --base 74942ec6 --with ''` names
-   17 paths that differ on the browser side from the hand-checked `8d797ba4`: `.gitignore` and
+1. **One full six-cell run on the final head** (Node 20/22/24 × MongoDB 4.4.24 and 7.0.43, probes,
+   compressed A/B soak against 15.0.8, as run 020 on `ce30a94d`). Run 021 on `1ad03e29` is in
+   progress. What has run since run 020 is under [Evidence](#evidence).
+2. **The browser hand checks still owed.**
+   `node tools/queue/gates/client-unchanged-since-hand-check.js --base 1ad03e29 --with ''` names
+   22 paths that differ on the browser side from the hand-checked `8d797ba4`: `.gitignore` and
    `.nycrc.json` (tooling), `azuredeploy.json` (#8799, the Azure deployment template),
-   `lib/api2/index.js`, `lib/api2/notifications-v2.js`,
-   `lib/client/clock-client.js`, `lib/data/calcdelta.js`, `lib/data/dataloader.js`,
-   `lib/data/ddata.js`, `lib/levels.js`, `lib/plugins/pump.js`, `lib/profile/profileeditor.js`,
-   `lib/profilefunctions.js`, `lib/report_plugins/daytoday.js`, `lib/settings.js`,
-   `static/css/food.css` (#8790) and `views/index.html`. It also lists the package entries #8786
-   and #8794 change; the production bundle built before and after each is byte-identical, so they
-   need no hand check.
+   `lib/api2/index.js`, `lib/api2/notifications-v2.js`, `lib/client/browser-settings.js` (#8802),
+   `lib/client/clock-client.js`, `lib/client/renderer.js` (#8801), `lib/data/calcdelta.js`,
+   `lib/data/dataloader.js`, `lib/data/ddata.js`, `lib/levels.js`, `lib/plugins/pump.js`,
+   `lib/profile/profileeditor.js`, `lib/profilefunctions.js`, `lib/report_plugins/daytoday.js`,
+   `lib/settings.js`, `static/css/food.css` (#8790), `views/clockviews/clock-config.html`,
+   `views/clockviews/clock-shared.css`, `views/clockviews/clock.html` (#8802) and `views/index.html`.
+   It also lists the package entries #8786 and #8794 change; the production bundle built before and
+   after each is byte-identical, so they need no hand check.
    **Done by hand on `ff93fa94` on 2026-09-26** (the maintainer in Chrome, the journey lab playing
    the phones, 15.0.8 side by side; [browser record](../../docs/60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.md)):
    careportal Temporary Override, Remote Carbs and Temporary Override Cancel each delivered a push
@@ -326,25 +324,29 @@ What the queue tracks is generated, and current, in
    COB count them); that was not checked in a browser. #8800 (BF-94) changes what the basal pill
    shows after a temp basal is edited: on an open page, a temp basal that AndroidAPS (API v3) or
    Trio cancels should show as cancelled without reloading (`tools/lab/bf94-browser` drives this
-   in Chromium; a check by hand is owed).
-4. **The version class of #8772, #8775 and #8780**, by the maintainer, who is collecting data:
+   in Chromium; a check by hand is owed). #8801 (BF-124): on an mmol/L site whose profile is in
+   mg/dL, a careportal treatment's tooltip should show the BG as entered (measured in Chromium on
+   the branch; a check by hand is owed). #8802 (BF-127): on a site that requires sign-in, a clock
+   opened from the menu by a viewer using a token should draw, and a clock opened without one should
+   say "Not authorized" (measured in Chromium on the branch; a check by hand is owed).
+3. **The version class of #8772, #8775 and #8780**, by the maintainer, who is collecting data:
    recorded as minor-under-patch exceptions (as #8530) or re-classed ([decisions](decisions.md)).
-5. **Re-approval of #8598 at its final head.** Both approvals were given on `e3adc91d`. CI on
-   `74942ec6`: 27 checks passed, 3 skipped (read 2026-10-03 00:21Z).
-6. **The `CHANGELOG.md` question.** `dev` carries a hand-written `## [Unreleased]` section (lines
-   5–87 of `git show official/dev:CHANGELOG.md` at `74942ec6`, from 14 commits —
+4. **Re-approval of #8598 at its final head.** Both approvals were given on `e3adc91d`. CI on
+   `1ad03e29`: 27 checks passed, 3 skipped (read 2026-10-03 01:16Z).
+5. **The `CHANGELOG.md` question.** `dev` carries a hand-written `## [Unreleased]` section (lines
+   5–87 of `git show official/dev:CHANGELOG.md` at `1ad03e29`, from 14 commits —
    `git log --no-merges official/master..official/dev -- CHANGELOG.md`), against the rule in
    [`../README.md`](../README.md#open-item-changelog-on-dev) that the changelog is generated at
    release time. No decision on it is recorded.
-7. **BF-154 is named in the release notes** (decided 2026-10-02, maintainer), under Known issues:
-   the `node-forge` advisory behind the 2 high among `npm audit`'s 10 findings on `25fc41d9` (#8796, #8799 and #8800
-   change no package file, so the figures stand for `74942ec6`), filed as low because Nightscout does not call the affected function ([below](#node-forge-ghsa-86w9-cpqp-85rv)).
+6. **BF-154 is named in the release notes** (decided 2026-10-02, maintainer), under Known issues:
+   the `node-forge` advisory behind the 2 high among `npm audit`'s 10 findings on `25fc41d9` (no PR
+   merged since changes a package file, so the figures stand for `1ad03e29`), filed as low because Nightscout does not call the affected function ([below](#node-forge-ghsa-86w9-cpqp-85rv)).
    It is not a release blocker: no fixed version exists, and `@parse/node-apn` 8.1.0 (the
    modernization line's version, and the latest) still depends on `node-forge` 1.4.0 exactly, so the
    update waits for an upstream fix and is carried with the modernization work.
-8. **The tag**, by the maintainer.
+7. **The tag**, by the maintainer.
 
-The [release notes](release-notes.md) and [tag message](tag-message.txt) are drafted on `74942ec6`.
+The [release notes](release-notes.md) and [tag message](tag-message.txt) are drafted on `1ad03e29`.
 
 The real-time soak is done by decision: on 2026-09-30 the maintainer decided that real sites
 running the candidate count as the 24 to 72 h real-time soak, and the lab's 72 h soak
@@ -362,7 +364,7 @@ decided.
 
 **Summary.** 15.0.8 (the release operators run today) had 49 `npm audit` findings (19 high) on
 2026-09-27. On `dev` `25fc41d9` (2026-10-02 17:31Z, npm 11.12.1, `--package-lock-only`), `npm audit`
-reports 10 findings (2 high); #8796, #8799 and #8800 change no package file, so the figures stand for `74942ec6`. The 8 moderate are the 7 left by the 2026-09-27 triage — a deliberate pin
+reports 10 findings (2 high); no PR merged since changes a package file, so the figures stand for `1ad03e29`. The 8 moderate are the 7 left by the 2026-09-27 triage — a deliberate pin
 whose advisories need elements the sanitizer does not allow (tested), the legacy `request` chain,
 loaded only when a legacy bridge is switched on (read from `lib/server/bootevent.js`), and two
 test-only packages — plus `moment`, held at 2.30.1 by decision. The 2 high are one advisory,
@@ -384,7 +386,7 @@ version in cut 5's lockfile. The work that gets there was planned in the open:
 | 2026-10-02 | #8794 (BF-153), advisories published after the 2026-09-27 triage |
 
 Since 15.0.7, 39 merges to `dev` changed the lockfile, 20 of them Dependabot's
-(`git log --first-parent --oneline 15.0.7..official/dev -- package-lock.json`, `74942ec6`). Alerts on the
+(`git log --first-parent --oneline 15.0.7..official/dev -- package-lock.json`, `1ad03e29`). Alerts on the
 default branch fall only when a release merges to `master`; on 2026-09-27, 74 of the 80 open were
 already fixed on `dev` (below).
 
@@ -402,7 +404,7 @@ so `--omit=dev` does not separate build-time from run-time packages.
 | `dev` `7000eb18` (#8786, BF-147) | 7 | 0 | 7 | 0 |
 | `dev` `7000eb18` `--omit=dev` | 5 | 0 | 5 | 0 |
 | `dev` `50bc1084` (#8794's base, as #8794 records) | 20 | 4 | — | — |
-| `dev` `25fc41d9` (2026-10-02 17:31Z; the lockfile #8794 left; #8795, #8796, #8799 and #8800 change no package file, so it stands for `74942ec6`) | 10 | 2 | 8 | 0 |
+| `dev` `25fc41d9` (2026-10-02 17:31Z; the lockfile #8794 left; no PR merged since changes a package file, so it stands for `1ad03e29`) | 10 | 2 | 8 | 0 |
 | `dev` `25fc41d9` `--omit=dev` | 8 | 2 | 6 | 0 |
 | `rh/cut2` `02205d91` | 6 | 0 | 6 | 0 |
 | `rh/cut4` `135faa3b`, `rh/cut35` `cd93d8e8`, cut 5 `b1bdaca0` | 0 | 0 | 0 | 0 |
@@ -500,11 +502,11 @@ No Dependabot pull request is open (2026-10-02); #8787 (webpack-dev-middleware) 
 
 Not blockers by decision; recorded so a green suite is not read as covering them.
 
-- **Test-script coverage.** 78 of the 225 `tests/*.test.js` files on `dev` `74942ec6` match neither
+- **Test-script coverage.** 79 of the 227 `tests/*.test.js` files on `dev` `1ad03e29` match neither
   `npm run test:unit` nor `test:integration` (compare the files against the two globs in
   `git show official/dev:package.json`). Among
   them: `dependency-overrides` (#8786), `report-daytoday-durations` (#8788),
-  `food-editor-touch-scroll` (#8790), `error-handler` (#8793), `profile-temp-cache` (#8800), `dependency-brace-expansion`, `query.operands`, `boluscalc.quickpick`, `boluscalc.quickpick-rebuild`, `booterror`,
+  `food-editor-touch-scroll` (#8790), `error-handler` (#8793), `profile-temp-cache` (#8800), `clock-token-link` (#8802), `dependency-brace-expansion`, `query.operands`, `boluscalc.quickpick`, `boluscalc.quickpick-rebuild`, `booterror`,
   `client.alarm-no-reading`, `treatmenttime`, `debug-logging`, `dependency-d3`, #8754's `authdelay`,
   `authsubjects` and `client-ip`, and 2026-09-26's `maker-level-names` (#8773),
   `profile-switch-percentage` (#8774), `soft-deleted.jl1` (#8775) and #8781's
@@ -564,7 +566,7 @@ the user-facing form. Facts the notes must not lose:
   values; `notes: ""` clears; `roles` is not filled in from storage, so removing the last role
   still works.
 - **BF-17 and BF-30 / `TRUST_PROXY` (#8754).** As described under
-  [#8754](#programme-backfix-prs-48-plus-8741), including the Loop remote-command sender address
+  [#8754](#programme-backfix-prs-50-plus-8741), including the Loop remote-command sender address
   that is now stored on remote overrides.
 - **Docker Compose (BF-10, #8753).** `mongo` service gains `ulimits nofile 64000`; without it mongod
   aborted with `Too many open files` (reproduced 2026-09-21 on mongod 7.0.43, register BF-10).
@@ -698,20 +700,36 @@ the user-facing form. Facts the notes must not lose:
 - **Cancelled temp basals on an open page (#8800, BF-94).** A temp basal that AndroidAPS (API v3)
   or Trio shortens or cancels shows as shortened or cancelled on an open page as soon as the change
   arrives, instead of the old rate until its original end. Nothing stored changes.
+- **Treatment tooltip BG units (#8801, BF-124).** A treatment's BG in the chart tooltip is converted
+  from the units it was saved in, falling back to the profile's units, so an mmol/L site with an
+  mg/dL profile no longer shows a careportal BG of 5 as 0.3 (or 90 as 1621 the other way round).
+  Display only; stored data is unchanged.
+- **Clock views from the menu (#8802, BF-127).** On a site that requires sign-in, the Clock menu
+  links carry the page's access token, so a viewer who opened the site with `?token=` gets a
+  working clock; a clock whose requests are refused says "Not authorized" instead of staying
+  blank. Opening a clock directly with `?token=` in the address worked before and still does.
 
 ## Evidence
 
 - Release-cycle statistics, method and materials: [How 15.0.9 was made](colophon.md).
 - Merged part: per-PR test evidence, ablations and controls are in each PR body and in the
   register entry for each id.
-- **The candidate, `dev` `74942ec6`** (tree `5671b8d3`, the same tree as #8800's head
-  `a06e75d6`). Full suite on `a06e75d6`: 3538 passing, 0 failing, 4 pending (Node 24.15.0,
-  MongoDB 7.0.43, one cell, 2026-10-02); the same count on the unmerged fix `2a64c500` (Node
-  22.23.2). #8800 (BF-94) changes `lib/profilefunctions.js` and adds
-  `tests/profile-temp-cache.test.js`; #8799 changes README, `azuredeploy.json` and the API v3
-  swagger text only. Each PR's own CI: 14 passed, 2 skipped. The last full RC run is run 020 on
-  `ce30a94d` (below); it has not been repeated on a later head, and one full six-cell run on
-  `74942ec6` is owed.
+- **The candidate, `dev` `1ad03e29`** (tree `7d16c516`, the same tree as #8802's head
+  `b13b7a3a`). Full suite on `b13b7a3a`: 3563 passing, 0 failing, 4 pending (Node 24.15.0,
+  MongoDB 7.0.43, one cell, fresh database, 2026-10-02). #8802 (BF-127) changes
+  `lib/client/browser-settings.js`, `lib/client/clock-client.js` and three files under
+  `views/clockviews/`, and adds `tests/clock-token-link.test.js`; its tests fail with `dev`
+  `68262e86`'s page. #8802's own CI: 13 passed, 2 skipped, CodeQL passed. The last full RC run is
+  run 020 on `ce30a94d` (below); run 021, the full six-cell run on `1ad03e29`, is in progress.
+- **`dev` `68262e86`** (#8801, BF-124; head `affbc8fd`). Full suite on its tree: 3552 passing,
+  0 failing, 4 pending (Node 22.23.2, MongoDB 7.0.43, one cell). #8801 changes
+  `lib/client/renderer.js` and adds `tests/client.renderer.tooltip-units.test.js`, whose tests fail
+  with the old renderer. Its own CI: 14 passed, 2 skipped.
+- **`dev` `74942ec6`** (tree `5671b8d3`, the same tree as #8800's head `a06e75d6`). Full suite on
+  `a06e75d6`: 3538 passing, 0 failing, 4 pending (Node 24.15.0, MongoDB 7.0.43, one cell,
+  2026-10-02); the same count on the unmerged fix `2a64c500` (Node 22.23.2). #8800 (BF-94) changes
+  `lib/profilefunctions.js` and adds `tests/profile-temp-cache.test.js`; #8799 changes README,
+  `azuredeploy.json` and the API v3 swagger text only. Each PR's own CI: 14 passed, 2 skipped.
 - **`dev` `ca6fcfaf`** (tree `0e38a5a7`, the same tree as #8796's head `e20b66ba`). Full suite on
   `e20b66ba`: 3534 passing, 0 failing, 4 pending (Node 22.23.2, MongoDB 7.0.43, one cell). #8796
   (BF-155) changes `lib/api/activity/index.js` and `lib/api/profile/index.js` (server only, no
@@ -760,7 +778,7 @@ the user-facing form. Facts the notes must not lose:
   fails only on BF-135's intended page-load change.
 - The previous candidate, `dev` `699eb5fa` (tree `0b727dc5`, run 019): 3458 passing, 0 failing,
   3 pending in the same six cells.
-- CI on #8598 at `74942ec6`: 27 checks passed, 3 skipped (read 2026-10-03 00:21Z). At `ca6fcfaf`: 27 checks passed, 3 skipped (read 2026-10-02 18:15Z); at `25fc41d9`,
+- CI on #8598 at `1ad03e29`: 27 checks passed, 3 skipped (read 2026-10-03 01:16Z). At `74942ec6`: 27 checks passed, 3 skipped (read 2026-10-03 00:21Z); at `ca6fcfaf`: 27 checks passed, 3 skipped (read 2026-10-02 18:15Z); at `25fc41d9`,
   `a143d507`, `3014f883`, `7000eb18` and `295f1177`, 27 checks passed, 3 skipped. At `e3adc91d`, 27 passed and 3 skipped (Node 20/22/24 × MongoDB 4.4/5.0/6.0, CodeQL, Docker).
 - Queue items P0-A…P0-K, P0-T01, ADV-RETRO, ADV-ALARM and ADV-CONFIG hold the gates. A local
   `test:unit` pass does not cover every test file ([Known test gaps](#known-test-gaps)).

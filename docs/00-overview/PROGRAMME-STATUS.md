@@ -1,7 +1,7 @@
 # Programme status — cgm-remote-monitor
 
 *Prepared for the Nightscout project; proposed for Nightscout Foundation stewardship. Contributor-facing; technical throughout.
-Prose revised 2026-10-03 against cgm-remote-monitor `official/dev` `74942ec6` and
+Prose revised 2026-10-03 against cgm-remote-monitor `official/dev` `1ad03e29` and
 `official/master` `92d08342` (tag `15.0.8`). The tables are generated from
 `queue/work-queue.yaml`; see [How to check any of this yourself](#how-to-check-any-of-this-yourself).*
 
@@ -28,29 +28,29 @@ current and the prose is stale.
 
 <!-- END GENERATED: horizons -->
 
-**Remedial** — finding and fixing defects that already ship. `dev` is at `74942ec6` (the merge of
-#8800, 2026-10-03): 95 first-parent merges and 537 commits since 15.0.8
+**Remedial** — finding and fixing defects that already ship. `dev` is at `1ad03e29` (the merge of
+#8802, 2026-10-03): 97 first-parent merges and 543 commits since 15.0.8
 (`git rev-list [--first-parent] --count official/master..official/dev`). None of it is released.
 
-- **Merged.** Every PR decided for 15.0.9 except the fixes for BF-124 and BF-127, decided 2026-10-02 and on branches being prepared (queue `BFQ-124`, `BFQ-127`); the PR-by-PR list is in
+- **Merged.** Every PR decided for 15.0.9; the PR-by-PR list is in
   [the release contents](../../releases/cgm-remote-monitor-15.0.9/contents.md). Crowdin #8730 is
   held out (BF-132). The connector fixes are in `nightscout-connect` `0.1.0`, released 2026-09-24,
-  which `dev` pins exactly (#8762). The last one in, #8800 (BF-94): an open page kept showing a temp basal
-  that AndroidAPS (API v3) or Trio had shortened or cancelled until its original end; it now shows
-  the change when it arrives. #8799 before it documents the settings the code reads (BF-46, BF-48
-  to BF-51, BF-74, BF-78, BF-81).
+  which `dev` pins exactly (#8762). The last two in: #8801 (BF-124), a treatment's BG in the chart tooltip
+  is converted from the units it was saved in, so an mmol/L site with an mg/dL profile no longer
+  shows 5 as 0.3; and #8802 (BF-127), clock views opened from the menu keep the page's access
+  token, and a refused clock says so instead of staying blank.
 - **Tests.** The last full run is run 020 on `ce30a94d` (2026-09-27): 3473/0/3 in all six cells
   (Node 20, 22 and 24 against MongoDB 4.4.24 and 7.0.43), with an A/B soak against 15.0.8. Each PR
-  merged since carries its own evidence (its GitHub CI and a full suite on its branch). #8800's head
-  `a06e75d6` has the same tree as `74942ec6`, and passes the full suite, 3538/0/4, on one cell
-  (Node 24, MongoDB 7.0.43). A full six-cell run on `74942ec6` comes next
+  merged since carries its own evidence (its GitHub CI and a full suite on its branch). #8802's head
+  `b13b7a3a` has the same tree as `1ad03e29`, and passes the full suite, 3563/0/4, on one cell
+  (Node 24, MongoDB 7.0.43). Run 021, the full six-cell run on `1ad03e29`, is in progress
   ([15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md)).
 - **Real-site soak.** `RT-SOAK` is done: the maintainer decided on 2026-09-30 that real sites
   running the candidate count as the soak, and reports (2026-10-02) stable behaviour from Loop, Trio
   and AndroidAPS users on `dev`. The lab's 72 h soak was not run.
-- **Release PR.** #8598 (`dev` → `master`) is at `74942ec6` and mergeable; its CI on `74942ec6`:
-  27 checks passed, 3 skipped (read 2026-10-03 00:21Z).
-  It was approved at `e3adc91d`; re-approval at `74942ec6` is owed.
+- **Release PR.** #8598 (`dev` → `master`) is at `1ad03e29` and mergeable; its CI on `1ad03e29`:
+  27 checks passed, 3 skipped (read 2026-10-03 01:16Z).
+  It was approved at `e3adc91d`; re-approval at `1ad03e29` is owed.
 - **Version.** Decided: 15.0.9. `RT-VERSION`'s gate measures the modernization cut branches, which
   also declare 15.0.9 and are renumbered when they are rebased; it holds the cuts, not this release.
 - **What remains** before the tag, including the queue's open `RT-0` blockers, is listed once, in [ROADMAP §1](ROADMAP.md#1-the-next-release-1509).
@@ -98,7 +98,7 @@ replacement.
 **In the backfix register, neither `fixed` nor `merged` means an operator is safe.**
 `fixed` means repaired on a branch that has not been merged. `merged` means merged
 into `origin/dev` and not released. `released` means in a tagged release operators
-run, and no programme fix is released: `official/master` is 537 commits behind `dev`
+run, and no programme fix is released: `official/master` is 543 commits behind `dev`
 (`git -C externals/cgm-remote-monitor-official rev-list --count official/master..official/dev`,
 2026-10-03) and the shipping tag is 15.0.8. Merging to `dev` publishes a Docker Hub
 image; that is not a release. `RT-0` (release 15.0.9) is the item that changes this.
@@ -271,7 +271,7 @@ expanded in [NEEDS-A-HUMAN.md](NEEDS-A-HUMAN.md).
 
 | | decision | why it blocks a train |
 |---|---|---|
-| `RT-0` | Release 15.0.9 (PR #8598 at `dev` `74942ec6`). | Every merged fix reaches operators only through it, and every later cut waits behind it. What remains before the tag is in [ROADMAP §1](ROADMAP.md#1-the-next-release-1509). |
+| `RT-0` | Release 15.0.9 (PR #8598 at `dev` `1ad03e29`). | Every merged fix reaches operators only through it, and every later cut waits behind it. What remains before the tag is in [ROADMAP §1](ROADMAP.md#1-the-next-release-1509). |
 | `BFQ-09` | BF-09: is a zero-valued temp basal a real value in the socket dedup? Measured; waits on the maintainer. | It ships to operators now. |
 | `A7A-7` | The clock question inside the alarm path. The maintainer owns it. | It gates alarms under `TENANCY_MODE=multi`. |
 
