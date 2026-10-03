@@ -83,27 +83,33 @@ two js/xss-through-dom alerts (126, 127) at views/clockviews/clock-
 config.html:38 and :68: the config link puts the raw page token and the face
 text into href. Session -d4 is adding a commit that decodes and then URL-
 encodes both, with a test; the push to the PR branch is the maintainer's.
-2026-10-03 (session -d4's agent): bf/clock-token-link 60d5951e = fix 9238fd32
-on 74942ec6, merged with dev 68262e86 (no conflicts); 6 files +237/-1: the
-Clock menu links (browser-settings.js) and clock-config.html's link carry the
-page's own ?token= (URL-encoded once, nothing without a token, no storage);
-clock-client.js shows "Not authorized" on a 401 from properties, clock.html
-re-checks on a script error; tests/clock-token-link.test.js, 8 tests;
-reverting each of the three files fails its own tests. Chromium, denied site,
-readable token: dev's Clock, Color and Simple are blank, the branch draws 123,
-no token shows the message. Full suite 3560/0/4 on 60d5951e (dev 68262e86 3552
-plus 8; api.count-parameter needs an empty database). Not pushed. Pre-
-existing, unchanged: curly quotes in the configurator link's target; the main
-page sometimes redirects to /profile without the token before the profile
-arrives, seen by two agents today (BFQ-124's and this), possibly JL-2's race.
-2026-10-02 (maintainer, relayed by session -d4): FIX IN 15.0.9; in RT-0's
-blocks_on. Local branch bf/clock-token-link being prepared by -d4's agent in
-externals/work/crm-bf127 off dev 74942ec6, not pushed. Approach: the main page
-appends its own ?token= to the Clock menu links, and the clock shows a message
-on a 401 instead of drawing nothing. Filed 2026-09-25 from the GitHub triage
-(issue #7377, opened 2022-03-16). Shares its silence with the #7036 entry: a
-clock whose fetch is refused draws nothing and says nothing. Whether to copy a
-token into more URLs is a maintainer decision.
+Committed as b13b7a3a on top of 60d5951e (clock-config.html clockHref encodes
+the face and the token, the token decoded first; 3 jsdom tests; 60d5951e's
+link fails the encoding test, dev's fails the two token tests). Full suite
+3563/0/4 on b13b7a3a (Node 24.15.0, MongoDB 7.0.43, fresh database), dev
+68262e86's 3552 plus 11. Not pushed: #8802's head is still 60d5951e until the
+maintainer pushes. 2026-10-03 (session -d4's agent): bf/clock-token-link
+60d5951e = fix 9238fd32 on 74942ec6, merged with dev 68262e86 (no conflicts);
+6 files +237/-1: the Clock menu links (browser-settings.js) and clock-
+config.html's link carry the page's own ?token= (URL-encoded once, nothing
+without a token, no storage); clock-client.js shows "Not authorized" on a 401
+from properties, clock.html re-checks on a script error; tests/clock-token-
+link.test.js, 8 tests; reverting each of the three files fails its own tests.
+Chromium, denied site, readable token: dev's Clock, Color and Simple are
+blank, the branch draws 123, no token shows the message. Full suite 3560/0/4
+on 60d5951e (dev 68262e86 3552 plus 8; api.count-parameter needs an empty
+database). Not pushed. Pre-existing, unchanged: curly quotes in the
+configurator link's target; the main page sometimes redirects to /profile
+without the token before the profile arrives, seen by two agents today
+(BFQ-124's and this), possibly JL-2's race. 2026-10-02 (maintainer, relayed by
+session -d4): FIX IN 15.0.9; in RT-0's blocks_on. Local branch bf/clock-token-
+link being prepared by -d4's agent in externals/work/crm-bf127 off dev
+74942ec6, not pushed. Approach: the main page appends its own ?token= to the
+Clock menu links, and the clock shows a message on a 401 instead of drawing
+nothing. Filed 2026-09-25 from the GitHub triage (issue #7377, opened
+2022-03-16). Shares its silence with the #7036 entry: a clock whose fetch is
+refused draws nothing and says nothing. Whether to copy a token into more URLs
+is a maintainer decision.
 
 ---
 

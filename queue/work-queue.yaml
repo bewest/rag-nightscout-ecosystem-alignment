@@ -10418,6 +10418,12 @@ items:
       raw page token and the face text into href. Session -d4 is adding a
       commit that decodes and then URL-encodes both, with a test; the push to
       the PR branch is the maintainer's.
+      Committed as b13b7a3a on top of 60d5951e (clock-config.html clockHref
+      encodes the face and the token, the token decoded first; 3 jsdom tests;
+      60d5951e's link fails the encoding test, dev's fails the two token
+      tests). Full suite 3563/0/4 on b13b7a3a (Node 24.15.0, MongoDB 7.0.43,
+      fresh database), dev 68262e86's 3552 plus 11. Not pushed: #8802's head
+      is still 60d5951e until the maintainer pushes.
       2026-10-03 (session -d4's agent): bf/clock-token-link 60d5951e = fix
       9238fd32 on 74942ec6, merged with dev 68262e86 (no conflicts); 6 files
       +237/-1: the Clock menu links (browser-settings.js) and
