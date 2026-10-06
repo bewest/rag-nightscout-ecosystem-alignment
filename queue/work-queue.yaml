@@ -11776,6 +11776,42 @@ items:
       Filed 2026-10-03 from session -d4's BF-127 work. After 15.0.9
       (maintainer, 2026-10-03). PR #8802 edits the same file (the link's
       href), so a fix should go on top of it once it merges.
+  - id: BFQ-161
+    title: "BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@1ad03e29
+    state: needs-decision
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/api/entries/index.js prep_patterns / count_patterns: a nesting-depth
+      (or input-length) limit checked before braces.parse and expand.
+    review: maintainer
+    operator_visible: >
+      A malformed request to the entries pattern routes gets an error reply
+      instead of being processed; the site keeps running either way.
+    semver: patch
+    semver_reason: an input limit on three read routes
+    register: [BF-161]
+    gates:
+      - no-gate: >
+          Read, not run: GHSA-vfj7-8cjw-p6xm (braces <= 3.0.3, no patched
+          version); the routes call braces.parse and expand synchronously in
+          Express middleware, so the RangeError is caught and answered 500.
+          A gate would send a nested pattern within the count limit and assert
+          a 400 before parsing, and that the server still answers afterwards.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Filed 2026-10-06 from session -d4's run 021 npm audit on dev 1ad03e29
+      (15 findings, 7 high, against 10 and 2 on 2026-10-02: new advisories
+      for braces, @parse/node-apn and eslint-webpack-plugin). Graded low by
+      -d4 from the code, same class as BF-154. Waiting on the maintainer:
+      known issue in 15.0.9 or a blocker. Mechanism only in public records
+      (live on 15.0.8).
   - id: RT-PR-8781
     title: "#8781 - treatment retries keep srvCreated, empty identities match, history clock survives a restart (AndyLow91; BF-141, BF-143, BF-144), merged for 15.0.9"
     parcel: release-train
