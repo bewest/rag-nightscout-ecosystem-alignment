@@ -148,9 +148,9 @@ two rows differ.
 - **Candidate: 3563/0/4** on #8802's head `b13b7a3a`, which has the same tree as `1ad03e29`
   (`7d16c516`), Node 24.15.0, MongoDB 7.0.43, one cell, fresh database, 2026-10-02
   ([contents §Evidence](contents.md#evidence)). 2,030 more passing tests than 15.0.8 (2.32×).
-- **Last six-cell run: run 020 on `ce30a94d`, 3473/0/3** (2026-09-27; Node 20.20.0 / 22.23.2 /
-  24.20.0 × MongoDB 4.4.24 / 7.0.43). Run 021, the six-cell run on the final head `1ad03e29`, is in
-  progress.
+- **Last six-cell run: run 021 on `1ad03e29`, 3563/0/4** (2026-10-03; Node 20.20.0 / 22.23.2 /
+  24.20.0 × MongoDB 4.4.24 / 7.0.43), with run 020's probes and a compressed A/B soak against 15.0.8.
+  The previous six-cell run, run 020 on `ce30a94d` (2026-09-27), gave 3473/0/3.
 - CI on #8598 at `1ad03e29`: 27 checks passed, 3 skipped (read 2026-10-03 01:16Z; [contents §Identity](contents.md#identity)).
 
 ### Run history
@@ -411,7 +411,7 @@ risk, the table says what was done and what it does not cover.
 | risk | what addresses it | what it does not cover |
 |---|---|---|
 | **A fix breaks an app that talks to Nightscout** | A census of 40 client projects read what each sends and expects. A replay lab sent those exact requests to 15.0.8 and the candidate side by side; three findings that looked like breakages from reading the code did not reproduce. Where a fix would have broken a real client (oref0's and GluPredKit's `count`), the old behaviour is kept behind a named setting, on by default, with a deprecation warning. | Clients outside the 40, and private scripts. The census reads each client at its upstream tip, not every version in use. Some changes are deliberate corrections and are listed as such in the release notes. |
-| **A fix introduces a new defect** | Every fix ships with tests (2,030 more passing than 15.0.8). Break-its undo a fix and check that its tests fail for the right reason. The suite runs in six cells of Node and MongoDB versions. An A/B soak runs 15.0.8 and the candidate on the same traffic and flags every difference not explained by an intended change. Seven defects introduced by fixes were caught and fixed before release. | Run 021, the six-cell run on the final candidate `1ad03e29`, is in progress; the thirteen merges since run 020 were each checked on one cell or in CI. The soak is compressed (minutes standing for hours) and synthetic. Break-its of most fixes ran on their own branches, not on the integrated tree. |
+| **A fix introduces a new defect** | Every fix ships with tests (2,030 more passing than 15.0.8). Break-its undo a fix and check that its tests fail for the right reason. The suite runs in six cells of Node and MongoDB versions. An A/B soak runs 15.0.8 and the candidate on the same traffic and flags every difference not explained by an intended change. Seven defects introduced by fixes were caught and fixed before release. | Run 021, the six-cell run on the final candidate `1ad03e29`, passed: 3563/0/4 in all six cells. The thirteen merges since run 020 were each checked on one cell or in CI before it. The soak is compressed (minutes standing for hours) and synthetic. Break-its of most fixes ran on their own branches, not on the integrated tree. |
 | **Behaviour on real devices** | The maintainer walked user journeys in a browser with 15.0.8 side by side (11 scenarios passed). Real sites ran the candidate as the real-time soak: as of 2026-09-29 one Loop, one Trio and one AndroidAPS user ran `7000eb18` for about two days with no errors, and on 2026-10-02 the maintainer reported stable behaviour from AndroidAPS, Trio and Loop users of `dev` through the week. | These reports are informal; how many sites and for how long is not recorded. Browser checks still owed include a remote bolus, LoopCaregiver from its own app, the clock views, the pump pill, alarm labels, reports during a percentage profile switch, the Day to Day report, the Food Editor on a touch screen, a temp basal cancelled while a page is open (BF-94), a treatment tooltip on an mmol/L site with an mg/dL profile (BF-124), and a clock opened from the menu with a token on a site that requires sign-in (BF-127). |
 | **Security defects** | Fixes for defects live on 15.0.8 are merged: live-update access, the query operator allowlist, login hardening, error replies without internal detail, bounds on two little-used request types, storage errors that ended the process, and dependency advisories. This repository is public, so those defects are described by mechanism and outcome only until a release with the fixes ships. | One such defect has no fix in 15.0.9 (BF-72). Until 15.0.9 is installed, every fixed defect is still present on sites running 15.0.8. `npm audit` on the candidate reports 10 findings, triaged one by one in [contents](contents.md#npm-audit-and-dependabot-triage). |
 | **What's left open** | 25 items are listed in "What is NOT in 15.0.9" and carried in the release notes as known issues or deferred by decision. 35 register entries in scope are not closed: 16 known issues, 5 whose documentation is merged for 15.0.9 with a code half later, 1 with a fix prepared for after 15.0.9, 4 partly fixed, 6 only on unreleased branches or tooling, and 3 found in the BF-124 and BF-127 work (2 after 15.0.9 by decision, 1 not decided) ([§6](#what-the-open-entries-are)). | |
@@ -419,9 +419,9 @@ risk, the table says what was done and what it does not cover.
 ### What is left open
 
 Before the tag ([contents §Open items](contents.md#open-items-a-releaser-must-settle)):
-run 021, the six-cell run on the final head `1ad03e29` (in progress); the browser hand checks
-above; the version class of #8772, #8775 and #8780; re-approval of #8598 at its final head (both
-approvals were given on `e3adc91d`); the `CHANGELOG.md` question; and the tag. The lab's 72-hour soak was not run, by decision.
+the browser hand checks above; the version class of #8772, #8775 and #8780; re-approval of #8598 at
+its final head (both approvals were given on `e3adc91d`); the `CHANGELOG.md` question; and the tag.
+Run 021, the six-cell run on the final head `1ad03e29`, passed (3563/0/4 in all six cells). The lab's 72-hour soak was not run, by decision.
 Known test gaps are in [contents §Known test gaps](contents.md#known-test-gaps): 79 of the 227
 `tests/*.test.js` files are reached only by `npm test` / `test-ci`.
 

@@ -5,9 +5,12 @@ cut. Drafted on dev 1ad03e29 (2026-10-03). If dev moves past
 1ad03e29 before the tag, re-measure the counts on the tag
 (git rev-list --first-parent --count 15.0.8..<tag>;
 git rev-list --count 15.0.8..<tag>; git diff --shortstat 15.0.8 <tag>).
-Test evidence: the last full release-candidate run is run 020 on
-ce30a94d (2026-09-27), 3473/0/3 in all six cells (Node 20/22/24 x
-MongoDB 4.4.24, 7.0.43). Each later PR passed its own GitHub CI;
+Test evidence: the last full release-candidate run is run 021 on
+1ad03e29 (2026-10-03), 3563/0/4 in all six cells (Node 20/22/24 x
+MongoDB 4.4.24, 7.0.43), with run 020's probes and a compressed
+A/B soak against 15.0.8. The previous full run is run 020 on
+ce30a94d (2026-09-27), 3473/0/3. Each PR merged between them passed
+its own GitHub CI;
 branch suites: #8788 3481/0/3, #8791 3485/0/3, #8793 3502/0/3,
 #8794 3512/0/4 with a byte-identical production bundle (#8786 too),
 #8795 head fdf88f4e 3532/0/4 (one cell, Node 22.23.2, MongoDB
@@ -16,8 +19,8 @@ Node 22.23.2, MongoDB 7.0.43), #8800 head a06e75d6 3538/0/4 (one
 cell, Node 24.15.0, MongoDB 7.0.43), #8801 3552/0/4 (one cell,
 Node 22.23.2, MongoDB 7.0.43), #8802 head b13b7a3a 3563/0/4 (one
 cell, Node 24.15.0, MongoDB 7.0.43), the same tree as 1ad03e29, so
-it ran on the exact candidate tree. Run 021, the full six-cell run
-on 1ad03e29, is in progress. Release PR #8598: both approvals are
+it ran on the exact candidate tree, and run 021 then ran the full
+six cells on it. Release PR #8598: both approvals are
 at e3adc91d; re-approval at 1ad03e29 owed; its CI on 1ad03e29: 27
 checks passed, 3 skipped (2026-10-03).
 

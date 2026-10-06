@@ -293,10 +293,7 @@ this file does not copy them.
 What the queue tracks is generated, and current, in
 [ROADMAP §1](../../docs/00-overview/ROADMAP.md#1-the-next-release-1509). As of `dev` `1ad03e29` (2026-10-03), 15.0.9 waits on:
 
-1. **One full six-cell run on the final head** (Node 20/22/24 × MongoDB 4.4.24 and 7.0.43, probes,
-   compressed A/B soak against 15.0.8, as run 020 on `ce30a94d`). Run 021 on `1ad03e29` is in
-   progress. What has run since run 020 is under [Evidence](#evidence).
-2. **The browser hand checks still owed.**
+1. **The browser hand checks still owed.**
    `node tools/queue/gates/client-unchanged-since-hand-check.js --base 1ad03e29 --with ''` names
    22 paths that differ on the browser side from the hand-checked `8d797ba4`: `.gitignore` and
    `.nycrc.json` (tooling), `azuredeploy.json` (#8799, the Azure deployment template),
@@ -329,22 +326,22 @@ What the queue tracks is generated, and current, in
    the branch; a check by hand is owed). #8802 (BF-127): on a site that requires sign-in, a clock
    opened from the menu by a viewer using a token should draw, and a clock opened without one should
    say "Not authorized" (measured in Chromium on the branch; a check by hand is owed).
-3. **The version class of #8772, #8775 and #8780**, by the maintainer, who is collecting data:
+2. **The version class of #8772, #8775 and #8780**, by the maintainer, who is collecting data:
    recorded as minor-under-patch exceptions (as #8530) or re-classed ([decisions](decisions.md)).
-4. **Re-approval of #8598 at its final head.** Both approvals were given on `e3adc91d`. CI on
+3. **Re-approval of #8598 at its final head.** Both approvals were given on `e3adc91d`. CI on
    `1ad03e29`: 27 checks passed, 3 skipped (read 2026-10-03 01:16Z).
-5. **The `CHANGELOG.md` question.** `dev` carries a hand-written `## [Unreleased]` section (lines
+4. **The `CHANGELOG.md` question.** `dev` carries a hand-written `## [Unreleased]` section (lines
    5–87 of `git show official/dev:CHANGELOG.md` at `1ad03e29`, from 14 commits —
    `git log --no-merges official/master..official/dev -- CHANGELOG.md`), against the rule in
    [`../README.md`](../README.md#open-item-changelog-on-dev) that the changelog is generated at
    release time. No decision on it is recorded.
-6. **BF-154 is named in the release notes** (decided 2026-10-02, maintainer), under Known issues:
+5. **BF-154 is named in the release notes** (decided 2026-10-02, maintainer), under Known issues:
    the `node-forge` advisory behind the 2 high among `npm audit`'s 10 findings on `25fc41d9` (no PR
    merged since changes a package file, so the figures stand for `1ad03e29`), filed as low because Nightscout does not call the affected function ([below](#node-forge-ghsa-86w9-cpqp-85rv)).
    It is not a release blocker: no fixed version exists, and `@parse/node-apn` 8.1.0 (the
    modernization line's version, and the latest) still depends on `node-forge` 1.4.0 exactly, so the
    update waits for an upstream fix and is carried with the modernization work.
-7. **The tag**, by the maintainer.
+6. **The tag**, by the maintainer.
 
 The [release notes](release-notes.md) and [tag message](tag-message.txt) are drafted on `1ad03e29`.
 
@@ -720,7 +717,11 @@ the user-facing form. Facts the notes must not lose:
   `lib/client/browser-settings.js`, `lib/client/clock-client.js` and three files under
   `views/clockviews/`, and adds `tests/clock-token-link.test.js`; its tests fail with `dev`
   `68262e86`'s page. #8802's own CI: 13 passed, 2 skipped, CodeQL passed. The last full RC run is
-  run 020 on `ce30a94d` (below); run 021, the full six-cell run on `1ad03e29`, is in progress.
+  run 021 on `1ad03e29`: 3563/0/4 in all six cells (Node 20/22/24 × MongoDB 4.4.24 and 7.0.43),
+  2026-10-03, with run 020's probes (`tooltip-bg-units.js` now passes, BF-124) and a compressed A/B
+  soak against 15.0.8 (R40–R44), the verdicts unchanged from run 020
+  ([integration record](../../docs/30-design/remedial/rc-15.0.9-integration-record.md#current-run)).
+  The previous full RC run is run 020 on `ce30a94d` (below).
 - **`dev` `68262e86`** (#8801, BF-124; head `affbc8fd`). Full suite on its tree: 3552 passing,
   0 failing, 4 pending (Node 22.23.2, MongoDB 7.0.43, one cell). #8801 changes
   `lib/client/renderer.js` and adds `tests/client.renderer.tooltip-units.test.js`, whose tests fail

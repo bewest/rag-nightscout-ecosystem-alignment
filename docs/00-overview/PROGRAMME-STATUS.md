@@ -39,11 +39,10 @@ current and the prose is stale.
   is converted from the units it was saved in, so an mmol/L site with an mg/dL profile no longer
   shows 5 as 0.3; and #8802 (BF-127), clock views opened from the menu keep the page's access
   token, and a refused clock says so instead of staying blank.
-- **Tests.** The last full run is run 020 on `ce30a94d` (2026-09-27): 3473/0/3 in all six cells
-  (Node 20, 22 and 24 against MongoDB 4.4.24 and 7.0.43), with an A/B soak against 15.0.8. Each PR
-  merged since carries its own evidence (its GitHub CI and a full suite on its branch). #8802's head
-  `b13b7a3a` has the same tree as `1ad03e29`, and passes the full suite, 3563/0/4, on one cell
-  (Node 24, MongoDB 7.0.43). Run 021, the full six-cell run on `1ad03e29`, is in progress
+- **Tests.** The last full run is run 021 on `1ad03e29` (2026-10-03): 3563/0/4 in all six cells
+  (Node 20, 22 and 24 against MongoDB 4.4.24 and 7.0.43), with run 020's probes and an A/B soak
+  against 15.0.8. Each PR merged after run 020 carries its own evidence (its GitHub CI and a full
+  suite on its branch). The previous six-cell run, run 020 on `ce30a94d` (2026-09-27), gave 3473/0/3
   ([15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md)).
 - **Real-site soak.** `RT-SOAK` is done: the maintainer decided on 2026-09-30 that real sites
   running the candidate count as the soak, and reports (2026-10-02) stable behaviour from Loop, Trio
