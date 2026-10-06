@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 190 |
+| items | 191 |
 | runnable gates | 250 |
-| explicit `no-gate:` markers | 245 |
+| explicit `no-gate:` markers | 246 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 245 of the 495 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 246 of the 496 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -48,7 +48,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `blocked` | 23 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, BFQ-72, BFQ-52, BFQ-93, BFQ-95, BFQ-67, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-152, BFQ-154, BFQ-156 |
 | `in-flight-upstream` | 1 | BFQ-09 |
 | `merged-upstream` | 85 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
-| `needs-decision` | 6 | RT-PROPAGATION, RT-0, T30-RESEARCH, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG |
+| `needs-decision` | 7 | RT-PROPAGATION, RT-0, T30-RESEARCH, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-162 |
 | `done` | 4 | P0-TAG, DOC-VIEWS, DOC-LINKS, RT-SOAK |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 3 | BFQ-71, BFQ-41, BFQ-141 |
@@ -2112,7 +2112,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 105 items
+`parcel: register-open` &mdash; 106 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2208,6 +2208,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-159` | BF-159 - the main page sometimes leaves for the Profile Editor while a profile exists, without the token | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-160` | BF-160 - the clock designer's link target is written with curly quotes | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-161` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `BFQ-162` | BF-162 - an explicit TRUST_PROXY address list reaches proxy-addr 2.0.7, inside a critical advisory fixed in 2.0.8 | `needs-decision` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `merged-upstream` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
 | `WS-LAB` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | `ready-to-push` | `main` | n/a | 1 run + 1 no-gate |
@@ -5114,6 +5115,36 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
 **Notes.** Filed 2026-10-06 from session -d4's run 021 npm audit on dev 1ad03e29 (15 findings, 7 high, against 10 and 2 on 2026-10-02: new advisories for braces, @parse/node-apn and eslint-webpack-plugin). Graded low by -d4 from the code, same class as BF-154. 2026-10-06 (maintainer): a known issue in 15.0.9, named in the release notes; the nesting-depth limit is after 15.0.9. Mechanism only in public records (live on 15.0.8).
+
+### `BFQ-162` &mdash; BF-162 - an explicit TRUST_PROXY address list reaches proxy-addr 2.0.7, inside a critical advisory fixed in 2.0.8
+
+| | |
+|---|---|
+| state (claimed) | `needs-decision` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@1ad03e29` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | no (pre-release) |
+| register | `BF-162` |
+
+**Blast radius.** package.json and package-lock.json: proxy-addr ^2.0.7 -> 2.0.8 (direct dependency, shared with Express 4.22.2's ~2.0.7); no code change.
+
+**What an operator sees.** Sites that list their proxy addresses in TRUST_PROXY get a corrected address check; other sites see no change.
+
+**Why `patch`.** a patch-level dependency update
+
+**Gates.**
+
+- **NO GATE** &mdash; Read, not run: GHSA-jqcg-44mw-7w3h (proxy-addr >= 1.1.0, < 2.0.8); client-ip.js compileTrust passes an explicit address list to proxyaddr.compile. A gate would compile an affected trust entry with the locked proxy-addr and assert an unrelated IPv4 peer is not trusted: fails on 2.0.7, passes on 2.0.8.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Filed 2026-10-06 from session -d4's re-measured npm audit (25 findings, 9 high, 1 critical; lockfile unchanged since run 021, the advisory database grew). Not on 15.0.8 (no TRUST_PROXY; trust proxy is enabled for every hop). Waiting on the maintainer: take 2.0.8 into 15.0.9 (run 022 and re-approval) or ship as a configuration-gated known issue.
 
 ### `BFQ-134` &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 

@@ -25,6 +25,7 @@ repository.
 | [`ADV-CONFIG`](adv-config.md) | #8746 | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81) |
 | [`BFQ-09`](bfq-09-bf-socket-dedup-zero.md) | #8797 | `in-flight-upstream` | BF-09 - socket dedup truthiness skips a falsy value |
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
+| [`BFQ-162`](bfq-162.md) | &mdash; | `needs-decision` | BF-162 - an explicit TRUST_PROXY address list reaches proxy-addr 2.0.7, inside a critical advisory fixed in 2.0.8 |
 | [`DEPENDABOT-CONFIG`](dependabot-config.md) | &mdash; | `needs-decision` | Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev |
 | [`P0-C-REMEDIATE`](p0-c-remediate.md) | &mdash; | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling |
 | [`RT-PROPAGATION`](rt-propagation.md) | &mdash; | `needs-decision` | How the release train reaches dev: merge dev into the cuts, or rebase the cuts onto dev |
