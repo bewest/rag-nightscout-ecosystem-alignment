@@ -11782,7 +11782,7 @@ items:
     repo: cgm-remote-monitor
     branch: ""
     base: official/dev@1ad03e29
-    state: needs-decision
+    state: not-started
     pr: []
     ships_to_operators_today: true
     blast_radius: >
@@ -11809,9 +11809,10 @@ items:
       Filed 2026-10-06 from session -d4's run 021 npm audit on dev 1ad03e29
       (15 findings, 7 high, against 10 and 2 on 2026-10-02: new advisories
       for braces, @parse/node-apn and eslint-webpack-plugin). Graded low by
-      -d4 from the code, same class as BF-154. Waiting on the maintainer:
-      known issue in 15.0.9 or a blocker. Mechanism only in public records
-      (live on 15.0.8).
+      -d4 from the code, same class as BF-154. 2026-10-06 (maintainer): a
+      known issue in 15.0.9, named in the release notes; the nesting-depth
+      limit is after 15.0.9. Mechanism only in public records (live on
+      15.0.8).
   - id: RT-PR-8781
     title: "#8781 - treatment retries keep srvCreated, empty identities match, history clock survives a restart (AndyLow91; BF-141, BF-143, BF-144), merged for 15.0.9"
     parcel: release-train
