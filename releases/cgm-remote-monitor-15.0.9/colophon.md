@@ -1,9 +1,9 @@
 # How 15.0.9 was made
 
-*Contributor- and maintainer-facing. Living record, measured 2026-10-03 against cgm-remote-monitor
-`official/dev` `1ad03e29` (the 15.0.9 candidate, release PR #8598) and `official/master` `92d08342`
+*Contributor- and maintainer-facing. Living record, measured 2026-10-07 against cgm-remote-monitor
+`official/dev` `43289dde` (the 15.0.9 candidate, release PR #8598) and `official/master` `92d08342`
 (tag `15.0.8`, the shipping release), in `externals/cgm-remote-monitor-official` after
-`git fetch official`, and this repository at `89922349`; re-measure before quoting. Nothing here is
+`git fetch official`, and this repository at `d9330a3c`; re-measure before quoting. Nothing here is
 tagged or released. What 15.0.9 contains is in [contents.md](contents.md), the maintainer's
 decisions in [decisions.md](decisions.md), defect facts in the
 [backfix register](../../docs/30-design/remedial/nightscout-backfix-register.md), and test runs in
@@ -19,14 +19,14 @@ range `R` is `official/master..official/dev`.
 ## 1. What 15.0.9 is
 
 15.0.9 is the next release of Nightscout's server and web app (cgm-remote-monitor). It is
-everything merged to the `dev` branch from 15.0.8 (2026-09-04) to `1ad03e29` (2026-10-03 01:00Z): mostly
+everything merged to the `dev` branch from 15.0.8 (2026-09-04) to `43289dde` (2026-10-07 20:52Z): mostly
 fixes for defects present in 15.0.8, with dependency updates and translations. It is not tagged;
 the checks still owed before the tag are listed in [§8](#what-is-left-open) and in
 [contents §Open items](contents.md#open-items-a-releaser-must-settle).
 
 | figure | value | command |
 |---|---|---|
-| time frame | 2026-09-04 (15.0.8's commit date, and the first merge) to 2026-10-02, the last merge's date in its committer's time zone (2026-10-03 01:00Z) | `git log --first-parent --format=%ad --date=short R \| sort \| sed -n '1p;$p'`; `git log -1 --format=%ad --date=short 15.0.8` |
+| time frame | 2026-09-04 (15.0.8's commit date, and the first merge) to 2026-10-07, the last merge's date in its committer's time zone (2026-10-07 20:52Z) | `git log --first-parent --format=%ad --date=short R \| sort \| sed -n '1p;$p'`; `git log -1 --format=%ad --date=short 15.0.8` |
 
 <!-- chart: kpis -->
 
@@ -34,10 +34,10 @@ the checks still owed before the tag are listed in [§8](#what-is-left-open) and
 
 | figure | value | command |
 |---|---|---|
-| PR merges | 97; every first-parent commit in the range is a PR merge | `git rev-list --first-parent --count R`; `git log --first-parent --merges --format=%h R \| wc -l` |
-| commits | 543 (337 non-merge, 17 author names) | `git rev-list [--no-merges] --count R`; `git log --no-merges --format=%an R \| sort -u \| wc -l` |
+| PR merges | 98; every first-parent commit in the range is a PR merge | `git rev-list --first-parent --count R`; `git log --first-parent --merges --format=%h R \| wc -l` |
+| commits | 545 (338 non-merge, 17 author names) | `git rev-list [--no-merges] --count R`; `git log --no-merges --format=%an R \| sort -u \| wc -l` |
 | files | 313 of 894 on `dev` changed: 131 added, 179 modified, 1 deleted (`tests/loop-server.test.js`), 2 renamed | `git diff --name-status official/master official/dev`; `git ls-tree -r --name-only official/dev \| wc -l` |
-| lines | +30,210 / −1,935 | `git diff --shortstat official/master official/dev` |
+| lines | +30,224 / −1,936 | `git diff --shortstat official/master official/dev` |
 | new modules under `lib/` | 18 | `git diff --name-status official/master official/dev -- lib \| grep -c '^A'` |
 
 <!-- chart: merges -->
@@ -46,10 +46,10 @@ By directory (files changed / files on `dev`, lines):
 
 | directory | changed / on `dev` | lines |
 |---|---:|---:|
-| `tests` | 142 / 320 | +21,535 / −132 |
+| `tests` | 142 / 320 | +21,548 / −132 |
 | `lib` | 105 / 241 | +5,113 / −931 |
 | `translations` | 34 / 34 | +1,021 / −4 |
-| root files | 11 / 30 | +1,609 / −861 (`package-lock.json` +1,357 / −815) |
+| root files | 11 / 30 | +1,610 / −862 (`package-lock.json` +1,358 / −816) |
 | `docs` | 11 / 84 | +838 / −3 |
 | `static` | 3 / 133 | +31 / −0 |
 | `views` | 5 / 15 | +29 / −4 |
@@ -70,19 +70,20 @@ PR merges per phase (`git log --first-parent --format=%ad --date=short R | sort 
 | 09-23 – 09-24 | 14 | backfix 2, connector 0.1.0 pin, count compatibility, login hardening |
 | 09-25 – 09-27 | 24 | #8758 (records keep their own `_id`), GitHub triage fixes, three carried outside PRs, regression fixes, #8784–#8786 |
 | 09-30 – 10-02 | 11 | #8788, #8790 (outside contributor), #8791, #8793–#8796, #8799–#8802 |
+| 10-07 | 1 | #8806, `proxy-addr` 2.0.8 clearing the GHSA-jqcg-44mw-7w3h critical (BF-162) |
 
 ## 3. Contributions
 
 ### PR merges by PR author
 
 Command: the PR number from each first-parent subject
-(`git log --first-parent --format=%s R | grep -oE '#[0-9]+'`), then one GraphQL query for all 97
+(`git log --first-parent --format=%s R | grep -oE '#[0-9]+'`), then one GraphQL query for all 98
 (`gh api graphql`, `pullRequest(number:N){author{login} headRepositoryOwner{login}}` on
 `nightscout/cgm-remote-monitor`), equivalent to `gh pr view N --json author` for each.
 
 | GitHub login | PRs | from |
 |---|---:|---|
-| bewest | 54 | branches in `nightscout/cgm-remote-monitor`: the 50 programme backfix PRs in [contents](contents.md#programme-backfix-prs-50-plus-8741), three connector pins (#8752, #8759, #8762) and #8750 |
+| bewest | 55 | branches in `nightscout/cgm-remote-monitor`: the 51 programme backfix PRs in [contents](contents.md#programme-backfix-prs-51-plus-8741), three connector pins (#8752, #8759, #8762) and #8750 |
 | dependabot | 15 | Dependabot branches, all merged 2026-09-05 |
 | AndyLow91 | 10 | 8 from `nightscout/` branches (#8597, #8697, #8699, #8701, #8702, #8726, #8778, #8781), 2 from a fork (#8601, #8602) |
 | bjorkert | 4 | fork |
@@ -118,12 +119,12 @@ Command: `git shortlog -sn --no-merges R`, grouped here by the GitHub login of t
 
 | who | commits |
 |---|---:|
-| bewest | 135 |
+| bewest | 136 |
 | Crowdin syncs (sulkaharo's account) | 103 (99 "New translations en.json", 4 "Update source file en.json") |
 | AndyLow91 | 47 |
 | dependabot | 15 |
 | the outside contributors listed above, and one Copilot-authored commit | 37, from 13 author names |
-| **total** | **337** non-merge commits |
+| **total** | **338** non-merge commits |
 
 The earliest non-merge commit is from 2022 (#7338's branch).
 
@@ -131,12 +132,12 @@ The earliest non-merge commit is from 2022 (#7338's branch).
 
 | figure | 15.0.8 | 15.0.9 candidate | command |
 |---|---:|---:|---|
-| `it(` calls under `tests/` | 1,288 | 2,361 | `git grep -cE '^\s*it\(' <ref> -- tests`, summed |
+| `it(` calls under `tests/` | 1,288 | 2,362 | `git grep -cE '^\s*it\(' <ref> -- tests`, summed |
 | `*.test.js` files under `tests/` | 157 | 253 | `git ls-tree -r --name-only <ref> tests \| grep -c '\.test\.js$'` |
 | of them at `tests/*.test.js` (what `npm test` runs) | 133 | 227 | `git ls-tree --name-only <ref> tests/ \| grep -c '\.test\.js$'` |
-| lines, `tests/` | — | +21,535 / −132 (142 files; 102 added) | `git diff --shortstat official/master official/dev -- tests` |
+| lines, `tests/` | — | +21,548 / −132 (142 files; 102 added) | `git diff --shortstat official/master official/dev -- tests` |
 | lines, `lib/` | — | +5,113 / −931 (105 files) | `git diff --shortstat official/master official/dev -- lib` |
-| passing / failing / pending, full suite | 1533 / 0 / 3 | 3563 / 0 / 4 | below |
+| passing / failing / pending, full suite | 1533 / 0 / 3 | 3564 / 0 / 4 | below |
 
 `it(` counts static calls; mocha's executed count also includes tests generated in loops, so the
 two rows differ.
@@ -145,13 +146,13 @@ two rows differ.
   24.15.0, a fresh `mongo:7.0.43` container with `--ulimit nofile=64000:64000`), with
   `NODE_ENV=test npx env-cmd -f <env> mocha --timeout 5000 --require ./tests/hooks.js --exit ./tests/*.test.js`
   ([snapshot §4](../../docs/60-research/programme/paving-the-cowpaths-2026-09-27.md#4-delta-in-testing)).
-- **Candidate: 3563/0/4** on #8802's head `b13b7a3a`, which has the same tree as `1ad03e29`
-  (`7d16c516`), Node 24.15.0, MongoDB 7.0.43, one cell, fresh database, 2026-10-02
-  ([contents §Evidence](contents.md#evidence)). 2,030 more passing tests than 15.0.8 (2.32×).
-- **Last six-cell run: run 021 on `1ad03e29`, 3563/0/4** (2026-10-03; Node 20.20.0 / 22.23.2 /
-  24.20.0 × MongoDB 4.4.24 / 7.0.43), with run 020's probes and a compressed A/B soak against 15.0.8.
-  The previous six-cell run, run 020 on `ce30a94d` (2026-09-27), gave 3473/0/3.
-- CI on #8598 at `1ad03e29`: 27 checks passed, 3 skipped (read 2026-10-03 01:16Z; [contents §Identity](contents.md#identity)).
+- **Candidate: 3564/0/4** on #8806's head `7dd4f400`, which has the same tree as `43289dde`
+  (`8c2e85b5`); it is the 3563 of `1ad03e29` plus #8806's one new `tests/client-ip.test.js` case
+  ([contents §Evidence](contents.md#evidence)). 2,031 more passing tests than 15.0.8 (2.32×).
+- **Last six-cell run: run 022 on `43289dde`, 3564/0/4** (2026-10-07; Node 20.20.0 / 22.23.2 /
+  24.20.0 × MongoDB 4.4.24 / 7.0.43), with run 021's probes and a compressed A/B soak against 15.0.8.
+  The previous six-cell run, run 021 on `1ad03e29` (2026-10-03), gave 3563/0/4.
+- CI on #8598 at `43289dde`: 27 checks passed, 3 skipped (read 2026-10-07; [contents §Identity](contents.md#identity)).
 
 ### Run history
 
@@ -186,6 +187,7 @@ and [contents §Evidence](contents.md#evidence):
 | #8800 `74942ec6` | `a06e75d6`, same tree (Node 24.15.0) | 3538/0/4 |
 | #8801 `68262e86` | its tree | 3552/0/4 |
 | #8802 `1ad03e29` | `b13b7a3a`, same tree (Node 24.15.0), fresh database | 3563/0/4 |
+| #8806 `43289dde` | `7dd4f400`, same tree; one new client-ip test, green and non-vacuous | 3564/0/4 |
 
 How each unit adds to the count, step by step with titles compared, is in the integration record
 ("How each unit adds to the suite count"); #8758 alone added 489 tests at `ab7b22d6`.
@@ -248,19 +250,19 @@ to `github`; an id not in a list counts as `latent`. Closed means the register s
 
 | origin | ids | closed | meaning |
 |---|---:|---:|---|
-| latent | 96 | 61 | present on 15.0.8, found by audit, lab, survey or review of an outside PR |
+| latent | 99 | 62 | present on 15.0.8, found by audit, lab, survey or review of an outside PR |
 | github | 14 | 14 | reproduced from upstream GitHub issues (BF-107, BF-118–128, BF-148, BF-150) |
 | connector | 9 | 9 | eight in nightscout-connect 0.1.0, which 15.0.9 pins exactly; BF-43 by the axios override (#8565) |
 | review | 10 | 10 | found in review of #8758 before it merged; nine fixed on the branch, BF-110 kept by decision |
 | escaped | 7 | 7 | introduced on `dev` by a merged fix PR ([below](#regressions-caught-before-release)) |
 | seam, cuts, invalid | 24 | — | not part of 15.0.9 |
-| **all** | **160** | | |
+| **all** | **163** | | |
 
 <!-- chart: arrival -->
 
 <!-- chart: burnup -->
 
-Per day, to 2026-10-03 (open and closed count only the 136 ids in scope):
+Per day, to 2026-10-07 (open and closed count only the 139 ids in scope):
 
 | date | latent | github | connector | review | escaped | not in 15.0.9 | filed | closed | open |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -279,8 +281,10 @@ Per day, to 2026-10-03 (open and closed count only the 136 ids in scope):
 | 09-27 | 0 | 1 | 0 | 0 | 0 | 0 | 1 | 1 | 36 |
 | 09-30 | 1 | 1 | 0 | 0 | 0 | 0 | 2 | 1 | 37 |
 | 10-01 | 4 | 0 | 0 | 0 | 0 | 0 | 4 | 2 | 39 |
-| 10-02 | 6 | 0 | 0 | 0 | 0 | 0 | 6 | 7 | 38 |
-| 10-03 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 35 |
+| 10-02 | 7 | 0 | 0 | 0 | 0 | 0 | 7 | 7 | 39 |
+| 10-03 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 36 |
+| 10-06 | 2 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 38 |
+| 10-07 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 37 |
 
 The checks first run on each day are in the
 [snapshot §5](../../docs/60-research/programme/paving-the-cowpaths-2026-09-27.md#5-defect-arrival).
@@ -288,49 +292,51 @@ Of the ids filed 09-30 to 10-02, BF-149 was found in review of #8788, and BF-153
 dependency advisory triage ([contents](contents.md#npm-audit-and-dependabot-triage)); BF-155 in review of
 the BF-72 branch, and BF-156 while documenting the API v3 settings (BF-46); BF-157 while fixing
 BF-124, BF-158 in BF-127's full-suite run, and BF-159 and BF-160 in the BF-124 and BF-127 browser
-runs.
+runs. BF-161 (the `braces` advisory) was filed 10-02, and BF-162 (the `proxy-addr` critical, fixed by
+#8806) and BF-163 (the `compression` advisory) 10-06, in continued dependency advisory triage; BF-162
+closed on 10-07 when #8806 merged.
 
 ### Register totals
 
-`node tools/queue/gates/register-exposure-legend.js` parses 159 status cells, 117 in §1 and 42 in
-§1b/§1c. In §1: 22 `open`, 1 `partly merged` (BF-07), 3 `fixed` (on unmerged branches: BF-52,
-BF-09, BF-156), 88 `merged` (in `dev`, not released), 3 not counted (BF-12, invalid; BF-41 and
-BF-71, closed), 0 `landed`. The gate exits 1 by design while nothing is released: every
-`fixed` and `merged` entry is still present for anyone running 15.0.8, so the exposure on the
-shipping release is 114 entries until 15.0.9 is tagged and installed.
+`node tools/queue/gates/register-exposure-legend.js` parses 162 status cells, 119 in §1 and 43 in
+§1b/§1c. In §1: 24 `open`, 3 `fixed` (on unmerged branches: BF-52, BF-09, BF-156), 89 `merged`
+(in `dev`, not released), 3 not counted (BF-12, invalid; BF-41 and BF-71, closed), 0 `landed`. The
+gate exits 1 by design while nothing is released: every `fixed` and `merged` entry is still present
+for anyone running 15.0.8, so the exposure on the shipping release is 116 entries until 15.0.9 is
+tagged and installed.
 
 ### What 15.0.9 closes, and what it carries
 
 | figure | value | source |
 |---|---:|---|
-| register entries in scope marked `merged` | 99 (60 latent, 14 github, 9 connector, 9 review, 7 escaped), plus BF-110 `decided` and BF-71 `closed` | `defect-arrival.py --json`, by origin and status |
-| in scope and not closed | 35 | the 10-03 row above; includes BF-07 and BF-63 (`partly merged`) and BF-52, BF-09 and BF-156 (`fixed` on unmerged branches) |
-| rows in contents "What is NOT in 15.0.9" | 25 | [contents](contents.md#what-is-not-in-1509) |
+| register entries in scope marked `merged` | 100 (61 latent, 14 github, 9 connector, 9 review, 7 escaped), plus BF-110 `decided` and BF-71 `closed` | `defect-arrival.py --json`, by origin and status |
+| in scope and not closed | 37 | the 10-07 row above; includes BF-07 and BF-63 (`partly merged`) and BF-52, BF-09 and BF-156 (`fixed` on unmerged branches) |
+| rows in contents "What is NOT in 15.0.9" | 27 | [contents](contents.md#what-is-not-in-1509) |
 
-The 25 rows are carried in the release notes as known issues, kept by decision, or deferred until
+The 27 rows are carried in the release notes as known issues, kept by decision, or deferred until
 after 15.0.9. One of them is a defect live on 15.0.8 with no fix in 15.0.9: a class of expensive
 search request can occupy the database for minutes (BF-72; its disposition is held privately).
 BF-46 (`API3_AUTOPRUNE_*` settings that delete old records when set) is a known issue by decision
 of 2026-10-02; #8799 documents the settings in 15.0.9.
-BF-154 (a dependency advisory with no fixed release, in code Nightscout does not call) is named
-in the release notes as well.
+Three dependency advisories are named in the release notes as well: BF-154 (`node-forge`, in code
+Nightscout does not call), BF-161 (`braces`) and BF-163 (`compression`), each with no fix in 15.0.9.
 
 ### What the open entries are
 
-Every one of the 35 has a queue item, and every one is present on 15.0.8 or only on unreleased
+Every one of the 37 has a queue item, and every one is present on 15.0.8 or only on unreleased
 branches and tooling, so none is a regression of 15.0.9. Each is in exactly one row below, as
-recorded in the register and `queue/work-queue.yaml` on 2026-10-03.
+recorded in the register and `queue/work-queue.yaml` on 2026-10-07.
 
 | disposition | entries | count |
 |---|---|---:|
-| known issue, described in the 15.0.9 notes | BF-44, BF-45, BF-46, BF-67, BF-72, BF-86, BF-92, BF-93, BF-95, BF-132, BF-137, BF-145, BF-149, BF-152, BF-154, BF-156 | 16 |
+| known issue, described in the 15.0.9 notes | BF-44, BF-45, BF-46, BF-67, BF-72, BF-86, BF-92, BF-93, BF-95, BF-132, BF-137, BF-145, BF-149, BF-152, BF-154, BF-156, BF-161, BF-163 | 18 |
 | documentation merged for 15.0.9, code half later | BF-48, BF-49, BF-74, BF-78, BF-81 | 5 |
 | fix prepared, after 15.0.9 | BF-09 | 1 |
 | partly fixed in 15.0.9, the rest planned | BF-07, BF-52, BF-54, BF-63 | 4 |
 | only on the modernization branches or in test tooling | BF-27, BF-53, BF-55, BF-88, BF-96, BF-158 | 6 |
 | found in the BF-124 and BF-127 work, after 15.0.9 by decision | BF-159, BF-160 | 2 |
 | found in the BF-124 work, not decided for 15.0.9 | BF-157 | 1 |
-| **all** | | **35** |
+| **all** | | **37** |
 
 - **Partly fixed:** BF-07's remainder is left by decision; BF-52's fix is ready and ships with
   BF-92's in a later release; BF-54 has no defect in shipped code and gets its regression test in
@@ -357,10 +363,11 @@ recorded in the register and `queue/work-queue.yaml` on 2026-10-03.
 ### Regressions caught before release
 
 Seven defects were introduced on `dev` by merged fix PRs. All seven are absent from 15.0.8 and fixed
-on `dev`; none reached a release. No register entry filed after 2026-09-27 (BF-147 to BF-160) is
-described as a defect introduced on `dev` in code a site runs (BF-158 is in a test file added on
-`dev`), and 14 merges have landed since the last regression fixes (#8781, #8783 on 09-26) with no
-new one found.
+on `dev`; none reached a release. No register entry filed after 2026-09-27 (BF-147 to BF-163) is
+classed as a defect introduced on `dev` in code a running site serves (BF-158 is in a test file added
+on `dev`; BF-162's config-gated `TRUST_PROXY` path, new in 15.0.9, was fixed by #8806 before release
+and is recorded as `latent`, not `escaped`), and 15 merges have landed since the last regression fixes
+(#8781, #8783 on 09-26) with no new `escaped` one found.
 
 | id | cause merged | filed | fix merged | family |
 |---|---|---|---|---|
@@ -392,12 +399,12 @@ claim of conformity with any standard.
 | design output | each PR with a "What changes for you" section, its tests and register ids; release notes; tag message | [`releases/cgm-remote-monitor-15.0.9/`](./) |
 | verification | six cells (Node 20.20.0 / 22.23.2 / 24.20.0 × MongoDB 4.4.24 / 7.0.43, version read from the server, one `mongod` per cell); additivity by test title; break-its, which count only when the failures show the defect; harness red controls; probes; A/B soak against 15.0.8 with expected-difference entries | [integration record §Method](../../docs/30-design/remedial/rc-15.0.9-integration-record.md#method); `tools/lab/` |
 | validation | browser walk by the maintainer in Chrome on `ff93fa94` (2026-09-26), with the journey lab playing the phones and 15.0.8 side by side: 11 scenarios passed, no regression found; real sites running the candidate as the 24–72 h real-time soak, by the maintainer's decision of 2026-09-30 | [browser record](../../docs/60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.md); [testing notes](testing-notes.md#where-testing-stands) |
-| work control | 189 queue items in 6 parcels, 250 runnable gates and 244 explicit `no-gate: <reason>` markers; 38 gate scripts | `make queue-validate`; `ls tools/queue/gates \| wc -l`; [`queue/work-queue.yaml`](../../queue/work-queue.yaml) |
+| work control | 192 queue items in 6 parcels, 250 runnable gates and 247 explicit `no-gate: <reason>` markers; 38 gate scripts | `make queue-validate`; `ls tools/queue/gates \| wc -l`; [`queue/work-queue.yaml`](../../queue/work-queue.yaml) |
 | review | 10 reviewer packets and an index, each generated from a queue item that wants a reviewer; `make packets-check` fails if one is stale or orphaned | [`reports/reviewer-packets/`](../../reports/reviewer-packets/README.md) |
 | records | documents are corrected in place; records are dated and never edited; one living file per series; the verification record is generated. The 2026-09-16 record is marked superseded and no 15.0.9 record has been captured | DOCUMENT-CONTROL, DEFINITION-OF-DONE, [verification record](verification-record.md) |
 | release decision | agents prepare and stop; people push, merge, tag and publish | [release README](../README.md) |
 
-`make queue-status` (2026-10-03) reports PASS 95, FAIL 33, UNMEASURED 61 across the 189 items. FAIL
+`make queue-status` (2026-10-07) reports PASS 95, FAIL 33, UNMEASURED 64 across the 192 items. FAIL
 means a gate ran and said no; many are items not started or blocked, whose gate is their
 acceptance test. UNMEASURED means nothing ran.
 
@@ -411,17 +418,17 @@ risk, the table says what was done and what it does not cover.
 | risk | what addresses it | what it does not cover |
 |---|---|---|
 | **A fix breaks an app that talks to Nightscout** | A census of 40 client projects read what each sends and expects. A replay lab sent those exact requests to 15.0.8 and the candidate side by side; three findings that looked like breakages from reading the code did not reproduce. Where a fix would have broken a real client (oref0's and GluPredKit's `count`), the old behaviour is kept behind a named setting, on by default, with a deprecation warning. | Clients outside the 40, and private scripts. The census reads each client at its upstream tip, not every version in use. Some changes are deliberate corrections and are listed as such in the release notes. |
-| **A fix introduces a new defect** | Every fix ships with tests (2,030 more passing than 15.0.8). Break-its undo a fix and check that its tests fail for the right reason. The suite runs in six cells of Node and MongoDB versions. An A/B soak runs 15.0.8 and the candidate on the same traffic and flags every difference not explained by an intended change. Seven defects introduced by fixes were caught and fixed before release. | Run 021, the six-cell run on the final candidate `1ad03e29`, passed: 3563/0/4 in all six cells. The thirteen merges since run 020 were each checked on one cell or in CI before it. The soak is compressed (minutes standing for hours) and synthetic. Break-its of most fixes ran on their own branches, not on the integrated tree. |
+| **A fix introduces a new defect** | Every fix ships with tests (2,031 more passing than 15.0.8). Break-its undo a fix and check that its tests fail for the right reason. The suite runs in six cells of Node and MongoDB versions. An A/B soak runs 15.0.8 and the candidate on the same traffic and flags every difference not explained by an intended change. Seven defects introduced by fixes were caught and fixed before release. | Run 022, the six-cell run on the final candidate `43289dde`, passed: 3564/0/4 in all six cells. The fourteen merges since run 020 were each checked on one cell or in CI before it (run 021 covered the first thirteen in six cells, run 022 the tree with #8806). The soak is compressed (minutes standing for hours) and synthetic. Break-its of most fixes ran on their own branches, not on the integrated tree. |
 | **Behaviour on real devices** | The maintainer walked user journeys in a browser with 15.0.8 side by side (11 scenarios passed). Real sites ran the candidate as the real-time soak: as of 2026-09-29 one Loop, one Trio and one AndroidAPS user ran `7000eb18` for about two days with no errors, and on 2026-10-02 the maintainer reported stable behaviour from AndroidAPS, Trio and Loop users of `dev` through the week. | These reports are informal; how many sites and for how long is not recorded. Browser checks still owed include a remote bolus, LoopCaregiver from its own app, the clock views, the pump pill, alarm labels, reports during a percentage profile switch, the Day to Day report, the Food Editor on a touch screen, a temp basal cancelled while a page is open (BF-94), a treatment tooltip on an mmol/L site with an mg/dL profile (BF-124), and a clock opened from the menu with a token on a site that requires sign-in (BF-127). |
-| **Security defects** | Fixes for defects live on 15.0.8 are merged: live-update access, the query operator allowlist, login hardening, error replies without internal detail, bounds on two little-used request types, storage errors that ended the process, and dependency advisories. This repository is public, so those defects are described by mechanism and outcome only until a release with the fixes ships. | One such defect has no fix in 15.0.9 (BF-72). Until 15.0.9 is installed, every fixed defect is still present on sites running 15.0.8. `npm audit` on the candidate reports 10 findings, triaged one by one in [contents](contents.md#npm-audit-and-dependabot-triage). |
-| **What's left open** | 25 items are listed in "What is NOT in 15.0.9" and carried in the release notes as known issues or deferred by decision. 35 register entries in scope are not closed: 16 known issues, 5 whose documentation is merged for 15.0.9 with a code half later, 1 with a fix prepared for after 15.0.9, 4 partly fixed, 6 only on unreleased branches or tooling, and 3 found in the BF-124 and BF-127 work (2 after 15.0.9 by decision, 1 not decided) ([§6](#what-the-open-entries-are)). | |
+| **Security defects** | Fixes for defects live on 15.0.8 are merged: live-update access, the query operator allowlist, login hardening, error replies without internal detail, bounds on two little-used request types, storage errors that ended the process, and dependency advisories. This repository is public, so those defects are described by mechanism and outcome only until a release with the fixes ships. | One such defect has no fix in 15.0.9 (BF-72). Until 15.0.9 is installed, every fixed defect is still present on sites running 15.0.8. `npm audit` on the candidate reports 24 findings (9 high, 0 critical; #8806 cleared the one critical), triaged one by one in [contents](contents.md#npm-audit-and-dependabot-triage). |
+| **What's left open** | 27 items are listed in "What is NOT in 15.0.9" and carried in the release notes as known issues or deferred by decision. 37 register entries in scope are not closed: 18 known issues, 5 whose documentation is merged for 15.0.9 with a code half later, 1 with a fix prepared for after 15.0.9, 4 partly fixed, 6 only on unreleased branches or tooling, and 3 found in the BF-124 and BF-127 work (2 after 15.0.9 by decision, 1 not decided) ([§6](#what-the-open-entries-are)). | |
 
 ### What is left open
 
 Before the tag ([contents §Open items](contents.md#open-items-a-releaser-must-settle)):
 the browser hand checks above; the version class of #8772, #8775 and #8780; re-approval of #8598 at
 its final head (both approvals were given on `e3adc91d`); the `CHANGELOG.md` question; and the tag.
-Run 021, the six-cell run on the final head `1ad03e29`, passed (3563/0/4 in all six cells). The lab's 72-hour soak was not run, by decision.
+Run 022, the six-cell run on the final head `43289dde`, passed (3564/0/4 in all six cells). The lab's 72-hour soak was not run, by decision.
 Known test gaps are in [contents §Known test gaps](contents.md#known-test-gaps): 79 of the 227
 `tests/*.test.js` files are reached only by `npm test` / `test-ci`.
 

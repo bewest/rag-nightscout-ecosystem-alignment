@@ -1,15 +1,15 @@
 # cgm-remote-monitor 15.0.9 — contents
 
 **Status: DRAFT for maintainer review. Contributor-facing; full technical depth intended.**
-Nothing here is tagged or released. Measured 2026-10-03 against `official/dev` `1ad03e29`
-(merge of #8802) and `official/master` `92d08342` (= tag `15.0.8`, the shipping release), in
+Nothing here is tagged or released. Measured 2026-10-07 against `official/dev` `43289dde`
+(merge of #8806) and `official/master` `92d08342` (= tag `15.0.8`, the shipping release), in
 `externals/cgm-remote-monitor-official` after `git fetch official`.
 
 > Complements the generated changelog. The changelog is authoritative for *what merged*;
 > this file records what the release is made of, how each figure was measured, and what is
 > unsettled.
 
-15.0.9 is **everything on `dev` at `1ad03e29`**. Every PR the
+15.0.9 is **everything on `dev` at `43289dde`**. Every PR the
 maintainer decided ships in it ([decisions](decisions.md)) is merged. Crowdin #8730 is held out because its sync reverts translations `dev`
 corrected (BF-132). Every PR merged to `dev` is `merged`; none is `released`.
 
@@ -19,14 +19,14 @@ corrected (BF-132). Every PR merged to `dev` is `merged`; none is `released`.
 |---|---|
 | Merged part | `official/master..official/dev` |
 | Base (shipping) | `92d08342` = `15.0.8` |
-| `dev` head | `1ad03e29` (merge of #8802, 2026-10-03 01:00Z), tree `7d16c516`, the same tree as #8802's head `b13b7a3a` |
-| Commits on `dev` | 543 — `git rev-list --count official/master..official/dev` |
-| First-parent merges on `dev` | **97** — `git rev-list --first-parent --count official/master..official/dev`; every first-parent commit in the range is a PR merge (`git log --first-parent --format=%s official/master..official/dev \| grep -vc '^Merge pull request'` prints 0) |
-| Diff on `dev` | 313 files, +30210/−1935 — `git diff --shortstat official/master official/dev` |
+| `dev` head | `43289dde` (merge of #8806, 2026-10-07 20:52Z), tree `8c2e85b5`, the same tree as #8806's head `7dd4f400` |
+| Commits on `dev` | 545 — `git rev-list --count official/master..official/dev` |
+| First-parent merges on `dev` | **98** — `git rev-list --first-parent --count official/master..official/dev`; every first-parent commit in the range is a PR merge (`git log --first-parent --format=%s official/master..official/dev \| grep -vc '^Merge pull request'` prints 0) |
+| Diff on `dev` | 313 files, +30224/−1936 — `git diff --shortstat official/master official/dev` |
 | `package.json` version | `15.0.9` on `dev` — `git show official/dev:package.json \| grep '"version"'` |
 | Connector pin | `nightscout-connect` exactly `0.1.0` from npm on `dev` (#8762); `15.0.8` pins the `v0.0.13` tag tarball — `git show official/<ref>:package.json \| grep nightscout-connect` |
 | Held out | Crowdin #8730 (head `f99c0e54`, open; BF-132) — `gh pr view 8730 --json state,headRefOid` |
-| Release PR | #8598 (`dev` → `master`, head `1ad03e29`, author AndyLow91): open, mergeable, `reviewDecision` `APPROVED`; both approvals (the maintainer, 2026-09-26 00:39Z) were given on `e3adc91d`; re-approval at `1ad03e29` is owed. CI on `1ad03e29`: 27 checks passed, 3 skipped (read 2026-10-03 01:16Z) — `gh pr view 8598 --json state,reviewDecision,reviews`, `gh pr checks 8598` |
+| Release PR | #8598 (`dev` → `master`, head `43289dde`, author AndyLow91): open, mergeable, `reviewDecision` `APPROVED`; both approvals (the maintainer, 2026-09-26 00:39Z) were given on `e3adc91d`; re-approval at `43289dde` is owed. CI on `43289dde`: 27 checks passed, 3 skipped (read 2026-10-07) — `gh pr view 8598 --json state,reviewDecision,reviews`, `gh pr checks 8598` |
 | Tag | none. No `15.0.9` tag exists |
 
 ## What 15.0.9 contains
@@ -44,7 +44,7 @@ Register ids refer to
 [`docs/30-design/remedial/nightscout-backfix-register.md`](../../docs/30-design/remedial/nightscout-backfix-register.md),
 which is the home of every defect fact; these tables do not restate them.
 
-#### Programme backfix PRs (50), plus #8741
+#### Programme backfix PRs (51), plus #8741
 
 | PR | Merge | Date | Register | What |
 |---|---|---|---|---|
@@ -98,6 +98,7 @@ which is the home of every defect fact; these tables do not restate them.
 | #8800 | `74942ec6` | 2026-10-03 | BF-94 | the browser kept the last temp basal it looked up in a module-level variable, so an open page went on showing a temp basal that AndroidAPS (API v3) or Trio had shortened or cancelled until the temp's original end; `lib/profilefunctions.js` now keeps it per instance and resets it when the treatments are replaced (`updateTreatments`), and the new `tests/profile-temp-cache.test.js` covers it. Measured in Chromium (`tools/lab/bf94-browser`): `ca6fcfaf` and `v15.0.8` show the stale temp alike, and the fixed tree clears every stale case in that harness. Its own CI: 14 passed, 2 skipped. Head `a06e75d6` (`2a64c500` merged with `dev` `f105f688`) |
 | #8801 | `68262e86` | 2026-10-03 | BF-124 | fixes #5940. The chart tooltip of a treatment with carbs or insulin converted its BG whenever the display units differed from the profile's units, ignoring the units the record was saved in, so on an mmol/L site with an mg/dL profile a careportal BG of 5 showed as 0.3 (and 90 as 1621 the other way round). `lib/client/renderer.js` `treatmentTooltip` now converts from the record's own `units` (any spelling containing `mmol` read as mmol/L), falling back to the profile's units when the record has none; the new `tests/client.renderer.tooltip-units.test.js` (14 tests, 7 of which fail on `74942ec6`) covers it. Display only: no stored data changes. Its own CI: 14 passed, 2 skipped. Head `affbc8fd`; 2 files, +162/−3 |
 | #8802 | `1ad03e29` | 2026-10-03 | BF-127 | fixes #7377. On a site that denies anonymous reads, a clock view opened from the Clock menu by a viewer using an access token was blank: the menu links were plain paths and the clock page looked for a token only in its own address. The four Clock menu links now carry the page's token, URL-encoded (`lib/client/browser-settings.js`); a clock whose requests are answered 401 says "Not authorized" instead of drawing nothing (`lib/client/clock-client.js`, `views/clockviews/clock.html`, `clock-shared.css`), and the clock designer's "Open my clock view!" link URL-encodes the face and the token (`views/clockviews/clock-config.html`; CodeQL `js/xss-through-dom` alert 126 fixed, alert 127 dismissed by the maintainer as a false positive). New `tests/clock-token-link.test.js` (11 tests). Measured in Chromium on a denied site with a readable token: the three clocks are blank on `68262e86` and draw on the branch. Its own CI: 13 passed, 2 skipped, CodeQL passed. Head `b13b7a3a` (`9238fd32` and the CodeQL fix); 6 files, +291/−1 |
+| #8806 | `43289dde` | 2026-10-07 | BF-162 | `proxy-addr` 2.0.7 → 2.0.8 (GHSA-jqcg-44mw-7w3h, critical, fixed in 2.0.8): an explicit `TRUST_PROXY` list that names an IPv6-notation subnet with zero leading bits (an IPv4-mapped-IPv6 subnet with a short prefix, or an IPv6 subnet with leading zero bits) compiled on `proxy-addr` 2.0.7 to trust every address; 2.0.8 trusts only the named block. The path is new in 15.0.9: `lib/server/client-ip.js` (added 2026-09-06) compiles the subnet list, while 15.0.8 enables trust proxy unconditionally and never compiles a subnet, so 15.0.8 cannot reach it. A plain IPv4 subnet (`10.0.0.0/8`), the default, `true`, `false` and a hop count are unaffected. `package.json` (`^2.0.8`), `package-lock.json` and one new `tests/client-ip.test.js` case. Its own CI: green across Node 20/22/24 × MongoDB 4.4/5/6, the npm 12 job, Docker and CodeQL. Head `7dd4f400`; 3 files |
 | #8741 | `bcd171cb` | 2026-09-20 | — (external contributor) | credential and identifier settings kept as strings (leading `+`, leading zeros) |
 
 **#8754** (`bf2/auth-hardening`, head `bae655a0`, merged as `4f705217`; 34 commits, 25 files,
@@ -263,6 +264,8 @@ The facts the classification rests on, for the record:
 | BF-93 — a food or quick pick changed elsewhere reaches an open page only when it reloads or reconnects | open; after 15.0.9 by decision (2026-10-02, `BFQ-93`) | described in the notes under the bolus calculator |
 | BF-149 — the Day to Day report draws a Temporary Target or other event cancelled early to its full planned length | open; after 15.0.9 (`BFQ-149`) | carried as a known issue |
 | BF-154 — `node-forge` advisory GHSA-86w9-cpqp-85rv, no fixed release; Nightscout does not call the affected function | open; blocked on an upstream release (`BFQ-154`) | named in the notes under Known issues |
+| BF-161 — `braces` advisory GHSA-vfj7-8cjw-p6xm, no fixed release; a deeply nested bracket pattern on the three query endpoints that read a forwarded-address list (`/times`, `/times/echo`, `/slice`) makes that one request answer 500, and the site keeps running; present on 15.0.8 too | open; known issue by decision (2026-10-07), nesting-depth limit after 15.0.9 (`BFQ-161`) | named in the notes under Known issues |
+| BF-163 — `compression` advisory GHSA-vc2v-76pw-4v95 (memory leak on prematurely closed responses, per the advisory, not measured here), fixed upstream in 1.8.2; 15.0.8 locks `compression` 1.8.1 too | open; known issue by decision (2026-10-07), the update comes with the modernization releases (`BFQ-163`) | named in the notes under Known issues |
 | BF-09 — in the socket `dbAdd` duplicate check a zero is ignored, so within 2 s a zero temp, 100 % temp, cancel, zero bolus or zero carbs can be taken for another record of the same type and dropped (AndroidAPS NSClient v1, the standalone NSClient app, the chart's drag-to-move) | fixed on #8797 (open); after 15.0.9 by decision (2026-10-02) | unchanged from 15.0.8 |
 | BF-156 — autoprune's delete result is never read: the deleted count is never logged, and a failed delete ends the server process (only where an `API3_AUTOPRUNE_*` setting is on; the same on 15.0.8) | fixed on the local branch `bf/autoprune-promise` (`BFQ-156`); after 15.0.9 by decision (2026-10-02) | carried as a known issue with BF-46 |
 | BF-76 — unbounded `silenceTime` | open, left open deliberately by #8745 | carried as a known issue |
@@ -291,11 +294,12 @@ this file does not copy them.
 ## Open items a releaser must settle
 
 What the queue tracks is generated, and current, in
-[ROADMAP §1](../../docs/00-overview/ROADMAP.md#1-the-next-release-1509). As of `dev` `1ad03e29` (2026-10-03), 15.0.9 waits on:
+[ROADMAP §1](../../docs/00-overview/ROADMAP.md#1-the-next-release-1509). As of `dev` `43289dde` (2026-10-07), 15.0.9 waits on:
 
 1. **The browser hand checks still owed.**
-   `node tools/queue/gates/client-unchanged-since-hand-check.js --base 1ad03e29 --with ''` names
-   22 paths that differ on the browser side from the hand-checked `8d797ba4`: `.gitignore` and
+   `node tools/queue/gates/client-unchanged-since-hand-check.js --base 43289dde --with ''` names
+   22 paths that differ on the browser side from the hand-checked `8d797ba4` (#8806 changes no
+   browser code): `.gitignore` and
    `.nycrc.json` (tooling), `azuredeploy.json` (#8799, the Azure deployment template),
    `lib/api2/index.js`, `lib/api2/notifications-v2.js`, `lib/client/browser-settings.js` (#8802),
    `lib/client/clock-client.js`, `lib/client/renderer.js` (#8801), `lib/data/calcdelta.js`,
@@ -329,21 +333,25 @@ What the queue tracks is generated, and current, in
 2. **The version class of #8772, #8775 and #8780**, by the maintainer, who is collecting data:
    recorded as minor-under-patch exceptions (as #8530) or re-classed ([decisions](decisions.md)).
 3. **Re-approval of #8598 at its final head.** Both approvals were given on `e3adc91d`. CI on
-   `1ad03e29`: 27 checks passed, 3 skipped (read 2026-10-03 01:16Z).
+   `43289dde`: 27 checks passed, 3 skipped (read 2026-10-07).
 4. **The `CHANGELOG.md` question.** `dev` carries a hand-written `## [Unreleased]` section (lines
-   5–87 of `git show official/dev:CHANGELOG.md` at `1ad03e29`, from 14 commits —
+   5–87 of `git show official/dev:CHANGELOG.md` at `43289dde`, from 14 commits —
    `git log --no-merges official/master..official/dev -- CHANGELOG.md`), against the rule in
    [`../README.md`](../README.md#open-item-changelog-on-dev) that the changelog is generated at
    release time. No decision on it is recorded.
-5. **BF-154 is named in the release notes** (decided 2026-10-02, maintainer), under Known issues:
-   the `node-forge` advisory behind the 2 high among `npm audit`'s 10 findings on `25fc41d9` (no PR
-   merged since changes a package file, so the figures stand for `1ad03e29`), filed as low because Nightscout does not call the affected function ([below](#node-forge-ghsa-86w9-cpqp-85rv)).
-   It is not a release blocker: no fixed version exists, and `@parse/node-apn` 8.1.0 (the
-   modernization line's version, and the latest) still depends on `node-forge` 1.4.0 exactly, so the
-   update waits for an upstream fix and is carried with the modernization work.
+5. **BF-154, BF-161 and BF-163 are named in the release notes** under Known issues: among `npm
+   audit`'s 9 high findings on `43289dde` (2026-10-07), the `node-forge` advisory (decided
+   2026-10-02; filed as low because Nightscout does not call the affected function,
+   [below](#node-forge-ghsa-86w9-cpqp-85rv)), the `braces` advisory (BF-161, known issue by
+   decision 2026-10-07) and the `compression` advisory (BF-163, known issue by decision 2026-10-07).
+   None blocks the release: `node-forge` has no fixed version and `@parse/node-apn` 8.1.0 (the
+   modernization line's version, and the latest) still depends on `node-forge` 1.4.0 exactly, so
+   that update waits for an upstream fix and is carried with the modernization work; `braces` has no
+   fixed release and a nesting-depth limit is planned after 15.0.9; `compression` is fixed upstream
+   in 1.8.2, taken up in the modernization releases. Triage [below](#npm-audit-and-dependabot-triage).
 6. **The tag**, by the maintainer.
 
-The [release notes](release-notes.md) and [tag message](tag-message.txt) are drafted on `1ad03e29`.
+The [release notes](release-notes.md) and [tag message](tag-message.txt) are drafted on `43289dde`.
 
 The real-time soak is done by decision: on 2026-09-30 the maintainer decided that real sites
 running the candidate count as the 24 to 72 h real-time soak, and the lab's 72 h soak
@@ -360,14 +368,19 @@ decided.
 ## `npm audit` and Dependabot triage
 
 **Summary.** 15.0.8 (the release operators run today) had 49 `npm audit` findings (19 high) on
-2026-09-27. On `dev` `25fc41d9` (2026-10-02 17:31Z, npm 11.12.1, `--package-lock-only`), `npm audit`
-reports 10 findings (2 high); no PR merged since changes a package file, so the figures stand for `1ad03e29`. The 8 moderate are the 7 left by the 2026-09-27 triage — a deliberate pin
-whose advisories need elements the sanitizer does not allow (tested), the legacy `request` chain,
-loaded only when a legacy bridge is switched on (read from `lib/server/bootevent.js`), and two
-test-only packages — plus `moment`, held at 2.30.1 by decision. The 2 high are one advisory,
-GHSA-86w9-cpqp-85rv against `node-forge` 1.4.0 (reviewed by GitHub 2026-10-01 21:09Z, no fixed
-release), counted once for `node-forge` and once for `@parse/node-apn` above it; it is register BF-154
-([below](#node-forge-ghsa-86w9-cpqp-85rv)). **After the
+2026-09-27. On `dev` `43289dde` (2026-10-07, npm 11.12.1, `--package-lock-only`), `npm audit`
+reports **24 findings — 9 high, 0 critical** across all dependencies, and **11 — 5 high, 0 critical**
+with `--omit=dev`. #8806 (BF-162) bumped `proxy-addr` to 2.0.8, so the one critical present before
+it (GHSA-jqcg-44mw-7w3h, on `1ad03e29`) is gone; run 022's same-moment A/B audit confirms the only
+delta #8806 makes is −1 critical. The absolute counts are higher than run 021's 2026-10-03 figure
+for `1ad03e29` (15 findings, 7 high) because GitHub's advisory database has grown since; the
+lockfile is unchanged apart from `proxy-addr`. The 9 high are four advisories, each read against
+where Nightscout reaches it ([triage below](#the-9-high-findings-on-43289dde)): `node-forge`
+(BF-154), `braces` (BF-161), `compression` (BF-163) and `source-map-js` (build-time only). The 15
+moderate are the 2026-09-27 triage's chain — a deliberate pin whose advisories need elements the
+sanitizer does not allow (tested), the legacy `request` chain, loaded only when a legacy bridge is
+switched on (read from `lib/server/bootevent.js`), and the dev-dependency tooling — plus `moment`,
+held at 2.30.1 by decision, and the advisories published since. **After the
 modernization pass (cut 4 onward, including cut 5 `b1bdaca0`) there are none:** `npm audit` reports
 0 findings with dev dependencies included, and none of the 80 open Dependabot alerts matches a
 version in cut 5's lockfile. The work that gets there was planned in the open:
@@ -381,30 +394,35 @@ version in cut 5's lockfile. The work that gets there was planned in the open:
 | 2026-09-05 | 15 Dependabot updates merged together (above); the modernization branch begins (`6a6dd7a5`, with `docs/plans/nightscout-modernization.md`), 498 commits by Andy Low to `b1bdaca0` (2026-09-21) |
 | 2026-09-23 to 27 | #8749 (qs, BF-87) and #8786 (BF-147) |
 | 2026-10-02 | #8794 (BF-153), advisories published after the 2026-09-27 triage |
+| 2026-10-07 | #8806 (BF-162), `proxy-addr` 2.0.7 → 2.0.8, clearing the GHSA-jqcg-44mw-7w3h critical |
 
-Since 15.0.7, 39 merges to `dev` changed the lockfile, 20 of them Dependabot's
-(`git log --first-parent --oneline 15.0.7..official/dev -- package-lock.json`, `1ad03e29`). Alerts on the
+Since 15.0.7, 40 merges to `dev` changed the lockfile, 20 of them Dependabot's
+(`git log --first-parent --oneline 15.0.7..official/dev -- package-lock.json`, `43289dde`). Alerts on the
 default branch fall only when a release merges to `master`; on 2026-09-27, 74 of the 80 open were
 already fixed on `dev` (below).
 
 Measured with `npm audit --package-lock-only` (npm 11.12.1), advisory data as of the date given:
 2026-09-27 for `v15.0.8`, `295f1177`, `7000eb18` and the cut branches; 2026-10-01 and 2026-10-02 for
-`50bc1084` and `a143d507` (the same lockfile as `25fc41d9`). Build tooling (webpack, its loaders, `browserslist`) is in
-`dependencies`, not `devDependencies`, because the bundle is built at install time (`postinstall`),
-so `--omit=dev` does not separate build-time from run-time packages.
+`50bc1084` and `a143d507` (the same lockfile as `25fc41d9`); 2026-10-07 for `43289dde`. The counts
+on `25fc41d9` and `43289dde` differ mostly because the advisory database grew between those dates;
+the lockfile moved only by `proxy-addr` (#8806). Build tooling (webpack, its loaders, `browserslist`)
+is in `dependencies`, not `devDependencies`, because the bundle is built at install time
+(`postinstall`), so `--omit=dev` does not separate build-time from run-time packages.
 
-| tree | total | high | moderate | low |
-|---|---:|---:|---:|---:|
-| `v15.0.8` `92d08342` | 49 | 19 | 28 | 2 |
-| `dev` `295f1177` | 17 | 3 | 13 | 1 |
-| `dev` `295f1177` `--omit=dev` | 13 | 3 | 9 | 1 |
-| `dev` `7000eb18` (#8786, BF-147) | 7 | 0 | 7 | 0 |
-| `dev` `7000eb18` `--omit=dev` | 5 | 0 | 5 | 0 |
-| `dev` `50bc1084` (#8794's base, as #8794 records) | 20 | 4 | — | — |
-| `dev` `25fc41d9` (2026-10-02 17:31Z; the lockfile #8794 left; no PR merged since changes a package file, so it stands for `1ad03e29`) | 10 | 2 | 8 | 0 |
-| `dev` `25fc41d9` `--omit=dev` | 8 | 2 | 6 | 0 |
-| `rh/cut2` `02205d91` | 6 | 0 | 6 | 0 |
-| `rh/cut4` `135faa3b`, `rh/cut35` `cd93d8e8`, cut 5 `b1bdaca0` | 0 | 0 | 0 | 0 |
+| tree | total | critical | high | moderate | low |
+|---|---:|---:|---:|---:|---:|
+| `v15.0.8` `92d08342` | 49 | 0 | 19 | 28 | 2 |
+| `dev` `295f1177` | 17 | 0 | 3 | 13 | 1 |
+| `dev` `295f1177` `--omit=dev` | 13 | 0 | 3 | 9 | 1 |
+| `dev` `7000eb18` (#8786, BF-147) | 7 | 0 | 0 | 7 | 0 |
+| `dev` `7000eb18` `--omit=dev` | 5 | 0 | 0 | 5 | 0 |
+| `dev` `50bc1084` (#8794's base, as #8794 records) | 20 | — | 4 | — | — |
+| `dev` `25fc41d9` (2026-10-02 17:31Z; the lockfile #8794 left) | 10 | 0 | 2 | 8 | 0 |
+| `dev` `25fc41d9` `--omit=dev` | 8 | 0 | 2 | 6 | 0 |
+| `dev` `43289dde` (2026-10-07; the lockfile #8806 left, the candidate) | 24 | 0 | 9 | 15 | 0 |
+| `dev` `43289dde` `--omit=dev` | 11 | 0 | 5 | 6 | 0 |
+| `rh/cut2` `02205d91` | 6 | 0 | 0 | 6 | 0 |
+| `rh/cut4` `135faa3b`, `rh/cut35` `cd93d8e8`, cut 5 `b1bdaca0` | 0 | 0 | 0 | 0 | 0 |
 
 ### Reading these counts
 
@@ -431,6 +449,22 @@ measures something narrower than it looks:
 
 What a count does show is the backlog to triage. The measured result for 15.0.9 is the table
 below: which findings reach a running site, and what is done about each.
+
+### The 9 high findings on `43289dde`
+
+The candidate's 9 high findings (2026-10-07) are four advisories. `npm audit` lists each once for the
+vulnerable package and once for each package above it in the tree.
+
+| advisory | high nodes | reach in 15.0.9 | disposition |
+|---|---|---|---|
+| GHSA-86w9-cpqp-85rv (`node-forge` 1.4.0) | `node-forge`, `@parse/node-apn` (2) | `node-forge` loads only through `@parse/node-apn` (Loop remote commands), to parse the site's own APNs key and certificate; the advisory is about signature verification, which Nightscout never calls | **BF-154** (low): no fixed release; `@parse/node-apn` 8.1.0 (the latest) still pins `node-forge` 1.4.0, so the update waits for an upstream fix and is carried with the modernization work ([below](#node-forge-ghsa-86w9-cpqp-85rv)) |
+| GHSA-vfj7-8cjw-p6xm (`braces` ≤3.0.3) | `braces`, `micromatch`, `chokidar`, `nodemon`, `eslint-webpack-plugin` (5) | a deeply nested bracket pattern on the three query endpoints (`/times`, `/times/echo`, `/slice`) makes that one request answer 500; the site keeps running and nothing is read or written. Present on 15.0.8 | **BF-161** (known issue, decided 2026-10-07): no fixed release; a nesting-depth limit is planned after 15.0.9 |
+| GHSA-vc2v-76pw-4v95 (`compression` 1.8.1) | `compression` (1) | per the advisory, a slow memory leak when many responses are cut off before they finish (not measured here). Present on 15.0.8, which locks `compression` 1.8.1 too | **BF-163** (known issue, decided 2026-10-07): fixed upstream in 1.8.2, taken up in the modernization releases |
+| GHSA-68fv-2mgg-jv7q (`source-map-js`) | `source-map-js` (1) | build time only: source-map parsing during the webpack build, not in any request path — the same build-tooling class as the moderate findings above | the fix is breaking-only and comes with the modernization work; not a new known issue |
+
+The `--omit=dev` run keeps the 5 highs a running site loads: `node-forge` and `@parse/node-apn`,
+`braces`, `compression` and `source-map-js`; `micromatch`, `chokidar`, `nodemon` and
+`eslint-webpack-plugin` are dev-dependency tooling.
 
 ### The 17 findings on `295f1177`
 
@@ -499,7 +533,7 @@ No Dependabot pull request is open (2026-10-02); #8787 (webpack-dev-middleware) 
 
 Not blockers by decision; recorded so a green suite is not read as covering them.
 
-- **Test-script coverage.** 79 of the 227 `tests/*.test.js` files on `dev` `1ad03e29` match neither
+- **Test-script coverage.** 79 of the 227 `tests/*.test.js` files on `dev` `43289dde` match neither
   `npm run test:unit` nor `test:integration` (compare the files against the two globs in
   `git show official/dev:package.json`). Among
   them: `dependency-overrides` (#8786), `report-daytoday-durations` (#8788),
@@ -711,17 +745,26 @@ the user-facing form. Facts the notes must not lose:
 - Release-cycle statistics, method and materials: [How 15.0.9 was made](colophon.md).
 - Merged part: per-PR test evidence, ablations and controls are in each PR body and in the
   register entry for each id.
-- **The candidate, `dev` `1ad03e29`** (tree `7d16c516`, the same tree as #8802's head
-  `b13b7a3a`). Full suite on `b13b7a3a`: 3563 passing, 0 failing, 4 pending (Node 24.15.0,
-  MongoDB 7.0.43, one cell, fresh database, 2026-10-02). #8802 (BF-127) changes
-  `lib/client/browser-settings.js`, `lib/client/clock-client.js` and three files under
-  `views/clockviews/`, and adds `tests/clock-token-link.test.js`; its tests fail with `dev`
-  `68262e86`'s page. #8802's own CI: 13 passed, 2 skipped, CodeQL passed. The last full RC run is
-  run 021 on `1ad03e29`: 3563/0/4 in all six cells (Node 20/22/24 × MongoDB 4.4.24 and 7.0.43),
-  2026-10-03, with run 020's probes (`tooltip-bg-units.js` now passes, BF-124) and a compressed A/B
-  soak against 15.0.8 (R40–R44), the verdicts unchanged from run 020
-  ([integration record](../../docs/30-design/remedial/rc-15.0.9-integration-record.md#current-run)).
-  The previous full RC run is run 020 on `ce30a94d` (below).
+- **The candidate, `dev` `43289dde`** (#8806, BF-162; tree `8c2e85b5`, the same tree as #8806's head
+  `7dd4f400`). Full suite on `7dd4f400`: 3564 passing, 0 failing, 4 pending (the 3563 of `1ad03e29`
+  plus #8806's one new `tests/client-ip.test.js` case). #8806 changes `package.json`,
+  `package-lock.json` (`proxy-addr` `^2.0.7` → `^2.0.8`) and that one test; no browser-side file, and
+  the production bundle is unaffected. #8806's own CI is green across Node 20/22/24 × MongoDB 4.4/5/6,
+  the npm 12 job, Docker and CodeQL. The last full RC run is run 022 on `43289dde`: 3564/0/4 in all
+  six cells (Node 20/22/24 × MongoDB 4.4.24 and 7.0.43), 2026-10-07, with run 021's probes and a
+  compressed A/B soak against 15.0.8 (R45–R49), the verdicts and probe outcomes unchanged from run
+  021, and the new `tests/client-ip.test.js` case green and non-vacuous
+  ([proof-2026-10-07-run022](../../tools/lab/rc-soak/results/proof-2026-10-07-run022.md); [integration record](../../docs/30-design/remedial/rc-15.0.9-integration-record.md#current-run)).
+  The previous full RC run is run 021 on `1ad03e29` (below).
+- **`dev` `1ad03e29`** (#8802, BF-127; tree `7d16c516`, the same tree as #8802's head `b13b7a3a`).
+  Full suite on `b13b7a3a`: 3563 passing, 0 failing, 4 pending (Node 24.15.0, MongoDB 7.0.43, one
+  cell, fresh database, 2026-10-02). #8802 changes `lib/client/browser-settings.js`,
+  `lib/client/clock-client.js` and three files under `views/clockviews/`, and adds
+  `tests/clock-token-link.test.js`; its tests fail with `dev` `68262e86`'s page. #8802's own CI: 13
+  passed, 2 skipped, CodeQL passed. Run 021 on `1ad03e29`: 3563/0/4 in all six cells (Node 20/22/24 ×
+  MongoDB 4.4.24 and 7.0.43), 2026-10-03, with run 020's probes (`tooltip-bg-units.js` now passes,
+  BF-124) and a compressed A/B soak against 15.0.8 (R40–R44), the verdicts unchanged from run 020
+  ([proof-2026-10-03-run021](../../tools/lab/rc-soak/results/proof-2026-10-03-run021.md)).
 - **`dev` `68262e86`** (#8801, BF-124; head `affbc8fd`). Full suite on its tree: 3552 passing,
   0 failing, 4 pending (Node 22.23.2, MongoDB 7.0.43, one cell). #8801 changes
   `lib/client/renderer.js` and adds `tests/client.renderer.tooltip-units.test.js`, whose tests fail
@@ -779,11 +822,11 @@ the user-facing form. Facts the notes must not lose:
   fails only on BF-135's intended page-load change.
 - The previous candidate, `dev` `699eb5fa` (tree `0b727dc5`, run 019): 3458 passing, 0 failing,
   3 pending in the same six cells.
-- CI on #8598 at `1ad03e29`: 27 checks passed, 3 skipped (read 2026-10-03 01:16Z). At `74942ec6`: 27 checks passed, 3 skipped (read 2026-10-03 00:21Z); at `ca6fcfaf`: 27 checks passed, 3 skipped (read 2026-10-02 18:15Z); at `25fc41d9`,
+- CI on #8598 at `43289dde`: 27 checks passed, 3 skipped (read 2026-10-07). At `1ad03e29`: 27 checks passed, 3 skipped (read 2026-10-03 01:16Z). At `74942ec6`: 27 checks passed, 3 skipped (read 2026-10-03 00:21Z); at `ca6fcfaf`: 27 checks passed, 3 skipped (read 2026-10-02 18:15Z); at `25fc41d9`,
   `a143d507`, `3014f883`, `7000eb18` and `295f1177`, 27 checks passed, 3 skipped. At `e3adc91d`, 27 passed and 3 skipped (Node 20/22/24 × MongoDB 4.4/5.0/6.0, CodeQL, Docker).
 - Queue items P0-A…P0-K, P0-T01, ADV-RETRO, ADV-ALARM and ADV-CONFIG hold the gates. A local
   `test:unit` pass does not cover every test file ([Known test gaps](#known-test-gaps)).
 
 ---
 
-*Draft, 2026-10-03. Requires maintainer review before release. Nothing tagged or published.*
+*Draft, 2026-10-07. Requires maintainer review before release. Nothing tagged or published.*

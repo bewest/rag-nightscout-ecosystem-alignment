@@ -1,25 +1,25 @@
 {
- "measured": "2026-10-02",
+ "measured": "2026-10-07",
  "range": {
   "base": "92d08342",
-  "tip": "1ad03e29",
-  "spec": "official/master..1ad03e29"
+  "tip": "43289dde",
+  "spec": "official/master..official/dev"
  },
- "repo_commit": "89922349",
+ "repo_commit": "d9330a3c",
  "kpis": {
-  "pr_merges": 97,
-  "commits": 543,
-  "non_merge_commits": 337,
+  "pr_merges": 98,
+  "commits": 545,
+  "non_merge_commits": 338,
   "it_calls": {
    "base": 1288,
-   "tip": 2361
+   "tip": 2362
   },
   "passing": {
    "base": 1533,
-   "tip": 3563
+   "tip": 3564
   },
-  "defect_ids": 160,
-  "defect_ids_in_scope": 136,
+  "defect_ids": 163,
+  "defect_ids_in_scope": 139,
   "regressions_caught": 7
  },
  "merges_per_day": [
@@ -280,6 +280,33 @@
     8801,
     8802
    ]
+  },
+  {
+   "date": "2026-10-03",
+   "count": 0,
+   "prs": []
+  },
+  {
+   "date": "2026-10-04",
+   "count": 0,
+   "prs": []
+  },
+  {
+   "date": "2026-10-05",
+   "count": 0,
+   "prs": []
+  },
+  {
+   "date": "2026-10-06",
+   "count": 0,
+   "prs": []
+  },
+  {
+   "date": "2026-10-07",
+   "count": 1,
+   "prs": [
+    8806
+   ]
   }
  ],
  "defects": [
@@ -520,14 +547,14 @@
   {
    "date": "2026-10-02",
    "filed": {
-    "latent": 6,
+    "latent": 7,
     "github": 0,
     "connector": 0,
     "review": 0,
     "escaped": 0
    },
    "filed_out_of_scope": 0,
-   "filed_cum": 136,
+   "filed_cum": 137,
    "closed_cum": 98
   },
   {
@@ -540,8 +567,60 @@
     "escaped": 0
    },
    "filed_out_of_scope": 0,
-   "filed_cum": 136,
+   "filed_cum": 137,
    "closed_cum": 101
+  },
+  {
+   "date": "2026-10-04",
+   "filed": {
+    "latent": 0,
+    "github": 0,
+    "connector": 0,
+    "review": 0,
+    "escaped": 0
+   },
+   "filed_out_of_scope": 0,
+   "filed_cum": 137,
+   "closed_cum": 101
+  },
+  {
+   "date": "2026-10-05",
+   "filed": {
+    "latent": 0,
+    "github": 0,
+    "connector": 0,
+    "review": 0,
+    "escaped": 0
+   },
+   "filed_out_of_scope": 0,
+   "filed_cum": 137,
+   "closed_cum": 101
+  },
+  {
+   "date": "2026-10-06",
+   "filed": {
+    "latent": 2,
+    "github": 0,
+    "connector": 0,
+    "review": 0,
+    "escaped": 0
+   },
+   "filed_out_of_scope": 0,
+   "filed_cum": 139,
+   "closed_cum": 101
+  },
+  {
+   "date": "2026-10-07",
+   "filed": {
+    "latent": 0,
+    "github": 0,
+    "connector": 0,
+    "review": 0,
+    "escaped": 0
+   },
+   "filed_out_of_scope": 0,
+   "filed_cum": 139,
+   "closed_cum": 102
   }
  ],
  "checks": [
@@ -788,6 +867,13 @@
    "passing": 3563,
    "cells": 1,
    "kind": "one merge, its own branch or CI"
+  },
+  {
+   "label": "#8806",
+   "date": "2026-10-07",
+   "passing": 3564,
+   "cells": 1,
+   "kind": "one merge, its own branch or CI"
   }
  ],
  "regressions": [
@@ -858,7 +944,7 @@
  "open_entries": [
   {
    "disposition": "known issue, described in the 15.0.9 notes",
-   "count": 16,
+   "count": 18,
    "ids": [
     "BF-44",
     "BF-45",
@@ -875,7 +961,9 @@
     "BF-149",
     "BF-152",
     "BF-154",
-    "BF-156"
+    "BF-156",
+    "BF-161",
+    "BF-163"
    ]
   },
   {

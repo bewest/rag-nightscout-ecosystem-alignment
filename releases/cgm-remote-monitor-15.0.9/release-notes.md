@@ -1257,6 +1257,18 @@ and many other software library updates.
   published yet, and the newer Apple push-notification library planned for the next releases
   still uses the same version, so the update is deferred to that modernization work and will be
   made once a fixed version exists. You do not need to do anything.
+- **A security check also reports a "high" finding about a pattern-matching library called
+  `braces`** (GHSA-vfj7-8cjw-p6xm, tracked by the project as BF-161). On three little-used web
+  addresses (`/times`, `/times/echo` and `/slice`), a request built with a deeply nested bracket
+  pattern can make that one request fail with an error. The site keeps running, and nothing is read
+  or written. The same is true on 15.0.8, which is the release in use today. No fixed version of
+  `braces` has been published yet; a limit on how deeply such a pattern can nest is planned for a
+  later release. You do not need to do anything.
+- **A security check also reports a "high" finding about `compression`**, the library Nightscout
+  uses to shrink the responses it sends (GHSA-vc2v-76pw-4v95, tracked as BF-163). According to the
+  notice, a site can slowly use a little extra memory when many responses are cut off before they
+  finish. It is fixed in `compression` 1.8.2, which Nightscout takes up in the modernization releases
+  that follow 15.0.9. The same version is on 15.0.8. You do not need to do anything.
 
 ### Access tokens stored in plain text
 
@@ -1312,4 +1324,4 @@ a report from "15.0.9" made before this release is from that channel.
 
 ---
 
-*Draft, 2026-10-03, on the development version 1ad03e29; not yet released.*
+*Draft, 2026-10-07, on the development version 43289dde; not yet released.*

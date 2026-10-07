@@ -1,7 +1,7 @@
 # Roadmap — what comes next, and in what order
 
 *Prepared for the Nightscout project; proposed for Nightscout Foundation stewardship. Contributor-facing. Living document: prose dated
-2026-10-03 against cgm-remote-monitor `official/dev` `1ad03e29` and `official/master` `92d08342`
+2026-10-07 against cgm-remote-monitor `official/dev` `43289dde` and `official/master` `92d08342`
 (tag `15.0.8`). The two order tables are generated from `queue/work-queue.yaml`, and
 `make views-check` fails when they drift.*
 
@@ -37,14 +37,15 @@ Everything merged since 15.0.8 reaches operators only through 15.0.9 (queue `RT-
 #8598), and every later step waits behind it. Operators running 15.0.8 keep every defect fixed on
 `dev` until it is tagged.
 
-`dev` is at `1ad03e29` (the merge of #8802, 2026-10-03): 97 first-parent merges and 543 commits
-since 15.0.8. Every PR decided for 15.0.9 is merged, including the fixes for BF-124 (#8801) and
-BF-127 (#8802); Crowdin #8730 is held out (BF-132). The last full run is run 021 on `1ad03e29`
-(2026-10-03), 3563/0/4 in all six cells (Node 20/22/24 × MongoDB 4.4.24 and 7.0.43), with run 020's
-probes and a compressed A/B soak against 15.0.8; each PR merged after run 020 carries its own
-evidence. The previous six-cell run, run 020 on `ce30a94d` (2026-09-27), gave 3473/0/3. The
-real-site soak (`RT-SOAK`) is done by the maintainer's decision of 2026-09-30. Release PR #8598 is at `1ad03e29`,
-approved at `e3adc91d`; its CI on `1ad03e29`: 27 checks passed, 3 skipped (read 2026-10-03 01:16Z).
+`dev` is at `43289dde` (the merge of #8806, 2026-10-07): 98 first-parent merges and 545 commits
+since 15.0.8. Every PR decided for 15.0.9 is merged, including the fixes for BF-124 (#8801),
+BF-127 (#8802) and the `proxy-addr` critical BF-162 (#8806); Crowdin #8730 is held out (BF-132). The
+last full run is run 022 on `43289dde` (2026-10-07), 3564/0/4 in all six cells (Node 20/22/24 ×
+MongoDB 4.4.24 and 7.0.43), with run 021's probes and a compressed A/B soak against 15.0.8; each PR
+merged after run 020 carries its own evidence. The previous six-cell run, run 021 on `1ad03e29`
+(2026-10-03), gave 3563/0/4. The
+real-site soak (`RT-SOAK`) is done by the maintainer's decision of 2026-09-30. Release PR #8598 is at `43289dde`,
+approved at `e3adc91d`; its CI on `43289dde`: 27 checks passed, 3 skipped (read 2026-10-07).
 
 The version is decided: 15.0.9. `RT-VERSION`'s gate measures the modernization cut branches, which
 also declare 15.0.9 and are renumbered when they are rebased, so it holds the cuts, not this
@@ -72,18 +73,19 @@ Before the tag, and not queue items of their own (they are in `RT-0`'s notes and
    ([browser record](../60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.md)).
 2. The version class of #8772, #8775 and #8780: a minor change shipped under the patch number as an
    exception, as #8530 was, or a different class. The maintainer is collecting data.
-3. Re-approval of #8598 at its final head, `1ad03e29`.
-4. Settled 2026-10-02 (maintainer): the release notes name BF-154, the `node-forge` advisory
-   GHSA-86w9-cpqp-85rv behind the 2 high among `npm audit`'s 10 findings on `25fc41d9` (#8796,
-   #8799, #8800, #8801 and #8802 change no package file, so the figures stand for `1ad03e29`). It has no
-   fixed release and Nightscout does not call the affected function (read from the code), so it is
-   filed as low and does not block the release ([contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#node-forge-ghsa-86w9-cpqp-85rv)).
+3. Re-approval of #8598 at its final head, `43289dde`.
+4. The release notes name three advisories under Known issues: BF-154 (`node-forge`, decided
+   2026-10-02; low, Nightscout does not call the affected function), BF-161 (`braces`, known issue
+   2026-10-07) and BF-163 (`compression`, known issue 2026-10-07). On `43289dde` (2026-10-07) `npm
+   audit` reports 24 findings, 9 high, 0 critical — #8806 (BF-162) cleared the one critical by
+   bumping `proxy-addr` to 2.0.8. None of the three blocks the release
+   ([contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#the-9-high-findings-on-43289dde)).
 5. The `CHANGELOG.md` question: `dev` carries a hand-written `## [Unreleased]` section against the
    rule that the changelog is generated at release time; no decision is recorded
    ([contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#open-items-a-releaser-must-settle)).
-6. The tag, by the maintainer. The release notes and tag message are drafted on `1ad03e29`.
+6. The tag, by the maintainer. The release notes and tag message are drafted on `43289dde`.
 
-The other 8 `npm audit` findings are triaged in
+The full `npm audit` triage, which findings reach a running site and what is done about each, is in
 [contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#npm-audit-and-dependabot-triage).
 
 | for | read |

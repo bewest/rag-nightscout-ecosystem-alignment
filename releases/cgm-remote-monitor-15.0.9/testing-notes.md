@@ -82,8 +82,8 @@ notes.
 
 ## Getting the test build
 
-The test build is the `dev` branch of `nightscout/cgm-remote-monitor` at commit **`1ad03e29`**
-(full: `1ad03e29e7f49df9028d7d9bf6eea2c8963918ad`, 2026-10-03). Its version reads **15.0.9**. Since
+The test build is the `dev` branch of `nightscout/cgm-remote-monitor` at commit **`43289dde`**
+(full: `43289dde4c6913c22b6656c3321e3d7414c47870`, 2026-10-07). Its version reads **15.0.9**. Since
 the earlier test build `7000eb18` it adds:
 
 - the Day to Day report shows events that run past midnight on both days (see 1.7);
@@ -107,12 +107,12 @@ the earlier test build `7000eb18` it adds:
 
 If you are running `7000eb18` or a later `dev` build, keep going: your reports still count.
 
-- **Docker:** `nightscout/cgm-remote-monitor:dev_1ad03e29e7f49df9028d7d9bf6eea2c8963918ad`. This tag
+- **Docker:** `nightscout/cgm-remote-monitor:dev_43289dde4c6913c22b6656c3321e3d7414c47870`. This tag
   always means exactly this build. `latest_dev` means "the newest `dev`" and moves when `dev` changes,
   so check which commit it is before relying on it.
 - **Deploying from your own copy of the code** (Heroku, Railway, Northflank, Render, a VPS and
   similar): update your copy's `dev` branch from `nightscout/cgm-remote-monitor` and deploy that
-  branch. Check the commit is `1ad03e29`.
+  branch. Check the commit is `43289dde`.
 - **A hosting service that runs Nightscout for you:** ask them whether they offer the test build.
 
 If `dev` moves to a new commit before the release, these notes will name it.

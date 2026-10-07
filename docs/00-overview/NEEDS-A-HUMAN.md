@@ -2,7 +2,7 @@
 
 *Contributor-facing. The subset of the work queue where no further engineering
 advances anything — a person has to push, decide, or review. Prose revised
-2026-10-03 against cgm-remote-monitor `official/dev` `1ad03e29` and nightscout-connect
+2026-10-07 against cgm-remote-monitor `official/dev` `43289dde` and nightscout-connect
 `official/main` `4dde1ec` (tag `v0.1.0`); tables generated.*
 
 This page lists only the items whose claimed state means **the next move belongs to
@@ -93,8 +93,8 @@ which is on 15.0.8 as well and is tracked as `BFQ-103`.
 
 ### `RT-0` — release 15.0.9
 
-The most consequential row on this page. `dev` is at `1ad03e29` (the merge of #8802, 2026-10-03):
-97 first-parent merges and 543 commits since 15.0.8
+The most consequential row on this page. `dev` is at `43289dde` (the merge of #8806, 2026-10-07):
+98 first-parent merges and 545 commits since 15.0.8
 (`git rev-list [--first-parent] --count official/master..official/dev`). Until 15.0.9 ships, every
 one of those fixes exists in code and protects nobody. They include the fixes for two
 published-advisory defects that survive `AUTH_DEFAULT_ROLES=denied`, GHSA-gjhc (BF-79, #8744) and
@@ -102,21 +102,22 @@ GHSA-8849 (BF-75/76, #8745), the boot notice for world-readable sites (#8746), a
 backported security fixes (BF-104, BF-105, #8751); every instance on 15.0.8 is still exposed to all
 of them.
 
-- **Merged.** Every PR decided for 15.0.9, the last being #8801 (BF-124) and #8802 (BF-127); the list is in
+- **Merged.** Every PR decided for 15.0.9, the last being #8802 (BF-127) and #8806 (BF-162, the
+  `proxy-addr` critical); the list is in
   [contents.md](../../releases/cgm-remote-monitor-15.0.9/contents.md), which also says what the
   release leaves broken. Crowdin #8730 is held out because its sync reverts translations `dev`
   corrected (BF-132).
-- **Tests.** The last full run is run 021 on `1ad03e29` (2026-10-03): 3563/0/4 in all six cells
-  (Node 20, 22 and 24 against MongoDB 4.4.24 and 7.0.43), with run 020's probes and an A/B soak
+- **Tests.** The last full run is run 022 on `43289dde` (2026-10-07): 3564/0/4 in all six cells
+  (Node 20, 22 and 24 against MongoDB 4.4.24 and 7.0.43), with run 021's probes and an A/B soak
   against 15.0.8. Each PR merged after run 020 carries its own evidence (its GitHub CI and a full
-  suite on its branch). The previous six-cell run, run 020 on `ce30a94d` (2026-09-27), gave 3473/0/3
+  suite on its branch). The previous six-cell run, run 021 on `1ad03e29` (2026-10-03), gave 3563/0/4
   ([15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md)).
 - **Real-site soak.** `RT-SOAK` is done: the maintainer decided on 2026-09-30 that real sites
   running the candidate count as the soak, and reports (2026-10-02) stable behaviour from Loop, Trio
   and AndroidAPS users on `dev`. The lab's 72 h soak was not run.
-- **Release PR.** #8598 (`dev` → `master`) is at `1ad03e29` and mergeable; its CI on `1ad03e29`:
-  27 checks passed, 3 skipped (read 2026-10-03 01:16Z).
-  It was approved at `e3adc91d`; re-approval at `1ad03e29` is owed.
+- **Release PR.** #8598 (`dev` → `master`) is at `43289dde` and mergeable; its CI on `43289dde`:
+  27 checks passed, 3 skipped (read 2026-10-07).
+  It was approved at `e3adc91d`; re-approval at `43289dde` is owed.
 - **Version.** Decided: 15.0.9. `RT-VERSION`'s gate measures the modernization cut branches, which
   also declare 15.0.9 and are renumbered when they are rebased; it holds the cuts, not this release.
 - **What remains** before the tag, including the queue's open `RT-0` blockers, is listed once, in [ROADMAP §1](ROADMAP.md#1-the-next-release-1509).
