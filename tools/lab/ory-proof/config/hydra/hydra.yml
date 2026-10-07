@@ -1,0 +1,25 @@
+# Hydra 2.x lab config. No secrets here: DSN and SECRETS_SYSTEM come from .secrets.env (lab.sh).
+serve:
+  cookies:
+    same_site_mode: Lax
+
+urls:
+  self:
+    issuer: http://hydra.apex.test:44480/
+  login: http://auth.apex.test:44480/ui/hydra/login
+  consent: http://auth.apex.test:44480/ui/hydra/consent
+  logout: http://auth.apex.test:44480/ui/hydra/logout
+
+oidc:
+  subject_identifiers:
+    supported_types:
+      - public
+      - pairwise
+
+strategies:
+  access_token: jwt
+
+log:
+  level: info
+  format: json
+  leak_sensitive_values: false

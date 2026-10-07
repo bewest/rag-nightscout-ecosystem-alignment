@@ -1,0 +1,279 @@
+{
+  "probe": "return-to",
+  "run": "2026-10-07-v26.2.0",
+  "started": "2026-10-07T21:56:02.743Z",
+  "node": "v24.15.0",
+  "table": [
+    {
+      "id": "own-tenant",
+      "return_to": "http://tenant-a.user-content.apex.test:44480/after",
+      "login": "allowed",
+      "registration": "allowed",
+      "recovery": "allowed",
+      "reason": null
+    },
+    {
+      "id": "sibling-tenant",
+      "return_to": "http://tenant-b.user-content.apex.test:44480/after",
+      "login": "allowed",
+      "registration": "allowed",
+      "recovery": "allowed",
+      "reason": null
+    },
+    {
+      "id": "unregistered-slug",
+      "return_to": "http://tenant-zz.user-content.apex.test:44480/after",
+      "login": "allowed",
+      "registration": "allowed",
+      "recovery": "allowed",
+      "reason": null
+    },
+    {
+      "id": "two-labels-deep",
+      "return_to": "http://x.tenant-a.user-content.apex.test:44480/after",
+      "login": "allowed",
+      "registration": "allowed",
+      "recovery": "allowed",
+      "reason": null
+    },
+    {
+      "id": "bare-suffix",
+      "return_to": "http://user-content.apex.test:44480/after",
+      "login": "refused",
+      "registration": "refused",
+      "recovery": "refused",
+      "reason": "Requested return_to URL \"http://user-content.apex.test:44480/after\" is not allowed."
+    },
+    {
+      "id": "other-port",
+      "return_to": "http://tenant-a.user-content.apex.test:9999/after",
+      "login": "refused",
+      "registration": "refused",
+      "recovery": "refused",
+      "reason": "Requested return_to URL \"http://tenant-a.user-content.apex.test:9999/after\" is not allowed."
+    },
+    {
+      "id": "https-scheme",
+      "return_to": "https://tenant-a.user-content.apex.test:44480/after",
+      "login": "refused",
+      "registration": "refused",
+      "recovery": "refused",
+      "reason": "Requested return_to URL \"https://tenant-a.user-content.apex.test:44480/after\" is not allowed."
+    },
+    {
+      "id": "foreign",
+      "return_to": "http://evil.test/after",
+      "login": "refused",
+      "registration": "refused",
+      "recovery": "refused",
+      "reason": "Requested return_to URL \"http://evil.test/after\" is not allowed."
+    },
+    {
+      "id": "suffix-append",
+      "return_to": "http://tenant-a.user-content.apex.test.evil.test:44480/after",
+      "login": "refused",
+      "registration": "refused",
+      "recovery": "refused",
+      "reason": "Requested return_to URL \"http://tenant-a.user-content.apex.test.evil.test:44480/after\" is not allowed."
+    },
+    {
+      "id": "userinfo",
+      "return_to": "http://tenant-a.user-content.apex.test:44480@evil.test/after",
+      "login": "refused",
+      "registration": "refused",
+      "recovery": "refused",
+      "reason": "Requested return_to URL \"http://tenant-a.user-content.apex.test:44480@evil.test/after\" is not allowed."
+    },
+    {
+      "id": "path-embed",
+      "return_to": "http://evil.test/http://tenant-a.user-content.apex.test:44480",
+      "login": "refused",
+      "registration": "refused",
+      "recovery": "refused",
+      "reason": "Requested return_to URL \"http://evil.test/http://tenant-a.user-content.apex.test:44480\" is not allowed."
+    },
+    {
+      "id": "scheme-relative",
+      "return_to": "//evil.test/after",
+      "login": "refused",
+      "registration": "refused",
+      "recovery": "refused",
+      "reason": "Requested return_to URL \"http://evil.test/after\" is not allowed."
+    },
+    {
+      "id": "javascript",
+      "return_to": "javascript:alert(1)",
+      "login": "refused",
+      "registration": "refused",
+      "recovery": "refused",
+      "reason": "Requested return_to URL \"javascript:alert(1)\" is not allowed."
+    },
+    {
+      "id": "own-tenant-again",
+      "return_to": "http://tenant-a.user-content.apex.test:44480/after",
+      "login": "allowed",
+      "registration": "allowed",
+      "recovery": "allowed",
+      "reason": null
+    }
+  ],
+  "finished": "2026-10-07T21:56:02.995Z",
+  "total": 14,
+  "failed": 0,
+  "checks": [
+    {
+      "id": "rt.own-tenant",
+      "desc": "http://tenant-a.user-content.apex.test:44480/after -> allowed by all three flows",
+      "expect": "allowed",
+      "got": [
+        "allowed",
+        "allowed",
+        "allowed"
+      ],
+      "pass": true
+    },
+    {
+      "id": "rt.sibling-tenant",
+      "desc": "http://tenant-b.user-content.apex.test:44480/after -> allowed by all three flows",
+      "expect": "allowed",
+      "got": [
+        "allowed",
+        "allowed",
+        "allowed"
+      ],
+      "pass": true
+    },
+    {
+      "id": "rt.unregistered-slug",
+      "desc": "http://tenant-zz.user-content.apex.test:44480/after -> allowed by all three flows",
+      "expect": "allowed",
+      "got": [
+        "allowed",
+        "allowed",
+        "allowed"
+      ],
+      "pass": true
+    },
+    {
+      "id": "rt.two-labels-deep",
+      "desc": "http://x.tenant-a.user-content.apex.test:44480/after -> recorded (no prediction; flows must agree)",
+      "expect": "consistent",
+      "got": [
+        "allowed",
+        "allowed",
+        "allowed"
+      ],
+      "pass": true
+    },
+    {
+      "id": "rt.bare-suffix",
+      "desc": "http://user-content.apex.test:44480/after -> recorded (no prediction; flows must agree)",
+      "expect": "consistent",
+      "got": [
+        "refused",
+        "refused",
+        "refused"
+      ],
+      "pass": true
+    },
+    {
+      "id": "rt.other-port",
+      "desc": "http://tenant-a.user-content.apex.test:9999/after -> recorded (no prediction; flows must agree)",
+      "expect": "consistent",
+      "got": [
+        "refused",
+        "refused",
+        "refused"
+      ],
+      "pass": true
+    },
+    {
+      "id": "rt.https-scheme",
+      "desc": "https://tenant-a.user-content.apex.test:44480/after -> recorded (no prediction; flows must agree)",
+      "expect": "consistent",
+      "got": [
+        "refused",
+        "refused",
+        "refused"
+      ],
+      "pass": true
+    },
+    {
+      "id": "rt.foreign",
+      "desc": "http://evil.test/after -> refused by all three flows",
+      "expect": "refused",
+      "got": [
+        "refused",
+        "refused",
+        "refused"
+      ],
+      "pass": true
+    },
+    {
+      "id": "rt.suffix-append",
+      "desc": "http://tenant-a.user-content.apex.test.evil.test:44480/after -> refused by all three flows",
+      "expect": "refused",
+      "got": [
+        "refused",
+        "refused",
+        "refused"
+      ],
+      "pass": true
+    },
+    {
+      "id": "rt.userinfo",
+      "desc": "http://tenant-a.user-content.apex.test:44480@evil.test/after -> refused by all three flows",
+      "expect": "refused",
+      "got": [
+        "refused",
+        "refused",
+        "refused"
+      ],
+      "pass": true
+    },
+    {
+      "id": "rt.path-embed",
+      "desc": "http://evil.test/http://tenant-a.user-content.apex.test:44480 -> refused by all three flows",
+      "expect": "refused",
+      "got": [
+        "refused",
+        "refused",
+        "refused"
+      ],
+      "pass": true
+    },
+    {
+      "id": "rt.scheme-relative",
+      "desc": "//evil.test/after -> refused by all three flows",
+      "expect": "refused",
+      "got": [
+        "refused",
+        "refused",
+        "refused"
+      ],
+      "pass": true
+    },
+    {
+      "id": "rt.javascript",
+      "desc": "javascript:alert(1) -> refused by all three flows",
+      "expect": "refused",
+      "got": [
+        "refused",
+        "refused",
+        "refused"
+      ],
+      "pass": true
+    },
+    {
+      "id": "rt.own-tenant-again",
+      "desc": "http://tenant-a.user-content.apex.test:44480/after -> allowed by all three flows",
+      "expect": "allowed",
+      "got": [
+        "allowed",
+        "allowed",
+        "allowed"
+      ],
+      "pass": true
+    }
+  ]
+}

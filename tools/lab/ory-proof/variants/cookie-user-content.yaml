@@ -1,0 +1,6 @@
+# Variant: cookie domain set to the tenant content domain, which the auth host is NOT inside.
+services:
+  kratos:
+    environment:
+      SESSION_COOKIE_DOMAIN: user-content.apex.test
+      COOKIES_DOMAIN: user-content.apex.test

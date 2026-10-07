@@ -1,0 +1,50 @@
+{
+  "probe": "hydra-pairwise",
+  "run": "2026-10-07-v26.2.0",
+  "started": "2026-10-07T21:56:00.533Z",
+  "node": "v24.15.0",
+  "finished": "2026-10-07T21:56:01.549Z",
+  "total": 3,
+  "failed": 0,
+  "checks": [
+    {
+      "id": "flows",
+      "desc": "three code flows complete (public A, pairwise A, pairwise B)",
+      "expect": [
+        200,
+        200,
+        200
+      ],
+      "got": [
+        200,
+        200,
+        200
+      ],
+      "pass": true
+    },
+    {
+      "id": "opaque",
+      "desc": "access tokens are opaque in this variant (not JWTs)",
+      "expect": true,
+      "got": true,
+      "pass": true
+    },
+    {
+      "id": "subjects",
+      "desc": "pairwise: each tenant's ID token carries a different sub, neither the Kratos id; introspection still returns the Kratos id; the public client's ID token sub IS the Kratos id",
+      "expect": {
+        "publicIdTokenSubIsKratosId": true,
+        "pairwiseIdTokenSubIsKratosId": false,
+        "pairwiseSubsDifferAcrossTenants": true,
+        "introspectionSubIsKratosId": true
+      },
+      "got": {
+        "publicIdTokenSubIsKratosId": true,
+        "pairwiseIdTokenSubIsKratosId": false,
+        "pairwiseSubsDifferAcrossTenants": true,
+        "introspectionSubIsKratosId": true
+      },
+      "pass": true
+    }
+  ]
+}

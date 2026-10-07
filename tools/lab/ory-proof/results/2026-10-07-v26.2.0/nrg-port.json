@@ -1,0 +1,181 @@
+{
+  "probe": "nrg-port",
+  "run": "2026-10-07-v26.2.0",
+  "started": "2026-10-07T21:56:09.491Z",
+  "node": "v24.15.0",
+  "nrg_commit": "90840ac",
+  "sdk": {
+    "kratos": "v0.9.0-alpha.3",
+    "hydra": "v1.11.8"
+  },
+  "nrg.as-documented": {
+    "HYDRA_API": "http://127.0.0.1:44445"
+  },
+  "nrg.admin-suffix": {
+    "HYDRA_API": "http://127.0.0.1:44445/admin"
+  },
+  "register.admin-suffix.body": "{\"code\":\"Internal\",\"message\":\"Error: Request failed with status code 400\"}",
+  "finished": "2026-10-07T21:56:12.327Z",
+  "total": 15,
+  "failed": 2,
+  "checks": [
+    {
+      "id": "sdk.kratos.class",
+      "desc": "NRG constructs V0alpha2Api (lib/privy/index.js:20): it exists in the SDK NRG pins",
+      "expect": true,
+      "got": true,
+      "pass": true
+    },
+    {
+      "id": "sdk.kratos.toSession",
+      "desc": "toSession (GET /sessions/whoami) from SDK 0.9.0-alpha.3 against Kratos 1.x returns the identity with traits.email",
+      "expect": {
+        "status": 200,
+        "same": true,
+        "email": true
+      },
+      "got": {
+        "status": 200,
+        "same": true,
+        "email": true
+      },
+      "pass": true
+    },
+    {
+      "id": "sdk.kratos.adminGetIdentity.admin",
+      "desc": "adminGetIdentity against the ADMIN port works",
+      "expect": {
+        "status": 200
+      },
+      "got": {
+        "status": 200
+      },
+      "pass": true
+    },
+    {
+      "id": "sdk.kratos.adminGetIdentity.public",
+      "desc": "adminGetIdentity against the PUBLIC port, as NRG does (one KRATOS_API for both): Kratos 1.x redirects /admin/* to serve.admin.base_url, which must then resolve from NRG",
+      "expect": {
+        "error": "getaddrinfo ... kratos"
+      },
+      "got": {
+        "error": "getaddrinfo EAI_AGAIN kratos"
+      },
+      "pass": true
+    },
+    {
+      "id": "sdk.hydra.legacy-path",
+      "desc": "hydra-client 1.11.8 POSTs /clients; Hydra 2.x answers 307 to /admin/clients on its OWN listen address (localhost:4445), unreachable through a mapped port",
+      "expect": {
+        "error": "ECONNREFUSED"
+      },
+      "got": {
+        "status": 201,
+        "id": "37317e62-4bae-4ea9-b195-5fc98b8184ba"
+      },
+      "pass": false
+    },
+    {
+      "id": "sdk.hydra.admin-suffix",
+      "desc": "the same SDK with basePath + '/admin' creates the client (status 201): the 1.x request shape is accepted by 2.x",
+      "expect": {
+        "status": 201
+      },
+      "got": {
+        "status": 201
+      },
+      "pass": true
+    },
+    {
+      "id": "sdk.hydra.delete",
+      "desc": "deleteOAuth2Client through the suffixed basePath",
+      "expect": 204,
+      "got": 204,
+      "pass": true
+    },
+    {
+      "id": "sdk.hydra.nrg-client-shape",
+      "desc": "NRG's client shape (subject_type pairwise + sector_identifier_url) is refused by this Hydra (JWT access tokens)",
+      "expect": {
+        "status": 400,
+        "error": "invalid_client_metadata"
+      },
+      "got": {
+        "status": 400,
+        "error": "invalid_client_metadata"
+      },
+      "pass": true
+    },
+    {
+      "id": "nrg.migrations",
+      "desc": "NRG's 31 knex migrations apply cleanly to Postgres 16",
+      "expect": 31,
+      "got": 31,
+      "pass": true
+    },
+    {
+      "id": "nrg.cookies",
+      "desc": "real Kratos 1.x browser sessions for U and V",
+      "expect": true,
+      "got": true,
+      "pass": true
+    },
+    {
+      "id": "nrg.portal.control",
+      "desc": "positive control, no Kratos in the chain: the portal route allows U on nrg-a",
+      "expect": 200,
+      "got": 200,
+      "pass": true
+    },
+    {
+      "id": "nrg.warden.kratos1x",
+      "desc": "NRG's warden chain (find site -> Kratos whoami -> ACL by identity -> policy -> decision) with real Kratos 1.x cookies: U allowed on nrg-a; anonymous denied; U denied on nrg-b; V allowed on nrg-b",
+      "expect": {
+        "uA": 200,
+        "anonA": 403,
+        "uB": 403,
+        "vB": 200
+      },
+      "got": {
+        "uA": 200,
+        "anonA": 403,
+        "uB": 403,
+        "vB": 200
+      },
+      "pass": true
+    },
+    {
+      "id": "nrg.register.as-documented",
+      "desc": "site registration (creates the per-site Hydra client) with HYDRA_API at the admin port as NRG documents it: fails on the 307 to localhost:4445",
+      "expect": {
+        "status": 500,
+        "logged": "ECONNREFUSED"
+      },
+      "got": {
+        "status": 500,
+        "logged": "Request failed with status code 400"
+      },
+      "pass": false
+    },
+    {
+      "id": "nrg.portal.control.2",
+      "desc": "liveness: portal route allows U on nrg-a in the second server run",
+      "expect": 200,
+      "got": 200,
+      "pass": true
+    },
+    {
+      "id": "nrg.register.admin-suffix",
+      "desc": "site registration with HYDRA_API + '/admin': the path is fixed and Hydra now answers 400 to NRG's client payload (sdk.hydra.nrg-client-shape shows the same payload refused as pairwise-under-JWT)",
+      "expect": {
+        "status": 500,
+        "logged": "Request failed with status code 400"
+      },
+      "got": {
+        "status": 500,
+        "logged": "Request failed with status code 400"
+      },
+      "pass": true
+    }
+  ]
+}

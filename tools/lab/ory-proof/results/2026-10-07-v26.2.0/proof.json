@@ -1,0 +1,322 @@
+{
+  "probe": "proof",
+  "run": "2026-10-07-v26.2.0",
+  "started": "2026-10-07T21:55:49.278Z",
+  "node": "v24.15.0",
+  "fixture": {
+    "tenants": [
+      "tenant-a",
+      "tenant-b"
+    ],
+    "U": "member of tenant-a only",
+    "V": "member of tenant-b only"
+  },
+  "finished": "2026-10-07T21:55:50.335Z",
+  "total": 23,
+  "failed": 0,
+  "checks": [
+    {
+      "id": "setup.sessions",
+      "desc": "both identities hold a Kratos session from the ONE pool",
+      "expect": [
+        200,
+        200
+      ],
+      "got": [
+        200,
+        200
+      ],
+      "pass": true
+    },
+    {
+      "id": "intact.live",
+      "desc": "liveness in this run: both tenant hosts answer, U exchanges and verifies on A",
+      "expect": [
+        200,
+        200,
+        200,
+        200
+      ],
+      "got": [
+        200,
+        200,
+        200,
+        200
+      ],
+      "pass": true
+    },
+    {
+      "id": "intact.a.claims",
+      "desc": "the A token names tenant-a and U",
+      "expect": {
+        "tenant": "tenant-a",
+        "sub": "f0dbcbf8-86a5-4749-957a-d1ebfeb4342a"
+      },
+      "got": {
+        "tenant": "tenant-a",
+        "sub": "f0dbcbf8-86a5-4749-957a-d1ebfeb4342a"
+      },
+      "pass": true
+    },
+    {
+      "id": "intact.b.exchange",
+      "desc": "U's session on B's host is refused for non-membership",
+      "expect": {
+        "status": 403,
+        "error": "not-a-member"
+      },
+      "got": {
+        "status": 403,
+        "error": "not-a-member"
+      },
+      "pass": true
+    },
+    {
+      "id": "intact.b.verify",
+      "desc": "the A token presented to B fails as a SIGNATURE failure",
+      "expect": {
+        "status": 401,
+        "error": "signature"
+      },
+      "got": {
+        "status": 401,
+        "error": "signature"
+      },
+      "pass": true
+    },
+    {
+      "id": "intact.b.live",
+      "desc": "B's own member V exchanges on B in the same run (B is alive, not just refusing)",
+      "expect": 200,
+      "got": 200,
+      "pass": true
+    },
+    {
+      "id": "intact.b-to-a.verify",
+      "desc": "a B token presented to A fails as a signature failure (the reverse direction)",
+      "expect": {
+        "status": 401,
+        "error": "signature"
+      },
+      "got": {
+        "status": 401,
+        "error": "signature"
+      },
+      "pass": true
+    },
+    {
+      "id": "intact.resolve-first",
+      "desc": "an unknown slug and a host outside the rule are refused BEFORE any credential is examined",
+      "expect": {
+        "unknownSlug": 404,
+        "offRule": 404,
+        "credentialExaminationsDelta": 0
+      },
+      "got": {
+        "unknownSlug": 404,
+        "offRule": 404,
+        "credentialExaminationsDelta": 0
+      },
+      "pass": true
+    },
+    {
+      "id": "intact.no-credential",
+      "desc": "on A, no credential -> 401 and a junk session token -> 401 (A refuses without a session)",
+      "expect": {
+        "none": 401,
+        "junk": 401
+      },
+      "got": {
+        "none": 401,
+        "junk": 401
+      },
+      "pass": true
+    },
+    {
+      "id": "control.b.exchange",
+      "desc": "CONTROL: with U added to B, the same session on B's host mints a B token that verifies on B",
+      "expect": {
+        "exchange": 200,
+        "verify": 200,
+        "claim": "tenant-b"
+      },
+      "got": {
+        "exchange": 200,
+        "verify": 200,
+        "claim": "tenant-b"
+      },
+      "pass": true
+    },
+    {
+      "id": "control.b.verify-a-token",
+      "desc": "CONTROL: membership in B does not make the A token valid on B (still a signature failure)",
+      "expect": {
+        "status": 401,
+        "error": "signature"
+      },
+      "got": {
+        "status": 401,
+        "error": "signature"
+      },
+      "pass": true
+    },
+    {
+      "id": "control.b.restored",
+      "desc": "U removed from B -> refused again (the refusal tracks the membership row)",
+      "expect": 403,
+      "got": 403,
+      "pass": true
+    },
+    {
+      "id": "revoke.kratos",
+      "desc": "after Kratos revokes all of U's sessions, U can no longer exchange on A",
+      "expect": {
+        "listSessions": 200,
+        "revoke": 204,
+        "exchange": 401
+      },
+      "got": {
+        "listSessions": 200,
+        "revoke": 204,
+        "exchange": 401
+      },
+      "pass": true
+    },
+    {
+      "id": "revoke.minted-survives",
+      "desc": "a Nightscout token minted before the revocation still verifies on A until its own exp (nsjwt has no revocation link to Kratos)",
+      "expect": 200,
+      "got": 200,
+      "pass": true
+    },
+    {
+      "id": "break.skip-membership.live",
+      "desc": "liveness in this run: both tenant hosts answer, U exchanges and verifies on A",
+      "expect": [
+        200,
+        200,
+        200,
+        200
+      ],
+      "got": [
+        200,
+        200,
+        200,
+        200
+      ],
+      "pass": true
+    },
+    {
+      "id": "break.skip-membership.red",
+      "desc": "BREAK skip-membership: the probe goes red - U's session on B mints a B token for a non-member",
+      "expect": {
+        "status": 200,
+        "tenant": "tenant-b",
+        "sub": "f0dbcbf8-86a5-4749-957a-d1ebfeb4342a"
+      },
+      "got": {
+        "status": 200,
+        "tenant": "tenant-b",
+        "sub": "f0dbcbf8-86a5-4749-957a-d1ebfeb4342a"
+      },
+      "pass": true
+    },
+    {
+      "id": "break.skip-membership.usable",
+      "desc": "and that token is accepted by B (a working cross-tenant credential)",
+      "expect": 200,
+      "got": 200,
+      "pass": true
+    },
+    {
+      "id": "break.no-claim-check.live",
+      "desc": "liveness in this run: both tenant hosts answer, U exchanges and verifies on A",
+      "expect": [
+        200,
+        200,
+        200,
+        200
+      ],
+      "got": [
+        200,
+        200,
+        200,
+        200
+      ],
+      "pass": true
+    },
+    {
+      "id": "break.no-claim-check.still-green",
+      "desc": "claim check removed, per-tenant keys intact: the A token on B is STILL a signature failure (D14 alone holds)",
+      "expect": {
+        "status": 401,
+        "error": "signature"
+      },
+      "got": {
+        "status": 401,
+        "error": "signature"
+      },
+      "pass": true
+    },
+    {
+      "id": "break.shared-key.live",
+      "desc": "liveness in this run: both tenant hosts answer, U exchanges and verifies on A",
+      "expect": [
+        200,
+        200,
+        200,
+        200
+      ],
+      "got": [
+        200,
+        200,
+        200,
+        200
+      ],
+      "pass": true
+    },
+    {
+      "id": "break.shared-key.claim-catches",
+      "desc": "BREAK shared-key: the signature now passes on B; only the tenant-claim check refuses it",
+      "expect": {
+        "status": 401,
+        "error": "tenant-claim"
+      },
+      "got": {
+        "status": 401,
+        "error": "tenant-claim"
+      },
+      "pass": true
+    },
+    {
+      "id": "break.shared-key+no-claim-check.live",
+      "desc": "liveness in this run: both tenant hosts answer, U exchanges and verifies on A",
+      "expect": [
+        200,
+        200,
+        200,
+        200
+      ],
+      "got": [
+        200,
+        200,
+        200,
+        200
+      ],
+      "pass": true
+    },
+    {
+      "id": "break.shared-key+no-claim-check.red",
+      "desc": "BREAK shared-key + no claim check: the probe goes red - the A token is accepted by B",
+      "expect": {
+        "status": 200,
+        "claim": "tenant-a"
+      },
+      "got": {
+        "status": 200,
+        "claim": "tenant-a"
+      },
+      "pass": true
+    }
+  ]
+}

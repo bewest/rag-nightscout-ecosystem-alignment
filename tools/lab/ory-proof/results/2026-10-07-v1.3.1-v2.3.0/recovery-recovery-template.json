@@ -1,0 +1,117 @@
+{
+  "probe": "recovery-recovery-template",
+  "run": "2026-10-07-v1.3.1-v2.3.0",
+  "started": "2026-10-07T21:54:57.615Z",
+  "node": "v24.15.0",
+  "starts": [
+    {
+      "status": 200,
+      "requestUrlHost": "auth.apex.test:44480",
+      "actionHost": "auth.apex.test",
+      "state": "sent_email"
+    },
+    {
+      "status": 200,
+      "requestUrlHost": "tenant-b.user-content.apex.test:44480",
+      "actionHost": "auth.apex.test",
+      "state": "sent_email"
+    },
+    {
+      "status": 200,
+      "requestUrlHost": "auth.apex.test:44480",
+      "actionHost": "auth.apex.test",
+      "state": "sent_email"
+    }
+  ],
+  "emails": [
+    {
+      "start": "auth-host",
+      "subject": "Recovery for tenant-a",
+      "tenantsNamed": [
+        "tenant-a"
+      ],
+      "hostsNamed": [
+        "auth.apex.test:44480"
+      ]
+    },
+    {
+      "start": "tenant-b /.ory proxy",
+      "subject": "Recovery for <no value>",
+      "tenantsNamed": [
+        "tenant-b.user-content.apex.test",
+        "tenant-b"
+      ],
+      "hostsNamed": [
+        "tenant-b.user-content.apex.test:44480"
+      ]
+    },
+    {
+      "start": "auth-host + transient tenant-b",
+      "subject": "Recovery for tenant-b",
+      "tenantsNamed": [
+        "tenant-b"
+      ],
+      "hostsNamed": [
+        "auth.apex.test:44480"
+      ]
+    }
+  ],
+  "finished": "2026-10-07T21:54:58.445Z",
+  "total": 5,
+  "failed": 0,
+  "checks": [
+    {
+      "id": "mail.arrives",
+      "desc": "positive control: one recovery email per started flow arrives, each with a code",
+      "expect": 3,
+      "got": 3,
+      "pass": true
+    },
+    {
+      "id": "flow.request_url",
+      "desc": "the request_url Kratos records for a flow started through tenant-b's proxy path names tenant-b (it follows the request's host, not base_url)",
+      "expect": "tenant-b.user-content.apex.test",
+      "got": "tenant-b.user-content.apex.test",
+      "pass": true
+    },
+    {
+      "id": "flow.request_url.unvalidated",
+      "desc": "direct to Kratos public with X-Forwarded-Host: evil.test, request_url names evil.test (no allow-list applies to it)",
+      "expect": "evil.test",
+      "got": "evil.test",
+      "pass": true
+    },
+    {
+      "id": "template.client-chosen",
+      "desc": "custom template rendering transient_payload: the tenant named is whatever the CALLER sent - tenant-b, where U is not a member",
+      "expect": {
+        "first": [
+          "tenant-a"
+        ],
+        "third": [
+          "tenant-b"
+        ]
+      },
+      "got": {
+        "first": [
+          "tenant-a"
+        ],
+        "third": [
+          "tenant-b"
+        ]
+      },
+      "pass": true
+    },
+    {
+      "id": "template.request-url",
+      "desc": "custom template rendering .RequestURL: the email for the flow started through tenant-b's proxy names tenant-b's host - chosen by whoever started the flow, for an identity that is not a member of tenant-b",
+      "expect": [
+        "tenant-b.user-content.apex.test:44480"
+      ],
+      "got": [
+        "tenant-b.user-content.apex.test:44480"
+      ],
+      "pass": true
+    }
+  ]
+}

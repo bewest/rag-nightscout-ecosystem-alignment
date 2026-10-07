@@ -1,0 +1,5 @@
+# Variant: opaque access tokens, which Hydra requires before it will accept pairwise subjects.
+services:
+  hydra:
+    environment:
+      STRATEGIES_ACCESS_TOKEN: opaque

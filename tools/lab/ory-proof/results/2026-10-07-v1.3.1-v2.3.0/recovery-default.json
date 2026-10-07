@@ -1,0 +1,73 @@
+{
+  "probe": "recovery-default",
+  "run": "2026-10-07-v1.3.1-v2.3.0",
+  "started": "2026-10-07T21:54:55.976Z",
+  "node": "v24.15.0",
+  "starts": [
+    {
+      "status": 200,
+      "requestUrlHost": "auth.apex.test:44480",
+      "actionHost": "auth.apex.test",
+      "state": "sent_email"
+    },
+    {
+      "status": 200,
+      "requestUrlHost": "tenant-b.user-content.apex.test:44480",
+      "actionHost": "auth.apex.test",
+      "state": "sent_email"
+    }
+  ],
+  "emails": [
+    {
+      "start": "auth-host",
+      "subject": "Recover access to your account",
+      "tenantsNamed": [],
+      "hostsNamed": []
+    },
+    {
+      "start": "tenant-b /.ory proxy",
+      "subject": "Recover access to your account",
+      "tenantsNamed": [],
+      "hostsNamed": []
+    }
+  ],
+  "finished": "2026-10-07T21:54:56.513Z",
+  "total": 4,
+  "failed": 0,
+  "checks": [
+    {
+      "id": "mail.arrives",
+      "desc": "positive control: one recovery email per started flow arrives, each with a code",
+      "expect": 2,
+      "got": 2,
+      "pass": true
+    },
+    {
+      "id": "flow.request_url",
+      "desc": "the request_url Kratos records for a flow started through tenant-b's proxy path names tenant-b (it follows the request's host, not base_url)",
+      "expect": "tenant-b.user-content.apex.test",
+      "got": "tenant-b.user-content.apex.test",
+      "pass": true
+    },
+    {
+      "id": "flow.request_url.unvalidated",
+      "desc": "direct to Kratos public with X-Forwarded-Host: evil.test, request_url names evil.test (no allow-list applies to it)",
+      "expect": "evil.test",
+      "got": "evil.test",
+      "pass": true
+    },
+    {
+      "id": "default.names-no-tenant",
+      "desc": "built-in template: the emails name no tenant at all, whichever host the flow started on",
+      "expect": [
+        [],
+        []
+      ],
+      "got": [
+        [],
+        []
+      ],
+      "pass": true
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+# Variant: a recovery email template that renders the flow's transient_payload and request URL.
+services:
+  kratos:
+    environment:
+      COURIER_TEMPLATES_RECOVERY_CODE_VALID_EMAIL_BODY_PLAINTEXT: file:///etc/config/kratos/templates/recovery_code_valid.plaintext.gotmpl
+      COURIER_TEMPLATES_RECOVERY_CODE_VALID_EMAIL_BODY_HTML: file:///etc/config/kratos/templates/recovery_code_valid.plaintext.gotmpl
+      COURIER_TEMPLATES_RECOVERY_CODE_VALID_EMAIL_SUBJECT: file:///etc/config/kratos/templates/recovery_code_valid.subject.gotmpl

@@ -1,0 +1,102 @@
+{
+  "probe": "cookies-host-only",
+  "run": "2026-10-07-v26.2.0",
+  "started": "2026-10-07T21:55:50.603Z",
+  "node": "v24.15.0",
+  "variant": "host-only",
+  "browser": "Chrome 154.0.8037.57",
+  "login": {
+    "formShown": true,
+    "finalUrl": "http://tenant-a.user-content.apex.test:44480/api/echo",
+    "excerpt": "       {\"tenant\":\"tenant-a\",\"cookieNames\":[],\"sessionDigest\":null,\"origin\":null}     "
+  },
+  "cookieJar": [
+    {
+      "name": "csrf_token_*",
+      "domain": "auth.apex.test",
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "ory_kratos_session",
+      "domain": "auth.apex.test",
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "echo": {
+    "tenantA": [],
+    "tenantB": []
+  },
+  "finished": "2026-10-07T21:55:51.455Z",
+  "total": 5,
+  "failed": 0,
+  "checks": [
+    {
+      "id": "login.ok",
+      "desc": "browser login through the ONE pool succeeds and lands on tenant-a",
+      "expect": {
+        "session": true,
+        "whoami": "200"
+      },
+      "got": {
+        "session": true,
+        "whoami": "200",
+        "sessionCookieDomain": "auth.apex.test"
+      },
+      "pass": true
+    },
+    {
+      "id": "scope.neither",
+      "desc": "host-only cookie on auth.apex.test: the session cookie reaches NEITHER tenant host",
+      "expect": {
+        "A": false,
+        "B": false
+      },
+      "got": {
+        "A": false,
+        "B": false
+      },
+      "pass": true
+    },
+    {
+      "id": "exchange.a.no-cookie",
+      "desc": "so a tenant host cannot use the cookie path at all: A answers no-credential",
+      "expect": {
+        "status": 401,
+        "error": "no-credential"
+      },
+      "got": {
+        "status": 401,
+        "error": "no-credential"
+      },
+      "pass": true
+    },
+    {
+      "id": "exchange.a.explicit",
+      "desc": "control: the same session, handed to A explicitly, mints an A token (the session is live; only the scope withheld it)",
+      "expect": 200,
+      "got": 200,
+      "pass": true
+    },
+    {
+      "id": "per-tenant-proxy",
+      "desc": "Kratos proxied under A's host still names its single base_url in the flow: form actions go to the auth host, while the CSRF cookie was set host-only on A",
+      "expect": {
+        "status": 200,
+        "actionHost": "auth.apex.test",
+        "csrfCookieDomainAttr": "none (host-only on tenant-a)"
+      },
+      "got": {
+        "status": 200,
+        "actionHost": "auth.apex.test",
+        "setCookie": [
+          "csrf_token_*=…; Path=/; Max-Age=31536000; HttpOnly; SameSite=Lax"
+        ]
+      },
+      "pass": true
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+# Variant: Kratos session + CSRF cookies on the apex, so every *.apex.test host receives them.
+services:
+  kratos:
+    environment:
+      SESSION_COOKIE_DOMAIN: apex.test
+      COOKIES_DOMAIN: apex.test

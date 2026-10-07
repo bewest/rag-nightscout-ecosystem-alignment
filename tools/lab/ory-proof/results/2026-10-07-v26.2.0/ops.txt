@@ -1,0 +1,24 @@
+## images (pinned)
+kratos	oryd/kratos:v26.2.0@sha256:2a13bb8d362c7a7ae33bd7c0f5168aee46921f15c916a06346db91c06dc76643	74.3 MB
+hydra	oryd/hydra:v26.2.0@sha256:ff67c7fb5f95074fa53374d41151713554960504b340cd3f95b09e65deaea2a9	52.3 MB
+postgres	postgres:16-alpine@sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea	294.3 MB
+mailpit	axllent/mailpit:v1.27@sha256:e22dce5b36f93c77082e204a3942fb6b283b7896e057458400a4c88344c3df68	34.6 MB
+## versions
+Version: v26.2.0
+Build Commit: 9d7085948039ffb8960160d4979f71527b5cf4d5
+Build Timestamp: 2026-03-20T13:49:31Z
+Version: v26.2.0
+Git Hash: 0b84568fffccf151dc5e6c7955fdfb738555bf4b
+Build Time: 2026-03-20T13:05:43Z
+## idle memory and CPU (docker stats --no-stream, 30 s after last request)
+ory-proof-kratos-1	47.84MiB / 62.64GiB	0.22%
+ory-proof-hydra-1	23.73MiB / 62.64GiB	0.00%
+ory-proof-postgres-1	67.9MiB / 62.64GiB	1.94%
+ory-proof-mailpit-1	13.95MiB / 62.64GiB	0.00%
+## migrations applied and tables per database
+kratos	tables=26	migrations=338	size=10015 kB
+hydra	tables=16	migrations=224	size=9375 kB
+nsjwt	tables=2	migrations=n/a	size=7663 kB
+nrg	tables=16	migrations=31	size=9463 kB
+## identities and sessions held by the pool after the probes
+identities=11 sessions=10 hydra_clients=0

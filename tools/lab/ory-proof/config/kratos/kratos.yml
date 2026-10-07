@@ -1,0 +1,74 @@
+# Kratos 1.x lab config. No secrets here: DSN and SECRETS_* come from .secrets.env (lab.sh).
+# Browser-visible origins go through the lab edge on :44480 (lib/edge.js), routed by Host.
+version: v1.3.1
+
+serve:
+  public:
+    base_url: http://auth.apex.test:44480/
+    cors:
+      enabled: false
+  admin:
+    base_url: http://kratos:4434/
+
+selfservice:
+  default_browser_return_url: http://auth.apex.test:44480/ui/home
+  # Probed by probes/return-to.js. One wildcard for every tenant host plus the auth host.
+  allowed_return_urls:
+    - http://auth.apex.test:44480/
+    - http://*.user-content.apex.test:44480/
+
+  methods:
+    password:
+      enabled: true
+    code:
+      enabled: true
+    link:
+      enabled: false
+
+  flows:
+    error:
+      ui_url: http://auth.apex.test:44480/ui/error
+    settings:
+      ui_url: http://auth.apex.test:44480/ui/settings
+      privileged_session_max_age: 15m
+    recovery:
+      enabled: true
+      ui_url: http://auth.apex.test:44480/ui/recovery
+      use: code
+    verification:
+      enabled: true
+      ui_url: http://auth.apex.test:44480/ui/verification
+      use: code
+    logout:
+      after:
+        default_browser_return_url: http://auth.apex.test:44480/ui/home
+    login:
+      ui_url: http://auth.apex.test:44480/ui/login
+      lifespan: 10m
+    registration:
+      lifespan: 10m
+      ui_url: http://auth.apex.test:44480/ui/registration
+      after:
+        password:
+          hooks:
+            - hook: session
+
+log:
+  level: info
+  format: json
+  leak_sensitive_values: false
+
+hashers:
+  algorithm: bcrypt
+  bcrypt:
+    cost: 8
+
+identity:
+  default_schema_id: default
+  schemas:
+    - id: default
+      url: file:///etc/config/kratos/identity.schema.json
+
+courier:
+  smtp:
+    connection_uri: smtp://mailpit:1025/?disable_starttls=true

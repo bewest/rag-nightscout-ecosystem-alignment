@@ -1,0 +1,13 @@
+NRG 90840ac suite, SKIP_HYDRA_TESTS=1 SKIP_KRATOS_TESTS=1, node:22
+## as-shipped ()
+  170 passing (28s)
+  16 pending
+  38 failing
+first failure messages (deduplicated):
+     36 relation "registered_sites" does not exist
+      1 relation "reserved_expected_names" does not exist
+      1 AssertionError: expected 'i
+## without-site-registration (--ignore test/integration/site_registration.test.js)
+  217 passing (48s)
+  11 pending
+first failure messages (deduplicated):

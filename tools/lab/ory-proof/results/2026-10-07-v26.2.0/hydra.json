@@ -1,0 +1,278 @@
+{
+  "probe": "hydra",
+  "run": "2026-10-07-v26.2.0",
+  "started": "2026-10-07T21:55:57.078Z",
+  "node": "v24.15.0",
+  "fixture": {
+    "U": "member of tenant-a AND tenant-b (client binding is the only variable)"
+  },
+  "tokens": {
+    "A": {
+      "kid": "8038b0fe-f497-4dec-9d1e-afc761174bd6",
+      "iss": "http://hydra.apex.test:44480/",
+      "aud": [
+        "http://tenant-a.user-content.apex.test:44480"
+      ],
+      "client_id": "37671c9f-36fb-4b44-9897-40e8a79c0cb4",
+      "sub_is_kratos_id": true
+    },
+    "B": {
+      "kid": "8038b0fe-f497-4dec-9d1e-afc761174bd6",
+      "iss": "http://hydra.apex.test:44480/",
+      "aud": [
+        "http://tenant-b.user-content.apex.test:44480"
+      ],
+      "client_id": "84af2fb7-e34b-4271-b94a-a304750e822b",
+      "sub_is_kratos_id": true
+    }
+  },
+  "finished": "2026-10-07T21:55:59.176Z",
+  "total": 18,
+  "failed": 0,
+  "checks": [
+    {
+      "id": "authorize.positive",
+      "desc": "client-A with A's redirect and A's audience is handed to the login app",
+      "expect": {
+        "toLogin": true
+      },
+      "got": {
+        "status": 302,
+        "toLogin": true,
+        "locationHost": "auth.apex.test",
+        "error": null
+      },
+      "pass": true
+    },
+    {
+      "id": "authorize.redirect-cross",
+      "desc": "client-A asking to redirect to B's callback is refused by Hydra (exact redirect_uri match)",
+      "expect": {
+        "toLogin": false,
+        "error": "invalid_request",
+        "locationHostIsNot": "tenant-b.user-content.apex.test"
+      },
+      "got": {
+        "status": 302,
+        "toLogin": false,
+        "locationHost": "hydra.apex.test",
+        "error": "invalid_request"
+      },
+      "pass": true
+    },
+    {
+      "id": "authorize.audience-cross",
+      "desc": "client-A asking for B's audience is refused by Hydra (audience allow-list per client)",
+      "expect": {
+        "toLogin": false,
+        "error": "invalid_request"
+      },
+      "got": {
+        "status": 303,
+        "toLogin": false,
+        "locationHost": "tenant-a.user-content.apex.test",
+        "error": "invalid_request"
+      },
+      "pass": true
+    },
+    {
+      "id": "flow.a",
+      "desc": "browser authorization-code flow for client-A completes through Kratos login and lands on A",
+      "expect": {
+        "status": 200,
+        "callbackHost": "tenant-a.user-content.apex.test"
+      },
+      "got": {
+        "status": 200,
+        "callbackHost": "tenant-a.user-content.apex.test"
+      },
+      "pass": true
+    },
+    {
+      "id": "flow.b",
+      "desc": "the same browser then completes client-B on B",
+      "expect": {
+        "status": 200,
+        "callbackHost": "tenant-b.user-content.apex.test"
+      },
+      "got": {
+        "status": 200,
+        "callbackHost": "tenant-b.user-content.apex.test"
+      },
+      "pass": true
+    },
+    {
+      "id": "sso.login-skip",
+      "desc": "Hydra's login session is cohort-wide: client-B's login request arrives with skip=true after logging in for client-A",
+      "expect": {
+        "logins": [
+          {
+            "client": "A",
+            "skip": false
+          },
+          {
+            "client": "B",
+            "skip": true
+          }
+        ]
+      },
+      "got": {
+        "logins": [
+          {
+            "client": "A",
+            "skip": false
+          },
+          {
+            "client": "B",
+            "skip": true
+          }
+        ]
+      },
+      "pass": true
+    },
+    {
+      "id": "consent.per-client",
+      "desc": "consent is remembered per client: client-B gets its own consent request (skip=false)",
+      "expect": {
+        "consents": [
+          {
+            "client": "A",
+            "skip": false
+          },
+          {
+            "client": "B",
+            "skip": false
+          }
+        ]
+      },
+      "got": {
+        "consents": [
+          {
+            "client": "A",
+            "skip": false
+          },
+          {
+            "client": "B",
+            "skip": false
+          }
+        ]
+      },
+      "pass": true
+    },
+    {
+      "id": "consent.remembered",
+      "desc": "control: a second client-A flow sees its remembered consent (skip=true), so skip=false for B above is the per-client boundary, not a consent app that never remembers",
+      "expect": true,
+      "got": true,
+      "pass": true
+    },
+    {
+      "id": "pairwise.refused-under-jwt",
+      "desc": "with JWT access tokens (this config), Hydra refuses a pairwise client - NRG's client shape (probes/hydra-pairwise.js runs the opaque variant)",
+      "expect": {
+        "status": 400,
+        "error": "invalid_client_metadata"
+      },
+      "got": {
+        "status": 400,
+        "error": "invalid_client_metadata"
+      },
+      "pass": true
+    },
+    {
+      "id": "one-issuer",
+      "desc": "both tenants' access tokens carry the same issuer and the same signing key id (OSS Hydra: one issuer, one key set)",
+      "expect": {
+        "sameIss": true,
+        "sameKid": true
+      },
+      "got": {
+        "sameIss": true,
+        "sameKid": true
+      },
+      "pass": true
+    },
+    {
+      "id": "jwks-verifies-anywhere",
+      "desc": "A's Hydra token verifies against the one JWKS any tenant would fetch: a signature check alone cannot separate tenants (D14 needs our own mint)",
+      "expect": true,
+      "got": true,
+      "pass": true
+    },
+    {
+      "id": "aud-scoped",
+      "desc": "Hydra puts the client's audience in the token: A's token names A's origin and not B's",
+      "expect": {
+        "aud": [
+          "http://tenant-a.user-content.apex.test:44480"
+        ]
+      },
+      "got": {
+        "aud": [
+          "http://tenant-a.user-content.apex.test:44480"
+        ]
+      },
+      "pass": true
+    },
+    {
+      "id": "exchange.a",
+      "desc": "positive: A's Hydra token exchanges on A",
+      "expect": {
+        "status": 200,
+        "via": "hydra-access-token"
+      },
+      "got": {
+        "status": 200,
+        "via": "hydra-access-token"
+      },
+      "pass": true
+    },
+    {
+      "id": "exchange.a-token-at-b",
+      "desc": "probe: A's Hydra token on B is refused because it was issued to another client (U IS a member of B)",
+      "expect": {
+        "status": 401,
+        "error": "hydra-token-other-client"
+      },
+      "got": {
+        "status": 401,
+        "error": "hydra-token-other-client"
+      },
+      "pass": true
+    },
+    {
+      "id": "exchange.b-own",
+      "desc": "control in the same run: B's own token exchanges on B",
+      "expect": 200,
+      "got": 200,
+      "pass": true
+    },
+    {
+      "id": "break.skip-client-check.live",
+      "desc": "liveness in the break run",
+      "expect": 200,
+      "got": 200,
+      "pass": true
+    },
+    {
+      "id": "break.skip-client-check.red",
+      "desc": "BREAK skip-client-check: the probe goes red - A's Hydra token mints a B Nightscout token",
+      "expect": {
+        "status": 200,
+        "tenant": "tenant-b"
+      },
+      "got": {
+        "status": 200,
+        "tenant": "tenant-b"
+      },
+      "pass": true
+    },
+    {
+      "id": "break.skip-client-check.membership",
+      "desc": "...and with U removed from B the membership check still refuses (the two defences are independent)",
+      "expect": 403,
+      "got": 403,
+      "pass": true
+    }
+  ]
+}

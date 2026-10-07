@@ -1,0 +1,63 @@
+{
+  "probe": "cookies-user-content",
+  "run": "2026-10-07-v26.2.0",
+  "started": "2026-10-07T21:55:55.062Z",
+  "node": "v24.15.0",
+  "variant": "user-content",
+  "browser": "Chrome 154.0.8037.57",
+  "login": {
+    "formShown": false,
+    "finalUrl": "http://auth.apex.test:44480/ui/login?flow=50941f6b-8d21-46ab-ab62-1ec335e91095",
+    "excerpt": "<html><head></head><body><pre id=\"err\">{\"error\":{\"id\":\"security_csrf_violation\",\"code\":403,\"status\":\"Forbidden\",\"reason\":\"Please retry the flow and optionally clear your cookies. The request was rejected to protect you from Cross-Site-Request-Forgery (CSRF) which could cause account takeover, leakin"
+  },
+  "cookieJar": [],
+  "echo": {
+    "tenantA": [],
+    "tenantB": []
+  },
+  "finished": "2026-10-07T21:55:55.743Z",
+  "total": 3,
+  "failed": 0,
+  "checks": [
+    {
+      "id": "login.fails",
+      "desc": "cookie domain outside the auth host: the browser login cannot complete and no session cookie is stored",
+      "expect": {
+        "sessionCookie": false,
+        "whoamiOnAuthHost": "401"
+      },
+      "got": {
+        "sessionCookie": false,
+        "whoamiOnAuthHost": "401",
+        "finalUrl": "http://auth.apex.test:44480/ui/login?flow=50941f6b-8d21-46ab-ab62-1ec335e91095"
+      },
+      "pass": true
+    },
+    {
+      "id": "live",
+      "desc": "liveness in this run: Kratos native login and the A exchange still succeed",
+      "expect": [
+        200,
+        200
+      ],
+      "got": [
+        200,
+        200
+      ],
+      "pass": true
+    },
+    {
+      "id": "scope.neither",
+      "desc": "user-content cookie domain: no session exists, so neither tenant host receives one",
+      "expect": {
+        "A": false,
+        "B": false
+      },
+      "got": {
+        "A": false,
+        "B": false
+      },
+      "pass": true
+    }
+  ]
+}

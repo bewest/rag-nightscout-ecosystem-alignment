@@ -1,0 +1,156 @@
+{
+  "probe": "cookies-apex",
+  "run": "2026-10-07-v26.2.0",
+  "started": "2026-10-07T21:55:52.860Z",
+  "node": "v24.15.0",
+  "variant": "apex",
+  "browser": "Chrome 154.0.8037.57",
+  "login": {
+    "formShown": true,
+    "finalUrl": "http://tenant-a.user-content.apex.test:44480/api/echo",
+    "excerpt": "       {\"tenant\":\"tenant-a\",\"cookieNames\":[\"csrf_token_17dd4f0373d679b116b7ce32014569214b71245707861aee09e2482cfba04893\",\"ory_kratos_session\"],\"sessionDigest\":\"2aa758db83cfa810\",\"origin\":null}     "
+  },
+  "cookieJar": [
+    {
+      "name": "csrf_token_*",
+      "domain": ".apex.test",
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "ory_kratos_session",
+      "domain": ".apex.test",
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "echo": {
+    "tenantA": [
+      "csrf_token_*",
+      "ory_kratos_session"
+    ],
+    "tenantB": [
+      "csrf_token_*",
+      "ory_kratos_session"
+    ]
+  },
+  "finished": "2026-10-07T21:55:53.713Z",
+  "total": 8,
+  "failed": 0,
+  "checks": [
+    {
+      "id": "login.ok",
+      "desc": "browser login through the ONE pool succeeds and lands on tenant-a",
+      "expect": {
+        "session": true,
+        "whoami": "200"
+      },
+      "got": {
+        "session": true,
+        "whoami": "200",
+        "sessionCookieDomain": ".apex.test"
+      },
+      "pass": true
+    },
+    {
+      "id": "scope.reaches-both",
+      "desc": "apex cookie domain: the session cookie reaches BOTH tenant hosts",
+      "expect": {
+        "A": true,
+        "B": true
+      },
+      "got": {
+        "A": true,
+        "B": true
+      },
+      "pass": true
+    },
+    {
+      "id": "exchange.a",
+      "desc": "positive: cookie-path exchange on A mints an A token",
+      "expect": {
+        "status": 200,
+        "via": "kratos-session-cookie"
+      },
+      "got": {
+        "status": 200,
+        "via": "kratos-session-cookie"
+      },
+      "pass": true
+    },
+    {
+      "id": "exchange.b",
+      "desc": "probe: the same cookie arrives at B and B refuses for non-membership",
+      "expect": {
+        "status": 403,
+        "error": "not-a-member"
+      },
+      "got": {
+        "status": 403,
+        "error": "not-a-member"
+      },
+      "pass": true
+    },
+    {
+      "id": "exchange.b.control",
+      "desc": "control: U added to B, the identical browser state now mints a B token",
+      "expect": {
+        "status": 200,
+        "tenant": "tenant-b"
+      },
+      "got": {
+        "status": 200,
+        "tenant": "tenant-b"
+      },
+      "pass": true
+    },
+    {
+      "id": "cross-origin.b-to-a",
+      "desc": "a script on B's origin POSTs to A's exchange: the session cookie is sent (tenants are same-site) and A mints; the browser withholds the response from B's script (no CORS)",
+      "expect": {
+        "serverMinted": true,
+        "viaCookie": true,
+        "originSeen": "http://tenant-b.user-content.apex.test:44480",
+        "scriptCouldRead": false
+      },
+      "got": {
+        "serverMinted": true,
+        "viaCookie": true,
+        "originSeen": "http://tenant-b.user-content.apex.test:44480",
+        "scriptCouldRead": false
+      },
+      "pass": true
+    },
+    {
+      "id": "replay.b-cookie-at-a",
+      "desc": "the session cookie B's host received (same digest), replayed by a non-browser client to A, mints an A token",
+      "expect": {
+        "sameSessionAtB": true,
+        "status": 200,
+        "tenant": "tenant-a"
+      },
+      "got": {
+        "sameSessionAtB": true,
+        "status": 200,
+        "tenant": "tenant-a"
+      },
+      "pass": true
+    },
+    {
+      "id": "attrs",
+      "desc": "session cookie attributes as set by Kratos --dev over http (production sets Secure)",
+      "expect": {
+        "httpOnly": true,
+        "sameSite": "Lax"
+      },
+      "got": {
+        "httpOnly": true,
+        "sameSite": "Lax",
+        "secure": false
+      },
+      "pass": true
+    }
+  ]
+}
