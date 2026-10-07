@@ -19,9 +19,9 @@ a critical advisory fixed in 2.0.8**
 | | |
 |---|---|
 | repository | `cgm-remote-monitor` |
-| branch | `` |
+| branch | `bf/proxy-addr-2.0.8` |
 | base | `official/dev@1ad03e29` |
-| claimed state | `needs-decision` — a claim; `make queue-status ID=BFQ-162` is the measurement |
+| claimed state | `ready-to-push` — a claim; `make queue-status ID=BFQ-162` is the measurement |
 | semver | `patch` |
 | register entries | `BF-162` |
 
@@ -66,8 +66,16 @@ maintainer
 Filed 2026-10-06 from session -d4's re-measured npm audit (25 findings, 9
 high, 1 critical; lockfile unchanged since run 021, the advisory database
 grew). Not on 15.0.8 (no TRUST_PROXY; trust proxy is enabled for every hop).
-Waiting on the maintainer: take 2.0.8 into 15.0.9 (run 022 and re-approval) or
-ship as a configuration-gated known issue.
+2026-10-07 (maintainer): goes into 15.0.9. Branch bf/proxy-addr-2.0.8
+7dd4f400, one commit on dev 1ad03e29, not pushed: package.json ^2.0.8 and the
+lockfile's one entry (npm ls: one 2.0.8, deduplicated under Express); the
+unrelated @types/tough-cookie "dev" flag npm 10.9.8 adds is left out. Measured
+in-process: on 2.0.7, ::ffff:10.0.0.0/8 and ::/1 trust an unrelated IPv4
+client's own X-Forwarded-For; 2.0.8 does not. New test in tests/client-
+ip.test.js fails on 2.0.7 only. Full suite 3564/0/4 (Node 22.23.2, MongoDB
+7.0.43, fresh database; dev 3563 plus 1). npm audit (npm 10.9.8): 25/9 high/1
+critical on dev, 24/9/0 on the branch. PR body reports/phase0-pr-bodies/proxy-
+addr-2.0.8.md. Merging it costs a run 022 and the #8598 re-approval.
 
 ---
 

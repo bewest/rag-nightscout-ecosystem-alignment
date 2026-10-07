@@ -56,7 +56,7 @@ release.
 
 | id | what | claimed state | waiting for | PR |
 |---|---|---|---|---|
-| &mdash; | nothing open blocks `RT-0` | | | |
+| `BFQ-162` | BF-162 - an explicit TRUST_PROXY address list reaches proxy-addr 2.0.7, inside a | `ready-to-push` | Maintainer | &mdash; |
 
 <!-- END GENERATED: release-waits -->
 
@@ -122,7 +122,6 @@ rebase cut 1 is right after 15.0.9 is tagged, while `dev` is quiet.
 | 1 | `OID-STORAGE-HELPER` | One storage-level rule for writes by _id instead of six hand-written copies | `not-started` | &mdash; |
 | 1 | `OID-V3-EDIT-MERGE` | API v3 PUT and PATCH of a record stored twice by _id leave both copies; make an  | `not-started` | &mdash; |
 | 1 | `OID-WS-EDIT-MERGE` | Websocket dbUpdate of a record stored twice by _id edits both copies and leaves  | `not-started` | &mdash; |
-| 1 | `RT-0` | Release 15.0.9 | `needs-decision` | &mdash; |
 | 1 | `RT-BOOTERROR` | BF-63 - the page that reports a boot error crashes on cut 4's boot errors | `gate-not-met` | &mdash; |
 | 1 | `RT-CONNECT-PIN-CUTS` | BF-65 - cuts 1-3 ship the leaking connector to upgraders first | `gate-not-met` | &mdash; |
 | 1 | `RT-PR-8730` | #8730 - Crowdin translation updates, held out of 15.0.9 (BF-132) | `gate-not-met` | &mdash; |
@@ -130,12 +129,13 @@ rebase cut 1 is right after 15.0.9 is tagged, while `dev` is quiet.
 | 1 | `RT-REBASE` | Cuts 1-5 are far behind dev and all five conflict | `gate-not-met` | &mdash; |
 | 1 | `RT-VERSION` | Two artefacts claim version 15.0.9 with different Node floors | `not-started` | &mdash; |
 | 2 | `OID-MIGRATION` | Opt-in migration that stores every string _id as the ObjectId it names, then ret | `not-started` | `OID-PREVALENCE` |
-| 2 | `RT-1` | Cut 1 - chore/retire-jsdom | `blocked` | `RT-0`, `RT-REBASE` |
-| 3 | `RT-2` | Cut 2 - chore/build-runtime-separation | `blocked` | `RT-1` |
-| 3 | `RT-D3-SUITE` | The treatment-drag clamps get a regression test in cut 1's real-browser suite | `blocked` | `RT-1` |
-| 3 | `RT-NODE-FLOOR-TESTED` | BF-58, BF-59 - the enforced Node floor is not the Node anything exercises | `gate-not-met` | `RT-1` |
-| 4 | `RT-3` | Cuts 3+5 combined - dependency release | `blocked` | `RT-2` |
-| 5 | `RT-5` | Cut 4 - chore/mime-exposure-review, the one to slow down on | `blocked` | `RT-3` |
+| 2 | `RT-0` | Release 15.0.9 | `needs-decision` | `BFQ-162` |
+| 3 | `RT-1` | Cut 1 - chore/retire-jsdom | `blocked` | `RT-0`, `RT-REBASE` |
+| 4 | `RT-2` | Cut 2 - chore/build-runtime-separation | `blocked` | `RT-1` |
+| 4 | `RT-D3-SUITE` | The treatment-drag clamps get a regression test in cut 1's real-browser suite | `blocked` | `RT-1` |
+| 4 | `RT-NODE-FLOOR-TESTED` | BF-58, BF-59 - the enforced Node floor is not the Node anything exercises | `gate-not-met` | `RT-1` |
+| 5 | `RT-3` | Cuts 3+5 combined - dependency release | `blocked` | `RT-2` |
+| 6 | `RT-5` | Cut 4 - chore/mime-exposure-review, the one to slow down on | `blocked` | `RT-3` |
 
 <!-- END GENERATED: road-release-train -->
 
@@ -176,18 +176,18 @@ Until then, the order below is the order of development, not of release.
 | 1 | `T30-RESEARCH` | T3.0 part 1 - enumerate the per-tenant configuration surface | `needs-decision` | &mdash; |
 | 1 | `T30-SCHEMA-CRED` | T3.0 part 2a - device and data-path credential storage in platform.sql | `not-started` | &mdash; |
 | 1 | `T43` | T4.3 - ns-realtime, LISTEN per served tenant | `not-started` | &mdash; |
-| 2 | `SEAM-REFRESH` | Refresh the seam chain once after 15.0.9, onto the base the release train leaves | `blocked` | `RT-0`, `RT-PROPAGATION` |
 | 2 | `T30-SCHEMA-CONFIG` | T3.0 part 2b - per-tenant configuration table, and where human identity lives | `not-started` | `T30-RESEARCH`, `T30-ORY-PROOF` |
+| 3 | `SEAM-REFRESH` | Refresh the seam chain once after 15.0.9, onto the base the release train leaves | `blocked` | `RT-0`, `RT-PROPAGATION` |
 | 3 | `T30-WIRING` | T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT | `not-started` | `T30-SCHEMA-CRED`, `T30-SCHEMA-CONFIG` |
 | 3 | `T32-REM` | T3.2 remainder - platform.sql carries no config, secret or signing key | `blocked` | `T30-SCHEMA-CRED`, `T30-SCHEMA-CONFIG` |
-| 3 | `WRITE-CONTRACT` | One write step behind the storage interface: _id form, srv dates, soft delete, r | `blocked` | `SEAM-REFRESH` |
-| 4 | `BFQ-CAP02` | CAP-02 - no importer, and no Mongo to PostgreSQL loader | `not-started` | `T30-SCHEMA-CRED`, `T30-SCHEMA-CONFIG`, `WRITE-CONTRACT` |
 | 4 | `T31-REM` | T3.1 remainder - per-tenant signing key replaces the install-wide one | `blocked` | `T30-WIRING` |
 | 4 | `T33-REM` | T3.3 remainder - the shared enclave, and language/levels per tenant | `blocked` | `T30-WIRING` |
 | 4 | `T44` | T4.4 - ns-evaluator, the per-tenant evaluation loop | `not-started` | `T30-WIRING` |
+| 4 | `WRITE-CONTRACT` | One write step behind the storage interface: _id form, srv dates, soft delete, r | `blocked` | `SEAM-REFRESH` |
 | 5 | `A7A-3` | §7a item 3 - a per-tenant error boundary | `not-started` | `T44` |
 | 5 | `A7A-4` | §7a item 4 - a health signal for a silent per-tenant outage | `not-started` | `T44` |
 | 5 | `BFQ-66` | BF-66 - the deployment's own tokens fail its own tenant check | `blocked` | `T30-WIRING`, `T31-REM`, `SEAM-REFRESH` |
+| 5 | `BFQ-CAP02` | CAP-02 - no importer, and no Mongo to PostgreSQL loader | `not-started` | `T30-SCHEMA-CRED`, `T30-SCHEMA-CONFIG`, `WRITE-CONTRACT` |
 | 6 | `A7A-GATE` | The alarms-on gate itself - nothing here may be marked done by inference | `blocked` | `T44`, `A7A-3`, `A7A-4`, `A7A-7` |
 
 <!-- END GENERATED: road-tenancy -->
