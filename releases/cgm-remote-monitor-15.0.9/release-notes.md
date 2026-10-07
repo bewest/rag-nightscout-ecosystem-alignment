@@ -1266,9 +1266,11 @@ and many other software library updates.
   later release. You do not need to do anything.
 - **A security check also reports a "high" finding about `compression`**, the library Nightscout
   uses to shrink the responses it sends (GHSA-vc2v-76pw-4v95, tracked as BF-163). According to the
-  notice, a site can slowly use a little extra memory when many responses are cut off before they
-  finish. It is fixed in `compression` 1.8.2, which Nightscout takes up in the modernization releases
-  that follow 15.0.9. The same version is on 15.0.8. You do not need to do anything.
+  notice, each response that is cut off before it finishes leaves some memory in use; if that
+  happens often enough, the site can run out of memory and restart. This is the notice's
+  description; it has not been measured on Nightscout. It is fixed in `compression` 1.8.2, which
+  Nightscout takes up in the modernization releases that follow 15.0.9. The same version is on
+  15.0.8. You do not need to do anything.
 
 ### Access tokens stored in plain text
 
