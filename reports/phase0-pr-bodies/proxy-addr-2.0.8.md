@@ -1,4 +1,4 @@
-<!-- Draft, not opened: branch bf/proxy-addr-2.0.8 at 7dd4f400 (one commit on dev 1ad03e29). This comment is hidden on GitHub. -->
+<!-- Body of #8806, branch bf/proxy-addr-2.0.8 at 7dd4f400 (one commit on dev 1ad03e29), merged 2026-10-07 as 43289dde. This comment is hidden on GitHub. -->
 `proxy-addr` moves from 2.0.7 to 2.0.8, which fixes GHSA-jqcg-44mw-7w3h (critical): a `TRUST_PROXY` entry written in IPv6 notation could make every client a trusted proxy (BF-162). One commit on `dev` `1ad03e29`. `TRUST_PROXY` is new in 15.0.9, so no released version is affected.
 
 ## What changes for you

@@ -11819,8 +11819,8 @@ items:
     repo: cgm-remote-monitor
     branch: bf/proxy-addr-2.0.8
     base: official/dev@1ad03e29
-    state: ready-to-push
-    pr: []
+    state: merged-upstream
+    pr: [8806]
     ships_to_operators_today: false
     blast_radius: >
       package.json and package-lock.json: proxy-addr ^2.0.7 -> 2.0.8 (direct
@@ -11844,6 +11844,10 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      Merged 2026-10-07 20:52Z as #8806 (merge 43289dde, head 7dd4f400); CI
+      (Node 20/22/24 x Mongo 4.4/5/6, npm 12 install, Docker) and CodeQL
+      green. Not released, goes into 15.0.9; run 022 on dev 43289dde and the
+      #8598 re-approval follow.
       Filed 2026-10-06 from session -d4's re-measured npm audit (25 findings,
       9 high, 1 critical; lockfile unchanged since run 021, the advisory
       database grew). Not on 15.0.8 (no TRUST_PROXY; trust proxy is enabled

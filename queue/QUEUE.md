@@ -44,10 +44,10 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `not-started` | 53 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
 | `in-progress` | 3 | BFQ-46, BFQ-ENV, OID-LAB |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
-| `ready-to-push` | 4 | P0-C-REMEDIATE, T30-AUTH, BFQ-162, WS-LAB |
+| `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
 | `blocked` | 23 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, BFQ-72, BFQ-52, BFQ-93, BFQ-95, BFQ-67, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-152, BFQ-154, BFQ-156 |
 | `in-flight-upstream` | 1 | BFQ-09 |
-| `merged-upstream` | 85 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
+| `merged-upstream` | 86 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 6 | RT-PROPAGATION, RT-0, T30-RESEARCH, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG |
 | `done` | 4 | P0-TAG, DOC-VIEWS, DOC-LINKS, RT-SOAK |
 | `unsettled` | 1 | A7A-7 |
@@ -2208,7 +2208,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-159` | BF-159 - the main page sometimes leaves for the Profile Editor while a profile exists, without the token | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-160` | BF-160 - the clock designer's link target is written with curly quotes | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-161` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes | `not-started` | `-` | patch | 0 run + 1 no-gate |
-| `BFQ-162` | BF-162 - an explicit TRUST_PROXY address list reaches proxy-addr 2.0.7, inside a critical advisory fixed in 2.0.8 | `ready-to-push` | `bf/proxy-addr-2.0.8` | patch | 0 run + 1 no-gate |
+| `BFQ-162` | BF-162 - an explicit TRUST_PROXY address list reaches proxy-addr 2.0.7, inside a critical advisory fixed in 2.0.8 | `merged-upstream` | `bf/proxy-addr-2.0.8` | patch | 0 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `merged-upstream` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
 | `WS-LAB` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | `ready-to-push` | `main` | n/a | 1 run + 1 no-gate |
@@ -5120,7 +5120,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/proxy-addr-2.0.8` |
 | base | `official/dev@1ad03e29` |
@@ -5144,7 +5144,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Filed 2026-10-06 from session -d4's re-measured npm audit (25 findings, 9 high, 1 critical; lockfile unchanged since run 021, the advisory database grew). Not on 15.0.8 (no TRUST_PROXY; trust proxy is enabled for every hop). 2026-10-07 (maintainer): goes into 15.0.9. Branch bf/proxy-addr-2.0.8 7dd4f400, one commit on dev 1ad03e29, not pushed: package.json ^2.0.8 and the lockfile's one entry (npm ls: one 2.0.8, deduplicated under Express); the unrelated @types/tough-cookie "dev" flag npm 10.9.8 adds is left out. Measured in-process: on 2.0.7, ::ffff:10.0.0.0/8 and ::/1 trust an unrelated IPv4 client's own X-Forwarded-For; 2.0.8 does not. New test in tests/client- ip.test.js fails on 2.0.7 only. Full suite 3564/0/4 (Node 22.23.2, MongoDB 7.0.43, fresh database; dev 3563 plus 1). npm audit (npm 10.9.8): 25/9 high/1 critical on dev, 24/9/0 on the branch. PR body reports/phase0-pr-bodies/proxy- addr-2.0.8.md. Merging it costs a run 022 and the #8598 re-approval.
+**Notes.** Merged 2026-10-07 20:52Z as #8806 (merge 43289dde, head 7dd4f400); CI (Node 20/22/24 x Mongo 4.4/5/6, npm 12 install, Docker) and CodeQL green. Not released, goes into 15.0.9; run 022 on dev 43289dde and the #8598 re-approval follow. Filed 2026-10-06 from session -d4's re-measured npm audit (25 findings, 9 high, 1 critical; lockfile unchanged since run 021, the advisory database grew). Not on 15.0.8 (no TRUST_PROXY; trust proxy is enabled for every hop). 2026-10-07 (maintainer): goes into 15.0.9. Branch bf/proxy- addr-2.0.8 7dd4f400, one commit on dev 1ad03e29, not pushed: package.json ^2.0.8 and the lockfile's one entry (npm ls: one 2.0.8, deduplicated under Express); the unrelated @types/tough-cookie "dev" flag npm 10.9.8 adds is left out. Measured in-process: on 2.0.7, ::ffff:10.0.0.0/8 and ::/1 trust an unrelated IPv4 client's own X-Forwarded-For; 2.0.8 does not. New test in tests/client-ip.test.js fails on 2.0.7 only. Full suite 3564/0/4 (Node 22.23.2, MongoDB 7.0.43, fresh database; dev 3563 plus 1). npm audit (npm 10.9.8): 25/9 high/1 critical on dev, 24/9/0 on the branch. PR body reports/phase0-pr-bodies/proxy-addr-2.0.8.md. Merging it costs a run 022 and the #8598 re-approval.
 
 ### `BFQ-134` &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 
