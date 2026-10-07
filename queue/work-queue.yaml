@@ -11863,6 +11863,36 @@ items:
       critical on dev, 24/9/0 on the branch. PR body
       reports/phase0-pr-bodies/proxy-addr-2.0.8.md. Merging it costs a run
       022 and the #8598 re-approval.
+  - id: BFQ-163
+    title: "BF-163 - compression 1.8.1 (every response) is inside a high memory-leak advisory fixed in 1.8.2"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@43289dde
+    state: not-started
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      package-lock.json only: compression 1.8.1 -> 1.8.2 (package.json's
+      ^1.7.4 already allows it; 1.8.2 adds destroy, already in the tree).
+    review: maintainer
+    operator_visible: ""
+    semver: patch
+    semver_reason: a patch-level dependency update
+    register: [BF-163]
+    gates:
+      - no-gate: >
+          Read, not run: GHSA-vc2v-76pw-4v95 (compression < 1.8.2); app.js:235
+          compresses every response. A gate would assert the locked version
+          is 1.8.2 or later (npm ls compression).
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Filed 2026-10-07 from session -d4's npm audit on dev 43289dde. Decision
+      2026-10-07 (maintainer): a known issue in 15.0.9, named in the release
+      notes; the update goes early in the modernization releases (the first
+      cut after 15.0.9, RT-1, or the dependency refresh that precedes it).
   - id: RT-PR-8781
     title: "#8781 - treatment retries keep srvCreated, empty identities match, history clock survives a restart (AndyLow91; BF-141, BF-143, BF-144), merged for 15.0.9"
     parcel: release-train

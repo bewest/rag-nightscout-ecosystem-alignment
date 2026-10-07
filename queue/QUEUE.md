@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 191 |
+| items | 192 |
 | runnable gates | 250 |
-| explicit `no-gate:` markers | 246 |
+| explicit `no-gate:` markers | 247 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 246 of the 496 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 247 of the 497 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 53 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
+| `not-started` | 54 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
 | `in-progress` | 3 | BFQ-46, BFQ-ENV, OID-LAB |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
@@ -117,6 +117,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-159** BF-159 - the main page sometimes leaves for the Profile Editor while a profile exists, without the token
 - **BFQ-160** BF-160 - the clock designer's link target is written with curly quotes
 - **BFQ-161** BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes
+- **BFQ-163** BF-163 - compression 1.8.1 (every response) is inside a high memory-leak advisory fixed in 1.8.2
 - **BFQ-134** BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 - **BFQ-129** BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500
 - **BFQ-133** BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one (fixed by BF-146's #8784), merged for 15.0.9
@@ -2112,7 +2113,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 106 items
+`parcel: register-open` &mdash; 107 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2209,6 +2210,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-160` | BF-160 - the clock designer's link target is written with curly quotes | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-161` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-162` | BF-162 - an explicit TRUST_PROXY address list reaches proxy-addr 2.0.7, inside a critical advisory fixed in 2.0.8 | `merged-upstream` | `bf/proxy-addr-2.0.8` | patch | 0 run + 1 no-gate |
+| `BFQ-163` | BF-163 - compression 1.8.1 (every response) is inside a high memory-leak advisory fixed in 1.8.2 | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `merged-upstream` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
 | `WS-LAB` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | `ready-to-push` | `main` | n/a | 1 run + 1 no-gate |
@@ -5145,6 +5147,36 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
 **Notes.** Merged 2026-10-07 20:52Z as #8806 (merge 43289dde, head 7dd4f400); CI (Node 20/22/24 x Mongo 4.4/5/6, npm 12 install, Docker) and CodeQL green. Not released, goes into 15.0.9; run 022 on dev 43289dde and the #8598 re-approval follow. Filed 2026-10-06 from session -d4's re-measured npm audit (25 findings, 9 high, 1 critical; lockfile unchanged since run 021, the advisory database grew). Not on 15.0.8 (no TRUST_PROXY; trust proxy is enabled for every hop). 2026-10-07 (maintainer): goes into 15.0.9. Branch bf/proxy- addr-2.0.8 7dd4f400, one commit on dev 1ad03e29, not pushed: package.json ^2.0.8 and the lockfile's one entry (npm ls: one 2.0.8, deduplicated under Express); the unrelated @types/tough-cookie "dev" flag npm 10.9.8 adds is left out. Measured in-process: on 2.0.7, ::ffff:10.0.0.0/8 and ::/1 trust an unrelated IPv4 client's own X-Forwarded-For; 2.0.8 does not. New test in tests/client-ip.test.js fails on 2.0.7 only. Full suite 3564/0/4 (Node 22.23.2, MongoDB 7.0.43, fresh database; dev 3563 plus 1). npm audit (npm 10.9.8): 25/9 high/1 critical on dev, 24/9/0 on the branch. PR body reports/phase0-pr-bodies/proxy-addr-2.0.8.md. Merging it costs a run 022 and the #8598 re-approval.
+
+### `BFQ-163` &mdash; BF-163 - compression 1.8.1 (every response) is inside a high memory-leak advisory fixed in 1.8.2
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@43289dde` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-163` |
+
+**Blast radius.** package-lock.json only: compression 1.8.1 -> 1.8.2 (package.json's ^1.7.4 already allows it; 1.8.2 adds destroy, already in the tree).
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `patch`.** a patch-level dependency update
+
+**Gates.**
+
+- **NO GATE** &mdash; Read, not run: GHSA-vc2v-76pw-4v95 (compression < 1.8.2); app.js:235 compresses every response. A gate would assert the locked version is 1.8.2 or later (npm ls compression).
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Filed 2026-10-07 from session -d4's npm audit on dev 43289dde. Decision 2026-10-07 (maintainer): a known issue in 15.0.9, named in the release notes; the update goes early in the modernization releases (the first cut after 15.0.9, RT-1, or the dependency refresh that precedes it).
 
 ### `BFQ-134` &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 
