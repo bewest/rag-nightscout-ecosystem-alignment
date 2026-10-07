@@ -1,0 +1,51 @@
+label=rebase-prefix tree=29c7c1fa92380a33249a2d7c5ca85466a4e11361 treeid=85c56d569a6e95712bfce089d7847c5ed8cb1f78 dirty=0
+node=v22.23.2 mongo_read=6.0.27 driver=5.9.2 db=prop_rebase_prefix_test start=2026-10-07T21:41:11Z
+  3601 passing (3m)
+  4 pending
+  15 failing
+  1) API v1 count endpoint pipeline parameter
+       still counts normally when no pipeline is named:
+     TypeError: col.countDocuments is not a function
+  2) API v1 count endpoint pipeline parameter
+       keeps the server-side conf.pipeline hook working:
+     Error: Aggregation pipelines are not supported by the count path
+  3) API v1 count endpoint pipeline parameter
+       still answers the ordinary count over HTTP:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  4) devicestatus: a re-send of a stored _id is acknowledged, not copied or refused
+       a re-send stored by another request after the read
+         any other insert error still fails the POST (control):
+  5) devicestatus: a re-send of a stored _id is acknowledged, not copied or refused
+       reads
+         one read for a batch carrying 24-hex _ids, asking for every form of each:
+  6) entries and treatments: an empty _id is replaced by a server id
+       _id: null
+         PUT /treatments stores the treatment with an ObjectId _id:
+  7) entries and treatments: an empty _id is replaced by a server id
+       _id: ""
+         PUT /treatments stores the treatment with an ObjectId _id:
+  8) Same-time treatments are kept apart (BF-121)
+       API v1
+         updates by PUT a record matched by time and type when the amounts are equal:
+  9) Treatment API
+       post single treatments:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  10) Treatment API
+       post a treatment array:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  11) Treatment API
+       post a treatment array and dedupe:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  12) Treatment API
+       post a treatment, query, delete, verify gone:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  13) BF-122: API v1 and websocket writes appear in API v3 history
+       an in-process write (as nightscout-connect makes) appears in history:
+     TypeError: unsupported operator '$not' on field 'syncIdentifier'
+  14) Storage Layer Shape Handling - Direct Storage Tests [backend: mongodb]
+       Treatments Storage - lib/server/treatments.js
+         create() accepts single object:
+  15) Storage Layer Shape Handling - Direct Storage Tests [backend: mongodb]
+       Treatments Storage - lib/server/treatments.js
+         sanitizes documents written directly through the storage adapter:
+exit=15 end=2026-10-07T21:44:23Z elapsed_s=192

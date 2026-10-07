@@ -1,0 +1,18 @@
+label=merge-prefix tree=16222c97f6a82cd0b05c83bfc87d2c03802ac83c treeid=b7234f6f8138712e90329456d94a7ccde44279e4 dirty=0
+node=v22.23.2 mongo_read=6.0.27 driver=7.6.0 db=prop_merge_prefix_test start=2026-10-07T21:33:53Z
+  2476 passing (2m)
+  1 pending
+  4 failing
+  1) API v1 count endpoint pipeline parameter
+       still counts normally when no pipeline is named:
+     TypeError: col.countDocuments is not a function
+  2) API v1 count endpoint pipeline parameter
+       keeps the server-side conf.pipeline hook working:
+     Error: Aggregation pipelines are not supported by the count path
+  3) API v1 count endpoint pipeline parameter
+       still answers the ordinary count over HTTP:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  4) API v1 ?count= parameter
+       never asks the driver for limit(0), whatever count it is handed:
+
+exit=4 end=2026-10-07T21:36:00Z elapsed_s=127

@@ -1,0 +1,1601 @@
+ 1:  12a83d61 !  1:  22901aea Close the two storage-interface leaks in api3's MongoCollection
+    @@ lib/api3/storage/mongoCollection/index.js: function MongoCollection (ctx, env, c
+     -  self.findOne = (...args) => find.findOne(self.col, ...args);
+     +  self.findOne = (...args) => find.findOne(col, ...args);
+      
+    +-  self.findEveryForm = (...args) => find.findEveryForm(self.col, ...args);
+    ++  self.findEveryForm = (...args) => find.findEveryForm(col, ...args);
+    + 
+     -  self.findOneFilter = (...args) => find.findOneFilter(self.col, ...args);
+     +  self.findOneFilter = (...args) => find.findOneFilter(col, ...args);
+      
+    @@ lib/api3/storage/mongoCollection/index.js: function MongoCollection (ctx, env, c
+     -  self.deleteOne = (...args) => modify.deleteOne(self.col, ...args);
+     +  self.deleteOne = (...args) => modify.deleteOne(col, ...args);
+      
+    +-  self.updateEveryForm = (...args) => modify.updateEveryForm(self.col, ...args);
+    ++  self.updateEveryForm = (...args) => modify.updateEveryForm(col, ...args);
+    + 
+    +-  self.deleteEveryForm = (...args) => modify.deleteEveryForm(self.col, ...args);
+    ++  self.deleteEveryForm = (...args) => modify.deleteEveryForm(col, ...args);
+    + 
+     -  self.deleteManyOr = (...args) => modify.deleteManyOr(self.col, ...args);
+     +  self.deleteManyOr = (...args) => modify.deleteManyOr(col, ...args);
+      
+ 2:  4f753ab9 =  2:  c7c2b267 Add the storage filter AST: the seam's backend-neutral filter language
+ 3:  b0709c2c !  3:  21096988 Add the escape hatches API v1 needs, and stop v3's index set being mandatory
+    @@ lib/api3/storage/mongoCollection/find.js
+      
+      const utils = require('./utils');
+     +const { toMongo } = require('../../../storage/filter');
+    - const READ_OPTIONS = require('../../../storage/mongo-read-options');
+    - const assertNoQueryJavascript = require('../../../storage/assert-no-query-javascript');
+    ++const assertNoQueryJavascript = require('../../../storage/assert-no-query-javascript');
+      
+    + /**
+    +  * Ensure Mongo limit/skip receive integers even when callers pass env strings.
+     @@ lib/api3/storage/mongoCollection/find.js: async function findMany (col, args) {
+      }
+      
+    @@ lib/api3/storage/mongoCollection/find.js: async function findMany (col, args) {
+      module.exports = {
+     +  findFiltered,
+        findOne,
+    +   findEveryForm,
+        findOneFilter,
+    -   findMany
+     
+      ## lib/api3/storage/mongoCollection/index.js ##
+     @@
+    @@ lib/api3/storage/mongoCollection/index.js: function MongoCollection (ctx, env, c
+     
+      ## lib/api3/storage/mongoCollection/modify.js ##
+     @@
+    - const assertNoQueryJavascript = require('../../../storage/assert-no-query-javascript');
+    + 'use strict';
+      
+    ++const assertNoQueryJavascript = require('../../../storage/assert-no-query-javascript');
+    ++
+      const utils = require('./utils')
+     +  , { toMongo } = require('../../../storage/filter')
+        ;
+    @@ lib/api3/storage/mongoCollection/modify.js: async function deleteManyOr (col, fi
+        replaceOne,
+        updateOne,
+        deleteOne,
+    +   updateEveryForm,
+    +   deleteEveryForm,
+     -  deleteManyOr
+     +  deleteMany,
+     +  deleteManyOr,
+ 4:  68ffbd66 =  4:  8d699655 Add fromMongo: the API v1 migration bridge, and v1's operator allowlist
+ 5:  3c8bd748 !  5:  ef205187 Convert lib/server/activity.js to the storage interface — the exemplar
+    @@ lib/api3/storage/mongoCollection/index.js: function MongoCollection (ctx, env, c
+        self.identifyingFilter = utils.identifyingFilter;
+     
+      ## lib/server/activity.js ##
+    -@@ lib/server/activity.js: const READ_OPTIONS = require('../storage/mongo-read-options');
+    - var find_options = require('./query');
+    +@@ lib/server/activity.js: var find_options = require('./query');
+      var runWithCallback = require('../storage/run-with-callback');
+      var purifyForStorage = require('./storage-purifier');
+    + var countParam = require('./count');
+     +var MongoStorage = require('../api3/storage/mongoCollection');
+     +var { fromMongo, cmp } = require('../storage/filter');
+      
+    @@ lib/server/activity.js: function storage (env, ctx) {
+          if (docs.length === 0) {
+            if (typeof fn === 'function') return fn(null, []);
+     @@ lib/server/activity.js: function storage (env, ctx) {
+    -       if (!doc._id) {
+    -         doc._id = new ObjectID();
+    -       }
+    +       // Store a 24-hex string _id as the ObjectId it names, as treatments
+    +       // do, so PUT, DELETE and find[_id] find the record that was created.
+    +       doc._id = idForms.toStoredId(doc._id);
+     -      var query = { _id: { $eq: doc._id } };
+     -      return {
+     -        replaceOne: {
+    @@ lib/server/activity.js: function storage (env, ctx) {
+     -      };
+     +      return { filter: cmp('eq', '_id', doc._id), doc: doc };
+          });
+    +-    idForms.withStaleStringsRemoved(bulkOps, submitted);
+    ++    // String twins of the ids just stored as ObjectIds (lib/server/object-id-forms.js).
+    ++    var stale = idForms.staleStringForms(submitted);
+      
+          return runWithCallback(async function () {
+            var bulkResult;
+    @@ lib/server/activity.js: function storage (env, ctx) {
+            try {
+     -        bulkResult = await api().bulkWrite(bulkOps, { ordered: true });
+     +        bulkResult = await store().bulkUpsert(bulkOps, { mode: 'replace', ordered: true });
+    ++        if (stale.length > 0) {
+    ++          await store().deleteMany(fromMongo({ _id: { $in: stale } }));
+    ++        }
+            } catch (err) {
+              console.error('Problem upserting activity batch', err);
+              throw err;
+    @@ lib/server/activity.js: function storage (env, ctx) {
+     +      // matches on _id alone.
+     +      await store().bulkUpsert([ { filter: cmp('eq', '_id', obj._id), doc: obj } ]
+     +        , { mode: 'replace' });
+    +       if (stale.length > 0) {
+    +-        await api().deleteMany({ _id: { $in: stale } });
+    ++        await store().deleteMany(fromMongo({ _id: { $in: stale } }));
+    +       }
+            return obj;
+          }, fn);
+    -   }
+     @@ lib/server/activity.js: function storage (env, ctx) {
+        }
+      
+    @@ lib/server/activity.js: function storage (env, ctx) {
+      
+     -    // configure the limit portion of the current query
+     -    function limit ( ) {
+    --      if (opts && opts.count) {
+    --        return this.limit(parseInt(opts.count));
+    --      }
+    --      return this;
+    +-      return countParam.applyCount(this, opts);
+     -    }
+     -
+          return runWithCallback(function () {
+     -      return limit.call(api( )
+    --        .find(query_for(opts), READ_OPTIONS)
+    +-        .find(query_for(opts))
+     -        .sort(sort( ))
+     -      ).toArray();
+    ++      // count=0 asks for no documents (lib/server/count.js).
+    ++      if (countParam.isZeroCount(opts && opts.count)) return Promise.resolve([ ]);
+     +      // normalize:false is load-bearing. The interface defaults to normalizing,
+     +      // which moves _id into identifier and deletes _id; API v1 returns _id.
+     +      return store().findFiltered(fromMongo(query_for(opts)), {
+     +        sort: sort( )
+    -+        , limit: opts && opts.count ? parseInt(opts.count) : undefined
+    -+        , readOptions: READ_OPTIONS
+    ++        , limit: countParam.parseCount(opts && opts.count) || undefined
+     +        , options: { normalize: false }
+     +      });
+          }, fn);
+        }
+    - 
+    -   function remove (_id, fn) {
+    -     var objId = new ObjectID(_id);
+    +   
+    +@@ lib/server/activity.js: function storage (env, ctx) {
+    +     // where an earlier edit left an ObjectId copy beside a string original.
+    +     var filter = idForms.idFilter(_id);
+          return runWithCallback(function () {
+    --      return api().deleteOne({ '_id': objId });
+    -+      return store().deleteMany(cmp('eq', '_id', objId));
+    +-      return api().deleteMany({ '_id': filter });
+    ++      return store().deleteMany(fromMongo({ '_id': filter }));
+          }, fn);
+        }
+      
+ 6:  256c6b58 !  6:  e499480e Convert food.js and devicestatus.js to the storage interface
+    @@ Commit message
+         previous {$and:[{type:'quickpick'},{hidden:'false'}]}. Both match identically.
+     
+      ## lib/server/devicestatus.js ##
+    -@@ lib/server/devicestatus.js: var moment = require('moment');
+    - var find_options = require('./query');
+    - var runWithCallback = require('../storage/run-with-callback');
+    - var purifyForStorage = require('./storage-purifier');
+    +@@ lib/server/devicestatus.js: var countParam = require('./count');
+    + var idForms = require('./object-id-forms');
+    + var srvDates = require('./srv-dates');
+    + var softDeleted = require('./soft-deleted');
+     +var MongoStorage = require('../api3/storage/mongoCollection');
+     +var { fromMongo } = require('../storage/filter');
+      
+      function truncatePredictions (obj, maxSize) {
+        if (!maxSize || maxSize <= 0) return obj;
+     @@ lib/server/devicestatus.js: function storage (env, ctx) {
+    -   var collection = env.devicestatus_collection;
+    -   var predictionsMaxSize = env.predictionsMaxSize || null;
+    + 
+    +     var forms = [];
+    +     hexIds.forEach(function (id) { forms.push.apply(forms, idForms.idForms(id)); });
+    +-    var stored = await api().find({ _id: { $in: forms } }, { projection: { _id: 1 } }).toArray();
+    ++    var stored = await store().findFiltered(fromMongo({ _id: { $in: forms } }), {
+    ++      projection: { _id: 1 }
+    ++      , options: { normalize: false }
+    ++    });
+    +     var storedAs = {};
+    +     stored.forEach(function (doc) {
+    +       var key = String(doc._id);
+    +@@ lib/server/devicestatus.js: function storage (env, ctx) {
+    +     });
+    +   }
+      
+     +  // The storage interface for this collection. Indexes stay with bootevent's
+     +  // ensureIndexes pass for now (hence the empty field list), so construction
+    @@ lib/server/devicestatus.js: function storage (env, ctx) {
+      
+          if (!Array.isArray(statuses)) { statuses = [statuses]; }
+     @@ lib/server/devicestatus.js: function storage (env, ctx) {
+    -       var insertResult;
+    - 
+    -       try {
+    --        // Use insertMany for batch insert
+    --        insertResult = await api().insertMany(statuses, { ordered: true });
+    -+        // Use insertMany for batch insert. The interface returns
+    -+        // { inserted, insertedIds }; insertedIds is the same map the driver
+    -+        // returns, keyed by operation index, which is what the loop below wants.
+    -+        insertResult = await store().insertMany(statuses, { ordered: true });
+    -       } catch (err) {
+    -         console.log('Error inserting device status objects', err.message);
+    -         throw err.message || err;
+    +           // Unordered, so a status another request stored meanwhile under the
+    +           // same _id (an uploader retrying before its first POST returned)
+    +           // does not stop the rest of the batch.
+    +-          insertResult = await api().insertMany(toInsert, { ordered: false });
+    ++          insertResult = await store().insertMany(toInsert, { ordered: false });
+    +         } catch (err) {
+    +           var writeErrors = [].concat(err.writeErrors || []);
+    +           var alreadyStored = writeErrors.length > 0 && writeErrors.every(function (writeError) {
+     @@ lib/server/devicestatus.js: function storage (env, ctx) {
+        }
+      
+    @@ lib/server/devicestatus.js: function storage (env, ctx) {
+      
+     -    // configure the limit portion of the current query
+     -    function limit () {
+    --      if (opts && opts.count) {
+    --        return this.limit(parseInt(opts.count));
+    --      }
+    --      return this;
+    +-      return countParam.applyCount(this, opts);
+     -    }
+     -
+          return runWithCallback(function () {
+     -      return limit.call(api()
+    --        .find(query_for(opts), READ_OPTIONS)
+    +-        .find(query_for(opts))
+     -        .sort(sort())
+     -      ).toArray();
+    ++      // count=0 asks for no documents (lib/server/count.js).
+    ++      if (countParam.isZeroCount(opts && opts.count)) return Promise.resolve([ ]);
+     +      // query_for() already builds a correct v1 Mongo filter, so the AST is
+     +      // derived from its OUTPUT rather than rebuilt -- semantics preserved by
+     +      // construction. fromMongo is also the v1 operator allowlist: anything the
+    @@ lib/server/devicestatus.js: function storage (env, ctx) {
+     +      // which moves _id into identifier and deletes _id; API v1 returns _id.
+     +      return store().findFiltered(fromMongo(query_for(opts)), {
+     +        sort: sort()
+    -+        , limit: opts && opts.count ? parseInt(opts.count) : undefined
+    -+        , readOptions: READ_OPTIONS
+    ++        , limit: countParam.parseCount(opts && opts.count) || undefined
+     +        , options: { normalize: false }
+     +      });
+          }, fn);
+        }
+      
+    -   function remove (opts, fn) {
+    +@@ lib/server/devicestatus.js: function storage (env, ctx) {
+    +     var asked = opts && opts.find ? opts.find._id : undefined;
+      
+          return runWithCallback(async function () {
+    --      var stat = await api().deleteMany(query_for(opts));
+    -+      var result = await store().deleteMany(fromMongo(query_for(opts)));
+    +-      var stat = await api().deleteMany(stored_query_for(opts));
+    ++      var result = await store().deleteMany(fromMongo(stored_query_for(opts)));
+     +      // The interface reports { deleted: n }, but this value is not private to
+     +      // the module -- it is the DELETE /api/devicestatus response body, via
+     +      // lib/api/shared/delete-status.js which derives `n` from deletedCount,
+    @@ lib/server/devicestatus.js: function storage (env, ctx) {
+     
+      ## lib/server/food.js ##
+     @@
+    - 
+    - const READ_OPTIONS = require('../storage/mongo-read-options');
+    + 'use strict';
+      
+     +var MongoStorage = require('../api3/storage/mongoCollection');
+    -+var { cmp, and } = require('../storage/filter');
+    ++var { cmp, fromMongo, toMongo } = require('../storage/filter');
+     +
+      function storage (env, ctx) {
+         var ObjectID = require('mongodb').ObjectId;
+    -   var runWithCallback = require('../storage/run-with-callback');
+    -   var purifyForStorage = require('./storage-purifier');
+    +   var idForms = require('./object-id-forms');
+    +@@ lib/server/food.js: function storage (env, ctx) {
+    +   // srvModified on every item, srvCreated kept from the food each item
+    +   // replaces (API v3 history reads them; see srv-dates).
+    +   function stampReplacements (bulkOps) {
+    +-    return srvDates.carryForReplace(api(), bulkOps.filter(function (op) {
+    +-      return op.replaceOne;
+    +-    }).map(function (op) {
+    +-      return { filter: op.replaceOne.filter, doc: op.replaceOne.replacement };
+    ++    // srv-dates reads the stored copies through the driver with Mongo filters,
+    ++    // so the interface's filter nodes are rendered back for it.
+    ++    return srvDates.carryForReplace(api(), bulkOps.map(function (op) {
+    ++      return { filter: toMongo(op.filter), doc: op.doc };
+    +     }));
+    +   }
+      
+     +  // The storage interface for this collection. Indexes stay with bootevent's
+     +  // ensureIndexes pass for now (hence the empty field list), so construction
+    @@ lib/server/food.js
+          try {
+            return new ObjectID(id);
+     @@ lib/server/food.js: function storage (env, ctx) {
+    -       return Promise.reject(err);
+    -     }
+    - 
+    --    // Build bulkWrite operations for batch upsert
+    -+    // Build upsert operations for the batch. 'replace' mode is the storage
+    -+    // interface's name for what this was: replaceOne with upsert, which stores
+    -+    // the incoming document wholesale rather than merging it onto the stored one.
+    -     var bulkOps = docs.map(function(doc) {
+    -       doc.created_at = (new Date()).toISOString();
+    -       if (!doc._id) {
+    -         doc._id = new ObjectID();
+    -       }
+    +       // Store a 24-hex string _id as the ObjectId it names, as treatments
+    +       // do, so PUT, DELETE and find[_id] find the record that was created.
+    +       doc._id = idForms.toStoredId(doc._id);
+     -      var query = { _id: { $eq: doc._id } };
+     -      return {
+     -        replaceOne: {
+    @@ lib/server/food.js: function storage (env, ctx) {
+     -      };
+     +      return { filter: cmp('eq', '_id', doc._id), doc: doc };
+          });
+    +-    idForms.withStaleStringsRemoved(bulkOps, submitted);
+    ++    // String twins of the ids just stored as ObjectIds (lib/server/object-id-forms.js).
+    ++    var stale = idForms.staleStringForms(submitted);
+      
+          return runWithCallback(async function () {
+            var bulkResult;
+      
+            try {
+    +         await stampReplacements(bulkOps);
+     -        bulkResult = await api().bulkWrite(bulkOps, { ordered: true });
+     +        bulkResult = await store().bulkUpsert(bulkOps, { mode: 'replace', ordered: true });
+    ++        if (stale.length > 0) {
+    ++          await store().deleteMany(fromMongo({ _id: { $in: stale } }));
+    ++        }
+            } catch (err) {
+              console.error('Problem upserting food batch', err);
+              throw err;
+     @@ lib/server/food.js: function storage (env, ctx) {
+    -       return Promise.reject(err);
+    -     }
+    - 
+    --    // Build bulkWrite operations for batch upsert
+    -+    // Same 'replace' semantics as create(): the stored document is replaced
+    -+    // wholesale, so a field the client drops is dropped from storage too. The
+    -+    // interface's replaceOne() is NOT a substitute -- it matches on API v3's
+    -+    // identifier with a hex-_id fallback, where v1 matches on _id alone.
+    -     var bulkOps = docs.map(function(doc) {
+    -       doc._id = normalizeObjectId(doc._id);
+    -       if (!doc.created_at) {
+              doc.created_at = (new Date()).toISOString();
+            }
+      
+    @@ lib/server/food.js: function storage (env, ctx) {
+     -      };
+     +      return { filter: cmp('eq', '_id', doc._id), doc: doc };
+          });
+    +-    idForms.withStaleStringsRemoved(bulkOps, submitted);
+    ++    // String twins of the ids just stored as ObjectIds (lib/server/object-id-forms.js).
+    ++    var stale = idForms.staleStringForms(submitted);
+      
+          return runWithCallback(async function () {
+            var bulkResult;
+      
+            try {
+    +         await stampReplacements(bulkOps);
+     -        bulkResult = await api().bulkWrite(bulkOps, { ordered: true });
+     +        bulkResult = await store().bulkUpsert(bulkOps, { mode: 'replace', ordered: true });
+    ++        if (stale.length > 0) {
+    ++          await store().deleteMany(fromMongo({ _id: { $in: stale } }));
+    ++        }
+            } catch (err) {
+              console.error('Problem saving food batch', err);
+              throw err;
+    @@ lib/server/food.js: function storage (env, ctx) {
+     +  // returns _id to its clients, and the food editor keys off it.
+        function list (fn) {
+          return runWithCallback(function () {
+    --      return api().find({ }, READ_OPTIONS).toArray();
+    -+      // null ast is the unfiltered read, i.e. the previous find({ }).
+    -+      return store().findFiltered(null, {
+    -+        readOptions: READ_OPTIONS
+    -+        , options: { normalize: false }
+    +       // Reads leave out deleted records (isValid: false; see soft-deleted).
+    +-      return api().find(softDeleted.visible({ })).toArray();
+    ++      return store().findFiltered(fromMongo(softDeleted.visible({ })), {
+    ++        options: { normalize: false }
+     +      });
+          }, fn);
+        }
+    - 
+    -   function listquickpicks (fn) {
+    +   
+    +@@ lib/server/food.js: function storage (env, ctx) {
+    +     // The sort has to happen here rather than in the query, because a
+    +     // lexicographic sort over stored strings puts '10' between '1' and '2'.
+          return runWithCallback(function () {
+    --      return api().find({ $and: [ { 'type': 'quickpick'} , { 'hidden' : 'false' } ] }, READ_OPTIONS).sort({'position': 1}).toArray();
+    -+      return store().findFiltered(and(cmp('eq', 'type', 'quickpick'), cmp('eq', 'hidden', 'false')), {
+    -+        sort: { 'position': 1 }
+    -+        , readOptions: READ_OPTIONS
+    -+        , options: { normalize: false }
+    -+      });
+    +-      return api()
+    +-        .find({ $and: [ { 'type': 'quickpick' }, { 'hidden': { $nin: [ true, 'true' ] } }, softDeleted.notDeleted() ] })
+    +-        .toArray()
+    +-        .then(function (records) { return records.sort(quickpick.byPosition); });
+    ++      return store().findFiltered(fromMongo({ $and: [ { 'type': 'quickpick' }, { 'hidden': { $nin: [ true, 'true' ] } }, softDeleted.notDeleted() ] }), {
+    ++        options: { normalize: false }
+    ++      }).then(function (records) { return records.sort(quickpick.byPosition); });
+          }, fn);
+        }
+    - 
+    +   
+        function listregular (fn) {
+          return runWithCallback(function () {
+    --      return api().find( { 'type': 'food'}, READ_OPTIONS).toArray();
+    -+      return store().findFiltered(cmp('eq', 'type', 'food'), {
+    -+        readOptions: READ_OPTIONS
+    -+        , options: { normalize: false }
+    +-      return api().find(softDeleted.visible({ 'type': 'food' })).toArray();
+    ++      return store().findFiltered(fromMongo(softDeleted.visible({ 'type': 'food' })), {
+    ++        options: { normalize: false }
+     +      });
+          }, fn);
+        }
+    - 
+    -   function remove (_id, fn) {
+    -     var objId = new ObjectID(_id);
+    +   
+    +@@ lib/server/food.js: function storage (env, ctx) {
+    +     // where an earlier edit left an ObjectId copy beside a string original.
+    +     var filter = idForms.idFilter(_id);
+          return runWithCallback(function () {
+    --      return api().deleteOne({ '_id': objId });
+    +-      return api().deleteMany({ '_id': filter });
+     +      // deleteMany(ast) rather than the interface's deleteOne(identifier):
+     +      // deleteOne matches v3's identifier with a hex-_id fallback, v1 matches
+    -+      // _id alone. _id is unique, so at most one document matches either way.
+    -+      return store().deleteMany(cmp('eq', '_id', objId));
+    ++      // _id alone.
+    ++      return store().deleteMany(fromMongo({ '_id': filter }));
+          }, fn);
+        }
+      
+ 9:  4ee593b1 !  7:  e900ba03 Convert lib/server/entries.js and lib/server/profile.js to the storage interface
+    @@ Commit message
+         of being passed as find()'s second argument.
+     
+      ## lib/server/entries.js ##
+    -@@ lib/server/entries.js: var ObjectId = require('mongodb').ObjectId;
+    - var moment = require('moment');
+    - var runWithCallback = require('../storage/run-with-callback');
+    - var purifyForStorage = require('./storage-purifier');
+    +@@ lib/server/entries.js: var purifyForStorage = require('./storage-purifier');
+    + var countParam = require('./count');
+    + var srvDates = require('./srv-dates');
+    + var softDeleted = require('./soft-deleted');
+     +var MongoStorage = require('../api3/storage/mongoCollection');
+     +var { fromMongo, cmp } = require('../storage/filter');
+      
+    - // REQ-SYNC-072: Pattern to match valid MongoDB ObjectId hex strings
+    - var OBJECT_ID_HEX_RE = /^[0-9a-fA-F]{24}$/;
+    + // REQ-SYNC-072: the 24-hex _id rule lives in object-id-forms.
+    + var idForms = require('./object-id-forms');
+     @@ lib/server/entries.js: function storage (env, ctx) {
+      
+        // TODO: Code is a little redundant.
+    @@ lib/server/entries.js: function storage (env, ctx) {
+        function list (opts, fn) {
+          // these functions, find, sort, and limit, are used to
+     @@ lib/server/entries.js: function storage (env, ctx) {
+    -       return this;
+    +       return countParam.applyCount(this, opts);
+          }
+      
+     -    // handle all the results
+    @@ lib/server/entries.js: function storage (env, ctx) {
+     +    // the raw collection until that lands.
+          return runWithCallback(function () {
+            return limit.call(api()
+    -         .find(query_for(opts), READ_OPTIONS)
+    +         .find(query_for(opts))
+     @@ lib/server/entries.js: function storage (env, ctx) {
+    - 
+    -   function remove (opts, fn) {
+    +     // The id as asked: query_for rewrites opts.find._id into a filter.
+    +     var asked = opts && opts.find ? opts.find._id : undefined;
+          return runWithCallback(async function () {
+    --      var stat = await api().deleteMany(query_for(opts));
+    +-      var stat = await api().deleteMany(stored_query_for(opts));
+     +      // The driver's DeleteResult shape is rebuilt because the emit below reads
+     +      // stat.deletedCount and lib/api/entries/index.js serialises stat straight
+     +      // to the client through normalizeDeleteStatus.
+    -+      var deleted = await store().deleteMany(fromMongo(query_for(opts)));
+    ++      var deleted = await store().deleteMany(fromMongo(stored_query_for(opts)));
+     +      var stat = { acknowledged: true, deletedCount: deleted.deleted };
+            ctx.bus.emit('data-update', {
+              type: 'entries'
+    @@ lib/server/entries.js: function storage (env, ctx) {
+     +      // run before doc is handed over, exactly as it did here before.
+            var query = upsertQueryFor(doc);
+      
+    --      return {
+    --        updateOne: {
+    --          filter: query,
+    --          update: { $set: doc },
+    --          upsert: true
+    --        }
+    --      };
+    -+      return { filter: fromMongo(query), doc: doc };
+    -     });
+    - 
+    -     return runWithCallback(async function () {
+    +       // An _id is set only when the upsert inserts. When it matches a stored
+    +@@ lib/server/entries.js: function storage (env, ctx) {
+            var bulkResult;
+      
+            try {
+     -        // Use bulkWrite for batch upsert
+    --        bulkResult = await api().bulkWrite(bulkOps, { ordered: true });
+    -+        // mode:'merge' is NOT interchangeable with the 'replace' the other v1
+    -+        // modules use. This was updateOne+$set, so stored fields absent from the
+    -+        // incoming entry survive the upsert; a wholesale replace would delete
+    -+        // them.
+    -+        bulkResult = await store().bulkUpsert(bulkOps, { mode: 'merge', ordered: true });
+    ++        // Still the raw collection: these upserts carry $setOnInsert (_id,
+    ++        // srvCreated) and $unset (isValid), which the interface's bulkUpsert
+    ++        // cannot express.
+    +         bulkResult = await api().bulkWrite(bulkOps, { ordered: true });
+            } catch (err) {
+              console.error('Problem upserting entries batch', err);
+    -         throw err;
+     @@ lib/server/entries.js: function storage (env, ctx) {
+        }
+      
+        function getEntry (id, fn) {
+     -    return runWithCallback(function () {
+    --      return api().findOne({ "_id": new ObjectId(id) });
+     +    return runWithCallback(async function () {
+     +      // findFiltered rather than the interface's findOne, which matches on API
+     +      // v3's identifier with a hex-_id fallback; v1 matches on _id alone.
+    -+      // Unwrapped to a single document or null, which is what the driver's
+    -+      // findOne returned.
+    -+      const docs = await store().findFiltered(cmp('eq', '_id', new ObjectId(id)), {
+    +       // 15.0.6 and earlier stored a 24-hex _id as the string itself; match
+    +-      // an entry stored either way.
+    +-      return api().findOne(softDeleted.visible({ "_id": idForms.isHexId(id) ? { $in: idForms.idForms(id) } : new ObjectId(id) }));
+    ++      // an entry stored either way. Unwrapped to a single document or null,
+    ++      // which is what the driver's findOne returned.
+    ++      const docs = await store().findFiltered(fromMongo(softDeleted.visible({ "_id": idForms.isHexId(id) ? { $in: idForms.idForms(id) } : new ObjectId(id) })), {
+     +        limit: 1
+     +        , options: { normalize: false }
+     +      });
+    @@ lib/server/entries.js: function storage (env, ctx) {
+      
+     
+      ## lib/server/profile.js ##
+    -@@ lib/server/profile.js: var find_options = require('./query');
+    - var consts = require('../constants');
+    - var runWithCallback = require('../storage/run-with-callback');
+    - var purifyForStorage = require('./storage-purifier');
+    +@@ lib/server/profile.js: var purifyForStorage = require('./storage-purifier');
+    + var countParam = require('./count');
+    + var srvDates = require('./srv-dates');
+    + var softDeleted = require('./soft-deleted');
+     +var MongoStorage = require('../api3/storage/mongoCollection');
+     +var { fromMongo, cmp } = require('../storage/filter');
+      
+      function storage (collection, ctx) {
+         var ObjectID = require('mongodb').ObjectId;
+    -    var profileSort = { startDate: -1, _id: -1 };
+    +@@ lib/server/profile.js: function storage (collection, ctx) {
+    +       .map(function (doc) { return doc._id; })
+    +       .filter(idForms.isHexId);
+    +     if (hexIds.length === 0) return new Set();
+    +-    var stored = await api()
+    +-      .find({ _id: { $in: hexIds } }, { projection: { _id: 1 } })
+    +-      .toArray();
+    ++    var stored = await store().findFiltered(fromMongo({ _id: { $in: hexIds } }), {
+    ++      projection: { _id: 1 }
+    ++      , options: { normalize: false }
+    ++    });
+    +     return new Set(stored.map(function (doc) { return doc._id; }));
+    +   }
+      
+     +  // The storage interface for this collection. Indexes stay with bootevent's
+     +  // ensureIndexes pass for now (hence the empty field list), so construction
+    @@ lib/server/profile.js: var find_options = require('./query');
+          // Normalize to array (supports both single object and array inputs)
+          var docs = Array.isArray(objOrArray) ? objOrArray : [objOrArray];
+     @@ lib/server/profile.js: function storage (collection, ctx) {
+    -     });
+    - 
+    -     const promise = runWithCallback(async function () {
+    +       docs.forEach(function (doc) { normalizeProfileId(doc, storedAsString); });
+    +       // API v3 history reads these (see srv-dates).
+    +       docs.forEach(srvDates.stampCreated);
+     -      const result = await api().insertMany(docs);
+     +      const result = await store().insertMany(docs);
+            if (result && result.insertedIds) {
+              Object.keys(result.insertedIds).forEach(function (index) {
+                if (!docs[index]._id) {
+     @@ lib/server/profile.js: function storage (collection, ctx) {
+    -     }
+    -     // Match existing profiles by _id only. The profile editor rewrites created_at on save.
+    +     // the profile is never absent between the two writes.
+          const promise = runWithCallback(async function () {
+    +       await srvDates.carryForReplace(api(), [{ filter: { _id: obj._id }, doc: obj }]);
+     -      await api().replaceOne({ _id: obj._id }, obj, { upsert: true });
+     +      // bulkUpsert with one operation is exactly replaceOne+upsert matched by a
+     +      // filter. The interface's replaceOne(identifier, doc) is NOT equivalent:
+    @@ lib/server/profile.js: function storage (collection, ctx) {
+     +      // matches on _id alone.
+     +      await store().bulkUpsert([ { filter: cmp('eq', '_id', obj._id), doc: obj } ]
+     +        , { mode: 'replace' });
+    +       if (submittedId !== undefined) {
+    +-        await api().deleteMany({ _id: { $in: idForms.stringIdForms(submittedId) } });
+    ++        await store().deleteMany(fromMongo({ _id: { $in: idForms.stringIdForms(submittedId) } }));
+    +       }
+            return obj;
+          }, fn);
+    - 
+     @@ lib/server/profile.js: function storage (collection, ctx) {
+    -   function list (fn, count) {
+    -     const limit = count !== null ? count : Number(consts.PROFILES_DEFAULT_COUNT);
+    +     const limit = count === undefined ? undefined
+    +       : countParam.parseCount(count) || Number(consts.PROFILES_DEFAULT_COUNT);
+          return runWithCallback(function () {
+    --      return api().find({ }, READ_OPTIONS).limit(limit).sort(profileSort).toArray();
+    +-      return api().find(softDeleted.visible({ })).limit(limit).sort(profileSort).toArray();
+     +      // normalize:false is load-bearing. The interface defaults to normalizing,
+     +      // which moves _id into identifier and deletes _id; API v1 returns _id.
+    -+      return store().findFiltered(null, {
+    ++      return store().findFiltered(fromMongo(softDeleted.visible({ })), {
+     +        sort: profileSort
+     +        , limit: limit
+    -+        , readOptions: READ_OPTIONS
+     +        , options: { normalize: false }
+     +      });
+          }, fn);
+        }
+      
+     @@ lib/server/profile.js: function storage (collection, ctx) {
+    -         return this;
+    +         return countParam.applyCount(this, opts);
+          }
+      
+     +    // NOT YET CONVERTED, and deliberately so. GET /profiles/ accepts $expr
+    @@ lib/server/profile.js: function storage (collection, ctx) {
+     +    // is a behaviour change and not this commit's to make).
+          return runWithCallback(function () {
+            return limit.call(api()
+    -         .find(query_for(opts), READ_OPTIONS)
+    +         .find(query_for(opts))
+     @@ lib/server/profile.js: function storage (collection, ctx) {
+      
+        function last (fn) {
+          return runWithCallback(function () {
+    --      return api().find().sort(profileSort).limit(1).toArray();
+    -+      return store().findFiltered(null, {
+    +-      return api().find(softDeleted.visible({ })).sort(profileSort).limit(1).toArray();
+    ++      return store().findFiltered(fromMongo(softDeleted.visible({ })), {
+     +        sort: profileSort
+     +        , limit: 1
+     +        , options: { normalize: false }
+    @@ lib/server/profile.js: function storage (collection, ctx) {
+          }, fn);
+        }
+      
+    -   function remove (_id, fn) {
+    -     var objId = new ObjectID(_id);
+    +@@ lib/server/profile.js: function storage (collection, ctx) {
+    +     // where an earlier edit left an ObjectId copy beside a string original.
+    +     var filter = idForms.idFilter(_id);
+          const promise = runWithCallback(function () {
+    --      return api().deleteOne({ '_id': objId });
+    -+      return store().deleteMany(cmp('eq', '_id', objId));
+    +-      return api().deleteMany({ '_id': filter });
+    ++      return store().deleteMany(fromMongo({ '_id': filter }));
+          }, fn);
+      
+          ctx.bus.emit('data-received');
+ 8:  b5dc2cbb !  8:  d1c7a99c Convert the auth store and the count path; fix the count endpoint's date bound
+    @@ Commit message
+     
+      ## lib/api/entries/index.js ##
+     @@ lib/api/entries/index.js: function configure (app, wares, ctx, env) {
+    -       });
+    -     }
+    +   function count_records (req, res, next) {
+    +     var query = req.query;
+          var storage = req.storage || ctx.entries;
+     -    storage.aggregate(query, function payload (err, entries) {
+     -      // assign payload
+    @@ lib/api/entries/index.js: function configure (app, wares, ctx, env) {
+     +      // is rebuilt here rather than being carried through storage.
+     +      res.entries = err ? null : [ { _id: null, count: count } ];
+            res.entries_err = err;
+    -       return next(err);
+    -     });
+    +       // format_results never runs on the error path here, so the refused-query
+    +       // 400 has to be answered before next(err) hands off to express.
+     
+      ## lib/authorization/storage.js ##
+    -@@ lib/authorization/storage.js: var crypto = require('node:crypto');
+    - var shiroTrie = require('shiro-trie');
+    +@@ lib/authorization/storage.js: var shiroTrie = require('shiro-trie');
+      var ObjectID = require('mongodb').ObjectId;
+    + var idForms = require('../server/object-id-forms');
+      var runWithCallback = require('../storage/run-with-callback');
+     +var MongoStorage = require('../api3/storage/mongoCollection');
+    -+var { cmp } = require('../storage/filter');
+    - 
+    ++var { cmp, fromMongo } = require('../storage/filter');
+      
+    - function init (env, ctx) {
+    + var find_options = require('../server/query');
+    + var countParam = require('../server/count');
+     @@ lib/authorization/storage.js: function init (env, ctx) {
+        storage.roles = [];
+        storage.subjects = [];
+    @@ lib/authorization/storage.js: function init (env, ctx) {
+     +  var rolesStore = storeFor(rolesCollectionName);
+     +  var subjectsStore = storeFor(subjectsCollectionName);
+      
+    -   function normalizeRequiredObjectId(id) {
+    -     if (id === undefined || id === null || id === '') {
+    +   storage.queryOpts = {
+    +     dateField: 'created_at'
+     @@ lib/authorization/storage.js: function init (env, ctx) {
+    +   // request that removes a subject's last role (or a role's last permission)
+    +   // carries no roles field at all. Filling roles or permissions in from the
+    +   // stored document would quietly keep access the operator had just removed.
+    +-  function keepStoredFields (collection, doc) {
+    ++  function keepStoredFields (store, doc) {
+    +     var keepNotes = !Object.prototype.hasOwnProperty.call(doc, 'notes');
+    +     var keepCreatedAt = !doc.created_at;
+    +     if (!keepNotes && !keepCreatedAt) {
+    +       return Promise.resolve();
+          }
+    + 
+    +-    return collection.findOne({ _id: doc._id }, { projection: { notes: 1, created_at: 1 } })
+    ++    return store().findFiltered(cmp('eq', '_id', doc._id), {
+    ++      limit: 1
+    ++      , projection: { notes: 1, created_at: 1 }
+    ++      , options: { normalize: false }
+    ++    })
+    ++      .then(function first (docs) { return docs.length ? docs[0] : null; })
+    +       .then(function merge (stored) {
+    +         if (!stored) { return; }
+    +         if (keepNotes && Object.prototype.hasOwnProperty.call(stored, 'notes')) {
+    +@@ lib/authorization/storage.js: function init (env, ctx) {
+    +       });
+        }
+      
+    --  function create (collection) {
+    -+  function create (store) {
+    +-  function create (collection, fields) {
+    ++  function create (store, fields) {
+          function doCreate(obj, fn) {
+    -       if (!Object.prototype.hasOwnProperty.call(obj, 'created_at')) {
+    -         obj.created_at = (new Date()).toISOString();
+    +       var doc = ownedFields(obj, fields);
+    + 
+     @@ lib/authorization/storage.js: function init (env, ctx) {
+    +         }
+      
+    -       return runWithCallback(async function () {
+              try {
+    --          await collection.insertOne(obj);
+    +-          await collection.insertOne(doc);
+     +          // normalize:false is load-bearing: the interface's insertOne deletes
+     +          // _id from the document by default, and this function returns that
+     +          // same object to its caller, which reads _id (the subject digest is
+     +          // derived from it).
+    -+          await store().insertOne(obj, { normalize: false });
+    ++          await store().insertOne(doc, { normalize: false });
+              } catch (err) {
+                if (err != null && err.message) {
+                  console.log('Data insertion error', err.message);
+    @@ lib/authorization/storage.js: function init (env, ctx) {
+      
+     -      // configure the limit portion of the current query
+     -      function limit() {
+    --        if (opts && opts.count) {
+    --          return this.limit(parseInt(opts.count));
+    --        }
+    --        return this;
+    +-        return countParam.applyCount(this, opts);
+     -      }
+     -
+    -       // Reloads must load complete authorization snapshots, never request filters.
+    - 
+            return runWithCallback(function () {
+    -         if (opts && Object.prototype.hasOwnProperty.call(opts, 'find')) {
+    -           throw new TypeError('Authorization reload lists do not accept filters');
+    -         }
+     -        return limit.call(collection
+    --          .find({}, READ_OPTIONS)
+    +-          .find(query_for(opts))
+     -          .sort(sort())
+     -        ).toArray();
+    -+        // A null AST is the unfiltered read, matching the previous find({}).
+    ++        // count=0 asks for no documents (lib/server/count.js).
+    ++        if (countParam.isZeroCount(opts && opts.count)) return [ ];
+     +        // normalize:false keeps _id on every role and subject: reload() reads
+     +        // subject._id to derive the access token digest.
+    -+        return store().findFiltered(null, {
+    ++        return store().findFiltered(fromMongo(query_for(opts)), {
+     +          sort: sort()
+    -+          , limit: opts && opts.count ? parseInt(opts.count) : undefined
+    -+          , readOptions: READ_OPTIONS
+    ++          , limit: countParam.parseCount(opts && opts.count) || undefined
+     +          , options: { normalize: false }
+     +        });
+            }, fn);
+    @@ lib/authorization/storage.js: function init (env, ctx) {
+     +  function remove (store) {
+          function doRemove (_id, callback) {
+            return runWithCallback(async function () {
+    --        await collection.deleteOne({ '_id': new ObjectID(_id) });
+    -+        // deleteMany on an _id equality, not the interface's deleteOne, which
+    -+        // matches on API v3's identifier rather than on _id.
+    -+        await store().deleteMany(cmp('eq', '_id', new ObjectID(_id)));
+    +         // Either form: up to 15.0.8 create stored a client's 24-hex _id as
+    +         // the string. Create now keeps only the owned fields, so a client
+    +         // _id is not stored at all, but those records remain.
+    +-        await collection.deleteMany({ '_id': idForms.idFilter(_id) });
+    ++        await store().deleteMany(fromMongo({ '_id': idForms.idFilter(_id) }));
+              await storageReload();
+              return null;
+            }, callback);
+    @@ lib/authorization/storage.js: function init (env, ctx) {
+          return doRemove;
+        }
+      
+    --  function save (collection) {
+    -+  function save (store) {
+    +-  function save (collection, fields) {
+    ++  function save (store, fields) {
+          function doSave (obj, callback) {
+            var idResult = normalizeRequiredObjectId(obj && obj._id);
+            if (idResult.error) {
+     @@ lib/authorization/storage.js: function init (env, ctx) {
+    -       }
+    +           throw storage.NAME_REQUIRED;
+    +         }
+      
+    -       return runWithCallback(async function () {
+    --        await collection.replaceOne({ _id: obj._id }, obj, { upsert: true });
+    +-        await keepStoredFields(collection, doc);
+    ++        await keepStoredFields(store, doc);
+    +         if (!doc.created_at) {
+    +           doc.created_at = (new Date()).toISOString();
+    +         }
+    +-        await collection.replaceOne({ _id: doc._id }, doc, { upsert: true });
+     +        // bulkUpsert with one operation is exactly replaceOne+upsert matched by
+     +        // a filter. The interface's replaceOne(identifier, doc) is NOT
+     +        // equivalent: it matches on API v3's identifier with a hex-_id
+     +        // fallback, where this matches on _id alone.
+    -+        await store().bulkUpsert([ { filter: cmp('eq', '_id', obj._id), doc: obj } ]
+    ++        await store().bulkUpsert([ { filter: cmp('eq', '_id', doc._id), doc: doc } ]
+     +          , { mode: 'replace' });
+              await storageReload();
+    -         return obj;
+    +         return doc;
+            }, callback);
+     @@ lib/authorization/storage.js: function init (env, ctx) {
+          return doSave;
+        }
+      
+    --  storage.createSubject = create(subjectsCollection);
+    --  storage.saveSubject = save(subjectsCollection);
+    +-  storage.createSubject = create(subjectsCollection, SUBJECT_FIELDS);
+    +-  storage.saveSubject = save(subjectsCollection, SUBJECT_FIELDS);
+     -  storage.removeSubject = remove(subjectsCollection);
+     -  storage.listSubjects = list(subjectsCollection);
+    -+  storage.createSubject = create(subjectsStore);
+    -+  storage.saveSubject = save(subjectsStore);
+    ++  storage.createSubject = create(subjectsStore, SUBJECT_FIELDS);
+    ++  storage.saveSubject = save(subjectsStore, SUBJECT_FIELDS);
+     +  storage.removeSubject = remove(subjectsStore);
+     +  storage.listSubjects = list(subjectsStore);
+      
+    --  storage.createRole = create(rolesCollection);
+    --  storage.saveRole = save(rolesCollection);
+    +-  storage.createRole = create(rolesCollection, ROLE_FIELDS);
+    +-  storage.saveRole = save(rolesCollection, ROLE_FIELDS);
+     -  storage.removeRole = remove(rolesCollection);
+     -  storage.listRoles = list(rolesCollection);
+    -+  storage.createRole = create(rolesStore);
+    -+  storage.saveRole = save(rolesStore);
+    ++  storage.createRole = create(rolesStore, ROLE_FIELDS);
+    ++  storage.saveRole = save(rolesStore, ROLE_FIELDS);
+     +  storage.removeRole = remove(rolesStore);
+     +  storage.listRoles = list(rolesStore);
+      
+    @@ lib/authorization/storage.js: function init (env, ctx) {
+     
+      ## lib/server/aggregate.js ##
+     @@
+    +-var assertNoQueryJavascript = require('../storage/assert-no-query-javascript');
+     +'use strict';
+     +
+    - var find_options = require('./query');
+    - const assertNoQueryJavascript = require('../storage/assert-no-query-javascript');
+    ++const assertNoQueryJavascript = require('../storage/assert-no-query-javascript');
+      var runWithCallback = require('../storage/run-with-callback');
+     +const { fromMongo } = require('../storage/filter');
+     +const storage = require('../api3/storage/mongoCollection/modify');
+    -+
+    + 
+    + // BF-70. `opts` here is the caller's parsed query string -- count_records in
+    + // lib/api/entries/index.js passes req.query straight through -- so
+    +@@ lib/server/aggregate.js: function refusePipeline ( ) {
+    +   throw error;
+    + }
+    + 
+     +// Flags MongoDB's regex engine accepts. The driver silently drops the rest
+     +// (g, u, y) when it serializes a native RegExp, so filtering to this set is
+     +// what preserves today's behaviour rather than changing it.
+     +const MONGO_REGEX_FLAGS = 'imsx';
+    - 
+    ++
+     +/**
+     + * Count documents matching an API v1 query.
+     + *
+    @@ lib/server/aggregate.js
+     -
+     -  // var collection = api( );
+        function aggregate (opts, done) {
+    -     return runWithCallback(function () {
+    --      var query = find_options(opts);
+    -+      // BUG FIX: this used to call find_options(opts) with one argument, so the
+    -+      // collection's queryOpts never arrived and lib/server/query.js fell back
+    -+      // to its defaults -- dateField 'date' and no useEpoch. The default date
+    -+      // bound was therefore an ISO string, while entries.date is numeric and
+    -+      // treatments/devicestatus constrain created_at, and MongoDB orders BSON
+    -+      // types before comparing values, so a numeric field never matches a
+    -+      // string bound. An unfiltered count silently matched NOTHING instead of
+    -+      // bounding to two days. query_for is the module's own
+    -+      // find_options(opts, queryOpts), which is exactly what its list path
+    -+      // uses, so count and list now bound identically by construction.
+    -+      var query = typeof api.query_for === 'function'
+    -+        ? api.query_for(opts)
+    -+        : find_options(opts);
+    +     if (opts && opts.pipeline !== undefined) { return runWithCallback(refusePipeline, done); }
+      
+    -       var pipeline = (conf.pipeline || [ ]).concat(opts.pipeline || [ ]);
+    --      var groupBy = [ {$match: query } ].concat(pipeline).concat(template( ));
+    --      for (const stage of groupBy) {
+    +-    // Build the filter with the collection's own `query_for`, so that counting
+    +-    // and listing can never disagree about the date field or the value types.
+    +-    var query = api.query_for(opts);
+    +-
+    +-    var pipeline = (conf.pipeline || [ ]);
+    +-    var groupBy = [ {$match: query } ].concat(pipeline).concat(template( ));
+    +-    // conf.pipeline is set by whoever constructs this module rather than by a
+    +-    // request, so this is a backstop rather than the guard; it costs one walk
+    +-    // of a three-stage array.
+    +-    assertNoQueryJavascript(groupBy);
+    +     return runWithCallback(function () {
+    +-      return api().aggregate(groupBy).toArray();
+    ++      // Build the filter with the collection's own `query_for`, so that counting
+    ++      // and listing can never disagree about the date field or the value types.
+    ++      var query = api.query_for(opts);
+     +
+    -+      // The JavaScript-operator guard runs FIRST, and over any supplied
+    -+      // pipeline stages as well as the match, so a hostile stage is rejected
+    -+      // with a 400 before anything else looks at it. Ordering is load-bearing:
+    -+      // tests/mongo-query-javascript.test.js constructs this module directly
+    -+      // with a pipeline and asserts the guard is what rejects it.
+    ++      var pipeline = (conf.pipeline || [ ]);
+    ++
+    ++      // conf.pipeline is set by whoever constructs this module rather than by a
+    ++      // request, so this is a backstop rather than the guard.
+     +      for (const stage of [ {$match: query } ].concat(pipeline)) {
+    -         if (stage.$match) assertNoQueryJavascript(stage.$match);
+    -         const expressions = Object.fromEntries(Object.entries(stage).filter(([key]) => key !== '$match'));
+    -         assertNoQueryJavascript({$expr: expressions});
+    -       }
+    ++        if (stage.$match) assertNoQueryJavascript(stage.$match);
+    ++        const expressions = Object.fromEntries(Object.entries(stage).filter(([key]) => key !== '$match'));
+    ++        assertNoQueryJavascript({$expr: expressions});
+    ++      }
+     +
+    -+      // Unreachable in production -- both suppliers are closed off, as above --
+    -+      // but a benign pipeline must not be silently ignored now that nothing
+    -+      // executes one.
+    ++      // Unreachable in production, but a benign pipeline must not be silently
+    ++      // ignored now that nothing executes one.
+     +      if (pipeline.length) {
+     +        throw new Error('Aggregation pipelines are not supported by the count path');
+     +      }
+     +
+    -       console.log('$match query', query);
+    --      console.log('AGGREGATE', groupBy);
+    --      return api().aggregate(groupBy).toArray();
+     +      return storage.count(api(), fromMongo(regexToPattern(query)));
+          }, done);
+        }
+    @@ lib/server/aggregate.js: function create (conf, api) {
+     +}
+     +
+      module.exports = create;
+    -
+    - ## tests/count-pipeline-boundary.test.js ##
+    -@@ tests/count-pipeline-boundary.test.js: describe('Public count query boundary', function () {
+    -     assert.equal(response.body[0].count, 1);
+    -   });
+    - });
+    -+
+    -+describe('Count default date bound', function () {
+    -+  this.timeout(15000);
+    -+  const prefix = 'count_default_bound_' + randomUUID().replaceAll('-', '');
+    -+  const aggregateFactory = require('../lib/server/aggregate');
+    -+  const query = require('../lib/server/query');
+    -+  let client, entries, storage;
+    -+  before(async function () {
+    -+    client = new MongoClient(process.env.CUSTOMCONNSTR_mongo || 'mongodb://127.0.0.1:27017/test');
+    -+    await client.connect();
+    -+    const db = client.db();
+    -+    entries = db.collection(prefix + '_entries');
+    -+    // entries.date is numeric. One reading inside the default window, one well
+    -+    // outside it, so a working bound and a broken bound give different answers.
+    -+    await entries.insertMany([
+    -+      {date:Date.now() - 3600000, sgv:110, type:'sgv'},
+    -+      {date:Date.now() - 20 * 86400000, sgv:120, type:'sgv'}
+    -+    ]);
+    -+    storage = require('../lib/server/entries')({entries_collection:entries.collectionName}, {store:db});
+    -+  });
+    -+  after(async function () {
+    -+    try {if (entries) await entries.drop();} finally {if (client) await client.close();}
+    -+  });
+    -+
+    -+  function capturingApi (queryOpts) {
+    -+    const captured = [];
+    -+    const api = () => ({
+    -+      countDocuments: async filter => {captured.push(filter); return 0;},
+    -+      aggregate:() => assert.fail('the count path must not aggregate')
+    -+    });
+    -+    api.query_for = opts => query(opts, queryOpts);
+    -+    return {captured, aggregate:aggregateFactory({}, api)};
+    -+  }
+    -+
+    -+  it('bounds an unfiltered count with the collection queryOpts, not query defaults', async function () {
+    -+    // entries: useEpoch, so the bound must be a number. MongoDB orders BSON
+    -+    // types before values, so an ISO string bound here matches no document.
+    -+    const numeric = capturingApi({walker:{date:parseInt, sgv:parseInt}, useEpoch:true});
+    -+    await numeric.aggregate({});
+    -+    assert.equal(typeof numeric.captured[0].date.$gte, 'number');
+    -+
+    -+    // devicestatus/treatments: a different dateField entirely, which the
+    -+    // defaults would have replaced with `date`.
+    -+    const dated = capturingApi({dateField:'created_at'});
+    -+    await dated.aggregate({});
+    -+    assert.equal(typeof dated.captured[0].created_at.$gte, 'string');
+    -+    assert(!('date' in dated.captured[0]));
+    -+  });
+    -+
+    -+  it('counts recent entries rather than nothing when no date filter is given', async function () {
+    -+    // The whole point of the bound: the reading from an hour ago is inside the
+    -+    // default window and the one from twenty days ago is not. Before the fix
+    -+    // this answered 0, because every numeric date compared false against an
+    -+    // ISO string bound.
+    -+    assert.equal(await storage.aggregate({}), 1);
+    -+    assert.equal(await storage.aggregate({find:{date:{$gte:0}}}), 2);
+    -+  });
+    -+});
+ 7:  a7c6efbc !  9:  2b418dc9 Convert lib/server/treatments.js; preserve MongoDB's compact conjunction
+    @@ lib/api3/storage/mongoCollection/modify.js: async function deleteMany (col, filt
+      
+     
+      ## lib/server/treatments.js ##
+    -@@ lib/server/treatments.js: var runWithCallback = require('../storage/run-with-callback');
+    - var purifyForStorage = require('./storage-purifier');
+    +@@ lib/server/treatments.js: function storage (env, ctx) {
+    +   var idForms = require('./object-id-forms');
+    +   var fallbackKey = require('./treatment-fallback-key');
+      
+    - function storage (env, ctx) {
+    -+
+     +  var MongoStorage = require('../api3/storage/mongoCollection');
+     +  var { fromMongo, cmp } = require('../storage/filter');
+     +
+    @@ lib/server/treatments.js: var runWithCallback = require('../storage/run-with-cal
+     +      , { limit: 1, options: { normalize: false } });
+     +    return docs && docs.length ? docs[0] : null;
+     +  }
+    -   var ObjectID = require('mongodb').ObjectId;
+    -   var OBJECT_ID_HEX_RE = /^[0-9a-fA-F]{24}$/;
+    - 
+    ++
+    +   function literal (value) {
+    +     return { $eq: value };
+    +   }
+     @@ lib/server/treatments.js: function storage (env, ctx) {
+    -       var bulkOps = objOrArray.map(function(obj) {
+    -         normalizeTreatmentId(obj);
+    -         var results = prepareData(obj);
+    --        return {
+    --          replaceOne: {
+    --            filter: upsertQueryFor(obj, results),
+    --            replacement: obj,
+    --            upsert: true
+    --          }
+    --        };
+    -+        return { filter: fromMongo(upsertQueryFor(obj, results)), doc: obj };
+    -       });
+    - 
+    -       return runWithCallback(async function () {
+    -         var bulkResult;
+    - 
+    -         try {
+    --          bulkResult = await api().bulkWrite(bulkOps, { ordered: true });
+    -+          bulkResult = await store().bulkUpsert(bulkOps, { mode: 'replace', ordered: true });
+    +           }).map(function (op) {
+    +             return { filter: op.replaceOne.filter, doc: op.replaceOne.replacement };
+    +           }));
+    ++          // Still the raw collection: BF-130 interleaves a deleteMany after each
+    ++          // replace matched by _id, which the interface's bulkUpsert cannot express.
+    +           bulkResult = await api().bulkWrite(bulkOps, { ordered: true });
+              } catch (err) {
+                console.error('Problem upserting treatments batch', err);
+    -           throw err;
+     @@ lib/server/treatments.js: function storage (env, ctx) {
+                var identifiers = docsNeedingId.map(function(obj) { return obj.identifier; });
+      
+                try {
+    --            var existing = await api().find({ identifier: { $in: identifiers } }, READ_OPTIONS).toArray();
+    +-            var existing = await api().find({ identifier: { $in: identifiers } }).toArray();
+     +            var existing = await store().findFiltered(cmp('in', 'identifier', identifiers)
+    -+              , { readOptions: READ_OPTIONS, options: { normalize: false } });
+    ++              , { options: { normalize: false } });
+                  if (existing) {
+                    var idMap = new Map();
+                    existing.forEach(function(doc) {
+     @@ lib/server/treatments.js: function storage (env, ctx) {
+    - 
+          (async function () {
+            try {
+    +         await srvDates.carryForReplace(api(), [{ filter: query, doc: obj }]);
+     -        var updateResults = await api().replaceOne(query, obj, {upsert: true});
+     +        var updateResults = await upsertOne(query, obj);
+    +         if (stale.length > 0) {
+    +-          await api().deleteMany({ _id: { $in: stale } });
+    ++          await store().deleteMany(fromMongo({ _id: { $in: stale } }));
+    +         }
+      
+              if (updateResults) {
+    -           if (updateResults.upsertedCount == 1) {
+     @@ lib/server/treatments.js: function storage (env, ctx) {
+                } else if (updateResults.matchedCount >= 1 && obj.identifier && !obj._id) {
+                  // REQ-SYNC-072: On update by identifier, fetch the existing _id
+    @@ lib/server/treatments.js: function storage (env, ctx) {
+                      obj._id = existing._id;
+                    }
+     @@ lib/server/treatments.js: function storage (env, ctx) {
+    -         };
+              var updateResults;
+              try {
+    +           await srvDates.carryForReplace(api(), [{ filter: pbQuery, doc: pbTreat }]);
+     -          updateResults = await api().replaceOne(pbQuery, pbTreat, {upsert: true});
+     +          updateResults = await upsertOne(pbQuery, pbTreat);
+              } catch (pbErr) {
+    @@ lib/server/treatments.js: function storage (env, ctx) {
+        function list (opts, fn) {
+     -
+     -    function limit ( ) {
+    --      if (opts && opts.count) {
+    --        return this.limit(parseInt(opts.count));
+    --      }
+    --      return this;
+    +-      return countParam.applyCount(this, opts);
+     -    }
+     -
+          return runWithCallback(function () {
+     -      return limit.call(api()
+    --        .find(query_for(opts), READ_OPTIONS)
+    +-        .find(query_for(opts))
+     -        .sort(opts && opts.sort || {created_at: -1}), opts)
+     -        .toArray();
+    ++      // count=0 asks for no documents (lib/server/count.js).
+    ++      if (countParam.isZeroCount(opts && opts.count)) return Promise.resolve([ ]);
+     +      // normalize:false is load-bearing: the interface otherwise moves _id into
+     +      // identifier and deletes _id, and API v1 returns _id to its clients.
+     +      return store().findFiltered(fromMongo(query_for(opts)), {
+     +        sort: opts && opts.sort || { created_at: -1 }
+    -+        , limit: opts && opts.count ? parseInt(opts.count) : undefined
+    -+        , readOptions: READ_OPTIONS
+    ++        , limit: countParam.parseCount(opts && opts.count) || undefined
+     +        , options: { normalize: false }
+     +      });
+          }, fn);
+        }
+      
+     @@ lib/server/treatments.js: function storage (env, ctx) {
+    - 
+    -   function remove (opts, fn) {
+    +     // The id as asked: query_for rewrites opts.find._id into a filter.
+    +     var asked = opts && opts.find ? opts.find._id : undefined;
+          return runWithCallback(async function () {
+    --      var stat = await api().deleteMany(query_for(opts), {});
+    -+      var stat = await store().deleteMany(fromMongo(query_for(opts)));
+    +-      var stat = await api().deleteMany(stored_query_for(opts), {});
+    ++      // The interface reports { deleted: n }; restate the driver's DeleteResult
+    ++      // shape, which the emit below and the DELETE response body read.
+    ++      var deleted = await store().deleteMany(fromMongo(stored_query_for(opts)));
+    ++      var stat = { acknowledged: true, deletedCount: deleted.deleted };
+            //TODO: this is triggering a read from Mongo, we can do better
+            //console.log('Treatment removed', opts); // , stat);
+      
+     @@ lib/server/treatments.js: function storage (env, ctx) {
+    -     var query = upsertQueryFor(obj, { created_at: obj.created_at });
+      
+          const promise = runWithCallback(async function () {
+    +       await srvDates.carryForReplace(api(), [{ filter: query, doc: obj }]);
+     -      var updateResults = await api().replaceOne(query, obj, {upsert: true});
+     +      var updateResults = await upsertOne(query, obj);
+    +       if (stale.length > 0) {
+    +-        await api().deleteMany({ _id: { $in: stale } });
+    ++        await store().deleteMany(fromMongo({ _id: { $in: stale } }));
+    +       }
+      
+            if (updateResults && updateResults.upsertedCount == 1) {
+    -         obj._id = updateResults.upsertedId;
+    +@@ lib/server/treatments.js: function storage (env, ctx) {
+            } else if (updateResults && updateResults.matchedCount >= 1 && obj.identifier && !obj._id) {
+              // REQ-SYNC-072: On update by identifier, fetch the existing _id
+              try {
+10:  7c645f3c = 10:  24ff3d4b Keep native RegExp filters instead of silently dropping them
+11:  1eba42df ! 11:  6dcc18ce Reconcile the three parallel conversions
+    @@ lib/api3/storage/mongoCollection/modify.js: async function deleteMany (col, filt
+      
+     
+      ## lib/server/aggregate.js ##
+    -@@ lib/server/aggregate.js: var runWithCallback = require('../storage/run-with-callback');
+    - const { fromMongo } = require('../storage/filter');
+    - const storage = require('../api3/storage/mongoCollection/modify');
+    +@@ lib/server/aggregate.js: function refusePipeline ( ) {
+    +   throw error;
+    + }
+      
+     -// Flags MongoDB's regex engine accepts. The driver silently drops the rest
+     -// (g, u, y) when it serializes a native RegExp, so filtering to this set is
+    @@ lib/server/aggregate.js: var runWithCallback = require('../storage/run-with-call
+       * Count documents matching an API v1 query.
+       *
+     @@ lib/server/aggregate.js: function create (conf, api) {
+    +         throw new Error('Aggregation pipelines are not supported by the count path');
+            }
+      
+    -       console.log('$match query', query);
+     -      return storage.count(api(), fromMongo(regexToPattern(query)));
+     +      return storage.count(api(), fromMongo(query));
+          }, done);
+    @@ lib/server/aggregate.js: function create (conf, api) {
+     
+      ## lib/server/devicestatus.js ##
+     @@ lib/server/devicestatus.js: function storage (env, ctx) {
+    -   function remove (opts, fn) {
+    +     var asked = opts && opts.find ? opts.find._id : undefined;
+      
+          return runWithCallback(async function () {
+    --      var result = await store().deleteMany(fromMongo(query_for(opts)));
+    +-      var result = await store().deleteMany(fromMongo(stored_query_for(opts)));
+     -      // The interface reports { deleted: n }, but this value is not private to
+     -      // the module -- it is the DELETE /api/devicestatus response body, via
+     +      // This value is not private to the module -- it is the
+    @@ lib/server/devicestatus.js: function storage (env, ctx) {
+     +      // and lib/admin_plugins reads deletedCount back off the wire. The
+     +      // interface reports acknowledged and deletedCount as the driver gave
+     +      // them, so it is passed through unchanged.
+    -+      var stat = await store().deleteMany(fromMongo(query_for(opts)));
+    ++      var stat = await store().deleteMany(fromMongo(stored_query_for(opts)));
+            console.log('removed', null, stat);
+            ctx.bus.emit('data-update', {
+              type: 'devicestatus'
+    @@ lib/server/entries.js: function storage (env, ctx) {
+      
+     -    // configure the limit portion of the current query
+     -    function limit () {
+    --      if (opts && opts.count) {
+    --        return this.limit(parseInt(opts.count));
+    --      }
+    --      return this;
+    +-      return countParam.applyCount(this, opts);
+     -    }
+     -
+     -    // NOT YET CONVERTED, and deliberately so. /slice/ and /times/ reach here
+    @@ lib/server/entries.js: function storage (env, ctx) {
+     +    // into identifier and delete it, and API v1 returns _id.
+          return runWithCallback(function () {
+     -      return limit.call(api()
+    --        .find(query_for(opts), READ_OPTIONS)
+    +-        .find(query_for(opts))
+     -        .sort(sort())
+     -      ).toArray();
+    ++      // count=0 asks for no documents (lib/server/count.js).
+    ++      if (countParam.isZeroCount(opts && opts.count)) return Promise.resolve([ ]);
+     +      return store().findFiltered(fromMongo(query_for(opts)), {
+     +        sort: sort()
+    -+        , limit: opts && opts.count ? parseInt(opts.count) : undefined
+    -+        , readOptions: READ_OPTIONS
+    ++        , limit: countParam.parseCount(opts && opts.count) || undefined
+     +        , options: { normalize: false }
+     +      });
+          }, fn);
+        }
+      
+    -   function remove (opts, fn) {
+    +@@ lib/server/entries.js: function storage (env, ctx) {
+    +     // The id as asked: query_for rewrites opts.find._id into a filter.
+    +     var asked = opts && opts.find ? opts.find._id : undefined;
+          return runWithCallback(async function () {
+     -      // The driver's DeleteResult shape is rebuilt because the emit below reads
+     -      // stat.deletedCount and lib/api/entries/index.js serialises stat straight
+     -      // to the client through normalizeDeleteStatus.
+    --      var deleted = await store().deleteMany(fromMongo(query_for(opts)));
+    +-      var deleted = await store().deleteMany(fromMongo(stored_query_for(opts)));
+     -      var stat = { acknowledged: true, deletedCount: deleted.deleted };
+     +      // stat is passed straight through: the emit below reads deletedCount and
+     +      // lib/api/entries/index.js serialises it to the client, so its shape is
+     +      // observable. The interface reports acknowledged and deletedCount as the
+     +      // driver gave them; normalizeDeleteStatus drops the internal `deleted`.
+    -+      var stat = await store().deleteMany(fromMongo(query_for(opts)));
+    ++      var stat = await store().deleteMany(fromMongo(stored_query_for(opts)));
+            ctx.bus.emit('data-update', {
+              type: 'entries'
+              , op: 'remove'
+    @@ lib/server/profile.js: function storage (collection, ctx) {
+              type: 'profile'
+              , op: 'remove'
+     
+    + ## lib/server/treatments.js ##
+    +@@ lib/server/treatments.js: function storage (env, ctx) {
+    +     // The id as asked: query_for rewrites opts.find._id into a filter.
+    +     var asked = opts && opts.find ? opts.find._id : undefined;
+    +     return runWithCallback(async function () {
+    +-      // The interface reports { deleted: n }; restate the driver's DeleteResult
+    +-      // shape, which the emit below and the DELETE response body read.
+    +-      var deleted = await store().deleteMany(fromMongo(stored_query_for(opts)));
+    +-      var stat = { acknowledged: true, deletedCount: deleted.deleted };
+    ++      var stat = await store().deleteMany(fromMongo(stored_query_for(opts)));
+    +       //TODO: this is triggering a read from Mongo, we can do better
+    +       //console.log('Treatment removed', opts); // , stat);
+    + 
+    +
+      ## tests/api3.storage.escape-hatches.test.js ##
+     @@ tests/api3.storage.escape-hatches.test.js: require('should');
+      const modify = require('../lib/api3/storage/mongoCollection/modify');
+12:  c40d37f7 ! 12:  ace97a0e Add updateMany: the one capability the socket path needs
+    @@ lib/api3/storage/mongoCollection/modify.js: async function count (col, filterAst
+       * Upsert many documents in one round trip, each matched by its own filter.
+       *
+     @@ lib/api3/storage/mongoCollection/modify.js: module.exports = {
+    -   deleteOne,
+    +   deleteEveryForm,
+        deleteMany,
+        deleteManyOr,
+     +  updateMany,
+13:  a2690bd4 ! 13:  29c7c1fa T1.3: select the test backend by env; say which tests are MongoDB's own
+    @@ tests/api3.renderer.test.js: describe('API3 output renderers', function() {
+        });
+      
+     
+    - ## tests/authorization-reload-boundary.test.js ##
+    -@@
+    - 'use strict';
+    - 
+    -+const {describeMongoOnly} = require('./support/backends');
+    -+
+    - const assert = require('node:assert/strict');
+    - const {randomUUID} = require('node:crypto');
+    - const {MongoClient} = require('mongodb');
+    - 
+    --describe('Complete authorization reload boundary', function () {
+    -+// MongoDB-only by mechanism: asserts the filter and sort of the find commands
+    -+// MongoDB actually receives. A second backend would need its own observer.
+    -+describeMongoOnly('Complete authorization reload boundary', function () {
+    -   this.timeout(15000);
+    -   const prefix = 'owned_auth_reload_' + randomUUID().replaceAll('-', '') + '_';
+    -   let client, roles, subjects, storage;
+    -
+    - ## tests/count-pipeline-boundary.test.js ##
+    -@@
+    - 'use strict';
+    - 
+    -+const {describeMongoOnly} = require('./support/backends');
+    -+
+    - const assert = require('node:assert/strict');
+    - const {randomUUID} = require('node:crypto');
+    - const {MongoClient} = require('mongodb');
+    -@@ tests/count-pipeline-boundary.test.js: const express = require('express');
+    - const request = require('supertest');
+    - const qs = require('qs');
+    - 
+    --describe('Public count query boundary', function () {
+    -+// MongoDB-only by mechanism: counts aggregate wire commands to prove a rejected
+    -+// $lookup pipeline never reached the server.
+    -+describeMongoOnly('Public count query boundary', function () {
+    -   this.timeout(15000);
+    -   const prefix = 'count_boundary_' + randomUUID().replaceAll('-', '');
+    -   let client, entries, privateCollection, server, aggregateCommands = 0;
+    -@@ tests/count-pipeline-boundary.test.js: describe('Public count query boundary', function () {
+    -   });
+    - });
+    - 
+    --describe('Count default date bound', function () {
+    -+// MongoDB-only by nature: the bug being guarded is MongoDB BSON type ordering --
+    -+// a numeric date never compares equal to an ISO string bound.
+    -+describeMongoOnly('Count default date bound', function () {
+    -   this.timeout(15000);
+    -   const prefix = 'count_default_bound_' + randomUUID().replaceAll('-', '');
+    -   const aggregateFactory = require('../lib/server/aggregate');
+    -
+    - ## tests/entries-query-permissions.test.js ##
+    -@@
+    - 'use strict';
+    - 
+    -+const {describeMongoOnly} = require('./support/backends');
+    -+
+    - const assert = require('node:assert/strict');
+    - const {randomUUID} = require('node:crypto');
+    - const {EventEmitter} = require('node:events');
+    -@@ tests/entries-query-permissions.test.js: const express = require('express');
+    - const request = require('supertest');
+    - const qs = require('qs');
+    - 
+    --describe('Entries predicate permission boundary', function () {
+    -+// MongoDB-only by mechanism: counts find/delete wire commands, and the predicates
+    -+// it rejects ($where, $expr/$function) are MongoDB server-side JavaScript.
+    -+describeMongoOnly('Entries predicate permission boundary', function () {
+    -   this.timeout(15000);
+    -   const name = 'owned_entries_query_' + randomUUID().replaceAll('-', '');
+    -   let client, collection, server, authorization, reads = 0, cacheReads = 0, deletes = 0;
+    -
+      ## tests/issue-6923-legacy-uuid.test.js ##
+     @@
+      const request = require('supertest');
+    @@ tests/issue-6923-legacy-uuid.test.js: describe('Issue #6923: Legacy UUID overrid
+      
+        beforeEach(async function () {
+     
+    - ## tests/mongo-aws-compat.test.js ##
+    -@@
+    - 'use strict';
+    - 
+    -+const {describeMongoOnly} = require('./support/backends');
+    -+
+    - const assert = require('node:assert/strict');
+    - const {spawnSync} = require('node:child_process');
+    - const {MongoClient, BSON} = require('mongodb');
+    -@@ tests/mongo-aws-compat.test.js: const configure = require('../lib/storage/mongo-client-configuration');
+    - const awsUri = 'mongodb://127.0.0.1/test?authMechanism=MONGODB-AWS&authSource=%24external';
+    - const keys = ['AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', 'AWS_SESSION_TOKEN'];
+    - 
+    --describe('MongoDB AWS credential compatibility', function () {
+    -+// MongoDB-only by nature: the MONGODB-AWS auth mechanism and the driver's own
+    -+// credential provider and signer.
+    -+describeMongoOnly('MongoDB AWS credential compatibility', function () {
+    -   let original;
+    -   beforeEach(function () {
+    -     original = keys.map(key => [key, process.env[key]]);
+    -
+      ## tests/mongo-pool-config.test.js ##
+     @@
+      'use strict';
+    @@ tests/mongo-pool-config.test.js
+        describe('Default Pool Size', function() {
+      
+     
+    - ## tests/mongo-query-javascript.http.test.js ##
+    -@@
+    - 'use strict';
+    - 
+    -+const {describeMongoOnly} = require('./support/backends');
+    -+
+    - const assert = require('node:assert/strict');
+    - const {randomUUID} = require('node:crypto');
+    - const {MongoClient} = require('mongodb');
+    -@@ tests/mongo-query-javascript.http.test.js: const express = require('express');
+    - const request = require('supertest');
+    - const qs = require('qs');
+    - 
+    --describe('Profile query JavaScript HTTP boundary', function () {
+    -+// MongoDB-only by mechanism: rejects MongoDB server-side JavaScript, proved by
+    -+// counting the find commands MongoDB receives.
+    -+describeMongoOnly('Profile query JavaScript HTTP boundary', function () {
+    -   this.timeout(15000);
+    -   let client, col, server, authorization, findCommands = 0;
+    -   const collectionName = 'query_boundary_' + randomUUID().replaceAll('-', '');
+    -
+    - ## tests/mongo-read-batches.test.js ##
+    -@@
+    - 'use strict';
+    - 
+    -+const {describeMongoOnly} = require('./support/backends');
+    -+
+    - const assert = require('node:assert/strict');
+    - const {randomUUID} = require('node:crypto');
+    - const {MongoClient, ObjectId} = require('mongodb');
+    -@@ tests/mongo-read-batches.test.js: const findMany = require('../lib/api3/storage/mongoCollection/find').findMany;
+    - 
+    - // Exercise real application reads and wire replies: a version bump must not
+    - // silently turn a month/report read into one large continuation batch.
+    --describe('MongoDB application read batches', function () {
+    -+// MongoDB-only by mechanism: the reads go through the seam, but the assertion is
+    -+// on find/getMore batch sizes observed via monitorCommands. Parametrising this
+    -+// needs a per-backend way to observe result batching first.
+    -+describeMongoOnly('MongoDB application read batches', function () {
+    -   this.timeout(15000);
+    -   const collectionName = 'read_batches_' + randomUUID().replaceAll('-', '');
+    -   let client, db, col, ctx, docs;
+    -
+      ## tests/mongo-storage.retry.test.js ##
+     @@
+      'use strict';
+    @@ tests/mongo-storage.test.js
+      
+        before(function (done) {
+     
+    - ## tests/mongo-uri-credentials.test.js ##
+    -@@
+    - 'use strict';
+    -+
+    -+const {describeMongoOnly} = require('./support/backends');
+    - const assert = require('node:assert/strict');
+    - const matches = require('../lib/utils/mongo-password-matches');
+    - const {MongoClient} = require('mongodb');
+    - 
+    --describe('MongoDB driver credential parsing', function () {
+    -+// MongoDB-only by nature: mongodb:// and mongodb+srv:// URI grammar, parsed by
+    -+// the driver.
+    -+describeMongoOnly('MongoDB driver credential parsing', function () {
+    -   const secret = 'owned :/@?% password';
+    -   const auth = 'owned:' + encodeURIComponent(secret) + '@';
+    -   const valid = [
+    -@@ tests/mongo-uri-credentials.test.js: describe('MongoDB driver credential parsing', function () {
+    -   });
+    - });
+    - 
+    --describe('MongoDB credential warning in environment configuration', function () {
+    -+// MongoDB-only by nature: the warning compares API_SECRET against the password
+    -+// inside a MongoDB connection string.
+    -+describeMongoOnly('MongoDB credential warning in environment configuration', function () {
+    -   it('warns only for the matching decoded password on successive configurations', function () {
+    -     const keys = ['API_SECRET', 'CUSTOMCONNSTR_mongo'];
+    -     const original = new Map(keys.map(key => [key, process.env[key]]));
+    -
+    - ## tests/slice-storage-cache.test.js ##
+    -@@
+    - 'use strict';
+    - 
+    -+const {describeMongoOnly} = require('./support/backends');
+    -+
+    - const assert = require('node:assert/strict');
+    - const {randomUUID} = require('node:crypto');
+    - const {MongoClient} = require('mongodb');
+    - const express = require('express');
+    - const request = require('supertest');
+    - 
+    --describe('Slice storage cache selection', function () {
+    -+// MongoDB-only by mechanism: proves which collection was read, and that the cache
+    -+// was used instead, by counting find commands on the wire.
+    -+describeMongoOnly('Slice storage cache selection', function () {
+    -   this.timeout(15000);
+    -   const prefix = 'owned_slice_cache_' + randomUUID().replaceAll('-', '') + '_';
+    -   const names = ['entries', 'treatments', 'devicestatus'];
+    -
+      ## tests/storage-read-permissions.test.js ##
+     @@
+      'use strict';

@@ -1,0 +1,660 @@
+label=hazard-h1 tree=b894ec76c3ae878b4876de6ba55797a094b9c1b3 treeid=56dc072f2225ddf1c64baf3cfefccf4f08013449 dirty=1
+node=v22.23.2 mongo_read=6.0.27 driver=5.9.2 db=prop_hazard_h1_test start=2026-10-07T21:54:10Z
+  3300 passing (6m)
+  3 pending
+  218 failing
+  1) API v1 count endpoint pipeline parameter
+       still counts normally when no pipeline is named:
+     ReferenceError: assertNoQueryJavascript is not defined
+  2) API v1 count endpoint pipeline parameter
+       keeps the server-side conf.pipeline hook working:
+     Error: Aggregation pipelines are not supported by the count path
+  3) API v1 count endpoint pipeline parameter
+       still answers the ordinary count over HTTP:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  4) AAPS Client Document Handling
+       "before each" hook for "SGV entry with AAPS device metadata is stored correctly":
+     ReferenceError: assertNoQueryJavascript is not defined
+  5) numeric date and sgv filters on activity and devicestatus (BF-106)
+       devicestatus
+         DELETE by a numeric sgv bound removes the matching records only:
+  6) Activity API
+       put a activity, query, delete, verify gone:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  7) Activity API
+       post a activity, query, delete, verify gone:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  8) Activity API
+       post single activity returns array with one item:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  9) Activity API
+       post activity array returns array:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  10) API v1 ?count= parameter
+       a delete that carries a count
+         still deletes everything its filter matches with a valid count, which it does not limit:
+  11) API v1 ?count= parameter
+       a delete that carries a count
+         still deletes everything its filter matches with no count:
+  12) Count REST api
+       counts the recent entries the list endpoint returns:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  13) Count REST api
+       agrees with the list endpoint over the same query:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  14) Count REST api
+       counts treatments against the date field treatments are stored with:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  15) Count REST api
+       does not write the filter it built to stdout:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  16) Count REST api
+       counts entries older than the default window when asked for them:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  17) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 entries
+         v1 delete | entries | oid -> 200 n=0:
+  18) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 entries
+         v1 delete | entries | oidU -> 200 n=0:
+  19) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 entries
+         v1 delete | entries | lower -> 200 n=0:
+  20) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 entries
+         v1 delete | entries | upper -> 200 n=0:
+  21) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 entries
+         v1 delete | entries | uuid -> 200 n=1:
+  22) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 treatments
+         v1 update | treatments | oid -> 200 n=1 edited=true:
+  23) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 treatments
+         v1 delete | treatments | oid -> 200 n=0:
+  24) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 treatments
+         v1 update | treatments | oidU -> 200 n=1 edited=true:
+  25) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 treatments
+         v1 delete | treatments | oidU -> 200 n=0:
+  26) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 treatments
+         v1 update | treatments | lower -> 200 n=1 edited=true:
+  27) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 treatments
+         v1 delete | treatments | lower -> 200 n=0:
+  28) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 treatments
+         v1 update | treatments | upper -> 200 n=1 edited=true:
+  29) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 treatments
+         v1 delete | treatments | upper -> 200 n=0:
+  30) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 treatments
+         v1 delete | treatments | uuid -> 200 n=0:
+  31) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 devicestatus
+         v1 delete | devicestatus | oid -> 200 n=0:
+  32) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 devicestatus
+         v1 delete | devicestatus | oidU -> 200 n=0:
+  33) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 devicestatus
+         v1 delete | devicestatus | lower -> 200 n=0:
+  34) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 devicestatus
+         v1 delete | devicestatus | upper -> 200 n=0:
+  35) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 profile
+         v1 update | profile | oid -> 200 n=1 edited=true:
+  36) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 profile
+         v1 delete | profile | oid -> 200 n=0:
+  37) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 profile
+         v1 update | profile | oidU -> 200 n=1 edited=true:
+  38) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 profile
+         v1 delete | profile | oidU -> 200 n=0:
+  39) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 profile
+         v1 update | profile | lower -> 200 n=1 edited=true:
+  40) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 profile
+         v1 delete | profile | lower -> 200 n=0:
+  41) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 profile
+         v1 update | profile | upper -> 200 n=1 edited=true:
+  42) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 profile
+         v1 delete | profile | upper -> 200 n=0:
+  43) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 food
+         v1 create | food | lower -> 200 [ObjectId]:
+  44) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 food
+         v1 create | food | upper -> 200 [ObjectId]:
+  45) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 food
+         v1 resend | food | oid -> 200 [ObjectId]:
+  46) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 food
+         v1 update | food | oid -> 200 n=1 edited=true:
+  47) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 food
+         v1 delete | food | oid -> 200 n=0:
+  48) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 food
+         v1 resend | food | oidU -> 200 [ObjectId]:
+  49) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 food
+         v1 update | food | oidU -> 200 n=1 edited=true:
+  50) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 food
+         v1 delete | food | oidU -> 200 n=0:
+  51) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 food
+         v1 resend | food | lower -> 200 [ObjectId]:
+  52) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 food
+         v1 update | food | lower -> 200 n=1 edited=true:
+  53) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 food
+         v1 delete | food | lower -> 200 n=0:
+  54) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 food
+         v1 resend | food | upper -> 200 [ObjectId]:
+  55) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 food
+         v1 update | food | upper -> 200 n=1 edited=true:
+  56) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 food
+         v1 delete | food | upper -> 200 n=0:
+  57) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 activity
+         v1 create | activity | lower -> 200 [ObjectId]:
+  58) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 activity
+         v1 create | activity | upper -> 200 [ObjectId]:
+  59) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 activity
+         v1 resend | activity | oid -> 200 [ObjectId]:
+  60) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 activity
+         v1 update | activity | oid -> 200 n=1 edited=true:
+  61) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 activity
+         v1 delete | activity | oid -> 200 n=0:
+  62) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 activity
+         v1 resend | activity | oidU -> 200 [ObjectId]:
+  63) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 activity
+         v1 update | activity | oidU -> 200 n=1 edited=true:
+  64) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 activity
+         v1 delete | activity | oidU -> 200 n=0:
+  65) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 activity
+         v1 resend | activity | lower -> 200 [ObjectId]:
+  66) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 activity
+         v1 update | activity | lower -> 200 n=1 edited=true:
+  67) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 activity
+         v1 delete | activity | lower -> 200 n=0:
+  68) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 activity
+         v1 resend | activity | upper -> 200 [ObjectId]:
+  69) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 activity
+         v1 update | activity | upper -> 200 n=1 edited=true:
+  70) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 activity
+         v1 delete | activity | upper -> 200 n=0:
+  71) v1 API Deduplication Behavior
+       "before each" hook for "duplicate pumpId+pumpType+pumpSerial is detected and rejected":
+     ReferenceError: assertNoQueryJavascript is not defined
+  72) devicestatus: a re-send of a stored _id is acknowledged, not copied or refused
+       a re-send stored by another request after the read
+         any other insert error still fails the POST (control):
+  73) devicestatus: a re-send of a stored _id is acknowledged, not copied or refused
+       reads
+         one read for a batch carrying 24-hex _ids, asking for every form of each:
+  74) Devicestatus API
+       post a devicestatus, query, delete, verify gone:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  75) Devicestatus API
+       _id validation
+         should accept POST with valid 24-hex _id:
+  76) Devicestatus API
+       _id validation
+         should accept POST without _id (auto-generate):
+  77) Devicestatus API
+       _id validation
+         should allow DELETE with wildcard _id:
+  78) Entries REST api
+       post an entry, query, delete, verify gone:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  79) Entries REST api
+       post multiple entries, query, delete, verify gone:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  80) Entries REST api
+       deletes the readings listed under find[date][$in] and no others:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  81) Entries REST api
+       post single entry returns array with one item:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  82) entries: GET /entries/<id> for an id that names no entry (BF-129)
+       an id that names no entry answers 200 with []
+         an id whose entry was deleted:
+  83) entries: /entries/<id> in upper case
+       DELETE /entries/<UPPER-CASE HEX> removes the entry stored with that ObjectId:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  84) Food quickpicks API
+       stores what the transport gives it — the premise of this entry:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  85) Food quickpicks API
+       returns quick picks hidden in neither spelling, including those with no flag:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  86) Food quickpicks API
+       orders by position numerically, not lexicographically:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  87) Food API
+       put a food, query, delete, verify gone:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  88) Food API
+       post a food, query, delete, verify gone:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  89) Food API
+       post a food array:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  90) Food API
+       put a food array:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  91) _id Validation API Tests
+       Activity API _id validation
+         should accept POST without _id (auto-generate):
+  92) _id Validation API Tests
+       Food API _id validation
+         should accept POST without _id (auto-generate):
+  93) devicestatus, food and activity: _id is stored and matched as an ObjectId
+       devicestatus
+         created with a 24-hex string _id
+  94) devicestatus, food and activity: _id is stored and matched as an ObjectId
+       devicestatus
+         already stored with a string _id
+  95) devicestatus, food and activity: _id is stored and matched as an ObjectId
+       devicestatus
+         already stored with a string _id
+  96) devicestatus, food and activity: _id is stored and matched as an ObjectId
+       devicestatus
+         already stored with a string _id
+  97) devicestatus, food and activity: _id is stored and matched as an ObjectId
+       food
+         created without an _id is still given a new ObjectId _id:
+  98) devicestatus, food and activity: _id is stored and matched as an ObjectId
+       food
+         created with a 24-hex string _id
+  99) devicestatus, food and activity: _id is stored and matched as an ObjectId
+       food
+         created with a 24-hex string _id
+  100) devicestatus, food and activity: _id is stored and matched as an ObjectId
+       food
+         created with a 24-hex string _id
+  101) devicestatus, food and activity: _id is stored and matched as an ObjectId
+       food
+         already stored with a string _id
+  102) devicestatus, food and activity: _id is stored and matched as an ObjectId
+       food
+         already stored with a string _id
+  103) devicestatus, food and activity: _id is stored and matched as an ObjectId
+       food
+         already stored with a string _id
+  104) devicestatus, food and activity: _id is stored and matched as an ObjectId
+       food
+         already stored with a string _id
+  105) devicestatus, food and activity: _id is stored and matched as an ObjectId
+       food
+         already stored with a string _id
+  106) devicestatus, food and activity: _id is stored and matched as an ObjectId
+       food
+         already stored with a string _id
+  107) devicestatus, food and activity: _id is stored and matched as an ObjectId
+       activity
+         created with a 24-hex string _id
+  108) devicestatus, food and activity: _id is stored and matched as an ObjectId
+       activity
+         created with a 24-hex string _id
+  109) devicestatus, food and activity: _id is stored and matched as an ObjectId
+       activity
+         created with a 24-hex string _id
+  110) devicestatus, food and activity: _id is stored and matched as an ObjectId
+       activity
+         already stored with a string _id
+  111) devicestatus, food and activity: _id is stored and matched as an ObjectId
+       activity
+         already stored with a string _id
+  112) devicestatus, food and activity: _id is stored and matched as an ObjectId
+       activity
+         already stored with a string _id
+  113) devicestatus, food and activity: _id is stored and matched as an ObjectId
+       activity
+         already stored with a string _id
+  114) devicestatus, food and activity: _id is stored and matched as an ObjectId
+       activity
+         already stored with a string _id
+  115) devicestatus, food and activity: _id is stored and matched as an ObjectId
+       activity
+         already stored with a string _id
+  116) treatments and entries: records stored with a string _id
+       treatments
+         is replaced by a PUT of the same _id, leaving one ObjectId record with the new content:
+  117) treatments and entries: records stored with a string _id
+       treatments
+         is removed by DELETE /treatments/:id:
+  118) treatments and entries: records stored with a string _id
+       treatments
+         with an ObjectId twin left by an earlier edit collapses to one record on the next PUT:
+  119) treatments and entries: records stored with a string _id
+       treatments
+         with an ObjectId twin is removed entirely by DELETE /treatments/:id:
+  120) treatments and entries: records stored with a string _id
+       treatments
+         is replaced, not copied, by a POST of the same _id with a preBolus:
+  121) treatments and entries: records stored with a string _id
+       treatments
+         stored in upper case is found, replaced by a PUT and removed by DELETE:
+  122) treatments and entries: records stored with a string _id
+       entries
+         is removed by DELETE /entries/:id:
+  123) treatments and entries: records stored with a string _id
+       entries
+         with an ObjectId twin is removed entirely by DELETE /entries/:id:
+  124) v1 API Partial Failures and Edge Cases
+       "before each" hook for "batch with duplicate id field - all documents inserted (id field not unique-indexed)":
+     ReferenceError: assertNoQueryJavascript is not defined
+  125) Profiles API: _id is stored and matched as an ObjectId
+       a profile created with a 24-hex string _id
+         is replaced by a PUT of the same _id, leaving one document with the new content:
+  126) Profiles API: _id is stored and matched as an ObjectId
+       a profile created with a 24-hex string _id
+         is removed by DELETE /profile/:_id:
+  127) Profiles API: _id is stored and matched as an ObjectId
+       a profile already stored with a string _id
+         is replaced by a PUT of the same _id, leaving one ObjectId document with the new content:
+  128) Profiles API: _id is stored and matched as an ObjectId
+       a profile already stored with a string _id
+         is removed by DELETE /profile/:_id:
+  129) Profiles API: _id is stored and matched as an ObjectId
+       a profile already stored with a string _id
+         stored in upper case is found, replaced by a PUT and removed by DELETE:
+  130) Profiles API: _id is stored and matched as an ObjectId
+       a profile already stored with a string _id
+         with an ObjectId twin left by an earlier edit collapses to one document on the next PUT:
+  131) Profiles API: _id is stored and matched as an ObjectId
+       a profile already stored with a string _id
+         with an ObjectId twin is removed entirely by DELETE /profile/:_id:
+  132) Profiles API
+       put a profile, query, delete, verify gone:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  133) Profiles API
+       post a profile, query, delete, verify gone:
+
+  134) Profiles API
+       profile pruning
+         should delete older profile records and keep the newest records:
+  135) Security of REST API V1 [backend: mongodb]
+       Authorization admin save endpoints
+         PUT /api/v2/authorization/subjects updates an existing subject by _id:
+  136) Security of REST API V1 [backend: mongodb]
+       Authorization admin save endpoints
+         PUT /api/v2/authorization/roles updates an existing role by _id:
+  137) API Shape Handling - Single Object vs Array Input
+       Bounded API write payloads
+         activity POST treats a forged length as a document field:
+  138) API Shape Handling - Single Object vs Array Input
+       Bounded API write payloads
+         activity POST remains sanitized at storage:
+  139) API Shape Handling - Single Object vs Array Input
+       Bounded API write payloads
+         food POST treats a forged length as a document field:
+  140) API Shape Handling - Single Object vs Array Input
+       Bounded API write payloads
+         food POST remains sanitized at storage:
+  141) API Shape Handling - Single Object vs Array Input
+       Bounded API write payloads
+         food PUT treats a forged length as a document field:
+  142) API Shape Handling - Single Object vs Array Input
+       Bounded API write payloads
+         food PUT remains sanitized at storage:
+  143) API Shape Handling - Single Object vs Array Input
+       NightscoutKit Fixtures Integration
+         Legacy PUT update semantics
+  144) API Shape Handling - Single Object vs Array Input
+       NightscoutKit Fixtures Integration
+         Legacy PUT update semantics
+  145) Treatment API
+       post single treatments:
+     Error: Timeout of 10000ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves. (<work>/crm-prop-rebase/tests/api.treatments.test.js)
+  146) Treatment API
+       post single treatments in zoned time format:
+     Error: Timeout of 10000ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves. (<work>/crm-prop-rebase/tests/api.treatments.test.js)
+  147) Treatment API
+       post a treatment array:
+     Error: Timeout of 10000ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves. (<work>/crm-prop-rebase/tests/api.treatments.test.js)
+  148) Treatment API
+       post a treatment array and dedupe:
+     Error: Timeout of 10000ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves. (<work>/crm-prop-rebase/tests/api.treatments.test.js)
+  149) Treatment API
+       post a treatment, query, delete, verify gone:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  150) Treatment API
+       supports UUID treatment ids for post, put, and delete:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  151) authed REST api
+       allow authorized POST:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  152) authed REST api
+       allow deletes when authorized:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  153) v1 API Batch Operations - MongoDB Modernization
+       "before each" hook for "POST /api/treatments with Loop carbs batch creates multiple documents":
+     ReferenceError: assertNoQueryJavascript is not defined
+  154) BF-146: treatments and device status written through API v3 enter the cache with mills
+       order
+         COB "last carbs" names the newest carbs after a v3 write and an edit of older carbs (BF-133):
+  155) storage interface escape hatches
+       bulkUpsert
+         replaces wholesale by default:
+  156) storage interface escape hatches
+       bulkUpsert
+         merges with $set in merge mode:
+  157) storage interface escape hatches
+       bulkUpsert
+         is ordered by default and can be unordered:
+  158) storage interface escape hatches
+       bulkUpsert
+         returns upsertedIds so callers can assign _id back:
+  159) storage interface escape hatches
+       updateMany
+         applies set and unset together:
+  160) storage interface escape hatches
+       updateMany
+         omits the half that was not supplied:
+  161) storage interface escape hatches
+       updateMany
+         refuses a field name that would become an update operator:
+  162) storage interface escape hatches
+       updateMany
+         refuses an empty or absent change set:
+  163) storage interface escape hatches
+       count
+         counts with a translated filter:
+  164) storage interface escape hatches
+       deleteMany
+         deletes by a single filter expression:
+  165) storage interface escape hatches
+       deleteMany
+         reports what the driver said about acknowledgement, not `true`:
+  166) BF-122: API v1 and websocket writes appear in API v3 history
+       a v1 POST of a profile and a food appears in history:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  167) BF-122: API v1 and websocket writes appear in API v3 history
+       a v1 PUT of a v3 record by _id keeps its identifier and srvCreated, and the change appears in history:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  168) BF-122: API v1 and websocket writes appear in API v3 history
+       a v1 PUT of a food and a profile keeps srvCreated and appears in history:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  169) BF-122: API v1 and websocket writes appear in API v3 history
+       a v1 DELETE still removes the record, and history does not report it (pinned: hard delete kept):
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  170) Storing authorization subjects
+       does not write the access token to the database when a subject is edited:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  171) Storing authorization subjects
+       does not store an access token a client asks it to store:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  172) Storing authorization subjects
+       keeps the token derivable only with the enclave key, not readable from the collection:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  173) Storing authorization subjects
+       keeps the notes an operator saved across an edit:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  174) Storing authorization subjects
+       keeps notes and created_at when a subject is edited on the admin page:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  175) Storing authorization subjects
+       removes every role when the admin page saves a subject with none:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  176) Storing authorization subjects
+       keeps notes and created_at when a PUT leaves them out:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  177) Storing authorization subjects
+       clears notes when a PUT sends them empty, and still keeps created_at:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  178) Storing authorization subjects
+       keeps a role's notes and created_at when a PUT leaves them out, and clears notes sent empty:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  179) Storing authorization subjects
+       does not store fields a subject document does not own:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  180) cache: a record deleted by _id is removed from the in-memory cache
+       entries.remove by _id removes the entry from the cache:
+     ReferenceError: assertNoQueryJavascript is not defined
+  181) cache: a record deleted by _id is removed from the in-memory cache
+       treatments.remove by _id removes the treatment from the cache, and keeps another:
+     ReferenceError: assertNoQueryJavascript is not defined
+  182) cache: a record deleted by _id is removed from the in-memory cache
+       devicestatus.remove by _id removes the status from the cache:
+     ReferenceError: assertNoQueryJavascript is not defined
+  183) cache: a record deleted by _id is removed from the in-memory cache
+       a delete asked in upper case removes the record from the cache:
+     ReferenceError: assertNoQueryJavascript is not defined
+  184) cache: a record deleted by _id is removed from the in-memory cache
+       a delete of both copies of an id stored twice leaves neither in the cache:
+     ReferenceError: assertNoQueryJavascript is not defined
+  185) Loop Carb Upload Tests
+       "before each" hook for "creates carb with syncIdentifier, absorptionTime preserved":
+     ReferenceError: assertNoQueryJavascript is not defined
+  186) Loop Dose Upload Tests
+       "before each" hook for "creates bolus with syncIdentifier and insulin":
+     ReferenceError: assertNoQueryJavascript is not defined
+  187) GAP-TREAT-012: Loop Override UUID Handling
+       "before each" hook for "accepts UUID _id and promotes to identifier field":
+     ReferenceError: assertNoQueryJavascript is not defined
+  188) Identity Field Test Matrix
+       "before each" hook for "TEST-ID-001: Loop Override with UUID _id is promoted to identifier":
+     ReferenceError: assertNoQueryJavascript is not defined
+  189) Issue #6923: Legacy UUID override edit/delete [backend: mongodb]
+       DELETE legacy UUID override via API
+         DELETE /api/v1/treatments/:uuid should actually remove the legacy document:
+  190) API tests for iOS Loop push notifications
+       "before all" hook for "Sends carb entry with ":
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  191) ObjectIdCache Workflow Tests
+       "before each" hook for "simulates full Loop carb workflow: POST, cache, PUT":
+     ReferenceError: assertNoQueryJavascript is not defined
+  192) Loop DeviceStatus Upload Tests
+       "before each" hook for "creates deviceStatus with loop IOB and COB":
+     ReferenceError: assertNoQueryJavascript is not defined
+  193) JL-1: a soft-deleted record (isValid false) stops counting
+       AAPS v3: 40 g carbs count 40 g COB; after the v3 DELETE they count 0 and v1 reads leave them out:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  194) JL-1: a soft-deleted record (isValid false) stops counting
+       control: the same carbs removed by a v1 DELETE count 0:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  195) JL-1: a soft-deleted record (isValid false) stops counting
+       a v1 DELETE by query still removes deleted records too:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  196) Selected storage read permissions
+       permits explicitly granted storage reads and retains entries fallback twice:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  197) legacy storage selector hardening
+       does not reuse activity or food documents as fallback selectors:
+     ReferenceError: assertNoQueryJavascript is not defined
+  198) legacy storage selector hardening
+       keeps legacy profile boundary values literal in prune selectors:
+     ReferenceError: assertNoQueryJavascript is not defined
+  199) Storage Layer Shape Handling - Direct Storage Tests [backend: mongodb]
+       Profile Storage - lib/server/profile.js
+         save() updates an existing profile by _id:
+  200) Storage Layer Shape Handling - Direct Storage Tests [backend: mongodb]
+       Profile Storage - lib/server/profile.js
+         save() generates _id when none provided:
+  201) Storage Layer Shape Handling - Direct Storage Tests [backend: mongodb]
+       Profile Storage - lib/server/profile.js
+         save() generates _id when invalid _id provided:
+  202) Storage Layer Shape Handling - Direct Storage Tests [backend: mongodb]
+       Profile Storage - lib/server/profile.js
+         save() generates _id for a 12-character _id instead of reading it as raw bytes:
+  203) Storage Layer Shape Handling - Direct Storage Tests [backend: mongodb]
+       Profile Storage - lib/server/profile.js
+         save() preserves explicit created_at and does not overwrite it:
+  204) Storage Layer Shape Handling - Direct Storage Tests [backend: mongodb]
+       Profile Storage - lib/server/profile.js
+         prune() deletes older profiles while keeping the newest records:
+  205) Storage Layer Shape Handling - Direct Storage Tests [backend: mongodb]
+       Profile Storage - lib/server/profile.js
+         prune() uses _id as a tie-breaker when profile startDate values match:
+  206) Storage Layer Shape Handling - Direct Storage Tests [backend: mongodb]
+       Profile Storage - lib/server/profile.js
+         prune() removes profiles missing startDate after dated profiles:
+  207) Storage Layer Shape Handling - Direct Storage Tests [backend: mongodb]
+       Food Storage - lib/server/food.js
+         create() accepts single food object:
+  208) Storage Layer Shape Handling - Direct Storage Tests [backend: mongodb]
+       Food Storage - lib/server/food.js
+         save() updates an existing food by _id when created_at changes:
+  209) Storage Layer Shape Handling - Direct Storage Tests [backend: mongodb]
+       Activity Storage - lib/server/activity.js
+         create() accepts array of activity objects (single object not supported):
+  210) Storage Layer Shape Handling - Direct Storage Tests [backend: mongodb]
+       Activity Storage - lib/server/activity.js
+         save() updates an existing activity by _id:
+  211) Storage Layer Shape Handling - Direct Storage Tests [backend: mongodb]
+       Authorization Storage - lib/authorization/storage.js
+         saveRole() updates an existing role without duplicating it:
+  212) Storage Layer Shape Handling - Direct Storage Tests [backend: mongodb]
+       Authorization Storage - lib/authorization/storage.js
+         removeSubject() removes a subject stored with a string _id:
+  213) Storage Layer Shape Handling - Direct Storage Tests [backend: mongodb]
+       Authorization Storage - lib/authorization/storage.js
+         saveSubject() updates an existing subject without duplicating it:
+  214) UUID_HANDLING=false (explicit)
+       "after each" hook for "UUID-OFF-001: GET by UUID returns empty (no crash)":
+     ReferenceError: assertNoQueryJavascript is not defined
+  215) UUID_HANDLING=true
+       "after each" hook for "UUID-ON-001: GET by UUID finds treatment via identifier":
+     ReferenceError: assertNoQueryJavascript is not defined
+  216) UUID Edge Cases
+       "after each" hook for "UUID-EDGE-001: 23-char hex (invalid ObjectId) returns empty":
+     ReferenceError: assertNoQueryJavascript is not defined
+  217) WebSocket Shape Handling - dbAdd Single vs Array Input
+       dbAdd with treatments collection
+         dbAdd accepts single object for treatments:
+  218) WebSocket write path purification (Stored XSS regression)
+       dbAdd
+         sanitizes malicious HTML in treatment notes the same way the REST API does:
+exit=218 end=2026-10-07T22:00:19Z elapsed_s=369

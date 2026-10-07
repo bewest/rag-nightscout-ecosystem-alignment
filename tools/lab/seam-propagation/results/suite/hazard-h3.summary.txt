@@ -1,0 +1,21 @@
+label=hazard-h3 tree=b894ec76c3ae878b4876de6ba55797a094b9c1b3 treeid=56dc072f2225ddf1c64baf3cfefccf4f08013449 dirty=1
+node=v22.23.2 mongo_read=6.0.27 driver=5.9.2 db=prop_hazard_h3_test start=2026-10-07T22:02:17Z
+  3611 passing (2m)
+  4 pending
+  5 failing
+  1) API v1 count endpoint pipeline parameter
+       still counts normally when no pipeline is named:
+     TypeError: col.countDocuments is not a function
+  2) API v1 count endpoint pipeline parameter
+       keeps the server-side conf.pipeline hook working:
+     Error: Aggregation pipelines are not supported by the count path
+  3) API v1 count endpoint pipeline parameter
+       still answers the ordinary count over HTTP:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  4) devicestatus: a re-send of a stored _id is acknowledged, not copied or refused
+       a re-send stored by another request after the read
+         any other insert error still fails the POST (control):
+  5) devicestatus: a re-send of a stored _id is acknowledged, not copied or refused
+       reads
+         one read for a batch carrying 24-hex _ids, asking for every form of each:
+exit=5 end=2026-10-07T22:04:18Z elapsed_s=121

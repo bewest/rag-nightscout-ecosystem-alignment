@@ -1,0 +1,48 @@
+label=hazard-h2 tree=b894ec76c3ae878b4876de6ba55797a094b9c1b3 treeid=56dc072f2225ddf1c64baf3cfefccf4f08013449 dirty=1
+node=v22.23.2 mongo_read=6.0.27 driver=5.9.2 db=prop_hazard_h2_test start=2026-10-07T22:00:19Z
+  3602 passing (2m)
+  4 pending
+  14 failing
+  1) API v1 count endpoint pipeline parameter
+       still counts normally when no pipeline is named:
+     TypeError: col.countDocuments is not a function
+  2) API v1 count endpoint pipeline parameter
+       keeps the server-side conf.pipeline hook working:
+     Error: Aggregation pipelines are not supported by the count path
+  3) API v1 count endpoint pipeline parameter
+       still answers the ordinary count over HTTP:
+     Error: expected 200 "OK", got 500 "Internal Server Error"
+  4) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 activity
+         v1 create | activity | lower -> 200 [ObjectId]:
+  5) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 activity
+         v1 create | activity | upper -> 200 [ObjectId]:
+  6) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 activity
+         v1 resend | activity | oid -> 200 [ObjectId]:
+  7) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 activity
+         v1 resend | activity | oidU -> 200 [ObjectId]:
+  8) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 activity
+         v1 resend | activity | lower -> 200 [ObjectId]:
+  9) CRUD by _id matrix: v1, v3 and websocket, every collection and stored _id form
+       v1 activity
+         v1 resend | activity | upper -> 200 [ObjectId]:
+  10) devicestatus: a re-send of a stored _id is acknowledged, not copied or refused
+       a re-send stored by another request after the read
+         any other insert error still fails the POST (control):
+  11) devicestatus: a re-send of a stored _id is acknowledged, not copied or refused
+       reads
+         one read for a batch carrying 24-hex _ids, asking for every form of each:
+  12) devicestatus, food and activity: _id is stored and matched as an ObjectId
+       activity
+         created with a 24-hex string _id
+  13) devicestatus, food and activity: _id is stored and matched as an ObjectId
+       activity
+         created with a 24-hex string _id
+  14) devicestatus, food and activity: _id is stored and matched as an ObjectId
+       activity
+         already stored with a string _id
+exit=14 end=2026-10-07T22:02:17Z elapsed_s=118
