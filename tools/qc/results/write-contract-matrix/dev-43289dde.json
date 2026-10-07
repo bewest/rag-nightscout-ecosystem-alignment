@@ -1,0 +1,3089 @@
+{
+ "head": "43289dde4c6913c22b6656c3321e3d7414c47870",
+ "dirty_lib": "",
+ "node": "v22.23.2",
+ "mongod": "7.0.43",
+ "db": "wcm_7d3889ad",
+ "date": "2026-10-07T22:07:18.843Z",
+ "collections": [
+  "entries",
+  "treatments",
+  "devicestatus",
+  "profile",
+  "food",
+  "activity"
+ ],
+ "paths": [
+  "v1",
+  "v3",
+  "ws",
+  "inproc"
+ ],
+ "forms": [
+  "create",
+  "resend-hex",
+  "resend-upper",
+  "resend-oid",
+  "resend-identity",
+  "resend-near",
+  "legacy-lower",
+  "legacy-upper",
+  "update",
+  "update-put",
+  "softdelete",
+  "harddelete"
+ ],
+ "cells": {
+  "entries v1 create": {
+   "st": "200 [1 _id]",
+   "store": "n=1 OID",
+   "srv": "CM",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "entries v1 resend-hex": {
+   "seed": "200 [1 _id=sent]",
+   "st": "200 [1 _id=sent]",
+   "store": "n=1 OID",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "entries v1 resend-upper": {
+   "seed": "200 [1 _id]",
+   "st": "200 [1 _id]",
+   "store": "n=1 OID",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "entries v1 resend-oid": {
+   "seed": "200 [1 _id]",
+   "st": "200 [1 _id]",
+   "store": "n=1 OID",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "entries v1 resend-identity": {
+   "seed": "200 [1 _id]",
+   "st": "200 [1 _id]",
+   "store": "n=1 OID",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "entries v1 resend-near": {
+   "seed": "200 [1 _id]",
+   "st": "200 [1 _id]",
+   "store": "n=2 OID,OID",
+   "srv": "C=M=,CM",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held×2",
+   "v1read": "n=2"
+  },
+  "entries v1 legacy-lower": {
+   "seed": "mongo str",
+   "st": "200 [1 _id=sent]",
+   "store": "n=1 str",
+   "srv": "noCM+",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "entries v1 legacy-upper": {
+   "seed": "mongo str",
+   "st": "200 [1 _id]",
+   "store": "n=1 str",
+   "srv": "noCM+",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "entries v1 update": {
+   "st": "n/a"
+  },
+  "entries v1 softdelete": {
+   "st": "n/a"
+  },
+  "entries v1 harddelete": {
+   "seed": "200 [1 _id]",
+   "st": "200 {acknowledged,deletedCount,n}",
+   "store": "none",
+   "srv": "-",
+   "hist": "absent",
+   "ev": "du:remove(id)",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=0"
+  },
+  "entries v3 create": {
+   "st": "201 {identifier,lastModified}",
+   "store": "n=1 OID",
+   "srv": "CM",
+   "hist": "valid",
+   "ev": "du:update[1,no-mills] ss:create",
+   "wire": "create",
+   "cache": "held no-mills",
+   "v1read": "n=1"
+  },
+  "entries v3 resend-hex": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {lastModified,identifier,isDeduplication}",
+   "store": "n=1 str",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,no-mills] ss:update",
+   "wire": "update",
+   "cache": "held no-mills",
+   "v1read": "n=1"
+  },
+  "entries v3 resend-upper": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {lastModified,identifier,isDeduplication}",
+   "store": "n=1 STR",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,no-mills] ss:update",
+   "wire": "update",
+   "cache": "held no-mills",
+   "v1read": "n=1"
+  },
+  "entries v3 resend-oid": {
+   "seed": "500 {message}",
+   "st": "500 {message}",
+   "store": "none",
+   "srv": "-",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=0"
+  },
+  "entries v3 resend-identity": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {lastModified,identifier,isDeduplication}",
+   "store": "n=1 OID",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,no-mills] ss:update",
+   "wire": "update",
+   "cache": "held no-mills",
+   "v1read": "n=1"
+  },
+  "entries v3 resend-near": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "201 {identifier,lastModified}",
+   "store": "n=2 OID,OID",
+   "srv": "C=M=,CM",
+   "hist": "valid",
+   "ev": "du:update[1,no-mills] ss:create",
+   "wire": "create",
+   "cache": "held×2 no-mills",
+   "v1read": "n=2"
+  },
+  "entries v3 legacy-lower": {
+   "seed": "mongo str",
+   "st": "200 {lastModified,identifier,isDeduplication,deduplicatedIdentifier}",
+   "store": "n=1 str",
+   "srv": "C+M+",
+   "hist": "valid",
+   "ev": "du:update[1,no-mills] ss:update",
+   "wire": "update",
+   "cache": "held no-mills",
+   "v1read": "n=1"
+  },
+  "entries v3 legacy-upper": {
+   "seed": "mongo str",
+   "st": "500 {message}",
+   "store": "n=1 str",
+   "srv": "noCnoM",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=1"
+  },
+  "entries v3 update": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {}",
+   "store": "n=1 OID:v2",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,no-mills] ss:update",
+   "wire": "update",
+   "cache": "held no-mills",
+   "v1read": "n=1"
+  },
+  "entries v3 update-put": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {lastModified}",
+   "store": "n=1 OID:v2",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,no-mills] ss:update",
+   "wire": "update",
+   "cache": "held no-mills",
+   "v1read": "n=1"
+  },
+  "entries v3 softdelete": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {}",
+   "store": "n=1 OID:inv",
+   "srv": "C=M+",
+   "hist": "invalid",
+   "ev": "du:remove(id) ss:delete",
+   "wire": "delete",
+   "cache": "absent",
+   "v1read": "n=0"
+  },
+  "entries v3 harddelete": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {}",
+   "store": "none",
+   "srv": "-",
+   "hist": "absent",
+   "ev": "du:remove(id) ss:delete",
+   "wire": "delete",
+   "cache": "absent",
+   "v1read": "n=0"
+  },
+  "entries ws create": {
+   "st": "ack [1 _id]",
+   "store": "n=1 OID",
+   "srv": "CM",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "entries ws resend-hex": {
+   "seed": "ack [1 _id=sent]",
+   "st": "ack [0]",
+   "store": "n=1 OID",
+   "srv": "C=M=",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "entries ws resend-upper": {
+   "seed": "ack [1 _id]",
+   "st": "ack [0]",
+   "store": "n=1 OID",
+   "srv": "C=M=",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "entries ws resend-oid": {
+   "seed": "ack {\"result\":\"Invalid data\"}",
+   "st": "ack {\"result\":\"Invalid data\"}",
+   "store": "none",
+   "srv": "-",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=0"
+  },
+  "entries ws resend-identity": {
+   "seed": "ack [1 _id]",
+   "st": "ack [1 _id]",
+   "store": "n=2 OID,OID",
+   "srv": "C=M=,CM",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held×2",
+   "v1read": "n=2"
+  },
+  "entries ws resend-near": {
+   "seed": "ack [1 _id]",
+   "st": "ack [1 _id]",
+   "store": "n=2 OID,OID",
+   "srv": "C=M=,CM",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held×2",
+   "v1read": "n=2"
+  },
+  "entries ws legacy-lower": {
+   "seed": "mongo str",
+   "st": "ack [0]",
+   "store": "n=1 str",
+   "srv": "noCnoM",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=1"
+  },
+  "entries ws legacy-upper": {
+   "seed": "mongo str",
+   "st": "ack [0]",
+   "store": "n=1 str",
+   "srv": "noCnoM",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=1"
+  },
+  "entries ws update": {
+   "seed": "ack [1 _id]",
+   "st": "ack {\"result\":\"success\"}",
+   "store": "n=1 OID:v2",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "entries ws softdelete": {
+   "seed": "ack [1 _id]",
+   "st": "ack {\"result\":\"success\"}",
+   "store": "n=1 OID:inv",
+   "srv": "C=M+",
+   "hist": "invalid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=0"
+  },
+  "entries ws harddelete": {
+   "seed": "ack [1 _id]",
+   "st": "ack {\"result\":\"success\"}",
+   "store": "none",
+   "srv": "-",
+   "hist": "absent",
+   "ev": "du:remove(id)",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=0"
+  },
+  "entries inproc create": {
+   "st": "cb [1 _id]",
+   "store": "n=1 OID",
+   "srv": "CM",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "entries inproc resend-hex": {
+   "seed": "cb [1 _id=sent]",
+   "st": "cb [1 _id=sent]",
+   "store": "n=1 OID",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "entries inproc resend-upper": {
+   "seed": "cb [1 _id]",
+   "st": "cb [1 _id]",
+   "store": "n=1 OID",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "entries inproc resend-oid": {
+   "seed": "cb [1 _id=sent]",
+   "st": "cb [1 _id=sent]",
+   "store": "n=1 OID",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "entries inproc resend-identity": {
+   "seed": "cb [1 _id]",
+   "st": "cb [1 _id]",
+   "store": "n=1 OID",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "entries inproc resend-near": {
+   "seed": "cb [1 _id]",
+   "st": "cb [1 _id]",
+   "store": "n=2 OID,OID",
+   "srv": "C=M=,CM",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held×2",
+   "v1read": "n=2"
+  },
+  "entries inproc legacy-lower": {
+   "seed": "mongo str",
+   "st": "cb [1 _id=sent]",
+   "store": "n=1 str",
+   "srv": "noCM+",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "entries inproc legacy-upper": {
+   "seed": "mongo str",
+   "st": "cb [1 _id]",
+   "store": "n=1 str",
+   "srv": "noCM+",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "entries inproc update": {
+   "st": "n/a"
+  },
+  "entries inproc softdelete": {
+   "st": "n/a"
+  },
+  "entries inproc harddelete": {
+   "seed": "cb [1 _id]",
+   "st": "cb [1 no _id]",
+   "store": "none",
+   "srv": "-",
+   "hist": "absent",
+   "ev": "du:remove(id)",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=0"
+  },
+  "treatments v1 create": {
+   "st": "200 [1 _id]",
+   "store": "n=1 OID",
+   "srv": "CM",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "treatments v1 resend-hex": {
+   "seed": "200 [1 _id=sent]",
+   "st": "200 [1 _id=sent]",
+   "store": "n=1 OID",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "treatments v1 resend-upper": {
+   "seed": "200 [1 _id]",
+   "st": "200 [1 _id]",
+   "store": "n=1 OID",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "treatments v1 resend-oid": {
+   "seed": "200 [1 _id]",
+   "st": "200 [1 _id]",
+   "store": "n=1 OID",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "treatments v1 resend-identity": {
+   "seed": "200 [1 _id]",
+   "st": "200 [1 no _id]",
+   "store": "n=1 OID",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "treatments v1 resend-near": {
+   "seed": "200 [1 _id]",
+   "st": "200 [1 _id]",
+   "store": "n=2 OID,OID",
+   "srv": "C=M=,CM",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held×2",
+   "v1read": "n=2"
+  },
+  "treatments v1 legacy-lower": {
+   "seed": "mongo str",
+   "st": "200 [1 _id=sent]",
+   "store": "n=1 OID",
+   "srv": "CM",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "treatments v1 legacy-upper": {
+   "seed": "mongo str",
+   "st": "200 [1 _id]",
+   "store": "n=1 OID",
+   "srv": "CM",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "treatments v1 update": {
+   "seed": "200 [1 _id]",
+   "st": "200 {_id,date,utcOffset,app,wc,wcv,eventType,carbs,created_at,device,enteredBy,srvModified,srvCreated}",
+   "store": "n=1 OID:v2",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "treatments v1 softdelete": {
+   "seed": "200 [1 _id]",
+   "st": "200 {_id,date,utcOffset,app,wc,wcv,eventType,carbs,created_at,device,enteredBy,srvModified,srvCreated,isValid}",
+   "store": "n=1 OID:inv",
+   "srv": "C=M+",
+   "hist": "invalid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=0"
+  },
+  "treatments v1 harddelete": {
+   "seed": "200 [1 _id]",
+   "st": "200 {acknowledged,deletedCount,n}",
+   "store": "none",
+   "srv": "-",
+   "hist": "absent",
+   "ev": "du:remove(id)",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=0"
+  },
+  "treatments v3 create": {
+   "st": "201 {identifier,lastModified}",
+   "store": "n=1 OID",
+   "srv": "CM",
+   "hist": "valid",
+   "ev": "du:update[1,mills] ss:create",
+   "wire": "create",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "treatments v3 resend-hex": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {lastModified,identifier,isDeduplication}",
+   "store": "n=1 str",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills] ss:update",
+   "wire": "update",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "treatments v3 resend-upper": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {lastModified,identifier,isDeduplication}",
+   "store": "n=1 STR",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills] ss:update",
+   "wire": "update",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "treatments v3 resend-oid": {
+   "seed": "500 {message}",
+   "st": "500 {message}",
+   "store": "none",
+   "srv": "-",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=0"
+  },
+  "treatments v3 resend-identity": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {lastModified,identifier,isDeduplication}",
+   "store": "n=1 OID",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills] ss:update",
+   "wire": "update",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "treatments v3 resend-near": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "201 {identifier,lastModified}",
+   "store": "n=2 OID,OID",
+   "srv": "C=M=,CM",
+   "hist": "valid",
+   "ev": "du:update[1,mills] ss:create",
+   "wire": "create",
+   "cache": "held×2",
+   "v1read": "n=2"
+  },
+  "treatments v3 legacy-lower": {
+   "seed": "mongo str",
+   "st": "200 {lastModified,identifier,isDeduplication,deduplicatedIdentifier}",
+   "store": "n=1 str",
+   "srv": "C+M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills] ss:update",
+   "wire": "update",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "treatments v3 legacy-upper": {
+   "seed": "mongo str",
+   "st": "500 {message}",
+   "store": "n=1 str",
+   "srv": "noCnoM",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=1"
+  },
+  "treatments v3 update": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {}",
+   "store": "n=1 OID:v2",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills] ss:update",
+   "wire": "update",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "treatments v3 update-put": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {lastModified}",
+   "store": "n=1 OID:v2",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills] ss:update",
+   "wire": "update",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "treatments v3 softdelete": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {}",
+   "store": "n=1 OID:inv",
+   "srv": "C=M+",
+   "hist": "invalid",
+   "ev": "du:remove(id) ss:delete",
+   "wire": "delete",
+   "cache": "absent",
+   "v1read": "n=0"
+  },
+  "treatments v3 harddelete": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {}",
+   "store": "none",
+   "srv": "-",
+   "hist": "absent",
+   "ev": "du:remove(id) ss:delete",
+   "wire": "delete",
+   "cache": "absent",
+   "v1read": "n=0"
+  },
+  "treatments ws create": {
+   "st": "ack [1 _id]",
+   "store": "n=1 OID",
+   "srv": "CM",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "treatments ws resend-hex": {
+   "seed": "ack [1 _id=sent]",
+   "st": "ack [1 _id=sent]",
+   "store": "n=1 OID",
+   "srv": "C=M=",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "treatments ws resend-upper": {
+   "seed": "ack [1 _id]",
+   "st": "ack [1 _id]",
+   "store": "n=1 OID",
+   "srv": "C=M=",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "treatments ws resend-oid": {
+   "seed": "ack {\"result\":\"Invalid data\"}",
+   "st": "ack {\"result\":\"Invalid data\"}",
+   "store": "none",
+   "srv": "-",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=0"
+  },
+  "treatments ws resend-identity": {
+   "seed": "ack [1 _id]",
+   "st": "ack [1 _id]",
+   "store": "n=1 OID",
+   "srv": "C=M=",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "treatments ws resend-near": {
+   "seed": "ack [1 _id]",
+   "st": "ack [1 _id]",
+   "store": "n=1 OID",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "none",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "treatments ws legacy-lower": {
+   "seed": "mongo str",
+   "st": "ack [1 _id=sent]",
+   "store": "n=1 str",
+   "srv": "noCnoM",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=1"
+  },
+  "treatments ws legacy-upper": {
+   "seed": "mongo str",
+   "st": "ack [1 _id]",
+   "store": "n=1 str",
+   "srv": "noCnoM",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=1"
+  },
+  "treatments ws update": {
+   "seed": "ack [1 _id]",
+   "st": "ack {\"result\":\"success\"}",
+   "store": "n=1 OID:v2",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "treatments ws softdelete": {
+   "seed": "ack [1 _id]",
+   "st": "ack {\"result\":\"success\"}",
+   "store": "n=1 OID:inv",
+   "srv": "C=M+",
+   "hist": "invalid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=0"
+  },
+  "treatments ws harddelete": {
+   "seed": "ack [1 _id]",
+   "st": "ack {\"result\":\"success\"}",
+   "store": "none",
+   "srv": "-",
+   "hist": "absent",
+   "ev": "du:remove(id)",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=0"
+  },
+  "treatments inproc create": {
+   "st": "cb [1 _id]",
+   "store": "n=1 OID",
+   "srv": "CM",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "treatments inproc resend-hex": {
+   "seed": "cb [1 _id=sent]",
+   "st": "cb [1 _id=sent]",
+   "store": "n=1 OID",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "treatments inproc resend-upper": {
+   "seed": "cb [1 _id]",
+   "st": "cb [1 _id]",
+   "store": "n=1 OID",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "treatments inproc resend-oid": {
+   "seed": "cb [1 _id=sent]",
+   "st": "cb [1 _id=sent]",
+   "store": "n=1 OID",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "treatments inproc resend-identity": {
+   "seed": "cb [1 _id]",
+   "st": "cb [1 no _id]",
+   "store": "n=1 OID",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "treatments inproc resend-near": {
+   "seed": "cb [1 _id]",
+   "st": "cb [1 _id]",
+   "store": "n=2 OID,OID",
+   "srv": "C=M=,CM",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held×2",
+   "v1read": "n=2"
+  },
+  "treatments inproc legacy-lower": {
+   "seed": "mongo str",
+   "st": "cb [1 _id=sent]",
+   "store": "n=1 OID",
+   "srv": "CM",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "treatments inproc legacy-upper": {
+   "seed": "mongo str",
+   "st": "cb [1 _id]",
+   "store": "n=1 OID",
+   "srv": "CM",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "treatments inproc update": {
+   "seed": "cb [1 _id]",
+   "st": "cb [1 _id]",
+   "store": "n=1 OID:v2",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "treatments inproc softdelete": {
+   "seed": "cb [1 _id]",
+   "st": "cb [1 _id]",
+   "store": "n=1 OID:inv",
+   "srv": "C=M+",
+   "hist": "invalid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=0"
+  },
+  "treatments inproc harddelete": {
+   "seed": "cb [1 _id]",
+   "st": "cb [1 no _id]",
+   "store": "none",
+   "srv": "-",
+   "hist": "absent",
+   "ev": "du:remove(id)",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=0"
+  },
+  "devicestatus v1 create": {
+   "st": "200 [1 _id]",
+   "store": "n=1 OID",
+   "srv": "CM",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "devicestatus v1 resend-hex": {
+   "seed": "200 [1 _id=sent]",
+   "st": "200 [1 _id=sent]",
+   "store": "n=1 OID",
+   "srv": "C=M=",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "devicestatus v1 resend-upper": {
+   "seed": "200 [1 _id]",
+   "st": "200 [1 _id]",
+   "store": "n=1 OID",
+   "srv": "C=M=",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "devicestatus v1 resend-oid": {
+   "seed": "400 {message,description}",
+   "st": "400 {message,description}",
+   "store": "none",
+   "srv": "-",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=0"
+  },
+  "devicestatus v1 resend-identity": {
+   "seed": "200 [1 _id]",
+   "st": "200 [1 _id]",
+   "store": "n=2 OID,OID",
+   "srv": "C=M=,CM",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held×2",
+   "v1read": "n=2"
+  },
+  "devicestatus v1 resend-near": {
+   "seed": "200 [1 _id]",
+   "st": "200 [1 _id]",
+   "store": "n=2 OID,OID",
+   "srv": "C=M=,CM",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held×2",
+   "v1read": "n=2"
+  },
+  "devicestatus v1 legacy-lower": {
+   "seed": "mongo str",
+   "st": "200 [1 _id=sent]",
+   "store": "n=1 str",
+   "srv": "noCnoM",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=1"
+  },
+  "devicestatus v1 legacy-upper": {
+   "seed": "mongo str",
+   "st": "200 [1 _id]",
+   "store": "n=1 str",
+   "srv": "noCnoM",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=1"
+  },
+  "devicestatus v1 update": {
+   "st": "n/a"
+  },
+  "devicestatus v1 softdelete": {
+   "st": "n/a"
+  },
+  "devicestatus v1 harddelete": {
+   "seed": "200 [1 _id]",
+   "st": "200 {acknowledged,deletedCount,n}",
+   "store": "none",
+   "srv": "-",
+   "hist": "absent",
+   "ev": "du:remove(id)",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=0"
+  },
+  "devicestatus v3 create": {
+   "st": "201 {identifier,lastModified}",
+   "store": "n=1 OID",
+   "srv": "CM",
+   "hist": "valid",
+   "ev": "du:update[1,mills] ss:create",
+   "wire": "create",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "devicestatus v3 resend-hex": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {lastModified,identifier,isDeduplication}",
+   "store": "n=1 str",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills] ss:update",
+   "wire": "update",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "devicestatus v3 resend-upper": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {lastModified,identifier,isDeduplication}",
+   "store": "n=1 STR",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills] ss:update",
+   "wire": "update",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "devicestatus v3 resend-oid": {
+   "seed": "500 {message}",
+   "st": "500 {message}",
+   "store": "none",
+   "srv": "-",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=0"
+  },
+  "devicestatus v3 resend-identity": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {lastModified,identifier,isDeduplication}",
+   "store": "n=1 OID",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills] ss:update",
+   "wire": "update",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "devicestatus v3 resend-near": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "201 {identifier,lastModified}",
+   "store": "n=2 OID,OID",
+   "srv": "C=M=,CM",
+   "hist": "valid",
+   "ev": "du:update[1,mills] ss:create",
+   "wire": "create",
+   "cache": "held×2",
+   "v1read": "n=2"
+  },
+  "devicestatus v3 legacy-lower": {
+   "seed": "mongo str",
+   "st": "200 {lastModified,identifier,isDeduplication,deduplicatedIdentifier}",
+   "store": "n=1 str",
+   "srv": "C+M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills] ss:update",
+   "wire": "update",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "devicestatus v3 legacy-upper": {
+   "seed": "mongo str",
+   "st": "500 {message}",
+   "store": "n=1 str",
+   "srv": "noCnoM",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=1"
+  },
+  "devicestatus v3 update": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {}",
+   "store": "n=1 OID:v2",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills] ss:update",
+   "wire": "update",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "devicestatus v3 update-put": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {lastModified}",
+   "store": "n=1 OID:v2",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills] ss:update",
+   "wire": "update",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "devicestatus v3 softdelete": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {}",
+   "store": "n=1 OID:inv",
+   "srv": "C=M+",
+   "hist": "invalid",
+   "ev": "du:remove(id) ss:delete",
+   "wire": "delete",
+   "cache": "absent",
+   "v1read": "n=0"
+  },
+  "devicestatus v3 harddelete": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {}",
+   "store": "none",
+   "srv": "-",
+   "hist": "absent",
+   "ev": "du:remove(id) ss:delete",
+   "wire": "delete",
+   "cache": "absent",
+   "v1read": "n=0"
+  },
+  "devicestatus ws create": {
+   "st": "ack [1 _id]",
+   "store": "n=1 OID",
+   "srv": "CM",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "devicestatus ws resend-hex": {
+   "seed": "ack [1 _id=sent]",
+   "st": "ack [1 _id=sent]",
+   "store": "n=1 OID",
+   "srv": "C=M=",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "devicestatus ws resend-upper": {
+   "seed": "ack [1 _id]",
+   "st": "ack [1 _id]",
+   "store": "n=1 OID",
+   "srv": "C=M=",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "devicestatus ws resend-oid": {
+   "seed": "ack {\"result\":\"Invalid data\"}",
+   "st": "ack {\"result\":\"Invalid data\"}",
+   "store": "none",
+   "srv": "-",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=0"
+  },
+  "devicestatus ws resend-identity": {
+   "seed": "ack [1 _id]",
+   "st": "ack [1 _id]",
+   "store": "n=1 OID",
+   "srv": "C=M=",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "devicestatus ws resend-near": {
+   "seed": "ack [1 _id]",
+   "st": "ack [1 _id]",
+   "store": "n=2 OID,OID",
+   "srv": "C=M=,CM",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held×2",
+   "v1read": "n=2"
+  },
+  "devicestatus ws legacy-lower": {
+   "seed": "mongo str",
+   "st": "ack [1 _id=sent]",
+   "store": "n=1 str",
+   "srv": "noCnoM",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=1"
+  },
+  "devicestatus ws legacy-upper": {
+   "seed": "mongo str",
+   "st": "ack [1 _id]",
+   "store": "n=1 str",
+   "srv": "noCnoM",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=1"
+  },
+  "devicestatus ws update": {
+   "seed": "ack [1 _id]",
+   "st": "ack {\"result\":\"success\"}",
+   "store": "n=1 OID:v2",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "devicestatus ws softdelete": {
+   "seed": "ack [1 _id]",
+   "st": "ack {\"result\":\"success\"}",
+   "store": "n=1 OID:inv",
+   "srv": "C=M+",
+   "hist": "invalid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=0"
+  },
+  "devicestatus ws harddelete": {
+   "seed": "ack [1 _id]",
+   "st": "ack {\"result\":\"success\"}",
+   "store": "none",
+   "srv": "-",
+   "hist": "absent",
+   "ev": "du:remove(id)",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=0"
+  },
+  "devicestatus inproc create": {
+   "st": "cb [1 _id]",
+   "store": "n=1 OID",
+   "srv": "CM",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "devicestatus inproc resend-hex": {
+   "seed": "cb [1 _id=sent]",
+   "st": "cb [1 _id=sent]",
+   "store": "n=1 OID",
+   "srv": "C=M=",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "devicestatus inproc resend-upper": {
+   "seed": "cb [1 _id]",
+   "st": "cb [1 _id]",
+   "store": "n=1 OID",
+   "srv": "C=M=",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "devicestatus inproc resend-oid": {
+   "seed": "cb [1 _id=sent]",
+   "st": "cb [1 _id=sent]",
+   "store": "n=1 OID",
+   "srv": "C=M=",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "held",
+   "v1read": "n=1"
+  },
+  "devicestatus inproc resend-identity": {
+   "seed": "cb [1 _id]",
+   "st": "cb [1 _id]",
+   "store": "n=2 OID,OID",
+   "srv": "C=M=,CM",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held×2",
+   "v1read": "n=2"
+  },
+  "devicestatus inproc resend-near": {
+   "seed": "cb [1 _id]",
+   "st": "cb [1 _id]",
+   "store": "n=2 OID,OID",
+   "srv": "C=M=,CM",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "held×2",
+   "v1read": "n=2"
+  },
+  "devicestatus inproc legacy-lower": {
+   "seed": "mongo str",
+   "st": "cb [1 _id=sent]",
+   "store": "n=1 str",
+   "srv": "noCnoM",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=1"
+  },
+  "devicestatus inproc legacy-upper": {
+   "seed": "mongo str",
+   "st": "cb [1 _id]",
+   "store": "n=1 str",
+   "srv": "noCnoM",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=1"
+  },
+  "devicestatus inproc update": {
+   "st": "n/a"
+  },
+  "devicestatus inproc softdelete": {
+   "st": "n/a"
+  },
+  "devicestatus inproc harddelete": {
+   "seed": "cb [1 _id]",
+   "st": "cb [1 no _id]",
+   "store": "none",
+   "srv": "-",
+   "hist": "absent",
+   "ev": "du:remove(id)",
+   "wire": "none",
+   "cache": "absent",
+   "v1read": "n=0"
+  },
+  "profile v1 create": {
+   "st": "200 [1 _id]",
+   "store": "n=1 OID",
+   "srv": "CM",
+   "hist": "valid",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "profile v1 resend-hex": {
+   "seed": "200 [1 _id=sent]",
+   "st": "500 {message,description}",
+   "store": "n=1 OID",
+   "srv": "C=M=",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "profile v1 resend-upper": {
+   "seed": "200 [1 _id]",
+   "st": "500 {message,description}",
+   "store": "n=1 OID",
+   "srv": "C=M=",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "profile v1 resend-oid": {
+   "seed": "400 {message,description}",
+   "st": "400 {message,description}",
+   "store": "none",
+   "srv": "-",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=0"
+  },
+  "profile v1 resend-identity": {
+   "seed": "200 [1 _id]",
+   "st": "200 [1 _id]",
+   "store": "n=2 OID,OID",
+   "srv": "C=M=,CM",
+   "hist": "valid",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=2"
+  },
+  "profile v1 resend-near": {
+   "seed": "200 [1 _id]",
+   "st": "200 [1 _id]",
+   "store": "n=2 OID,OID",
+   "srv": "C=M=,CM",
+   "hist": "valid",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=2"
+  },
+  "profile v1 legacy-lower": {
+   "seed": "mongo str",
+   "st": "500 {message,description}",
+   "store": "n=1 str",
+   "srv": "noCnoM",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "profile v1 legacy-upper": {
+   "seed": "mongo str",
+   "st": "200 [1 _id]",
+   "store": "n=2 str,OID",
+   "srv": "noCnoM,CM",
+   "hist": "valid",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=2"
+  },
+  "profile v1 update": {
+   "seed": "200 [1 _id]",
+   "st": "200 {_id,date,utcOffset,app,wc,wcv,defaultProfile,startDate,created_at,units,store,srvModified,srvCreated}",
+   "store": "n=1 OID:v2",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "profile v1 softdelete": {
+   "seed": "200 [1 _id]",
+   "st": "200 {_id,date,utcOffset,app,wc,wcv,defaultProfile,startDate,created_at,units,store,srvModified,srvCreated,isValid}",
+   "store": "n=1 OID:inv",
+   "srv": "C=M+",
+   "hist": "invalid",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=0"
+  },
+  "profile v1 harddelete": {
+   "seed": "200 [1 _id]",
+   "st": "200 {}",
+   "store": "none",
+   "srv": "-",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=0"
+  },
+  "profile v3 create": {
+   "st": "201 {identifier,lastModified}",
+   "store": "n=1 OID",
+   "srv": "CM",
+   "hist": "valid",
+   "ev": "ss:create",
+   "wire": "create",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "profile v3 resend-hex": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {lastModified,identifier,isDeduplication}",
+   "store": "n=1 str",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "ss:update",
+   "wire": "update",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "profile v3 resend-upper": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {lastModified,identifier,isDeduplication}",
+   "store": "n=1 STR",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "ss:update",
+   "wire": "update",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "profile v3 resend-oid": {
+   "seed": "500 {message}",
+   "st": "500 {message}",
+   "store": "none",
+   "srv": "-",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=0"
+  },
+  "profile v3 resend-identity": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {lastModified,identifier,isDeduplication}",
+   "store": "n=1 OID",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "ss:update",
+   "wire": "update",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "profile v3 resend-near": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "201 {identifier,lastModified}",
+   "store": "n=2 OID,OID",
+   "srv": "C=M=,CM",
+   "hist": "valid",
+   "ev": "ss:create",
+   "wire": "create",
+   "cache": "n/a",
+   "v1read": "n=2"
+  },
+  "profile v3 legacy-lower": {
+   "seed": "mongo str",
+   "st": "200 {lastModified,identifier,isDeduplication,deduplicatedIdentifier}",
+   "store": "n=1 str",
+   "srv": "C+M+",
+   "hist": "valid",
+   "ev": "ss:update",
+   "wire": "update",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "profile v3 legacy-upper": {
+   "seed": "mongo str",
+   "st": "500 {message}",
+   "store": "n=1 str",
+   "srv": "noCnoM",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "profile v3 update": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {}",
+   "store": "n=1 OID:v2",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "ss:update",
+   "wire": "update",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "profile v3 update-put": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {lastModified}",
+   "store": "n=1 OID:v2",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "ss:update",
+   "wire": "update",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "profile v3 softdelete": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {}",
+   "store": "n=1 OID:inv",
+   "srv": "C=M+",
+   "hist": "invalid",
+   "ev": "ss:delete",
+   "wire": "delete",
+   "cache": "n/a",
+   "v1read": "n=0"
+  },
+  "profile v3 harddelete": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {}",
+   "store": "none",
+   "srv": "-",
+   "hist": "absent",
+   "ev": "ss:delete",
+   "wire": "delete",
+   "cache": "n/a",
+   "v1read": "n=0"
+  },
+  "profile ws create": {
+   "st": "ack [1 _id]",
+   "store": "n=1 OID",
+   "srv": "CM",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "profile ws resend-hex": {
+   "seed": "ack [1 _id=sent]",
+   "st": "ack [1 _id=sent]",
+   "store": "n=1 OID",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "profile ws resend-upper": {
+   "seed": "ack [1 _id]",
+   "st": "ack [1 _id]",
+   "store": "n=1 OID",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "profile ws resend-oid": {
+   "seed": "ack {\"result\":\"Invalid data\"}",
+   "st": "ack {\"result\":\"Invalid data\"}",
+   "store": "none",
+   "srv": "-",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=0"
+  },
+  "profile ws resend-identity": {
+   "seed": "ack [1 _id]",
+   "st": "ack [1 _id]",
+   "store": "n=1 OID",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "profile ws resend-near": {
+   "seed": "ack [1 _id]",
+   "st": "ack [1 _id]",
+   "store": "n=2 OID,OID",
+   "srv": "C=M=,CM",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=2"
+  },
+  "profile ws legacy-lower": {
+   "seed": "mongo str",
+   "st": "ack [1 _id=sent]",
+   "store": "n=1 str",
+   "srv": "noCM+",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "profile ws legacy-upper": {
+   "seed": "mongo str",
+   "st": "ack [1 _id]",
+   "store": "n=1 str",
+   "srv": "noCM+",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "profile ws update": {
+   "seed": "ack [1 _id]",
+   "st": "ack {\"result\":\"success\"}",
+   "store": "n=1 OID:v2",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "profile ws softdelete": {
+   "seed": "ack [1 _id]",
+   "st": "ack {\"result\":\"success\"}",
+   "store": "n=1 OID:inv",
+   "srv": "C=M+",
+   "hist": "invalid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=0"
+  },
+  "profile ws harddelete": {
+   "seed": "ack [1 _id]",
+   "st": "ack {\"result\":\"success\"}",
+   "store": "none",
+   "srv": "-",
+   "hist": "absent",
+   "ev": "du:remove(id)",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=0"
+  },
+  "profile inproc create": {
+   "st": "cb [1 _id]",
+   "store": "n=1 OID",
+   "srv": "CM",
+   "hist": "valid",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "profile inproc resend-hex": {
+   "seed": "cb [1 _id=sent]",
+   "st": "err E11000 duplicate key error collection: wcm_*.profile index: ",
+   "store": "n=1 OID",
+   "srv": "C=M=",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "profile inproc resend-upper": {
+   "seed": "cb [1 _id]",
+   "st": "err E11000 duplicate key error collection: wcm_*.profile index: ",
+   "store": "n=1 OID",
+   "srv": "C=M=",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "profile inproc resend-oid": {
+   "seed": "cb [1 _id=sent]",
+   "st": "err E11000 duplicate key error collection: wcm_*.profile index: ",
+   "store": "n=1 OID",
+   "srv": "C=M=",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "profile inproc resend-identity": {
+   "seed": "cb [1 _id]",
+   "st": "cb [1 _id]",
+   "store": "n=2 OID,OID",
+   "srv": "C=M=,CM",
+   "hist": "valid",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=2"
+  },
+  "profile inproc resend-near": {
+   "seed": "cb [1 _id]",
+   "st": "cb [1 _id]",
+   "store": "n=2 OID,OID",
+   "srv": "C=M=,CM",
+   "hist": "valid",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=2"
+  },
+  "profile inproc legacy-lower": {
+   "seed": "mongo str",
+   "st": "err E11000 duplicate key error collection: wcm_*.profile index: ",
+   "store": "n=1 str",
+   "srv": "noCnoM",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "profile inproc legacy-upper": {
+   "seed": "mongo str",
+   "st": "cb [1 _id]",
+   "store": "n=2 str,OID",
+   "srv": "noCnoM,CM",
+   "hist": "valid",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=2"
+  },
+  "profile inproc update": {
+   "seed": "cb [1 _id]",
+   "st": "cb [1 _id]",
+   "store": "n=1 OID:v2",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "profile inproc softdelete": {
+   "seed": "cb [1 _id]",
+   "st": "cb [1 _id]",
+   "store": "n=1 OID:inv",
+   "srv": "C=M+",
+   "hist": "invalid",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=0"
+  },
+  "profile inproc harddelete": {
+   "seed": "cb [1 _id]",
+   "st": "cb [1 no _id]",
+   "store": "none",
+   "srv": "-",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=0"
+  },
+  "food v1 create": {
+   "st": "200 [1 _id]",
+   "store": "n=1 OID",
+   "srv": "CM",
+   "hist": "valid",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "food v1 resend-hex": {
+   "seed": "200 [1 _id=sent]",
+   "st": "200 [1 _id=sent]",
+   "store": "n=1 OID",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "food v1 resend-upper": {
+   "seed": "200 [1 _id]",
+   "st": "200 [1 _id]",
+   "store": "n=1 OID",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "food v1 resend-oid": {
+   "seed": "400 {message,description}",
+   "st": "400 {message,description}",
+   "store": "none",
+   "srv": "-",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=0"
+  },
+  "food v1 resend-identity": {
+   "seed": "200 [1 _id]",
+   "st": "200 [1 _id]",
+   "store": "n=2 OID,OID",
+   "srv": "C=M=,CM",
+   "hist": "valid",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=2"
+  },
+  "food v1 resend-near": {
+   "seed": "200 [1 _id]",
+   "st": "200 [1 _id]",
+   "store": "n=2 OID,OID",
+   "srv": "C=M=,CM",
+   "hist": "valid",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=2"
+  },
+  "food v1 legacy-lower": {
+   "seed": "mongo str",
+   "st": "200 [1 _id=sent]",
+   "store": "n=1 OID",
+   "srv": "CM",
+   "hist": "valid",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "food v1 legacy-upper": {
+   "seed": "mongo str",
+   "st": "200 [1 _id]",
+   "store": "n=1 OID",
+   "srv": "CM",
+   "hist": "valid",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "food v1 update": {
+   "seed": "200 [1 _id]",
+   "st": "200 [1 _id]",
+   "store": "n=1 OID:v2",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "food v1 softdelete": {
+   "seed": "200 [1 _id]",
+   "st": "200 [1 _id]",
+   "store": "n=1 OID:inv",
+   "srv": "C=M+",
+   "hist": "invalid",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=0"
+  },
+  "food v1 harddelete": {
+   "seed": "200 [1 _id]",
+   "st": "200 {}",
+   "store": "none",
+   "srv": "-",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=0"
+  },
+  "food v3 create": {
+   "st": "201 {identifier,lastModified}",
+   "store": "n=1 OID",
+   "srv": "CM",
+   "hist": "valid",
+   "ev": "ss:create",
+   "wire": "create",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "food v3 resend-hex": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {lastModified,identifier,isDeduplication}",
+   "store": "n=1 str",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "ss:update",
+   "wire": "update",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "food v3 resend-upper": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {lastModified,identifier,isDeduplication}",
+   "store": "n=1 STR",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "ss:update",
+   "wire": "update",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "food v3 resend-oid": {
+   "seed": "500 {message}",
+   "st": "500 {message}",
+   "store": "none",
+   "srv": "-",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=0"
+  },
+  "food v3 resend-identity": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {lastModified,identifier,isDeduplication}",
+   "store": "n=1 OID",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "ss:update",
+   "wire": "update",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "food v3 resend-near": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "201 {identifier,lastModified}",
+   "store": "n=2 OID,OID",
+   "srv": "C=M=,CM",
+   "hist": "valid",
+   "ev": "ss:create",
+   "wire": "create",
+   "cache": "n/a",
+   "v1read": "n=2"
+  },
+  "food v3 legacy-lower": {
+   "seed": "mongo str",
+   "st": "200 {lastModified,identifier,isDeduplication,deduplicatedIdentifier}",
+   "store": "n=1 str",
+   "srv": "C+M+",
+   "hist": "valid",
+   "ev": "ss:update",
+   "wire": "update",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "food v3 legacy-upper": {
+   "seed": "mongo str",
+   "st": "500 {message}",
+   "store": "n=1 str",
+   "srv": "noCnoM",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "food v3 update": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {}",
+   "store": "n=1 OID:v2",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "ss:update",
+   "wire": "update",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "food v3 update-put": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {lastModified}",
+   "store": "n=1 OID:v2",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "ss:update",
+   "wire": "update",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "food v3 softdelete": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {}",
+   "store": "n=1 OID:inv",
+   "srv": "C=M+",
+   "hist": "invalid",
+   "ev": "ss:delete",
+   "wire": "delete",
+   "cache": "n/a",
+   "v1read": "n=0"
+  },
+  "food v3 harddelete": {
+   "seed": "201 {identifier,lastModified}",
+   "st": "200 {}",
+   "store": "none",
+   "srv": "-",
+   "hist": "absent",
+   "ev": "ss:delete",
+   "wire": "delete",
+   "cache": "n/a",
+   "v1read": "n=0"
+  },
+  "food ws create": {
+   "st": "ack [1 _id]",
+   "store": "n=1 OID",
+   "srv": "CM",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "food ws resend-hex": {
+   "seed": "ack [1 _id=sent]",
+   "st": "ack [0]",
+   "store": "n=1 OID",
+   "srv": "C=M=",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "food ws resend-upper": {
+   "seed": "ack [1 _id]",
+   "st": "ack [0]",
+   "store": "n=1 OID",
+   "srv": "C=M=",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "food ws resend-oid": {
+   "seed": "ack {\"result\":\"Invalid data\"}",
+   "st": "ack {\"result\":\"Invalid data\"}",
+   "store": "none",
+   "srv": "-",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=0"
+  },
+  "food ws resend-identity": {
+   "seed": "ack [1 _id]",
+   "st": "ack [1 _id]",
+   "store": "n=2 OID,OID",
+   "srv": "C=M=,CM",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=2"
+  },
+  "food ws resend-near": {
+   "seed": "ack [1 _id]",
+   "st": "ack [1 _id]",
+   "store": "n=2 OID,OID",
+   "srv": "C=M=,CM",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=2"
+  },
+  "food ws legacy-lower": {
+   "seed": "mongo str",
+   "st": "ack [0]",
+   "store": "n=1 str",
+   "srv": "noCnoM",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "food ws legacy-upper": {
+   "seed": "mongo str",
+   "st": "ack [0]",
+   "store": "n=1 str",
+   "srv": "noCnoM",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "food ws update": {
+   "seed": "ack [1 _id]",
+   "st": "ack {\"result\":\"success\"}",
+   "store": "n=1 OID:v2",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "food ws softdelete": {
+   "seed": "ack [1 _id]",
+   "st": "ack {\"result\":\"success\"}",
+   "store": "n=1 OID:inv",
+   "srv": "C=M+",
+   "hist": "invalid",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=0"
+  },
+  "food ws harddelete": {
+   "seed": "ack [1 _id]",
+   "st": "ack {\"result\":\"success\"}",
+   "store": "none",
+   "srv": "-",
+   "hist": "absent",
+   "ev": "du:remove(id)",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=0"
+  },
+  "food inproc create": {
+   "st": "cb [1 _id]",
+   "store": "n=1 OID",
+   "srv": "CM",
+   "hist": "valid",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "food inproc resend-hex": {
+   "seed": "cb [1 _id=sent]",
+   "st": "cb [1 _id=sent]",
+   "store": "n=1 OID",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "food inproc resend-upper": {
+   "seed": "cb [1 _id]",
+   "st": "cb [1 _id]",
+   "store": "n=1 OID",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "food inproc resend-oid": {
+   "seed": "cb [1 _id=sent]",
+   "st": "cb [1 _id=sent]",
+   "store": "n=1 OID",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "food inproc resend-identity": {
+   "seed": "cb [1 _id]",
+   "st": "cb [1 _id]",
+   "store": "n=2 OID,OID",
+   "srv": "C=M=,CM",
+   "hist": "valid",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=2"
+  },
+  "food inproc resend-near": {
+   "seed": "cb [1 _id]",
+   "st": "cb [1 _id]",
+   "store": "n=2 OID,OID",
+   "srv": "C=M=,CM",
+   "hist": "valid",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=2"
+  },
+  "food inproc legacy-lower": {
+   "seed": "mongo str",
+   "st": "cb [1 _id=sent]",
+   "store": "n=1 OID",
+   "srv": "CM",
+   "hist": "valid",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "food inproc legacy-upper": {
+   "seed": "mongo str",
+   "st": "cb [1 _id]",
+   "store": "n=1 OID",
+   "srv": "CM",
+   "hist": "valid",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "food inproc update": {
+   "seed": "cb [1 _id]",
+   "st": "cb [1 _id]",
+   "store": "n=1 OID:v2",
+   "srv": "C=M+",
+   "hist": "valid",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "food inproc softdelete": {
+   "seed": "cb [1 _id]",
+   "st": "cb [1 _id]",
+   "store": "n=1 OID:inv",
+   "srv": "C=M+",
+   "hist": "invalid",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=0"
+  },
+  "food inproc harddelete": {
+   "seed": "cb [1 _id]",
+   "st": "cb [1 no _id]",
+   "store": "none",
+   "srv": "-",
+   "hist": "absent",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=0"
+  },
+  "activity v1 create": {
+   "st": "200 [1 _id]",
+   "store": "n=1 OID",
+   "srv": "noCnoM",
+   "hist": "n/a",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "activity v1 resend-hex": {
+   "seed": "200 [1 _id=sent]",
+   "st": "200 [1 _id=sent]",
+   "store": "n=1 OID",
+   "srv": "noCnoM",
+   "hist": "n/a",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "activity v1 resend-upper": {
+   "seed": "200 [1 _id]",
+   "st": "200 [1 _id]",
+   "store": "n=1 OID",
+   "srv": "noCnoM",
+   "hist": "n/a",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "activity v1 resend-oid": {
+   "seed": "400 {message,description}",
+   "st": "400 {message,description}",
+   "store": "none",
+   "srv": "-",
+   "hist": "n/a",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=0"
+  },
+  "activity v1 resend-identity": {
+   "seed": "200 [1 _id]",
+   "st": "200 [1 _id]",
+   "store": "n=2 OID,OID",
+   "srv": "noCnoM,noCnoM",
+   "hist": "n/a",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=2"
+  },
+  "activity v1 resend-near": {
+   "seed": "200 [1 _id]",
+   "st": "200 [1 _id]",
+   "store": "n=2 OID,OID",
+   "srv": "noCnoM,noCnoM",
+   "hist": "n/a",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=2"
+  },
+  "activity v1 legacy-lower": {
+   "seed": "mongo str",
+   "st": "200 [1 _id=sent]",
+   "store": "n=1 OID",
+   "srv": "noCnoM",
+   "hist": "n/a",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "activity v1 legacy-upper": {
+   "seed": "mongo str",
+   "st": "200 [1 _id]",
+   "store": "n=1 OID",
+   "srv": "noCnoM",
+   "hist": "n/a",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "activity v1 update": {
+   "seed": "200 [1 _id]",
+   "st": "200 {_id,date,utcOffset,app,wc,wcv,created_at,steps}",
+   "store": "n=1 OID:v2",
+   "srv": "noCnoM",
+   "hist": "n/a",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "activity v1 softdelete": {
+   "seed": "200 [1 _id]",
+   "st": "200 {_id,date,utcOffset,app,wc,wcv,created_at,steps,isValid}",
+   "store": "n=1 OID:inv",
+   "srv": "noCnoM",
+   "hist": "n/a",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "activity v1 harddelete": {
+   "seed": "200 [1 _id]",
+   "st": "200 {}",
+   "store": "none",
+   "srv": "-",
+   "hist": "n/a",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=0"
+  },
+  "activity v3 create": {
+   "st": "n/a"
+  },
+  "activity v3 resend-hex": {
+   "st": "n/a"
+  },
+  "activity v3 resend-upper": {
+   "st": "n/a"
+  },
+  "activity v3 resend-oid": {
+   "st": "n/a"
+  },
+  "activity v3 resend-identity": {
+   "st": "n/a"
+  },
+  "activity v3 resend-near": {
+   "st": "n/a"
+  },
+  "activity v3 legacy-lower": {
+   "st": "n/a"
+  },
+  "activity v3 legacy-upper": {
+   "st": "n/a"
+  },
+  "activity v3 update": {
+   "st": "n/a (seed not stored: null)"
+  },
+  "activity v3 update-put": {
+   "st": "n/a (seed not stored: null)"
+  },
+  "activity v3 softdelete": {
+   "st": "n/a (seed not stored: null)"
+  },
+  "activity v3 harddelete": {
+   "st": "n/a (seed not stored: null)"
+  },
+  "activity ws create": {
+   "st": "ack [1 _id]",
+   "store": "n=1 OID",
+   "srv": "noCnoM",
+   "hist": "n/a",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "activity ws resend-hex": {
+   "seed": "ack [1 _id=sent]",
+   "st": "ack [0]",
+   "store": "n=1 OID",
+   "srv": "noCnoM",
+   "hist": "n/a",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "activity ws resend-upper": {
+   "seed": "ack [1 _id]",
+   "st": "ack [0]",
+   "store": "n=1 OID",
+   "srv": "noCnoM",
+   "hist": "n/a",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "activity ws resend-oid": {
+   "seed": "ack {\"result\":\"Invalid data\"}",
+   "st": "ack {\"result\":\"Invalid data\"}",
+   "store": "none",
+   "srv": "-",
+   "hist": "n/a",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=0"
+  },
+  "activity ws resend-identity": {
+   "seed": "ack [1 _id]",
+   "st": "ack [1 _id]",
+   "store": "n=2 OID,OID",
+   "srv": "noCnoM,noCnoM",
+   "hist": "n/a",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=2"
+  },
+  "activity ws resend-near": {
+   "seed": "ack [1 _id]",
+   "st": "ack [1 _id]",
+   "store": "n=2 OID,OID",
+   "srv": "noCnoM,noCnoM",
+   "hist": "n/a",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=2"
+  },
+  "activity ws legacy-lower": {
+   "seed": "mongo str",
+   "st": "ack [0]",
+   "store": "n=1 str",
+   "srv": "noCnoM",
+   "hist": "n/a",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "activity ws legacy-upper": {
+   "seed": "mongo str",
+   "st": "ack [0]",
+   "store": "n=1 str",
+   "srv": "noCnoM",
+   "hist": "n/a",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "activity ws update": {
+   "seed": "ack [1 _id]",
+   "st": "ack {\"result\":\"success\"}",
+   "store": "n=1 OID:v2",
+   "srv": "noCnoM",
+   "hist": "n/a",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "activity ws softdelete": {
+   "seed": "ack [1 _id]",
+   "st": "ack {\"result\":\"success\"}",
+   "store": "n=1 OID:inv",
+   "srv": "noCnoM",
+   "hist": "n/a",
+   "ev": "du:update[1,mills]",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "activity ws harddelete": {
+   "seed": "ack [1 _id]",
+   "st": "ack {\"result\":\"success\"}",
+   "store": "none",
+   "srv": "-",
+   "hist": "n/a",
+   "ev": "du:remove(id)",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=0"
+  },
+  "activity inproc create": {
+   "st": "cb [1 _id]",
+   "store": "n=1 OID",
+   "srv": "noCnoM",
+   "hist": "n/a",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "activity inproc resend-hex": {
+   "seed": "cb [1 _id=sent]",
+   "st": "cb [1 _id=sent]",
+   "store": "n=1 OID",
+   "srv": "noCnoM",
+   "hist": "n/a",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "activity inproc resend-upper": {
+   "seed": "cb [1 _id]",
+   "st": "cb [1 _id]",
+   "store": "n=1 OID",
+   "srv": "noCnoM",
+   "hist": "n/a",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "activity inproc resend-oid": {
+   "seed": "cb [1 _id=sent]",
+   "st": "cb [1 _id=sent]",
+   "store": "n=1 OID",
+   "srv": "noCnoM",
+   "hist": "n/a",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "activity inproc resend-identity": {
+   "seed": "cb [1 _id]",
+   "st": "cb [1 _id]",
+   "store": "n=2 OID,OID",
+   "srv": "noCnoM,noCnoM",
+   "hist": "n/a",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=2"
+  },
+  "activity inproc resend-near": {
+   "seed": "cb [1 _id]",
+   "st": "cb [1 _id]",
+   "store": "n=2 OID,OID",
+   "srv": "noCnoM,noCnoM",
+   "hist": "n/a",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=2"
+  },
+  "activity inproc legacy-lower": {
+   "seed": "mongo str",
+   "st": "cb [1 _id=sent]",
+   "store": "n=1 OID",
+   "srv": "noCnoM",
+   "hist": "n/a",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "activity inproc legacy-upper": {
+   "seed": "mongo str",
+   "st": "cb [1 _id]",
+   "store": "n=1 OID",
+   "srv": "noCnoM",
+   "hist": "n/a",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "activity inproc update": {
+   "seed": "cb [1 _id]",
+   "st": "cb [1 _id]",
+   "store": "n=1 OID:v2",
+   "srv": "noCnoM",
+   "hist": "n/a",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "activity inproc softdelete": {
+   "seed": "cb [1 _id]",
+   "st": "cb [1 _id]",
+   "store": "n=1 OID:inv",
+   "srv": "noCnoM",
+   "hist": "n/a",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=1"
+  },
+  "activity inproc harddelete": {
+   "seed": "cb [1 _id]",
+   "st": "cb [1 no _id]",
+   "store": "none",
+   "srv": "-",
+   "hist": "n/a",
+   "ev": "none",
+   "wire": "none",
+   "cache": "n/a",
+   "v1read": "n=0"
+  },
+  "entries x v1 x v3": {
+   "st": "200 {lastModified,identifier,isDeduplication,deduplicatedIdentifier}",
+   "store": "n=1 OID"
+  },
+  "entries x v1 x ws": {
+   "st": "ack [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "entries x v1 x inproc": {
+   "st": "cb [1 _id]",
+   "store": "n=1 OID"
+  },
+  "entries x v3 x v1": {
+   "st": "200 [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "entries x v3 x ws": {
+   "st": "ack [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "entries x v3 x inproc": {
+   "st": "cb [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "entries x ws x v1": {
+   "st": "200 [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "entries x ws x v3": {
+   "st": "200 {lastModified,identifier,isDeduplication,deduplicatedIdentifier}",
+   "store": "n=1 OID"
+  },
+  "entries x ws x inproc": {
+   "st": "cb [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "entries x inproc x v1": {
+   "st": "200 [1 _id]",
+   "store": "n=1 OID"
+  },
+  "entries x inproc x v3": {
+   "st": "200 {lastModified,identifier,isDeduplication,deduplicatedIdentifier}",
+   "store": "n=1 OID"
+  },
+  "entries x inproc x ws": {
+   "st": "ack [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "treatments x v1 x v3": {
+   "st": "200 {lastModified,identifier,isDeduplication,deduplicatedIdentifier}",
+   "store": "n=1 OID"
+  },
+  "treatments x v1 x ws": {
+   "st": "ack [1 _id]",
+   "store": "n=1 OID"
+  },
+  "treatments x v1 x inproc": {
+   "st": "cb [1 no _id]",
+   "store": "n=1 OID"
+  },
+  "treatments x v3 x v1": {
+   "st": "200 [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "treatments x v3 x ws": {
+   "st": "ack [1 _id]",
+   "store": "n=1 OID"
+  },
+  "treatments x v3 x inproc": {
+   "st": "cb [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "treatments x ws x v1": {
+   "st": "200 [1 no _id]",
+   "store": "n=1 OID"
+  },
+  "treatments x ws x v3": {
+   "st": "200 {lastModified,identifier,isDeduplication,deduplicatedIdentifier}",
+   "store": "n=1 OID"
+  },
+  "treatments x ws x inproc": {
+   "st": "cb [1 no _id]",
+   "store": "n=1 OID"
+  },
+  "treatments x inproc x v1": {
+   "st": "200 [1 no _id]",
+   "store": "n=1 OID"
+  },
+  "treatments x inproc x v3": {
+   "st": "200 {lastModified,identifier,isDeduplication,deduplicatedIdentifier}",
+   "store": "n=1 OID"
+  },
+  "treatments x inproc x ws": {
+   "st": "ack [1 _id]",
+   "store": "n=1 OID"
+  },
+  "devicestatus x v1 x v3": {
+   "st": "200 {lastModified,identifier,isDeduplication,deduplicatedIdentifier}",
+   "store": "n=1 OID"
+  },
+  "devicestatus x v1 x ws": {
+   "st": "ack [1 _id]",
+   "store": "n=1 OID"
+  },
+  "devicestatus x v1 x inproc": {
+   "st": "cb [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "devicestatus x v3 x v1": {
+   "st": "200 [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "devicestatus x v3 x ws": {
+   "st": "ack [1 _id]",
+   "store": "n=1 OID"
+  },
+  "devicestatus x v3 x inproc": {
+   "st": "cb [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "devicestatus x ws x v1": {
+   "st": "200 [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "devicestatus x ws x v3": {
+   "st": "200 {lastModified,identifier,isDeduplication,deduplicatedIdentifier}",
+   "store": "n=1 OID"
+  },
+  "devicestatus x ws x inproc": {
+   "st": "cb [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "devicestatus x inproc x v1": {
+   "st": "200 [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "devicestatus x inproc x v3": {
+   "st": "200 {lastModified,identifier,isDeduplication,deduplicatedIdentifier}",
+   "store": "n=1 OID"
+  },
+  "devicestatus x inproc x ws": {
+   "st": "ack [1 _id]",
+   "store": "n=1 OID"
+  },
+  "profile x v1 x v3": {
+   "st": "200 {lastModified,identifier,isDeduplication,deduplicatedIdentifier}",
+   "store": "n=1 OID"
+  },
+  "profile x v1 x ws": {
+   "st": "ack [1 _id]",
+   "store": "n=1 OID"
+  },
+  "profile x v1 x inproc": {
+   "st": "cb [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "profile x v3 x v1": {
+   "st": "200 [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "profile x v3 x ws": {
+   "st": "ack [1 _id]",
+   "store": "n=1 OID"
+  },
+  "profile x v3 x inproc": {
+   "st": "cb [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "profile x ws x v1": {
+   "st": "200 [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "profile x ws x v3": {
+   "st": "200 {lastModified,identifier,isDeduplication,deduplicatedIdentifier}",
+   "store": "n=1 OID"
+  },
+  "profile x ws x inproc": {
+   "st": "cb [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "profile x inproc x v1": {
+   "st": "200 [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "profile x inproc x v3": {
+   "st": "200 {lastModified,identifier,isDeduplication,deduplicatedIdentifier}",
+   "store": "n=1 OID"
+  },
+  "profile x inproc x ws": {
+   "st": "ack [1 _id]",
+   "store": "n=1 OID"
+  },
+  "food x v1 x v3": {
+   "st": "201 {identifier,lastModified}",
+   "store": "n=2 OID,OID"
+  },
+  "food x v1 x ws": {
+   "st": "ack [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "food x v1 x inproc": {
+   "st": "cb [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "food x v3 x v1": {
+   "st": "200 [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "food x v3 x ws": {
+   "st": "ack [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "food x v3 x inproc": {
+   "st": "cb [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "food x ws x v1": {
+   "st": "200 [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "food x ws x v3": {
+   "st": "200 {lastModified,identifier,isDeduplication,deduplicatedIdentifier}",
+   "store": "n=1 OID"
+  },
+  "food x ws x inproc": {
+   "st": "cb [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "food x inproc x v1": {
+   "st": "200 [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "food x inproc x v3": {
+   "st": "201 {identifier,lastModified}",
+   "store": "n=2 OID,OID"
+  },
+  "food x inproc x ws": {
+   "st": "ack [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "activity x v1 x ws": {
+   "st": "ack [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "activity x v1 x inproc": {
+   "st": "cb [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "activity x ws x v1": {
+   "st": "200 [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "activity x ws x inproc": {
+   "st": "cb [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "activity x inproc x v1": {
+   "st": "200 [1 _id]",
+   "store": "n=2 OID,OID"
+  },
+  "activity x inproc x ws": {
+   "st": "ack [1 _id]",
+   "store": "n=2 OID,OID"
+  }
+ }
+}

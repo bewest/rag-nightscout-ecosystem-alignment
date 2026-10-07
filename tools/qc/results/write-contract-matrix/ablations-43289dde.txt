@@ -1,0 +1,76 @@
+== oid: -        if (!idForms.isHexId(document._id)) return; +        return; 
+   treatments ws resend-hex
+     A {"seed":"ack [1 _id=sent]","st":"ack [1 _id=sent]","store":"n=1 OID","srv":"C=M=","hist":"absent","ev":"none","wire":"none","cache":"held","v1read":"n=1"}
+     B {"seed":"ack [1 _id=sent]","st":"ack [1 _id=sent]","store":"n=1 str","srv":"C=M=","hist":"absent","ev":"none","wire":"none","cache":"held","v1read":"n=1"}
+   treatments ws resend-upper
+     A {"seed":"ack [1 _id]","st":"ack [1 _id]","store":"n=1 OID","srv":"C=M=","hist":"absent","ev":"none","wire":"none","cache":"held","v1read":"n=1"}
+     B {"seed":"ack [1 _id=sent]","st":"ack [1 _id=sent]","store":"n=1 STR","srv":"C=M=","hist":"absent","ev":"none","wire":"none","cache":"held","v1read":"n=1"}
+   food ws resend-hex
+     A {"seed":"ack [1 _id=sent]","st":"ack [0]","store":"n=1 OID","srv":"C=M=","hist":"absent","ev":"none","wire":"none","cache":"n/a","v1read":"n=1"}
+     B {"seed":"ack [1 _id=sent]","st":"ack [0]","store":"n=1 str","srv":"C=M=","hist":"absent","ev":"none","wire":"none","cache":"n/a","v1read":"n=1"}
+   food ws resend-upper
+     A {"seed":"ack [1 _id]","st":"ack [0]","store":"n=1 OID","srv":"C=M=","hist":"absent","ev":"none","wire":"none","cache":"n/a","v1read":"n=1"}
+     B {"seed":"ack [1 _id=sent]","st":"ack [0]","store":"n=1 STR","srv":"C=M=","hist":"absent","ev":"none","wire":"none","cache":"n/a","v1read":"n=1"}
+   differing cells: 4 (A 43289dde4c6913c22b6656c3321e3d7414c47870, B 43289dde4c6913c22b6656c3321e3d7414c47870)
+   break: changed exactly the expected cells
+   revert: matches the clean run
+== srv: -            if (servedByV3(data.collection)) srvDates.stampCreated(data.data); +            ; 
+   food ws create
+     A {"st":"ack [1 _id]","store":"n=1 OID","srv":"CM","hist":"valid","ev":"du:update[1,mills]","wire":"none","cache":"n/a","v1read":"n=1"}
+     B {"st":"ack [1 _id]","store":"n=1 OID","srv":"noCnoM","hist":"absent","ev":"du:update[1,mills]","wire":"none","cache":"n/a","v1read":"n=1"}
+   entries ws create
+     A {"st":"ack [1 _id]","store":"n=1 OID","srv":"CM","hist":"valid","ev":"du:update[1,mills]","wire":"none","cache":"held","v1read":"n=1"}
+     B {"st":"ack [1 _id]","store":"n=1 OID","srv":"noCnoM","hist":"absent","ev":"du:update[1,mills]","wire":"none","cache":"held","v1read":"n=1"}
+   differing cells: 2 (A 43289dde4c6913c22b6656c3321e3d7414c47870, B 43289dde4c6913c22b6656c3321e3d7414c47870)
+   break: changed exactly the expected cells
+   revert: matches the clean run
+== soft: -    return softDeleted.visible(stored_query_for(opts), opts); +    return stored_query_for(opts); 
+   treatments v1 softdelete
+     A {"seed":"200 [1 _id]","st":"200 {_id,date,utcOffset,app,wc,wcv,eventType,carbs,created_at,device,enteredBy,srvModified,srvCreated,isValid}","store":"n=1 OID:inv","srv":"C=M+","hist":"invalid","ev":"du:update[1,mills]","wire":"none","cache":"absent","v1read":"n=0"}
+     B {"seed":"200 [1 _id]","st":"200 {_id,date,utcOffset,app,wc,wcv,eventType,carbs,created_at,device,enteredBy,srvModified,srvCreated,isValid}","store":"n=1 OID:inv","srv":"C=M+","hist":"invalid","ev":"du:update[1,mills]","wire":"none","cache":"absent","v1read":"n=1"}
+   treatments v3 softdelete
+     A {"seed":"201 {identifier,lastModified}","st":"200 {}","store":"n=1 OID:inv","srv":"C=M+","hist":"invalid","ev":"du:remove(id) ss:delete","wire":"delete","cache":"absent","v1read":"n=0"}
+     B {"seed":"201 {identifier,lastModified}","st":"200 {}","store":"n=1 OID:inv","srv":"C=M+","hist":"invalid","ev":"du:remove(id) ss:delete","wire":"delete","cache":"absent","v1read":"n=1"}
+   treatments ws softdelete
+     A {"seed":"ack [1 _id]","st":"ack {\"result\":\"success\"}","store":"n=1 OID:inv","srv":"C=M+","hist":"invalid","ev":"du:update[1,mills]","wire":"none","cache":"absent","v1read":"n=0"}
+     B {"seed":"ack [1 _id]","st":"ack {\"result\":\"success\"}","store":"n=1 OID:inv","srv":"C=M+","hist":"invalid","ev":"du:update[1,mills]","wire":"none","cache":"absent","v1read":"n=1"}
+   treatments inproc softdelete
+     A {"seed":"cb [1 _id]","st":"cb [1 _id]","store":"n=1 OID:inv","srv":"C=M+","hist":"invalid","ev":"du:update[1,mills]","wire":"none","cache":"absent","v1read":"n=0"}
+     B {"seed":"cb [1 _id]","st":"cb [1 _id]","store":"n=1 OID:inv","srv":"C=M+","hist":"invalid","ev":"du:update[1,mills]","wire":"none","cache":"absent","v1read":"n=1"}
+   differing cells: 4 (A 43289dde4c6913c22b6656c3321e3d7414c47870, B 43289dde4c6913c22b6656c3321e3d7414c47870)
+   break: changed exactly the expected cells
+   revert: matches the clean run
+== key: -    return fallbackKey.fallbackQuery(obj, results.created_at, { withAmounts: true }); +    return Object.assign(fallbackKey.fallbackQuery(obj, results.created_at, { withAmounts: true }), { wcNever: { $eq: true } }); 
+   treatments v1 resend-identity
+     A {"seed":"200 [1 _id]","st":"200 [1 no _id]","store":"n=1 OID","srv":"C=M+","hist":"valid","ev":"du:update[1,mills]","wire":"none","cache":"held","v1read":"n=1"}
+     B {"seed":"200 [1 _id]","st":"200 [1 _id]","store":"n=2 OID,OID","srv":"C=M=,CM","hist":"valid","ev":"du:update[1,mills]","wire":"none","cache":"held×2","v1read":"n=2"}
+   treatments inproc resend-identity
+     A {"seed":"cb [1 _id]","st":"cb [1 no _id]","store":"n=1 OID","srv":"C=M+","hist":"valid","ev":"du:update[1,mills]","wire":"none","cache":"held","v1read":"n=1"}
+     B {"seed":"cb [1 _id]","st":"cb [1 _id]","store":"n=2 OID,OID","srv":"C=M=,CM","hist":"valid","ev":"du:update[1,mills]","wire":"none","cache":"held×2","v1read":"n=2"}
+   differing cells: 2 (A 43289dde4c6913c22b6656c3321e3d7414c47870, B 43289dde4c6913c22b6656c3321e3d7414c47870)
+   break: changed exactly the expected cells
+   revert: matches the clean run
+== derive: -  const DERIVE_FOR_CACHE = { treatments: true, devicestatus: true }; +  const DERIVE_FOR_CACHE = {}; 
+   treatments v3 create
+     A {"st":"201 {identifier,lastModified}","store":"n=1 OID","srv":"CM","hist":"valid","ev":"du:update[1,mills] ss:create","wire":"create","cache":"held","v1read":"n=1"}
+     B {"st":"201 {identifier,lastModified}","store":"n=1 OID","srv":"CM","hist":"valid","ev":"du:update[1,no-mills] ss:create","wire":"create","cache":"held","v1read":"n=1"}
+   treatments v3 update
+     A {"seed":"201 {identifier,lastModified}","st":"200 {}","store":"n=1 OID:v2","srv":"C=M+","hist":"valid","ev":"du:update[1,mills] ss:update","wire":"update","cache":"held","v1read":"n=1"}
+     B {"seed":"201 {identifier,lastModified}","st":"200 {}","store":"n=1 OID:v2","srv":"C=M+","hist":"valid","ev":"du:update[1,no-mills] ss:update","wire":"update","cache":"held no-mills","v1read":"n=1"}
+   devicestatus v3 create
+     A {"st":"201 {identifier,lastModified}","store":"n=1 OID","srv":"CM","hist":"valid","ev":"du:update[1,mills] ss:create","wire":"create","cache":"held","v1read":"n=1"}
+     B {"st":"201 {identifier,lastModified}","store":"n=1 OID","srv":"CM","hist":"valid","ev":"du:update[1,no-mills] ss:create","wire":"create","cache":"held no-mills","v1read":"n=1"}
+   devicestatus v3 update
+     A {"seed":"201 {identifier,lastModified}","st":"200 {}","store":"n=1 OID:v2","srv":"C=M+","hist":"valid","ev":"du:update[1,mills] ss:update","wire":"update","cache":"held","v1read":"n=1"}
+     B {"seed":"201 {identifier,lastModified}","st":"200 {}","store":"n=1 OID:v2","srv":"C=M+","hist":"valid","ev":"du:update[1,no-mills] ss:update","wire":"update","cache":"held no-mills","v1read":"n=1"}
+   differing cells: 4 (A 43289dde4c6913c22b6656c3321e3d7414c47870, B 43289dde4c6913c22b6656c3321e3d7414c47870)
+   break: changed exactly the expected cells
+   revert: matches the clean run
+== wire: -  ctx.bus.emit('storage-socket-create', { colName: col.colName, doc }); +  ; 
+   treatments v3 create
+     A {"st":"201 {identifier,lastModified}","store":"n=1 OID","srv":"CM","hist":"valid","ev":"du:update[1,mills] ss:create","wire":"create","cache":"held","v1read":"n=1"}
+     B {"st":"201 {identifier,lastModified}","store":"n=1 OID","srv":"CM","hist":"valid","ev":"du:update[1,mills]","wire":"none","cache":"held","v1read":"n=1"}
+   differing cells: 1 (A 43289dde4c6913c22b6656c3321e3d7414c47870, B 43289dde4c6913c22b6656c3321e3d7414c47870)
+   break: changed exactly the expected cells
+   revert: matches the clean run
+exit 0
