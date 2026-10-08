@@ -1,0 +1,425 @@
+{
+ "note": "Unforced runs, 2026-10-07, Chromium 1243 (Playwright), Node 22.23.2, MongoDB 7.0.43; drags ended 40 px past the chart edge. Runs that did not finish (the drag ended past the viewport and the page navigated away) are not listed.",
+ "runs": [
+  {
+   "run": "dev-mouse-widen",
+   "tree": "dev 43289dde",
+   "mode": "mouse-widen",
+   "extentWidthAtLoad": 636,
+   "chartWidthAtLoad": 636,
+   "afterDragRight": {
+    "retro": false,
+    "brush": [
+     1196,
+     1276
+    ],
+    "minutesBehindNow": 0.0
+   }
+  },
+  {
+   "run": "dev-mouse",
+   "tree": "dev 43289dde",
+   "mode": "mouse",
+   "extentWidthAtLoad": 1276,
+   "chartWidthAtLoad": 1276,
+   "afterDragRight": {
+    "retro": false,
+    "brush": [
+     1196,
+     1276
+    ],
+    "minutesBehindNow": 0.0
+   }
+  },
+  {
+   "run": "dev-touch-rotate",
+   "tree": "dev 43289dde",
+   "mode": "touch-rotate",
+   "extentWidthAtLoad": 300,
+   "chartWidthAtLoad": 406,
+   "afterDragRight": {
+    "retro": false,
+    "brush": [
+     829,
+     884
+    ],
+    "minutesBehindNow": 0.0
+   }
+  },
+  {
+   "run": "dev1-touch",
+   "tree": "dev 43289dde",
+   "mode": "touch",
+   "extentWidthAtLoad": 884,
+   "chartWidthAtLoad": 884,
+   "afterDragRight": {
+    "retro": false,
+    "brush": [
+     829,
+     884
+    ],
+    "minutesBehindNow": 0.0
+   }
+  },
+  {
+   "run": "dev11-touch",
+   "tree": "dev 43289dde",
+   "mode": "touch",
+   "extentWidthAtLoad": 884,
+   "chartWidthAtLoad": 884,
+   "afterDragRight": {
+    "retro": false,
+    "brush": [
+     829,
+     884
+    ],
+    "minutesBehindNow": 0.0
+   }
+  },
+  {
+   "run": "dev12-touch",
+   "tree": "dev 43289dde",
+   "mode": "touch",
+   "extentWidthAtLoad": 884,
+   "chartWidthAtLoad": 884,
+   "afterDragRight": {
+    "retro": false,
+    "brush": [
+     829,
+     884
+    ],
+    "minutesBehindNow": 0.0
+   }
+  },
+  {
+   "run": "dev13-touch",
+   "tree": "dev 43289dde",
+   "mode": "touch",
+   "extentWidthAtLoad": 884,
+   "chartWidthAtLoad": 884,
+   "afterDragRight": {
+    "retro": false,
+    "brush": [
+     829,
+     884
+    ],
+    "minutesBehindNow": 0.0
+   }
+  },
+  {
+   "run": "dev15-touch",
+   "tree": "dev 43289dde",
+   "mode": "touch",
+   "extentWidthAtLoad": 884,
+   "chartWidthAtLoad": 884,
+   "afterDragRight": {
+    "retro": false,
+    "brush": [
+     829,
+     884
+    ],
+    "minutesBehindNow": 0.0
+   }
+  },
+  {
+   "run": "dev17-touch",
+   "tree": "dev 43289dde",
+   "mode": "touch",
+   "extentWidthAtLoad": 884,
+   "chartWidthAtLoad": 884,
+   "afterDragRight": {
+    "retro": false,
+    "brush": [
+     829,
+     884
+    ],
+    "minutesBehindNow": 0.0
+   }
+  },
+  {
+   "run": "dev18-touch",
+   "tree": "dev 43289dde",
+   "mode": "touch",
+   "extentWidthAtLoad": 884,
+   "chartWidthAtLoad": 884,
+   "afterDragRight": {
+    "retro": false,
+    "brush": [
+     829,
+     884
+    ],
+    "minutesBehindNow": 0.0
+   }
+  },
+  {
+   "run": "dev19-touch",
+   "tree": "dev 43289dde",
+   "mode": "touch",
+   "extentWidthAtLoad": 884,
+   "chartWidthAtLoad": 884,
+   "afterDragRight": {
+    "retro": false,
+    "brush": [
+     829,
+     884
+    ],
+    "minutesBehindNow": 0.0
+   }
+  },
+  {
+   "run": "dev2-touch",
+   "tree": "dev 43289dde",
+   "mode": "touch",
+   "extentWidthAtLoad": 884,
+   "chartWidthAtLoad": 884,
+   "afterDragRight": {
+    "retro": false,
+    "brush": [
+     829,
+     884
+    ],
+    "minutesBehindNow": 0.0
+   }
+  },
+  {
+   "run": "dev20-touch",
+   "tree": "dev 43289dde",
+   "mode": "touch",
+   "extentWidthAtLoad": 884,
+   "chartWidthAtLoad": 884,
+   "afterDragRight": {
+    "retro": false,
+    "brush": [
+     829,
+     884
+    ],
+    "minutesBehindNow": 0.0
+   }
+  },
+  {
+   "run": "v1508-mouse-widen",
+   "tree": "15.0.8 92d08342",
+   "mode": "mouse-widen",
+   "extentWidthAtLoad": 636,
+   "chartWidthAtLoad": 636,
+   "afterDragRight": {
+    "retro": false,
+    "brush": [
+     1196,
+     1276
+    ],
+    "minutesBehindNow": 0.0
+   }
+  },
+  {
+   "run": "v1508-mouse",
+   "tree": "15.0.8 92d08342",
+   "mode": "mouse",
+   "extentWidthAtLoad": 1276,
+   "chartWidthAtLoad": 1276,
+   "afterDragRight": {
+    "retro": false,
+    "brush": [
+     1196,
+     1276
+    ],
+    "minutesBehindNow": 0.0
+   }
+  },
+  {
+   "run": "v1508-touch-rotate",
+   "tree": "15.0.8 92d08342",
+   "mode": "touch-rotate",
+   "extentWidthAtLoad": 418,
+   "chartWidthAtLoad": 418,
+   "afterDragRight": {
+    "retro": false,
+    "brush": [
+     829,
+     884
+    ],
+    "minutesBehindNow": 0.0
+   }
+  },
+  {
+   "run": "v15081-touch",
+   "tree": "15.0.8 92d08342",
+   "mode": "touch",
+   "extentWidthAtLoad": 300,
+   "chartWidthAtLoad": 872,
+   "afterDragRight": {
+    "retro": true,
+    "brush": [
+     245,
+     300
+    ],
+    "minutesBehindNow": 1886.1
+   }
+  },
+  {
+   "run": "v150812-touch",
+   "tree": "15.0.8 92d08342",
+   "mode": "touch",
+   "extentWidthAtLoad": 884,
+   "chartWidthAtLoad": 884,
+   "afterDragRight": {
+    "retro": false,
+    "brush": [
+     829,
+     884
+    ],
+    "minutesBehindNow": 0.0
+   }
+  },
+  {
+   "run": "v150813-touch",
+   "tree": "15.0.8 92d08342",
+   "mode": "touch",
+   "extentWidthAtLoad": 884,
+   "chartWidthAtLoad": 884,
+   "afterDragRight": {
+    "retro": false,
+    "brush": [
+     829,
+     884
+    ],
+    "minutesBehindNow": 0.0
+   }
+  },
+  {
+   "run": "v150814-touch",
+   "tree": "15.0.8 92d08342",
+   "mode": "touch",
+   "extentWidthAtLoad": 884,
+   "chartWidthAtLoad": 884,
+   "afterDragRight": {
+    "retro": false,
+    "brush": [
+     829,
+     884
+    ],
+    "minutesBehindNow": 0.0
+   }
+  },
+  {
+   "run": "v150815-touch",
+   "tree": "15.0.8 92d08342",
+   "mode": "touch",
+   "extentWidthAtLoad": 884,
+   "chartWidthAtLoad": 884,
+   "afterDragRight": {
+    "retro": false,
+    "brush": [
+     829,
+     884
+    ],
+    "minutesBehindNow": 0.0
+   }
+  },
+  {
+   "run": "v150816-touch",
+   "tree": "15.0.8 92d08342",
+   "mode": "touch",
+   "extentWidthAtLoad": 884,
+   "chartWidthAtLoad": 884,
+   "afterDragRight": {
+    "retro": false,
+    "brush": [
+     829,
+     884
+    ],
+    "minutesBehindNow": 0.0
+   }
+  },
+  {
+   "run": "v150817-touch",
+   "tree": "15.0.8 92d08342",
+   "mode": "touch",
+   "extentWidthAtLoad": 884,
+   "chartWidthAtLoad": 884,
+   "afterDragRight": {
+    "retro": false,
+    "brush": [
+     829,
+     884
+    ],
+    "minutesBehindNow": 0.0
+   }
+  },
+  {
+   "run": "v150818-touch",
+   "tree": "15.0.8 92d08342",
+   "mode": "touch",
+   "extentWidthAtLoad": 884,
+   "chartWidthAtLoad": 884,
+   "afterDragRight": {
+    "retro": false,
+    "brush": [
+     829,
+     884
+    ],
+    "minutesBehindNow": 0.0
+   }
+  },
+  {
+   "run": "v150819-touch",
+   "tree": "15.0.8 92d08342",
+   "mode": "touch",
+   "extentWidthAtLoad": 884,
+   "chartWidthAtLoad": 884,
+   "afterDragRight": {
+    "retro": false,
+    "brush": [
+     829,
+     884
+    ],
+    "minutesBehindNow": 0.0
+   }
+  },
+  {
+   "run": "v15082-touch",
+   "tree": "15.0.8 92d08342",
+   "mode": "touch",
+   "extentWidthAtLoad": 884,
+   "chartWidthAtLoad": 884,
+   "afterDragRight": {
+    "retro": false,
+    "brush": [
+     829,
+     884
+    ],
+    "minutesBehindNow": 0.0
+   }
+  },
+  {
+   "run": "v150820-touch",
+   "tree": "15.0.8 92d08342",
+   "mode": "touch",
+   "extentWidthAtLoad": 300,
+   "chartWidthAtLoad": 872,
+   "afterDragRight": {
+    "retro": true,
+    "brush": [
+     245,
+     300
+    ],
+    "minutesBehindNow": 1886.1
+   }
+  },
+  {
+   "run": "v15083-touch",
+   "tree": "15.0.8 92d08342",
+   "mode": "touch",
+   "extentWidthAtLoad": 884,
+   "chartWidthAtLoad": 884,
+   "afterDragRight": {
+    "retro": false,
+    "brush": [
+     829,
+     884
+    ],
+    "minutesBehindNow": 0.0
+   }
+  }
+ ]
+}

@@ -1,0 +1,121 @@
+{
+ "label": "fix2",
+ "mode": "touch",
+ "atLoad": {
+  "extent": [
+   [
+    0,
+    0
+   ],
+   [
+    884,
+    78.89999999999999
+   ]
+  ],
+  "svgW": 884,
+  "range": [
+   0,
+   884
+  ]
+ },
+ "extent": [
+  [
+   0,
+   0
+  ],
+  [
+   884,
+   78.89999999999999
+  ]
+ ],
+ "svgW": 884,
+ "box": {
+  "x": 2,
+  "y": 304.1000061035156,
+  "w": 884,
+  "h": 78.89999389648438
+ },
+ "steps": [
+  {
+   "step": "initial",
+   "retro": false,
+   "brushSel": [
+    828.6914868869566,
+    884.0375738434782
+   ],
+   "x2range": [
+    0,
+    884
+   ],
+   "x2domainEndMinAgo": 0.1691,
+   "focusEndMinFromNow": 64.89756666666666,
+   "brushEndTime": 0.0469,
+   "bodyRetro": false
+  },
+  {
+   "step": "tap middle",
+   "retro": true,
+   "brushSel": [
+    414.32695652173913,
+    469.67304347826087
+   ],
+   "x2range": [
+    0,
+    884
+   ],
+   "x2domainEndMinAgo": 0.18505,
+   "focusEndMinFromNow": 64.88161666666667,
+   "brushEndTime": 1347.68505,
+   "bodyRetro": false
+  },
+  {
+   "step": "drag middle -> right edge",
+   "retro": false,
+   "brushSel": [
+    828.7205025855072,
+    884.0665895420291
+   ],
+   "x2range": [
+    0,
+    884
+   ],
+   "x2domainEndMinAgo": 0.23048333333333335,
+   "focusEndMinFromNow": 29.98525,
+   "brushEndTime": 0.013916666666666667,
+   "bodyRetro": false
+  },
+  {
+   "step": "drag near edge -> right edge",
+   "retro": false,
+   "brushSel": [
+    828.7303213913043,
+    884.076408347826
+   ],
+   "x2range": [
+    0,
+    884
+   ],
+   "x2domainEndMinAgo": 0.26243333333333335,
+   "focusEndMinFromNow": 64.80423333333333,
+   "brushEndTime": 0.013933333333333334,
+   "bodyRetro": false
+  },
+  {
+   "step": "tap inside right edge",
+   "retro": false,
+   "brushSel": [
+    828.7303213913043,
+    884.076408347826
+   ],
+   "x2range": [
+    0,
+    884
+   ],
+   "x2domainEndMinAgo": 0.27826666666666666,
+   "focusEndMinFromNow": 64.7884,
+   "brushEndTime": 0.029766666666666667,
+   "bodyRetro": false
+  }
+ ],
+ "errors": []
+}

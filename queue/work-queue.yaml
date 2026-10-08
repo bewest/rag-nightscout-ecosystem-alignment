@@ -12166,6 +12166,60 @@ items:
     notes: >
       Filed 2026-10-07 from the seam propagation rehearsal. Register §1b, kind
       (c): behaviour is correct today.
+  - id: BFQ-168
+    title: "BF-168 - the context chart's window sometimes cannot be dragged back to now"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: bf/brush-extent
+    base: official/dev@43289dde
+    state: ready-to-push
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/client/chart.js only (8 lines): the brush gets an explicit extent from
+      the context chart's scale and height, and chart.update() calls the brush
+      again when the size changes, restoring the overlay's selection datum. Tests:
+      tests/dependency-d3.test.js (2 new) and tests/fixtures/d3-chart.js (an
+      optional layout argument).
+    review: maintainer
+    operator_visible: >
+      On the main page, dragging the small chart's window to the right always
+      reaches the latest reading. Before, on some page loads, mostly on phones,
+      the window stopped part-way and the page stayed showing older readings
+      until it was reloaded or the window was resized.
+    semver: patch
+    semver_reason: a client-side display fix
+    register: [BF-168]
+    gates:
+      - run: 'git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/brush-extent >/dev/null'
+        kind: static
+        describe: Merges into official/dev with no conflict.
+      - run: 'cd externals/work/crm-bf168 && n exec 22.23.2 npx mocha --timeout 10000 --exit tests/dependency-d3.test.js'
+        kind: unit
+        describe: >
+          The D3 chart tests, no database; 26 passing. Control, 2026-10-07: on
+          official/dev 43289dde the 2 new tests fail at [75, 300] (the 300 px
+          default-size extent); with the extent function removed they fail at
+          [75, 300], with the re-read in chart.update() removed at [655, 880].
+      - no-gate: >
+          The browser half is not a gate: tools/lab/brush-extent/probe.js needs
+          Playwright, a server and a MongoDB, and the unforced race shows in about
+          1 load in 10. Forced (-force), dev and v15.0.8 stop at [245, 300] and
+          the branch reaches now (tools/lab/brush-extent/results/).
+    blocks_on: []
+    worktree: externals/work/crm-bf168
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - tools/lab/brush-extent/README.md
+      - reports/phase0-pr-bodies/brush-extent.md
+    notes: >
+      Filed 2026-10-07 by session -96 from a user's screen recording of dev
+      (Firefox on Android, landscape). Branch bf/brush-extent b919af9f, one
+      commit on dev 43289dde, not pushed. Full suite 3566/0/4 (Node 22.23.2,
+      MongoDB 7.0.43, dev 3564 plus 2); ESLint clean on the 3 files. Present on
+      v15.0.8 too (2 of 12 unforced phone loads stuck); not a D3 7 regression.
+      Whether it goes into 15.0.9 is not decided. PR body
+      reports/phase0-pr-bodies/brush-extent.md.
   - id: RT-PR-8781
     title: "#8781 - treatment retries keep srvCreated, empty identities match, history clock survives a restart (AndyLow91; BF-141, BF-143, BF-144), merged for 15.0.9"
     parcel: release-train

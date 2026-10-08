@@ -1,0 +1,121 @@
+{
+ "label": "dev",
+ "mode": "touch-force",
+ "atLoad": {
+  "extent": [
+   [
+    0,
+    0
+   ],
+   [
+    300,
+    150
+   ]
+  ],
+  "svgW": 884,
+  "range": [
+   0,
+   884
+  ]
+ },
+ "extent": [
+  [
+   0,
+   0
+  ],
+  [
+   300,
+   150
+  ]
+ ],
+ "svgW": 884,
+ "box": {
+  "x": 2,
+  "y": 305.79998779296875,
+  "w": 884,
+  "h": 79.20001220703125
+ },
+ "steps": [
+  {
+   "step": "initial",
+   "retro": false,
+   "brushSel": [
+    828.7084648115942,
+    884.054551768116
+   ],
+   "x2range": [
+    0,
+    884
+   ],
+   "x2domainEndMinAgo": 0.29481666666666667,
+   "focusEndMinFromNow": 64.77185,
+   "brushEndTime": 0.1174,
+   "bodyRetro": false
+  },
+  {
+   "step": "tap middle",
+   "retro": true,
+   "brushSel": [
+    414.32695652173913,
+    469.67304347826087
+   ],
+   "x2range": [
+    0,
+    884
+   ],
+   "x2domainEndMinAgo": 0.31088333333333334,
+   "focusEndMinFromNow": 64.75578333333333,
+   "brushEndTime": 1347.8108833333333,
+   "bodyRetro": false
+  },
+  {
+   "step": "drag middle -> right edge",
+   "retro": true,
+   "brushSel": [
+    244.65390801159418,
+    299.9999949681159
+   ],
+   "x2range": [
+    0,
+    884
+   ],
+   "x2domainEndMinAgo": 0.3566,
+   "focusEndMinFromNow": -1835.2899333333332,
+   "brushEndTime": 1899.6778833333333,
+   "bodyRetro": false
+  },
+  {
+   "step": "drag near edge -> right edge",
+   "retro": true,
+   "brushSel": [
+    244.65390801159418,
+    299.9999949681159
+   ],
+   "x2range": [
+    0,
+    884
+   ],
+   "x2domainEndMinAgo": 0.39215,
+   "focusEndMinFromNow": -1835.3254833333333,
+   "brushEndTime": 1899.7134333333333,
+   "bodyRetro": false
+  },
+  {
+   "step": "tap inside right edge",
+   "retro": true,
+   "brushSel": [
+    244.65390801159418,
+    299.9999949681159
+   ],
+   "x2range": [
+    0,
+    884
+   ],
+   "x2domainEndMinAgo": 0.40796666666666664,
+   "focusEndMinFromNow": -1835.3413,
+   "brushEndTime": 1899.72925,
+   "bodyRetro": false
+  }
+ ],
+ "errors": []
+}

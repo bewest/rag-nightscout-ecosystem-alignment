@@ -1,0 +1,121 @@
+{
+ "label": "fix",
+ "mode": "touch-force-rotate",
+ "atLoad": {
+  "extent": [
+   [
+    0,
+    0
+   ],
+   [
+    418,
+    201.6
+   ]
+  ],
+  "svgW": 418,
+  "range": [
+   0,
+   418
+  ]
+ },
+ "extent": [
+  [
+   0,
+   0
+  ],
+  [
+   884,
+   79.2
+  ]
+ ],
+ "svgW": 884,
+ "box": {
+  "x": 2,
+  "y": 304.79998779296875,
+  "w": 884,
+  "h": 79.20001220703125
+ },
+ "steps": [
+  {
+   "step": "initial",
+   "retro": false,
+   "brushSel": [
+    828.7449881043478,
+    884.0910750608696
+   ],
+   "x2range": [
+    0,
+    884
+   ],
+   "x2domainEndMinAgo": 0.34603333333333336,
+   "focusEndMinFromNow": 64.72063333333334,
+   "brushEndTime": 0.049833333333333334,
+   "bodyRetro": false
+  },
+  {
+   "step": "tap middle",
+   "retro": true,
+   "brushSel": [
+    414.32695652173913,
+    469.67304347826087
+   ],
+   "x2range": [
+    0,
+    884
+   ],
+   "x2domainEndMinAgo": 0.3620333333333333,
+   "focusEndMinFromNow": 64.70463333333333,
+   "brushEndTime": 1347.8620333333333,
+   "bodyRetro": false
+  },
+  {
+   "step": "drag middle -> right edge",
+   "retro": false,
+   "brushSel": [
+    828.7748954898551,
+    884.120982446377
+   ],
+   "x2range": [
+    0,
+    884
+   ],
+   "x2domainEndMinAgo": 0.4074,
+   "focusEndMinFromNow": 29.985233333333333,
+   "brushEndTime": 0.013933333333333334,
+   "bodyRetro": false
+  },
+  {
+   "step": "drag near edge -> right edge",
+   "retro": false,
+   "brushSel": [
+    828.7854676173913,
+    884.1315545739131
+   ],
+   "x2range": [
+    0,
+    884
+   ],
+   "x2domainEndMinAgo": 0.4399,
+   "focusEndMinFromNow": 64.62676666666667,
+   "brushEndTime": 0.01205,
+   "bodyRetro": false
+  },
+  {
+   "step": "tap inside right edge",
+   "retro": false,
+   "brushSel": [
+    828.7854676173913,
+    884.1315545739131
+   ],
+   "x2range": [
+    0,
+    884
+   ],
+   "x2domainEndMinAgo": 0.45571666666666666,
+   "focusEndMinFromNow": 64.61095,
+   "brushEndTime": 0.027866666666666668,
+   "bodyRetro": false
+  }
+ ],
+ "errors": []
+}

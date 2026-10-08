@@ -1,0 +1,121 @@
+{
+ "label": "fix5",
+ "mode": "touch",
+ "atLoad": {
+  "extent": [
+   [
+    0,
+    0
+   ],
+   [
+    884,
+    79.2
+   ]
+  ],
+  "svgW": 884,
+  "range": [
+   0,
+   884
+  ]
+ },
+ "extent": [
+  [
+   0,
+   0
+  ],
+  [
+   884,
+   79.2
+  ]
+ ],
+ "svgW": 884,
+ "box": {
+  "x": 2,
+  "y": 305.79998779296875,
+  "w": 884,
+  "h": 79.20001220703125
+ },
+ "steps": [
+  {
+   "step": "initial",
+   "retro": false,
+   "brushSel": [
+    828.6937366028986,
+    884.0398235594203
+   ],
+   "x2range": [
+    0,
+    884
+   ],
+   "x2domainEndMinAgo": 0.18033333333333335,
+   "focusEndMinFromNow": 64.88633333333334,
+   "brushEndTime": 0.05081666666666667,
+   "bodyRetro": false
+  },
+  {
+   "step": "tap middle",
+   "retro": true,
+   "brushSel": [
+    414.32695652173913,
+    469.67304347826087
+   ],
+   "x2range": [
+    0,
+    884
+   ],
+   "x2domainEndMinAgo": 0.19678333333333334,
+   "focusEndMinFromNow": 64.86988333333333,
+   "brushEndTime": 1347.6967833333333,
+   "bodyRetro": false
+  },
+  {
+   "step": "drag middle -> right edge",
+   "retro": false,
+   "brushSel": [
+    828.7242896927537,
+    884.0703766492754
+   ],
+   "x2range": [
+    0,
+    884
+   ],
+   "x2domainEndMinAgo": 0.24281666666666665,
+   "focusEndMinFromNow": 29.98525,
+   "brushEndTime": 0.013933333333333334,
+   "bodyRetro": false
+  },
+  {
+   "step": "drag near edge -> right edge",
+   "retro": false,
+   "brushSel": [
+    828.734456973913,
+    884.0805439304347
+   ],
+   "x2range": [
+    0,
+    884
+   ],
+   "x2domainEndMinAgo": 0.27586666666666665,
+   "focusEndMinFromNow": 64.7908,
+   "brushEndTime": 0.013916666666666667,
+   "bodyRetro": false
+  },
+  {
+   "step": "tap inside right edge",
+   "retro": false,
+   "brushSel": [
+    828.734456973913,
+    884.0805439304347
+   ],
+   "x2range": [
+    0,
+    884
+   ],
+   "x2domainEndMinAgo": 0.29163333333333336,
+   "focusEndMinFromNow": 64.77503333333334,
+   "brushEndTime": 0.029683333333333332,
+   "bodyRetro": false
+  }
+ ],
+ "errors": []
+}

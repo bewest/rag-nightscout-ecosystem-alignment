@@ -1,0 +1,121 @@
+{
+ "label": "fix",
+ "mode": "mouse-force",
+ "atLoad": {
+  "extent": [
+   [
+    0,
+    0
+   ],
+   [
+    1276,
+    156
+   ]
+  ],
+  "svgW": 1276,
+  "range": [
+   0,
+   1276
+  ]
+ },
+ "extent": [
+  [
+   0,
+   0
+  ],
+  [
+   1276,
+   156
+  ]
+ ],
+ "svgW": 1276,
+ "box": {
+  "x": 2,
+  "y": 605,
+  "w": 1276,
+  "h": 156
+ },
+ "steps": [
+  {
+   "step": "initial",
+   "retro": false,
+   "brushSel": [
+    1196.1889591188406,
+    1276.0776547710143
+   ],
+   "x2range": [
+    0,
+    1276
+   ],
+   "x2domainEndMinAgo": 0.29235,
+   "focusEndMinFromNow": 64.77431666666666,
+   "brushEndTime": 0.11738333333333334,
+   "bodyRetro": false
+  },
+  {
+   "step": "tap middle",
+   "retro": true,
+   "brushSel": [
+    598.0556521739131,
+    677.9443478260869
+   ],
+   "x2range": [
+    0,
+    1276
+   ],
+   "x2domainEndMinAgo": 0.30678333333333335,
+   "focusEndMinFromNow": 64.75988333333333,
+   "brushEndTime": 1347.8067833333334,
+   "bodyRetro": false
+  },
+  {
+   "step": "drag middle -> right edge",
+   "retro": false,
+   "brushSel": [
+    1196.257737368116,
+    1276.14643302029
+   ],
+   "x2range": [
+    0,
+    1276
+   ],
+   "x2domainEndMinAgo": 0.34415,
+   "focusEndMinFromNow": 34.722516666666664,
+   "brushEndTime": 0.014216666666666667,
+   "bodyRetro": false
+  },
+  {
+   "step": "drag near edge -> right edge",
+   "retro": false,
+   "brushSel": [
+    1196.273382237681,
+    1276.162077889855
+   ],
+   "x2range": [
+    0,
+    1276
+   ],
+   "x2domainEndMinAgo": 0.3793666666666667,
+   "focusEndMinFromNow": 64.6873,
+   "brushEndTime": 0.014183333333333333,
+   "bodyRetro": false
+  },
+  {
+   "step": "tap inside right edge",
+   "retro": false,
+   "brushSel": [
+    1196.273382237681,
+    1276.162077889855
+   ],
+   "x2range": [
+    0,
+    1276
+   ],
+   "x2domainEndMinAgo": 0.3935,
+   "focusEndMinFromNow": 64.67316666666666,
+   "brushEndTime": 0.028316666666666667,
+   "bodyRetro": false
+  }
+ ],
+ "errors": []
+}

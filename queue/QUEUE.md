@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 196 |
-| runnable gates | 253 |
-| explicit `no-gate:` markers | 251 |
+| items | 197 |
+| runnable gates | 255 |
+| explicit `no-gate:` markers | 252 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 251 of the 504 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 252 of the 507 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -44,7 +44,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `not-started` | 56 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-164, BFQ-165, BFQ-166, BFQ-167, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
 | `in-progress` | 3 | BFQ-46, BFQ-ENV, OID-LAB |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
-| `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
+| `ready-to-push` | 4 | P0-C-REMEDIATE, T30-AUTH, BFQ-168, WS-LAB |
 | `blocked` | 23 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, BFQ-72, BFQ-52, BFQ-93, BFQ-95, BFQ-67, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-152, BFQ-154, BFQ-156 |
 | `in-flight-upstream` | 1 | BFQ-09 |
 | `merged-upstream` | 86 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
@@ -121,6 +121,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-164** BF-164 - writes outside API v3 never reach the v3 storage socket
 - **BFQ-165** BF-165 - a treatment re-send matched by its fallback key is answered without _id
 - **BFQ-166** BF-166 - a profile re-sent with its own _id answers 500
+- **BFQ-168** BF-168 - the context chart's window sometimes cannot be dragged back to now
 - **BFQ-134** BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 - **BFQ-129** BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500
 - **BFQ-133** BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one (fixed by BF-146's #8784), merged for 15.0.9
@@ -2117,7 +2118,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 111 items
+`parcel: register-open` &mdash; 112 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2219,6 +2220,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-165` | BF-165 - a treatment re-send matched by its fallback key is answered without _id | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-166` | BF-166 - a profile re-sent with its own _id answers 500 | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-167` | BF-167 - devicestatus remove()'s filter is not pinned by any test | `not-started` | `-` | n/a | 0 run + 1 no-gate |
+| `BFQ-168` | BF-168 - the context chart's window sometimes cannot be dragged back to now | `ready-to-push` | `bf/brush-extent` | patch | 2 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `merged-upstream` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
 | `WS-LAB` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | `ready-to-push` | `main` | n/a | 1 run + 1 no-gate |
@@ -5309,6 +5311,42 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/60-research/tenancy/seam-propagation-rehearsal-2026-10-07.md`
 
 **Notes.** Filed 2026-10-07 from the seam propagation rehearsal. Register §1b, kind (c): behaviour is correct today.
+
+### `BFQ-168` &mdash; BF-168 - the context chart's window sometimes cannot be dragged back to now
+
+| | |
+|---|---|
+| state (claimed) | `ready-to-push` |
+| repo | `cgm-remote-monitor` |
+| branch | `bf/brush-extent` |
+| base | `official/dev@43289dde` |
+| worktree | `externals/work/crm-bf168` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-168` |
+
+**Blast radius.** lib/client/chart.js only (8 lines): the brush gets an explicit extent from the context chart's scale and height, and chart.update() calls the brush again when the size changes, restoring the overlay's selection datum. Tests: tests/dependency-d3.test.js (2 new) and tests/fixtures/d3-chart.js (an optional layout argument).
+
+**What an operator sees.** On the main page, dragging the small chart's window to the right always reaches the latest reading. Before, on some page loads, mostly on phones, the window stopped part-way and the page stayed showing older readings until it was reloaded or the window was resized.
+
+**Why `patch`.** a client-side display fix
+
+**Gates.**
+
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/brush-extent >/dev/null`
+  - Merges into official/dev with no conflict.
+- `[unit]` `cd externals/work/crm-bf168 && n exec 22.23.2 npx mocha --timeout 10000 --exit tests/dependency-d3.test.js`
+  - The D3 chart tests, no database; 26 passing. Control, 2026-10-07: on official/dev 43289dde the 2 new tests fail at [75, 300] (the 300 px default-size extent); with the extent function removed they fail at [75, 300], with the re-read in chart.update() removed at [655, 880].
+- **NO GATE** &mdash; The browser half is not a gate: tools/lab/brush-extent/probe.js needs Playwright, a server and a MongoDB, and the unforced race shows in about 1 load in 10. Forced (-force), dev and v15.0.8 stop at [245, 300] and the branch reaches now (tools/lab/brush-extent/results/).
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `tools/lab/brush-extent/README.md`
+- `reports/phase0-pr-bodies/brush-extent.md`
+
+**Notes.** Filed 2026-10-07 by session -96 from a user's screen recording of dev (Firefox on Android, landscape). Branch bf/brush-extent b919af9f, one commit on dev 43289dde, not pushed. Full suite 3566/0/4 (Node 22.23.2, MongoDB 7.0.43, dev 3564 plus 2); ESLint clean on the 3 files. Present on v15.0.8 too (2 of 12 unforced phone loads stuck); not a D3 7 regression. Whether it goes into 15.0.9 is not decided. PR body reports/phase0-pr-bodies/brush-extent.md.
 
 ### `BFQ-134` &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 
