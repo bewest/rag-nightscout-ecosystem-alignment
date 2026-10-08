@@ -1,4 +1,4 @@
-<!-- Body for branch bf/brush-extent at b919af9f (one commit on dev 43289dde), not pushed. This comment is hidden on GitHub. -->
+<!-- Body of #8807, branch bf/brush-extent at b919af9f (one commit on dev 43289dde), merged 2026-10-08 as fade2299. This comment is hidden on GitHub. -->
 On some page loads, the window in the small chart under the main chart could not be dragged back to the latest reading: the drag stopped part-way across and the page stayed on older readings (BF-168). This was reported on `dev` with a screen recording from a phone, and it is present in 15.0.8 as well. One commit on `dev` `43289dde`, client only.
 
 ## What changes for you

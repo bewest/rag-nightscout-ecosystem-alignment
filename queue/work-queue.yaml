@@ -12172,8 +12172,8 @@ items:
     repo: cgm-remote-monitor
     branch: bf/brush-extent
     base: official/dev@43289dde
-    state: ready-to-push
-    pr: []
+    state: merged-upstream
+    pr: [8807]
     ships_to_operators_today: true
     blast_radius: >
       lib/client/chart.js only (8 lines): the brush gets an explicit extent from
@@ -12191,9 +12191,10 @@ items:
     semver_reason: a client-side display fix
     register: [BF-168]
     gates:
-      - run: 'git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/brush-extent >/dev/null'
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor fade2299 official/dev
         kind: static
-        describe: Merges into official/dev with no conflict.
+        describe: >
+          #8807's merge fade2299 (2026-10-08) is contained in official/dev.
       - run: 'cd externals/work/crm-bf168 && n exec 22.23.2 npx mocha --timeout 10000 --exit tests/dependency-d3.test.js'
         kind: unit
         describe: >
@@ -12213,9 +12214,14 @@ items:
       - tools/lab/brush-extent/README.md
       - reports/phase0-pr-bodies/brush-extent.md
     notes: >
+      Merged 2026-10-08 00:47Z as #8807 (merge fade2299, head b919af9f), merged
+      by the maintainer; CI (Node 20/22/24 x Mongo 4.4/5/6, npm 12 install) and
+      CodeQL green, Docker image validation still running when recorded. Not
+      released; dev's 15.0.9 final head was 43289dde, so 15.0.9 carries it only
+      if the release head moves.
       Filed 2026-10-07 by session -96 from a user's screen recording of dev
       (Firefox on Android, landscape). Branch bf/brush-extent b919af9f, one
-      commit on dev 43289dde, not pushed. Full suite 3566/0/4 (Node 22.23.2,
+      commit on dev 43289dde. Full suite 3566/0/4 (Node 22.23.2,
       MongoDB 7.0.43, dev 3564 plus 2); ESLint clean on the 3 files. Present on
       v15.0.8 too (2 of 12 unforced phone loads stuck); not a D3 7 regression.
       Whether it goes into 15.0.9 is not decided. PR body
