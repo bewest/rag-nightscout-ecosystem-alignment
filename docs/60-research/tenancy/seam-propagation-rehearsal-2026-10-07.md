@@ -137,7 +137,7 @@ Result before follow-up: `29c7c1fa`. 10 of the 13 non-merge commits changed (`gi
 **58 hunks in 11 distinct lib files**, plus 9 modify/delete events on 8 test files. Agent
 wall-clock from `--onto` to finish: 21:29:59–21:37:40Z (7 min 41 s), plus a follow-up commit
 after the suite (§2.4). Full stop log:
-[`rebase-stops.log`](../../../tools/lab/seam-propagation/results/rebase-stops.log).
+[`rebase-stops.txt`](../../../tools/lab/seam-propagation/results/rebase-stops.txt).
 
 | seam commit | path | hunks | dev change met | §4.1 rule? | resolution | judgement? |
 |---|---|---:|---|---|---|---|
@@ -392,7 +392,7 @@ prefix's own `1eba42df` makes `deleteMany` return both, so the tip is unaffected
 
 ```
 # distances and conflicts: §0.2 commands
-# merge path: §1 commands; rebase path: §2.1 command, resolutions per results/rebase-stops.log
+# merge path: §1 commands; rebase path: §2.1 command, resolutions per results/rebase-stops.txt
 docker run -d --name prop-mongo --ulimit nofile=64000:64000 -p 127.0.0.1:27152:27017 mongo:6.0.27
 OUT=/tmp/seam-propagation tools/lab/seam-propagation/install.sh crm-prop-merge ...
 OUT=/tmp/seam-propagation [NODEV=20.20.0] tools/lab/seam-propagation/suite.sh <worktree> <label>

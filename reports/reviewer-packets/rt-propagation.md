@@ -57,6 +57,7 @@ maintainer
 ## Evidence
 
 - [`docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`](../../docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md)
+- [`docs/60-research/tenancy/seam-propagation-rehearsal-2026-10-07.md`](../../docs/60-research/tenancy/seam-propagation-rehearsal-2026-10-07.md)
 
 ## Notes carried on the item
 
@@ -64,7 +65,21 @@ Merge keeps the seam's base, so SEAM-REFRESH is one merge into the seam tip,
 keeping the history of its 16 branches. Rebase rewrites the base, so the seam
 is re-parented onto dev instead: the Phase 1 prefix (seam/t1-2-e) after RT-3,
 which brings MongoDB driver 7, and the rest after RT-5, which carries
-9e869662. Recorded as open at the maintainer's request, 2026-09-27.
+9e869662. Recorded as open at the maintainer's request, 2026-09-27. Rehearsed
+2026-10-07 on the Phase 1 prefix (seam/t1-2-e a2690bd4;
+docs/60-research/tenancy/seam-propagation-rehearsal-2026-10-07.md; local
+branches prop/merge-prefix 16222c97 and prop/rebase-prefix b894ec76). Merge
+into modernization b1bdaca0: 8 paths, 14 hunks, 0 write-rule files, 2 design
+calls; suite 2476/4 against its base 2426/0. Rebase with `git rebase --rebase-
+merges --onto 43289dde 0a4109f6` (a plain rebase replays modernization's own
+commits and stops at 37 conflicting paths): 11 lib and 8 test paths, 58 hunks,
+7 write-rule files, 11 design calls, 3 seam write sites left on the raw
+driver, 5 silent auto-merge hazards of which the suite misses one kind; suite
+3611/5 against its base 3564/0. The prefix runs on driver 5.9.2 and Node 20
+and 22, so the driver does not force the prefix after RT-3. Under merge, the
+15.0.9 write rules, including treatment-fallback-key's $not/$type that the
+seam AST cannot express, arrive with the modernization branch's next merge of
+dev. Recommendation from session -69, for the maintainer to decide: merge.
 
 ---
 

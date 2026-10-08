@@ -49,9 +49,11 @@ Measured 2026-09-27 against `cgm-remote-monitor` `official/dev` `295f1177` and
   `seam/t1-2-storage-interface` `81a1f6ce` (worktree `externals/work/crm-seam`), cut from
   `chore/nightscout-modernization` at `0a4109f6`. That base is now `b1bdaca0`; the seam is 68
   behind it and 50 ahead, with 19 conflicting paths on trial merge (§5, queue `SEAM-REFRESH`).
-- **Open tenancy work:** T3.0 (configuration surface and credential root). `T30-SCHEMA-CRED` has
-  no blockers and is claimable; `T30-SCHEMA-CONFIG` waits on `T30-RESEARCH` (config half) and
-  `T30-ORY-PROOF` (identity half).
+- **Open tenancy work:** T3.0 (configuration surface and credential root). `T30-SCHEMA-CRED` is
+  done on local branch `seam/t30-schema-cred` `65ce54b9` (2026-10-07). `T30-ORY-PROOF` is done and
+  its condition held ([Ory proof](../../60-research/tenancy/ory-proof-2026-10-07.md)); D17 row 2
+  stays held until the maintainer adopts it and picks the cookie scope. `T30-SCHEMA-CONFIG` waits on
+  `T30-RESEARCH` (config half) and those two decisions (identity half).
 - **`TENANCY_MODE=multi` is developer-only**, and under it alarms and live updates are withheld
   (§2.10, §7a).
 
@@ -742,6 +744,15 @@ collection and by path today, so a client that relies on one path's behaviour wi
 It needs a semver decision (at least minor), a consumer-replay arm and the existing regression nets:
 #8758's CRUD-by-id matrix, `tools/qc/write-arm.js` and `tools/lab/rc-soak`.
 
+**Measured 2026-10-07 on `dev` `43289dde`** ([write-contract spec](write-contract-spec-2026-10-07.md),
+`tools/qc/write-contract-matrix.js`). The counts above re-measure as stated. The paths are four, not
+three: in-process `ctx.<collection>` writes behave differently from v1 HTTP in some cells. Stored
+state differs between paths in 33 of 66 collection-and-form groups (47 on 15.0.8), and a record
+created through one path and re-sent without `_id` through another is stored twice in 38 of 66 path
+pairs. None of the v1, socket or in-process writes reaches the API v3 storage socket (BF-164). The
+spec proposes the step's interface, the re-send rule and the gates; its §6 lists the six decisions
+it needs.
+
 **The Postgres loader (`BFQ-CAP02`) runs imported documents through the same step,** with
 `OID-MIGRATION`'s rules for twins, so that an imported record and a written one cannot differ.
 
@@ -782,10 +793,14 @@ thing to an irreversible operation in this programme.
   first.
 - `lib/server/query.js` carries two fixes for the same `$exists` operand defect: the seam's
   `coerceExistsArguments()` (`e0564167`) and `dev`'s schema-driven `lib/server/query-coercion`
-  (#8737, BF-32). The schema-driven one covers more operators. Whether it covers the ordering the
-  seam's version handles has **not been measured**, so measure it before dropping either. BF-04's
-  operator allowlist sits in the same output path, so a careless resolution can re-open a security
-  fix.
+  (#8737, BF-32). **Measured 2026-10-07** ([propagation rehearsal](../../60-research/tenancy/seam-propagation-rehearsal-2026-10-07.md)):
+  `dev`'s covers the ordering the seam's handles; they differ only on `''` and `' false '`, which the
+  seam reads as false and `dev` passes to MongoDB. BF-04's operator allowlist sits in the same
+  output path; removing its call turns its test from 79/0 to 65/14, so a resolution that drops it
+  is caught.
+- A rebase onto `dev` must be `git rebase --rebase-merges --onto <dev> 0a4109f6`. A plain rebase
+  replays the modernization branch's own commits (it stopped at `0a4109f6` with 37 conflicting
+  paths in the rehearsal).
 - The conflict count in `SEAM-REFRESH` is measured against the tip only. A per-branch rebase may
   meet conflicts the tip does not show.
 
@@ -823,15 +838,26 @@ different paths:
 | **merge** `dev` into the cuts and the modernization branch | its commits are kept | merge the moved base into the seam once, keeping the 16 branches' history, then `WRITE-CONTRACT` |
 | **rebase** the cuts onto `dev` | its commits are rewritten | re-parent onto `dev`: the Phase 1 prefix after `RT-3`, the rest after `RT-5` |
 
+**Rehearsed 2026-10-07 on the prefix** ([propagation rehearsal](../../60-research/tenancy/seam-propagation-rehearsal-2026-10-07.md)):
+merging into the modernization branch met 8 paths, 14 hunks, 0 write-rule files and 2 design calls;
+rebasing onto `dev` met 19 paths, 58 hunks, 7 write-rule files and 11 design calls, and left 3 seam
+write sites on the raw driver. The merge is cheaper now because the modernization branch does not
+yet carry the 15.0.9 write rules; under a merge they arrive with its next merge of `dev`.
+
 Constraints either way:
 
 - The seam is built on MongoDB driver `^7.6.0` and Node `^22.23.2 || ^24.20.0`. `dev` has `^5.9.2`
-  and `>=20.x`. The driver major arrives with cut 3 (`RT-3`). Whether the seam's own code needs
-  driver 7 is unmeasured.
+  and `>=20.x`. The driver major arrives with cut 3 (`RT-3`). **Measured 2026-10-07:** the Phase 1
+  prefix does not need driver 7. Rebased onto `dev`, it runs on driver 5.9.2 under Node 20.20.0 and
+  22.23.2 with no driver or Node failure, so the driver does not force the prefix to wait for
+  `RT-3`.
 - `9e869662` (alarm state per service, one of D9's reasons) is in cut 4 (`chore/mime-exposure-review`
   `b80aa147`) and in neither cut 1 nor cut 2. Phases 3–4 need it; Phase 1 does not.
 - **The chain splits.** Its first 16 commits (`seam/t1-2-e`: T1.2, T1.3; 38 files, +1,962 / −242)
-  carry no tenancy behaviour, and their done criterion is an unchanged suite. They trial-merge onto
+  carry no tenancy behaviour, and their done criterion is an unchanged suite. That criterion is not
+  enough: at `a2690bd4` the prefix inverts `$exists` and its suite passes 2213/0; the fix,
+  `e0564167`, is later in the chain, so the prefix ships only with it or with `dev`'s
+  `normalizeOperands`. They trial-merge onto
   `b1bdaca0` with 8 conflicting paths, against 19 for the whole chain. Under either propagation,
   that prefix can reach `dev` and ship to single-tenant operators as a refactor release, ahead of the
   Postgres and tenancy commits.

@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 139 | 40 | 6 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 143 | 44 | 6 |
 | **Modernization** | `release-train` | 32 | 5 | 2 |
-| **Multitenant** | `tenancy` | 19 | 9 | 3 |
-| | **total** | **192** | **54** | **11** |
+| **Multitenant** | `tenancy` | 19 | 7 | 3 |
+| | **total** | **196** | **56** | **11** |
 
 <!-- END GENERATED: horizons -->
 
@@ -167,6 +167,9 @@ cover more than one `BF-`:
 | `BFQ-160` | `not-started` | BF-160 - the clock designer's link target is written with curly quotes |
 | `BFQ-161` | `not-started` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fi |
 | `BFQ-163` | `not-started` | BF-163 - compression 1.8.1 (every response) is inside a high memory-leak advisory fixed in |
+| `BFQ-164` | `not-started` | BF-164 - writes outside API v3 never reach the v3 storage socket |
+| `BFQ-165` | `not-started` | BF-165 - a treatment re-send matched by its fallback key is answered without _id |
+| `BFQ-166` | `not-started` | BF-166 - a profile re-sent with its own _id answers 500 |
 | `BFQ-40` | `merged-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `in-progress` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
 | `BFQ-47` | `merged-upstream` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
@@ -202,8 +205,8 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  | 17 |  | 1 |  |  |  | **22** |
 | `release-train` | 5 |  | 5 |  | 5 |  | 13 | 2 | 1 |  |  | 1 | **32** |
-| `register-open` | 30 | 3 | 1 | 1 | 11 | 1 | 54 | 3 |  |  | 3 |  | **107** |
-| `tenancy` | 9 |  |  | 1 | 7 |  |  | 1 |  | 1 |  |  | **19** |
+| `register-open` | 34 | 3 | 1 | 1 | 11 | 1 | 54 | 3 |  |  | 3 |  | **111** |
+| `tenancy` | 7 |  |  | 1 | 7 |  |  | 1 | 2 | 1 |  |  | **19** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  | 2 |  |  |  | **10** |
 | `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
 
@@ -241,14 +244,14 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 158 | 82% |
+| Maintainer | 162 | 83% |
 | SECURITY reviewer | 15 | 8% |
 | Maintainer + a second human | 7 | 4% |
 | SAFETY reviewer | 6 | 3% |
 | Whoever edits it next | 3 | 2% |
 | Unassigned | 2 | 1% |
 | Upstream reviewers | 1 | 1% |
-| **total** | **192** | |
+| **total** | **196** | |
 
 <!-- END GENERATED: reviewer-load -->
 

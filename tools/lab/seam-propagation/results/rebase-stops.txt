@@ -1,0 +1,47 @@
+STOP 21:30:00 pick 12a83d61 Close the two storage-interface leaks
+  lib/api3/storage/mongoCollection/index.js UU hunks=2
+STOP 21:31:30 pick b0709c2c Add the escape hatches
+  lib/api3/storage/mongoCollection/find.js UU hunks=1
+  lib/api3/storage/mongoCollection/modify.js UU hunks=1 (+silent: dropped assertNoQueryJavascript require)
+STOP 21:31:34 pick 3c8bd74871cb713ee6ef5327861a9ee7ebd84fb3 Convert lib/server/activity.js to the storage interface — the exemplar
+  lib/server/activity.js UU hunks=5
+  (activity: 5 hunks; 4 re-expressed object-id-forms/count rules; +1 silent: withStaleStringsRemoved pushed driver op into seam op list)
+STOP 21:32:34 pick 256c6b588822ccc75bb680e18d02748f38c3f766 Convert food.js and devicestatus.js to the storage interface
+  lib/server/devicestatus.js UU hunks=5
+  lib/server/food.js UU hunks=10
+  devicestatus: 5 hunks (withoutStoredIds re-send identity read via findFiltered; insertMany via store keeps driver writeErrors/11000 crossing the seam; count rule; remove via stored_query_for)
+  food: 10 hunks (object-id-forms toStoredId+stale twins x2 [silent withStaleStringsRemoved x2]; srv-dates carryForReplace left on raw driver via toMongo; soft-deleted visible() via fromMongo x3; quickpick BF-35 $nin+JS sort; remove idFilter)
+STOP 21:33:52 pick 4ee593b158fe8ca99ce9a372dd41ad2a5ef80646 Convert lib/server/entries.js and lib/server/profile.js to the storage interface
+  lib/server/entries.js UU hunks=4
+  lib/server/profile.js UU hunks=6
+  entries: 4 hunks (create: seam conversion DROPPED - bulkUpsert cannot carry $setOnInsert/$unset [design]; remove via stored_query_for; getEntry both forms+soft-deleted via fromMongo)
+  profile: 6 hunks (+1 auto-merged raw read converted); srv-dates carryForReplace on raw driver; stale twin delete via seam; soft-deleted list/last; idFilter remove
+STOP 21:34:45 pick b5dc2cbb8ecbb8d8e23af8645bb07a3aed23b840 Convert the auth store and the count path; fix the count endpoint's date bound
+  lib/authorization/storage.js UU hunks=7
+  lib/server/aggregate.js UU hunks=3
+  tests/count-pipeline-boundary.test.js DU hunks=0
+  auth storage.js: 7 hunks (dev owned-fields/name/keepStoredFields [BF a8f75da5/1942920a/7103f657] kept, keepStoredFields read via seam; list takes DEV semantics query_for (mod 71c42c9a refuse-filters is cut-3 content) [choice]; idFilter remove; count rule)
+  aggregate.js: 3 hunks (dev BF-70 refusePipeline kept; seam count(); console.log dropped)
+  tests/count-pipeline-boundary.test.js DU: mod-only file (needs cut-5 configure-request); seam's 2 tests dropped [choice]
+STOP 21:35:55 pick a7c6efbce9e2077d6745e13a0797a64deea17377 Convert lib/server/treatments.js; preserve MongoDB's compact conjunction
+  lib/server/treatments.js UU hunks=9
+  treatments: 9 hunks (batch create: seam conversion DROPPED - BF-130 interleaved deletes inside ordered bulkWrite [design]; srv-dates carryForReplace raw x3; single upserts via seam upsertOne + stale twin delete via seam x2; count rule; remove restates DeleteResult [choice; also fixes seam defect C1 on this branch])
+STOP 21:36:49 pick 1eba42dfde363d39186754fd93aa90603fd54ad3 Reconcile the three parallel conversions
+  lib/server/aggregate.js UU hunks=2
+  lib/server/devicestatus.js UU hunks=1
+  lib/server/entries.js UU hunks=2
+STOP 21:36:49 pick 1eba42df Reconcile the three parallel conversions
+  aggregate.js hunks=2 (keep BF-70; drop regex helper per reconcile; no console.log)
+  devicestatus.js hunks=1 (+silent: auto-merged remove used query_for (soft-delete-visible) instead of dev's stored_query_for)
+  entries.js hunks=2 (list onto seam + dev count rule; remove pass-through with stored_query_for)
+  (treatments remove restatement from a7c6efbc step replaced by pass-through per reconcile)
+STOP 21:37:30 pick a2690bd4593a254bf50d9f79206a9ca999ea82ce T1.3: select the test backend by env; say which tests are MongoDB's own
+  tests/authorization-reload-boundary.test.js DU hunks=0
+  tests/count-pipeline-boundary.test.js DU hunks=0
+  tests/entries-query-permissions.test.js DU hunks=0
+  tests/mongo-aws-compat.test.js DU hunks=0
+  tests/mongo-query-javascript.http.test.js DU hunks=0
+  tests/mongo-read-batches.test.js DU hunks=0
+  tests/mongo-uri-credentials.test.js DU hunks=0
+  tests/slice-storage-cache.test.js DU hunks=0
+  8 DU mod-only test files: T1.3 backend tagging dropped (files not on dev) [choice]

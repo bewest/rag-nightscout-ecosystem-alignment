@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 192 |
-| runnable gates | 250 |
-| explicit `no-gate:` markers | 247 |
+| items | 196 |
+| runnable gates | 253 |
+| explicit `no-gate:` markers | 251 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 247 of the 497 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 251 of the 504 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 54 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
+| `not-started` | 56 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-164, BFQ-165, BFQ-166, BFQ-167, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
 | `in-progress` | 3 | BFQ-46, BFQ-ENV, OID-LAB |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
@@ -49,7 +49,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `in-flight-upstream` | 1 | BFQ-09 |
 | `merged-upstream` | 86 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 6 | RT-PROPAGATION, RT-0, T30-RESEARCH, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG |
-| `done` | 4 | P0-TAG, DOC-VIEWS, DOC-LINKS, RT-SOAK |
+| `done` | 6 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, DOC-VIEWS, DOC-LINKS, RT-SOAK |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 3 | BFQ-71, BFQ-41, BFQ-141 |
 | `answered` | 1 | RT-D3 |
@@ -118,6 +118,9 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-160** BF-160 - the clock designer's link target is written with curly quotes
 - **BFQ-161** BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes
 - **BFQ-163** BF-163 - compression 1.8.1 (every response) is inside a high memory-leak advisory fixed in 1.8.2
+- **BFQ-164** BF-164 - writes outside API v3 never reach the v3 storage socket
+- **BFQ-165** BF-165 - a treatment re-send matched by its fallback key is answered without _id
+- **BFQ-166** BF-166 - a profile re-sent with its own _id answers 500
 - **BFQ-134** BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 - **BFQ-129** BF-129 - GET /api/v1/entries/<id> for an id that names no entry answers 500
 - **BFQ-133** BF-133 - the COB pill's last-carbs detail can name an older carb entry than the newest one (fixed by BF-146's #8784), merged for 15.0.9
@@ -1378,8 +1381,9 @@ that costs.
 **Evidence.**
 
 - `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/60-research/tenancy/seam-propagation-rehearsal-2026-10-07.md`
 
-**Notes.** Merge keeps the seam's base, so SEAM-REFRESH is one merge into the seam tip, keeping the history of its 16 branches. Rebase rewrites the base, so the seam is re-parented onto dev instead: the Phase 1 prefix (seam/t1-2-e) after RT-3, which brings MongoDB driver 7, and the rest after RT-5, which carries 9e869662. Recorded as open at the maintainer's request, 2026-09-27.
+**Notes.** Merge keeps the seam's base, so SEAM-REFRESH is one merge into the seam tip, keeping the history of its 16 branches. Rebase rewrites the base, so the seam is re-parented onto dev instead: the Phase 1 prefix (seam/t1-2-e) after RT-3, which brings MongoDB driver 7, and the rest after RT-5, which carries 9e869662. Recorded as open at the maintainer's request, 2026-09-27. Rehearsed 2026-10-07 on the Phase 1 prefix (seam/t1-2-e a2690bd4; docs/60-research/tenancy/seam-propagation-rehearsal-2026-10-07.md; local branches prop/merge-prefix 16222c97 and prop/rebase-prefix b894ec76). Merge into modernization b1bdaca0: 8 paths, 14 hunks, 0 write-rule files, 2 design calls; suite 2476/4 against its base 2426/0. Rebase with `git rebase --rebase- merges --onto 43289dde 0a4109f6` (a plain rebase replays modernization's own commits and stops at 37 conflicting paths): 11 lib and 8 test paths, 58 hunks, 7 write-rule files, 11 design calls, 3 seam write sites left on the raw driver, 5 silent auto-merge hazards of which the suite misses one kind; suite 3611/5 against its base 3564/0. The prefix runs on driver 5.9.2 and Node 20 and 22, so the driver does not force the prefix after RT-3. Under merge, the 15.0.9 write rules, including treatment-fallback-key's $not/$type that the seam AST cannot express, arrive with the modernization branch's next merge of dev. Recommendation from session -69, for the maintainer to decide: merge.
 
 ### `RT-0` &mdash; Release 15.0.9
 
@@ -2013,7 +2017,7 @@ that costs.
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Re-send behaviour differs by collection today: devicestatus and profile create keep the legacy string and collide; treatments, food and activity move it to an ObjectId. #8758's 336-cell matrix is the regression net; the 11 new test files overlap it and could be folded into it at the same time. Best done with OID-MIGRATION. It is the _id slice of WRITE-CONTRACT (execution plan section 4.1): if it lands on dev first, WRITE-CONTRACT moves its helper behind the storage interface; if not, WRITE-CONTRACT absorbs it.
+**Notes.** Re-send behaviour differs by collection today: devicestatus and profile create keep the legacy string and collide; treatments, food and activity move it to an ObjectId. #8758's 336-cell matrix is the regression net; the 11 new test files overlap it and could be folded into it at the same time. Best done with OID-MIGRATION. It is the _id slice of WRITE-CONTRACT (execution plan section 4.1): if it lands on dev first, WRITE-CONTRACT moves its helper behind the storage interface; if not, WRITE-CONTRACT absorbs it. Correction, measured 2026-10-07 on dev 43289dde (docs/30-design/tenancy/write-contract- spec-2026-10-07.md §1.6): a profile stored with a string _id by an older release and re-sent in upper case is stored twice; the same devicestatus is answered 200 and not written (BF-116); a profile created by dev and re-sent with its own _id answers 500 (BF-166).
 
 ### `RT-SOAK` &mdash; tools/lab/rc-soak - A/B soak of the 15.0.9 candidate against 15.0.8, and a 24-72 h real-time soak
 
@@ -2113,7 +2117,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 107 items
+`parcel: register-open` &mdash; 111 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2211,6 +2215,10 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-161` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-162` | BF-162 - an explicit TRUST_PROXY address list reaches proxy-addr 2.0.7, inside a critical advisory fixed in 2.0.8 | `merged-upstream` | `bf/proxy-addr-2.0.8` | patch | 0 run + 1 no-gate |
 | `BFQ-163` | BF-163 - compression 1.8.1 (every response) is inside a high memory-leak advisory fixed in 1.8.2 | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `BFQ-164` | BF-164 - writes outside API v3 never reach the v3 storage socket | `not-started` | `-` | minor | 0 run + 1 no-gate |
+| `BFQ-165` | BF-165 - a treatment re-send matched by its fallback key is answered without _id | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `BFQ-166` | BF-166 - a profile re-sent with its own _id answers 500 | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `BFQ-167` | BF-167 - devicestatus remove()'s filter is not pinned by any test | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `BFQ-134` | BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open | `merged-upstream` | `bf/loop-apns-shutdown` | patch | 1 run + 1 no-gate |
 | `OID-LAB` | tools/lab/object-id - wrap the lab in queue gates and add the real-client replays | `in-progress` | `main` | n/a | 1 run |
 | `WS-LAB` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | `ready-to-push` | `main` | n/a | 1 run + 1 no-gate |
@@ -5178,6 +5186,130 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Notes.** Filed 2026-10-07 from session -d4's npm audit on dev 43289dde. Decision 2026-10-07 (maintainer): a known issue in 15.0.9, named in the release notes; the update goes early in the modernization releases (the first cut after 15.0.9, RT-1, or the dependency refresh that precedes it).
 
+### `BFQ-164` &mdash; BF-164 - writes outside API v3 never reach the v3 storage socket
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@43289dde` |
+| worktree | `-` |
+| semver | `minor` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-164` |
+
+**Blast radius.** lib/api3/storageSocket.js and the shared data-update path, or the write step WRITE-CONTRACT proposes; every v1, socket and in-process write would start emitting storage-socket events.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `minor`.** clients subscribed to the storage socket start receiving events they did not before
+
+**Gates.**
+
+- **NO GATE** &mdash; Reproduced by tools/qc/write-contract-matrix.js with a real /storage subscriber: 0 of 190 non-v3 write cells emit, v3 create in the same run does. A gate would run the matrix's wire column and fail on any non-v3 write cell with wire none; the control is the same run on 43289dde, which must fail.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
+
+**Notes.** Filed 2026-10-07 from the WRITE-CONTRACT write matrix. Present on 15.0.8 too. Overlaps BF-122's mechanism paragraph, whose fix covered history only. Either a narrow fix on dev ahead of WRITE-CONTRACT or item 5 of WRITE-CONTRACT; not decided. AndroidAPS NSClientV3's reliance on the socket is read, not run.
+
+### `BFQ-165` &mdash; BF-165 - a treatment re-send matched by its fallback key is answered without _id
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@43289dde` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-165` |
+
+**Blast radius.** lib/server/treatments.js's fallback-key re-send reply, over API v1 and in- process; the reply and data-update document would carry the stored _id.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `patch`.** the reply gains the field a client already expects
+
+**Gates.**
+
+- **NO GATE** &mdash; Reproduced: matrix cells treatments v1 resend-identity and treatments inproc resend-identity answer 200 with one document without _id. A gate asserts the _id is present; control: 43289dde fails it.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
+
+**Notes.** Filed 2026-10-07 from the WRITE-CONTRACT write matrix. Present on 15.0.8 too. NightscoutKit's 'NA' handling is read, not run.
+
+### `BFQ-166` &mdash; BF-166 - a profile re-sent with its own _id answers 500
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@43289dde` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-166` |
+
+**Blast radius.** lib/server/profile.js create path over API v1 and in-process.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `patch`.** a retried write stops failing; nothing stored changes
+
+**Gates.**
+
+- **NO GATE** &mdash; Reproduced: profile v1 resend-hex answers 500, profile inproc resend-hex a duplicate-key error. A gate asserts 200 and one stored record; control: 43289dde fails it.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
+
+**Notes.** Filed 2026-10-07 from the WRITE-CONTRACT write matrix. Present on 15.0.8 too. BF-116 fixed the same shape for devicestatus.
+
+### `BFQ-167` &mdash; BF-167 - devicestatus remove()'s filter is not pinned by any test
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@43289dde` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| ships to operators today | no (pre-release) |
+| register | `BF-167` |
+
+**Blast radius.** tests only: one test asserting that devicestatus remove() also deletes soft- deleted records.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** test only
+
+**Gates.**
+
+- **NO GATE** &mdash; Reproduced by tools/lab/seam-propagation/ds-remove-softdeleted.js: deletedCount 2 as shipped, 1 with stored_query_for swapped for query_for, while the suite stays 3564/0. The fix's proof is that same swap turning the new test red.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `docs/60-research/tenancy/seam-propagation-rehearsal-2026-10-07.md`
+
+**Notes.** Filed 2026-10-07 from the seam propagation rehearsal. Register §1b, kind (c): behaviour is correct today.
+
 ### `BFQ-134` &mdash; BF-134 - every Loop remote command leaves an APNs connection and a heartbeat timer open
 
 | | |
@@ -5727,11 +5859,11 @@ alarm-readiness items, and the seam branch refresh.
 
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
-| `T30-RESEARCH` | T3.0 part 1 - enumerate the per-tenant configuration surface | `needs-decision` | `-` | n/a | 1 run + 3 no-gate |
+| `T30-RESEARCH` | T3.0 part 1 - enumerate the per-tenant configuration surface | `needs-decision` | `-` | n/a | 2 run + 3 no-gate |
 | `T30-AUTH` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-interface split | `ready-to-push` | `main` | n/a | 2 run + 4 no-gate |
-| `T30-SCHEMA-CRED` | T3.0 part 2a - device and data-path credential storage in platform.sql | `not-started` | `-` | n/a | 1 run + 2 no-gate |
+| `T30-SCHEMA-CRED` | T3.0 part 2a - device and data-path credential storage in platform.sql | `done` | `seam/t30-schema-cred` | n/a | 2 run + 2 no-gate |
 | `T30-SCHEMA-CONFIG` | T3.0 part 2b - per-tenant configuration table, and where human identity lives | `not-started` | `-` | n/a | 1 run + 2 no-gate |
-| `T30-ORY-PROOF` | Stand up Kratos 1.x and Hydra 2.x and try to make one pool serve two tenants | `not-started` | `-` | n/a | 0 run + 3 no-gate |
+| `T30-ORY-PROOF` | Stand up Kratos 1.x and Hydra 2.x and try to make one pool serve two tenants | `done` | `ory/proof-2026-10-07` | n/a | 1 run + 3 no-gate |
 | `T30-WIRING` | T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `T31-REM` | T3.1 remainder - per-tenant signing key replaces the install-wide one | `blocked` | `seam/t1-2-storage-interface` | n/a | 0 run + 1 no-gate |
 | `T32-REM` | T3.2 remainder - platform.sql carries no config, secret or signing key | `blocked` | `seam/t1-2-storage-interface` | n/a | 0 run + 1 no-gate |
@@ -5767,6 +5899,8 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
+- `[static]` `node tools/queue/gates/t30-census-differential.js --ref 81a1f6ce`
+  - The spec's B.4, B.2 gap-5 and B.6 names equal the code-side surface (the G.3 sources plus direct, generic and injected readers parsed from lib/ and bin/). Green at 81a1f6ce with union 247 and surface 277. Red at official/dev 43289dde (14 code-only, 25 report-only) because the two lines have diverged, not because either is wrong.
 - `[static]` `test -f docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md`
   - the deliverable exists. A presence check only; it says nothing about whether the enumeration is complete or correct.
 - **NO GATE** &mdash; Nothing checks that the enumeration is COMPLETE. The only non-vacuous form is a differential: enumerate from the report, enumerate from lib/server/env.js by parsing, and require the two sets to agree - with a planted extra variable as the control. The census script exists, at section G.3 of the deliverable, and reproduces {"s1":70,"s2":51, "s3prefixes":37,"s4":208,"union":247} against crm-seam at 81a1f6ce. It is not checked in anywhere and nothing re-runs it, so the 247 is a transcript rather than a measurement. Lifting G.3 into tools/queue/gates/ is the cheapest real gate this item can have.
@@ -5777,8 +5911,9 @@ alarm-readiness items, and the seam branch refresh.
 
 - `docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md`
 - `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/60-research/tenancy/t30-census-gate-and-schema-cred-2026-10-07.md`
 
-**Notes.** T3.0 is the largest correction owed in the programme. It does not block T3.3, which landed first; it AMENDS T3.1, T3.2 and T3.3, all marked DONE-EXCEPT. The enumeration was written and adversarially reviewed on 2026-09-15; the surface total is 277. What remains is not enumeration: it is the maintainer decisions the document defers, and the harnesses that would turn its numbers into measurements. The three decisions with the longest reach are where the tenant- owner API lives, what issues and verifies a tenant-owner credential, and whether D7's credential-free platform plane holds against Nocturne's design, which puts platform admin on the consumer API behind a platform_admin role instead.
+**Notes.** T3.0 is the largest correction owed in the programme. It does not block T3.3, which landed first; it AMENDS T3.1, T3.2 and T3.3, all marked DONE-EXCEPT. The enumeration was written and adversarially reviewed on 2026-09-15; the surface total is 277. What remains is not enumeration: it is the maintainer decisions the document defers, and the harnesses that would turn its numbers into measurements. The three decisions with the longest reach are where the tenant- owner API lives, what issues and verifies a tenant-owner credential, and whether D7's credential-free platform plane holds against Nocturne's design, which puts platform admin on the consumer API behind a platform_admin role instead. 2026-10-07 (session -69's T30 agent, docs/60-research/tenancy/t30-census-gate-and-schema-cred-2026-10-07.md): the census is now a gate, and 247 against 277 is measured: 247 is the union the settings layer, env.js and the README can see; 277 adds 30 names found only by parsing code (3 AWS, CI, 10 API v3, 4 WEBHOOK, 12 ADMIN/FEED). The first no- gate's differential exists; gaps (1) to (4) and J14 are covered by parsing. Gap (5) stays partly open: the gate checks PREFIX_* counts and class totals but not subgroup headings, and the T-plugin subgroup headed (97) lists 98; the spec's TREATMENTS_AUTH reconciliation sentence contradicts its own list. Not in B.2: CUSTOMCONNSTR_DEXCOM_BRIDGE_USE_LEGACY, a direct read in lib/server/bridge-connect-compat.js:6 on dev (gone on the seam).
 
 ### `T30-AUTH` &mdash; The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-interface split
 
@@ -5820,11 +5955,11 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `done` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
+| branch | `seam/t30-schema-cred` |
 | base | `seam/t1-2-storage-interface@81a1f6ce` |
-| worktree | `externals/work/crm-seam` |
+| worktree | `externals/work/crm-t30-cred` |
 | semver | `n/a` |
 | review | SECURITY - this is where D13's per-tenant credential root and D14's per-tenant signing key live |
 
@@ -5836,6 +5971,8 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
+- `[static]` `node tools/queue/gates/platform-sql-surface.js --subset=cred --ref seam/t30-schema-cred`
+  - The cred subset on the branch that carries it: columns, referent types and RLS on every tenant table (the gate was rewritten 2026-10-07; the old form went green on a comment). Red at 81a1f6ce (6 of 8), green at 65ce54b9 (8 of 8); five single-column breaks each turn exactly one finding red. The unqualified gate below reads crm-seam at 81a1f6ce and stays red until the seam takes the branch.
 - `[static]` `node tools/queue/gates/platform-sql-surface.js --subset=cred`
   - FAILS while platform.sql carries no signing-key column, no per-tenant root credential and no referent for tenant_members.subject_id. Re-runs GT3's grep as a machine check. It measures that a COLUMN EXISTS and nothing about whether anything reads it - T30-WIRING owns that, and its D14 gate is the non-vacuous one.
 - **NO GATE** &mdash; D13 forbids any deployment-wide secret under TENANCY_MODE=multi on any interface. Nothing checks for one. A gate would have to enumerate every place a secret can enter and assert none is deployment-wide under multi - which is the T30-RESEARCH deliverable. This item is not blocked on that, because a credential column can be added before the enumeration is complete, but the enumeration is what would turn this no-gate into a gate.
@@ -5845,8 +5982,9 @@ alarm-readiness items, and the seam branch refresh.
 
 - `docs/60-research/remedial/gt3-register-truth-2026-09-15.md`
 - `docs/60-research/tenancy/auth-plane-ory-vs-inhouse-2026-09-16.md`
+- `docs/60-research/tenancy/t30-census-gate-and-schema-cred-2026-10-07.md`
 
-**Notes.** The device and data-path half of the T3.0 schema work. D17 row 1 - native per- tenant credentials for devices and the data path, permanently - is adopted, so this half is unblocked. It takes nothing from the Ory question: row 1 holds however row 2 lands, because an uploader cannot run an OAuth flow and D1 keeps the self-hosted path first-class permanently. The human-identity columns are NOT in this item - they are in T30-SCHEMA-CONFIG, gated on T30-ORY-PROOF, so that no DDL is written for a table that may hold nothing.
+**Notes.** The device and data-path half of the T3.0 schema work. D17 row 1 - native per- tenant credentials for devices and the data path, permanently - is adopted, so this half is unblocked. It takes nothing from the Ory question: row 1 holds however row 2 lands, because an uploader cannot run an OAuth flow and D1 keeps the self-hosted path first-class permanently. The human-identity columns are NOT in this item - they are in T30-SCHEMA-CONFIG, gated on T30-ORY-PROOF, so that no DDL is written for a table that may hold nothing. Done 2026-10-07 on local branch seam/t30-schema-cred 65ce54b9 (on 81a1f6ce; docs/60-research/tenancy/t30-census-gate-and-schema-cred-2026-10-07.md): tenant_secret (root, jwt, subject-salt; active/retiring/revoked; material bytea plus key_ref), tenant_subject, tenant_role, and tenant_members.subject_id as text with a composite foreign key to tenant_subject; RLS enabled and forced on each. tests/admin-tenants.test.js now executes the DDL on PostgreSQL 16.15; seam suite 2657 to 2663 passing, 1 pending, each new test mutated and seen red. Nothing reads the columns yet (T30-WIRING). Open for the maintainer: whether subjects and roles count as tenant data. NOT_TENANT_DATA drives both the export and the deletion gate, so counting them makes any tenant with a member undeletable; the branch excludes them from both (T3.2's behaviour); splitting the set is the option that matches both documents. Also open: J4/J5 (what wraps the material; a root secret only needs verifying, so it could be hashed) and I.2 (a member who is not a subject).
 
 ### `T30-SCHEMA-CONFIG` &mdash; T3.0 part 2b - per-tenant configuration table, and where human identity lives
 
@@ -5879,15 +6017,15 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md`
 - `docs/60-research/tenancy/auth-plane-ory-vs-inhouse-2026-09-16.md`
 
-**Notes.** Two different blockers. T30-RESEARCH blocks the configuration table, because the settings surface is what that item enumerates and what a tenant may override versus what the hoster pins is a decision it still defers. T30-ORY- PROOF blocks the human-identity columns, because D17 row 2 is direction of travel and not adopted: if one cohort-wide Kratos pool lands, human identity lives in Kratos with only a subject reference here; if it does not, these tables carry credentials, recovery and MFA. Those are different schemas. If this item is claimed before T30-ORY-PROOF resolves, do the configuration table and stop at the identity columns.
+**Notes.** Two different blockers. T30-RESEARCH blocks the configuration table, because the settings surface is what that item enumerates and what a tenant may override versus what the hoster pins is a decision it still defers. T30-ORY- PROOF blocks the human-identity columns, because D17 row 2 is direction of travel and not adopted: if one cohort-wide Kratos pool lands, human identity lives in Kratos with only a subject reference here; if it does not, these tables carry credentials, recovery and MFA. Those are different schemas. If this item is claimed before T30-ORY-PROOF resolves, do the configuration table and stop at the identity columns. 2026-10-07: T30-ORY-PROOF is done and its condition held. The identity half still waits on two maintainer decisions: adopting D17 row 2, and the cookie scope (apex cookie, or a per-tenant OAuth client, which adds tenants.oauth_client_id). Under row 2, tenant_members.subject_id holds the Kratos identity UUID with no foreign key, and no credential, recovery or MFA columns are ours (docs/60-research/tenancy/ory-proof-2026-10-07.md §7).
 
 ### `T30-ORY-PROOF` &mdash; Stand up Kratos 1.x and Hydra 2.x and try to make one pool serve two tenants
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `done` |
 | repo | `rag-nightscout-ecosystem-alignment` |
-| branch | `-` |
+| branch | `ory/proof-2026-10-07` |
 | base | `main@671bc88d` |
 | worktree | `.` |
 | semver | `n/a` |
@@ -5901,6 +6039,8 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
+- `[integration]` `tools/lab/ory-proof/run-all.sh`
+  - One Kratos pool, tenants A and B, U a member of A only, run 2026-10-07 on Kratos v1.3.1 / Hydra v2.3.0 and on v26.2.0. U's session is refused on B (403 not-a-member) and an A token fails on B as a signature failure; the control on the identical setup (U added to B) mints on B while the A token still fails on B; removing one defence at a time goes red as predicted. Every negative phase asserts liveness in the same run. 23/23 on both lines. Needs Docker, Chrome, ports 44433-44445, 44480, 44486, 54353.
 - **NO GATE** &mdash; Not started, so there is nothing to run. The gate it needs: register two tenants against ONE Kratos pool and confirm a session for tenant A cannot be exchanged for a Nightscout token on tenant B. WITH A CONTROL - the same session against tenant A's own host must succeed, or the failure is not known to come from the tenancy boundary. A red control can be red for the wrong reason, so the control itself must be checked.
 - **NO GATE** &mdash; nightscout-roles-gateway was read, not executed. Its dependencies are 2022-era - @ory/kratos-client 0.9.0-alpha.3 and @ory/hydra-client 1.11.8 - and V0alpha2Api, which lib/privy/index.js:20 constructs, no longer exists under that name in Kratos 1.x. Whether its decision pipeline still works is the second thing this item should measure, and it is the whole cost estimate for a port.
 - **NO GATE** &mdash; No cost model, and self-hosting does not dispose of it. Ory Network pricing does not apply under the one-deployment shape, which needs no Enterprise License - but the compliance question of any third-party processor adjacent to health data is unanalysed, and that one survives self-hosting because it is about who can reach the data, not who is billed for it.
@@ -5908,8 +6048,9 @@ alarm-readiness items, and the seam branch refresh.
 **Evidence.**
 
 - `docs/60-research/tenancy/auth-plane-ory-vs-inhouse-2026-09-16.md`
+- `docs/60-research/tenancy/ory-proof-2026-10-07.md`
 
-**Notes.** The condition on D17 row 2 (maintainer, 2026-09-16). Three of D17's four rows are adopted; row 2 - Ory Kratos as one cohort-wide identity pool for human identity, hosted-only - is direction of travel pending this measurement, because read-derived claims are hypotheses and a shared identity pool is effectively irreversible once identities exist. Roughly a day of work; it unblocks the identity half of T30-SCHEMA-CONFIG.
+**Notes.** The condition on D17 row 2 (maintainer, 2026-09-16). Three of D17's four rows are adopted; row 2 - Ory Kratos as one cohort-wide identity pool for human identity, hosted-only - is direction of travel pending this measurement, because read-derived claims are hypotheses and a shared identity pool is effectively irreversible once identities exist. Roughly a day of work; it unblocks the identity half of T30-SCHEMA-CONFIG. Measured 2026-10-07 (docs/60-research/tenancy/ory-proof-2026-10-07.md). The condition on D17 row 2 held, and isolation is held only by our nsjwt exchange (Host-first tenant resolution, tenant_members, a per-tenant key, a Hydra client_id check), not by Ory: Hydra login is cohort-wide (skip=true), one issuer and key, and introspection reports any tenant's token active. Cookie scope is undecided and decides the identity half of T30-SCHEMA-CONFIG: an apex cookie reaches every tenant host, and B's copy replayed at A mints an A token; a host-only cookie reaches no tenant host, so with Hydra deferred a browser has no credential, unless each tenant gets an OAuth client (tenants.oauth_client_id). The return_to allow-list is one list for the cohort. A minted token outlives Kratos session revocation. Read claims corrected: V0alpha2Api is an SDK rename (NRG's 2022 SDK still resolves sessions on Kratos 1.x and v26), and Kratos request_url follows X-Forwarded-Host. NRG's warden chain works against Kratos 1.x; the port cost is restify on Node 24, npm peer deps, Hydra 2.3's admin path, and pairwise clients refused under JWT access tokens. Ory now uses calendar versions (v26.2.0). Not covered: the compliance question for a processor next to health data, Secure cookies, the Public Suffix List, verification email, MFA and passkeys, load.
 
 ### `T30-WIRING` &mdash; T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT
 
@@ -5998,7 +6139,7 @@ alarm-readiness items, and the seam branch refresh.
 
 - `docs/60-research/remedial/gt3-register-truth-2026-09-15.md`
 
-**Notes.** Also still open from T3.2's own "not done" list: two-role deployments are untested; logical-slot lag arithmetic has no producer until Phase 4; the admin plane is PostgreSQL-only by construction with no export for a single-tenant MongoDB deployment; reserved labels (www, api, admin) and xn-- prefixes are flagged, not enforced.
+**Notes.** Also still open from T3.2's own "not done" list: two-role deployments are untested; logical-slot lag arithmetic has no producer until Phase 4; the admin plane is PostgreSQL-only by construction with no export for a single-tenant MongoDB deployment; reserved labels (www, api, admin) and xn-- prefixes are flagged, not enforced. 2026-10-07: the credential half is on seam/t30-schema- cred 65ce54b9 (T30-SCHEMA-CRED); the config half remains with T30-SCHEMA- CONFIG.
 
 ### `T33-REM` &mdash; T3.3 remainder - the shared enclave, and language/levels per tenant
 
@@ -6236,8 +6377,9 @@ alarm-readiness items, and the seam branch refresh.
 **Evidence.**
 
 - `docs/60-research/remedial/gt1-branch-inventory-2026-09-15.md`
+- `docs/60-research/tenancy/seam-propagation-rehearsal-2026-10-07.md`
 
-**Notes.** GT1 also found that crm-pool, crm-tenant and crm-write are three separate worktrees all detached at the SAME commit 239f8c25, a mid-chain commit of seam/t1-2-storage-interface, with no branch of their own. Rule 5 - do not repoint a worktree you did not create - so they are recorded, not touched. Timing (maintainer, 2026-09-27; execution plan section 5.1): refresh once, after the 15.0.9 freeze and the release train's next propagation, as the first step of WRITE-CONTRACT. Not now: nothing builds on the seam, and nine of the 19 conflicting paths are files that now call a 15.0.9 write rule (lib/api/entries/index.js, lib/authorization/storage.js, lib/server/{activity, devicestatus, entries, food, profile, query, treatments}.js), so resolving them is re-expressing those rules through the storage interface. Measured 2026-09-27 against dev 295f1177: since dev 59430336 (the dev side of e3b22034) dev has taken 206 commits, 77 in lib/server, lib/api or lib/api3, and 30 files the seam changes have also changed on dev. The chain's first 16 commits (seam/t1-2-e, T1.2 and T1.3, 38 files +1962/-242) carry no tenancy behaviour and trial-merge onto b1bdaca0 with 8 conflicting paths, against 19 for the whole chain.
+**Notes.** GT1 also found that crm-pool, crm-tenant and crm-write are three separate worktrees all detached at the SAME commit 239f8c25, a mid-chain commit of seam/t1-2-storage-interface, with no branch of their own. Rule 5 - do not repoint a worktree you did not create - so they are recorded, not touched. Timing (maintainer, 2026-09-27; execution plan section 5.1): refresh once, after the 15.0.9 freeze and the release train's next propagation, as the first step of WRITE-CONTRACT. Not now: nothing builds on the seam, and nine of the 19 conflicting paths are files that now call a 15.0.9 write rule (lib/api/entries/index.js, lib/authorization/storage.js, lib/server/{activity, devicestatus, entries, food, profile, query, treatments}.js), so resolving them is re-expressing those rules through the storage interface. Measured 2026-09-27 against dev 295f1177: since dev 59430336 (the dev side of e3b22034) dev has taken 206 commits, 77 in lib/server, lib/api or lib/api3, and 30 files the seam changes have also changed on dev. The chain's first 16 commits (seam/t1-2-e, T1.2 and T1.3, 38 files +1962/-242) carry no tenancy behaviour and trial-merge onto b1bdaca0 with 8 conflicting paths, against 19 for the whole chain. 2026-10-07 rehearsal (docs/60-research/tenancy/seam-propagation- rehearsal-2026-10-07.md): a refresh by rebase must use --rebase-merges --onto <old modernization base>. Open before the real refresh, on either path: (1) the conf.pipeline hook, which BF-70 keeps and the seam's count() refuses, needs a decision; (2) 3 to 5 tests that stub or spy on the raw collection need re-expressing; (3) $exists with an empty operand: dev passes it to MongoDB, the seam's fromMongo reads it as false; (4) bulkUpsert cannot express $setOnInsert/$unset or interleaved deletes (entries create, BF-130), and the AST lacks $not/$type (treatment-fallback-key), all WRITE-CONTRACT inputs. The prefix alone (a2690bd4) inverts $exists, and its suite (2213/0) does not see it; the fix e0564167 is in seam/t2-4-allowlist, so the prefix must not ship without e0564167 or dev's normalizeOperands. Conflict cost: measured for the prefix (rehearsal §5); the full chain is classified only (§4: 19 against the modernization branch = 3 BF-04 supersessions, 2 test, 14 other lib, 0 write- rule; 50 against dev = 11 write-rule, 21 of them the modernization branch's own).
 
 ### `WRITE-CONTRACT` &mdash; One write step behind the storage interface: _id form, srv dates, soft delete, re-send identity, one change event
 
@@ -6267,8 +6409,10 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 - `docs/30-design/tenancy/nightscout-storage-seam-interface-2026-09-14.md`
 - `docs/30-design/remedial/nightscout-backfix-register.md`
+- `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
+- `tools/qc/write-contract-matrix.js`
 
-**Notes.** Execution plan section 4.1. Absorbs OID-STORAGE-HELPER (the _id rule alone) if that has not landed on dev first; if it has, its helper moves behind the interface here. Under single, the change event carries the runtime-derived copy and replaces the separate emissions the cache, v3 history and the socket consume. Under multi the change feed (D6) is the event. BFQ-CAP02's loader runs imported documents through the same step. Ships to single-tenant operators as its own release, before any Phase 2 work.
+**Notes.** Execution plan section 4.1. Absorbs OID-STORAGE-HELPER (the _id rule alone) if that has not landed on dev first; if it has, its helper moves behind the interface here. Under single, the change event carries the runtime-derived copy and replaces the separate emissions the cache, v3 history and the socket consume. Under multi the change feed (D6) is the event. BFQ-CAP02's loader runs imported documents through the same step. Ships to single-tenant operators as its own release, before any Phase 2 work. Spec drafted 2026-10-07 (docs/30-design/tenancy/write-contract-spec-2026-10-07.md), measured on dev 43289dde and 15.0.8 92d08342 with tools/qc/write-contract-matrix.js (336 cells per build; stored state differs between paths in 33 of 66 groups on dev, 47 on 15.0.8; a cross-path re-send without _id is stored twice in 38 of 66 path pairs; six one-line ablations each turn exactly their predicted cells red). Proposes one write(intent) step in lib/storage/write-step.js inside collectionFor, merge-on-match re-sends, one natural key per collection and one event per write; semver minor if merge-on-match is chosen. Its gates G1 to G8 are in spec §5 and replace the no-gate above when the item starts. Needs maintainer decisions Q1 to Q6 (spec §6); Q3's devicestatus key needs an ns- data corpus count of created_at+device collisions first. Found BF-164, BF-165 and BF-166. Still blocked on SEAM-REFRESH.
 
 ### `BFQ-66` &mdash; BF-66 - the deployment's own tokens fail its own tenant check
 

@@ -43,6 +43,14 @@ not an unstarted research task.
 
 ## What was measured
 
+**`node tools/queue/gates/t30-census-differential.js --ref 81a1f6ce`** &nbsp;·&nbsp; kind: `static`
+
+The spec's B.4, B.2 gap-5 and B.6 names equal the code-side surface (the G.3
+sources plus direct, generic and injected readers parsed from lib/ and bin/).
+Green at 81a1f6ce with union 247 and surface 277. Red at official/dev 43289dde
+(14 code-only, 25 report-only) because the two lines have diverged, not
+because either is wrong.
+
 **`test -f docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md`** &nbsp;·&nbsp; kind: `static`
 
 the deliverable exists. A presence check only; it says nothing about whether
@@ -81,6 +89,7 @@ the enumeration is complete or correct.
 
 - [`docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md`](../../docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md)
 - [`docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`](../../docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md)
+- [`docs/60-research/tenancy/t30-census-gate-and-schema-cred-2026-10-07.md`](../../docs/60-research/tenancy/t30-census-gate-and-schema-cred-2026-10-07.md)
 
 ## Notes carried on the item
 
@@ -93,7 +102,17 @@ measurements. The three decisions with the longest reach are where the tenant-
 owner API lives, what issues and verifies a tenant-owner credential, and
 whether D7's credential-free platform plane holds against Nocturne's design,
 which puts platform admin on the consumer API behind a platform_admin role
-instead.
+instead. 2026-10-07 (session -69's T30 agent,
+docs/60-research/tenancy/t30-census-gate-and-schema-cred-2026-10-07.md): the
+census is now a gate, and 247 against 277 is measured: 247 is the union the
+settings layer, env.js and the README can see; 277 adds 30 names found only by
+parsing code (3 AWS, CI, 10 API v3, 4 WEBHOOK, 12 ADMIN/FEED). The first no-
+gate's differential exists; gaps (1) to (4) and J14 are covered by parsing.
+Gap (5) stays partly open: the gate checks PREFIX_* counts and class totals
+but not subgroup headings, and the T-plugin subgroup headed (97) lists 98; the
+spec's TREATMENTS_AUTH reconciliation sentence contradicts its own list. Not
+in B.2: CUSTOMCONNSTR_DEXCOM_BRIDGE_USE_LEGACY, a direct read in
+lib/server/bridge-connect-compat.js:6 on dev (gone on the seam).
 
 ---
 
