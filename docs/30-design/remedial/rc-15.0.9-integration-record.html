@@ -2709,6 +2709,8 @@
       
         
       
+        
+      
     
     
     
@@ -4538,52 +4540,59 @@
 
 
 <h1 id="1509-integration-record">15.0.9 integration record<a class="headerlink" href="#1509-integration-record" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-02 at <code>528d5a29</code>.</em></p>
+<p><em>Living document, last changed 2026-10-07 at <code>12ea387c</code>.</em></p>
 <p><em>Contributor-facing. Living record of how the cgm-remote-monitor 15.0.9 candidate was assembled
 and tested. Item state is in <code>queue/work-queue.yaml</code> (<code>RT-0</code>); defect facts are in the
 <a href="nightscout-backfix-register.html">backfix register</a>; release contents are in
 <a href="../../../releases/cgm-remote-monitor-15.0.9/contents.html">releases/cgm-remote-monitor-15.0.9</a>.
 Several units fix defects that are live on the shipping release (15.0.8, <code>official/master</code>
 <code>92d08342</code>), so this record describes mechanisms only.</em></p>
-<p><strong>Where the candidate stands, 2026-10-03.</strong> The candidate is <code>official/dev</code> <code>1ad03e29</code> (tree
-<code>7d16c516</code>, package version 15.0.9), merged 2026-10-03 01:00Z. 15.0.8..<code>1ad03e29</code>: 543 commits, 97
-first-parent merges, 313 files, +30210/−1935 (<code>git rev-list --count</code>, <code>--first-parent --count</code> and <code>git diff --shortstat</code>
+<p><strong>Where the candidate stands, 2026-10-08.</strong> The candidate is <code>official/dev</code> <code>fade2299</code> (tree
+<code>0bdc42f6</code>, package version 15.0.9), merged 2026-10-08 00:47Z. 15.0.8..<code>fade2299</code>: 547 commits, 99
+first-parent merges, 313 files, +30264/−1936 (<code>git rev-list --count</code>, <code>--first-parent --count</code> and <code>git diff --shortstat</code>
 <code>official/master official/dev</code>). There is no <code>15.0.9</code> tag. Every PR decided for 15.0.9 is merged;
 Crowdin #8730 (BF-132) is held out.</p>
 <ul>
-<li><strong>Current full run: run 020 on <code>ce30a94d</code> (2026-09-27).</strong> 3473/0/3 (passing/failing/pending) in
-  all six cells, Node 20/22/24 × MongoDB 4.4.24 and 7.0.43; probes; break-its of #8784; a compressed
-  A/B soak against 15.0.8. It has not been repeated on a later head.</li>
-<li><strong>Merged after run 020:</strong> #8785, #8786, #8788, #8790, #8791, #8793, #8794, #8795, #8796, #8799, #8800, #8801 and #8802, each checked
+<li><strong>Current full run: run 023 on <code>fade2299</code> (2026-10-08).</strong> 3566/0/4 (passing/failing/pending) in
+  all six cells, Node 20/22/24 × MongoDB 4.4.24 and 7.0.43; run 022's probes (every one gave run
+  022's result); the browser hand-check gate; a compressed A/B soak against 15.0.8 (R50–R52, with
+  R46–R47 carried from run 022); the two new <code>tests/dependency-d3.test.js</code> context-brush cases green
+  and non-vacuous. Record:
+  <a href="../../../tools/lab/rc-soak/results/proof-2026-10-08-run023.html">proof-2026-10-08-run023</a>.</li>
+<li><strong>Merged after run 020:</strong> #8785, #8786, #8788, #8790, #8791, #8793, #8794, #8795, #8796, #8799, #8800, #8801, #8802, #8806 and #8807, each checked
   on its own; see <a href="#after-run-020">After run 020</a>.</li>
-<li><strong>Full suite on the candidate tree, one cell:</strong> #8802's head <code>b13b7a3a</code> has the same tree as
-  <code>1ad03e29</code> (<code>7d16c516</code>). On it the full suite gave 3563/0/4 (Node 24.15.0, MongoDB 7.0.43,
-  fresh database, 2026-10-02).</li>
-<li><strong>Next run:</strong> run 021, the full six-cell run on <code>1ad03e29</code>, is in progress.</li>
+<li><strong>Full suite on the candidate tree:</strong> #8807's merge <code>fade2299</code> differs from run 022's <code>43289dde</code>
+  only in <code>lib/client/chart.js</code> and the two test files it adds (the server-side tree is byte-identical
+  except <code>lib/client/chart.js</code>). Run 023 ran the full six cells on <code>fade2299</code>: 3564/0/4 of <code>43289dde</code>
+  plus #8807's two new <code>tests/dependency-d3.test.js</code> cases = 3566/0/4 (below).</li>
 <li><strong>Real-time soak (RT-SOAK):</strong> done on real sites, by the maintainer's decision of 2026-09-30; the
   lab's 72 h soak was not run. Reports: as of 2026-09-29, one Loop, one Trio and one AndroidAPS user
   ran <code>7000eb18</code> for about two days with no errors; on 2026-10-02 the maintainer reported AndroidAPS,
-  Trio and Loop users of the <code>dev</code> branch seeing stable, unsurprising behaviour all week. No rig
-  count or duration is recorded beyond that.</li>
-<li><strong><code>npm audit</code> on <code>25fc41d9</code></strong> (2026-10-02 17:31Z, npm 11.12.1, <code>--package-lock-only</code>, counting
-  packages with a finding): 10, 2 high; 8 with <code>--omit=dev</code>. No PR merged since changes a package
-  file, so the figures stand for <code>1ad03e29</code>. The 2 high are one advisory against
-  <code>node-forge</code> (GHSA-86w9-cpqp-85rv, reviewed by GitHub 2026-10-01, no fixed release), filed
-  as BF-154 (low: Nightscout does not call the affected function, read from the code); the other 8
-  are triaged. Triage:
-  <a href="../../../releases/cgm-remote-monitor-15.0.9/contents.html#npm-audit-and-dependabot-triage">contents</a>.</li>
-<li><strong>Still owed before the tag:</strong> run 021 (in progress); the browser hand checks listed under
-  <a href="#what-the-current-run-does-not-cover">What the current run does not cover</a>; the version class of
-  #8772, #8775 and #8780; re-approval of the release PR #8598 at <code>1ad03e29</code> (its two approvals
-  were given on <code>e3adc91d</code>); the tag, by the maintainer. The release notes name BF-154 (<code>node-forge</code>) under Known issues (decided 2026-10-02). #8598's head
-  is <code>1ad03e29</code>; its CI there: 27 checks passed, 3 skipped (read 2026-10-03 01:16Z). The release notes and tag
-  message are drafted on <code>1ad03e29</code>.</li>
+  Trio and Loop users of the <code>dev</code> branch seeing stable, unsurprising behaviour all week. The
+  maintainer notes several days of soak testing on real devices, with additional testing against a
+  larger AndroidAPS and xDrip cohort expected; no rig count or duration is recorded beyond that.</li>
+<li><strong><code>npm audit</code> on <code>fade2299</code></strong> (2026-10-08, npm 11.19.0, <code>--package-lock-only</code>, counting
+  packages with a finding): 24, 9 high, 0 critical; 11 with <code>--omit=dev</code> (5 high, 0 critical). #8807
+  changes no package file, so the figures equal run 022's <code>43289dde</code> line measured at the same moment
+  (run 023's same-moment A/B audit confirms <code>fade2299</code> and <code>43289dde</code> are identical). #8806
+  (BF-162) bumped <code>proxy-addr</code> to 2.0.8, so the one critical present on <code>1ad03e29</code> (GHSA-jqcg-44mw-7w3h)
+  is gone. The 9 high are four advisories: <code>node-forge</code> (BF-154, low — Nightscout does not call the
+  affected function), <code>braces</code> (BF-161, known issue), <code>compression</code> (BF-163, known issue) and
+  <code>source-map-js</code> (build time only).
+  Triage: <a href="../../../releases/cgm-remote-monitor-15.0.9/contents.html#the-9-high-findings-on-fade2299">contents</a>.</li>
+<li><strong>Still owed before the tag:</strong> the browser hand checks listed under
+  <a href="#what-the-current-run-does-not-cover">What the current run does not cover</a>, now including a
+  context-chart drag check on <code>lib/client/chart.js</code> (#8807); the version class of
+  #8772, #8775 and #8780; re-approval of the release PR #8598 at <code>fade2299</code> (its two approvals
+  were given on <code>e3adc91d</code>); the tag, by the maintainer. The release notes name BF-154 (<code>node-forge</code>),
+  BF-161 (<code>braces</code>) and BF-163 (<code>compression</code>) under Known issues, and #8807 (BF-168) as a fix. #8598's
+  head is <code>fade2299</code>. The release notes and tag message are drafted on <code>fade2299</code>.</li>
 </ul>
 <p>This record has five parts:</p>
 <ul>
-<li><a href="#after-run-020">After run 020</a> lists what merged after the current full run, and the checks
-  each merge had.</li>
-<li><a href="#current-run">Current run</a> is the evidence from the current full run, run 020.</li>
+<li><a href="#after-run-020">After run 020</a> lists what merged between run 020 and the current full run, and
+  the checks each merge had.</li>
+<li><a href="#current-run">Current run</a> is the evidence from the current full run, run 023.</li>
 <li><a href="#evidence-carried-from-earlier-runs">Evidence carried from earlier runs</a> covers checks that were
   not repeated on the current tree and still stand for it.</li>
 <li><a href="#run-history">Run history</a> lists every run, with a link to its full record at the commit that
@@ -4711,6 +4720,22 @@ each was checked on its own, as below. Each PR's own CI on GitHub passed.</p>
 <td>BF-127</td>
 <td><code>lib/client/browser-settings.js</code>, <code>lib/client/clock-client.js</code>, <code>views/clockviews/clock.html</code>, <code>clock-config.html</code>, <code>clock-shared.css</code> (browser)</td>
 <td>full suite 3563/0/4 on the same tree, one cell; tests fail with <code>68262e86</code>'s page; CI 13 passed, 2 skipped, CodeQL passed; hand check owed</td>
+</tr>
+<tr>
+<td>#8806</td>
+<td><code>43289dde</code></td>
+<td>2026-10-07 20:52Z</td>
+<td>BF-162</td>
+<td><code>package.json</code>, <code>package-lock.json</code>, <code>tests/client-ip.test.js</code> (server-side; no browser code)</td>
+<td>full suite 3564/0/4 on the same tree, one cell; the new client-ip test green and non-vacuous; CI green across Node 20/22/24 × MongoDB 4.4/5/6, the npm 12 job, Docker and CodeQL</td>
+</tr>
+<tr>
+<td>#8807</td>
+<td><code>fade2299</code></td>
+<td>2026-10-08 00:47Z</td>
+<td>BF-168</td>
+<td><code>lib/client/chart.js</code> (browser)</td>
+<td>full suite 3566/0/4 (six cells, run 023); the two new context-brush tests green and non-vacuous; no package change, audit unchanged; CI and CodeQL green; hand check owed</td>
 </tr>
 </tbody>
 </table>
@@ -4850,6 +4875,35 @@ full suite 3563/0/4 on <code>b13b7a3a</code> (Node 24.15.0, MongoDB 7.0.43, one 
 2026-10-02); in Chromium on a denied site with a readable token, the three clocks are blank on
 <code>68262e86</code> and draw on the branch; #8802's CI 13 passed, 2 skipped, CodeQL passed. A check by hand
 in a browser is owed (below).</p>
+<h3 id="8806-bf-162-43289dde">#8806 (BF-162), <code>43289dde</code><a class="headerlink" href="#8806-bf-162-43289dde" title="Permanent link">&para;</a></h3>
+<h1 id="8806-merged-into-dev-as-43289dde-2026-10-07-2052z-head-7dd4f400-tree-8c2e85b5-the-same">8806 merged into <code>dev</code> as <code>43289dde</code> (2026-10-07 20:52Z, head <code>7dd4f400</code>, tree <code>8c2e85b5</code>, the same<a class="headerlink" href="#8806-merged-into-dev-as-43289dde-2026-10-07-2052z-head-7dd4f400-tree-8c2e85b5-the-same" title="Permanent link">&para;</a></h1>
+<p>tree as its head; <code>43289dde</code> has parents <code>1ad03e29</code> and <code>7dd4f400</code>). It bumps <code>proxy-addr</code> 2.0.7 →
+2.0.8 (GHSA-jqcg-44mw-7w3h, critical, fixed in 2.0.8): an explicit <code>TRUST_PROXY</code> list naming an
+IPv6-notation subnet with zero leading bits compiled on 2.0.7 to trust every address, where 2.0.8
+trusts only the named block. The reachable path is new in 15.0.9 (<code>lib/server/client-ip.js</code> compiles
+the subnet list); 15.0.8 enables trust proxy unconditionally and never compiles a subnet, so it
+cannot reach it. It changes <code>package.json</code> (<code>^2.0.8</code>), <code>package-lock.json</code> and adds one case to
+<code>tests/client-ip.test.js</code>; no browser-side file, and the production bundle is unaffected. <code>43289dde</code>
+against <code>1ad03e29</code> is exactly those three files. Checks on <code>7dd4f400</code>: full suite 3564/0/4 (the 3563
+of <code>1ad03e29</code> plus the one new test); the new case (<code>trusts only the IPv4 block an IPv6-notation
+entry names</code>) passes on the installed 2.0.8 and fails on 2.0.7, so it is non-vacuous. #8806's CI is
+green across Node 20/22/24 × MongoDB 4.4/5/6, the npm 12 job, Docker and CodeQL.</p>
+<h3 id="8807-bf-168-fade2299">#8807 (BF-168), <code>fade2299</code><a class="headerlink" href="#8807-bf-168-fade2299" title="Permanent link">&para;</a></h3>
+<h1 id="8807-merged-into-dev-as-fade2299-2026-10-08-0047z-head-b919af9f-tree-0bdc42f6-fade2299">8807 merged into <code>dev</code> as <code>fade2299</code> (2026-10-08 00:47Z, head <code>b919af9f</code>, tree <code>0bdc42f6</code>; <code>fade2299</code><a class="headerlink" href="#8807-merged-into-dev-as-fade2299-2026-10-08-0047z-head-b919af9f-tree-0bdc42f6-fade2299" title="Permanent link">&para;</a></h1>
+<p>has parents <code>43289dde</code> and <code>b919af9f</code>). It fixes BF-168: the context chart's time window could not
+always be dragged back to the current time. d3's <code>brushX</code> reads its drag extent from the <code>&lt;svg&gt;</code>
+element's own size, which is the browser default 300×150 when the chart is drawn before layout
+settles, and <code>chart.update()</code> never re-read it; #8807 declares an explicit <code>.extent()</code> from the
+chart's own scale and height and has <code>update()</code> re-read it and rebind the brush overlay. The defect is
+display-only — no stored-data or API change — and is live on 15.0.8 as well, so this record describes
+the mechanism only. <code>fade2299</code> against <code>43289dde</code> is exactly three files: <code>lib/client/chart.js</code> (+8),
+<code>tests/dependency-d3.test.js</code> (+23, two new cases) and <code>tests/fixtures/d3-chart.js</code> (+17/−4); no
+package file, so dependencies and the audit are unchanged, and <code>git diff 43289dde fade2299 -- lib/
+app.js server.js bin</code> names only <code>lib/client/chart.js</code> (the server-side tree is otherwise byte-
+identical). The two new <code>tests/dependency-d3.test.js</code> cases (<code>drags the context window back to now
+after the chart was drawn before layout</code>, mouse and touch) pass on the branch and are the brush fix's
+proof; the served client bundle differs from <code>43289dde</code> because <code>chart.js</code> is bundled. #8807's CI and
+CodeQL are green. Because <code>chart.js</code> is browser code, a check by hand in a browser is owed (below).</p>
 <h3 id="browser-hand-check-gate-on-a143d507">Browser hand-check gate on <code>a143d507</code><a class="headerlink" href="#browser-hand-check-gate-on-a143d507" title="Permanent link">&para;</a></h3>
 <p><code>node tools/queue/gates/client-unchanged-since-hand-check.js</code> on <code>a143d507</code> names 16 paths that
 differ on the browser side from the hand-checked <code>8d797ba4</code>: <code>.gitignore</code>, <code>.nycrc.json</code> (tooling),
@@ -4865,62 +4919,48 @@ the same 16 and <code>azuredeploy.json</code> (#8799, the Azure deployment templ
 (2026-10-03) it names 22: those 17, <code>lib/client/renderer.js</code> (#8801), and
 <code>lib/client/browser-settings.js</code>, <code>views/clockviews/clock-config.html</code>,
 <code>views/clockviews/clock-shared.css</code> and <code>views/clockviews/clock.html</code> (#8802); <code>lib/client/clock-client.js</code>
-was already in the list.</p>
+was already in the list. On <code>43289dde</code> (2026-10-07) it names the same 22: #8806 changes only
+<code>package.json</code>, <code>package-lock.json</code> and <code>tests/client-ip.test.js</code>, no browser code. On <code>fade2299</code>
+(2026-10-08) it names 23: those 22 plus <code>lib/client/chart.js</code> (#8807); nothing is removed and the 34
+package entries are unchanged. The one added browser path is the context-chart drag fix, so a browser
+hand check of the context chart's drag-to-now behaviour is owed on <code>fade2299</code>.</p>
 <h2 id="current-run">Current run<a class="headerlink" href="#current-run" title="Permanent link">&para;</a></h2>
-<p><strong>2026-09-27. Run 020: <code>origin/dev</code> <code>ce30a94d</code>, run 019's <code>699eb5fa</code> plus #8784 (BF-146, which
-also fixes BF-133).</strong></p>
-<p>Run 020's candidate was <code>dev</code> <code>ce30a94d</code> itself, tree <code>d300bee9</code>, with no local merge. <code>package.json</code> reports version
-15.0.9. <code>official/dev</code> and <code>origin/dev</code> were fetched at the start of the run and again at the end,
-and were <code>ce30a94d</code> both times; <code>origin/master</code> is still <code>92d08342</code> (15.0.8). The checks ran in run
-018's detached worktrees, checked out at <code>ce30a94d</code>: <code>externals/work/crm-rc-018-n20</code>, <code>-n22</code> and
-<code>-n24</code> for the suite, and <code>externals/work/crm-rc-018-soak</code> for the probes and the soak.</p>
+<p><strong>2026-10-08. Run 023: <code>official/dev</code> <code>fade2299</code>, the merge of #8807 (BF-168).</strong> Record:
+<a href="../../../tools/lab/rc-soak/results/proof-2026-10-08-run023.html">proof-2026-10-08-run023</a>.</p>
+<p>Run 023's candidate was <code>dev</code> <code>fade2299</code> itself, tree <code>0bdc42f6</code>, with no local merge; <code>fade2299</code> has
+parents <code>43289dde</code> (run 022's candidate) and <code>b919af9f</code>. <code>package.json</code> reports version 15.0.9.
+<code>master</code> was <code>92d08342</code> (15.0.8). 15.0.8..<code>fade2299</code>: 547 commits, 99 first-parent merges,
+313 files, +30264/−1936. The checks ran in run 018's four detached worktrees, checked out at
+<code>fade2299</code>: <code>externals/work/crm-rc-018-n20</code>, <code>-n22</code>, <code>-n24</code> for the suite, and <code>-soak</code> for the probes
+and the soak.</p>
 <h3 id="what-is-in-the-candidate">What is in the candidate<a class="headerlink" href="#what-is-in-the-candidate" title="Permanent link">&para;</a></h3>
-<p><code>dev</code>'s first-parent merge after <code>699eb5fa</code> (run 019's candidate):</p>
-<table>
-<thead>
-<tr>
-<th>merge</th>
-<th>PR</th>
-<th>merged head</th>
-<th>tree</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>ce30a94d</code></td>
-<td>#8784, BF-146 and BF-133 (API v3 treatments and device status enter the server's in-memory cache with <code>mills</code>, as v1 writes do; commits <code>db99bba4</code> treatments, <code>d235bdf6</code> device status)</td>
-<td><code>d235bdf6</code></td>
-<td><code>d300bee9</code></td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li><code>699eb5fa..ce30a94d</code> changes one file under <code>lib/</code>,
-  <code>lib/api3/storage/mongoCachedCollection/index.js</code> (+20/−1), and adds
-  <code>tests/api3.cache-derived-fields.test.js</code> (312 lines, 15 tests). Nothing that runs in the
-  browser changed; what the server sends to the page does (late or edited v3 treatments now carry
-  <code>mills</code> in the page data).</li>
-<li><code>ce30a94d</code>'s tree equals <code>d235bdf6</code>'s, the head #8784 was opened with.</li>
-</ul>
+<p><code>fade2299</code> is <code>dev</code> at the merge of #8807. The 15 first-parent merges after run 020's <code>ce30a94d</code>
+(oldest first) are #8785, #8786, #8788, #8790, #8791, #8793, #8794, #8795, #8796, #8799, #8800, #8801,</p>
+<h1 id="8802-8806-and-8807-each-was-checked-on-its-own-before-this-run-see-after-run-020">8802, #8806 and #8807; each was checked on its own before this run (see <a href="#after-run-020">After run 020</a>).<a class="headerlink" href="#8802-8806-and-8807-each-was-checked-on-its-own-before-this-run-see-after-run-020" title="Permanent link">&para;</a></h1>
+<p>Run 022 ran the full six cells on <code>43289dde</code> (the first fourteen); run 023 is the first full six-cell
+run on the tree they make with #8807. <code>fade2299</code> against <code>43289dde</code> is three files — <code>lib/client/chart.js</code>,
+<code>tests/dependency-d3.test.js</code> and <code>tests/fixtures/d3-chart.js</code> — and the server-side tree is
+byte-identical except <code>lib/client/chart.js</code>.</p>
 <h3 id="dependencies">Dependencies<a class="headerlink" href="#dependencies" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong><code>package.json</code> and <code>package-lock.json</code> are identical to <code>699eb5fa</code>'s</strong> (and so to <code>e3adc91d</code>'s),
-  so <code>npm ci</code> was not repeated. Run 017's comparison of the lockfile with 15.0.8 still holds; see
-  <a href="#from-run-017-tree-d7383aae-origindev-e3adc91d">From run 017</a>.</li>
-<li><strong>The bundle was rebuilt</strong> in each of the four worktrees under its own Node (<code>npm run bundle</code>,
-  webpack 5.106.2, 3 warnings, as in runs 018 and 019).</li>
-<li><strong><code>npm audit</code>: 17 findings (1 low, 13 moderate, 3 high),</strong> the same as runs 017 to 019. Not
-  triaged in this run; triaged on 2026-09-27 in <a href="../../../releases/cgm-remote-monitor-15.0.9/contents.html#npm-audit-and-dependabot-triage">contents</a> (10 cleared by BF-147's fix, merged after
-  this run as #8786 <code>7000eb18</code>, which run 020 does not cover; 7 retired on the modernization line).</li>
+<li><strong><code>package.json</code> and <code>package-lock.json</code> are byte-identical to <code>43289dde</code>'s</strong> (#8807 changes no
+  package file; sha256 confirmed). The existing <code>node_modules</code> from run 022 stay valid; <code>proxy-addr</code>
+  resolves to 2.0.8 in each worktree.</li>
+<li><strong>The served client bundle differs from <code>43289dde</code></strong> because <code>lib/client/chart.js</code> is bundled (via
+  <code>lib/client/index.js</code>). The server-side mocha suite requires <code>chart.js</code> directly through the
+  fixture, so the suite is independent of bundle state.</li>
+<li><strong><code>npm audit</code></strong> is unchanged from <code>43289dde</code> (package files identical); the same-moment A/B audit in
+  run 023 confirms <code>fade2299</code> and <code>43289dde</code> are identical (24, 9 high, 0 critical). The full triage is
+  in <a href="../../../releases/cgm-remote-monitor-15.0.9/contents.html#npm-audit-and-dependabot-triage">contents</a>
+  and in the top block of this record.</li>
 </ul>
 <h3 id="suite">Suite<a class="headerlink" href="#suite" title="Permanent link">&para;</a></h3>
-<p><strong>Method:</strong> as run 019: <code>NODE_ENV=test npx env-cmd -f ./my.test.env mocha --timeout 5000 --require ./tests/hooks.js --exit ./tests/*.test.js</code>.
-Each cell had a fresh container (<code>r020-&lt;cell&gt;</code>) with <code>--ulimit nofile=64000:64000</code> on its own port,
-and a new database whose name contains <code>test</code>, dropped before the run. The server version was read
-with <code>db.version()</code>, waiting for an x.y.z answer, and <code>node --version</code> was printed in the log. The
-container was removed by name after the cell. <strong>The cells ran one at a time, with no other heavy
-work on the machine.</strong> New in this run: each cell's output was also written with the seconds since
-the suite started, to time <code>tests/boluswizardpreview.test.js</code> (CI note below).</p>
+<p><strong>Method:</strong> as run 020: <code>NODE_ENV=test npx env-cmd -f ./my.test.env mocha --timeout 5000 --require
+./tests/hooks.js --exit ./tests/*.test.js</code>. Each cell had a fresh <code>mongo:&lt;ver&gt;</code> container
+(<code>r023-&lt;cell&gt;</code>) with <code>--ulimit nofile=64000:64000</code> on its own port, and a new database whose name
+contains <code>test</code>, dropped before the run. The server version was read with <code>buildInfo</code> and
+<code>node --version</code> written to the log. The container was removed by name after the cell. The cells ran
+one at a time, with no other heavy work on the machine.</p>
 <table>
 <thead>
 <tr>
@@ -4929,65 +4969,65 @@ the suite started, to time <code>tests/boluswizardpreview.test.js</code> (CI not
 <th style="text-align: right;">passing</th>
 <th style="text-align: right;">failing</th>
 <th style="text-align: right;">pending</th>
-<th style="text-align: right;"><code>boluswizardpreview</code> starts at</th>
+<th style="text-align: right;">new context-brush cases</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>20.20.0</td>
 <td>4.4.24</td>
-<td style="text-align: right;">3473</td>
+<td style="text-align: right;">3566</td>
 <td style="text-align: right;">0</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">60 s</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">2 ✔</td>
 </tr>
 <tr>
 <td>20.20.0</td>
 <td>7.0.43</td>
-<td style="text-align: right;">3473</td>
+<td style="text-align: right;">3566</td>
 <td style="text-align: right;">0</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">58 s</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">2 ✔</td>
 </tr>
 <tr>
 <td>22.23.2</td>
 <td>4.4.24</td>
-<td style="text-align: right;">3473</td>
+<td style="text-align: right;">3566</td>
 <td style="text-align: right;">0</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">59 s</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">2 ✔</td>
 </tr>
 <tr>
 <td>22.23.2</td>
 <td>7.0.43</td>
-<td style="text-align: right;">3473</td>
+<td style="text-align: right;">3566</td>
 <td style="text-align: right;">0</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">58 s</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">2 ✔</td>
 </tr>
 <tr>
 <td>24.20.0</td>
 <td>4.4.24</td>
-<td style="text-align: right;">3473</td>
+<td style="text-align: right;">3566</td>
 <td style="text-align: right;">0</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">60 s</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">2 ✔</td>
 </tr>
 <tr>
 <td>24.20.0</td>
 <td>7.0.43</td>
-<td style="text-align: right;">3473</td>
+<td style="text-align: right;">3566</td>
 <td style="text-align: right;">0</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">57 s</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">2 ✔</td>
 </tr>
 <tr>
 <td>22.23.2, <code>test-ci</code> form (nyc)</td>
 <td>7.0.43</td>
-<td style="text-align: right;">3473</td>
+<td style="text-align: right;">3566</td>
 <td style="text-align: right;">0</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">65 s</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">2 ✔</td>
 </tr>
 <tr>
 <td>22.23.2, <code>test:core</code></td>
@@ -5000,229 +5040,128 @@ the suite started, to time <code>tests/boluswizardpreview.test.js</code> (CI not
 </tbody>
 </table>
 <ul>
-<li><strong>Every cell printed mocha totals and exited 0,</strong> on the first pass, in 113 to 125 s. The pending
-  tests are run 017's three.</li>
-<li><strong>The <code>test-ci</code> form</strong> is CI's command with <code>my.test.env</code> in place of <code>tests/ci.test.env</code>, as in
-  runs 017 to 019. Coverage: statements 66.68%, branches 60.01%, functions 71.28%, lines 67.35%.</li>
-<li><strong><code>test:core</code></strong> ran in the Node 22 worktree after the suite: 286 passing.</li>
-<li><strong>CI note (<code>tests/boluswizardpreview.test.js</code>).</strong> Two of its tests read the clock when mocha loads
-  the file and fail with "expected 49.95 to be 50" when the files before it take more than about
-  60 s. It failed that way on #8784's CI cell Node 22 / MongoDB 4.4 (78 s), and <code>dev</code>'s latest CI
-  reached it at 60.3 s. In this run it started at 57 to 65 s and did not fail. The test-only fix
-  (<code>a9b77d1e</code>) merged after this run as #8785 (<code>295f1177</code>).</li>
+<li><strong>Every cell printed mocha totals and exited 0</strong>, with tree <code>fade2299</code>, treeid <code>0bdc42f6</code>,
+  <code>dirty=0</code>; no cell hit a shell timeout.</li>
+<li><strong>Pending:</strong> run 022's four — run 020's three plus the axios-floor test added by #8794, which skips
+  itself at run time because the connector's own axios copy is outside the advisory range.</li>
+<li><strong>The two new <code>tests/dependency-d3.test.js</code> cases</strong> #8807 adds (<code>drags the context window back to
+  now after the chart was drawn before layout</code>, mouse and touch) passed in every cell and in the
+  <code>test-ci</code> form; they exercise the real <code>lib/client/chart.js</code> through the fixture and are the brush
+  fix's proof.</li>
+<li><strong>The <code>test-ci</code> form</strong> is CI's command with <code>my.test.env</code> in place of <code>tests/ci.test.env</code>.
+  Coverage: statements 68.26%, branches 61.15%, functions 72.14%, lines 68.95%.</li>
+<li><strong><code>test:core</code></strong> ran in the Node 22 worktree after the <code>test-ci</code> cell: 286 passing.</li>
 </ul>
-<p><strong>Test count.</strong> From <code>mocha --dry-run</code> with the same command and files:</p>
-<table>
-<thead>
-<tr>
-<th>merge</th>
-<th>PR</th>
-<th style="text-align: right;">passing</th>
-<th style="text-align: right;">added</th>
-<th>titles new / gone</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>699eb5fa</code></td>
-<td>run 019's candidate</td>
-<td style="text-align: right;">3458</td>
-<td style="text-align: right;"></td>
-<td></td>
-</tr>
-<tr>
-<td><code>ce30a94d</code></td>
-<td>#8784 BF-146, BF-133</td>
-<td style="text-align: right;">3473</td>
-<td style="text-align: right;">+15</td>
-<td>15 / 0</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li>3458 + 15 = 3473, the executed count in every cell. The 15 new titles are exactly
-  <code>tests/api3.cache-derived-fields.test.js</code>'s; no title was lost. The titles were compared sorted;
-  none carries a generated ObjectId.</li>
-</ul>
+<p><strong>Test count.</strong> From <code>mocha --dry-run</code> with the same command and files (each tree from <code>git archive</code>):
+<code>43289dde</code> 3565, <code>fade2299</code> 3567 (+2, exactly the two context-brush titles, none lost). Executed, the
+axios-floor test is pending, so 3566 passing and 4 pending, the count in every cell. The difference
+from run 022's 3564 is #8807's two new <code>tests/dependency-d3.test.js</code> cases.</p>
 <h3 id="probes">Probes<a class="headerlink" href="#probes" title="Permanent link">&para;</a></h3>
-<p>Node 22.23.2. Each probe ran against the soak worktree on <code>ce30a94d</code> and against 15.0.8
-(<code>externals/work/crm-6a-soak-a</code>, <code>92d08342</code>) as its control, unless the table names another
-control. The <code>699eb5fa</code> control ran in <code>externals/work/crm-rc-018-n20</code>, checked out at <code>699eb5fa</code>
-for the probe and returned to <code>ce30a94d</code> (bundle rebuilt) afterwards. Probes that need a server
-started their own, against a dedicated <code>mongo:7.0.43</code> container (7.0.43 read) on its own port, and
-databases whose names contain <code>test</code>.</p>
-<p><strong>Run 020's new probe: <code>tools/lab/rc-soak/probe-v3-late-mills.js</code> (BF-146, BF-133).</strong> It boots the
-tree's server with 24 v1 notes held (so the dataloader loads incrementally), then writes through
-v3 a 1 U bolus and 30 g of carbs dated 40 min ago, and a device status dated 20 min ago after 24 v1
-statuses dated 60 to 37 min ago. Controls: a v1 bolus dated 41 min ago, a v3 bolus dated 1 min ago,
-a v1 status dated 19 min ago. It then restarts the server and prints the same values.</p>
+<p>Node 22.23.2. Sixteen probes ran against the soak worktree on <code>fade2299</code> and against 15.0.8
+(<code>externals/work/crm-6a-soak-a</code>, <code>92d08342</code>) as the control, with the same results as run 022; the
+server-side tree is byte-identical to <code>43289dde</code> except <code>lib/client/chart.js</code>, which no probe
+exercises. <code>clock-token-link</code> exits 1 on both heads for the same non-reaching reason as run 022 (its
+client arm opens the clock from the <code>views/index.html</code> menu link, not the run-time code #8802 adds;
+BF-127 is covered by <code>tests/clock-token-link.test.js</code>), and <code>v1-writes-v3-history</code> exits 1 on the
+<code>treatments-v1del</code> arm by decision. The <code>bf106</code> gate exits 0. The full table is in the
+<a href="../../../tools/lab/rc-soak/results/proof-2026-10-08-run023.html#probes">proof file</a>; it matches run
+022's table <a href="../../../tools/lab/rc-soak/results/proof-2026-10-07-run022.html#probes">here</a>. #8807 has no
+probe — its regression is covered by the two new suite cases and by a browser hand check (below).</p>
+<h3 id="browser-hand-check-gate">Browser hand-check gate<a class="headerlink" href="#browser-hand-check-gate" title="Permanent link">&para;</a></h3>
+<p><code>node tools/queue/gates/client-unchanged-since-hand-check.js --base fade2299 --with ''</code> exits 1; its
+control is ok. It names <strong>23</strong> browser-side paths (and 34 package entries): the 22 run 022 named on
+<code>43289dde</code> plus <code>lib/client/chart.js</code> (#8807), nothing removed and no package change. The one added
+path is the context-chart brush fix, so <strong>a browser hand check of the context chart's drag-to-now
+behaviour is owed</strong> on <code>fade2299</code>, alongside the checks carried from <code>ff93fa94</code>'s 2026-09-26 walk.
+These are listed under <a href="#what-the-current-run-does-not-cover">What the current run does not cover</a>.</p>
+<h3 id="soak-toolslabrc-soak">Soak (tools/lab/rc-soak)<a class="headerlink" href="#soak-toolslabrc-soak" title="Permanent link">&para;</a></h3>
+<p>A/B soak, 2026-10-08, A = 15.0.8 <code>92d08342</code>, B = <code>fade2299</code>
+(<code>ARM_B_DIR=externals/work/crm-rc-018-soak</code>), harness 5, <code>PFX</code>/ports this run's own (<code>r023*</code>).
+<code>expected-diffs.json</code> was not changed. R50 to R52 repeat run 022's R45, R48 and R49 with the same
+commands; R46 and R47 are carried from run 022 (the soak exercises no client code, and #8807 changes
+only <code>lib/client/chart.js</code>). Results:
+<a href="../../../tools/lab/rc-soak/results/proof-2026-10-08-run023.html">proof-2026-10-08-run023</a>.</p>
 <table>
 <thead>
 <tr>
-<th>tree</th>
-<th>exit</th>
-<th>what it shows</th>
+<th>run</th>
+<th>repeats</th>
+<th>arms</th>
+<th>shape</th>
+<th>compared / differing</th>
+<th>ledger, parity</th>
+<th>findings</th>
+<th>verdict</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>ce30a94d</code></td>
+<td>R50</td>
+<td>run 022 R45</td>
+<td>15.0.8 / fade2299</td>
+<td>25 min = 48 h, <code>DUMP_TICKS</code> every 12th tick</td>
+<td>8463 / 2559</td>
+<td>1931 keys, 0 missing; equal</td>
 <td>0</td>
-<td>the late v3 bolus raises IOB 0 → 0.866; the late v3 carbs give COB 20.4 and are <code>cob.lastCarbs</code>; the late v3 status is first of 10 in the default <code>GET /api/v1/devicestatus.json</code>; all controls pass</td>
+<td>PASS</td>
 </tr>
 <tr>
-<td><code>699eb5fa</code></td>
-<td>1</td>
-<td>the three arms fail: IOB stays 0, COB 0 with no <code>lastCarbs</code>, the v3 status is not in the default read. The v1 and v3-now boluses count, and the v1 status is first. After the restart IOB 2.721, COB 20.8, <code>lastCarbs</code> the v3 carbs and the v3 status second, behind the newer v1 one: the records were stored and are counted once they come from MongoDB</td>
+<td>R51</td>
+<td>run 022 R48</td>
+<td>A/A: 15.0.8 / 15.0.8</td>
+<td>as R50, without the dump</td>
+<td>8463 / 0</td>
+<td>1931 keys, 0 missing; equal</td>
+<td>0</td>
+<td>PASS</td>
 </tr>
 <tr>
-<td>15.0.8</td>
-<td>1</td>
-<td>as <code>699eb5fa</code>, with the same numbers</td>
+<td>R52</td>
+<td>run 022 R49</td>
+<td>fade2299 / 15.0.8 (swapped)</td>
+<td>5 min = 12 h</td>
+<td>2115 / 657</td>
+<td>483 keys, 0 missing</td>
+<td>29 (by design)</td>
+<td>FAIL</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Run 019's probes, repeated.</strong> Each log was compared with run 019's after removing numbers, ids,
-hex strings and paths, and matched it line for line (41 logs, the 15.0.8 and <code>ab7b22d6</code> controls
-included).</p>
-<table>
-<thead>
-<tr>
-<th>probe</th>
-<th>defect</th>
-<th><code>ce30a94d</code></th>
-<th>15.0.8</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>triage-2026-09/retry-keeps-srvcreated.js</code></td>
-<td>BF-143</td>
-<td>0: R1 to R9 keep <code>_id</code> and <code>srvCreated</code> and store one record</td>
-<td>(control <code>ff93fa94</code> in run 019)</td>
-</tr>
-<tr>
-<td><code>triage-2026-09/history-clock-restart.js</code>, batch 30,000</td>
-<td>BF-144</td>
-<td>0: after the restart both writes are stored above the reader's cursor, and history returns both; the writes came while wall time was 26 s behind the cursor</td>
-<td>(control <code>ff93fa94</code> in run 019)</td>
-</tr>
-<tr>
-<td><code>triage-2026-09/api3-empty-identifier-delete.js</code></td>
-<td>BF-140, BF-141, BF-142</td>
-<td>0, as on <code>699eb5fa</code></td>
-<td>0, as in run 019 (BF-135 not fixed there)</td>
-</tr>
-<tr>
-<td><code>tools/queue/gates/bf106-activity-date-coercion.js --ref ce30a94d</code></td>
-<td>BF-106</td>
-<td>0</td>
-<td>control ok</td>
-</tr>
-<tr>
-<td><code>triage-2026-09/maker-language.js</code></td>
-<td>BF-125</td>
-<td>0</td>
-<td>1</td>
-</tr>
-<tr>
-<td><code>triage-2026-09/profile-switch-percentage.js</code></td>
-<td>BF-123</td>
-<td>0</td>
-<td>1</td>
-</tr>
-<tr>
-<td><code>triage-2026-09/pebble-units.js</code></td>
-<td>BF-128</td>
-<td>0</td>
-<td>1</td>
-</tr>
-<tr>
-<td><code>triage-2026-09/pebble-shared-scaled.js</code></td>
-<td>BF-138, BF-139</td>
-<td>0 (in-process, no server)</td>
-<td>1</td>
-</tr>
-<tr>
-<td><code>triage-2026-09/same-time-carbs.js</code></td>
-<td>BF-121</td>
-<td>0; v3-noid and ws-dbAdd still store 1 (known issues, counted only with <code>--strict</code>)</td>
-<td>1</td>
-</tr>
-<tr>
-<td><code>triage-2026-09/api3-app-field.js</code></td>
-<td>BF-136</td>
-<td>0</td>
-<td>1</td>
-</tr>
-<tr>
-<td><code>triage-2026-09/v1-writes-v3-history.js</code></td>
-<td>BF-122</td>
-<td>1, on the <code>treatments-v1del</code> arm only (a v1 DELETE is a hard delete, kept by decision)</td>
-<td>1, on every v1 arm</td>
-</tr>
-<tr>
-<td><code>triage-2026-09/mmol-partial-thresholds.js</code></td>
-<td>BF-118</td>
-<td>0</td>
-<td>1</td>
-</tr>
-<tr>
-<td><code>triage-2026-09/pump-suspend.js</code></td>
-<td>BF-119</td>
-<td>0</td>
-<td>1</td>
-</tr>
-<tr>
-<td><code>triage-2026-09/clock-stale-offline.js</code></td>
-<td>BF-120</td>
-<td>0</td>
-<td>1</td>
-</tr>
-<tr>
-<td><code>aaps-offline/probe.js</code></td>
-<td>BF-114</td>
-<td>0</td>
-<td>1</td>
-</tr>
-<tr>
-<td><code>tools/lab/apns-shutdown/probe.js</code></td>
-<td>BF-134</td>
-<td>0</td>
-<td>1</td>
-</tr>
-<tr>
-<td><code>rc-soak/probe-deleted-entry.js</code></td>
-<td>BF-131</td>
-<td>0, twice (the second on the same database)</td>
-<td>control <code>ab7b22d6</code>: 1, twice</td>
-</tr>
-<tr>
-<td><code>triage-2026-09/tooltip-bg-units.js</code></td>
-<td>#5940, not fixed</td>
-<td>1</td>
-<td>1</td>
-</tr>
-<tr>
-<td><code>triage-2026-09/clock-token-link.js</code> (client arms only)</td>
-<td>#7377, not fixed</td>
-<td>1</td>
-<td>1</td>
-</tr>
-</tbody>
-</table>
+<p><strong>Verdict:</strong> the same as run 022. R50 and the A/A control R51 pass; R52 (swapped) fails by design. The
+A/B soak verdicts are unchanged.</p>
+<p><strong>Every A/B run:</strong> 0 liveness samples not ok on either arm (R50 153/153, R51 153/153, R52 33/33);
+every eligible reading was delivered to the socket follower (R50 542/542, R52 119/119 on each arm);
+0 hard-deleted records were sent to a page load.</p>
+<p><strong>Expected differences.</strong> No entry was added to <code>expected-diffs.json</code>. R50's 29 signatures are run 022
+R45's (sorted, identical); the differing-op count 2559 against R45's 2564 is the known positional
+<code>uploader.devicestatus.count10</code> variance, with the signatures themselves unchanged. The families are
+run 021's (object-id <code>_id</code>, COB keys, the one Loop error body). R51 (A/A) has 0 differences; R52
+reports every expected difference reversed and fires <code>[apns]</code> (143 sessions) and <code>[fds]</code> (172 against
+29) on the 15.0.8 arm (arm B in this run), matching run 022 R49.</p>
+<p><strong>Brush extent (#8807).</strong> #8807 changes only <code>lib/client/chart.js</code>, which runs in the browser; the
+A/B soak drives API-level traffic and reaches no client chart code, so by construction no difference
+signature names it and the A/B verdict is unchanged. The fix is covered by the two new
+<code>tests/dependency-d3.test.js</code> cases and the owed browser hand check.</p>
+<p><strong>Resources.</strong> No leak, open-file or latency finding. Leak check (heap-minima growth B − A, threshold
+25 MB): R50 −12.4, R51 3.6. RSS growth B − A (threshold 100 MB): R50 −75.4, R51 −3.2. R52 is shorter
+than the 20 min the leak check needs. The candidate arm leaves 0 APNs sessions and its fds flat in
+every run (R50 B fds 28→29; R52 A fds 30→29); the 15.0.8 arm leaks one session and one fd per remote
+command (#8770). Full per-arm figures are in the
+<a href="../../../tools/lab/rc-soak/results/proof-2026-10-08-run023.html#memory-open-files-and-latency-per-arm">proof file</a>.</p>
+<p><strong>The lab's 24 to 72 h real-time soak was not run</strong> on <code>fade2299</code>; real sites running the candidate
+stand in for it (maintainer, 2026-09-30), with a larger AndroidAPS and xDrip cohort expected.</p>
+<h2 id="evidence-carried-from-earlier-runs">Evidence carried from earlier runs<a class="headerlink" href="#evidence-carried-from-earlier-runs" title="Permanent link">&para;</a></h2>
+<p>These checks ran on earlier trees and were not repeated on <code>0bdc42f6</code> (run 023). Each row names the
+tree it ran on. Every unit listed here is now in <code>dev</code> <code>fade2299</code>. Its code is unchanged since it was
+checked, except where the row says otherwise.</p>
+<h3 id="from-run-020-tree-d300bee9-origindev-ce30a94d">From run 020 (tree <code>d300bee9</code>, <code>origin/dev</code> <code>ce30a94d</code>)<a class="headerlink" href="#from-run-020-tree-d300bee9-origindev-ce30a94d" title="Permanent link">&para;</a></h3>
+<p>Runs 021, 022 and 023 did not repeat these. <code>fade2299</code> adds #8785–#8807 after <code>ce30a94d</code>; the
+<code>lib/api3/storage/mongoCachedCollection/index.js</code> code #8784 added is unchanged.</p>
 <ul>
-<li><strong><code>triage-2026-09/same-time-resend-shapes.js</code></strong> (BF-121), trees <code>base1508</code> = 15.0.8 and
-  <code>rc</code> = <code>ce30a94d</code>, exited 0 with the same outcome per shape as run 019.</li>
-<li><strong><code>triage-2026-09/bf80-alarm-delay.js</code></strong> (BF-80; untracked, outcomes only) ran on <code>ce30a94d</code> with
-  <code>readable</code> and <code>denied</code> and exited 0 each time, with run 019's outcomes for the candidate. Its
-  <code>e3adc91d</code> control was not repeated.</li>
-<li><code>probe-deleted-entry.js</code> ran against a <code>lab.sh up --no-apns</code> pair: A = <code>ab7b22d6</code>, B =
-  <code>ce30a94d</code> (<code>PFX=r020pd</code>), stopped by PID and its containers removed.</li>
+<li><strong>Break-its of #8784 on the candidate.</strong> In a scratch worktree at <code>ce30a94d</code> (removed afterwards),
+  with #8784's test file (<code>tests/api3.cache-derived-fields.test.js</code>) and the
+  <code>probe-v3-late-mills.js</code> probe, Node 22.23.2, MongoDB 7.0.43:</li>
 </ul>
-<h3 id="break-its-of-8784-on-the-candidate">Break-its of #8784 on the candidate<a class="headerlink" href="#break-its-of-8784-on-the-candidate" title="Permanent link">&para;</a></h3>
-<p>In a scratch worktree at <code>ce30a94d</code> (removed afterwards), with the new test file and the probe,
-Node 22.23.2, MongoDB 7.0.43:</p>
 <table>
 <thead>
 <tr>
@@ -5259,197 +5198,11 @@ Node 22.23.2, MongoDB 7.0.43:</p>
 </tr>
 </tbody>
 </table>
-<p>The five controls in the test file pass in every break.</p>
-<h3 id="browser-hand-check-gate">Browser hand-check gate<a class="headerlink" href="#browser-hand-check-gate" title="Permanent link">&para;</a></h3>
-<p><code>node tools/queue/gates/client-unchanged-since-hand-check.js --base ce30a94d --with ''</code> exits 1.
-The control is ok. It names the same 14 paths as runs 018 and 019; #8784 adds none. The browser
-walk of <code>ff93fa94</code> on 2026-09-26
-(<a href="../../60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.html">journey-lab-browser-15.0.9-2026-09-26</a>)
-passed its 11 scenarios. The three merges since are server-only. #8784 changes the page data a
-browser receives for late or edited v3 treatments; no browser check of that was made.</p>
-<h3 id="soak-toolslabrc-soak">Soak (tools/lab/rc-soak)<a class="headerlink" href="#soak-toolslabrc-soak" title="Permanent link">&para;</a></h3>
-<p>A/B soak, 2026-09-27 06:13Z to 08:29Z, A = 15.0.8 <code>92d08342</code>, B = <code>ce30a94d</code>
-(<code>ARM_B_DIR=externals/work/crm-rc-018-soak</code>), harness 5. <code>PFX</code> and ports were this run's own
-(<code>r020*</code>). R33 to R37 repeat run 019's R28 to R32 with the same commands; R38 and R39 repeat R33
-and R34 after four entries were added to <code>expected-diffs.json</code>. Results:
-<a href="../../../tools/lab/rc-soak/results/proof-2026-09-27-run020.html">proof-2026-09-27-run020</a>.</p>
-<p><strong>Verdict:</strong> R35, the A/A control R36 and R38 pass. R33 (11 findings) and R34 (7) failed
-on differences #8784 makes on purpose, plus BF-135's page loads in R34; after four entries were
-added to <code>expected-diffs.json</code>, R38 (R33 repeated) passes and R39 (R34 repeated) fails only on
-BF-135's page loads, which have no expected-difference rule. R37 fails by design. In every A/B run
-there were no liveness failures, every eligible reading reached the socket follower, and
-<code>ce30a94d</code> sent no deleted record to a page load.</p>
-<table>
-<thead>
-<tr>
-<th>run</th>
-<th>repeats</th>
-<th>shape</th>
-<th style="text-align: right;">compared</th>
-<th style="text-align: right;">differ</th>
-<th>ledger / parity</th>
-<th>verdict</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>R33</td>
-<td>R28</td>
-<td>Node 22.23.2, MongoDB 7.0.43, 25 min = 48 h</td>
-<td style="text-align: right;">8463</td>
-<td style="text-align: right;">2559</td>
-<td>1931 keys, 0 missing / equal</td>
-<td>FAIL: 11 findings, all #8784's</td>
-</tr>
-<tr>
-<td>R34</td>
-<td>R29</td>
-<td>as R33, 72 h, MongoDB restart at +20 min, server restart at +35 min</td>
-<td style="text-align: right;">12694</td>
-<td style="text-align: right;">3642 (249 in the disturbance windows)</td>
-<td>2896 keys, 0 missing / equal</td>
-<td>FAIL: 6 findings #8784's, 1 BF-135's page loads</td>
-</tr>
-<tr>
-<td>R35</td>
-<td>R30</td>
-<td>Node 24.20.0, MongoDB 4.4.24, <code>readable</code>, 45 s MongoDB outage</td>
-<td style="text-align: right;">4232</td>
-<td style="text-align: right;">1387 (231 in the outage window)</td>
-<td>966 keys, 0 missing / equal</td>
-<td>PASS</td>
-</tr>
-<tr>
-<td>R36</td>
-<td>R31</td>
-<td>A/A control (15.0.8 against itself), as R33</td>
-<td style="text-align: right;">8463</td>
-<td style="text-align: right;">0</td>
-<td>1931 keys, 0 missing / equal</td>
-<td>PASS</td>
-</tr>
-<tr>
-<td>R37</td>
-<td>R32</td>
-<td>arms swapped (A = <code>ce30a94d</code>, B = 15.0.8), 5 min = 12 h</td>
-<td style="text-align: right;">2115</td>
-<td style="text-align: right;">657</td>
-<td>483 keys, 0 missing</td>
-<td>FAIL by design: 29 findings</td>
-</tr>
-<tr>
-<td>R38</td>
-<td>R33</td>
-<td>R33 with the new entries</td>
-<td style="text-align: right;">8463</td>
-<td style="text-align: right;">2564</td>
-<td>1931 keys, 0 missing / equal</td>
-<td>PASS</td>
-</tr>
-<tr>
-<td>R39</td>
-<td>R34</td>
-<td>R34 with the new entries</td>
-<td style="text-align: right;">12694</td>
-<td style="text-align: right;">3642 (249 in the disturbance windows)</td>
-<td>2896 keys, 0 missing / equal</td>
-<td>FAIL: 1 finding, BF-135's page loads (by design)</td>
-</tr>
-</tbody>
-</table>
-<p>Run 019's differing counts were R28 1756, R29 2719 and R30 872. The differences filed under the
-four new entries are R33 885, R34 979 and R35 459.</p>
-<p><strong>Four new expected-difference entries, all #8784's.</strong> R33 failed on 11 findings where R28 passed, and
-R34 on six besides BF-135's page loads. Each is a difference #8784 makes on purpose, checked before
-an entry was added:</p>
-<ul>
-<li><strong><code>GET /api/v1/treatments</code> from memory carries <code>mills</code> and <code>endmills</code> on v3 records.</strong> R33's 144
-  dumped treatment reads: with those two fields left out, all 144 satisfy run 018's BF-135 rule;
-  603 records carry <code>mills</code> only on B, all v3, each equal to its <code>created_at</code>.</li>
-<li><strong><code>GET /api/v1/devicestatus</code> from memory places the AndroidAPS v3 status by time.</strong> R33's 48 dumped
-  reads: B is A's reply with the AndroidAPS statuses inserted by time in all 48; in 22 of them
-  15.0.8 leaves an AndroidAPS status out of <code>count=10</code>.</li>
-<li><strong><code>cob.lastCarbs</code> names the newest carb entry, and an AndroidAPS v3 bolus can be <code>iob.lastBolus</code>.</strong>
-  In every captured <code>lastCarbs</code> difference (R33 47, R34 73) A's entry is older than B's; B's is the
-  newest carb entry acknowledged before the request in all but three, which are the write tick
-  itself (the re-ask 3 s later names it; the reload debounce).</li>
-<li><strong>An AndroidAPS v3 temp basal can be the current basal treatment</strong> (once per run, at the end).</li>
-</ul>
-<p>The scratch checks' tampered-reply control exits 1. R38 and R39 then passed with the entries.
-R36 has 0
-differences, so the entries are not applied. R37 reports every expected difference as a finding
-with the direction reversed, the four new ones included, and fires <code>[apns]</code> (143 sessions) and
-<code>[fds]</code> (172 against 29) on the 15.0.8 arm. <code>expected-diffs.json</code> is committed with this run; the
-entries say which dumps they were checked against.</p>
-<p><strong>The <code>cob.lastCarbs</code> answer (R24, R29).</strong> On <code>ce30a94d</code> the treatments are in time order and B
-names the newest carb entry as each is written (carb-189, 585, 621, 657, 729, 765, 801, 837 in
-R34). 15.0.8 stays on older, edited entries: carb-153 before any disturbance, then carb-549 and
-carb-585, the entries R24 and R29 showed. The differences therefore now start before the restart:
-before #8784 both arms were wrong in step there. What R24 and R29 reported as a difference between
-two wrong answers is now 15.0.8 alone naming an older entry, the BF-133 defect #8784 fixes; it is
-classified under the new entry. Run 019's <code>trace-order.js</code> on R34's kept databases found every
-treatment with a finite <code>mills</code> and the newest carb entry last on both arms after a fresh boot.</p>
-<p><strong>R34's page loads (21 differences): BF-135's intended change,</strong> as in R29: 23 page loads on 15.0.8
-from tick 611 (the first after the server restart) send AndroidAPS records soft-deleted more than
-10 s earlier, and none on B; the analyser's 10 s rule leaves 21.</p>
-<p><strong>Nothing else new.</strong> No liveness failure, every eligible reading reached the socket follower in
-every A/B run, <code>ce30a94d</code> sent no deleted record to a page load, and the ledgers and parity were
-complete.</p>
-<p><strong>Resources.</strong></p>
-<table>
-<thead>
-<tr>
-<th>arm</th>
-<th>heap MB first→last (max)</th>
-<th>RSS MB first→last</th>
-<th>APNs sessions open at end</th>
-<th>fds first→last</th>
-<th>active handles</th>
-<th>event-loop p99 ms</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>A 15.0.8 (R33)</td>
-<td>55.4→64.9 (70.1)</td>
-<td>147.9→256.5</td>
-<td>575 of 575</td>
-<td>30→604</td>
-<td>12→583</td>
-<td>21.1</td>
-</tr>
-<tr>
-<td>B <code>ce30a94d</code> (R33)</td>
-<td>46.4→50.6 (72.6)</td>
-<td>118.3→129.2</td>
-<td>0 of 575</td>
-<td>28→29</td>
-<td>11→8</td>
-<td>18.8</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li><strong>Leak check</strong> (heap growth B − A, threshold 25 MB; RSS growth B − A, threshold 100 MB): R33
-  −6.8 and −69.0, R34 −12.4 and −85.8, R36 (A/A) 1.3 and −0.9, R38 −4.9 and −69.5, R39 −7.6 and
-  −79.9. R34 and R39: APNs sessions open at the end 259 of 862 on A (the server restart closed the
-  earlier ones) and 0 of 862 on B.</li>
-<li><strong>R35 (Node 24, MongoDB 4.4, 15 min):</strong> RSS 151.5→335.0 MB on A and 155.7→278.2 MB on B; APNs
-  sessions open at the end 287 of 287 on A and 0 of 287 on B; fds 30→315 on A and 28→28 on B. The
-  leak check needs a process lifetime of at least 20 min.</li>
-<li><strong>p95 latency, A / B, ms (R33):</strong> <code>loop.devicestatus</code> 56 / 42, <code>loopfollow.entries288</code> 9 / 9,
-  <code>cgm.post</code> 12 / 12, <code>loop.remote.override</code> 8 / 7. No latency finding in any run.</li>
-<li><strong>Runs were started in pairs</strong> (R33 with R36, R34 with R35, R38 with R39) and R37 alone, as in
-  run 019; the suite had finished before the first soak started.</li>
-</ul>
-<p><strong>The lab's 24 to 72 h real-time soak was not run</strong>; real sites running <code>7000eb18</code> stand in for it
-(maintainer, 2026-09-30). To run it on this tree: <code>export SOAK_STATE=$HOME/rc-soak-state;
-ARM_B_DIR=$PWD/externals/work/crm-rc-018-soak tools/lab/rc-soak/lab.sh soak --hours 72</code> (README,
-"Start the 72-hour soak of the release candidate"), with that worktree at <code>ce30a94d</code>.</p>
-<h2 id="evidence-carried-from-earlier-runs">Evidence carried from earlier runs<a class="headerlink" href="#evidence-carried-from-earlier-runs" title="Permanent link">&para;</a></h2>
-<p>These checks ran on earlier trees and were not repeated on <code>d300bee9</code>. Each row names the tree it
-ran on. Every unit listed here is now in <code>dev</code> <code>ce30a94d</code>. Its code is unchanged since it was
-checked, except where the row says otherwise.</p>
+<p>The five controls in the test file pass in every break.
+- <strong>The <code>cob.lastCarbs</code> answer (R24, R29).</strong> On <code>ce30a94d</code> the treatments are in time order and B
+  names the newest carb entry as each is written; 15.0.8 stays on older, edited entries, which is the
+  BF-133 defect #8784 fixes. Run 020's R40 repeated R38's dumped figures in run 021. The full narrative
+  is in <a href="../../../tools/lab/rc-soak/results/proof-2026-09-27-run020.html#the-coblastcarbs-question-r24-and-r29">proof-2026-09-27-run020</a>.</p>
 <h3 id="from-run-019-tree-0b727dc5-origindev-699eb5fa">From run 019 (tree <code>0b727dc5</code>, <code>origin/dev</code> <code>699eb5fa</code>)<a class="headerlink" href="#from-run-019-tree-0b727dc5-origindev-699eb5fa" title="Permanent link">&para;</a></h3>
 <p>Run 020 did not repeat these. <code>ce30a94d</code> changes one server file and adds one test file after
 <code>699eb5fa</code>, and has the same <code>package.json</code> and lockfile.</p>
@@ -5795,7 +5548,7 @@ from that version only in <code>docs/releasing.md</code>.</p>
 Update-on-change is active only against a sink that has #8758.</p>
 <h2 id="run-history">Run history<a class="headerlink" href="#run-history" title="Permanent link">&para;</a></h2>
 <p>Each record is kept at the commit shown. Suite results are passing/failing/pending. Every run
-had 0 failing except run 016, where the Crowdin merge failed 4 to 5 language tests (BF-132). Before run 011, runs used <code>npm test</code>. Runs 011 to 015 use CI's <code>test-ci</code> + <code>test:core</code>. Runs 016 to 020 use <code>npm test</code>; runs 017 to 020 also run the <code>test-ci</code> form in one cell.</p>
+had 0 failing except run 016, where the Crowdin merge failed 4 to 5 language tests (BF-132). Before run 011, runs used <code>npm test</code>. Runs 011 to 015 use CI's <code>test-ci</code> + <code>test:core</code>. Runs 016 to 022 use <code>npm test</code>; runs 017 to 022 also run the <code>test-ci</code> form in one cell.</p>
 <table>
 <thead>
 <tr>
@@ -5810,13 +5563,40 @@ had 0 failing except run 016, where the Crowdin merge failed 4 to 5 language tes
 </thead>
 <tbody>
 <tr>
-<td><strong>020 (current)</strong></td>
+<td><strong>023 (current)</strong></td>
+<td>2026-10-08</td>
+<td><code>dev</code> <code>fade2299</code></td>
+<td>#8807 (BF-168) merged into <code>dev</code></td>
+<td>tree <code>0bdc42f6</code></td>
+<td>3566/0/4, 6 cells one at a time, <code>npm test</code>; <code>test-ci</code> form and <code>test:core</code> on Node 22 / MongoDB 7; run 022's probes; gate names 23 paths (adds <code>lib/client/chart.js</code>); two new context-brush tests green and non-vacuous; A/B soak R50–R52 (R46–R47 carried), <code>expected-diffs.json</code> unchanged</td>
+<td>this page</td>
+</tr>
+<tr>
+<td>022</td>
+<td>2026-10-07</td>
+<td><code>dev</code> <code>43289dde</code></td>
+<td>#8806 (BF-162) merged into <code>dev</code></td>
+<td>tree <code>8c2e85b5</code></td>
+<td>3564/0/4, 6 cells one at a time, <code>npm test</code>; <code>test-ci</code> form and <code>test:core</code> on Node 22 / MongoDB 7; run 021's probes; gate names 22 paths; new <code>tests/client-ip.test.js</code> case green and non-vacuous; A/B soak R45–R49, <code>expected-diffs.json</code> unchanged</td>
+<td><a href="../../../tools/lab/rc-soak/results/proof-2026-10-07-run022.html">proof-2026-10-07-run022</a></td>
+</tr>
+<tr>
+<td>021</td>
+<td>2026-10-03</td>
+<td><code>dev</code> <code>1ad03e29</code></td>
+<td>#8785–#8802 merged into <code>dev</code> (13 PRs)</td>
+<td>tree <code>7d16c516</code></td>
+<td>3563/0/4, 6 cells one at a time, <code>npm test</code>; <code>test-ci</code> form and <code>test:core</code> on Node 22 / MongoDB 7; run 020's probes (<code>tooltip-bg-units.js</code> now passes, BF-124); gate names 22 paths; A/B soak R40–R44, <code>expected-diffs.json</code> unchanged</td>
+<td><a href="../../../tools/lab/rc-soak/results/proof-2026-10-03-run021.html">proof-2026-10-03-run021</a></td>
+</tr>
+<tr>
+<td>020</td>
 <td>2026-09-27</td>
 <td><code>dev</code> <code>ce30a94d</code></td>
 <td><code>699eb5fa</code> + #8784 (BF-146, BF-133) merged into <code>dev</code></td>
 <td>tree <code>d300bee9</code></td>
 <td>3473/0/3, 6 cells one at a time, <code>npm test</code>; <code>test-ci</code> form and <code>test:core</code> on Node 22 / MongoDB 7; the BF-146 probe and 21 run-019 probes; break-its of #8784; gate; A/B soak R33–R39 with four new expected-difference entries</td>
-<td>this page</td>
+<td><a href="../../../tools/lab/rc-soak/results/proof-2026-09-27-run020.html">proof-2026-09-27-run020</a></td>
 </tr>
 <tr>
 <td>019</td>
@@ -6161,26 +5941,29 @@ compared:</p>
 </ul>
 <h2 id="what-the-current-run-does-not-cover">What the current run does not cover<a class="headerlink" href="#what-the-current-run-does-not-cover" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>The merges after run 020</strong> (#8785 to #8802) are covered by their own checks, listed under
-  <a href="#after-run-020">After run 020</a>, and the candidate tree by one full-suite cell, not by a full
-  six-cell run. Run 021, that run on <code>1ad03e29</code>, is in progress.</li>
+<li><strong>The merges after run 020</strong> (#8785 to #8807) were each checked on their own before this run,
+  listed under <a href="#after-run-020">After run 020</a>; run 021 covered the first thirteen in all six cells,
+  run 022 covered the tree with #8806 in all six cells, and run 023 covered the tree with #8807.</li>
 <li><strong>The lab's 24 to 72 h real-time soak was not run.</strong> Real sites running the candidate stand in for
   it (maintainer, 2026-09-30). The reports recorded are those under "Where the candidate stands" at the top of this
   record; no other data from those sites is in it. The compressed A/B soak is under <a href="#soak-toolslabrc-soak">Soak</a>.</li>
-<li><strong><code>npm audit</code>'s 17 findings on <code>ce30a94d</code> were not triaged in this run.</strong> The triage (2026-09-27)
-  and the count on <code>25fc41d9</code> (10, 2 high, the <code>node-forge</code> advisory) are in
-  <a href="../../../releases/cgm-remote-monitor-15.0.9/contents.html#npm-audit-and-dependabot-triage">contents</a>.</li>
+<li><strong><code>npm audit</code> on <code>fade2299</code></strong> equals <code>43289dde</code> (package files identical; run 023's same-moment A/B
+  audit shows zero delta between the two heads). The full triage and the count (24 findings, 9 high,
+  0 critical) are in
+  <a href="../../../releases/cgm-remote-monitor-15.0.9/contents.html#the-9-high-findings-on-fade2299">contents</a>.</li>
 <li><strong>Browser hand checks.</strong> The browser walk ran on <code>ff93fa94</code> (2026-09-26,
   <a href="../../60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.html">browser record</a>); the gate on
-  <code>1ad03e29</code> names 22 paths: the 16 it named on <code>a143d507</code>, <code>azuredeploy.json</code>, and the five
-  browser files #8801 and #8802 add (see <a href="#browser-hand-check-gate-on-a143d507">After run 020</a>). Still owed:
+  <code>fade2299</code> names 23 paths: the 22 on <code>43289dde</code> (the 16 named on <code>a143d507</code>, <code>azuredeploy.json</code>,
+  and the five browser files #8801 and #8802 add) plus <code>lib/client/chart.js</code> (#8807; see
+  <a href="#browser-hand-check-gate-on-a143d507">After run 020</a>). Still owed:
   a remote bolus; LoopCaregiver from its own app; clock views; the pump pill; alarm level labels; the
   Bolus Wizard Preview pill and reports during a percentage profile switch; the Day to Day report
   (#8788, smoke checklist section 3, "Day to Day events with a duration past midnight"); the Food Editor on a touch screen (#8790, smoke checklist
   section 5); an AndroidAPS (API v3) or Trio temp basal cancelled while a page is open (#8800, BF-94;
   <code>tools/lab/bf94-browser</code> drives it in Chromium); a treatment tooltip on an mmol/L site with an
   mg/dL profile (#8801, BF-124); a clock opened from the menu with a token on a site that requires
-  sign-in, and a refused clock saying so (#8802, BF-127). #8784 changes the page data for late or edited v3 treatments (they now carry <code>mills</code>,
+  sign-in, and a refused clock saying so (#8802, BF-127); and the context chart's time window dragged
+  all the way back to the current time after the page loads on a narrow screen (#8807, BF-168). #8784 changes the page data for late or edited v3 treatments (they now carry <code>mills</code>,
   so the page's own IOB and COB count them); that was measured in the page data sent over the socket
   by #8784's test, not in a browser.</li>
 <li><strong>BF-146 beyond the server's in-memory data</strong> was not measured: chart placement (the renderer
@@ -6201,8 +5984,9 @@ compared:</p>
   captured values.</li>
 <li><strong>No MongoDB 5.0 or 6.0 cell on this tree.</strong> CI on <code>f1e8398b</code> covered 4.4, 5.0 and 6.0 for #8758
   alone.</li>
-<li><strong>Break-its of the other merged fixes on the integrated tree</strong> were not run; each fix's own branch
-  has them (see the register). #8784's ran on this tree.</li>
+<li><strong>Break-its of the merged fixes on the integrated tree</strong> were not run in run 021, run 022 or run 023; each fix's own
+  branch has them (see the register). #8784's ran in run 020
+  (<a href="#evidence-carried-from-earlier-runs">Evidence carried from earlier runs</a>).</li>
 <li><strong>The deleted-reading probe covers entries only.</strong></li>
 <li><strong>No connector lab run on this tree.</strong> The last one ran on <code>d087588f</code>.</li>
 </ul>

@@ -1524,6 +1524,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -2688,7 +2692,7 @@
 
 
 
-<p><em>Living document, last changed 2026-09-27 at <code>232c0e72</code>.</em></p>
+<p><em>Living document, last changed 2026-10-07 at <code>ade273f9</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -2747,6 +2751,12 @@ distinct names, classified T / TS / D / B / X, measured against crm-seam at
 need a yes before T30-SCHEMA-CONFIG can start; the item is a decision surface,
 not an unstarted research task.</p>
 <h2 id="what-was-measured">What was measured<a class="headerlink" href="#what-was-measured" title="Permanent link">&para;</a></h2>
+<p><strong><code>node tools/queue/gates/t30-census-differential.js --ref 81a1f6ce</code></strong> &nbsp;·&nbsp; kind: <code>static</code></p>
+<p>The spec's B.4, B.2 gap-5 and B.6 names equal the code-side surface (the G.3
+sources plus direct, generic and injected readers parsed from lib/ and bin/).
+Green at 81a1f6ce with union 247 and surface 277. Red at official/dev 43289dde
+(14 code-only, 25 report-only) because the two lines have diverged, not
+because either is wrong.</p>
 <p><strong><code>test -f docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md</code></strong> &nbsp;·&nbsp; kind: <code>static</code></p>
 <p>the deliverable exists. A presence check only; it says nothing about whether
 the enumeration is complete or correct.</p>
@@ -2782,6 +2792,7 @@ the enumeration is complete or correct.</p>
 <ul>
 <li><a href="../../docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.html"><code>docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md</code></a></li>
 <li><a href="../../docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html"><code>docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md</code></a></li>
+<li><a href="../../docs/60-research/tenancy/t30-census-gate-and-schema-cred-2026-10-07.html"><code>docs/60-research/tenancy/t30-census-gate-and-schema-cred-2026-10-07.md</code></a></li>
 </ul>
 <h2 id="notes-carried-on-the-item">Notes carried on the item<a class="headerlink" href="#notes-carried-on-the-item" title="Permanent link">&para;</a></h2>
 <p>T3.0 is the largest correction owed in the programme. It does not block T3.3,
@@ -2793,7 +2804,17 @@ measurements. The three decisions with the longest reach are where the tenant-
 owner API lives, what issues and verifies a tenant-owner credential, and
 whether D7's credential-free platform plane holds against Nocturne's design,
 which puts platform admin on the consumer API behind a platform_admin role
-instead.</p>
+instead. 2026-10-07 (session -69's T30 agent,
+docs/60-research/tenancy/t30-census-gate-and-schema-cred-2026-10-07.md): the
+census is now a gate, and 247 against 277 is measured: 247 is the union the
+settings layer, env.js and the README can see; 277 adds 30 names found only by
+parsing code (3 AWS, CI, 10 API v3, 4 WEBHOOK, 12 ADMIN/FEED). The first no-
+gate's differential exists; gaps (1) to (4) and J14 are covered by parsing.
+Gap (5) stays partly open: the gate checks PREFIX_* counts and class totals
+but not subgroup headings, and the T-plugin subgroup headed (97) lists 98; the
+spec's TREATMENTS_AUTH reconciliation sentence contradicts its own list. Not
+in B.2: CUSTOMCONNSTR_DEXCOM_BRIDGE_USE_LEGACY, a direct read in
+lib/server/bridge-connect-compat.js:6 on dev (gone on the seam).</p>
 <hr />
 <h2 id="before-you-approve">Before you approve<a class="headerlink" href="#before-you-approve" title="Permanent link">&para;</a></h2>
 <ul class="task-list">

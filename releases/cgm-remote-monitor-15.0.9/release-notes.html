@@ -1566,6 +1566,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#dragging-the-lower-chart-back-to-now" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dragging the lower chart back to now
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#filter-the-treatments-report-by-type" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3307,6 +3318,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#dragging-the-lower-chart-back-to-now" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dragging the lower chart back to now
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#filter-the-treatments-report-by-type" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3489,7 +3511,7 @@
 
 
 <h1 id="nightscout-1509--release-notes">Nightscout 15.0.9 — release notes<a class="headerlink" href="#nightscout-1509--release-notes" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-02 at <code>528d5a29</code>.</em></p>
+<p><em>Living document, last changed 2026-10-07 at <code>12ea387c</code>.</em></p>
 <p><strong>Draft: 15.0.9 is not yet released, and the wording may change before it is.</strong></p>
 <p><em>For people who run a Nightscout site for themselves or a family member. Nightscout is a
 secondary display, nothing in these notes is advice about insulin doses, and you should talk
@@ -4422,6 +4444,12 @@ and a site that already holds one starts normally and notes it in the server log
 <h3 id="a-48-hour-view-on-the-main-chart">A 48-hour view on the main chart<a class="headerlink" href="#a-48-hour-view-on-the-main-chart" title="Permanent link">&para;</a></h3>
 <p>The "Hours:" choices on the main page, which set how much time the main chart shows, now include
 <strong>48</strong>, after 24, so you can see two days at once. Nothing else about the chart changes, and the view it opens with is the same as before.</p>
+<h3 id="dragging-the-lower-chart-back-to-now">Dragging the lower chart back to now<a class="headerlink" href="#dragging-the-lower-chart-back-to-now" title="Permanent link">&para;</a></h3>
+<p>The small chart below the main one has a highlighted window you can drag left and right to look
+back over the day. When the page opened on a narrow or slow-loading screen, that window sometimes
+could not be dragged all the way back to the current time — it stopped short. It can now be dragged
+all the way to now again. This is a display fix; nothing about your data changes, and the same
+behaviour was on 15.0.8.</p>
 <h3 id="filter-the-treatments-report-by-type">Filter the treatments report by type<a class="headerlink" href="#filter-the-treatments-report-by-type" title="Permanent link">&para;</a></h3>
 <p><strong>Reports → Treatments</strong> now has a list of event types above the table (for example "Meal Bolus"
 or "Temp Basal", each with how many entries it has), so a long list can be narrowed to one kind of
@@ -4660,6 +4688,20 @@ and many other software library updates.</p>
   published yet, and the newer Apple push-notification library planned for the next releases
   still uses the same version, so the update is deferred to that modernization work and will be
   made once a fixed version exists. You do not need to do anything.</li>
+<li><strong>A security check also reports a "high" finding about a pattern-matching library called
+  <code>braces</code></strong> (GHSA-vfj7-8cjw-p6xm, tracked by the project as BF-161). On three little-used web
+  addresses (<code>/times</code>, <code>/times/echo</code> and <code>/slice</code>), a request built with a deeply nested bracket
+  pattern can make that one request fail with an error. The site keeps running, and nothing is read
+  or written. The same is true on 15.0.8, which is the release in use today. No fixed version of
+  <code>braces</code> has been published yet; a limit on how deeply such a pattern can nest is planned for a
+  later release. You do not need to do anything.</li>
+<li><strong>A security check also reports a "high" finding about <code>compression</code></strong>, the library Nightscout
+  uses to shrink the responses it sends (GHSA-vc2v-76pw-4v95, tracked as BF-163). According to the
+  notice, each response that is cut off before it finishes leaves some memory in use; if that
+  happens often enough, the site can run out of memory and restart. This is the notice's
+  description; it has not been measured on Nightscout. It is fixed in <code>compression</code> 1.8.2, which
+  Nightscout takes up in the modernization releases that follow 15.0.9. The same version is on
+  15.0.8. You do not need to do anything.</li>
 </ul>
 <h3 id="access-tokens-stored-in-plain-text">Access tokens stored in plain text<a class="headerlink" href="#access-tokens-stored-in-plain-text" title="Permanent link">&para;</a></h3>
 <p>An <strong>access token</strong> is the password-like string that lets a person or an app use your
@@ -4716,7 +4758,7 @@ corrections of behaviour that was never intended, not as new features, and nothi
 depends on the number. Sites that follow the development channel may already report <code>15.0.9</code>;
 a report from "15.0.9" made before this release is from that channel.</p>
 <hr />
-<p><em>Draft, 2026-10-03, on the development version 1ad03e29; not yet released.</em></p>
+<p><em>Draft, 2026-10-08, on the development version fade2299; not yet released.</em></p>
 
 
 

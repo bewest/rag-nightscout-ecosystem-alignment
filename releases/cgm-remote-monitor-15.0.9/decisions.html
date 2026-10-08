@@ -2217,9 +2217,9 @@
 
 
 <h1 id="cgm-remote-monitor-1509--decisions">cgm-remote-monitor 15.0.9 — decisions<a class="headerlink" href="#cgm-remote-monitor-1509--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-02 at <code>528d5a29</code>.</em></p>
+<p><em>Living document, last changed 2026-10-07 at <code>12ea387c</code>.</em></p>
 <p><em>Contributor-facing. Living record of the maintainer's decisions that shape 15.0.9, taken
-2026-09-22 to 2026-10-02, as of <code>dev</code> <code>1ad03e29</code> (2026-10-03). Each row states the decision as it stands. Item state is in
+2026-09-22 to 2026-10-08, as of <code>dev</code> <code>fade2299</code> (2026-10-08). Each row states the decision as it stands. Item state is in
 <code>queue/work-queue.yaml</code>; what 15.0.9 contains and what is still open before the tag is in
 <a href="contents.html">contents.md</a>; the test evidence is in the
 <a href="../../docs/30-design/remedial/rc-15.0.9-integration-record.html">15.0.9 integration record</a>.
@@ -2243,7 +2243,7 @@ shipping release, and this repository is public.</em></p>
 <tr>
 <td><strong>The release goes out through #8598</strong> (<code>dev</code> → <code>master</code>, opened by AndyLow91)</td>
 <td><code>RT-0</code></td>
-<td>open, head <code>1ad03e29</code>, mergeable, <code>reviewDecision</code> <code>APPROVED</code>; both approvals (the maintainer, 2026-09-26 00:39Z) were given on <code>e3adc91d</code>, and re-approval at <code>1ad03e29</code> is owed; CI on <code>1ad03e29</code>: 27 checks passed, 3 skipped (read 2026-10-03 01:16Z)</td>
+<td>open, head <code>fade2299</code>, mergeable, <code>reviewDecision</code> <code>APPROVED</code>; both approvals (the maintainer, 2026-09-26 00:39Z) were given on <code>e3adc91d</code>, and the head has since moved through <code>1ad03e29</code>, <code>43289dde</code> and now <code>fade2299</code>, so re-approval at <code>fade2299</code> is owed</td>
 </tr>
 <tr>
 <td><strong>Backfix 2 ships inside 15.0.9</strong>: <code>bf2/ops</code>, <code>bf2/backports</code> and <code>bf2/auth-hardening</code>, with the subject-edit fix folded into the last (2026-09-23)</td>
@@ -2354,6 +2354,26 @@ shipping release, and this repository is public.</em></p>
 <td><strong>BF-153's dependency refresh is taken in on its measured result</strong> (<code>npm audit</code> 20 → 8, no highs, production bundle byte-identical); <strong><code>moment</code> stays at 2.30.1</strong>, because no request input reaches <code>moment.locale</code> on <code>dev</code> and 2.31.0 changes parsing and locale display output (2026-10-01)</td>
 <td><code>BFQ-153</code></td>
 <td>#8794 merged (<code>a143d507</code>)</td>
+</tr>
+<tr>
+<td><strong>BF-162 is fixed for 15.0.9 (#8806)</strong> (2026-10-07): <code>proxy-addr</code> 2.0.7 → 2.0.8 clears the GHSA-jqcg-44mw-7w3h critical. The reachable path — an explicit <code>TRUST_PROXY</code> list naming an IPv6-notation subnet with zero leading bits — is new in 15.0.9 (<code>lib/server/client-ip.js</code>); 15.0.8 enables trust proxy unconditionally and never compiles a subnet, so it cannot reach it. A plain IPv4 subnet, the default, <code>true</code>, <code>false</code> and a hop count are unaffected</td>
+<td><code>BFQ-162</code></td>
+<td>#8806 merged (<code>43289dde</code>)</td>
+</tr>
+<tr>
+<td><strong>BF-161 is a known issue in 15.0.9</strong> (2026-10-07): the <code>braces</code> advisory GHSA-vfj7-8cjw-p6xm (no fixed release); a deeply nested bracket pattern on <code>/times</code>, <code>/times/echo</code> or <code>/slice</code> makes that one request answer 500 and the site keeps running. Present on 15.0.8 too. A nesting-depth limit comes after 15.0.9</td>
+<td><code>BFQ-161</code></td>
+<td>release notes, Known issues</td>
+</tr>
+<tr>
+<td><strong>BF-163 is a known issue in 15.0.9</strong> (2026-10-07): the <code>compression</code> advisory GHSA-vc2v-76pw-4v95 (a memory leak on prematurely closed responses, per the advisory); fixed upstream in 1.8.2, taken up in the modernization releases. Present on 15.0.8 too (<code>compression</code> 1.8.1)</td>
+<td><code>BFQ-163</code></td>
+<td>release notes, Known issues</td>
+</tr>
+<tr>
+<td><strong>BF-168 is fixed for 15.0.9 (#8807)</strong> (2026-10-08): the context (lower) chart's time window could not always be dragged back to the current time when the chart was drawn before the page laid out; <code>lib/client/chart.js</code> now sets the brush extent from the chart's own scale and height. Display only; the same behaviour is on 15.0.8. The release head moves from <code>43289dde</code> to <code>fade2299</code> (#8598's head); run 023, a context-chart drag hand check, and #8598 re-approval are owed at <code>fade2299</code></td>
+<td><code>BFQ-168</code></td>
+<td>#8807 merged (<code>fade2299</code>)</td>
 </tr>
 <tr>
 <td><strong>BF-152 is after 15.0.9</strong> (API v3 <code>settings</code> documents are admin-only through search and history but readable by identifier with read permission): AndroidAPS's follower app reads its settings by identifier, so which side is the intended contract is a question for the AndroidAPS developers (2026-10-01)</td>

@@ -4629,6 +4629,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -4810,6 +4816,34 @@
     
   
     ns-evaluator: what a per-tenant evaluation loop actually needs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ory-proof-2026-10-07.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    One Ory identity pool, two Nightscout tenants: the T30-ORY-PROOF measurement
   
 
     
@@ -5150,6 +5184,34 @@
   
   
     <li class="md-nav__item">
+      <a href="seam-propagation-rehearsal-2026-10-07.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seam propagation rehearsal: the Phase 1 prefix by merge and by rebase
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="seam-readoptions-2026-09-15.html" class="md-nav__link">
         
   
@@ -5242,6 +5304,34 @@
     
   
     Verifying the T2.5 PostgreSQL backend — four predictions, two of them wrong
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="t30-census-gate-and-schema-cred-2026-10-07.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    T3.0: the census gate, and the credential half of the schema
   
 
     
@@ -7006,7 +7096,7 @@
 <p><strong>Snapshot — research as of 2026-09-14, measured against <code>origin/dev</code> and the seam branch (the doc names no commit). Status: current — tenancy research, not on a shipping path; the two live API defects it found, BF-14 and BF-15, are merged to dev in PR #8738 (2026-09-18, unreleased; 15.0.8 still ships them). Current facts: <a href="../../30-design/remedial/nightscout-backfix-register.html">backfix register</a>.</strong></p>
 </blockquote>
 <p><em>Audience: contributors.</em></p>
-<p>Date: 2026-09-14 · Harness: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b91eb768584c899f07f0e79d127a887100ac832f/tools/qc/shape-arm.js"><code>tools/qc/shape-arm.js</code></a>
+<p>Date: 2026-09-14 · Harness: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/1ea5d9384859b5edeeb12ca88f7d04f355357e12/tools/qc/shape-arm.js"><code>tools/qc/shape-arm.js</code></a>
 Arms: real <code>mongod</code> 7 · real PostgreSQL 16 · the shipping <code>fieldsProjector.js</code></p>
 <p>Closes the last gap recorded in
 <a href="seam-ordering-and-pagination-2026-09-14.html">seam ordering and pagination</a> §4:</p>
@@ -7117,7 +7207,7 @@ is unchanged</strong> — the seam reproduced the old semantics correctly.</p>
 that means <em>no limit</em>, so the fallback for unparseable input is an unbounded read. <code>findMany</code>, on
 the same file, defaults to <code>1000</code>.</p>
 <h3 id="22-sized-against-the-client-corpus--and-the-measurement-downgrades-it">2.2 Sized against the client corpus — and the measurement downgrades it<a class="headerlink" href="#22-sized-against-the-client-corpus--and-the-measurement-downgrades-it" title="Permanent link">&para;</a></h3>
-<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b91eb768584c899f07f0e79d127a887100ac832f/tools/qc/v1_count_census.py"><code>tools/qc/v1_count_census.py</code></a>, same method and same limits
+<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/1ea5d9384859b5edeeb12ca88f7d04f355357e12/tools/qc/v1_count_census.py"><code>tools/qc/v1_count_census.py</code></a>, same method and same limits
 as the operator census: it reads client <strong>source</strong>, not request logs, because there are no
 request logs. <strong>274 <code>count=</code> occurrences across 10 projects.</strong></p>
 <table>

@@ -5593,6 +5593,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -7249,7 +7255,7 @@
 <p>Record as of 2026-09-23. A point-in-time document; it is not kept up to date.</p>
 </div>
 <blockquote>
-<p><strong>Snapshot, 2026-09-22 (US local; run clock 2026-09-23 UTC), against <code>origin/master</code> <code>92d08342</code> (tag 15.0.8), <code>origin/dev</code> <code>74fc6619</code> and local branch <code>bf3/alarm-no-reading</code> at <code>92544d8f</code>. Historical: the fix is merged into <code>dev</code> as #8755, not released; 15.0.8 still has BF-90. Current facts about the defect live in the <a href="../../30-design/remedial/nightscout-backfix-register.html">backfix register</a> (BF-90) and item <code>BFQ-90</code> in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b91eb768584c899f07f0e79d127a887100ac832f/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a>.</strong></p>
+<p><strong>Snapshot, 2026-09-22 (US local; run clock 2026-09-23 UTC), against <code>origin/master</code> <code>92d08342</code> (tag 15.0.8), <code>origin/dev</code> <code>74fc6619</code> and local branch <code>bf3/alarm-no-reading</code> at <code>92544d8f</code>. Historical: the fix is merged into <code>dev</code> as #8755, not released; 15.0.8 still has BF-90. Current facts about the defect live in the <a href="../../30-design/remedial/nightscout-backfix-register.html">backfix register</a> (BF-90) and item <code>BFQ-90</code> in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/1ea5d9384859b5edeeb12ca88f7d04f355357e12/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a>.</strong></p>
 </blockquote>
 <p>Audience: contributors and the maintainer, except §1, which is written for operators and users.</p>
 <h2 id="1-what-a-person-sees-plain-language">1. What a person sees (plain language)<a class="headerlink" href="#1-what-a-person-sees-plain-language" title="Permanent link">&para;</a></h2>
@@ -7315,7 +7321,7 @@
 </table>
 <p><strong>Harness defect found on the way (pre-existing, not fixed on the branch).</strong> <code>headless.js</code> passes the shim an un-normalised path (<code>tests/fixtures/../../node_modules/...</code>), so <code>benv-shim.js</code>'s <code>delete require.cache[filename]</code> misses the key Node stored the bundle under. A second headless suite in the same mocha process gets the cached bundle, and <code>$</code> is undefined. <code>careportal</code> was the only live headless suite, so nothing had shown this before. The new test busts the resolved key itself, with a comment. The one-line shim fix (<code>path.resolve</code>) is left for a separate change.</p>
 <h2 id="4-browser-evidence">4. Browser evidence<a class="headerlink" href="#4-browser-evidence" title="Permanent link">&para;</a></h2>
-<p>Probe: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b91eb768584c899f07f0e79d127a887100ac832f/tools/review/probes/alarm-no-reading-browser.js"><code>tools/review/probes/alarm-no-reading-browser.js</code></a>. One instance per build. Each instance has its own <code>node_modules</code> via <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b91eb768584c899f07f0e79d127a887100ac832f/tools/review/probes/w2-instance.sh"><code>w2-instance.sh</code></a> (which gained a <code>W2_MONGO_PORT</code> override), and runs with <code>NODE_ENV=development</code>, <code>ENABLE="careportal basal iob cob bwp boluscalc pump"</code> and <code>PUMP_ENABLE_ALERTS=true</code>. Chrome 149.0.7827.102 was driven by playwright-core 1.63.0 (no browser download). Each run started from a fresh database (<code>reset</code> stops the server before dropping). The data is synthetic.</p>
+<p>Probe: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/1ea5d9384859b5edeeb12ca88f7d04f355357e12/tools/review/probes/alarm-no-reading-browser.js"><code>tools/review/probes/alarm-no-reading-browser.js</code></a>. One instance per build. Each instance has its own <code>node_modules</code> via <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/1ea5d9384859b5edeeb12ca88f7d04f355357e12/tools/review/probes/w2-instance.sh"><code>w2-instance.sh</code></a> (which gained a <code>W2_MONGO_PORT</code> override), and runs with <code>NODE_ENV=development</code>, <code>ENABLE="careportal basal iob cob bwp boluscalc pump"</code> and <code>PUMP_ENABLE_ALERTS=true</code>. Chrome 149.0.7827.102 was driven by playwright-core 1.63.0 (no browser download). Each run started from a fresh database (<code>reset</code> stops the server before dropping). The data is synthetic.</p>
 <p><strong>No server decision is forced.</strong> The trigger is two ordinary REST uploads of pump status: reservoir 8 U (WARN, <code>alarm</code>), then 3 U (URGENT, <code>urgent_alarm</code>), both counted in MongoDB. The recorder is an <code>onAny</code> listener on the page's own alarm connection, which runs before the page's handlers. Liveness is checked in the same window: the server log's emission counts must rise.</p>
 <p><strong>Provenance gate</strong> (<code>probes/provenance.js --unit bf3/alarm-no-reading</code>, tokens <code>latestMgdlForLog</code> and <code>updateChartAfterAlarm</code>, tried verbatim and eval-escaped): BASE dev 0/0, candidate 3/3, bundles differ (10933669 B vs 10935629 B). BASE 15.0.8 (10246799 B) 0/0 against the same candidate. <strong>Pass.</strong></p>
 <table>

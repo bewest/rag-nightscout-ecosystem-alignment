@@ -1,0 +1,7195 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/write-contract-spec-2026-10-07.html">
+      
+      
+        <link rel="prev" href="tenant-owner-config-surface-2026-09-15.html">
+      
+      
+        <link rel="next" href="../../40-data-pipelines/index.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>WRITE-CONTRACT: the measured write matrix, and one write step behind the storage interface - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#write-contract-the-measured-write-matrix-and-one-write-step-behind-the-storage-interface" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              WRITE-CONTRACT: the measured write matrix, and one write step behind the storage interface
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../site/pages/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_24" id="__nav_5_24_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_24_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    30-design/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cgm-remote-monitor-telemetry-emitter-map-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor Telemetry Emitter Integration Map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-adoption-roadmap-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adoption roadmap: who builds what, in what order
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-integration-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Integration Guide for App Developers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-backend-service-design-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Backend Service Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-deployment-lifecycle-examples-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Deployment Lifecycle Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-implementation-breakdown-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Implementation Breakdown
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-lifecycle-policy-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Lifecycle Policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-local-integration-plan-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Local Integration Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-scheduling-dedupe-model-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Scheduling and Dedupe Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ns2parquet-keyed-pseudonyms.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ns2parquet keyed pseudonyms: design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../modernization/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    modernization/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../platform/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    platform/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../remedial/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    remedial/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24_15" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenancy/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_24_15" id="__nav_5_24_15_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_24_15_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24_15">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    tenancy/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-configuration-and-delegation-2026-09-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings, extensibility, new data, and delegated access: four open questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-control-plane-reconciliation-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reconciling the agentic control plane RFC with what the corpus measured
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-deployable-components-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployable components: entrypoints, program structure, and what an operator actually runs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-multitenancy-discussion-2026-09-09.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout multitenancy: evidence and options
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-multitenancy-execution-plan-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenancy execution plan: decisions, tasks, and the context each one needs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-seam-ordering-translation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design — how ordering crosses the storage seam
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-storage-seam-interface-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    T1.1 — the storage seam: interface definition and call-site classification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tenant-owner-config-surface-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The tenant-owner configuration surface — T3.0's missing schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WRITE-CONTRACT: the measured write matrix, and one write step behind the storage interface
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="write-contract-spec-2026-10-07.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WRITE-CONTRACT: the measured write matrix, and one write step behind the storage interface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-the-matrix-measured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The matrix, measured
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. The matrix, measured">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-how-it-was-measured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 How it was measured
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-legend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Legend
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-the-matrix-on-dev-43289dde" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 The matrix on dev 43289dde
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-cross-path-re-send" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Cross-path re-send
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-where-the-paths-disagree" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 Where the paths disagree
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-the-plans-counts-re-measured-and-the-mismatch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6 The plan's counts, re-measured, and the mismatch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#17-non-vacuity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.7 Non-vacuity
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-proposed-write-step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The proposed write step
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. The proposed write step">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-where-it-sits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Where it sits
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Interface
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-order-of-the-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Order of the rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-the-change-event" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 The change event
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-what-stays-where-it-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 What stays where it is
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-unified-re-send-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The unified re-send rule
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-semver-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Semver class
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-the-gates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. The gates
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-decisions-for-the-maintainer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Decisions for the maintainer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-candidate-defects-found" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Candidate defects found
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-reproduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Reproduction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-divergence-by-group-dev-43289dde" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix: divergence by group, dev 43289dde
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../60-research/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../site/pages/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-the-matrix-measured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The matrix, measured
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. The matrix, measured">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-how-it-was-measured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 How it was measured
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-legend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Legend
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-the-matrix-on-dev-43289dde" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 The matrix on dev 43289dde
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-cross-path-re-send" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Cross-path re-send
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-where-the-paths-disagree" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 Where the paths disagree
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-the-plans-counts-re-measured-and-the-mismatch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6 The plan's counts, re-measured, and the mismatch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#17-non-vacuity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.7 Non-vacuity
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-proposed-write-step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The proposed write step
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. The proposed write step">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-where-it-sits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Where it sits
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Interface
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-order-of-the-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Order of the rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-the-change-event" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 The change event
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-what-stays-where-it-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 What stays where it is
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-unified-re-send-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The unified re-send rule
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-semver-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Semver class
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-the-gates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. The gates
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-decisions-for-the-maintainer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Decisions for the maintainer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-candidate-defects-found" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Candidate defects found
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-reproduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Reproduction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-divergence-by-group-dev-43289dde" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix: divergence by group, dev 43289dde
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="write-contract-the-measured-write-matrix-and-one-write-step-behind-the-storage-interface">WRITE-CONTRACT: the measured write matrix, and one write step behind the storage interface<a class="headerlink" href="#write-contract-the-measured-write-matrix-and-one-write-step-behind-the-storage-interface" title="Permanent link">&para;</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Record</p>
+<p>Record as of 2026-10-07. A point-in-time document; it is not kept up to date.</p>
+</div>
+<p><em>Contributor-facing.</em> <strong>Snapshot, 2026-10-07. Status: draft specification for queue <code>WRITE-CONTRACT</code>,
+awaiting the maintainer decisions in §6.</strong> Nothing here is implemented. Measured against
+<code>cgm-remote-monitor</code> <code>official/dev</code> <code>43289dde</code> (the merge of #8806) and <code>official/master</code> <code>92d08342</code>
+(tag <code>15.0.8</code>); the as-built storage interface is <code>seam/t1-2-storage-interface</code> <code>81a1f6ce</code>. The
+decisions this builds on are in the
+<a href="nightscout-multitenancy-execution-plan-2026-09-14.html#41-the-write-contract-belongs-behind-the-seam">execution plan §4.1</a>
+and the <a href="nightscout-storage-seam-interface-2026-09-14.html">storage seam interface §4.4, §5 and §10</a>.
+Item state: <a href="../../../queue/QUEUE.html"><code>queue/QUEUE.md</code></a>. Defect facts:
+<a href="../remedial/nightscout-backfix-register.html">backfix register</a>.</p>
+<p>Every claim carries one of two marks. <strong>[M]</strong> measured: by the commands in §1.1 and §8, on the refs
+above, Node 22.23.2, MongoDB 7.0.43. <strong>[R]</strong> read: from source at the ref named, not run.</p>
+<hr />
+<h2 id="0-summary">0. Summary<a class="headerlink" href="#0-summary" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>The matrix</strong> [M]: six collections × four write paths × eleven write forms, plus API v3 <code>PUT</code>:
+  270 cells per build, 20 of them <code>n/a</code> (the path has no such operation), and 66 cross-path
+  re-sends; 336 in all. No cell was invalid (a liveness check before and after every measured
+  step). A second run on <code>43289dde</code> matched the first in every field except one <code>cache</code> value
+  (§1.1, a known race).</li>
+<li><strong>How often the paths disagree</strong> [M]: of the 66 (collection, write form) groups that two or more
+  paths can perform, the stored result (documents, <code>_id</code> form, <code>srvCreated</code>/<code>srvModified</code>, v3
+  history, v1 read) differs between paths in <strong>33</strong> on <code>dev</code> (47 on 15.0.8), and the emissions
+  differ in 56. A record created through one path and re-sent without <code>_id</code> through another is
+  stored twice in <strong>38 of 66</strong> ordered path pairs (36 on 15.0.8).</li>
+<li><strong>Two findings that cut across every collection</strong> [M]: (1) only API v3 writes reach a client subscribed to the
+  API v3 storage socket; writes of the same records through API v1, the socket <code>dbAdd</code>/<code>dbUpdate</code>/
+  <code>dbRemove</code> and in-process callers never do, on <code>dev</code> and on 15.0.8 (§1.5 D8, candidate C4).
+  (2) An identical re-send is a no-op on some paths and a full replacement, with a new
+  <code>srvModified</code>, a v3 history entry and a change event, on others (D3, D4).</li>
+<li><strong>The proposed step</strong> (§2): <code>lib/storage/write-step.js</code>, applied in <code>collectionFor</code> above both
+  adapters, so the paths call <code>write(intent)</code> and never an adapter write method. Per item: <code>_id</code>
+  form → target resolution (twins included) → outcome (insert / merge / replace / unchanged /
+  refused) → server dates → adapter write → one change event per call.</li>
+<li><strong>The re-send rule</strong> (§3): identical re-send is unchanged and answered with the stored ids; a
+  differing re-send merges; one natural key per collection on every path; every path's writes
+  reach the storage socket. Semver: <strong>minor</strong> if the maintainer picks merge-on-match (§4); a
+  replace-on-match on the socket path would be <strong>major</strong> (ladder question 5).</li>
+<li><strong>Mismatch with the plan</strong> [M]: the plan's example "a profile re-sent in upper case is stored
+  twice while the same devicestatus is refused" holds for a record an older release stored with a
+  string <code>_id</code> (<code>legacy-upper</code>). For a profile created by <code>dev</code> itself, a re-send with its own <code>_id</code>
+  in either case answers <strong>500</strong> over API v1 and a duplicate-key error in-process, and is not
+  stored twice (§1.6).</li>
+</ul>
+<hr />
+<h2 id="1-the-matrix-measured">1. The matrix, measured<a class="headerlink" href="#1-the-matrix-measured" title="Permanent link">&para;</a></h2>
+<h3 id="11-how-it-was-measured">1.1 How it was measured<a class="headerlink" href="#11-how-it-was-measured" title="Permanent link">&para;</a></h3>
+<p>The harness is <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/1ea5d9384859b5edeeb12ca88f7d04f355357e12/tools/qc/write-contract-matrix.js"><code>tools/qc/write-contract-matrix.js</code></a>.
+Per execution plan rule 4 it exercises the shipping modules, not a copy: it boots the build in
+its own process from the worktree named by <code>WC_WORKTREE</code>, exactly as <code>lib/server/server.js</code> does
+(<code>bootevent</code>, <code>app</code>, an HTTP listener, <code>websocket</code>), with every module <code>require()</code>d by path from
+that worktree. Requests go over a real listener: API v1 and v3 over HTTP, the socket path over
+socket.io (<code>authorize</code>, then <code>dbAdd</code>/<code>dbUpdate</code>/<code>dbRemove</code>), and a second socket.io client
+subscribed to the API v3 <code>/storage</code> namespace with a subject's access token, as AndroidAPS
+NSClientV3 subscribes in websocket mode. The in-process path calls <code>ctx.&lt;collection&gt;.create</code>,
+<code>save</code> and <code>remove</code>, as nightscout-connect's internal output does
+(<code>nightscout-connect/lib/outputs/internal.js:40</code> [R]).</p>
+<p>Booting in-process is what lets a cell record the two bus emissions no client sees directly
+(<code>data-update</code>, which the in-memory cache consumes, and <code>storage-socket-*</code>, which the v3 storage
+socket forwards) and the cache itself.</p>
+<ul>
+<li><strong>Database:</strong> a dedicated container, <code>docker run -d --name wc-mongo --ulimit nofile=64000 -p
+  27151:27017 mongo:7</code>; <code>db.version()</code> answered <code>7.0.43</code>. Each run uses a fresh database
+  <code>wcm_&lt;random&gt;</code> and drops it at the end. Synthetic records only.</li>
+<li><strong>Node:</strong> <code>n exec 22.23.2</code>.</li>
+<li><strong>Builds:</strong> detached worktrees <code>externals/work/crm-wc-spec</code> at <code>43289dde</code> and
+  <code>externals/work/crm-wc-1508</code> at <code>92d08342</code>, each after <code>npm ci</code>; <code>git status --porcelain -- lib</code>
+  empty on both (recorded in each result file's <code>dirty_lib</code>).</li>
+<li><strong>Results:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/1ea5d9384859b5edeeb12ca88f7d04f355357e12/tools/qc/results/write-contract-matrix/dev-43289dde.json"><code>dev-43289dde.json</code></a>,
+  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/1ea5d9384859b5edeeb12ca88f7d04f355357e12/tools/qc/results/write-contract-matrix/v15.0.8-92d08342.json"><code>v15.0.8-92d08342.json</code></a>.
+  The tables below are generated from them with <code>--compact</code>, <code>--divergence</code> and the cross-path
+  listing (§8).</li>
+<li><strong>Liveness:</strong> <code>GET /api/v1/status.json</code> answered 200 before and after every measured step; a
+  cell that fails it is reported <code>INVALID</code>. 0 of 336 on either build (270 matrix cells and 66
+  cross-path cells).</li>
+<li><strong>Repeatability:</strong> a second full run on <code>43289dde</code> compared with <code>--compare</code>: 1 differing cell
+  of 336, <code>entries v3 resend-identity</code>, in the <code>cache</code> field only (<code>held no-mills</code> once, <code>held</code>
+  once). The <code>cache</code> field races the dataloader's reload of recent records after <code>data-received</code>;
+  no conclusion below rests on it, and it is left out of the divergence counts.</li>
+</ul>
+<p><strong>Each cell records:</strong> the reply; the stored documents carrying the cell's marker field (so twins
+are found whatever their <code>_id</code>), with the BSON type of each <code>_id</code>; <code>srvCreated</code>/<code>srvModified</code>
+compared with the state before the step; whether <code>GET /api/v3/&lt;col&gt;/history/&lt;cursor&gt;</code> returns the
+record, the cursor being the collection's largest <code>srvModified</code> before the step (what a reader
+holds); the bus emissions; what the subscribed storage-socket client received; and, for deletes,
+how many records a filtered v1 read returns.</p>
+<p><strong>Write forms.</strong> <code>create</code> (no <code>_id</code>); <code>resend-hex</code> / <code>resend-upper</code> (created through the same path
+with a client 24-hex <code>_id</code>, then re-sent with it, in lower or upper case); <code>resend-oid</code> (the same,
+the id as an ObjectId in-process and as Extended JSON <code>{"$oid": …}</code> over the wire);
+<code>resend-identity</code> (re-sent with no <code>_id</code>, same body); <code>resend-near</code> (re-sent with the times one
+second later); <code>legacy-lower</code> / <code>legacy-upper</code> (a record stored straight into MongoDB with a string
+<code>_id</code>, no server dates and no <code>identifier</code>, as 15.0.6 and earlier stored it, then re-sent with
+that id); <code>update</code> (v1 <code>PUT</code>, v3 <code>PATCH</code>, socket <code>dbUpdate</code>, in-process <code>save</code>); <code>update-put</code> (v3
+<code>PUT</code>); <code>softdelete</code> (<code>isValid: false</code>: v1 <code>PUT</code>, v3 <code>DELETE</code>, socket <code>dbUpdate</code>, in-process
+<code>save</code>); <code>harddelete</code> (v1 <code>DELETE /&lt;col&gt;/&lt;id&gt;</code>, v3 <code>DELETE ?permanent=true</code>, socket <code>dbRemove</code>,
+in-process <code>remove</code>). Every path sends the same body, including the <code>date</code>, <code>utcOffset</code> and <code>app</code>
+API v3 requires.</p>
+<h3 id="12-legend">1.2 Legend<a class="headerlink" href="#12-legend" title="Permanent link">&para;</a></h3>
+<p>Each cell is <code>reply · stored · server dates · v3 history · emissions</code> (<code>· v1:&lt;n&gt;</code> for deletes).</p>
+<ul>
+<li><strong>reply</strong> — <code>ok+id</code> accepted and told the stored id; <code>ok, no id</code> accepted, reply carries no id;
+  <code>ok</code> accepted, no record in the reply; <code>empty</code> an empty array; <code>400</code>/<code>500</code> HTTP status;
+  <code>refused</code> a socket ack naming a problem; <code>dup-err</code> a duplicate-key error to the callback.</li>
+<li><strong>stored</strong> — number of documents, then each <code>_id</code>: <code>OID</code> ObjectId, <code>str</code> lower-case hex string,
+  <code>STR</code> upper-case hex string; <code>:v2</code> carries the update, <code>:inv</code> has <code>isValid: false</code>.</li>
+<li><strong>server dates</strong> — per document: <code>C</code> srvCreated set on a new document, <code>C=</code> kept, <code>C+</code> added
+  where it was absent, <code>noC</code> absent; <code>M</code> set, <code>M+</code> advanced, <code>M=</code> unchanged, <code>noM</code> absent. <code>-</code> no
+  document.</li>
+<li><strong>v3 history</strong> — <code>h</code> returned valid, <code>h:del</code> returned with <code>isValid: false</code>, <code>–</code> not returned,
+  <code>n/a</code> no v3 endpoint (activity).</li>
+<li><strong>emissions</strong> — <code>du</code> a <code>data-update</code> whose documents carry <code>mills</code>; <code>du(no mills)</code> without;
+  <code>du:rm</code> a <code>data-update</code> remove; <code>ws3:&lt;event&gt;</code> what the subscribed storage-socket client
+  received; <code>–</code> nothing.</li>
+</ul>
+<h3 id="13-the-matrix-on-dev-43289dde">1.3 The matrix on <code>dev</code> <code>43289dde</code><a class="headerlink" href="#13-the-matrix-on-dev-43289dde" title="Permanent link">&para;</a></h3>
+<p><strong>entries</strong></p>
+<table>
+<thead>
+<tr>
+<th>form</th>
+<th>v1</th>
+<th>v3</th>
+<th>ws</th>
+<th>inproc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>create</td>
+<td>ok+id · 1 OID · CM · h · du</td>
+<td>ok+id · 1 OID · CM · h · du(no mills)+ws3:create</td>
+<td>ok+id · 1 OID · CM · h · du</td>
+<td>ok+id · 1 OID · CM · h · du</td>
+</tr>
+<tr>
+<td>resend-hex</td>
+<td>ok+id · 1 OID · C=M+ · h · du</td>
+<td>ok+id · 1 str · C=M+ · h · du(no mills)+ws3:update</td>
+<td>empty · 1 OID · C=M= · – · –</td>
+<td>ok+id · 1 OID · C=M+ · h · du</td>
+</tr>
+<tr>
+<td>resend-upper</td>
+<td>ok+id · 1 OID · C=M+ · h · du</td>
+<td>ok+id · 1 STR · C=M+ · h · du(no mills)+ws3:update</td>
+<td>empty · 1 OID · C=M= · – · –</td>
+<td>ok+id · 1 OID · C=M+ · h · du</td>
+</tr>
+<tr>
+<td>resend-oid</td>
+<td>ok+id · 1 OID · C=M+ · h · du</td>
+<td>500 · 0 · - · – · –</td>
+<td>refused · 0 · - · – · –</td>
+<td>ok+id · 1 OID · C=M+ · h · du</td>
+</tr>
+<tr>
+<td>resend-identity</td>
+<td>ok+id · 1 OID · C=M+ · h · du</td>
+<td>ok+id · 1 OID · C=M+ · h · du(no mills)+ws3:update</td>
+<td>ok+id · 2 OID,OID · C=M=,CM · h · du</td>
+<td>ok+id · 1 OID · C=M+ · h · du</td>
+</tr>
+<tr>
+<td>resend-near</td>
+<td>ok+id · 2 OID,OID · C=M=,CM · h · du</td>
+<td>ok+id · 2 OID,OID · C=M=,CM · h · du(no mills)+ws3:create</td>
+<td>ok+id · 2 OID,OID · C=M=,CM · h · du</td>
+<td>ok+id · 2 OID,OID · C=M=,CM · h · du</td>
+</tr>
+<tr>
+<td>legacy-lower</td>
+<td>ok+id · 1 str · noCM+ · h · du</td>
+<td>ok+id · 1 str · C+M+ · h · du(no mills)+ws3:update</td>
+<td>empty · 1 str · noCnoM · – · –</td>
+<td>ok+id · 1 str · noCM+ · h · du</td>
+</tr>
+<tr>
+<td>legacy-upper</td>
+<td>ok+id · 1 str · noCM+ · h · du</td>
+<td>500 · 1 str · noCnoM · – · –</td>
+<td>empty · 1 str · noCnoM · – · –</td>
+<td>ok+id · 1 str · noCM+ · h · du</td>
+</tr>
+<tr>
+<td>update</td>
+<td>n/a</td>
+<td>ok · 1 OID:v2 · C=M+ · h · du(no mills)+ws3:update</td>
+<td>ok · 1 OID:v2 · C=M+ · h · du</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>update-put</td>
+<td>n/a</td>
+<td>ok · 1 OID:v2 · C=M+ · h · du(no mills)+ws3:update</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>softdelete</td>
+<td>n/a</td>
+<td>ok · 1 OID:inv · C=M+ · h:del · du:rm+ws3:delete · v1:0</td>
+<td>ok · 1 OID:inv · C=M+ · h:del · du · v1:0</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>harddelete</td>
+<td>ok · 0 · - · – · du:rm · v1:0</td>
+<td>ok · 0 · - · – · du:rm+ws3:delete · v1:0</td>
+<td>ok · 0 · - · – · du:rm · v1:0</td>
+<td>ok, no id · 0 · - · – · du:rm · v1:0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>treatments</strong></p>
+<table>
+<thead>
+<tr>
+<th>form</th>
+<th>v1</th>
+<th>v3</th>
+<th>ws</th>
+<th>inproc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>create</td>
+<td>ok+id · 1 OID · CM · h · du</td>
+<td>ok+id · 1 OID · CM · h · du+ws3:create</td>
+<td>ok+id · 1 OID · CM · h · du</td>
+<td>ok+id · 1 OID · CM · h · du</td>
+</tr>
+<tr>
+<td>resend-hex</td>
+<td>ok+id · 1 OID · C=M+ · h · du</td>
+<td>ok+id · 1 str · C=M+ · h · du+ws3:update</td>
+<td>ok+id · 1 OID · C=M= · – · –</td>
+<td>ok+id · 1 OID · C=M+ · h · du</td>
+</tr>
+<tr>
+<td>resend-upper</td>
+<td>ok+id · 1 OID · C=M+ · h · du</td>
+<td>ok+id · 1 STR · C=M+ · h · du+ws3:update</td>
+<td>ok+id · 1 OID · C=M= · – · –</td>
+<td>ok+id · 1 OID · C=M+ · h · du</td>
+</tr>
+<tr>
+<td>resend-oid</td>
+<td>ok+id · 1 OID · C=M+ · h · du</td>
+<td>500 · 0 · - · – · –</td>
+<td>refused · 0 · - · – · –</td>
+<td>ok+id · 1 OID · C=M+ · h · du</td>
+</tr>
+<tr>
+<td>resend-identity</td>
+<td>ok, no id · 1 OID · C=M+ · h · du</td>
+<td>ok+id · 1 OID · C=M+ · h · du+ws3:update</td>
+<td>ok+id · 1 OID · C=M= · – · –</td>
+<td>ok, no id · 1 OID · C=M+ · h · du</td>
+</tr>
+<tr>
+<td>resend-near</td>
+<td>ok+id · 2 OID,OID · C=M=,CM · h · du</td>
+<td>ok+id · 2 OID,OID · C=M=,CM · h · du+ws3:create</td>
+<td>ok+id · 1 OID · C=M+ · h · –</td>
+<td>ok+id · 2 OID,OID · C=M=,CM · h · du</td>
+</tr>
+<tr>
+<td>legacy-lower</td>
+<td>ok+id · 1 OID · CM · h · du</td>
+<td>ok+id · 1 str · C+M+ · h · du+ws3:update</td>
+<td>ok+id · 1 str · noCnoM · – · –</td>
+<td>ok+id · 1 OID · CM · h · du</td>
+</tr>
+<tr>
+<td>legacy-upper</td>
+<td>ok+id · 1 OID · CM · h · du</td>
+<td>500 · 1 str · noCnoM · – · –</td>
+<td>ok+id · 1 str · noCnoM · – · –</td>
+<td>ok+id · 1 OID · CM · h · du</td>
+</tr>
+<tr>
+<td>update</td>
+<td>ok+id · 1 OID:v2 · C=M+ · h · du</td>
+<td>ok · 1 OID:v2 · C=M+ · h · du+ws3:update</td>
+<td>ok · 1 OID:v2 · C=M+ · h · du</td>
+<td>ok+id · 1 OID:v2 · C=M+ · h · du</td>
+</tr>
+<tr>
+<td>update-put</td>
+<td>n/a</td>
+<td>ok · 1 OID:v2 · C=M+ · h · du+ws3:update</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>softdelete</td>
+<td>ok+id · 1 OID:inv · C=M+ · h:del · du · v1:0</td>
+<td>ok · 1 OID:inv · C=M+ · h:del · du:rm+ws3:delete · v1:0</td>
+<td>ok · 1 OID:inv · C=M+ · h:del · du · v1:0</td>
+<td>ok+id · 1 OID:inv · C=M+ · h:del · du · v1:0</td>
+</tr>
+<tr>
+<td>harddelete</td>
+<td>ok · 0 · - · – · du:rm · v1:0</td>
+<td>ok · 0 · - · – · du:rm+ws3:delete · v1:0</td>
+<td>ok · 0 · - · – · du:rm · v1:0</td>
+<td>ok, no id · 0 · - · – · du:rm · v1:0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>devicestatus</strong></p>
+<table>
+<thead>
+<tr>
+<th>form</th>
+<th>v1</th>
+<th>v3</th>
+<th>ws</th>
+<th>inproc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>create</td>
+<td>ok+id · 1 OID · CM · h · du</td>
+<td>ok+id · 1 OID · CM · h · du+ws3:create</td>
+<td>ok+id · 1 OID · CM · h · du</td>
+<td>ok+id · 1 OID · CM · h · du</td>
+</tr>
+<tr>
+<td>resend-hex</td>
+<td>ok+id · 1 OID · C=M= · – · –</td>
+<td>ok+id · 1 str · C=M+ · h · du+ws3:update</td>
+<td>ok+id · 1 OID · C=M= · – · –</td>
+<td>ok+id · 1 OID · C=M= · – · –</td>
+</tr>
+<tr>
+<td>resend-upper</td>
+<td>ok+id · 1 OID · C=M= · – · –</td>
+<td>ok+id · 1 STR · C=M+ · h · du+ws3:update</td>
+<td>ok+id · 1 OID · C=M= · – · –</td>
+<td>ok+id · 1 OID · C=M= · – · –</td>
+</tr>
+<tr>
+<td>resend-oid</td>
+<td>400 · 0 · - · – · –</td>
+<td>500 · 0 · - · – · –</td>
+<td>refused · 0 · - · – · –</td>
+<td>ok+id · 1 OID · C=M= · – · –</td>
+</tr>
+<tr>
+<td>resend-identity</td>
+<td>ok+id · 2 OID,OID · C=M=,CM · h · du</td>
+<td>ok+id · 1 OID · C=M+ · h · du+ws3:update</td>
+<td>ok+id · 1 OID · C=M= · – · –</td>
+<td>ok+id · 2 OID,OID · C=M=,CM · h · du</td>
+</tr>
+<tr>
+<td>resend-near</td>
+<td>ok+id · 2 OID,OID · C=M=,CM · h · du</td>
+<td>ok+id · 2 OID,OID · C=M=,CM · h · du+ws3:create</td>
+<td>ok+id · 2 OID,OID · C=M=,CM · h · du</td>
+<td>ok+id · 2 OID,OID · C=M=,CM · h · du</td>
+</tr>
+<tr>
+<td>legacy-lower</td>
+<td>ok+id · 1 str · noCnoM · – · –</td>
+<td>ok+id · 1 str · C+M+ · h · du+ws3:update</td>
+<td>ok+id · 1 str · noCnoM · – · –</td>
+<td>ok+id · 1 str · noCnoM · – · –</td>
+</tr>
+<tr>
+<td>legacy-upper</td>
+<td>ok+id · 1 str · noCnoM · – · –</td>
+<td>500 · 1 str · noCnoM · – · –</td>
+<td>ok+id · 1 str · noCnoM · – · –</td>
+<td>ok+id · 1 str · noCnoM · – · –</td>
+</tr>
+<tr>
+<td>update</td>
+<td>n/a</td>
+<td>ok · 1 OID:v2 · C=M+ · h · du+ws3:update</td>
+<td>ok · 1 OID:v2 · C=M+ · h · du</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>update-put</td>
+<td>n/a</td>
+<td>ok · 1 OID:v2 · C=M+ · h · du+ws3:update</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>softdelete</td>
+<td>n/a</td>
+<td>ok · 1 OID:inv · C=M+ · h:del · du:rm+ws3:delete · v1:0</td>
+<td>ok · 1 OID:inv · C=M+ · h:del · du · v1:0</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>harddelete</td>
+<td>ok · 0 · - · – · du:rm · v1:0</td>
+<td>ok · 0 · - · – · du:rm+ws3:delete · v1:0</td>
+<td>ok · 0 · - · – · du:rm · v1:0</td>
+<td>ok, no id · 0 · - · – · du:rm · v1:0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>profile</strong></p>
+<table>
+<thead>
+<tr>
+<th>form</th>
+<th>v1</th>
+<th>v3</th>
+<th>ws</th>
+<th>inproc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>create</td>
+<td>ok+id · 1 OID · CM · h · –</td>
+<td>ok+id · 1 OID · CM · h · ws3:create</td>
+<td>ok+id · 1 OID · CM · h · du</td>
+<td>ok+id · 1 OID · CM · h · –</td>
+</tr>
+<tr>
+<td>resend-hex</td>
+<td>500 · 1 OID · C=M= · – · –</td>
+<td>ok+id · 1 str · C=M+ · h · ws3:update</td>
+<td>ok+id · 1 OID · C=M+ · h · du</td>
+<td>dup-err · 1 OID · C=M= · – · –</td>
+</tr>
+<tr>
+<td>resend-upper</td>
+<td>500 · 1 OID · C=M= · – · –</td>
+<td>ok+id · 1 STR · C=M+ · h · ws3:update</td>
+<td>ok+id · 1 OID · C=M+ · h · du</td>
+<td>dup-err · 1 OID · C=M= · – · –</td>
+</tr>
+<tr>
+<td>resend-oid</td>
+<td>400 · 0 · - · – · –</td>
+<td>500 · 0 · - · – · –</td>
+<td>refused · 0 · - · – · –</td>
+<td>dup-err · 1 OID · C=M= · – · –</td>
+</tr>
+<tr>
+<td>resend-identity</td>
+<td>ok+id · 2 OID,OID · C=M=,CM · h · –</td>
+<td>ok+id · 1 OID · C=M+ · h · ws3:update</td>
+<td>ok+id · 1 OID · C=M+ · h · du</td>
+<td>ok+id · 2 OID,OID · C=M=,CM · h · –</td>
+</tr>
+<tr>
+<td>resend-near</td>
+<td>ok+id · 2 OID,OID · C=M=,CM · h · –</td>
+<td>ok+id · 2 OID,OID · C=M=,CM · h · ws3:create</td>
+<td>ok+id · 2 OID,OID · C=M=,CM · h · du</td>
+<td>ok+id · 2 OID,OID · C=M=,CM · h · –</td>
+</tr>
+<tr>
+<td>legacy-lower</td>
+<td>500 · 1 str · noCnoM · – · –</td>
+<td>ok+id · 1 str · C+M+ · h · ws3:update</td>
+<td>ok+id · 1 str · noCM+ · h · du</td>
+<td>dup-err · 1 str · noCnoM · – · –</td>
+</tr>
+<tr>
+<td>legacy-upper</td>
+<td>ok+id · 2 str,OID · noCnoM,CM · h · –</td>
+<td>500 · 1 str · noCnoM · – · –</td>
+<td>ok+id · 1 str · noCM+ · h · du</td>
+<td>ok+id · 2 str,OID · noCnoM,CM · h · –</td>
+</tr>
+<tr>
+<td>update</td>
+<td>ok+id · 1 OID:v2 · C=M+ · h · –</td>
+<td>ok · 1 OID:v2 · C=M+ · h · ws3:update</td>
+<td>ok · 1 OID:v2 · C=M+ · h · du</td>
+<td>ok+id · 1 OID:v2 · C=M+ · h · –</td>
+</tr>
+<tr>
+<td>update-put</td>
+<td>n/a</td>
+<td>ok · 1 OID:v2 · C=M+ · h · ws3:update</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>softdelete</td>
+<td>ok+id · 1 OID:inv · C=M+ · h:del · – · v1:0</td>
+<td>ok · 1 OID:inv · C=M+ · h:del · ws3:delete · v1:0</td>
+<td>ok · 1 OID:inv · C=M+ · h:del · du · v1:0</td>
+<td>ok+id · 1 OID:inv · C=M+ · h:del · – · v1:0</td>
+</tr>
+<tr>
+<td>harddelete</td>
+<td>ok · 0 · - · – · – · v1:0</td>
+<td>ok · 0 · - · – · ws3:delete · v1:0</td>
+<td>ok · 0 · - · – · du:rm · v1:0</td>
+<td>ok, no id · 0 · - · – · – · v1:0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>food</strong></p>
+<table>
+<thead>
+<tr>
+<th>form</th>
+<th>v1</th>
+<th>v3</th>
+<th>ws</th>
+<th>inproc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>create</td>
+<td>ok+id · 1 OID · CM · h · –</td>
+<td>ok+id · 1 OID · CM · h · ws3:create</td>
+<td>ok+id · 1 OID · CM · h · du</td>
+<td>ok+id · 1 OID · CM · h · –</td>
+</tr>
+<tr>
+<td>resend-hex</td>
+<td>ok+id · 1 OID · C=M+ · h · –</td>
+<td>ok+id · 1 str · C=M+ · h · ws3:update</td>
+<td>empty · 1 OID · C=M= · – · –</td>
+<td>ok+id · 1 OID · C=M+ · h · –</td>
+</tr>
+<tr>
+<td>resend-upper</td>
+<td>ok+id · 1 OID · C=M+ · h · –</td>
+<td>ok+id · 1 STR · C=M+ · h · ws3:update</td>
+<td>empty · 1 OID · C=M= · – · –</td>
+<td>ok+id · 1 OID · C=M+ · h · –</td>
+</tr>
+<tr>
+<td>resend-oid</td>
+<td>400 · 0 · - · – · –</td>
+<td>500 · 0 · - · – · –</td>
+<td>refused · 0 · - · – · –</td>
+<td>ok+id · 1 OID · C=M+ · h · –</td>
+</tr>
+<tr>
+<td>resend-identity</td>
+<td>ok+id · 2 OID,OID · C=M=,CM · h · –</td>
+<td>ok+id · 1 OID · C=M+ · h · ws3:update</td>
+<td>ok+id · 2 OID,OID · C=M=,CM · h · du</td>
+<td>ok+id · 2 OID,OID · C=M=,CM · h · –</td>
+</tr>
+<tr>
+<td>resend-near</td>
+<td>ok+id · 2 OID,OID · C=M=,CM · h · –</td>
+<td>ok+id · 2 OID,OID · C=M=,CM · h · ws3:create</td>
+<td>ok+id · 2 OID,OID · C=M=,CM · h · du</td>
+<td>ok+id · 2 OID,OID · C=M=,CM · h · –</td>
+</tr>
+<tr>
+<td>legacy-lower</td>
+<td>ok+id · 1 OID · CM · h · –</td>
+<td>ok+id · 1 str · C+M+ · h · ws3:update</td>
+<td>empty · 1 str · noCnoM · – · –</td>
+<td>ok+id · 1 OID · CM · h · –</td>
+</tr>
+<tr>
+<td>legacy-upper</td>
+<td>ok+id · 1 OID · CM · h · –</td>
+<td>500 · 1 str · noCnoM · – · –</td>
+<td>empty · 1 str · noCnoM · – · –</td>
+<td>ok+id · 1 OID · CM · h · –</td>
+</tr>
+<tr>
+<td>update</td>
+<td>ok+id · 1 OID:v2 · C=M+ · h · –</td>
+<td>ok · 1 OID:v2 · C=M+ · h · ws3:update</td>
+<td>ok · 1 OID:v2 · C=M+ · h · du</td>
+<td>ok+id · 1 OID:v2 · C=M+ · h · –</td>
+</tr>
+<tr>
+<td>update-put</td>
+<td>n/a</td>
+<td>ok · 1 OID:v2 · C=M+ · h · ws3:update</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>softdelete</td>
+<td>ok+id · 1 OID:inv · C=M+ · h:del · – · v1:0</td>
+<td>ok · 1 OID:inv · C=M+ · h:del · ws3:delete · v1:0</td>
+<td>ok · 1 OID:inv · C=M+ · h:del · du · v1:0</td>
+<td>ok+id · 1 OID:inv · C=M+ · h:del · – · v1:0</td>
+</tr>
+<tr>
+<td>harddelete</td>
+<td>ok · 0 · - · – · – · v1:0</td>
+<td>ok · 0 · - · – · ws3:delete · v1:0</td>
+<td>ok · 0 · - · – · du:rm · v1:0</td>
+<td>ok, no id · 0 · - · – · – · v1:0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>activity</strong></p>
+<table>
+<thead>
+<tr>
+<th>form</th>
+<th>v1</th>
+<th>v3</th>
+<th>ws</th>
+<th>inproc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>create</td>
+<td>ok+id · 1 OID · noCnoM · n/a · –</td>
+<td>n/a</td>
+<td>ok+id · 1 OID · noCnoM · n/a · du</td>
+<td>ok+id · 1 OID · noCnoM · n/a · –</td>
+</tr>
+<tr>
+<td>resend-hex</td>
+<td>ok+id · 1 OID · noCnoM · n/a · –</td>
+<td>n/a</td>
+<td>empty · 1 OID · noCnoM · n/a · –</td>
+<td>ok+id · 1 OID · noCnoM · n/a · –</td>
+</tr>
+<tr>
+<td>resend-upper</td>
+<td>ok+id · 1 OID · noCnoM · n/a · –</td>
+<td>n/a</td>
+<td>empty · 1 OID · noCnoM · n/a · –</td>
+<td>ok+id · 1 OID · noCnoM · n/a · –</td>
+</tr>
+<tr>
+<td>resend-oid</td>
+<td>400 · 0 · - · n/a · –</td>
+<td>n/a</td>
+<td>refused · 0 · - · n/a · –</td>
+<td>ok+id · 1 OID · noCnoM · n/a · –</td>
+</tr>
+<tr>
+<td>resend-identity</td>
+<td>ok+id · 2 OID,OID · noCnoM,noCnoM · n/a · –</td>
+<td>n/a</td>
+<td>ok+id · 2 OID,OID · noCnoM,noCnoM · n/a · du</td>
+<td>ok+id · 2 OID,OID · noCnoM,noCnoM · n/a · –</td>
+</tr>
+<tr>
+<td>resend-near</td>
+<td>ok+id · 2 OID,OID · noCnoM,noCnoM · n/a · –</td>
+<td>n/a</td>
+<td>ok+id · 2 OID,OID · noCnoM,noCnoM · n/a · du</td>
+<td>ok+id · 2 OID,OID · noCnoM,noCnoM · n/a · –</td>
+</tr>
+<tr>
+<td>legacy-lower</td>
+<td>ok+id · 1 OID · noCnoM · n/a · –</td>
+<td>n/a</td>
+<td>empty · 1 str · noCnoM · n/a · –</td>
+<td>ok+id · 1 OID · noCnoM · n/a · –</td>
+</tr>
+<tr>
+<td>legacy-upper</td>
+<td>ok+id · 1 OID · noCnoM · n/a · –</td>
+<td>n/a</td>
+<td>empty · 1 str · noCnoM · n/a · –</td>
+<td>ok+id · 1 OID · noCnoM · n/a · –</td>
+</tr>
+<tr>
+<td>update</td>
+<td>ok+id · 1 OID:v2 · noCnoM · n/a · –</td>
+<td>n/a</td>
+<td>ok · 1 OID:v2 · noCnoM · n/a · du</td>
+<td>ok+id · 1 OID:v2 · noCnoM · n/a · –</td>
+</tr>
+<tr>
+<td>softdelete</td>
+<td>ok+id · 1 OID:inv · noCnoM · n/a · – · v1:1</td>
+<td>n/a</td>
+<td>ok · 1 OID:inv · noCnoM · n/a · du · v1:1</td>
+<td>ok+id · 1 OID:inv · noCnoM · n/a · – · v1:1</td>
+</tr>
+<tr>
+<td>harddelete</td>
+<td>ok · 0 · - · n/a · – · v1:0</td>
+<td>n/a</td>
+<td>ok · 0 · - · n/a · du:rm · v1:0</td>
+<td>ok, no id · 0 · - · n/a · – · v1:0</td>
+</tr>
+</tbody>
+</table>
+<h3 id="14-cross-path-re-send">1.4 Cross-path re-send<a class="headerlink" href="#14-cross-path-re-send" title="Permanent link">&para;</a></h3>
+<p>Created through the first path with no <code>_id</code>, then the identical body re-sent through the second;
+the number is how many documents are stored. Bold is two. Where 15.0.8 differs it is shown.</p>
+<table>
+<thead>
+<tr>
+<th>collection</th>
+<th>first path</th>
+<th>then v1</th>
+<th>then v3</th>
+<th>then ws</th>
+<th>then inproc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>entries</td>
+<td>v1</td>
+<td>·</td>
+<td>1</td>
+<td><strong>2</strong></td>
+<td>1</td>
+</tr>
+<tr>
+<td>entries</td>
+<td>v3</td>
+<td><strong>2</strong></td>
+<td>·</td>
+<td><strong>2</strong></td>
+<td><strong>2</strong></td>
+</tr>
+<tr>
+<td>entries</td>
+<td>ws</td>
+<td><strong>2</strong></td>
+<td>1</td>
+<td>·</td>
+<td><strong>2</strong></td>
+</tr>
+<tr>
+<td>entries</td>
+<td>inproc</td>
+<td>1</td>
+<td>1</td>
+<td><strong>2</strong></td>
+<td>·</td>
+</tr>
+<tr>
+<td>treatments</td>
+<td>v1</td>
+<td>·</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>treatments</td>
+<td>v3</td>
+<td><strong>2</strong> (15.0.8: 1)</td>
+<td>·</td>
+<td>1</td>
+<td><strong>2</strong> (15.0.8: 1)</td>
+</tr>
+<tr>
+<td>treatments</td>
+<td>ws</td>
+<td>1</td>
+<td>1</td>
+<td>·</td>
+<td>1</td>
+</tr>
+<tr>
+<td>treatments</td>
+<td>inproc</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>·</td>
+</tr>
+<tr>
+<td>devicestatus</td>
+<td>v1</td>
+<td>·</td>
+<td>1</td>
+<td>1</td>
+<td><strong>2</strong></td>
+</tr>
+<tr>
+<td>devicestatus</td>
+<td>v3</td>
+<td><strong>2</strong></td>
+<td>·</td>
+<td>1</td>
+<td><strong>2</strong></td>
+</tr>
+<tr>
+<td>devicestatus</td>
+<td>ws</td>
+<td><strong>2</strong></td>
+<td>1</td>
+<td>·</td>
+<td><strong>2</strong></td>
+</tr>
+<tr>
+<td>devicestatus</td>
+<td>inproc</td>
+<td><strong>2</strong></td>
+<td>1</td>
+<td>1</td>
+<td>·</td>
+</tr>
+<tr>
+<td>profile</td>
+<td>v1</td>
+<td>·</td>
+<td>1</td>
+<td>1</td>
+<td><strong>2</strong></td>
+</tr>
+<tr>
+<td>profile</td>
+<td>v3</td>
+<td><strong>2</strong></td>
+<td>·</td>
+<td>1</td>
+<td><strong>2</strong></td>
+</tr>
+<tr>
+<td>profile</td>
+<td>ws</td>
+<td><strong>2</strong></td>
+<td>1</td>
+<td>·</td>
+<td><strong>2</strong></td>
+</tr>
+<tr>
+<td>profile</td>
+<td>inproc</td>
+<td><strong>2</strong></td>
+<td>1</td>
+<td>1</td>
+<td>·</td>
+</tr>
+<tr>
+<td>food</td>
+<td>v1</td>
+<td>·</td>
+<td><strong>2</strong></td>
+<td><strong>2</strong></td>
+<td><strong>2</strong></td>
+</tr>
+<tr>
+<td>food</td>
+<td>v3</td>
+<td><strong>2</strong></td>
+<td>·</td>
+<td><strong>2</strong></td>
+<td><strong>2</strong></td>
+</tr>
+<tr>
+<td>food</td>
+<td>ws</td>
+<td><strong>2</strong></td>
+<td>1</td>
+<td>·</td>
+<td><strong>2</strong></td>
+</tr>
+<tr>
+<td>food</td>
+<td>inproc</td>
+<td><strong>2</strong></td>
+<td><strong>2</strong></td>
+<td><strong>2</strong></td>
+<td>·</td>
+</tr>
+<tr>
+<td>activity</td>
+<td>v1</td>
+<td>·</td>
+<td>n/a</td>
+<td><strong>2</strong></td>
+<td><strong>2</strong></td>
+</tr>
+<tr>
+<td>activity</td>
+<td>ws</td>
+<td><strong>2</strong></td>
+<td>n/a</td>
+<td>·</td>
+<td><strong>2</strong></td>
+</tr>
+<tr>
+<td>activity</td>
+<td>inproc</td>
+<td><strong>2</strong></td>
+<td>n/a</td>
+<td><strong>2</strong></td>
+<td>·</td>
+</tr>
+</tbody>
+</table>
+<h3 id="15-where-the-paths-disagree">1.5 Where the paths disagree<a class="headerlink" href="#15-where-the-paths-disagree" title="Permanent link">&para;</a></h3>
+<p>Each item cites the cells above. All [M] unless marked.</p>
+<ul>
+<li><strong>D1 · A client 24-hex <code>_id</code> on API v3.</strong> Stored as the string, in the case sent (<code>str</code>, <code>STR</code>),
+  for every v3 collection; every other path stores the ObjectId (<code>resend-hex</code>, <code>resend-upper</code>).
+  Same on 15.0.8.</li>
+<li><strong>D2 · Extended JSON <code>{"$oid": …}</code>.</strong> Accepted by v1 entries and treatments and by every
+  in-process call; v1 devicestatus, profile, food and activity answer 400
+  (<code>lib/api/shared/objectid-validation.js</code> [R]); the socket refuses it ("Invalid data"); API v3
+  answers 500 and stores nothing (<code>resend-oid</code>).</li>
+<li><strong>D3 · Re-send with the record's own <code>_id</code>.</strong> v1 and in-process entries (merge), treatments,
+  food and activity (replace) write the record again even when the body is identical, and for the
+  first four advance <code>srvModified</code>, so v3 history returns it again (and treatments and entries
+  emit a <code>data-update</code>); devicestatus is not written and is answered
+  with the stored <code>_id</code> (BF-116's fix); profile answers 500 over v1 and a duplicate-key error
+  in-process. The socket returns the stored treatment or devicestatus unchanged, replaces the
+  profile (matched on <code>startDate</code>), and for entries, food and activity answers an empty ack and
+  writes nothing. API v3 replaces (<code>isDeduplication</code>).</li>
+<li><strong>D4 · Re-send with no <code>_id</code>, same body.</strong> entries: one record on v1, v3 and in-process, two on
+  the socket. treatments: one record everywhere, but the socket leaves it unchanged while v1, v3
+  and in-process replace it. devicestatus and profile: two records on v1 and in-process, one on
+  v3 and the socket. food: two records on v1, the socket and in-process, one on v3; v1 food
+  <code>create</code> sets <code>created_at</code> to the server's time (<code>lib/server/food.js:51</code> [R]), so the v3 key
+  never matches a v1-written food. activity: two records everywhere.</li>
+<li><strong>D5 · Re-send one second later.</strong> Two records on every path and collection except socket
+  treatments, whose similar-treatment match (±2 s, <code>lib/server/websocket.js:618-656</code> [R]) keeps one
+  record and rewrites its <code>created_at</code> and <code>srvModified</code>, <strong>with no <code>data-update</code> and no storage
+  event</strong> (<code>resend-near</code>; candidate C5).</li>
+<li><strong>D6 · A record stored with a string <code>_id</code> by an older release.</strong> entries v1 and in-process merge
+  and keep the string <code>_id</code>; treatments, food and activity v1 and in-process store an ObjectId copy
+  and remove the string; devicestatus is not written on v1, in-process or the socket; profile over
+  v1 answers 500 in lower case and <strong>stores a second record</strong> in upper case (in-process: duplicate
+  error, then a second record); the socket answers an empty ack for entries, food and activity,
+  returns treatments and devicestatus unchanged and replaces the profile keeping the string; API v3
+  replaces in lower case keeping the string, and answers <strong>500 and writes nothing in upper case</strong>
+  (<code>legacy-lower</code>, <code>legacy-upper</code>; candidate C2).</li>
+<li><strong>D7 · Replies.</strong> A v1 or in-process treatment re-send matched by its fallback key is answered
+  with no <code>_id</code> (<code>ok, no id</code>; same on 15.0.8; candidate C3), where an entries re-send is answered
+  with the stored <code>_id</code>. A hard delete answers <code>{acknowledged, deletedCount, n}</code> for v1 entries,
+  treatments and devicestatus and <code>{}</code> for v1 profile, food and activity. v3 answers 201 to a
+  create and 200 with <code>isDeduplication</code> to a re-send.</li>
+<li><strong>D8 · Emissions.</strong> Only API v3 writes reach the subscribed storage-socket client: in 0 of the
+  190 measured non-v3 cells on either build, against 50 of 60 v3 cells on <code>dev</code> (45 on 15.0.8), including v3 create in
+  the same run as the positive control (candidate C4). v1 and in-process profile and food writes
+  emit no <code>data-update</code>; the socket path emits one for every collection. API v3 entries are emitted
+  without <code>mills</code> (by design: <code>DERIVE_FOR_CACHE</code> in
+  <code>lib/api3/storage/mongoCachedCollection/index.js:159</code> derives for treatments and devicestatus
+  only, and entries readers use <code>date</code> [R]). A v3 soft delete emits <code>du:rm</code>; a v1 or socket soft
+  delete emits an update carrying <code>isValid: false</code>, which <code>lib/server/cache.js</code> treats as a removal
+  [R]; the cache ends without the record either way.</li>
+<li><strong>D9 · Server dates.</strong> activity is never stamped, on any path (not served by API v3; the
+  <code>srv-dates</code> header [R]). The no-op answers in D3 and D4 leave <code>srvModified</code> as it was; every
+  replace advances it.</li>
+<li><strong>D10 · Soft delete.</strong> For the five v3 collections, every path's <code>isValid: false</code> write hides the
+  record from v1 reads and v3 history reports it deleted. activity still returns it on v1 reads
+  (<code>soft-deleted</code> is not called from <code>lib/server/activity.js</code> [R]).</li>
+<li><strong>D11 · Hard delete.</strong> Stored state agrees on every path: the record is gone and v3 history does
+  not report it (BF-122's decision (a), 2026-09-26).</li>
+</ul>
+<p><strong>Cross-path (§1.4).</strong> API v1 entries match on <code>sysTime</code> + <code>type</code> (<code>upsertQueryFor</code>, <code>lib/server/entries.js:301</code>
+[R]), API v3 on <code>date</code> + <code>type</code>; the socket does not match entries. So an entry written through
+v3 or the socket and re-sent through v1 is stored twice. A treatment written through API v3 and
+re-sent through v1 or in-process is stored twice on <code>dev</code> and once on 15.0.8: BF-121's decided
+rule that a write without identity cannot replace a record with an <code>identifier</code>.</p>
+<h3 id="16-the-plans-counts-re-measured-and-the-mismatch">1.6 The plan's counts, re-measured, and the mismatch<a class="headerlink" href="#16-the-plans-counts-re-measured-and-the-mismatch" title="Permanent link">&para;</a></h3>
+<p>[M] on <code>43289dde</code>:</p>
+<ul>
+<li><code>git grep -l "srv-dates')\|soft-deleted')\|object-id-forms')\|treatment-fallback-key')" -- lib</code>:
+  <strong>18 files</strong>, as §4.1 states. Per module, <code>git grep -l "&lt;module&gt;')" -- lib | wc -l</code>:
+  object-id-forms 12, srv-dates 11, soft-deleted 7, treatment-fallback-key 2, as §4.1 states.
+  Module sizes 169 / 222 / 53 / 67 lines, as stated.</li>
+<li><code>git grep -n processRawDataForRuntime -- lib/server lib/data lib/api3</code> lists 20 lines: the
+  definition (<code>lib/data/ddata.js:29</code>), one comment (<code>mongoCachedCollection/index.js:148</code>) and
+  <strong>18 calls in six files</strong>, seven in <code>lib/server/websocket.js</code>, as stated. Fifteen are on write paths
+  (<code>websocket.js</code> 7, <code>treatments.js</code> 5, <code>entries.js</code> 1, <code>devicestatus.js</code> 1,
+  <code>mongoCachedCollection/index.js</code> 1); three are the dataloader's read side
+  (<code>lib/data/dataloader.js</code> 3), which the step does not take over.</li>
+</ul>
+<p><strong>Mismatch.</strong> §4.1, <code>OID-STORAGE-HELPER</code> and <code>WRITE-CONTRACT</code> cite "a profile re-sent in upper case
+is stored twice while the same devicestatus is refused". On <code>43289dde</code> that is the <code>legacy-upper</code>
+row: a profile stored with a lower-case string <code>_id</code> by an older release, re-sent through v1 in
+upper case, is stored twice; the same devicestatus re-send is answered 200 with the stored <code>_id</code>
+and not written. For a record created by <code>43289dde</code> itself (<code>resend-upper</code>) the profile re-send
+answers 500 and stores nothing more, and the devicestatus re-send behaves as above. The queue
+note's other clause, "devicestatus and profile create keep the legacy string and collide;
+treatments, food and activity move it to an ObjectId", matches the <code>legacy-lower</code> row except that
+devicestatus no longer collides (it answers 200, BF-116).</p>
+<h3 id="17-non-vacuity">1.7 Non-vacuity<a class="headerlink" href="#17-non-vacuity" title="Permanent link">&para;</a></h3>
+<p>Each rule column was broken in one place and the matrix re-run on the identical setup; the clean
+run is the positive control, and the restored file must reproduce it.
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/1ea5d9384859b5edeeb12ca88f7d04f355357e12/tools/qc/write-contract-ablate.sh"><code>tools/qc/write-contract-ablate.sh</code></a> runs all six on
+a detached worktree of <code>43289dde</code>
+(<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/1ea5d9384859b5edeeb12ca88f7d04f355357e12/tools/qc/results/write-contract-matrix/ablations-43289dde.txt">log</a>); every break
+changed exactly the cells listed and every revert matched the clean run.</p>
+<table>
+<thead>
+<tr>
+<th>rule</th>
+<th>break (one line)</th>
+<th>cells that went red, and how</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>_id</code> form</td>
+<td><code>websocket.js</code> <code>storeIdAsObjectId</code> returns at once</td>
+<td>treatments and food <code>ws resend-hex</code>/<code>resend-upper</code>: stored <code>OID</code> → <code>str</code>/<code>STR</code></td>
+</tr>
+<tr>
+<td>server dates</td>
+<td><code>websocket.js</code> generic <code>dbAdd</code> skips <code>stampCreated</code></td>
+<td>food and entries <code>ws create</code>: <code>CM</code> → <code>noCnoM</code>, history <code>h</code> → <code>–</code></td>
+</tr>
+<tr>
+<td>soft delete (read half)</td>
+<td><code>treatments.js</code> <code>query_for</code> without <code>softDeleted.visible</code></td>
+<td>treatments <code>softdelete</code> on all four paths: <code>v1:0</code> → <code>v1:1</code></td>
+</tr>
+<tr>
+<td>re-send identity</td>
+<td><code>treatments.js</code> <code>upsertQueryFor</code> fallback can never match</td>
+<td>treatments <code>v1</code>/<code>inproc</code> <code>resend-identity</code>: one record → two</td>
+</tr>
+<tr>
+<td>derived copy</td>
+<td><code>DERIVE_FOR_CACHE = {}</code></td>
+<td>treatments and devicestatus <code>v3 create</code>/<code>update</code>: <code>du</code> → <code>du(no mills)</code></td>
+</tr>
+<tr>
+<td>storage event</td>
+<td><code>insert.js</code> drops <code>storage-socket-create</code></td>
+<td>treatments <code>v3 create</code>: <code>ws3:create</code> → nothing</td>
+</tr>
+</tbody>
+</table>
+<p>Two things the run showed about the instrument. The first attempt at the storage-event break
+named the wrong line, changed nothing, and reported a green break; the script now stops with
+<code>ABLATION-NO-OP</code> when a substitution changes no file. Both of its guards were seen to fail
+(<code>ABLATION-NO-OP</code> on an unmatched pattern; <code>MISMATCH</code> on an expectation listing one of two cells
+that changed). And the soft-delete break turned all four paths red at once: the read half of that
+rule is already one place per collection (<code>query_for</code>); the write half is per path.</p>
+<p>The existing regression net was checked the same way [M]: #8758's
+<code>tests/api.crud-by-id.matrix.test.js</code> passes 336 of 336 on <code>43289dde</code> against <code>wc-mongo</code>; with the
+<code>_id</code>-form break above it fails 18, twelve of them titled <code>ws create | &lt;collection&gt; |
+lower|upper -&gt; [ObjectId]</code>.</p>
+<hr />
+<h2 id="2-the-proposed-write-step">2. The proposed write step<a class="headerlink" href="#2-the-proposed-write-step" title="Permanent link">&para;</a></h2>
+<h3 id="21-where-it-sits">2.1 Where it sits<a class="headerlink" href="#21-where-it-sits" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a> API v1 routes   API v3 generic ops   socket dbAdd/dbUpdate/dbRemove   in-process callers (connector, plugins)
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>      \                 |                         |                              /
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>       `---- route rules above the seam: auth, v1 400s for non-hex _id, query coercion (§3.4) ----'
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>                                         |
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>                       lib/storage/write-step.js   write(intent)   &lt;- the five rules, once
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>                                         |
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>                 seam interface (§10.1): findFiltered, insertMany, bulkUpsert, replaceFiltered,
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>                                          updateMany, deleteMany
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>                         /                                      \
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>              MongoCollection (+ mongoose validation)      PgCollection (RLS)
+</code></pre></div>
+<p><code>collectionFor(ctx, env, colName)</code> (<code>lib/storage/collection-for.js</code> on the seam [R]) wraps the
+collection it returns in the step. The returned object keeps the read methods and replaces the
+write methods with <code>write(intent)</code>; the adapters' write methods are reachable only from the step.
+That is what makes "every write from every path" checkable (gate G2).</p>
+<h3 id="22-interface">2.2 Interface<a class="headerlink" href="#22-interface" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">// lib/storage/write-step.js</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c1">// rules: the collection's entry in COLLECTION_RULES (below); events: the change-event sink.</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="kd">function</span><span class="w"> </span><span class="nx">writeStep</span><span class="w"> </span><span class="p">(</span><span class="nx">collection</span><span class="p">,</span><span class="w"> </span><span class="nx">rules</span><span class="p">,</span><span class="w"> </span><span class="nx">events</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="p">...</span><span class="nx">readMethods</span><span class="p">,</span><span class="w">                          </span><span class="c1">// findOne, findFiltered, count, getLastModified</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="nx">write</span><span class="w"> </span><span class="p">(</span><span class="nx">intent</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">WriteResult</span><span class="o">&gt;</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="p">}</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="nx">intent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">  </span><span class="nx">op</span><span class="o">:</span><span class="w"> </span><span class="s1">'create'</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s1">'update'</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s1">'patch'</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s1">'softDelete'</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s1">'delete'</span><span class="p">,</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">  </span><span class="nx">docs</span><span class="o">:</span><span class="w">   </span><span class="p">[</span><span class="nx">doc</span><span class="p">,</span><span class="w"> </span><span class="p">...],</span><span class="w">                      </span><span class="c1">// create, update (whole documents)</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">  </span><span class="nx">target</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">identifier</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">_id</span><span class="w"> </span><span class="p">},</span><span class="w">        </span><span class="c1">// patch, softDelete, delete; update when the doc has no _id</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">  </span><span class="nx">set</span><span class="p">,</span><span class="w"> </span><span class="nx">unset</span><span class="p">,</span><span class="w">                              </span><span class="c1">// patch: the same two maps as updateMany (§10.3)</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">  </span><span class="nx">near</span><span class="o">:</span><span class="w">   </span><span class="p">{</span><span class="w"> </span><span class="nx">ms</span><span class="p">,</span><span class="w"> </span><span class="nx">fields</span><span class="w"> </span><span class="p">},</span><span class="w">                  </span><span class="c1">// create only; the socket's similar-treatment match (§6 Q4)</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">  </span><span class="nx">origin</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">path</span><span class="o">:</span><span class="w"> </span><span class="s1">'v1'</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s1">'v3'</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s1">'socket'</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s1">'internal'</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s1">'loader'</span><span class="p">,</span><span class="w"> </span><span class="nx">subject</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="p">}</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="nx">WriteResult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">  </span><span class="nx">items</span><span class="o">:</span><span class="w"> </span><span class="p">[{</span><span class="w"> </span><span class="nx">index</span><span class="p">,</span><span class="w"> </span><span class="nx">outcome</span><span class="p">,</span><span class="w"> </span><span class="nx">_id</span><span class="p">,</span><span class="w"> </span><span class="nx">identifier</span><span class="p">,</span><span class="w"> </span><span class="nx">reason</span><span class="w"> </span><span class="p">}],</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="w">  </span><span class="c1">// outcome: 'inserted' | 'merged' | 'replaced' | 'unchanged' | 'deleted' | 'not-found' | 'refused'</span>
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="w">  </span><span class="nx">event</span><span class="o">:</span><span class="w"> </span><span class="nx">ChangeEvent</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="w">                </span><span class="c1">// null when no item changed stored state</span>
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="p">}</span>
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="nx">COLLECTION_RULES</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="w">  </span><span class="c1">// keys are tried in order; the first that resolves a target wins</span>
+<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a><span class="w">  </span><span class="nx">treatments</span><span class="o">:</span><span class="w">   </span><span class="p">{</span><span class="w"> </span><span class="nx">keys</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">'identifier'</span><span class="p">,</span><span class="w"> </span><span class="s1">'_id'</span><span class="p">,</span><span class="w"> </span><span class="s1">'clientIdentity'</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="s1">'created_at'</span><span class="p">,</span><span class="w"> </span><span class="s1">'eventType'</span><span class="p">]],</span>
+<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a><span class="w">                  </span><span class="nx">amountsWithoutIdentity</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">'carbs'</span><span class="p">,</span><span class="w"> </span><span class="s1">'insulin'</span><span class="p">],</span><span class="w"> </span><span class="nx">onMatch</span><span class="o">:</span><span class="w"> </span><span class="s1">'merge'</span><span class="p">,</span><span class="w"> </span><span class="nx">v3</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nx">derive</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">},</span>
+<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a><span class="w">  </span><span class="nx">entries</span><span class="o">:</span><span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nx">keys</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">'identifier'</span><span class="p">,</span><span class="w"> </span><span class="s1">'_id'</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="s1">'date'</span><span class="p">,</span><span class="w"> </span><span class="s1">'type'</span><span class="p">]],</span><span class="w"> </span><span class="nx">onMatch</span><span class="o">:</span><span class="w"> </span><span class="s1">'merge'</span><span class="p">,</span><span class="w"> </span><span class="nx">v3</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nx">derive</span><span class="o">:</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="p">},</span>
+<a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a><span class="w">  </span><span class="nx">devicestatus</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">keys</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">'identifier'</span><span class="p">,</span><span class="w"> </span><span class="s1">'_id'</span><span class="p">,</span><span class="w"> </span><span class="s1">'NSCLIENT_ID'</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="s1">'created_at'</span><span class="p">,</span><span class="w"> </span><span class="s1">'device'</span><span class="p">]],</span><span class="w"> </span><span class="nx">onMatch</span><span class="o">:</span><span class="w"> </span><span class="s1">'merge'</span><span class="p">,</span><span class="w"> </span><span class="nx">v3</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nx">derive</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">},</span>
+<a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a><span class="w">  </span><span class="nx">profile</span><span class="o">:</span><span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nx">keys</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">'identifier'</span><span class="p">,</span><span class="w"> </span><span class="s1">'_id'</span><span class="p">,</span><span class="w"> </span><span class="s1">'NSCLIENT_ID'</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="s1">'created_at'</span><span class="p">]],</span><span class="w"> </span><span class="nx">onMatch</span><span class="o">:</span><span class="w"> </span><span class="s1">'merge'</span><span class="p">,</span><span class="w"> </span><span class="nx">v3</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">},</span>
+<a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a><span class="w">  </span><span class="nx">food</span><span class="o">:</span><span class="w">         </span><span class="p">{</span><span class="w"> </span><span class="nx">keys</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">'identifier'</span><span class="p">,</span><span class="w"> </span><span class="s1">'_id'</span><span class="p">],</span><span class="w"> </span><span class="nx">onMatch</span><span class="o">:</span><span class="w"> </span><span class="s1">'merge'</span><span class="p">,</span><span class="w"> </span><span class="nx">v3</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">},</span>
+<a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a><span class="w">  </span><span class="nx">activity</span><span class="o">:</span><span class="w">     </span><span class="p">{</span><span class="w"> </span><span class="nx">keys</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">'_id'</span><span class="p">],</span><span class="w"> </span><span class="nx">onMatch</span><span class="o">:</span><span class="w"> </span><span class="s1">'merge'</span><span class="p">,</span><span class="w"> </span><span class="nx">v3</span><span class="o">:</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a><span class="p">};</span>
+</code></pre></div>
+<p>The natural keys and <code>onMatch</code> above are the recommendation, not decided: §6 Q1–Q3. <code>clientIdentity</code>
+is <code>treatment-fallback-key</code>'s <code>CLIENT_IDS</code> with its "a write without identity matches only a record
+without identity" rule (BF-121, BF-141).</p>
+<p>The step's adapter calls are only methods both backends implement, or the dependency is named: on
+the seam, PostgreSQL declines <code>insertMany</code>, <code>updateMany</code> and <code>replaceFiltered</code> (they throw, naming
+themselves) and ignores <code>bulkUpsert</code>'s <code>mode</code> (BF-21, open)
+(<a href="../../60-research/tenancy/seam-write-path-2026-09-15.html">write-path research §2, §5</a>, measured
+2026-09-15 on <code>239f8c25</code>; [R] here, not re-measured). BF-22 (dotted keys in <code>updateOne</code>) is reachable
+through <code>patch</code>. The step on PostgreSQL waits on those.</p>
+<h3 id="23-order-of-the-rules">2.3 Order of the rules<a class="headerlink" href="#23-order-of-the-rules" title="Permanent link">&para;</a></h3>
+<p>§4.1 lists what the seam owes, not an order. Applied per item, within one call:</p>
+<ol>
+<li><strong><code>_id</code> form</strong> (<code>object-id-forms</code>). <code>{"$oid": …}</code> and any 24-hex string, either case, become the
+   ObjectId; an empty <code>_id</code> is dropped; a non-hex string keeps today's per-collection rule (moved
+   to <code>identifier</code> for treatments and entries under <code>UUID_HANDLING</code>, kept as given elsewhere).</li>
+<li><strong>Target resolution</strong> (re-send identity: <code>treatment-fallback-key</code> and the <code>keys</code> above; twins).
+   One read per batch for all items. An <code>_id</code> matches every stored form (<code>idForms</code>); where both
+   halves of a twin match, the ObjectId copy is the target (BF-117's sort) and the string form is
+   listed for removal. A soft-deleted record (<code>isValid: false</code>) is not a target for <code>create</code>: a
+   re-send of a deleted record is stored again (BF-135's decision).</li>
+<li><strong>Outcome.</strong> No target: <code>inserted</code>. Target equal to the item on every client field:
+   <code>unchanged</code>, nothing written. Otherwise <code>onMatch</code> (<code>merged</code> or <code>replaced</code>), subject to the
+   immutable-field rule: on API v3 its full set (<code>isSameAsStored</code>, BF-136), which can answer
+   <code>refused</code>; on the other paths only the server-owned fields (<code>srvCreated</code>, <code>srvModified</code>,
+   <code>identifier</code>), which they overwrite silently today. Applying v3's full set there would turn
+   today's 2xx into 4xx for a real client (ladder question 4, major).
+   <code>softDelete</code> sets <code>isValid: false</code> (<code>soft-deleted</code>); <code>delete</code> removes every form (BF-110's
+   decided behaviour).</li>
+<li><strong>Server dates</strong> (<code>srv-dates</code>). <code>inserted</code>: <code>stampCreated</code>. <code>merged</code>/<code>replaced</code>: <code>carry</code>
+   (<code>srvCreated</code> and <code>identifier</code> kept, new <code>srvModified</code>). <code>patch</code>/<code>softDelete</code>:
+   <code>stampModified</code>. <code>unchanged</code>, <code>delete</code>: none. Stamped immediately before the adapter call, from
+   the one process clock (BF-144).</li>
+<li><strong>Adapter write</strong>, then the string-twin removal directly after the write it belongs to (BF-130's
+   ordering), with <code>replaceFiltered</code> (no upsert) where the target was resolved, so a record deleted
+   between resolution and write is not recreated (§10.7).</li>
+<li><strong>One change event</strong> for the call, carrying every item whose stored state changed; none if
+   every item was <code>unchanged</code>, <code>not-found</code> or <code>refused</code>.</li>
+</ol>
+<p>Server dates come after resolution because <code>carry</code> needs the target. Soft delete sits in step 3 as
+a write outcome; its read half (leave <code>isValid: false</code> out unless the caller names <code>isValid</code>) stays
+on the read path, as <code>findFiltered</code>'s default, where §1.7's break showed it is already one place
+per collection.</p>
+<h3 id="24-the-change-event">2.4 The change event<a class="headerlink" href="#24-the-change-event" title="Permanent link">&para;</a></h3>
+<p>Under <code>TENANCY_MODE=single</code> the step emits:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nx">ChangeEvent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nx">collection</span><span class="o">:</span><span class="w"> </span><span class="s1">'treatments'</span><span class="p">,</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="nx">op</span><span class="o">:</span><span class="w"> </span><span class="s1">'insert'</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s1">'update'</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s1">'delete'</span><span class="p">,</span><span class="w">      </span><span class="c1">// softDelete is 'update' with isValid: false</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span><span class="nx">docs</span><span class="o">:</span><span class="w">    </span><span class="p">[</span><span class="nx">stored</span><span class="p">],</span><span class="w">                       </span><span class="c1">// as stored, _id as lower-case hex; absent for 'delete'</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">  </span><span class="nx">runtime</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="nx">stored</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">mills</span><span class="p">,</span><span class="w"> </span><span class="nx">endmills</span><span class="p">],</span><span class="w">     </span><span class="c1">// ddata.processRawDataForRuntime on a copy, when rules.derive</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">  </span><span class="nx">removed</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">ids</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">'&lt;hex&gt;'</span><span class="p">],</span><span class="w"> </span><span class="nx">count</span><span class="w"> </span><span class="p">},</span><span class="w">      </span><span class="c1">// 'delete'</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">  </span><span class="nx">srvModified</span><span class="o">:</span><span class="w"> </span><span class="o">&lt;</span><span class="nx">largest</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nx">the</span><span class="w"> </span><span class="nx">call</span><span class="o">&gt;</span><span class="p">,</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">  </span><span class="nx">origin</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">path</span><span class="p">,</span><span class="w"> </span><span class="nx">subject</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="p">}</span>
+</code></pre></div>
+<p>One subscriber, <code>lib/server/write-events.js</code>, fans it out to today's three consumers, so none of
+them changes in the first step:</p>
+<table>
+<thead>
+<tr>
+<th>consumer today</th>
+<th>gets</th>
+<th>replaces</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>lib/server/cache.js</code> (<code>data-update</code>)</td>
+<td><code>op: 'update'</code> with <code>runtime</code> (or <code>docs</code>); <code>op: 'remove'</code> with <code>object-id-forms.cacheRemoval(asked, count)</code></td>
+<td>15 write-side <code>processRawDataForRuntime</code> calls and the per-path <code>data-update</code> emits (§1.6)</td>
+</tr>
+<tr>
+<td><code>lib/api3/storageSocket.js</code> (<code>storage-socket-create/update/delete</code>)</td>
+<td>the v3-normalised doc (<code>identifier</code>, no <code>_id</code>), or the identifier on delete</td>
+<td>the three emits in <code>lib/api3/generic/{create,update,patch,delete}</code>; adds every non-v3 path (D8)</td>
+</tr>
+<tr>
+<td>dataloader trigger (<code>data-received</code>)</td>
+<td>one per event</td>
+<td>the per-path <code>data-received</code> emits</td>
+</tr>
+</tbody>
+</table>
+<p>Under <code>TENANCY_MODE=multi</code> the in-process event is not the transport. D6's change feed is read
+from the replication slot, so the feed record is derived from the committed row. That puts three
+constraints on the event's shape, so <code>single</code> and <code>multi</code> carry the same information:</p>
+<ul>
+<li>every field except <code>runtime</code> and <code>origin</code> must be a stored column or derivable from one: <code>op</code>
+  from the row (<code>insert</code> when no prior row; <code>isValid: false</code> for a soft delete), <code>srvModified</code>
+  stored;</li>
+<li><code>runtime</code> is not in the feed: <code>ns-evaluator</code> derives on its own slice (§7b);</li>
+<li>a hard delete arrives from the slot with the replica identity only. The storage socket addresses
+  a deleted record by <code>identifier</code>, so either the table's replica identity includes <code>identifier</code>
+  or the feed reader maps the key to it. [R]: not measured; it lands on Phase 4 (T4.1).</li>
+</ul>
+<h3 id="25-what-stays-where-it-is">2.5 What stays where it is<a class="headerlink" href="#25-what-stays-where-it-is" title="Permanent link">&para;</a></h3>
+<p>Route rules (authorization, v1's 400 for a non-hex <code>_id</code> on profile/devicestatus/food/activity,
+query coercion §3.4) stay above the seam. Mongoose validation stays inside the MongoDB adapter
+(§4 item 3). The in-memory cache stays for <code>single</code> (D4). Runtime-derived fields are not stored.
+The dataloader's three read-side derivations stay.</p>
+<hr />
+<h2 id="3-the-unified-re-send-rule">3. The unified re-send rule<a class="headerlink" href="#3-the-unified-re-send-rule" title="Permanent link">&para;</a></h2>
+<p>For each divergence, what the contract picks, why, and who would see it. Client facts are from the
+<a href="../../60-research/remedial/consumer-impact-15.0.9-2026-09-23.html">consumer-impact survey</a>, its
+<a href="../../../reports/consumer-impact-15.0.9/clients/index.html">client maps</a> and the
+<a href="../../../reports/consumer-impact-15.0.9/clients-8758.html">#8758 client survey</a>, all read-derived
+except where a replay cell is cited; the server behaviour is the matrix above.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>today (§1.5)</th>
+<th>contract</th>
+<th>why</th>
+<th>clients that would see a change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>U1</td>
+<td>D1, D2: v3 keeps a client hex <code>_id</code> as a string; <code>{$oid}</code> 400/refused/500 depending on path</td>
+<td>every path stores the ObjectId; <code>{$oid}</code> accepted everywhere the route accepts an <code>_id</code></td>
+<td>one form per id, which <code>OID-MIGRATION</code> assumes</td>
+<td>none in the corpus: AndroidAPS never sends <code>_id</code> to v3 (clients-8758 Q3); no client in the survey sends <code>{$oid}</code>. <code>mongoexport</code> writes it, which is why <code>dropEmptyId</code> accepts it (<code>object-id-forms.js</code> header [R])</td>
+</tr>
+<tr>
+<td>U2</td>
+<td>D3, D4: an identical re-send replaces on v1/v3/in-process (new <code>srvModified</code>, history entry, event) and is a no-op on the socket and for devicestatus</td>
+<td>identical re-send is <code>unchanged</code>: nothing written, no <code>srvModified</code>, no event, answered with the stored ids</td>
+<td>a retry is not an edit; the no-op already exists on two paths</td>
+<td>every uploader that retries a whole batch: Loop ("a failed batch is re-sent whole", clients-8758 Loop (e)), Trio (chunks re-posted, Trio S15), xDrip+ (entries), tconnectsync; AndroidAPS NSClientV3 stops receiving those records again through v3 history</td>
+</tr>
+<tr>
+<td>U3</td>
+<td>D3, D4: a differing re-send replaces on v1/v3/in-process, merges for v1 entries, is ignored on the socket</td>
+<td><code>merge</code> on match for every collection and path; an explicit update (<code>PUT</code>, v3 <code>PUT</code>) still replaces</td>
+<td>merge loses no stored field (ladder question 5); replace on the socket would drop fields another client added with <code>dbUpdate</code>; it also keeps the careportal <code>notes</code>/<code>enteredBy</code> that BF-136's trade-off loses</td>
+<td>AndroidAPS 3.4.x socket client: an edit re-sent after a lost ack is applied instead of left stale (BF-121's "left by design"); a v1 re-POST no longer removes fields it omits (no client in the survey relies on that: Trio and tconnectsync edit by delete-then-POST, Loop and xDrip+ by <code>PUT</code>)</td>
+</tr>
+<tr>
+<td>U4</td>
+<td>D4, §1.4: entries keyed <code>sysTime</code>+<code>type</code> on v1, <code>date</code>+<code>type</code> on v3, not at all on the socket; devicestatus and profile not keyed on v1; food never matches</td>
+<td>one key per collection on every path: entries <code>date</code>+<code>type</code>; devicestatus <code>created_at</code>+<code>device</code>; profile <code>created_at</code>; food and activity by id only</td>
+<td>the 38 cross-path twins; a key that differs by path cannot be one rule</td>
+<td>Loop and Trio devicestatus re-sends stop being stored twice (clients-8758 Loop (e): "inserts again (a second copy, same on every build)"); AndroidAPS 3.4.x socket entries (<code>nsAdd("entries", …)</code>, <code>DataSyncSelectorV1.kt:434</code> @<code>598e2eb39c</code>) re-sent after a 60 s ack timeout (androidaps S15) stop duplicating; xDrip+ and xDrip4iOS entries are unchanged in effect (already matched on v1), provided their <code>date</code> and <code>sysTime</code> name the same instant, which is unmeasured (§6 Q3)</td>
+</tr>
+<tr>
+<td>U5</td>
+<td>D5: ±2 s similar-treatment match on the socket only</td>
+<td>kept as an explicit <code>near</code> option the socket path passes (§6 Q4)</td>
+<td>removing it duplicates AAPS 3.4.x socket treatments; applying it elsewhere merges legitimate rapid boluses (seam interface §4.4)</td>
+<td>none until decided</td>
+</tr>
+<tr>
+<td>U6</td>
+<td>D7: v1 treatment re-send answered without <code>_id</code>; socket answers <code>[]</code> for some re-sends; profile 500</td>
+<td>every accepted item answered with its stored <code>_id</code> and <code>identifier</code>; a duplicate is never a 5xx, an error to the callback, or an empty ack; v3 keeps 201 create / 200 re-send</td>
+<td>NightscoutKit maps a missing <code>_id</code> to <code>"NA"</code> and then skips the record's later <code>PUT</code>/<code>DELETE</code> (<code>NightscoutClient.swift:479-511</code> @<code>4ec9fd1</code>)</td>
+<td>Loop: a carb whose POST was retried keeps an id it can edit and delete by; nightscout-connect and restore tools re-sending a profile get 200; librelink-up's v3 client, which throws on anything but 201 (librelink-up S13), is unchanged</td>
+</tr>
+<tr>
+<td>U7</td>
+<td>D8: only v3 writes reach the storage socket</td>
+<td>every path's writes reach it</td>
+<td>AndroidAPS NSClientV3 defaults to websocket mode (<code>ns_use_ws</code>, default true, on master <code>598e2eb39c</code> and dev <code>7e1d537d49</code>) and stops polling after its first load (<code>NSClientV3Plugin.kt:1132</code> on dev)</td>
+<td>AndroidAPS NSClientV3: careportal, Loop, Trio, xDrip+, connector and AAPS-3.4-socket records arrive while connected instead of only after a full sync. Read; whether a socket reconnect triggers a history load was not traced</td>
+</tr>
+<tr>
+<td>U8</td>
+<td>D9, D10: activity has no server dates and ignores <code>isValid</code></td>
+<td>§6 Q5</td>
+<td>activity has no v3 endpoint and no client in the survey soft-deletes it</td>
+<td>none known</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-semver-class">4. Semver class<a class="headerlink" href="#4-semver-class" title="Permanent link">&para;</a></h2>
+<p>From the <a href="../modernization/semver-and-release-versioning-policy-2026-09-15.html">semver policy</a> §2;
+surfaces S1 (HTTP API and the socket) and S4 (stored document shapes).</p>
+<table>
+<thead>
+<tr>
+<th>change</th>
+<th>ladder question that answers yes</th>
+<th>class</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>U1 <code>_id</code> form on v3; <code>{$oid}</code> accepted</td>
+<td>9 (an accepted input added); 10 for the stored form</td>
+<td>minor</td>
+</tr>
+<tr>
+<td>U2 identical re-send unchanged</td>
+<td>10: v3 history returns a different set of records for the same cursor</td>
+<td>minor</td>
+</tr>
+<tr>
+<td>U3 merge on match</td>
+<td>10 (stored body differs after the same request)</td>
+<td>minor; <strong>major under replace-on-match</strong>, question 5 (a non-delete write drops a field) for the socket path</td>
+</tr>
+<tr>
+<td>U4 one natural key per collection</td>
+<td>10 (a re-send that made two records makes one)</td>
+<td>minor, provided no client sends two distinct records with the same key; unmeasured for devicestatus <code>created_at</code>+<code>device</code> (§6 Q3) — if one does, question 5 makes it major</td>
+</tr>
+<tr>
+<td>U5 <code>near</code> kept for the socket</td>
+<td>—</td>
+<td>none</td>
+</tr>
+<tr>
+<td>U6 replies carry the stored ids; no 5xx for a duplicate</td>
+<td>9 (5xx/empty to 2xx with a body), 10 (body shape)</td>
+<td>minor</td>
+</tr>
+<tr>
+<td>U7 storage-socket events from every path</td>
+<td>9 (emissions added); not question 8, which is alarms and notifications</td>
+<td>minor; the release note says what AndroidAPS starts receiving</td>
+</tr>
+<tr>
+<td>U8 activity dates/soft delete</td>
+<td>9 or none</td>
+<td>minor or none</td>
+</tr>
+<tr>
+<td>the step itself, with the matrix pinned to today</td>
+<td>—</td>
+<td>patch: "for every input a supported client sends, the bytes on the wire and the emissions are the same" (§2 PATCH), checkable with gate G1</td>
+</tr>
+</tbody>
+</table>
+<p>Rule R3 classifies the release by its loudest row: minor, as §4.1 says, unless the maintainer picks
+replace-on-match or a key that a client collides on.</p>
+<hr />
+<h2 id="5-the-gates">5. The gates<a class="headerlink" href="#5-the-gates" title="Permanent link">&para;</a></h2>
+<p>Each gate is proved non-vacuous by a control that removes the step from one path; the gate must
+go red naming that path and that rule.</p>
+<table>
+<thead>
+<tr>
+<th>gate</th>
+<th>what it asserts</th>
+<th>break-it control</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>G1</strong> matrix</td>
+<td><code>write-contract-matrix.js</code> on the branch: <code>--divergence</code> reports stored state "same" for every group, and every cell equals a committed expected file (today's matrix with each §3 change applied)</td>
+<td>route one path's create around the step (call the adapter directly): that path's re-send rows go red; plus <code>write-contract-ablate.sh</code>'s six breaks (§1.7), retargeted at the step</td>
+</tr>
+<tr>
+<td><strong>G2</strong> one door</td>
+<td>outside <code>lib/storage</code>: no call to an adapter write method (<code>insertOne</code>, <code>insertMany</code>, <code>replaceOne</code>, <code>updateOne</code>, <code>updateMany</code>, <code>replaceFiltered</code>, <code>deleteOne</code>, <code>deleteMany</code>, <code>deleteManyOr</code>, <code>bulkUpsert</code>, <code>bulkWrite</code>) on a collection, no <code>require</code> of the four rule modules (18 files today), and no write-side <code>processRawDataForRuntime</code> (15 today)</td>
+<td>add one direct <code>insertOne</code> in <code>lib/server/food.js</code>: red, naming the file</td>
+</tr>
+<tr>
+<td><strong>G3</strong> CRUD-by-id</td>
+<td>#8758's <code>tests/api.crud-by-id.matrix.test.js</code> passes; cells the contract changes are edited and marked <code>CHANGED EXPECTATION</code></td>
+<td>the <code>_id</code>-form break: 18 red (§1.7)</td>
+</tr>
+<tr>
+<td><strong>G4</strong> both backends</td>
+<td><code>tools/qc/write-arm.js</code> with the step: MongoDB and PostgreSQL store the same document for every intent</td>
+<td>reintroduce BF-21 (PostgreSQL ignores <code>mode</code>): the merge/replace rows differ</td>
+</tr>
+<tr>
+<td><strong>G5</strong> consumer replay</td>
+<td>the consumer-replay lab's client shapes (AndroidAPS v3 and 3.4.x socket, Loop, Trio, xDrip+, xDrip4iOS, nightscout-connect, tconnectsync, oref0) give the §3 counts and replies</td>
+<td>per client, the same shape against <code>43289dde</code> gives today's cells</td>
+</tr>
+<tr>
+<td><strong>G6</strong> soak</td>
+<td><code>tools/lab/rc-soak</code> A/B against <code>dev</code>: no difference beyond the declared §3 changes; A/A control clean</td>
+<td>the derived-copy break (§1.7) shows as BF-146's late-record symptom</td>
+</tr>
+<tr>
+<td><strong>G7</strong> events</td>
+<td>one event per call that changed state, none for <code>unchanged</code>; the storage-socket client receives create/update/delete for every path; <code>runtime</code> docs carry <code>mills</code></td>
+<td>the <code>derive</code> and <code>wire</code> breaks (§1.7)</td>
+</tr>
+<tr>
+<td><strong>G8</strong> loader parity</td>
+<td>for <code>BFQ-CAP02</code>: a document imported through the loader is stored identically (minus <code>srvCreated</code>/<code>srvModified</code>) to the same document written through each path</td>
+<td>let the loader call the adapter directly: twins and <code>_id</code> forms differ</td>
+</tr>
+</tbody>
+</table>
+<p>G1 and G2 can run on every commit; G4 waits on PostgreSQL behind the seam; G8 on <code>BFQ-CAP02</code>.
+Controls seen to fail for this spec, on <code>43289dde</code>: G1's six breaks, G3's and G7's two (§1.7) [M].
+The others are proposed and have not been run.</p>
+<hr />
+<h2 id="6-decisions-for-the-maintainer">6. Decisions for the maintainer<a class="headerlink" href="#6-decisions-for-the-maintainer" title="Permanent link">&para;</a></h2>
+<p><strong>Q1 · What a re-send does to the record it matches.</strong> (a) merge, every collection and path;
+(b) replace, every collection and path; (c) as v1 does today, merge for entries and replace for
+the rest. Evidence: (a) loses no stored field and keeps BF-136's careportal <code>notes</code>; (b) and (c)
+change the socket path from "ignore" to "replace", which drops fields another client set with
+<code>dbUpdate</code> — a major under the policy's question 5. Recommended: (a).</p>
+<p><strong>Q2 · An identical re-send writes nothing.</strong> (a) yes: no <code>srvModified</code>, no history entry, no
+event; (b) no: keep v1/v3's replace. Evidence: the socket and devicestatus already do (a); under
+(b) every retried batch from Loop, Trio or xDrip+ is re-announced to AndroidAPS through v3
+history. Recommended: (a).</p>
+<p><strong>Q3 · The natural key per collection.</strong> entries: (a) <code>date</code>+<code>type</code> everywhere, (b) keep
+<code>sysTime</code>+<code>type</code> on v1. devicestatus: (a) <code>created_at</code>+<code>device</code> on every path, (b) none on v1.
+profile: (a) <code>created_at</code>, (b) <code>startDate</code> (the socket's). Evidence: §1.4's 38 twins; whether any
+client sends two distinct statuses with the same <code>created_at</code> and <code>device</code> is unmeasured (a corpus
+query in <code>ns-data</code> would settle it before deciding). Recommended: (a) for each, after that query.</p>
+<p><strong>Q4 · The socket's ±2 s similar-treatment match.</strong> (a) keep it as the socket's explicit <code>near</code>
+option; (b) drop it; (c) apply it on every path. Evidence: seam interface §4.4 and BF-09 (deferred
+past 15.0.9 on 2026-10-02): (b) duplicates AndroidAPS 3.4.x socket treatments, (c) merges rapid
+boluses. AndroidAPS dev has removed the v1 socket client (<code>30fe4591a7</code>). Recommended: (a), retired
+with that client.</p>
+<p><strong>Q5 · activity.</strong> (a) server dates and soft delete like the other five; (b) leave it out (no v3
+endpoint). Evidence: no client in the survey reads activity history or soft-deletes activity.
+Either is defensible; (a) makes the step uniform.</p>
+<p><strong>Q6 · How it ships.</strong> (a) two releases: the step with today's matrix pinned (patch, gate G1),
+then the §3 changes (minor); (b) one minor. Evidence: G1 can hold (a)'s first release to "no
+cell changed". Recommended: (a). Independently, U7 (C4) is live on 15.0.8 and could be fixed on
+<code>dev</code> before <code>WRITE-CONTRACT</code>, which waits on <code>SEAM-REFRESH</code>.</p>
+<hr />
+<h2 id="7-candidate-defects-found">7. Candidate defects found<a class="headerlink" href="#7-candidate-defects-found" title="Permanent link">&para;</a></h2>
+<p>Not allocated and not in the register; each with its reproduction. "Cell" means the matrix cell
+in <code>dev-43289dde.json</code> (and <code>v15.0.8-92d08342.json</code>).</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>what</th>
+<th>reproduction</th>
+<th>15.0.8</th>
+<th>reach</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C1</td>
+<td>API v3 stores a client 24-hex <code>_id</code> as the string, in the case sent, so new upper-case string <code>_id</code>s are created on <code>dev</code> (object-id-forms' header says they arise only from older releases)</td>
+<td>cells <code>&lt;col&gt; v3 resend-hex</code>, <code>&lt;col&gt; v3 resend-upper</code></td>
+<td>same</td>
+<td>no corpus client sends <code>_id</code> to v3</td>
+</tr>
+<tr>
+<td>C2</td>
+<td>API v3 answers 500 and stores nothing for <code>_id: {"$oid": …}</code>, and for a re-send whose <code>_id</code> form differs from the stored record's (a string-stored record re-sent in upper case)</td>
+<td>cells <code>&lt;col&gt; v3 resend-oid</code>, <code>&lt;col&gt; v3 legacy-upper</code></td>
+<td><code>resend-oid</code> same; <code>legacy-upper</code> answered 500 <strong>and</strong> stored a second record</td>
+<td>no corpus client</td>
+</tr>
+<tr>
+<td>C3</td>
+<td>a v1 or in-process treatment re-send matched by its fallback key is answered without <code>_id</code>; its <code>data-update</code> document also lacks <code>_id</code>, which <code>cache.js</code> drops (<code>filterForAge</code> keeps only documents with <code>_id</code> [R])</td>
+<td>cell <code>treatments v1 resend-identity</code> (<code>200 [1 no _id]</code>), <code>treatments inproc resend-identity</code></td>
+<td>same</td>
+<td>Loop: NightscoutKit stores <code>"NA"</code> for a missing <code>_id</code> and skips later <code>PUT</code>/<code>DELETE</code> of that carb or dose [R], so a retried upload cannot later be edited or deleted on the site from Loop</td>
+</tr>
+<tr>
+<td>C4</td>
+<td>API v1, socket and in-process writes emit no API v3 storage-socket event; a subscribed client receives nothing for them</td>
+<td>every non-v3 cell <code>wire: none</code> (0 of 190 measured on <code>dev</code>); v3 create <code>wire: create</code> in the same run</td>
+<td>same (0 non-v3 cells)</td>
+<td>AndroidAPS NSClientV3 in its default websocket mode (read above); stated in BF-122's mechanism paragraph, not in its fix, and without an entry of its own</td>
+</tr>
+<tr>
+<td>C5</td>
+<td>the socket's similar-treatment match rewrites <code>created_at</code> and <code>srvModified</code> and emits no <code>data-update</code> (only <code>data-received</code>), so the cache holds the old <code>created_at</code> until it reloads</td>
+<td>cell <code>treatments ws resend-near</code> (<code>1 OID · C=M+ · h · –</code>)</td>
+<td>same, without <code>srvModified</code></td>
+<td>AndroidAPS 3.4.x socket; the web UI's drag-to-move uses <code>dbAdd</code> (BF-09's notes)</td>
+</tr>
+<tr>
+<td>C6</td>
+<td>a socket <code>dbAdd</code> of an entry, food or activity whose <code>_id</code> is already stored answers <code>[]</code>, the same as a failure</td>
+<td>cells <code>entries ws resend-hex</code>, <code>food ws resend-hex</code>, <code>activity ws resend-hex</code></td>
+<td>same</td>
+<td>AndroidAPS 3.4.x reads <code>[0]._id</code> from the ack but sends no <code>_id</code> on <code>dbAdd</code> (androidaps S7)</td>
+</tr>
+<tr>
+<td>C7</td>
+<td>a profile re-sent with its own <code>_id</code> answers 500 (v1) or a duplicate-key error (in-process); devicestatus, which had the same 500, was fixed by BF-116</td>
+<td>cells <code>profile v1 resend-hex</code>, <code>profile inproc resend-hex</code></td>
+<td>same</td>
+<td>nightscout-connect guards its profile copy with a <code>find[_id]</code> first; restore tools. Recorded in the object-id lab results as "unchanged behaviour" (2026-09-25), without a register entry</td>
+</tr>
+</tbody>
+</table>
+<p>The profile <code>legacy-upper</code> twin is not listed: queue <code>OID-STORAGE-HELPER</code> tracks it.</p>
+<hr />
+<h2 id="8-reproduction">8. Reproduction<a class="headerlink" href="#8-reproduction" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>--name<span class="w"> </span>wc-mongo<span class="w"> </span>--ulimit<span class="w"> </span><span class="nv">nofile</span><span class="o">=</span><span class="m">64000</span><span class="w"> </span>-p<span class="w"> </span><span class="m">27151</span>:27017<span class="w"> </span>mongo:7
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>git<span class="w"> </span>-C<span class="w"> </span>externals/cgm-remote-monitor-official<span class="w"> </span>worktree<span class="w"> </span>add<span class="w"> </span>--detach<span class="w"> </span>../work/crm-wc-spec<span class="w"> </span>43289dde
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="o">(</span><span class="nb">cd</span><span class="w"> </span>externals/work/crm-wc-spec<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>npm<span class="w"> </span>ci<span class="o">)</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="nv">WC_WORKTREE</span><span class="o">=</span>externals/work/crm-wc-spec<span class="w"> </span><span class="nv">WC_MONGO</span><span class="o">=</span>mongodb://127.0.0.1:27151<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">  </span>n<span class="w"> </span><span class="nb">exec</span><span class="w"> </span><span class="m">22</span>.23.2<span class="w"> </span>node<span class="w"> </span>tools/qc/write-contract-matrix.js<span class="w"> </span>--out<span class="w"> </span>dev.json
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>node<span class="w"> </span>tools/qc/write-contract-matrix.js<span class="w"> </span>--compact<span class="w"> </span>dev.json<span class="w">       </span><span class="c1"># §1.3</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>node<span class="w"> </span>tools/qc/write-contract-matrix.js<span class="w"> </span>--divergence<span class="w"> </span>dev.json<span class="w">    </span><span class="c1"># §1.5 counts, appendix</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>node<span class="w"> </span>tools/qc/write-contract-matrix.js<span class="w"> </span>--table<span class="w"> </span>dev.json<span class="w">         </span><span class="c1"># every field, cross-path included</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>node<span class="w"> </span>tools/qc/write-contract-matrix.js<span class="w"> </span>--compare<span class="w"> </span>a.json<span class="w"> </span>b.json<span class="w">  </span><span class="c1"># cell-by-cell</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>git<span class="w"> </span>-C<span class="w"> </span>externals/cgm-remote-monitor-official<span class="w"> </span>worktree<span class="w"> </span>add<span class="w"> </span>--detach<span class="w"> </span>../work/crm-wc-ablate<span class="w"> </span>43289dde
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>ln<span class="w"> </span>-s<span class="w"> </span>../crm-wc-spec/node_modules<span class="w"> </span>externals/work/crm-wc-ablate/node_modules
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="nv">WC_ABLATE_WORKTREE</span><span class="o">=</span>externals/work/crm-wc-ablate<span class="w"> </span>tools/qc/write-contract-ablate.sh
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>docker<span class="w"> </span>rm<span class="w"> </span>-f<span class="w"> </span>wc-mongo
+</code></pre></div>
+<p>The harness writes; it must never be pointed at a real site. It stores no credential: the API
+secret is generated per run.</p>
+<hr />
+<h2 id="appendix-divergence-by-group-dev-43289dde">Appendix: divergence by group, <code>dev</code> <code>43289dde</code><a class="headerlink" href="#appendix-divergence-by-group-dev-43289dde" title="Permanent link">&para;</a></h2>
+<p>"stored state" compares documents, <code>_id</code> forms, server dates, v3 history and the v1 read; "reply"
+compares the kind of answer (id given, no id, refused, failed, empty); "emission" compares bus
+emissions and what the storage-socket client received. The number is how many distinct outcomes
+the paths produced.</p>
+<table>
+<thead>
+<tr>
+<th>collection</th>
+<th>form</th>
+<th>paths</th>
+<th>stored state</th>
+<th>reply</th>
+<th>emission</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>entries</td>
+<td>create</td>
+<td>v1,v3,ws,inproc</td>
+<td>same</td>
+<td>same</td>
+<td>differ (2)</td>
+</tr>
+<tr>
+<td>entries</td>
+<td>resend-hex</td>
+<td>v1,v3,ws,inproc</td>
+<td>differ (3)</td>
+<td>differ (2)</td>
+<td>differ (3)</td>
+</tr>
+<tr>
+<td>entries</td>
+<td>resend-upper</td>
+<td>v1,v3,ws,inproc</td>
+<td>differ (3)</td>
+<td>differ (2)</td>
+<td>differ (3)</td>
+</tr>
+<tr>
+<td>entries</td>
+<td>resend-oid</td>
+<td>v1,v3,ws,inproc</td>
+<td>differ (2)</td>
+<td>differ (3)</td>
+<td>differ (2)</td>
+</tr>
+<tr>
+<td>entries</td>
+<td>resend-identity</td>
+<td>v1,v3,ws,inproc</td>
+<td>differ (2)</td>
+<td>same</td>
+<td>differ (2)</td>
+</tr>
+<tr>
+<td>entries</td>
+<td>resend-near</td>
+<td>v1,v3,ws,inproc</td>
+<td>same</td>
+<td>same</td>
+<td>differ (2)</td>
+</tr>
+<tr>
+<td>entries</td>
+<td>legacy-lower</td>
+<td>v1,v3,ws,inproc</td>
+<td>differ (3)</td>
+<td>differ (2)</td>
+<td>differ (3)</td>
+</tr>
+<tr>
+<td>entries</td>
+<td>legacy-upper</td>
+<td>v1,v3,ws,inproc</td>
+<td>differ (2)</td>
+<td>differ (3)</td>
+<td>differ (2)</td>
+</tr>
+<tr>
+<td>entries</td>
+<td>update</td>
+<td>v3,ws</td>
+<td>same</td>
+<td>same</td>
+<td>differ (2)</td>
+</tr>
+<tr>
+<td>entries</td>
+<td>softdelete</td>
+<td>v3,ws</td>
+<td>same</td>
+<td>same</td>
+<td>differ (2)</td>
+</tr>
+<tr>
+<td>entries</td>
+<td>harddelete</td>
+<td>v1,v3,ws,inproc</td>
+<td>same</td>
+<td>same</td>
+<td>differ (2)</td>
+</tr>
+<tr>
+<td>treatments</td>
+<td>create</td>
+<td>v1,v3,ws,inproc</td>
+<td>same</td>
+<td>same</td>
+<td>differ (2)</td>
+</tr>
+<tr>
+<td>treatments</td>
+<td>resend-hex</td>
+<td>v1,v3,ws,inproc</td>
+<td>differ (3)</td>
+<td>same</td>
+<td>differ (3)</td>
+</tr>
+<tr>
+<td>treatments</td>
+<td>resend-upper</td>
+<td>v1,v3,ws,inproc</td>
+<td>differ (3)</td>
+<td>same</td>
+<td>differ (3)</td>
+</tr>
+<tr>
+<td>treatments</td>
+<td>resend-oid</td>
+<td>v1,v3,ws,inproc</td>
+<td>differ (2)</td>
+<td>differ (3)</td>
+<td>differ (2)</td>
+</tr>
+<tr>
+<td>treatments</td>
+<td>resend-identity</td>
+<td>v1,v3,ws,inproc</td>
+<td>differ (2)</td>
+<td>differ (2)</td>
+<td>differ (3)</td>
+</tr>
+<tr>
+<td>treatments</td>
+<td>resend-near</td>
+<td>v1,v3,ws,inproc</td>
+<td>differ (2)</td>
+<td>same</td>
+<td>differ (3)</td>
+</tr>
+<tr>
+<td>treatments</td>
+<td>legacy-lower</td>
+<td>v1,v3,ws,inproc</td>
+<td>differ (3)</td>
+<td>same</td>
+<td>differ (3)</td>
+</tr>
+<tr>
+<td>treatments</td>
+<td>legacy-upper</td>
+<td>v1,v3,ws,inproc</td>
+<td>differ (2)</td>
+<td>differ (2)</td>
+<td>differ (2)</td>
+</tr>
+<tr>
+<td>treatments</td>
+<td>update</td>
+<td>v1,v3,ws,inproc</td>
+<td>same</td>
+<td>differ (2)</td>
+<td>differ (2)</td>
+</tr>
+<tr>
+<td>treatments</td>
+<td>softdelete</td>
+<td>v1,v3,ws,inproc</td>
+<td>same</td>
+<td>differ (2)</td>
+<td>differ (2)</td>
+</tr>
+<tr>
+<td>treatments</td>
+<td>harddelete</td>
+<td>v1,v3,ws,inproc</td>
+<td>same</td>
+<td>same</td>
+<td>differ (2)</td>
+</tr>
+<tr>
+<td>devicestatus</td>
+<td>create</td>
+<td>v1,v3,ws,inproc</td>
+<td>same</td>
+<td>same</td>
+<td>differ (2)</td>
+</tr>
+<tr>
+<td>devicestatus</td>
+<td>resend-hex</td>
+<td>v1,v3,ws,inproc</td>
+<td>differ (2)</td>
+<td>same</td>
+<td>differ (2)</td>
+</tr>
+<tr>
+<td>devicestatus</td>
+<td>resend-upper</td>
+<td>v1,v3,ws,inproc</td>
+<td>differ (2)</td>
+<td>same</td>
+<td>differ (2)</td>
+</tr>
+<tr>
+<td>devicestatus</td>
+<td>resend-oid</td>
+<td>v1,v3,ws,inproc</td>
+<td>differ (2)</td>
+<td>differ (3)</td>
+<td>same</td>
+</tr>
+<tr>
+<td>devicestatus</td>
+<td>resend-identity</td>
+<td>v1,v3,ws,inproc</td>
+<td>differ (3)</td>
+<td>same</td>
+<td>differ (3)</td>
+</tr>
+<tr>
+<td>devicestatus</td>
+<td>resend-near</td>
+<td>v1,v3,ws,inproc</td>
+<td>same</td>
+<td>same</td>
+<td>differ (2)</td>
+</tr>
+<tr>
+<td>devicestatus</td>
+<td>legacy-lower</td>
+<td>v1,v3,ws,inproc</td>
+<td>differ (2)</td>
+<td>same</td>
+<td>differ (2)</td>
+</tr>
+<tr>
+<td>devicestatus</td>
+<td>legacy-upper</td>
+<td>v1,v3,ws,inproc</td>
+<td>same</td>
+<td>differ (2)</td>
+<td>same</td>
+</tr>
+<tr>
+<td>devicestatus</td>
+<td>update</td>
+<td>v3,ws</td>
+<td>same</td>
+<td>same</td>
+<td>differ (2)</td>
+</tr>
+<tr>
+<td>devicestatus</td>
+<td>softdelete</td>
+<td>v3,ws</td>
+<td>same</td>
+<td>same</td>
+<td>differ (2)</td>
+</tr>
+<tr>
+<td>devicestatus</td>
+<td>harddelete</td>
+<td>v1,v3,ws,inproc</td>
+<td>same</td>
+<td>same</td>
+<td>differ (2)</td>
+</tr>
+<tr>
+<td>profile</td>
+<td>create</td>
+<td>v1,v3,ws,inproc</td>
+<td>same</td>
+<td>same</td>
+<td>differ (3)</td>
+</tr>
+<tr>
+<td>profile</td>
+<td>resend-hex</td>
+<td>v1,v3,ws,inproc</td>
+<td>differ (3)</td>
+<td>differ (2)</td>
+<td>differ (3)</td>
+</tr>
+<tr>
+<td>profile</td>
+<td>resend-upper</td>
+<td>v1,v3,ws,inproc</td>
+<td>differ (3)</td>
+<td>differ (2)</td>
+<td>differ (3)</td>
+</tr>
+<tr>
+<td>profile</td>
+<td>resend-oid</td>
+<td>v1,v3,ws,inproc</td>
+<td>differ (2)</td>
+<td>differ (2)</td>
+<td>same</td>
+</tr>
+<tr>
+<td>profile</td>
+<td>resend-identity</td>
+<td>v1,v3,ws,inproc</td>
+<td>differ (2)</td>
+<td>same</td>
+<td>differ (3)</td>
+</tr>
+<tr>
+<td>profile</td>
+<td>resend-near</td>
+<td>v1,v3,ws,inproc</td>
+<td>same</td>
+<td>same</td>
+<td>differ (3)</td>
+</tr>
+<tr>
+<td>profile</td>
+<td>legacy-lower</td>
+<td>v1,v3,ws,inproc</td>
+<td>differ (3)</td>
+<td>differ (2)</td>
+<td>differ (3)</td>
+</tr>
+<tr>
+<td>profile</td>
+<td>legacy-upper</td>
+<td>v1,v3,ws,inproc</td>
+<td>differ (3)</td>
+<td>differ (2)</td>
+<td>differ (2)</td>
+</tr>
+<tr>
+<td>profile</td>
+<td>update</td>
+<td>v1,v3,ws,inproc</td>
+<td>same</td>
+<td>differ (2)</td>
+<td>differ (3)</td>
+</tr>
+<tr>
+<td>profile</td>
+<td>softdelete</td>
+<td>v1,v3,ws,inproc</td>
+<td>same</td>
+<td>differ (2)</td>
+<td>differ (3)</td>
+</tr>
+<tr>
+<td>profile</td>
+<td>harddelete</td>
+<td>v1,v3,ws,inproc</td>
+<td>same</td>
+<td>same</td>
+<td>differ (3)</td>
+</tr>
+<tr>
+<td>food</td>
+<td>create</td>
+<td>v1,v3,ws,inproc</td>
+<td>same</td>
+<td>same</td>
+<td>differ (3)</td>
+</tr>
+<tr>
+<td>food</td>
+<td>resend-hex</td>
+<td>v1,v3,ws,inproc</td>
+<td>differ (3)</td>
+<td>differ (2)</td>
+<td>differ (2)</td>
+</tr>
+<tr>
+<td>food</td>
+<td>resend-upper</td>
+<td>v1,v3,ws,inproc</td>
+<td>differ (3)</td>
+<td>differ (2)</td>
+<td>differ (2)</td>
+</tr>
+<tr>
+<td>food</td>
+<td>resend-oid</td>
+<td>v1,v3,ws,inproc</td>
+<td>differ (2)</td>
+<td>differ (3)</td>
+<td>same</td>
+</tr>
+<tr>
+<td>food</td>
+<td>resend-identity</td>
+<td>v1,v3,ws,inproc</td>
+<td>differ (2)</td>
+<td>same</td>
+<td>differ (3)</td>
+</tr>
+<tr>
+<td>food</td>
+<td>resend-near</td>
+<td>v1,v3,ws,inproc</td>
+<td>same</td>
+<td>same</td>
+<td>differ (3)</td>
+</tr>
+<tr>
+<td>food</td>
+<td>legacy-lower</td>
+<td>v1,v3,ws,inproc</td>
+<td>differ (3)</td>
+<td>differ (2)</td>
+<td>differ (2)</td>
+</tr>
+<tr>
+<td>food</td>
+<td>legacy-upper</td>
+<td>v1,v3,ws,inproc</td>
+<td>differ (2)</td>
+<td>differ (3)</td>
+<td>same</td>
+</tr>
+<tr>
+<td>food</td>
+<td>update</td>
+<td>v1,v3,ws,inproc</td>
+<td>same</td>
+<td>differ (2)</td>
+<td>differ (3)</td>
+</tr>
+<tr>
+<td>food</td>
+<td>softdelete</td>
+<td>v1,v3,ws,inproc</td>
+<td>same</td>
+<td>differ (2)</td>
+<td>differ (3)</td>
+</tr>
+<tr>
+<td>food</td>
+<td>harddelete</td>
+<td>v1,v3,ws,inproc</td>
+<td>same</td>
+<td>same</td>
+<td>differ (3)</td>
+</tr>
+<tr>
+<td>activity</td>
+<td>create</td>
+<td>v1,ws,inproc</td>
+<td>same</td>
+<td>same</td>
+<td>differ (2)</td>
+</tr>
+<tr>
+<td>activity</td>
+<td>resend-hex</td>
+<td>v1,ws,inproc</td>
+<td>same</td>
+<td>differ (2)</td>
+<td>same</td>
+</tr>
+<tr>
+<td>activity</td>
+<td>resend-upper</td>
+<td>v1,ws,inproc</td>
+<td>same</td>
+<td>differ (2)</td>
+<td>same</td>
+</tr>
+<tr>
+<td>activity</td>
+<td>resend-oid</td>
+<td>v1,ws,inproc</td>
+<td>differ (2)</td>
+<td>differ (2)</td>
+<td>same</td>
+</tr>
+<tr>
+<td>activity</td>
+<td>resend-identity</td>
+<td>v1,ws,inproc</td>
+<td>same</td>
+<td>same</td>
+<td>differ (2)</td>
+</tr>
+<tr>
+<td>activity</td>
+<td>resend-near</td>
+<td>v1,ws,inproc</td>
+<td>same</td>
+<td>same</td>
+<td>differ (2)</td>
+</tr>
+<tr>
+<td>activity</td>
+<td>legacy-lower</td>
+<td>v1,ws,inproc</td>
+<td>differ (2)</td>
+<td>differ (2)</td>
+<td>same</td>
+</tr>
+<tr>
+<td>activity</td>
+<td>legacy-upper</td>
+<td>v1,ws,inproc</td>
+<td>differ (2)</td>
+<td>differ (2)</td>
+<td>same</td>
+</tr>
+<tr>
+<td>activity</td>
+<td>update</td>
+<td>v1,ws,inproc</td>
+<td>same</td>
+<td>differ (2)</td>
+<td>differ (2)</td>
+</tr>
+<tr>
+<td>activity</td>
+<td>softdelete</td>
+<td>v1,ws,inproc</td>
+<td>same</td>
+<td>differ (2)</td>
+<td>differ (2)</td>
+</tr>
+<tr>
+<td>activity</td>
+<td>harddelete</td>
+<td>v1,ws,inproc</td>
+<td>same</td>
+<td>same</td>
+<td>differ (2)</td>
+</tr>
+</tbody>
+</table>
+<p>groups compared: 66; stored state differs in 33, reply kind in 33, emissions in 56</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

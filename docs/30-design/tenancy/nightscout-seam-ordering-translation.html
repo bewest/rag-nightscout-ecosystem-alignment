@@ -2449,6 +2449,8 @@
       
         
       
+        
+      
     
     
     
@@ -2866,6 +2868,34 @@
     
   
     The tenant-owner configuration surface — T3.0's missing schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="write-contract-spec-2026-10-07.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WRITE-CONTRACT: the measured write matrix, and one write step behind the storage interface
   
 
     
@@ -4754,7 +4784,7 @@ crosses the storage seam.</strong> Proposal, for whoever owns the adapter. Writt
 (<code>externals/work/crm-seam</code> @ <code>81a1f6ce</code>); not implemented beyond what §5 marks done. Decisions it
 assumes: D3, D4, D8 — <a href="nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">execution plan §1</a>.
 Evidence: <a href="../../60-research/tenancy/seam-ordering-and-pagination-2026-09-14.html">ordering and pagination</a> ·
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b91eb768584c899f07f0e79d127a887100ac832f/tools/qc/order-arm.js"><code>tools/qc/order-arm.js</code></a></p>
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/1ea5d9384859b5edeeb12ca88f7d04f355357e12/tools/qc/order-arm.js"><code>tools/qc/order-arm.js</code></a></p>
 <p>The filter got an AST. Ordering did not, and T2.5 landed a PostgreSQL backend without one — it
 has an <code>orderBy</code> in <code>lib/api3/storage/pgCollection/sql.js</code> that solves one of the three
 sub-problems correctly and records a second as a known difference. This is the missing design:
@@ -4841,7 +4871,7 @@ in that set. From the emitted DDL:</p>
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">       </span><span class="k">THEN</span><span class="w"> </span><span class="p">(</span><span class="n">doc</span><span class="w"> </span><span class="o">#&gt;&gt;</span><span class="w"> </span><span class="s1">'{sgv}'</span><span class="p">)::</span><span class="nb">numeric</span><span class="w"> </span><span class="k">END</span><span class="p">)</span><span class="w"> </span><span class="n">STORED</span>
 </code></pre></div>
 <p><code>orderBy</code> sorts on that column whenever one exists. Measured against <code>mongod</code> 7 with
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b91eb768584c899f07f0e79d127a887100ac832f/tools/qc/typeguard-arm.js"><code>tools/qc/typeguard-arm.js</code></a>:</p>
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/1ea5d9384859b5edeeb12ca88f7d04f355357e12/tools/qc/typeguard-arm.js"><code>tools/qc/typeguard-arm.js</code></a>:</p>
 <p><strong>On single-typed data it matches mongod exactly, ascending and descending.</strong> That is the first
 translation of the five to do so, and the guard is what earns it — without it a mixed column
 raises 22P02 (divergence class D).</p>

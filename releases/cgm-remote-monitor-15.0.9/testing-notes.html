@@ -2217,7 +2217,7 @@
 
 
 <h1 id="nightscout-1509--testing-notes-for-the-release-candidate">Nightscout 15.0.9 — testing notes for the release candidate<a class="headerlink" href="#nightscout-1509--testing-notes-for-the-release-candidate" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-02 at <code>528d5a29</code>.</em></p>
+<p><em>Living document, last changed 2026-10-07 at <code>12ea387c</code>.</em></p>
 <p><strong>DRAFT — prepared for maintainer review before it is shared.</strong> Kept current as reports arrive and
 as the test build changes. Last updated 2026-10-03.</p>
 <p><em>For people who would like to help test the next Nightscout release before it comes out. Part 1 is
@@ -2325,8 +2325,8 @@ particular setup to try them.</p>
 described: the <a href="release-notes.html#known-issues--not-fixed-in-this-release">known issues</a> in the release
 notes.</p>
 <h2 id="getting-the-test-build">Getting the test build<a class="headerlink" href="#getting-the-test-build" title="Permanent link">&para;</a></h2>
-<p>The test build is the <code>dev</code> branch of <code>nightscout/cgm-remote-monitor</code> at commit <strong><code>1ad03e29</code></strong>
-(full: <code>1ad03e29e7f49df9028d7d9bf6eea2c8963918ad</code>, 2026-10-03). Its version reads <strong>15.0.9</strong>. Since
+<p>The test build is the <code>dev</code> branch of <code>nightscout/cgm-remote-monitor</code> at commit <strong><code>fade2299</code></strong>
+(full: <code>fade229909e6f3a0b5459230bc7273fe85de4f32</code>, 2026-10-08). Its version reads <strong>15.0.9</strong>. Since
 the earlier test build <code>7000eb18</code> it adds:</p>
 <ul>
 <li>the Day to Day report shows events that run past midnight on both days (see 1.7);</li>
@@ -2344,18 +2344,20 @@ the earlier test build <code>7000eb18</code> it adds:</p>
   in the units it was entered in (see 1.2);</li>
 <li>on a site that needs a login, a clock page opened from the menu by someone using an access token
   shows the readings instead of staying blank (see 1.5);</li>
+<li>the lower chart's time window can again be dragged all the way back to the current time, instead
+  of sometimes stopping short when the chart loads on a narrow or slow screen (see 1.10);</li>
 <li>the setup guide (README) describes the settings the code reads, including the API v3 settings
   (nothing to test by hand; see the release notes);</li>
 <li>updated versions of several software libraries it uses, with no change to what you see.</li>
 </ul>
 <p>If you are running <code>7000eb18</code> or a later <code>dev</code> build, keep going: your reports still count.</p>
 <ul>
-<li><strong>Docker:</strong> <code>nightscout/cgm-remote-monitor:dev_1ad03e29e7f49df9028d7d9bf6eea2c8963918ad</code>. This tag
+<li><strong>Docker:</strong> <code>nightscout/cgm-remote-monitor:dev_fade229909e6f3a0b5459230bc7273fe85de4f32</code>. This tag
   always means exactly this build. <code>latest_dev</code> means "the newest <code>dev</code>" and moves when <code>dev</code> changes,
   so check which commit it is before relying on it.</li>
 <li><strong>Deploying from your own copy of the code</strong> (Heroku, Railway, Northflank, Render, a VPS and
   similar): update your copy's <code>dev</code> branch from <code>nightscout/cgm-remote-monitor</code> and deploy that
-  branch. Check the commit is <code>1ad03e29</code>.</li>
+  branch. Check the commit is <code>fade2299</code>.</li>
 <li><strong>A hosting service that runs Nightscout for you:</strong> ask them whether they offer the test build.</li>
 </ul>
 <p>If <code>dev</code> moves to a new commit before the release, these notes will name it.</p>
@@ -2486,6 +2488,18 @@ do not change any setting to make it happen.</p>
   rate again, without reloading.</li>
 <li>If the page still shows the old temp rate after a few minutes, reload it and note whether the
   reload changes what it shows. Tell us your app and its version.</li>
+</ul>
+<h2 id="110-dragging-the-lower-chart-back-to-the-current-time">1.10 Dragging the lower chart back to the current time<a class="headerlink" href="#110-dragging-the-lower-chart-back-to-the-current-time" title="Permanent link">&para;</a></h2>
+<p>The main page has a small chart below the big one. You can drag its highlighted window left and
+right to look back over the day. On 15.0.8, when the page opened on a narrow or slow-loading screen,
+that window sometimes could not be dragged all the way back to the current time — it stopped short.
+This build fixes that.</p>
+<ul>
+<li>Open your site, ideally on a phone or a narrow browser window, and let it finish loading. On the
+  lower chart, drag the highlighted window all the way to the right, toward now.
+  <strong>Working looks like:</strong> the window reaches the current time, and the big chart follows to the
+  latest readings.</li>
+<li>If it stops short of now, note the device, the browser and the screen width, and tell us.</li>
 </ul>
 <hr />
 <h1 id="part-2-for-people-who-run-a-site-or-write-tools-that-use-it">Part 2: for people who run a site, or write tools that use it<a class="headerlink" href="#part-2-for-people-who-run-a-site-or-write-tools-that-use-it" title="Permanent link">&para;</a></h1>
