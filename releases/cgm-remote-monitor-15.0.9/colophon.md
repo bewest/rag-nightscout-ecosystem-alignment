@@ -1,9 +1,12 @@
 # How 15.0.9 was made
 
-*Contributor- and maintainer-facing. Living record, measured 2026-10-07 against cgm-remote-monitor
-`official/dev` `43289dde` (the 15.0.9 candidate, release PR #8598) and `official/master` `92d08342`
-(tag `15.0.8`, the shipping release), in `externals/cgm-remote-monitor-official` after
-`git fetch official`, and this repository at `d9330a3c`; re-measure before quoting. Nothing here is
+*Contributor- and maintainer-facing. Living record. The release head is cgm-remote-monitor
+`official/dev` `fade2299` (the 15.0.9 candidate, release PR #8598; merge of #8807, 2026-10-08
+00:47Z) against `official/master` `92d08342` (tag `15.0.8`, the shipping release), in
+`externals/cgm-remote-monitor-official` after `git fetch official`. The aggregate dev-range figures
+below are re-measured to `fade2299`; the per-PR, per-day and register breakdowns are the 2026-10-07
+snapshot through `43289dde`, with #8807 (BF-168, one client-only merge) the one later merge, and the
+test evidence is from run 023 on `fade2299`. Re-measure before quoting. Nothing here is
 tagged or released. What 15.0.9 contains is in [contents.md](contents.md), the maintainer's
 decisions in [decisions.md](decisions.md), defect facts in the
 [backfix register](../../docs/30-design/remedial/nightscout-backfix-register.md), and test runs in
@@ -19,14 +22,14 @@ range `R` is `official/master..official/dev`.
 ## 1. What 15.0.9 is
 
 15.0.9 is the next release of Nightscout's server and web app (cgm-remote-monitor). It is
-everything merged to the `dev` branch from 15.0.8 (2026-09-04) to `43289dde` (2026-10-07 20:52Z): mostly
+everything merged to the `dev` branch from 15.0.8 (2026-09-04) to `fade2299` (2026-10-08 00:47Z): mostly
 fixes for defects present in 15.0.8, with dependency updates and translations. It is not tagged;
 the checks still owed before the tag are listed in [§8](#what-is-left-open) and in
 [contents §Open items](contents.md#open-items-a-releaser-must-settle).
 
 | figure | value | command |
 |---|---|---|
-| time frame | 2026-09-04 (15.0.8's commit date, and the first merge) to 2026-10-07, the last merge's date in its committer's time zone (2026-10-07 20:52Z) | `git log --first-parent --format=%ad --date=short R \| sort \| sed -n '1p;$p'`; `git log -1 --format=%ad --date=short 15.0.8` |
+| time frame | 2026-09-04 (15.0.8's commit date, and the first merge) to 2026-10-08, the last merge's date in its committer's time zone (#8807, 2026-10-08 00:47Z) | `git log --first-parent --format=%ad --date=short R \| sort \| sed -n '1p;$p'`; `git log -1 --format=%ad --date=short 15.0.8` |
 
 <!-- chart: kpis -->
 
@@ -34,10 +37,10 @@ the checks still owed before the tag are listed in [§8](#what-is-left-open) and
 
 | figure | value | command |
 |---|---|---|
-| PR merges | 98; every first-parent commit in the range is a PR merge | `git rev-list --first-parent --count R`; `git log --first-parent --merges --format=%h R \| wc -l` |
-| commits | 545 (338 non-merge, 17 author names) | `git rev-list [--no-merges] --count R`; `git log --no-merges --format=%an R \| sort -u \| wc -l` |
+| PR merges | 99; every first-parent commit in the range is a PR merge | `git rev-list --first-parent --count R`; `git log --first-parent --merges --format=%h R \| wc -l` |
+| commits | 547 (339 non-merge, 17 author names) | `git rev-list [--no-merges] --count R`; `git log --no-merges --format=%an R \| sort -u \| wc -l` |
 | files | 313 of 894 on `dev` changed: 131 added, 179 modified, 1 deleted (`tests/loop-server.test.js`), 2 renamed | `git diff --name-status official/master official/dev`; `git ls-tree -r --name-only official/dev \| wc -l` |
-| lines | +30,224 / −1,936 | `git diff --shortstat official/master official/dev` |
+| lines | +30,264 / −1,936 | `git diff --shortstat official/master official/dev` |
 | new modules under `lib/` | 18 | `git diff --name-status official/master official/dev -- lib \| grep -c '^A'` |
 
 <!-- chart: merges -->
@@ -46,8 +49,8 @@ By directory (files changed / files on `dev`, lines):
 
 | directory | changed / on `dev` | lines |
 |---|---:|---:|
-| `tests` | 142 / 320 | +21,548 / −132 |
-| `lib` | 105 / 241 | +5,113 / −931 |
+| `tests` | 142 / 320 | +21,580 / −132 |
+| `lib` | 105 / 241 | +5,121 / −931 |
 | `translations` | 34 / 34 | +1,021 / −4 |
 | root files | 11 / 30 | +1,610 / −862 (`package-lock.json` +1,358 / −816) |
 | `docs` | 11 / 84 | +838 / −3 |
@@ -146,13 +149,14 @@ two rows differ.
   24.15.0, a fresh `mongo:7.0.43` container with `--ulimit nofile=64000:64000`), with
   `NODE_ENV=test npx env-cmd -f <env> mocha --timeout 5000 --require ./tests/hooks.js --exit ./tests/*.test.js`
   ([snapshot §4](../../docs/60-research/programme/paving-the-cowpaths-2026-09-27.md#4-delta-in-testing)).
-- **Candidate: 3564/0/4** on #8806's head `7dd4f400`, which has the same tree as `43289dde`
-  (`8c2e85b5`); it is the 3563 of `1ad03e29` plus #8806's one new `tests/client-ip.test.js` case
-  ([contents §Evidence](contents.md#evidence)). 2,031 more passing tests than 15.0.8 (2.32×).
-- **Last six-cell run: run 022 on `43289dde`, 3564/0/4** (2026-10-07; Node 20.20.0 / 22.23.2 /
-  24.20.0 × MongoDB 4.4.24 / 7.0.43), with run 021's probes and a compressed A/B soak against 15.0.8.
-  The previous six-cell run, run 021 on `1ad03e29` (2026-10-03), gave 3563/0/4.
-- CI on #8598 at `43289dde`: 27 checks passed, 3 skipped (read 2026-10-07; [contents §Identity](contents.md#identity)).
+- **Candidate: 3566/0/4** on `fade2299` (run 023); it is the 3564 of `43289dde` plus #8807's two new
+  `tests/dependency-d3.test.js` context-brush cases
+  ([contents §Evidence](contents.md#evidence)). 2,033 more passing tests than 15.0.8 (2.33×).
+- **Last six-cell run: run 023 on `fade2299`, 3566/0/4** (2026-10-08; Node 20.20.0 / 22.23.2 /
+  24.20.0 × MongoDB 4.4.24 / 7.0.43), with run 022's probes and a compressed A/B soak against 15.0.8.
+  The previous six-cell run, run 022 on `43289dde` (2026-10-07), gave 3564/0/4.
+- #8598's head is `fade2299`; re-approval there is owed (both approvals were given on `e3adc91d`;
+  [contents §Identity](contents.md#identity)).
 
 ### Run history
 
@@ -188,6 +192,7 @@ and [contents §Evidence](contents.md#evidence):
 | #8801 `68262e86` | its tree | 3552/0/4 |
 | #8802 `1ad03e29` | `b13b7a3a`, same tree (Node 24.15.0), fresh database | 3563/0/4 |
 | #8806 `43289dde` | `7dd4f400`, same tree; one new client-ip test, green and non-vacuous | 3564/0/4 |
+| #8807 `fade2299` | six cells (run 023); two new context-brush tests, green and non-vacuous | 3566/0/4 |
 
 How each unit adds to the count, step by step with titles compared, is in the integration record
 ("How each unit adds to the suite count"); #8758 alone added 489 tests at `ab7b22d6`.
@@ -418,7 +423,7 @@ risk, the table says what was done and what it does not cover.
 | risk | what addresses it | what it does not cover |
 |---|---|---|
 | **A fix breaks an app that talks to Nightscout** | A census of 40 client projects read what each sends and expects. A replay lab sent those exact requests to 15.0.8 and the candidate side by side; three findings that looked like breakages from reading the code did not reproduce. Where a fix would have broken a real client (oref0's and GluPredKit's `count`), the old behaviour is kept behind a named setting, on by default, with a deprecation warning. | Clients outside the 40, and private scripts. The census reads each client at its upstream tip, not every version in use. Some changes are deliberate corrections and are listed as such in the release notes. |
-| **A fix introduces a new defect** | Every fix ships with tests (2,031 more passing than 15.0.8). Break-its undo a fix and check that its tests fail for the right reason. The suite runs in six cells of Node and MongoDB versions. An A/B soak runs 15.0.8 and the candidate on the same traffic and flags every difference not explained by an intended change. Seven defects introduced by fixes were caught and fixed before release. | Run 022, the six-cell run on the final candidate `43289dde`, passed: 3564/0/4 in all six cells. The fourteen merges since run 020 were each checked on one cell or in CI before it (run 021 covered the first thirteen in six cells, run 022 the tree with #8806). The soak is compressed (minutes standing for hours) and synthetic. Break-its of most fixes ran on their own branches, not on the integrated tree. |
+| **A fix introduces a new defect** | Every fix ships with tests (2,033 more passing than 15.0.8). Break-its undo a fix and check that its tests fail for the right reason. The suite runs in six cells of Node and MongoDB versions. An A/B soak runs 15.0.8 and the candidate on the same traffic and flags every difference not explained by an intended change. Seven defects introduced by fixes were caught and fixed before release. | Run 023, the six-cell run on the final candidate `fade2299`, passed: 3566/0/4 in all six cells. The fifteen merges since run 020 were each checked on one cell or in CI before it (run 021 covered the first thirteen in six cells, run 022 the tree with #8806, run 023 the tree with #8807). The soak is compressed (minutes standing for hours) and synthetic. Break-its of most fixes ran on their own branches, not on the integrated tree. |
 | **Behaviour on real devices** | The maintainer walked user journeys in a browser with 15.0.8 side by side (11 scenarios passed). Real sites ran the candidate as the real-time soak: as of 2026-09-29 one Loop, one Trio and one AndroidAPS user ran `7000eb18` for about two days with no errors, and on 2026-10-02 the maintainer reported stable behaviour from AndroidAPS, Trio and Loop users of `dev` through the week. | These reports are informal; how many sites and for how long is not recorded. Browser checks still owed include a remote bolus, LoopCaregiver from its own app, the clock views, the pump pill, alarm labels, reports during a percentage profile switch, the Day to Day report, the Food Editor on a touch screen, a temp basal cancelled while a page is open (BF-94), a treatment tooltip on an mmol/L site with an mg/dL profile (BF-124), and a clock opened from the menu with a token on a site that requires sign-in (BF-127). |
 | **Security defects** | Fixes for defects live on 15.0.8 are merged: live-update access, the query operator allowlist, login hardening, error replies without internal detail, bounds on two little-used request types, storage errors that ended the process, and dependency advisories. This repository is public, so those defects are described by mechanism and outcome only until a release with the fixes ships. | One such defect has no fix in 15.0.9 (BF-72). Until 15.0.9 is installed, every fixed defect is still present on sites running 15.0.8. `npm audit` on the candidate reports 24 findings (9 high, 0 critical; #8806 cleared the one critical), triaged one by one in [contents](contents.md#npm-audit-and-dependabot-triage). |
 | **What's left open** | 27 items are listed in "What is NOT in 15.0.9" and carried in the release notes as known issues or deferred by decision. 37 register entries in scope are not closed: 18 known issues, 5 whose documentation is merged for 15.0.9 with a code half later, 1 with a fix prepared for after 15.0.9, 4 partly fixed, 6 only on unreleased branches or tooling, and 3 found in the BF-124 and BF-127 work (2 after 15.0.9 by decision, 1 not decided) ([§6](#what-the-open-entries-are)). | |
@@ -428,7 +433,7 @@ risk, the table says what was done and what it does not cover.
 Before the tag ([contents §Open items](contents.md#open-items-a-releaser-must-settle)):
 the browser hand checks above; the version class of #8772, #8775 and #8780; re-approval of #8598 at
 its final head (both approvals were given on `e3adc91d`); the `CHANGELOG.md` question; and the tag.
-Run 022, the six-cell run on the final head `43289dde`, passed (3564/0/4 in all six cells). The lab's 72-hour soak was not run, by decision.
+Run 023, the six-cell run on the final head `fade2299`, passed (3566/0/4 in all six cells). The lab's 72-hour soak was not run, by decision.
 Known test gaps are in [contents §Known test gaps](contents.md#known-test-gaps): 79 of the 227
 `tests/*.test.js` files are reached only by `npm test` / `test-ci`.
 

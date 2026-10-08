@@ -1,15 +1,15 @@
 cgm-remote-monitor 15.0.9
 
 DRAFT tag body, not applied. Delete this paragraph when the tag is
-cut. Drafted on dev 43289dde (2026-10-07). If dev moves past
-43289dde before the tag, re-measure the counts on the tag
+cut. Drafted on dev fade2299 (2026-10-08). If dev moves past
+fade2299 before the tag, re-measure the counts on the tag
 (git rev-list --first-parent --count 15.0.8..<tag>;
 git rev-list --count 15.0.8..<tag>; git diff --shortstat 15.0.8 <tag>).
-Test evidence: the last full release-candidate run is run 022 on
-43289dde (2026-10-07), 3564/0/4 in all six cells (Node 20/22/24 x
-MongoDB 4.4.24, 7.0.43), with run 021's probes and a compressed
-A/B soak against 15.0.8. The previous full run is run 021 on
-1ad03e29 (2026-10-03), 3563/0/4. Each PR merged between them passed
+Test evidence: the last full release-candidate run is run 023 on
+fade2299 (2026-10-08), 3566/0/4 in all six cells (Node 20/22/24 x
+MongoDB 4.4.24, 7.0.43), with run 022's probes and a compressed
+A/B soak against 15.0.8. The previous full run is run 022 on
+43289dde (2026-10-07), 3564/0/4. Each PR merged between them passed
 its own GitHub CI;
 branch suites: #8788 3481/0/3, #8791 3485/0/3, #8793 3502/0/3,
 #8794 3512/0/4 with a byte-identical production bundle (#8786 too),
@@ -19,14 +19,16 @@ Node 22.23.2, MongoDB 7.0.43), #8800 head a06e75d6 3538/0/4 (one
 cell, Node 24.15.0, MongoDB 7.0.43), #8801 3552/0/4 (one cell,
 Node 22.23.2, MongoDB 7.0.43), #8802 head b13b7a3a 3563/0/4 (one
 cell, Node 24.15.0, MongoDB 7.0.43), the same tree as 1ad03e29,
-and #8806 head 7dd4f400 3564/0/4 (3563 plus one new client-ip
-test), the same tree as 43289dde, so it ran on the exact candidate
-tree, and run 022 then ran the full six cells on it. Release PR
-#8598: both approvals are at e3adc91d; re-approval at 43289dde
-owed; its CI on 43289dde: 27 checks passed, 3 skipped (2026-10-07).
+#8806 head 7dd4f400 3564/0/4 (3563 plus one new client-ip
+test), the same tree as 43289dde, and #8807 head b919af9f 3566/0/4
+(3564 plus two new context-brush tests), the same tree as fade2299,
+so it ran on the exact candidate tree, and run 023 then ran the
+full six cells on it. Release PR #8598: both approvals are at
+e3adc91d; the head has moved through 1ad03e29, 43289dde and now
+fade2299, so re-approval at fade2299 is owed.
 
-15.0.8..dev at 43289dde: 98 first-parent PR merges, 545 commits,
-313 files, +30224/-1936. Crowdin #8730 is held out (BF-132).
+15.0.8..dev at fade2299: 99 first-parent PR merges, 547 commits,
+313 files, +30264/-1936. Crowdin #8730 is held out (BF-132).
 
 Query and API correctness
   #8737 025f1310  schema-driven query coercion; $exists operand;
@@ -133,6 +135,10 @@ Alarms and client
                   access token; a refused clock says so instead of
                   staying blank; the clock designer's link encodes
                   the face and token (BF-127, #7377)
+  #8807 fade2299  the context chart's time window drags all the way
+                  back to now even when the chart is drawn before the
+                  page lays out; brush extent read from the chart's
+                  own scale and height (BF-168)
   #8766 e812a68c  mmol sites: each BG_ threshold read on its own
                   (below 30 = mmol/L, converted; 30 or more = mg/dL,
                   kept), so low alarms fire when only some are set in
@@ -277,7 +283,8 @@ unbounded request to two little-used v1 addresses answers 400;
 an open page shows a temp basal AAPS v3 or Trio cancels as
 cancelled without a reload; a treatment tooltip shows its BG in the
 units it was saved in; on a site that requires sign-in, a clock
-opened from the menu keeps the page's token; MongoDB 4.4
+opened from the menu keeps the page's token; the context chart's
+time window can be dragged all the way back to now again; MongoDB 4.4
 deprecated; legacy mmconnect and DEXCOM_BRIDGE_USE_LEGACY to be
 retired.
 

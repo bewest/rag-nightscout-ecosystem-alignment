@@ -82,8 +82,8 @@ notes.
 
 ## Getting the test build
 
-The test build is the `dev` branch of `nightscout/cgm-remote-monitor` at commit **`43289dde`**
-(full: `43289dde4c6913c22b6656c3321e3d7414c47870`, 2026-10-07). Its version reads **15.0.9**. Since
+The test build is the `dev` branch of `nightscout/cgm-remote-monitor` at commit **`fade2299`**
+(full: `fade229909e6f3a0b5459230bc7273fe85de4f32`, 2026-10-08). Its version reads **15.0.9**. Since
 the earlier test build `7000eb18` it adds:
 
 - the Day to Day report shows events that run past midnight on both days (see 1.7);
@@ -101,18 +101,20 @@ the earlier test build `7000eb18` it adds:
   in the units it was entered in (see 1.2);
 - on a site that needs a login, a clock page opened from the menu by someone using an access token
   shows the readings instead of staying blank (see 1.5);
+- the lower chart's time window can again be dragged all the way back to the current time, instead
+  of sometimes stopping short when the chart loads on a narrow or slow screen (see 1.10);
 - the setup guide (README) describes the settings the code reads, including the API v3 settings
   (nothing to test by hand; see the release notes);
 - updated versions of several software libraries it uses, with no change to what you see.
 
 If you are running `7000eb18` or a later `dev` build, keep going: your reports still count.
 
-- **Docker:** `nightscout/cgm-remote-monitor:dev_43289dde4c6913c22b6656c3321e3d7414c47870`. This tag
+- **Docker:** `nightscout/cgm-remote-monitor:dev_fade229909e6f3a0b5459230bc7273fe85de4f32`. This tag
   always means exactly this build. `latest_dev` means "the newest `dev`" and moves when `dev` changes,
   so check which commit it is before relying on it.
 - **Deploying from your own copy of the code** (Heroku, Railway, Northflank, Render, a VPS and
   similar): update your copy's `dev` branch from `nightscout/cgm-remote-monitor` and deploy that
-  branch. Check the commit is `43289dde`.
+  branch. Check the commit is `fade2299`.
 - **A hosting service that runs Nightscout for you:** ask them whether they offer the test build.
 
 If `dev` moves to a new commit before the release, these notes will name it.
@@ -256,6 +258,19 @@ do not change any setting to make it happen.
   rate again, without reloading.
 - If the page still shows the old temp rate after a few minutes, reload it and note whether the
   reload changes what it shows. Tell us your app and its version.
+
+## 1.10 Dragging the lower chart back to the current time
+
+The main page has a small chart below the big one. You can drag its highlighted window left and
+right to look back over the day. On 15.0.8, when the page opened on a narrow or slow-loading screen,
+that window sometimes could not be dragged all the way back to the current time — it stopped short.
+This build fixes that.
+
+- Open your site, ideally on a phone or a narrow browser window, and let it finish loading. On the
+  lower chart, drag the highlighted window all the way to the right, toward now.
+  **Working looks like:** the window reaches the current time, and the big chart follows to the
+  latest readings.
+- If it stops short of now, note the device, the browser and the screen width, and tell us.
 
 ---
 

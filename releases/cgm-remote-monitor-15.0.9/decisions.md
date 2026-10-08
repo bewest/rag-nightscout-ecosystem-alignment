@@ -1,7 +1,7 @@
 # cgm-remote-monitor 15.0.9 — decisions
 
 *Contributor-facing. Living record of the maintainer's decisions that shape 15.0.9, taken
-2026-09-22 to 2026-10-07, as of `dev` `43289dde` (2026-10-07). Each row states the decision as it stands. Item state is in
+2026-09-22 to 2026-10-08, as of `dev` `fade2299` (2026-10-08). Each row states the decision as it stands. Item state is in
 `queue/work-queue.yaml`; what 15.0.9 contains and what is still open before the tag is in
 [contents.md](contents.md); the test evidence is in the
 [15.0.9 integration record](../../docs/30-design/remedial/rc-15.0.9-integration-record.md).
@@ -13,7 +13,7 @@ shipping release, and this repository is public.*
 | decision | queue | as it stands |
 |---|---|---|
 | The `dev` → `master` release is numbered **15.0.9**, the number `dev`'s `package.json` carries (2026-09-22). Reads tolerate the `count` shapes oref0 and GluPredKit send, so 15.0.9 stays a patch (2026-09-24) | `RT-VERSION`, `RT-COUNT-COMPAT` | #8761 merged |
-| **The release goes out through #8598** (`dev` → `master`, opened by AndyLow91) | `RT-0` | open, head `1ad03e29`, mergeable, `reviewDecision` `APPROVED`; both approvals (the maintainer, 2026-09-26 00:39Z) were given on `e3adc91d`, and re-approval at `1ad03e29` is owed; CI on `1ad03e29`: 27 checks passed, 3 skipped (read 2026-10-03 01:16Z) |
+| **The release goes out through #8598** (`dev` → `master`, opened by AndyLow91) | `RT-0` | open, head `fade2299`, mergeable, `reviewDecision` `APPROVED`; both approvals (the maintainer, 2026-09-26 00:39Z) were given on `e3adc91d`, and the head has since moved through `1ad03e29`, `43289dde` and now `fade2299`, so re-approval at `fade2299` is owed |
 | **Backfix 2 ships inside 15.0.9**: `bf2/ops`, `bf2/backports` and `bf2/auth-hardening`, with the subject-edit fix folded into the last (2026-09-23) | `BF2-AUTH` | #8753, #8751, #8754 merged |
 | **Records keep their own `_id` across v1, v3 and the websocket** (BF-99 to BF-102): `bf/object-id-consistency` goes in instead of the narrow profile-only fix, with D1–D4 below (2026-09-23) | `BFQ-102` | #8758 merged (`4d9ecc3b`) |
 | **BF-103 (split drag) goes in if its branch comes back clean**: red on `dev`, green on the branch, a green suite, every break-it red, clean merges with the other 15.0.9 PRs. Otherwise it ships as a known issue (2026-09-23) | `BFQ-103` | clean; #8760 merged |
@@ -39,6 +39,7 @@ shipping release, and this repository is public.*
 | **BF-162 is fixed for 15.0.9 (#8806)** (2026-10-07): `proxy-addr` 2.0.7 → 2.0.8 clears the GHSA-jqcg-44mw-7w3h critical. The reachable path — an explicit `TRUST_PROXY` list naming an IPv6-notation subnet with zero leading bits — is new in 15.0.9 (`lib/server/client-ip.js`); 15.0.8 enables trust proxy unconditionally and never compiles a subnet, so it cannot reach it. A plain IPv4 subnet, the default, `true`, `false` and a hop count are unaffected | `BFQ-162` | #8806 merged (`43289dde`) |
 | **BF-161 is a known issue in 15.0.9** (2026-10-07): the `braces` advisory GHSA-vfj7-8cjw-p6xm (no fixed release); a deeply nested bracket pattern on `/times`, `/times/echo` or `/slice` makes that one request answer 500 and the site keeps running. Present on 15.0.8 too. A nesting-depth limit comes after 15.0.9 | `BFQ-161` | release notes, Known issues |
 | **BF-163 is a known issue in 15.0.9** (2026-10-07): the `compression` advisory GHSA-vc2v-76pw-4v95 (a memory leak on prematurely closed responses, per the advisory); fixed upstream in 1.8.2, taken up in the modernization releases. Present on 15.0.8 too (`compression` 1.8.1) | `BFQ-163` | release notes, Known issues |
+| **BF-168 is fixed for 15.0.9 (#8807)** (2026-10-08): the context (lower) chart's time window could not always be dragged back to the current time when the chart was drawn before the page laid out; `lib/client/chart.js` now sets the brush extent from the chart's own scale and height. Display only; the same behaviour is on 15.0.8. The release head moves from `43289dde` to `fade2299` (#8598's head); run 023, a context-chart drag hand check, and #8598 re-approval are owed at `fade2299` | `BFQ-168` | #8807 merged (`fade2299`) |
 | **BF-152 is after 15.0.9** (API v3 `settings` documents are admin-only through search and history but readable by identifier with read permission): AndroidAPS's follower app reads its settings by identifier, so which side is the intended contract is a question for the AndroidAPS developers (2026-10-01) | `BFQ-152` | open, not in 15.0.9 |
 | **BF-145 after 15.0.9**: v3 PATCH and PUT by the id v3 GET shows miss a record stored with identifier `null`, `""` or `0` (PATCH 404, PUT stores a second copy); the same on 15.0.8 (2026-09-26) | `BFQ-145` | release notes, Known issues |
 | **Version class of #8772, #8775 and #8780 deferred**: the queue classes #8775 and #8780 as minor and #8772's 500 → 200 is an open question; the maintainer is still collecting data before deciding whether they are recorded as minor-under-patch exceptions (as #8530) or re-classed (2026-09-26) | `BFQ-129`, `BFQ-122`, `BFQ-121` | undecided |

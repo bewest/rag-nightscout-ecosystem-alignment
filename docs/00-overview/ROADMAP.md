@@ -1,7 +1,7 @@
 # Roadmap — what comes next, and in what order
 
 *Prepared for the Nightscout project; proposed for Nightscout Foundation stewardship. Contributor-facing. Living document: prose dated
-2026-10-07 against cgm-remote-monitor `official/dev` `43289dde` and `official/master` `92d08342`
+2026-10-08 against cgm-remote-monitor `official/dev` `fade2299` and `official/master` `92d08342`
 (tag `15.0.8`). The two order tables are generated from `queue/work-queue.yaml`, and
 `make views-check` fails when they drift.*
 
@@ -37,15 +37,16 @@ Everything merged since 15.0.8 reaches operators only through 15.0.9 (queue `RT-
 #8598), and every later step waits behind it. Operators running 15.0.8 keep every defect fixed on
 `dev` until it is tagged.
 
-`dev` is at `43289dde` (the merge of #8806, 2026-10-07): 98 first-parent merges and 545 commits
+`dev` is at `fade2299` (the merge of #8807, 2026-10-08): 99 first-parent merges and 547 commits
 since 15.0.8. Every PR decided for 15.0.9 is merged, including the fixes for BF-124 (#8801),
-BF-127 (#8802) and the `proxy-addr` critical BF-162 (#8806); Crowdin #8730 is held out (BF-132). The
-last full run is run 022 on `43289dde` (2026-10-07), 3564/0/4 in all six cells (Node 20/22/24 ×
-MongoDB 4.4.24 and 7.0.43), with run 021's probes and a compressed A/B soak against 15.0.8; each PR
-merged after run 020 carries its own evidence. The previous six-cell run, run 021 on `1ad03e29`
-(2026-10-03), gave 3563/0/4. The
-real-site soak (`RT-SOAK`) is done by the maintainer's decision of 2026-09-30. Release PR #8598 is at `43289dde`,
-approved at `e3adc91d`; its CI on `43289dde`: 27 checks passed, 3 skipped (read 2026-10-07).
+BF-127 (#8802), the `proxy-addr` critical BF-162 (#8806) and the context-chart brush BF-168 (#8807);
+Crowdin #8730 is held out (BF-132). The
+last full run is run 023 on `fade2299` (2026-10-08), 3566/0/4 in all six cells (Node 20/22/24 ×
+MongoDB 4.4.24 and 7.0.43), with run 022's probes and a compressed A/B soak against 15.0.8; each PR
+merged after run 020 carries its own evidence. The previous six-cell run, run 022 on `43289dde`
+(2026-10-07), gave 3564/0/4. The
+real-site soak (`RT-SOAK`) is done by the maintainer's decision of 2026-09-30. Release PR #8598 is at `fade2299`,
+approved at `e3adc91d`; re-approval at `fade2299` is owed.
 
 The version is decided: 15.0.9. `RT-VERSION`'s gate measures the modernization cut branches, which
 also declare 15.0.9 and are renumbered when they are rebased, so it holds the cuts, not this
@@ -69,21 +70,23 @@ Before the tag, and not queue items of their own (they are in `RT-0`'s notes and
    (#8790, smoke checklist §5); an AndroidAPS (API v3) or Trio temp basal cancelled while a page is
    open (#8800, BF-94; `tools/lab/bf94-browser` drives it in Chromium); a treatment's BG in the
    chart tooltip on an mmol/L site with an mg/dL profile (#8801, BF-124); a clock view opened from
-   the menu with an access token on a site that requires sign-in (#8802, BF-127). The rest was checked by hand on `ff93fa94` on 2026-09-26
+   the menu with an access token on a site that requires sign-in (#8802, BF-127); the context chart's
+   time window dragged all the way back to now after the page loads on a narrow screen (#8807, BF-168). The rest was checked by hand on `ff93fa94` on 2026-09-26
    ([browser record](../60-research/remedial/journey-lab-browser-15.0.9-2026-09-26.md)).
 2. The version class of #8772, #8775 and #8780: a minor change shipped under the patch number as an
    exception, as #8530 was, or a different class. The maintainer is collecting data.
-3. Re-approval of #8598 at its final head, `43289dde`.
+3. Re-approval of #8598 at its final head, `fade2299`.
 4. The release notes name three advisories under Known issues: BF-154 (`node-forge`, decided
    2026-10-02; low, Nightscout does not call the affected function), BF-161 (`braces`, known issue
-   2026-10-07) and BF-163 (`compression`, known issue 2026-10-07). On `43289dde` (2026-10-07) `npm
-   audit` reports 24 findings, 9 high, 0 critical — #8806 (BF-162) cleared the one critical by
-   bumping `proxy-addr` to 2.0.8. None of the three blocks the release
-   ([contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#the-9-high-findings-on-43289dde)).
+   2026-10-07) and BF-163 (`compression`, known issue 2026-10-07). On `fade2299` (2026-10-08,
+   unchanged from `43289dde`) `npm audit` reports 24 findings, 9 high, 0 critical — #8806 (BF-162)
+   cleared the one critical by bumping `proxy-addr` to 2.0.8; #8807 changes no package. None of the
+   three blocks the release
+   ([contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#the-9-high-findings-on-fade2299)).
 5. The `CHANGELOG.md` question: `dev` carries a hand-written `## [Unreleased]` section against the
    rule that the changelog is generated at release time; no decision is recorded
    ([contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#open-items-a-releaser-must-settle)).
-6. The tag, by the maintainer. The release notes and tag message are drafted on `43289dde`.
+6. The tag, by the maintainer. The release notes and tag message are drafted on `fade2299`.
 
 The full `npm audit` triage, which findings reach a running site and what is done about each, is in
 [contents](../../releases/cgm-remote-monitor-15.0.9/contents.md#npm-audit-and-dependabot-triage).

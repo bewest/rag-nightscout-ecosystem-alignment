@@ -999,6 +999,14 @@ and a site that already holds one starts normally and notes it in the server log
 The "Hours:" choices on the main page, which set how much time the main chart shows, now include
 **48**, after 24, so you can see two days at once. Nothing else about the chart changes, and the view it opens with is the same as before.
 
+### Dragging the lower chart back to now
+
+The small chart below the main one has a highlighted window you can drag left and right to look
+back over the day. When the page opened on a narrow or slow-loading screen, that window sometimes
+could not be dragged all the way back to the current time — it stopped short. It can now be dragged
+all the way to now again. This is a display fix; nothing about your data changes, and the same
+behaviour was on 15.0.8.
+
 ### Filter the treatments report by type
 
 **Reports → Treatments** now has a list of event types above the table (for example "Meal Bolus"
@@ -1326,4 +1334,4 @@ a report from "15.0.9" made before this release is from that channel.
 
 ---
 
-*Draft, 2026-10-07, on the development version 43289dde; not yet released.*
+*Draft, 2026-10-08, on the development version fade2299; not yet released.*

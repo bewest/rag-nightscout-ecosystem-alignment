@@ -1,22 +1,22 @@
 {
- "measured": "2026-10-07",
+ "measured": "2026-10-08",
  "range": {
   "base": "92d08342",
-  "tip": "43289dde",
+  "tip": "fade2299",
   "spec": "official/master..official/dev"
  },
  "repo_commit": "d9330a3c",
  "kpis": {
-  "pr_merges": 98,
-  "commits": 545,
-  "non_merge_commits": 338,
+  "pr_merges": 99,
+  "commits": 547,
+  "non_merge_commits": 339,
   "it_calls": {
    "base": 1288,
-   "tip": 2362
+   "tip": 2364
   },
   "passing": {
    "base": 1533,
-   "tip": 3564
+   "tip": 3566
   },
   "defect_ids": 163,
   "defect_ids_in_scope": 139,
@@ -306,6 +306,13 @@
    "count": 1,
    "prs": [
     8806
+   ]
+  },
+  {
+   "date": "2026-10-08",
+   "count": 1,
+   "prs": [
+    8807
    ]
   }
  ],
@@ -874,6 +881,13 @@
    "passing": 3564,
    "cells": 1,
    "kind": "one merge, its own branch or CI"
+  },
+  {
+   "label": "#8807",
+   "date": "2026-10-08",
+   "passing": 3566,
+   "cells": 6,
+   "kind": "six cells (run 023)"
   }
  ],
  "regressions": [
