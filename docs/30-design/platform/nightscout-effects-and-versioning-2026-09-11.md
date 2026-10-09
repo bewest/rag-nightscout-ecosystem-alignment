@@ -1,6 +1,6 @@
 # Temporary effects, privacy-preserving projection, and which version this is
 
-*Contributor-facing.* **Snapshot — describes 2026-09-11. Status: current as analysis; not adopted as a decision.** Current decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
+*Contributor-facing.* **Snapshot — describes 2026-09-11. Status: current as analysis; not adopted as a decision.** Current decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions). **Corrected in place 2026-10-09** to distinct-document counts (§2.1), and against source ([intent and workflow across the landscape](./nightscout-intent-workflow-landscape-2026-10-09.md) §11): the AAPS `percentage` semantics (§2.2, §3.3, §6), the Trio document count and the meaning of its `notes` (TL;DR, §2.2, §3.3), and the Trio recoverability question (§6).
 
 Date: 2026-09-11. Companion to
 [the hub-and-spoke sync design](./nightscout-hub-sync-architecture-2026-09-11.md).
@@ -17,16 +17,17 @@ review by someone qualified for the jurisdictions involved.**
 |---|---|
 | Does the registration solve the MQTT+protobuf "which schemas do I publish" problem? | **Yes, and that is most of what a registration is for.** A registration *is* a schema announcement; a broker or a batch endpoint is then a transport choice, not a schema problem |
 | Can legacy traffic keep working while newer controllers sync idiomatically? | **Yes**, because the split is by *contract*, not by document. v1 writers keep writing v1 documents into the same collections |
-| Can effects be represented only as their impact on dosing, not their motivation? | **Yes, and the corpus is already 86% of the way there.** 85.9% of temporary-effect treatments carry both halves separably | §2 |
-| Can AAPS, Trio and Loop concepts be remapped? | **Yes, with two documented lossy cases** — and one of them is the finding: Trio publishes the motivation and no effect at all | §2.2 |
+| Can effects be represented only as their impact on dosing, not their motivation? | **Yes, and the corpus is already 86% of the way there.** 86.1% of temporary-effect treatments carry both halves separably | §2 |
+| Can AAPS, Trio and Loop concepts be remapped? | **Yes, with one documented lossy case** — and it is the finding: Trio publishes a preset name and no effect at all | §2.2 |
 | Does Nocturne already implement this? | **It has the container, not the separation.** `StateSpan` is the right shape; `BuildOverrideMetadata` puts `name` and `multiplier` side by side in one untyped dictionary | §4 |
 | Is this v4, v5, or an extension to v4? | **An extension to v4, and the sync contract is a profile over it, not a document generation.** A v5 would be the fourth layer nobody adopts | §5 |
 
 **The sharpest finding.** Trio uploads an override as
-`{eventType: "Exercise", duration, notes}` — 481 documents in the corpus,
-and its `NightscoutExercise` model carries no percentage, no target, no
-multiplier. The record keeps the user's own note and discards what the loop
-actually did. **It can be neither replayed nor usefully anonymised**:
+`{eventType: "Exercise", duration, notes}` — 399 distinct documents in the
+corpus, one site — and its `NightscoutExercise` model carries no percentage, no
+target, no multiplier. `eventType: "Exercise"` is a fixed carrier for every
+override whatever its purpose, and `notes` is the preset name the user chose.
+The record keeps that name and discards what the loop actually did. **It can be neither replayed nor usefully anonymised**:
 redacting it leaves nothing, and keeping it reveals only the sensitive half.
 
 ---
@@ -67,10 +68,12 @@ and the **motivation** (preset name, reason, note — why it was asked for):
 
 | | Records | effect+motivation | motivation-only | effect-only |
 |---|---|---|---|---|
-| Temporary-effect treatments | 3,415 | **85.9%** | 14.1% | — |
-| Active overrides in devicestatus | 64,674 | **77.3%** | 18.9% | 3.7% |
+| Temporary-effect treatments | 2,865 | **86.1%** | 13.9% | — |
+| Active overrides in devicestatus | 55,938 | **76.5%** | 19.5% | 3.9% |
 
-**85.9% are already separable**, because Loop writes
+Counts are distinct documents across the corpus's two overlapping snapshots (`make schema-effects`, corrected 2026-10-09).
+
+**86.1% are already separable**, because Loop writes
 `insulinNeedsScaleFactor` and `correctionRange` alongside `reason`. A
 privacy-preserving projection of those records is a field selection, not a
 redaction pass — which matters, because a field selection can be enforced in
@@ -83,23 +86,26 @@ representation that separates them serves both.
 ### 2.2 The remapping, and where it is lossy
 
 `specs/sync/effect-remapping.yaml` maps each controller's concept onto
-`TherapyEffect`. Five rules, two lossy:
+`TherapyEffect`. Five rules, one lossy:
 
 | Rule | Controller | Lossy | Note |
 |---|---|---|---|
-| `MAP-LOOP-OVERRIDE` | Loop | no | 2,892 documents, 9 sites, both halves present |
-| `MAP-LOOP-DEVICESTATUS-OVERRIDE` | Loop | no | 64,674 active overrides |
+| `MAP-LOOP-OVERRIDE` | Loop | no | 2,428 documents, 9 sites, both halves present |
+| `MAP-LOOP-DEVICESTATUS-OVERRIDE` | Loop | no | 55,938 active overrides |
 | `MAP-AAPS-TEMPTARGET` | AAPS | no | the only **closed** motivation vocabulary in the ecosystem |
-| `MAP-AAPS-PROFILESWITCH` | AAPS | **yes** | `percentage` is a *basal* scale, not an insulin-needs scale |
-| `MAP-TRIO-EXERCISE` | Trio | **yes** | no effect on the wire at all |
+| `MAP-AAPS-PROFILESWITCH` | AAPS | no | `percentage` is an insulin-needs scale: basal × p/100, ISF and IC × 100/p (`ProfileSealed.convertToNonCustomizedProfile`, pinned by `ProfileSealedTest`); under Dynamic ISF it enters the ISF formula instead |
+| `MAP-TRIO-EXERCISE` | Trio | **yes** | no effect on the wire at all; `notes` is the preset name |
 
-**Two things that must not be merged.** An AAPS profile-switch `percentage`
-scales the profile's basal rates. A Loop override multiplier scales overall
-insulin needs, moving ISF and carb ratio inversely as well. They have
-similar names and are different quantities, so `TherapyEffect` carries
-`basalScaleFactor` *and* `insulinNeedsScaleFactor` rather than one
-normalised factor. Collapsing them would silently misprice every replayed
-dose — the kind of error that validates cleanly and is wrong.
+**Why the factors stay per component.** An AAPS profile-switch `percentage`
+and a Loop override multiplier are the same kind of quantity: both scale basal
+by the factor and ISF and carb ratio by its inverse. Trio is the case that
+needs separate components — its override applies the percentage to basal and,
+by its `isfAndCr`, `isf` and `cr` flags, to ISF and CR together, to one of
+them, or to neither. So `TherapyEffect` carries `basalScaleFactor` *and*
+`insulinNeedsScaleFactor` rather than one normalised factor, and a mapping
+states which components a controller scaled. Collapsing them would silently
+misprice a replayed dose — the kind of error that validates cleanly and is
+wrong.
 
 **AAPS already does the right thing on motivation.** `NSTemporaryTarget.reason`
 is a closed enum — `Custom`, `Hypo`, `Activity`, `Eating Soon`,
@@ -172,9 +178,9 @@ participate:
 
 | | Change | Value |
 |---|---|---|
-| **Trio** | publish the effect, not only the note | **highest in this document.** 481 records today carry the sensitive half and nothing else |
+| **Trio** | publish the effect, not only the preset name | **highest in this document.** 399 records in the corpus carry the name and nothing else |
 | **Loop** | adopt a closed `classification` beside the free-text preset name | makes coarsening possible; the name alone cannot be published safely |
-| **AAPS** | publish the profile-switch percentage as a *basal* scale explicitly | prevents the merge error in §2.2 |
+| **AAPS** | publish the effective scale per component with the profile switch | removes the need for a consumer to know the `percentage` and Dynamic ISF rules |
 | **All three** | publish `smbAllowed` with the effect | closes a measured dosing input (`microBolusAllowed`) that no controller records |
 
 ## 4. Does this need new out-of-band collections?
@@ -236,13 +242,16 @@ So the naming that fits what exists:
 
 ## 6. What is not measured
 
-* **The scale-factor semantics.** §2.2's claim that an AAPS percentage and a
-  Loop multiplier are different quantities is read from source and is the
-  kind of thing a maintainer should confirm before anyone builds on it.
-* **Whether Trio's override effect is recoverable from elsewhere.** Trio may
-  express the effect through a profile switch or a temp target it uploads
-  separately; this was not traced, and if so the mapping is a join rather
-  than a controller change.
+* **The scale-factor semantics under Dynamic ISF and AutoISF.** The plain
+  AAPS `percentage` maths is pinned by an AAPS unit test; how it combines with
+  Dynamic ISF and AutoISF is read from source only.
+* **Trio's override effect is partly recoverable, by join only.** Trio does not
+  express an override through a profile switch or temp target. The applied
+  ISF, CR, target and `sensitivityRatio` are in
+  `devicestatus.openaps.suggested/enacted` on every cycle, after every
+  adjustment and unattributed; preset percentage and target are in the
+  `profile` document's `overridePresets`, joinable by name, with no Trio
+  `profile` document in the corpus to test the join.
 * **`disclosure` enforcement.** Nothing implements it. RLS was measured for
   tenant isolation, not for field-level projection, and the two are not the
   same query.

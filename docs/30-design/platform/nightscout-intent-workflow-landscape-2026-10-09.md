@@ -1,7 +1,6 @@
 # Intent, workflow and entity management across the AID controller landscape
 
-*Contributor-facing.* **Snapshot — describes 2026-10-09. Status: current; no decision rests on it
-yet.** Every claim is **read-derived** (from source, a hypothesis about behaviour) unless marked
+*Contributor-facing.* **Snapshot — describes 2026-10-09. Status: current; the evidence for D18.** Every claim is **read-derived** (from source, a hypothesis about behaviour) unless marked
 **measured**. Sources and commits are in §1. Current decisions: [execution plan
 §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
 
@@ -16,7 +15,8 @@ registration can describe the difference.
 declarations shipped with the hub, for backwards compatibility, and controller-owned typed
 registrations, for extensibility. Adoption follows the WHATWG pattern — specify what happens now,
 leave room to extend. The hub (Nightscout, Nocturne) is responsible for observability; the
-controller is responsible for sending data accurately and for syncing and reconciling.
+controller is responsible for sending data accurately and for syncing and reconciling. Recorded as
+**D18** in the execution plan (§2.6.1).
 
 ---
 
@@ -91,9 +91,9 @@ Six properties. A controller's intent model has each of them; an entity collecti
   lasts; the override's scale factor still applies.
 - **Scale factor.** basal × f, ISF × 1/f, CR × 1/f. Target replaces the scheduled target.
 - **Pump suspend** uploads as `Temp Basal` rate 0, `reason: "suspend"`; resume is not uploaded.
-- **Measured.** 2,892 `Temporary Override` treatments, all with effect and motivation. Of 64,674
-  active devicestatus overrides: 49,990 effect + motivation, 2,411 effect only (custom overrides
-  have no name), 12,202 motivation only.
+- **Measured** (distinct documents, `make schema-effects`). 2,428 `Temporary Override`
+  treatments, all with effect and motivation. Of 55,938 active devicestatus overrides: 42,799
+  effect + motivation, 2,176 effect only (custom overrides have no name), 10,892 motivation only.
 
 ### 3.2 Trio and iAPS
 
@@ -247,14 +247,14 @@ Derived from §3–§8. Each element is something at least one controller does t
 
 | Document | Consistent | Needs revising |
 |---|---|---|
-| [Controller descriptions](PROPOSAL-controller-descriptions-2026-09-11.md) | kind/instance split, `decomposesTo` (D11), `.well-known` catalogue | §4 ("static, not CRD-style, no new endpoints") predates the two-tier direction |
+| [Controller descriptions](PROPOSAL-controller-descriptions-2026-09-11.md) | kind/instance split, `decomposesTo` (D11), `.well-known` catalogue | §4 ("static, not CRD-style, no new endpoints") is superseded in part by D18; it describes the well-known tier |
 | [Hub-and-spoke sync](nightscout-hub-sync-architecture-2026-09-11.md) | registration-derived contract, cursor + batch | `stateSpans` in the schema has no slots, end reasons, initiators or command contract |
 | [Effects and versioning](nightscout-effects-and-versioning-2026-09-11.md) | effect vs motivation; `TherapyEffect` as a span | AAPS percentage is an insulin-needs scale; Trio "481" is 399 distinct; Trio `notes` is a preset name |
 | `specs/sync/registrations/{loop,trio,androidaps}.yaml` | structural discriminators | intent spans have no wire path; missing pre-meal, RunningMode, `dosingMode`, PS/EPS pair, composition |
 | Upstream RFC | Definition/Instance, DeliveryRequest/Observation/Reconciliation, kind vs instance | request types for override/TT/carbs/mode; `requested`/`rejected` states; hub-side composition in `conflict-resolution.md`; `bridge-rules.md` reads `devicestatus.loop.override` and AAPS `devicestatus.configuration`, neither of which is on the wire |
 | Nocturne `StateSpan` | right container for observed state; supersession; overlap for activity categories | no request/applied distinction, no end reason, metadata untyped; the §5 unit and cancel differences |
 
-## 11. Corrections owed to other documents
+## 11. Corrections applied to other documents
 
 | Document | Claim | Source says |
 |---|---|---|
@@ -270,6 +270,14 @@ Derived from §3–§8. Each element is something at least one controller does t
 | `nocturne-override-temptarget-analysis.md` | categories include `TempBasal`; no supersession; CRM has no supersession | source categories per §5; `SupersededById` exists; CRM truncates TTs and profile switches |
 | `nocturne-profileswitch-analysis.md:238-262` | CRM does not apply percentage/timeshift | dev applies both; AAPS 3.x timeshift is milliseconds |
 | docs citing Trio's oref JS as the running engine | — | Trio runs a Swift port |
+
+The effects figures in the first two rows are also restated as distinct documents: `make
+schema-effects` counted a document once per snapshot, and the corpus's two snapshots overlap. It
+now counts by (site, collection, `_id`): 2,865 temporary-effect treatments (3,415 read), 55,938
+active devicestatus overrides (64,674 read).
+
+Two items are queued as labs in the `platform` parcel: `LAB-TRIO-INTENT` (Trio behaviour that
+depends on app lifecycle and upload bookkeeping) and `LAB-HUB-ACTIVE-STATE` (§5, run on both hubs).
 
 ## 12. Not measured
 

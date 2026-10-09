@@ -1,6 +1,7 @@
 # Nocturne Override/Temporary Target Representation
 
 > **OQ-010 Item #8**: How Nocturne stores and serves Override vs Temporary Target events.
+> **Corrected 2026-10-09** against Nocturne `42275c812` and cgm-remote-monitor `fade2299`; see [intent and workflow across the landscape](../30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md) §5 and §11.
 
 ## Summary
 
@@ -107,11 +108,13 @@ public async Task<ActionResult<IEnumerable<StateSpan>>> GetOverrides(
 
 | Category | Description |
 |----------|-------------|
-| `PumpMode` | Automatic, Manual, Boost, EaseOff, Sleep, Exercise |
+| `PumpMode` | Automatic, Limited, Manual, Boost, EaseOff, Sleep, Exercise, Liberty, Suspended, Off |
 | `PumpConnectivity` | Connected, Disconnected, Removed, BluetoothOff |
-| `Override` | Custom (user-defined override) |
-| `Profile` | Active profile name |
-| `TempBasal` | Active or Cancelled |
+| `Override` | None, Custom |
+| `Profile` | Active |
+| `TemporaryTarget` | Active, Cancelled |
+| `Exercise`, `Illness`, `Travel` | from the Activity API |
+| `DataExclusion` | |
 
 ### Override State Enum
 
@@ -124,25 +127,24 @@ public enum OverrideState
 }
 ```
 
-**Note**: The V4 StateSpan abstraction provides a unified view of overrides, but does NOT distinguish between Loop Override and AAPS Temporary Target - both would be represented as `OverrideState.Custom`.
+**Note**: Loop overrides and temporary targets are separate categories (`Override`, `TemporaryTarget`). Every override span has state `Custom`; its name and multiplier are in the untyped `Metadata` dictionary.
 
 ## Supersession Tracking
 
 ### Current State
 
-**No explicit supersession tracking exists in Nocturne for Override or Temporary Target events.**
+Treatments are stored unchanged. Supersession is tracked on **StateSpans**
+(`StateSpanRepository.cs`): `Override`, `TemporaryTarget` and `Profile` are exclusive categories,
+and inserting a new span closes any *open* span in the same category that started earlier,
+setting its `EndTimestamp` and `SupersededById`. `PumpMode` supersedes only a span with the same
+state; `Exercise`, `Illness` and `Travel` may overlap.
 
-When a new override is activated:
-1. Old override treatment remains unchanged in database
-2. New override treatment is inserted
-3. No `supersededBy` or `status` update on old treatment
-
-### V4 StateSpan Approach
-
-StateSpans provide implicit supersession through time ranges:
-- Each span has `startMs` and `endMs`
-- Overlapping spans are NOT automatically resolved
-- Client must query active span for current state
+Limits (read-derived):
+- Only open spans are superseded, so a timed span is not shortened by a later one, and a
+  temp-target cancel becomes a separate open span with state `Cancelled`.
+- `Temporary Override Cancel` is not classified by `TreatmentDecomposer` and produces no span.
+- Supersession runs only on insert; amending a span does not re-evaluate its neighbours.
+- No end reason is recorded beyond `SupersededById`.
 
 ### Gap Impact
 
@@ -159,10 +161,10 @@ Without supersession tracking:
 |--------|----------|-------------------|
 | Override eventType | `Temporary Override` | `Temporary Override` |
 | TempTarget eventType | `Temporary Target` | `Temporary Target` |
-| Cancel Override | `Temporary Override Cancel` | `Temporary Override Cancel` |
+| Cancel Override | not classified (no span) | not stored by careportal (APNs request only) |
 | Cancel TempTarget | `duration=0` | `duration=0` |
 | Storage | treatments collection | treatments collection |
-| Supersession | None | None |
+| Supersession | open spans in exclusive categories (`SupersededById`) | computed at read time: a later temp target or profile switch truncates the earlier one (`ddata.js`) |
 
 ### Differences
 
@@ -213,7 +215,7 @@ public class LoopOverridePreset
 
 ### GAP-OVRD-006: Override Supersession Not Tracked
 
-**Description**: Neither Nocturne nor cgm-remote-monitor tracks override supersession. When a new override activates, the old one is not updated.
+**Description**: Neither hub records why an override ended. Nocturne links a superseded open span to its successor (`SupersededById`); cgm-remote-monitor truncates temp targets and profile switches at read time and stores nothing.
 
 **Affected Systems**: All
 
@@ -283,7 +285,7 @@ public class LoopOverridePreset
 
 ### 3. What supersession tracking exists (if any)?
 
-**None.** Neither Nocturne nor cgm-remote-monitor updates old overrides when new ones are activated. The V4 StateSpan API provides time-range queries but does NOT link superseded overrides.
+**Partial.** Nocturne sets `SupersededById` on an open span in an exclusive category when a later span starts; timed spans and cancels are not linked. cgm-remote-monitor computes truncation at read time and stores nothing. Neither records an end reason.
 
 ---
 

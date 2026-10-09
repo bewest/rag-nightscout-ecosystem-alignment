@@ -2,7 +2,8 @@
 
 > **Sources**: Loop, AAPS, Trio, Nightscout  
 > **Last Updated**: 2026-01-29  
-> **Analysis Depth**: Deep (source code analysis)
+> **Analysis Depth**: Deep (source code analysis)  
+> **Corrected 2026-10-09** against source; see [intent and workflow across the landscape](../30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md) §11.  
 
 ## Overview
 
@@ -21,7 +22,7 @@ This document compares how Loop, AAPS, and Trio handle temporary therapy adjustm
 
 | Aspect | Loop | AAPS | Trio |
 |--------|------|------|------|
-| **Separate Target** | No (target in override) | Yes (TempTarget entity) | Yes (TempTarget entity) |
+| **Separate Target** | Yes: a pre-meal target slot, concurrent with an override, not uploaded | Yes (TempTarget entity) | Yes (TempTarget entity) |
 | **Percentage Scaling** | `insulinNeedsScaleFactor` | `percentage` field | `percentage` field |
 | **Multiple Profiles** | No | Yes (full profiles) | No |
 | **Profile Shifting** | No | Yes (`timeshift` field) | No |
@@ -339,9 +340,9 @@ These are mathematically equivalent but semantically inverted.
 
 | System | ID Field | Type | Storage | Deduplication |
 |--------|----------|------|---------|---------------|
-| Loop | `syncIdentifier` | UUID | Memory + NS | Client-side |
+| Loop | `syncIdentifier`, sent as `_id` (no `syncIdentifier` field on the wire) | UUID | Memory + NS | Server-dependent (`UUID_HANDLING`) |
 | AAPS | `interfaceIDs.nightscoutId` | String | Room DB | Server-side (v3) |
-| Trio | `id` | UUID string | CoreData | Client-side |
+| Trio | `created_at` + `eventType` on the wire; `id` is local only (excluded from `NightscoutExercise` coding keys) | — | CoreData | Server upsert by time + eventType |
 
 ### Loop Sync Identity
 
@@ -374,6 +375,11 @@ identifier = ids.nightscoutId
 newOverride.id = UUID().uuidString
 ```
 
+The `id` stays local: `NightscoutExercise` omits it from its `CodingKeys`, deletes use
+`find[created_at][$eq]` + `find[eventType][$eq]=Exercise` (`NightscoutAPI.swift`), and the end of an
+override is uploaded by deleting the original and re-posting it with the actual duration
+(`NightscoutManager.swift`).
+
 ---
 
 ## Summary Table
@@ -383,9 +389,9 @@ newOverride.id = UUID().uuidString
 | **Primary Model** | Override | ProfileSwitch | Override | Document both |
 | **Target Handling** | In override | Separate TT | Both | Accept difference |
 | **Insulin Scaling** | Factor (0.0-2.0) | Percentage (1-200) | Percentage | Map: % = factor×100 |
-| **End Tracking** | ✅ | ❌ | ❌ | Add to AAPS/Trio |
+| **End Tracking** | ✅ amended `duration` | ✅ shortened `duration`, same `identifier` | ✅ delete + re-post with actual duration | Declare the encoding per controller |
 | **NS eventType** | Temporary Override | Profile Switch | **Exercise** | Standardize to Override |
-| **Sync Identity** | syncIdentifier (UUID) | interfaceIDs | id (UUID string) | All use UUID pattern |
+| **Sync Identity** | UUID as `_id` | `identifier` (v3) | `created_at` + `eventType` | Trio to send its `id` |
 
 ---
 

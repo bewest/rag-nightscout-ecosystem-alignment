@@ -2,6 +2,9 @@
 
 This document analyzes how caregivers remotely control AID systems across Trio, Loop, and AAPS, focusing on security models, command types, and safety limits.
 
+> **Corrected 2026-10-09** against source; see [intent and workflow across the landscape](../30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md) §11.  
+> AAPS paths and the SMS command list below are from the 3.4.2.6 release line; AAPS dev (`7e1d537d49`) moved the plugin under `plugins/sync`, dropped `AAPSCLIENT RESTART`, and added signed client control.
+
 ---
 
 ## Executive Summary
@@ -601,7 +604,7 @@ func otpValidationRequired() -> Bool {
 
 **Severity**: Medium
 
-**Description**: None of the systems use cryptographic signatures to verify command origin. Trio uses symmetric encryption (provides integrity via GCM), but Loop and AAPS send commands in plaintext.
+**Description**: In released versions none of the systems use cryptographic signatures to verify command origin. Trio uses symmetric encryption (provides integrity via GCM), but Loop and AAPS 3.4.2.6 send commands in plaintext. AAPS dev (not released) adds per-client HMAC-signed command envelopes and signed acknowledgements carried on the Nightscout `settings` collection (`SignedEnvelope.kt`, `AckEnvelope.kt`).
 
 **Impact**: 
 - Loop: Anyone with Nightscout access can forge commands

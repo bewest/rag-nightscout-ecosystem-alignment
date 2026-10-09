@@ -1278,9 +1278,9 @@ def test_a_label_is_not_required_at_any_disclosure_level():
 
 
 def test_basal_and_insulin_needs_scale_factors_stay_distinct():
-    # An AAPS profile-switch percentage scales basal; a Loop override
-    # multiplier scales overall insulin needs, moving ISF and CR too.
-    # Collapsing them would misprice every replayed dose.
+    # Trio can scale basal without ISF and CR (its override `isf`, `cr` and
+    # `isfAndCr` flags); Loop and AAPS scale all three together. Collapsing
+    # the components would misprice a replayed dose.
     schema = json.loads(
         (corpus.repo_root() / "specs/sync/therapy-effect.schema.json").read_text())
     effect = schema["properties"]["effect"]["properties"]
@@ -1469,9 +1469,12 @@ def test_the_proposal_headline_numbers_match_their_reports():
 
     effects_report = json.loads((census_dir / "effects.json").read_text())
     treatments = effects_report["treatments"]
-    assert treatments["total"] == 3415
-    assert treatments["by_verdict"]["effect+motivation"] == 2934
-    assert treatments["by_verdict"]["motivation-only"] == 481
+    # Distinct documents: the two snapshots overlap, and 3,415 is the count
+    # read across both.
+    assert treatments["total"] == 2865
+    assert treatments["read_across_snapshots"] == 3415
+    assert treatments["by_verdict"]["effect+motivation"] == 2466
+    assert treatments["by_verdict"]["motivation-only"] == 399
 
 
 # ── primitive catalogue and settings schema ─────────────────────────────

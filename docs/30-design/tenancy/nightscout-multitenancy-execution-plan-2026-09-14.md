@@ -2,9 +2,10 @@
 
 *Contributor- and maintainer-facing.*
 
-**Status: living document — the decision record.** Decisions D1–D17 are the maintainer's
-(2026-09-14 to 2026-09-16) and are all **adopted**, except **D17 row 2** (Ory Kratos as one
-cohort-wide human-identity pool), which is **held** pending queue item `T30-ORY-PROOF`. Each
+**Status: living document — the decision record.** Decisions D1–D18 are the maintainer's
+(2026-09-14 to 2026-09-16, and D18 on 2026-10-09) and are all **adopted**, except **D17 row 2**
+(Ory Kratos as one cohort-wide human-identity pool), which is **held** pending queue item
+`T30-ORY-PROOF`. Each
 decision carries the evidence that settled it. Task definitions follow in §6. **Item state lives
 in [`queue/work-queue.yaml`](../../../queue/work-queue.yaml)** (rendered as
 [`queue/QUEUE.md`](../../../queue/QUEUE.md), measured by `make queue-status`); defect facts live
@@ -141,6 +142,7 @@ preference.
 | **D15** | **Configuration source diverges by entrypoint.** `single` reads the process environment; hosted entrypoints read per-tenant configuration from the database, administered by the tenant owner. Env-sourced configuration must not reach the multi path | maintainer, 2026-09-15 — §2.8 |
 | **D16** | **Three listeners, three audiences** — consumer/data (`ns-api`, plus `single`), tenant-owner configuration (`ns-tenant-admin`), platform operator (`ns-admin`). **Prerequisite: tenant resolution and credential verification extract into one module before the third listener exists** | maintainer, 2026-09-16 — §2.9 |
 | **D17** | **The auth plane splits by audience, not by build-versus-buy.** Adopted: devices and the data path keep a **native per-tenant credential permanently**; Hydra is **deferred**; D7 is **unchanged**. **Held, not adopted:** human identity via one cohort-wide Ory Kratos pool, hosted-only — conditional on `T30-ORY-PROOF`. D14 holds either way: Nightscout mints its own per-tenant token after authentication | maintainer, 2026-09-16 — §2.9 |
+| **D18** | **Controller registration has two tiers.** *Well-known* declarations ship with the hub, so legacy writers are described with no controller change (backwards compatibility). *Controller-owned* registrations are dynamic and typed: a controller declares its own definitions — intent kinds, states, transitions, initiators, effect fields, command contract — and the hub offers typed API for them, so controller-unique features have a home other than untyped `devicestatus`. Adoption follows the WHATWG pattern: specify what happens now, leave room to extend; the controller owns its registration's lifecycle. **Roles:** the hub (Nightscout, Nocturne) is responsible for observability; the controller is responsible for sending data accurately and for syncing and reconciling. The hub records a controller's composition and reconciliation results; it does not compute dosing state | maintainer, 2026-10-09 — §2.6.1 |
 
 **Amendment carried with D13, true however D17 row 2 lands:** *credentials are per-tenant,
 identity is per-cohort, authorization is per-tenant.* Isolation rests on the authorization layer
@@ -291,6 +293,32 @@ OpenAPI spec, `indexedFields`, the nsschema model and the `walker` (§3.4).
 - **Decomposition must sit above the seam, like coercion** (§3.4). The 56-of-166 dropped-path
   finding that motivates it ({M} motivation (a)) is a fidelity problem; fixing it in the multitenant
   backend only would leave single-tenant behind, which D4 forbids.
+
+### 2.6.1 D18 — two-tier controller registration
+
+D11 says *what* `devicestatus` decomposes into is declared by a registered controller description.
+D18 says who may declare it and what a declaration may carry.
+
+| tier | who writes it | purpose | what changes for the controller |
+|---|---|---|---|
+| **well-known** | the hub, generated from measurement (`specs/sync/registrations/`) | backwards compatibility: today's writers are described as they are | nothing |
+| **controller-owned** | the controller, per release | extensibility: typed definitions for features unique to that controller, and the hub API derived from them | publishes a registration when it wants typed support for a feature |
+
+**What a registration has to be able to declare** is measured across Loop, Trio, iAPS, AAPS and
+both hubs in [intent and workflow across the landscape](../platform/nightscout-intent-workflow-landscape-2026-10-09.md)
+§9: definitions with stable ids, intent slots and which coexist, states and end reasons, the wire
+carrier for today's documents, requested vs applied, the controller's composition result, its
+initiator vocabulary, its command contract, and which hub-originated intent it accepts.
+
+**The role split decides one open design question.** Overlapping intents are combined by a
+controller-specific rule (Loop, Trio/iAPS and AAPS each differ, and the rule depends on algorithm
+settings), so the hub records the result the controller reports and never derives it. A hub-side
+composition rule, such as the upstream RFC's `conflict-resolution.md` override composition, is
+outside the hub's role.
+
+**What D18 supersedes:** [controller descriptions](../platform/PROPOSAL-controller-descriptions-2026-09-11.md)
+§4 ("static descriptions, not CRD-style, no new endpoints"). The well-known tier keeps every
+property §4 lists; the controller-owned tier is the addition.
 
 ### 2.7 D12 — what each repository is for
 

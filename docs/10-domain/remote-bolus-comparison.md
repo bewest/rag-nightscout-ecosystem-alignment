@@ -1,7 +1,8 @@
 # Remote Bolus Command Comparison
 
 > **Sources**: Loop, AAPS, Trio, Nightscout  
-> **Last Updated**: 2026-01-28
+> **Last Updated**: 2026-01-28  
+> **Corrected 2026-10-09** against source; see [intent and workflow across the landscape](../30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md) §11.  
 
 ## Overview
 
@@ -11,7 +12,7 @@ Remote bolus commands allow caregivers to trigger insulin delivery from outside 
 
 | System | Channel | Auth | Encryption | Expiration |
 |--------|---------|------|------------|------------|
-| **Loop** | APNs push | OTP | TLS (APNs) | 5 minutes |
+| **Loop** | APNs push | OTP | TLS (APNs) | set by the sender (Nightscout: 5 minutes); Loop checks it only when present |
 | **AAPS** | SMS | Passcode | None (SMS) | 15 min distance |
 | **AAPS** | Wear OS | None (local) | Bluetooth | N/A |
 | **Trio** | APNs push | Shared secret | AES-256 | Configurable |
@@ -306,7 +307,7 @@ Authorization: Bearer <api-secret>
 
 ### GAP-REMOTE-004: Response notification inconsistency
 
-**Description**: Only Trio sends structured response notifications; Loop/AAPS rely on polling devicestatus.
+**Description**: Loop (NightscoutService `RemoteNotificationResponseManager`, optional, only when the sender supplies a return channel) and Trio send structured response notifications directly to the sender over APNs; neither carries a command id, and Nightscout sees only failures, as `Note` treatments. AAPS 3.4.2.6 replies by SMS; AAPS dev adds signed acknowledgements on the NS `settings` collection.
 
 **Impact**: Caregivers may not know if remote command succeeded.
 

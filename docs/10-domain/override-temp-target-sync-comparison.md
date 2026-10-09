@@ -1,6 +1,7 @@
 # Override and Temporary Target Sync Comparison
 
 > **Status**: Complete  
+> **Corrected 2026-10-09** against source; see [intent and workflow across the landscape](../30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md) §11.  
 > **Last Updated**: 2026-01-30  
 > **Task**: Compare how overrides/temp targets sync to Nightscout
 
@@ -10,10 +11,10 @@ Loop and AAPS have fundamentally different concepts that both sync to Nightscout
 
 | Concept | Loop | AAPS | Nightscout eventType |
 |---------|------|------|---------------------|
-| **Override** | `TemporaryScheduleOverride` | N/A | `Override` (custom) |
+| **Override** | `TemporaryScheduleOverride` | N/A | `Temporary Override` |
 | **Temp Target** | (part of override) | `TemporaryTarget` | `Temporary Target` |
 
-Key difference: Loop's override modifies **both** target range AND insulin needs (sensitivity); AAPS temp target modifies **only** target range.
+Key difference: Loop's override modifies **both** target range AND insulin needs (sensitivity); an AAPS temp target modifies **only** the target range under OpenAPS SMB. Under AutoISF a preference lets a high temp target raise sensitivity (`OpenAPSAutoISFPlugin.kt`).
 
 ## Loop Override Sync
 
@@ -209,10 +210,10 @@ if (lastTreatment.duration === 0 && eventType === 'Temporary Target') {
 
 ### GAP-OVRD-001: Different eventTypes
 
-**Description**: Loop uses `Override`, AAPS uses `Temporary Target` - they don't map to each other.
+**Description**: Loop uses `Temporary Override`, AAPS uses `Temporary Target` - they don't map to each other.
 
 **Evidence**:
-- Loop: `OverrideTreament.swift` creates eventType `Override`
+- Loop: `OverrideTreament.swift` creates eventType `Temporary Override` (NightscoutKit `NightscoutTreatment.swift`)
 - AAPS: `NSTemporaryTarget.kt:29` uses `EventType.TEMPORARY_TARGET`
 
 **Impact**: A Loop override is not recognized as a temp target by AAPS and vice versa.
@@ -275,7 +276,7 @@ endId = ids.endId
 
 | System | Primary Key | Secondary Keys |
 |--------|-------------|----------------|
-| Loop | `syncIdentifier` (UUID) | None |
+| Loop | `_id` = the override's `syncIdentifier` UUID; no `syncIdentifier` field is sent, and whether the UUID `_id` is kept depends on the server's `UUID_HANDLING` | `created_at` + `eventType` (server fallback) |
 | AAPS | `identifier` | `pumpId`, `pumpSerial`, `endId` |
 
 ## Requirements

@@ -1,6 +1,6 @@
 # Reconciling the agentic control plane RFC with what the corpus measured
 
-*Contributor-facing.* **Snapshot — describes 2026-09-11. Status: current as analysis of the RFC; no decision rests on it.** Current decisions: [execution plan §1](nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
+*Contributor-facing.* **Snapshot — describes 2026-09-11. Status: current as analysis of the RFC; no decision rests on it.** Current decisions: [execution plan §1](nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions). **Corrected in place 2026-10-09:** §3.4 counts are distinct documents across the corpus's two overlapping snapshots. The RFC's hub-side override composition (`conflict-resolution.md`) is outside the hub's role under D18.
 
 Date: 2026-09-11. Tenth in the series, and the
 first one addressed **to cgm-remote-monitor's own `docs/proposals/` set**
@@ -20,7 +20,7 @@ rather than to a controller.
 | | |
 |---|---|
 | **Seven claims the corpus confirms** | Including two the RFC treats as open questions that already have answers on the wire: an idempotency key (`syncIdentifier`, 306,741 treatments) and a human/automation flag (`automatic`, 300,228 treatments) |
-| **Five things the corpus corrects** | The Trio discriminator never fires; instance identity is taken from the least reliable field; `OverrideInstance.effectiveEffects` would be empty for 19% of observed active overrides; the suggested/enacted split already exists under three different key names |
+| **Five things the corpus corrects** | The Trio discriminator never fires; instance identity is taken from the least reliable field; `OverrideInstance.effectiveEffects` would be empty for 20% of observed active overrides; the suggested/enacted split already exists under three different key names |
 | **Two simplifications with arithmetic behind them** | The ten new collections would add 2,880 requests/day *only because the delta is per collection*. Fix that first — a small change to already-generic code — and their cost is zero. The RFC does not have to choose between typed resources and cheap sync |
 | **One thing to do before any of it** | `integration-questionnaire.md` is twenty questions and fourteen empty tables. Roughly half can be pre-filled from measurement and source. An implementer corrects a wrong table far faster than they fill an empty one |
 
@@ -143,19 +143,19 @@ observed alias; it must not *be* the identity. Bridge-synthesized events for
 an unregistered controller get a synthetic instance id, not the device
 string.
 
-### 3.4 `OverrideInstance.effectiveEffects` will be empty 19% of the time
+### 3.4 `OverrideInstance.effectiveEffects` will be empty 20% of the time
 
 Bridge mode synthesizes `OverrideInstance` from devicestatus. Measured over
-the **64,674** devicestatus snapshots with an active override:
+the **55,938** distinct devicestatus documents with an active override (counted once across the corpus's two overlapping snapshots; corrected 2026-10-09):
 
 | | Count | Share |
 |---|---|---|
-| Effect and motivation both present | 49,990 | 77.3% |
-| Effect only (no label) | 2,411 | 3.7% |
-| **Motivation only — a name, no effect** | **12,202** | **18.9%** |
+| Effect and motivation both present | 42,799 | 76.5% |
+| Effect only (no label) | 2,176 | 3.9% |
+| **Motivation only — a name, no effect** | **10,892** | **19.5%** |
 | Neither | 71 | 0.1% |
 
-The same shape appears on treatments: of 3,415 temporary effects, **481
+The same shape appears on treatments: of 2,865 temporary effects, **399
 carry a label and no effect at all**.
 
 So a bridged `OverrideInstance` will carry a `reason` and an empty

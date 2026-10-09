@@ -61,16 +61,38 @@ def classify(doc, effect_fields=EFFECT_FIELDS, motivation_fields=MOTIVATION_FIEL
     return "neither"
 
 
+def _first_sighting(seen, src, doc):
+    """True the first time a document is met across snapshots.
+
+    The corpus holds two snapshots of the same sites, so a document present
+    in both is read twice. Identity is (site, collection, ``_id``); a
+    document without an ``_id`` is always counted.
+    """
+    doc_id = doc.get("_id")
+    if doc_id is None:
+        return True
+    key = (src.site, src.collection, str(doc_id))
+    if key in seen:
+        return False
+    seen.add(key)
+    return True
+
+
 def run(sources):
     treatments = defaultdict(Counter)
     by_event = defaultdict(Counter)
     device_status = defaultdict(Counter)
+    raw = Counter()
+    seen = set()
 
     for src in sources:
         if src.collection == "treatments":
             for doc in corpus.iter_documents(src.path):
                 event = (doc.get("eventType") or "").strip().lower()
                 if event not in EFFECT_EVENTS:
+                    continue
+                raw["treatments"] += 1
+                if not _first_sighting(seen, src, doc):
                     continue
                 verdict = classify(doc)
                 treatments[src.site][verdict] += 1
@@ -79,6 +101,9 @@ def run(sources):
             for doc in corpus.iter_documents(src.path):
                 override = doc.get("override")
                 if not isinstance(override, dict) or not override.get("active"):
+                    continue
+                raw["devicestatus"] += 1
+                if not _first_sighting(seen, src, doc):
                     continue
                 device_status[src.site][classify(override)] += 1
 
@@ -91,14 +116,17 @@ def run(sources):
 
     return {
         "generated_by": "tools/nsschema/effects.py",
+        "counting": "distinct documents by (site, collection, _id) across snapshots",
         "treatments": {
             "total": sum(totals.values()),
+            "read_across_snapshots": raw["treatments"],
             "by_verdict": dict(totals),
             "by_site": {s: dict(c) for s, c in sorted(treatments.items())},
             "by_event_type": {e: dict(c) for e, c in sorted(by_event.items())},
         },
         "devicestatus_active_overrides": {
             "total": sum(ds_totals.values()),
+            "read_across_snapshots": raw["devicestatus"],
             "by_verdict": dict(ds_totals),
             "by_site": {s: dict(c) for s, c in sorted(device_status.items())},
         },

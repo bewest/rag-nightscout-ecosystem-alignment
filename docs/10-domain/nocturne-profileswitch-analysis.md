@@ -3,7 +3,8 @@
 > **Date**: 2026-01-30  
 > **Status**: Complete  
 > **Domain**: Sync & Identity / Profile  
-> **OQ Reference**: [OQ-010](../OPEN-QUESTIONS.md#oq-010-profileswitch--override-mapping--resolved--extended)
+> **OQ Reference**: [OQ-010](../OPEN-QUESTIONS.md#oq-010-profileswitch--override-mapping--resolved--extended)  
+> **Corrected 2026-10-09** (§8 comparison, GAP-NOCTURNE-004) against cgm-remote-monitor `fade2299` and the backfix register's BF-123; see [intent and workflow across the landscape](../30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md) §5.
 
 ---
 
@@ -234,11 +235,11 @@ public class OrefProfile
 |--------|----------|-------------------|
 | ProfileSwitch storage | treatments table (JSONB) | treatments collection (BSON) |
 | profileJson field | ✅ Supported | ✅ Supported |
-| percentage application | ✅ Applied in ProfileService | ❌ Display only |
-| timeshift application | ✅ Applied in ProfileService | ❌ Display only |
+| percentage application | ✅ Applied in ProfileService | ✅ with `CircadianPercentageProfile: true` (15.0.8 and dev); AAPS 3.x switches without that flag: basal × p/100, ISF and IC × 100/p on dev (BF-123, merged, not released) |
+| timeshift application | ✅ Applied, read as **hours** (`% 24`) | ✅ CircadianPercentageProfile path; AAPS 3.x `timeshift` read as **milliseconds** on dev (BF-123) |
 | oref integration | Rust FFI with pre-scaled values | JS with display values |
 
-**Key Difference**: Nocturne **actually applies** percentage/timeshift to algorithm calculations, while cgm-remote-monitor only displays them.
+**Key Difference**: both hubs apply percentage. They differ on the AAPS 3.x `timeshift` unit: AAPS sends milliseconds (`ProfileSwitchExtension.kt`), which cgm-remote-monitor dev reads as milliseconds and Nocturne reads as hours, so a whole-hour shift becomes 0 modulo 24 in Nocturne (read-derived).
 
 ---
 
@@ -259,7 +260,7 @@ public class OrefProfile
 
 ### New Finding: GAP-NOCTURNE-004
 
-**Description**: Nocturne applies percentage/timeshift in calculations, but cgm-remote-monitor does not. This creates behavioral divergence when the same ProfileSwitch treatment is stored in both systems.
+**Description**: The two hubs resolve the same AAPS 3.x ProfileSwitch differently: `timeshift` units differ (milliseconds vs hours), and after a timed switch expires cgm-remote-monitor falls back to the earlier permanent profile while Nocturne's spans leave no profile covering that time (read-derived).
 
 **Impact**: 
 - Users migrating from cgm-remote-monitor to Nocturne may see different IOB/COB/predictions

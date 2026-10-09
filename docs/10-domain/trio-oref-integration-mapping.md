@@ -3,7 +3,8 @@
 > **Cycle**: 71  
 > **Date**: 2026-01-31  
 > **Status**: Complete  
-> **Backlog Item**: aid-algorithms.md #5 / ECOSYSTEM-BACKLOG Ready Queue #2
+> **Backlog Item**: aid-algorithms.md #5 / ECOSYSTEM-BACKLOG Ready Queue #2  
+> **Corrected 2026-10-09:** at Trio `e41c9db37` the running algorithm is a Swift port (`OpenAPS.swift` calls `DeterminationGenerator.generate`; no `JSContext` remains in `Trio/Sources`). `trio-oref/lib/` is still vendored and is the reference this mapping describes; the override/temp-target rules checked in [intent and workflow across the landscape](../30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md) §7 match between the two.
 
 ## Executive Summary
 

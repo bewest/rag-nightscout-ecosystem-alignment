@@ -2,7 +2,7 @@
 
 *Contributor-facing.* **Snapshot, written 2026-09-11. Current: the only statement of the
 controller-description proposal.** A proposal to the named projects, not adopted by any of them.
-Its §5 `decomposesTo` mechanism is the direction adopted for `devicestatus` storage by
+§4 is superseded in part by **D18** (two-tier registration, 2026-10-09). Its §5 `decomposesTo` mechanism is the direction adopted for `devicestatus` storage by
 **D11** — [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
 Measurements are over the 11-site corpus (snapshots 2026-04-01 and 2026-04-26). §2.2 was added
 2026-09-27, checked against Nocturne `42275c81`. **One page of proposal, then a worked example, then
@@ -65,7 +65,7 @@ writes down get silently dropped. Three measured consequences:
 |---|---|
 | `devicestatus` paths a typed consumer silently drops | **56 of 166** — including Loop's automatic dose recommendation, on 10 of 11 sites |
 | Loop dosing inputs recorded in Nightscout | **4 of 20**. Eight are absent, including the factor that scales every automatic dose |
-| Temporary effects that record what they *did*, not just why | **2,934 of 3,415** — the other 481 carry a label and no effect at all |
+| Temporary effects that record what they *did*, not just why | **2,466 of 2,865** — the other 399 carry a label and no effect at all |
 
 None of this is a bug in any project. It is the cost of the shape being
 tacit.
@@ -223,6 +223,12 @@ corpus. A proposal Loop must act on is a proposal that does not happen.
 
 ## 4. What this is *not*
 
+> **Superseded in part by D18** ([execution plan §2.6.1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md)),
+> 2026-10-09. The table below describes the **well-known** tier, which keeps every property listed.
+> D18 adds a **controller-owned** tier: dynamic, typed registrations a controller publishes for its
+> own features, from which the hub derives typed API. The "static, not CRD-style" and "no new
+> endpoints" rows do not apply to that tier.
+
 "Registration" is easy to misread as a control plane. Concretely:
 
 | Not this | Actually this |
@@ -340,7 +346,7 @@ Every number above is reproducible from this repository:
 |---|---|---|
 | 56 of 166 `devicestatus` paths dropped | `make schema-nocturne` | `reports/schema-census/nocturne-coverage.json` |
 | Loop records 4 of 20 dosing inputs | `make schema-dosing` | `reports/schema-census/dosing-inputs.json` |
-| 2,934 of 3,415 effects separable | `make schema-effects` | `reports/schema-census/effects.json` |
+| 2,466 of 2,865 effects separable | `make schema-effects` | `reports/schema-census/effects.json` |
 | The shipped descriptions | `make schema-sync-model` | `specs/sync/registrations/` |
 
 **Caveats that matter to this proposal specifically:**

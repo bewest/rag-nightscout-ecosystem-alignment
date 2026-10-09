@@ -1,97 +1,100 @@
 {
  "generated_by": "tools/nsschema/effects.py",
+ "counting": "distinct documents by (site, collection, _id) across snapshots",
  "treatments": {
-  "total": 3415,
+  "total": 2865,
+  "read_across_snapshots": 3415,
   "by_verdict": {
-   "effect+motivation": 2934,
-   "motivation-only": 481
+   "effect+motivation": 2466,
+   "motivation-only": 399
   },
   "by_site": {
    "a": {
-    "effect+motivation": 1192
+    "effect+motivation": 993
    },
    "b": {
-    "effect+motivation": 147,
-    "motivation-only": 481
+    "effect+motivation": 126,
+    "motivation-only": 399
    },
    "c": {
-    "effect+motivation": 162
+    "effect+motivation": 138
    },
    "d": {
-    "effect+motivation": 6
+    "effect+motivation": 5
    },
    "e": {
-    "effect+motivation": 183
+    "effect+motivation": 163
    },
    "g": {
-    "effect+motivation": 397
+    "effect+motivation": 327
    },
    "h": {
-    "effect+motivation": 178
+    "effect+motivation": 128
    },
    "i": {
-    "effect+motivation": 571
+    "effect+motivation": 505
    },
    "k": {
-    "effect+motivation": 98
+    "effect+motivation": 81
    }
   },
   "by_event_type": {
    "exercise": {
-    "motivation-only": 481
+    "motivation-only": 399
    },
    "temporary override": {
-    "effect+motivation": 2892
+    "effect+motivation": 2428
    },
    "temporary target": {
-    "effect+motivation": 42
+    "effect+motivation": 38
    }
   }
  },
  "devicestatus_active_overrides": {
-  "total": 64674,
+  "total": 55938,
+  "read_across_snapshots": 64674,
   "by_verdict": {
-   "effect+motivation": 49990,
-   "effect-only": 2411,
-   "motivation-only": 12202,
+   "effect+motivation": 42799,
+   "effect-only": 2176,
+   "motivation-only": 10892,
    "neither": 71
   },
   "by_site": {
    "a": {
-    "effect+motivation": 14255,
-    "effect-only": 67
+    "effect+motivation": 11988,
+    "effect-only": 40
    },
    "b": {
-    "effect+motivation": 2186,
+    "effect+motivation": 2033,
     "effect-only": 98
    },
    "c": {
-    "effect-only": 1740,
-    "effect+motivation": 6280
+    "effect-only": 1532,
+    "effect+motivation": 5439
    },
    "d": {
-    "effect+motivation": 40
+    "effect+motivation": 28
    },
    "e": {
-    "effect+motivation": 5061
+    "effect+motivation": 4530
    },
    "g": {
-    "effect+motivation": 7938,
+    "effect+motivation": 6564,
     "effect-only": 388
    },
    "h": {
-    "effect+motivation": 2064,
+    "effect+motivation": 1611,
     "effect-only": 34,
     "motivation-only": 54
    },
    "i": {
-    "motivation-only": 11806,
-    "effect+motivation": 11762,
+    "motivation-only": 10496,
+    "effect+motivation": 10290,
     "neither": 71,
     "effect-only": 84
    },
    "k": {
-    "effect+motivation": 404,
+    "effect+motivation": 316,
     "motivation-only": 342
    }
   }
