@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 197 |
-| runnable gates | 255 |
-| explicit `no-gate:` markers | 252 |
+| items | 199 |
+| runnable gates | 257 |
+| explicit `no-gate:` markers | 253 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 252 of the 507 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 253 of the 510 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 56 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-164, BFQ-165, BFQ-166, BFQ-167, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS |
+| `not-started` | 58 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-164, BFQ-165, BFQ-166, BFQ-167, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-TRIO-INTENT, LAB-HUB-ACTIVE-STATE |
 | `in-progress` | 3 | BFQ-46, BFQ-ENV, OID-LAB |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
@@ -6941,6 +6941,83 @@ flag rule: versioning policy section 5.7.
 - `docs/30-design/remedial/rc-15.0.9-integration-record.md`
 
 **Notes.** Merged into dev by #8753 (3a38c6f2, 2026-09-23); not released. CI and CodeQL green. It reaches operators with 15.0.9 (RT-0). Four commits: 03fba725 BF-10 (BFQ-10), e72ba30d follow-up 3 and af8eee45 follow-up 7 (FU-RESIDUALS), e6a50e9a BF-63 renderer guard (RT-BOOTERROR). Follow-up 4 stays on bf/auth (in #8754) and is not repeated here. Destination 15.0.9 (backfix-2 plan section 1a, 2026-09-23). Evidence: suite Node 20.20.0, mongo 7.0.43 - dev 2386/0/3, branch 2392/0/3, +6 exactly the new tests; the rc-c integration record, rc/15.0.9-additions-c b9c9828b, 2508/0/3 on every Node and MongoDB pair, this unit's three break-its red on the final tree.
+
+---
+
+## Controller registration and intent observability
+
+`parcel: platform` &mdash; 2 items
+
+D18 (maintainer, 2026-10-09): two-tier controller registration - well-known
+declarations for backwards compatibility, controller-owned typed registrations
+for extensibility; the hub observes, the controller sends accurately and
+reconciles. The evidence base is docs/30-design/platform/nightscout-intent-
+workflow-landscape-2026-10-09.md. Items here turn its read-derived claims into
+reproduced ones.
+
+| id | title | state | branch | semver | gates |
+|---|---|---|---|---|---|
+| `LAB-TRIO-INTENT` | Simulator lab: Trio override expiry, temp-target upload repeats, downloaded temp-target echo | `not-started` | `main` | n/a | 1 run + 1 no-gate |
+| `LAB-HUB-ACTIVE-STATE` | Lab: cgm-remote-monitor and Nocturne answer 'what is active at t' for the same intent records | `not-started` | `main` | n/a | 1 run |
+
+### `LAB-TRIO-INTENT` &mdash; Simulator lab: Trio override expiry, temp-target upload repeats, downloaded temp-target echo
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `main` |
+| base | `main@2755d722` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** New lab under tools/lab/trio-intent/ (harness notes, Nightscout fixture, results). Reads Trio; changes nothing in Trio.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** lab evidence in this repository; ships nothing
+
+**Gates.**
+
+- `[static]` `test -f tools/lab/trio-intent/results/RESULTS.md`
+  - FAILS until the lab has run and recorded its results. RED on 2026-10-09. The results record says, for each hypothesis below, reproduced or not reproduced, with the Trio commit, the iOS simulator version and a control run.
+- **NO GATE** &mdash; The lab itself needs macOS with Xcode and an iOS simulator (Trio stores adjustments in Core Data and runs its algorithm in the app process). This host is Linux with no Xcode, so the run cannot be automated here; the gate above only records that it happened.
+
+**Evidence.**
+
+- `docs/30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md`
+
+**Notes.** Three read-derived hypotheses from Trio e41c9db37, each to be reproduced or refuted, with a control. (1) Timed override expiry: the algorithm's override query (NSPredicate.lastActiveOverride in OverrideStored+helper.swift, used by OpenAPS.swift) selects on `enabled` and a 24 h start window, not on duration; the only expiry path found is the Home view countdown (HomeRootView+BottomControls.swift). Start a timed override, move the app to the background past its end, and record whether the next determinations still apply the override's percentage, target and SMB settings, and when the override record is closed. Control: the same override with the app in the foreground. A timer elsewhere that the read missed would refute it; report either way, and report a reproduction to Trio maintainers before any public statement. (2) Temp-target upload repeats: the temp-target upload mappers pass no `id`, while updateTempTargetsAsUploaded matches `id IN ids` (NightscoutManager.swift); count POSTs of one temp target to a fixture Nightscout over an hour. (3) Downloaded temp-target echo: FetchTreatmentsManager enables a temp target entered in Nightscout by another client and leaves isUploadedToNS false; record whether Trio re-uploads it and with which enteredBy. Use a local Nightscout fixture with synthetic data only.
+
+### `LAB-HUB-ACTIVE-STATE` &mdash; Lab: cgm-remote-monitor and Nocturne answer 'what is active at t' for the same intent records
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `main` |
+| base | `main@2755d722` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** New lab under tools/lab/hub-active-state/: one synthetic record set, a cgm- remote-monitor probe (ddata.js, profilefunctions.js) and a Nocturne harness (decomposers and StateSpanRepository, run with dotnet), and a results table.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** lab evidence in this repository; ships nothing
+
+**Gates.**
+
+- `[static]` `test -f tools/lab/hub-active-state/results/RESULTS.md`
+  - FAILS until both hubs have been run over the same records and the table recorded. RED on 2026-10-09.
+
+**Evidence.**
+
+- `docs/30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md`
+
+**Notes.** The landscape document's §5 compares the two hubs case by case; the cgm- remote-monitor side is measured (fade2299), the Nocturne side (42275c812) is read-derived. Cases: a timed temp target followed by a cancel; Temporary Override Cancel; a Loop devicestatus override (duration in seconds remaining); a timed profile switch after a permanent one, queried after the timed one expires; an AndroidAPS 3.x profile switch with timeshift in milliseconds; two temp targets with the same millisecond; an out-of-order backfill of two overrides. For each, record each hub's answer at fixed query times. Break-it control for each Nocturne case: a record set where the hubs should agree, confirming the harness can report agreement. Findings that are Nocturne defects go to Nocturne as shared-contract evidence, with the record set attached.
 
 ---
 

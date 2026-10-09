@@ -119,6 +119,16 @@ parcels:
       its last commit, is open as #8754. Decisions: releases/cgm-remote-monitor-15.0.9/decisions.md;
       flag rule: versioning policy section 5.7.
 
+  platform:
+    title: Controller registration and intent observability
+    summary: >
+      D18 (maintainer, 2026-10-09): two-tier controller registration -
+      well-known declarations for backwards compatibility, controller-owned
+      typed registrations for extensibility; the hub observes, the controller
+      sends accurately and reconciles. The evidence base is
+      docs/30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md.
+      Items here turn its read-derived claims into reproduced ones.
+
 items:
 
 # ---------------------------------------------------------------------------
@@ -13433,3 +13443,103 @@ items:
       (Phase 2 next, Phase 5 pending) and "no insertMany usage" (dev uses
       it since 9318a577) are stale. Mark them as snapshots, with a pointer
       to the current state; do not rewrite their history.
+
+# ---------------------------------------------------------------------------
+# PARCEL: platform
+
+  - id: LAB-TRIO-INTENT
+    title: "Simulator lab: Trio override expiry, temp-target upload repeats, downloaded temp-target echo"
+    parcel: platform
+    repo: rag-nightscout-ecosystem-alignment
+    branch: main
+    base: main@2755d722
+    state: not-started
+    pr: []
+    blast_radius: >
+      New lab under tools/lab/trio-intent/ (harness notes, Nightscout
+      fixture, results). Reads Trio; changes nothing in Trio.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: lab evidence in this repository; ships nothing
+    register: []
+    gates:
+      - run: test -f tools/lab/trio-intent/results/RESULTS.md
+        kind: static
+        describe: >
+          FAILS until the lab has run and recorded its results. RED on
+          2026-10-09. The results record says, for each hypothesis below,
+          reproduced or not reproduced, with the Trio commit, the iOS
+          simulator version and a control run.
+      - no-gate: >
+          The lab itself needs macOS with Xcode and an iOS simulator (Trio
+          stores adjustments in Core Data and runs its algorithm in the app
+          process). This host is Linux with no Xcode, so the run cannot be
+          automated here; the gate above only records that it happened.
+    blocks_on: []
+    evidence:
+      - docs/30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md
+    notes: >
+      Three read-derived hypotheses from Trio e41c9db37, each to be
+      reproduced or refuted, with a control. (1) Timed override expiry: the
+      algorithm's override query (NSPredicate.lastActiveOverride in
+      OverrideStored+helper.swift, used by OpenAPS.swift) selects on
+      `enabled` and a 24 h start window, not on duration; the only expiry
+      path found is the Home view countdown
+      (HomeRootView+BottomControls.swift). Start a timed override, move the
+      app to the background past its end, and record whether the next
+      determinations still apply the override's percentage, target and SMB
+      settings, and when the override record is closed. Control: the same
+      override with the app in the foreground. A timer elsewhere that the
+      read missed would refute it; report either way, and report a
+      reproduction to Trio maintainers before any public statement. (2)
+      Temp-target upload repeats: the temp-target upload mappers pass no
+      `id`, while updateTempTargetsAsUploaded matches `id IN ids`
+      (NightscoutManager.swift); count POSTs of one temp target to a
+      fixture Nightscout over an hour. (3) Downloaded temp-target echo:
+      FetchTreatmentsManager enables a temp target entered in Nightscout by
+      another client and leaves isUploadedToNS false; record whether Trio
+      re-uploads it and with which enteredBy. Use a local Nightscout
+      fixture with synthetic data only.
+
+  - id: LAB-HUB-ACTIVE-STATE
+    title: "Lab: cgm-remote-monitor and Nocturne answer 'what is active at t' for the same intent records"
+    parcel: platform
+    repo: rag-nightscout-ecosystem-alignment
+    branch: main
+    base: main@2755d722
+    state: not-started
+    pr: []
+    blast_radius: >
+      New lab under tools/lab/hub-active-state/: one synthetic record set,
+      a cgm-remote-monitor probe (ddata.js, profilefunctions.js) and a
+      Nocturne harness (decomposers and StateSpanRepository, run with
+      dotnet), and a results table.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: lab evidence in this repository; ships nothing
+    register: []
+    gates:
+      - run: test -f tools/lab/hub-active-state/results/RESULTS.md
+        kind: static
+        describe: >
+          FAILS until both hubs have been run over the same records and the
+          table recorded. RED on 2026-10-09.
+    blocks_on: []
+    evidence:
+      - docs/30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md
+    notes: >
+      The landscape document's §5 compares the two hubs case by case; the
+      cgm-remote-monitor side is measured (fade2299), the Nocturne side
+      (42275c812) is read-derived. Cases: a timed temp target followed by a
+      cancel; Temporary Override Cancel; a Loop devicestatus override
+      (duration in seconds remaining); a timed profile switch after a
+      permanent one, queried after the timed one expires; an AndroidAPS 3.x
+      profile switch with timeshift in milliseconds; two temp targets with
+      the same millisecond; an out-of-order backfill of two overrides. For
+      each, record each hub's answer at fixed query times. Break-it
+      control for each Nocturne case: a record set where the hubs should
+      agree, confirming the harness can report agreement. Findings that
+      are Nocturne defects go to Nocturne as shared-contract evidence, with
+      the record set attached.

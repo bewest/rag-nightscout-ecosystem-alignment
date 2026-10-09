@@ -23,8 +23,8 @@ current and the prose is stale.
 |---|---|---:|---:|---:|
 | **Remedial** | `phase0`, `register-open`, `docs-truth` | 144 | 44 | 6 |
 | **Modernization** | `release-train` | 32 | 5 | 2 |
-| **Multitenant** | `tenancy` | 19 | 7 | 3 |
-| | **total** | **197** | **56** | **11** |
+| **Multitenant** | `tenancy`, `platform` | 21 | 9 | 3 |
+| | **total** | **199** | **58** | **11** |
 
 <!-- END GENERATED: horizons -->
 
@@ -81,7 +81,7 @@ gates. The files newly conflicting on cuts 2–4 were touched by the merged Phas
 PRs, so every merge to `dev` raises the rebase cost of the train. Whether the train reaches `dev`
 by merge or by rebase is open (`RT-PROPAGATION`); so far every propagation has been a merge.
 
-**Multitenant** — making bulk hosting feasible. Decisions D1–D17 are recorded in the
+**Multitenant** — making bulk hosting feasible. Decisions D1–D18 are recorded in the
 [execution plan](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md);
 D17 is adopted in three of four rows, with row 2 (cohort-wide human identity) held
 pending `T30-ORY-PROOF`. Most implementation is not started, and several items are
@@ -210,6 +210,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 | `tenancy` | 7 |  |  | 1 | 7 |  |  | 1 | 2 | 1 |  |  | **19** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  | 2 |  |  |  | **10** |
 | `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
+| `platform` | 2 |  |  |  |  |  |  |  |  |  |  |  | **2** |
 
 <!-- END GENERATED: state-matrix -->
 
@@ -245,14 +246,14 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 163 | 83% |
+| Maintainer | 165 | 83% |
 | SECURITY reviewer | 15 | 8% |
 | Maintainer + a second human | 7 | 4% |
 | SAFETY reviewer | 6 | 3% |
 | Whoever edits it next | 3 | 2% |
 | Unassigned | 2 | 1% |
 | Upstream reviewers | 1 | 1% |
-| **total** | **197** | |
+| **total** | **199** | |
 
 <!-- END GENERATED: reviewer-load -->
 
@@ -316,7 +317,7 @@ measurement.
 | what 15.0.9 still waits on | [`ROADMAP.md` §1](ROADMAP.md#1-the-next-release-1509) (generated) |
 | Phase 0 PR ordering and coupling | [`../30-design/remedial/phase0-pr-sequencing-2026-09-15.md`](../30-design/remedial/phase0-pr-sequencing-2026-09-15.md) |
 | the release train and its order | [`../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md`](../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md) |
-| tenancy decisions D1–D17 | [`../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) |
+| tenancy decisions D1–D18 | [`../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) |
 | the governance / zero-reviews finding | [`../30-design/remedial/maintainer-release-brief-2026-09-15.md`](../30-design/remedial/maintainer-release-brief-2026-09-15.md) |
 
 <!-- BEGIN GENERATED: provenance -->

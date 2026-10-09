@@ -65,14 +65,16 @@ BLOCK_RE = re.compile(
 # The three horizons the maintainer works in, and the parcels that serve each.
 # `docs-truth` sits under remedial because a document that contradicts itself
 # is a defect in the same sense the register means: something that will mislead
-# whoever reads it next.
+# whoever reads it next. `platform` sits under multitenant because its decision
+# (D18, controller registration) is recorded in the tenancy execution plan beside
+# D11, which it extends.
 HORIZONS = [
     ("Remedial", "find and fix defects that already ship",
      ["phase0", "register-open", "docs-truth"]),
     ("Modernization", "bring dependencies and code up to date",
      ["release-train"]),
     ("Multitenant", "operate at bulk scale, affordably",
-     ["tenancy"]),
+     ["tenancy", "platform"]),
 ]
 
 # How `review:` prose maps to the kind of person an item is waiting for. The
