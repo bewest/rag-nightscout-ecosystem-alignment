@@ -5046,6 +5046,13 @@ items:
       (minor). U2 is dropped; U7 (every path reaches the storage socket) is
       held out of the contract until BF-164's question is answered.
 
+      Q3 devicestatus re-decided 2026-10-12, after the corpus showed Loop
+      writing 3,078 groups of distinct statuses that share created_at+device:
+      the key identifies identical retries only (unchanged, nothing written);
+      a differing body is a new record, on every path. Loop's upload code is
+      being read to say what the same-key pairs are, for a possible later
+      merge change.
+
 
 # ---------------------------------------------------------------------------
 # PARCEL: docs-truth
