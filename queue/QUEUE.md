@@ -41,7 +41,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 58 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-164, BFQ-165, BFQ-166, BFQ-167, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-TRIO-INTENT, LAB-HUB-ACTIVE-STATE |
+| `not-started` | 57 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-164, BFQ-165, BFQ-166, BFQ-167, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-TRIO-INTENT |
 | `in-progress` | 3 | BFQ-46, BFQ-ENV, OID-LAB |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
@@ -49,7 +49,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `in-flight-upstream` | 1 | BFQ-09 |
 | `merged-upstream` | 87 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 6 | RT-PROPAGATION, RT-0, T30-RESEARCH, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG |
-| `done` | 6 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, DOC-VIEWS, DOC-LINKS, RT-SOAK |
+| `done` | 7 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, DOC-VIEWS, DOC-LINKS, RT-SOAK, LAB-HUB-ACTIVE-STATE |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 3 | BFQ-71, BFQ-41, BFQ-141 |
 | `answered` | 1 | RT-D3 |
@@ -6958,7 +6958,7 @@ reproduced ones.
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
 | `LAB-TRIO-INTENT` | Simulator lab: Trio override expiry, temp-target upload repeats, downloaded temp-target echo | `not-started` | `main` | n/a | 1 run + 1 no-gate |
-| `LAB-HUB-ACTIVE-STATE` | Lab: cgm-remote-monitor and Nocturne answer 'what is active at t' for the same intent records | `not-started` | `main` | n/a | 1 run |
+| `LAB-HUB-ACTIVE-STATE` | Lab: cgm-remote-monitor and Nocturne answer 'what is active at t' for the same intent records | `done` | `main` | n/a | 1 run |
 
 ### `LAB-TRIO-INTENT` &mdash; Simulator lab: Trio override expiry, temp-target upload repeats, downloaded temp-target echo
 
@@ -6994,7 +6994,7 @@ reproduced ones.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `done` |
 | repo | `rag-nightscout-ecosystem-alignment` |
 | branch | `main` |
 | base | `main@2755d722` |
@@ -7002,7 +7002,7 @@ reproduced ones.
 | semver | `n/a` |
 | review | maintainer |
 
-**Blast radius.** New lab under tools/lab/hub-active-state/: one synthetic record set, a cgm- remote-monitor probe (ddata.js, profilefunctions.js) and a Nocturne harness (decomposers and StateSpanRepository, run with dotnet), and a results table.
+**Blast radius.** New lab under tools/lab/hub-active-state/: one synthetic record set, a cgm- remote-monitor probe (ddata.js, profilefunctions.js) and a Nocturne harness (decomposers and StateSpanRepository, run with dotnet), and a results table. Landscape §5 updated in place.
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
@@ -7011,13 +7011,14 @@ reproduced ones.
 **Gates.**
 
 - `[static]` `test -f tools/lab/hub-active-state/results/RESULTS.md`
-  - FAILS until both hubs have been run over the same records and the table recorded. RED on 2026-10-09.
+  - FAILS until both hubs have been run over the same records and the table recorded. RED on 2026-10-09; GREEN on 2026-10-12, after tools/lab/hub-active-state/run.sh ran cgm-remote-monitor fade2299 and Nocturne 42275c812 (GitHub archives of both commits) over records/cases.json.
 
 **Evidence.**
 
 - `docs/30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md`
+- `tools/lab/hub-active-state/results/RESULTS.md`
 
-**Notes.** The landscape document's §5 compares the two hubs case by case; the cgm- remote-monitor side is measured (fade2299), the Nocturne side (42275c812) is read-derived. Cases: a timed temp target followed by a cancel; Temporary Override Cancel; a Loop devicestatus override (duration in seconds remaining); a timed profile switch after a permanent one, queried after the timed one expires; an AndroidAPS 3.x profile switch with timeshift in milliseconds; two temp targets with the same millisecond; an out-of-order backfill of two overrides. For each, record each hub's answer at fixed query times. Break-it control for each Nocturne case: a record set where the hubs should agree, confirming the harness can report agreement. Findings that are Nocturne defects go to Nocturne as shared-contract evidence, with the record set attached.
+**Notes.** The landscape document's §5 compares the two hubs case by case; the cgm- remote-monitor side is measured (fade2299), the Nocturne side (42275c812) is read-derived. Cases: a timed temp target followed by a cancel; Temporary Override Cancel; a Loop devicestatus override (duration in seconds remaining); a timed profile switch after a permanent one, queried after the timed one expires; an AndroidAPS 3.x profile switch with timeshift in milliseconds; two temp targets with the same millisecond; an out-of-order backfill of two overrides. For each, record each hub's answer at fixed query times. Break-it control for each Nocturne case: a record set where the hubs should agree, confirming the harness can report agreement. Findings that are Nocturne defects go to Nocturne as shared-contract evidence, with the record set attached. Measured 2026-10-12 (tools/lab/hub-active-state/results/RESULTS.md): Nocturne on SQLite through its real decomposers, StateSpanRepository, DeduplicationService, ActiveProfileResolver and BasalRateResolver; cgm-remote- monitor through ddata.js, profilefunctions.js and the loop and override plugins. 12 of 18 case rows agree on the latest-span read; all 20 control rows agree on every reading; every case has a perturbation that moves at least one hub. §5 confirmed for the devicestatus duration unit, the timed profile switch, the AAPS timeshift and the cancel span; the same-millisecond row is corrected (deduplication hides the second arrival on list reads, as cgm- remote-monitor drops it; GetActiveAtAsync still sees it); a stored Temporary Override Cancel is ignored by both hubs; the out-of-order backfill leaves two open Override spans. Not run: either HTTP API, Nocturne on PostgreSQL. Nothing filed with Nocturne.
 
 ---
 

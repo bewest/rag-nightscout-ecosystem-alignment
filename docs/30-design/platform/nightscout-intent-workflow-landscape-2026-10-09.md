@@ -163,14 +163,26 @@ Six properties. A controller's intent model has each of them; an entity collecti
 cgm-remote-monitor recomputes active state on every load; Nocturne materialises
 `StateSpan`s on write and supersedes open spans within exclusive categories.
 
+**Status 2026-10-12: every row below is measured on both hubs** by the lab
+[`tools/lab/hub-active-state`](../../../tools/lab/hub-active-state/results/RESULTS.md)
+(cgm-remote-monitor `fade2299`, Nocturne `42275c812` on SQLite, one synthetic record set, a
+control per case where the hubs agree). Against the 2026-10-09 text, whose Nocturne cells were
+read-derived: the "Agree?" cells of the cancel rows change, the same-millisecond Nocturne cell is
+corrected, the backfill row is new, and the other cells are confirmed. The careportal storage
+claim in the override-cancel row is still read-derived. "Agree?" means the two hubs report the same
+active state at the lab's query times; for Nocturne, "latest span" is `GetActiveAtAsync(category,
+state: null, t)` and "list" is `GetStateSpansAsync` over t, which hides records deduplication
+marked non-primary.
+
 | Intent | cgm-remote-monitor | Nocturne | Agree? |
 |---|---|---|---|
-| Temp target + later cancel | cancel truncates the earlier target (**measured**: 60-min target + cancel at 20 → one 20-min window) | cancel becomes a separate open span with state `Cancelled`; supersession closes only *open* spans, so a timed target is not shortened (test pins the cancel span; no test covers timed-then-cancel) | **no** |
-| `Temporary Override Cancel` | not stored by careportal (APNs request only) | not classified; produces no span | — |
-| Loop devicestatus override | `timestamp` + `duration` read as **seconds** | span per devicestatus, starting at devicestatus time, `duration` read as **minutes** (pinned by a test) | **no** |
-| Timed profile switch after a permanent one | falls back to the permanent profile when the timed one expires (**measured**) | closes the permanent span at the timed start; nothing covers t after expiry | **no** |
-| AAPS `timeshift` | milliseconds (AAPS 3.x wire unit) | hours, modulo 24 | **no** |
-| Same-millisecond temp targets | keeps the first, drops the second (**measured**) | both upserted | **no** |
+| Temp target + later cancel | cancel truncates the earlier target (**measured**: 60-min target + cancel at 20 → one 20-min window) | cancel becomes a separate span with state `Cancelled` and no end; the timed target keeps its 60 min (**measured**) | latest span: **yes** (it is the Cancelled one); `Active`-state and list reads: **no** until the target's own end, and the open Cancelled span stays in list reads afterwards |
+| `Temporary Override Cancel` | not stored by careportal (APNs request only, read-derived); a stored one has no duration and is ignored (**measured**) | not classified; produces no record (**measured**) | **yes**: in both, the override runs its full duration |
+| Loop devicestatus override | latest devicestatus `override`; `timestamp` + `duration` read as **seconds** (**measured**) | one span per devicestatus, starting at devicestatus time, `duration` read as **minutes**; spans are not superseded, and `active: false` closes nothing (**measured**) | **no** (30-min override: active at +40 and +120 in Nocturne only) |
+| Timed profile switch after a permanent one | falls back to the permanent profile when the timed one expires (**measured**) | closes the permanent span at the timed start; no span after expiry, so basal resolves against profile `Default` (**measured**) | **no** |
+| AAPS `timeshift` | milliseconds (AAPS 3.x wire unit); schedule read at t − shift (**measured**) | hours, modulo 24: a millisecond value becomes 0; an hours value is applied as t + shift (**measured**) | **no** for any non-zero shift |
+| Same-millisecond temp targets | keeps the first, drops the second (**measured**) | both stored; deduplication marks the second arrival non-primary, so list reads show the first; `GetActiveAtAsync` sees both (**measured**) | list: **yes**; latest span: **no** once the first-arrived target ends before the second |
+| Out-of-order backfill of two open overrides | no truncation of `Temporary Override` treatments in either order (**measured**) | supersession closes only spans starting at or before the new one, so the backfilled earlier span stays open: two open spans (**measured**) | list: **yes** out of order, **no** in time order (Nocturne supersedes); latest span: **no** |
 
 Two hub writes do not reach any controller: Nocturne `POST /api/v4/state-spans` writes
 Override, TemporaryTarget or Profile spans directly, and careportal or nightguard temp targets are

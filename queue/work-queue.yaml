@@ -13508,13 +13508,13 @@ items:
     repo: rag-nightscout-ecosystem-alignment
     branch: main
     base: main@2755d722
-    state: not-started
+    state: done
     pr: []
     blast_radius: >
       New lab under tools/lab/hub-active-state/: one synthetic record set,
       a cgm-remote-monitor probe (ddata.js, profilefunctions.js) and a
       Nocturne harness (decomposers and StateSpanRepository, run with
-      dotnet), and a results table.
+      dotnet), and a results table. Landscape §5 updated in place.
     review: maintainer
     operator_visible: ""
     semver: n/a
@@ -13525,10 +13525,14 @@ items:
         kind: static
         describe: >
           FAILS until both hubs have been run over the same records and the
-          table recorded. RED on 2026-10-09.
+          table recorded. RED on 2026-10-09; GREEN on 2026-10-12, after
+          tools/lab/hub-active-state/run.sh ran cgm-remote-monitor fade2299 and
+          Nocturne 42275c812 (GitHub archives of both commits) over
+          records/cases.json.
     blocks_on: []
     evidence:
       - docs/30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md
+      - tools/lab/hub-active-state/results/RESULTS.md
     notes: >
       The landscape document's §5 compares the two hubs case by case; the
       cgm-remote-monitor side is measured (fade2299), the Nocturne side
@@ -13543,3 +13547,18 @@ items:
       agree, confirming the harness can report agreement. Findings that
       are Nocturne defects go to Nocturne as shared-contract evidence, with
       the record set attached.
+
+      Measured 2026-10-12 (tools/lab/hub-active-state/results/RESULTS.md):
+      Nocturne on SQLite through its real decomposers, StateSpanRepository,
+      DeduplicationService, ActiveProfileResolver and BasalRateResolver;
+      cgm-remote-monitor through ddata.js, profilefunctions.js and the loop
+      and override plugins. 12 of 18 case rows agree on the latest-span
+      read; all 20 control rows agree on every reading; every case has a
+      perturbation that moves at least one hub. §5 confirmed for the
+      devicestatus duration unit, the timed profile switch, the AAPS
+      timeshift and the cancel span; the same-millisecond row is corrected
+      (deduplication hides the second arrival on list reads, as
+      cgm-remote-monitor drops it; GetActiveAtAsync still sees it); a
+      stored Temporary Override Cancel is ignored by both hubs; the
+      out-of-order backfill leaves two open Override spans. Not run: either
+      HTTP API, Nocturne on PostgreSQL. Nothing filed with Nocturne.
