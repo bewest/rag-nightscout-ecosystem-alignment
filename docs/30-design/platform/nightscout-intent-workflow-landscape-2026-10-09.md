@@ -3,7 +3,7 @@
 *Contributor-facing.* **Snapshot — describes 2026-10-09. Status: current; the evidence for D18.** Every claim is **read-derived** (from source, a hypothesis about behaviour) unless marked
 **measured**. Sources and commits are in §1. Current decisions: [execution plan
 §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
-**Corrected in place 2026-10-12:** the §10 rows for the hub-sync design and `specs/sync/registrations/` record what the
+**Corrected in place 2026-10-12:** §5 is measured on both hubs (TL;DR and §12 follow it); the §10 rows for the hub-sync design and `specs/sync/registrations/` record what the
 registrations now declare and what remains.
 
 **The question.** Nightscout's API v1 and v3 manage *entities*: create, read, update and delete
@@ -29,7 +29,7 @@ controller is responsible for sending data accurately and for syncing and reconc
 | **Single records** | Entity CRUD works. Every controller keeps one document per instance and amends or deletes it. Each encodes identity and "ended" differently (§4) |
 | **Six things CRUD cannot carry** | definition identity, concurrent intent slots with a composition rule, requested vs applied, end reason, initiator, and the command → acknowledgement → outcome link (§2) |
 | **Every controller already built them** | each in its own place: AAPS on the NS `settings` collection (dev), Loop and Trio over APNs replies and failure `Note`s, iAPS over NS `Announcement` treatments. None of it is typed, and most of it is invisible to the hub (§3, §6) |
-| **The hubs disagree on "what is active now"** | cgm-remote-monitor and Nocturne differ on temp-target cancel, override cancel, override duration units, profile fallback after a timed switch, and AAPS timeshift units (§5) |
+| **The hubs disagree on "what is active now"** | Measured on both hubs: cgm-remote-monitor and Nocturne differ on temp-target cancel, devicestatus override duration units, profile fallback after a timed switch, AAPS timeshift units, and out-of-order override backfill; they agree on `Temporary Override Cancel` (§5) |
 | **Composition is controller-specific** | Loop: pre-meal target wins, override factor applies. Trio/iAPS: temp target wins the target, override factors apply. AAPS: temp target replaces targets, profile-switch percentage has already scaled basal/ISF/CR. No hub composes, and under the stated roles none should (§7) |
 | **Cowpaths already exist** | Loop and Trio publish preset definitions in the `profile` document; Nightscout's careportal builds its remote-override picker from Loop's. AAPS dev publishes scene and automation definitions plus active-scene state. These are registrations in all but name (§8) |
 
@@ -298,8 +298,9 @@ depends on app lifecycle and upload bookkeeping) and `LAB-HUB-ACTIVE-STATE` (§5
 * Anything about AAPS from data; no AAPS closed-loop site in the corpus.
 * The Trio `profile.overridePresets` name join; no Trio profile document in the corpus.
 * Order of multiplication between a Trio override factor and a TT `sensitivityRatio`.
-* Nocturne behaviour for a timed temp target followed by a cancel, and for out-of-order backfill
-  leaving two open spans; read-derived, no test covers them.
+* Either hub's HTTP write path (upsert, dedup on insert), Nocturne on PostgreSQL (the
+  same-millisecond tie is broken by insertion order on SQLite), and the cgm-remote-monitor client
+  renderer; the §5 lab ran the storage and active-state code directly.
 * Whether shipping AAPS sites enable the `NsClientAccept*` preferences.
 * xDrip+ remote and follower paths; the NightscoutKit fork LoopCaregiver uses.
 * Behaviour that depends on app lifecycle (foreground vs background) in any controller; nothing
