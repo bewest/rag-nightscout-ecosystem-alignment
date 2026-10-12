@@ -360,8 +360,10 @@ not what it means for dosing. The hub still records what the controller reports 
 
 **Status.** Rules 1–5 are schema and generator work in this repository, queued as `SCHEMA-REG-EXT`;
 its proof is the three generated registrations still validating plus an unfamiliar test
-registration that uses every rule. Rule 6 and the API a hub derives from a registration are hub
-implementation, not yet queued.
+registration that uses every rule. Rule 6 is specified as `SPEC-REG-NEGOTIATE` (capability
+document, submit and fallback contract, conformance fixtures); the API a hub derives from a
+registration is `HUB-REG-CRM` for cgm-remote-monitor and `HUB-REG-NOCTURNE`, a shared-contract
+proposal to Nocturne. All three follow `SCHEMA-REG-EXT`.
 
 ### 2.7 D12 — what each repository is for
 

@@ -13569,6 +13569,126 @@ items:
       the landscape §10 row. Rule 6 (negotiation) and the hub-derived API
       are hub implementation and are out of scope here.
 
+  - id: SPEC-REG-NEGOTIATE
+    title: "Registration negotiation: the hub capability document, submit and fallback contract (D18 addendum rule 6)"
+    parcel: platform
+    repo: rag-nightscout-ecosystem-alignment
+    branch: main
+    base: main@7f1d1f86
+    state: not-started
+    pr: []
+    blast_radius: >
+      New specs/sync/hub-capabilities.schema.json, a negotiation section in
+      the hub-sync architecture doc, and conformance fixtures under
+      specs/sync/conformance/ that any hub implementation is tested
+      against. Ships nothing.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: specification in this repository; ships nothing
+    register: []
+    gates:
+      - run: python -m pytest -q tools/nsschema/test_registration_negotiation.py
+        kind: unit
+        describe: >
+          FAILS until the capability schema and the conformance fixtures
+          exist. RED on 2026-10-12 (the test file does not exist). The tests
+          check every fixture against the schemas and the documented
+          outcome: accepted, accepted with ignored fields, rejected (untyped
+          extension, unsupported grammar major), and fallback to the
+          well-known carrier, each with a passing control.
+    blocks_on: [SCHEMA-REG-EXT]
+    evidence:
+      - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
+    notes: >
+      D18 addendum rule 6 (maintainer, 2026-10-12). The hub publishes the
+      grammar versions, kinds, versions and capabilities it supports at a
+      .well-known address; a controller submits its registration and reads
+      back what was accepted; anything not accepted is written as its
+      well-known carrier (stateSpans[].wire). Specify: the capability
+      document; the submit request and response (accepted, ignored,
+      rejected with reasons); how a registration is updated and retired
+      by the controller that owns it (D18: the controller owns the
+      lifecycle); authorisation (which credential may register for a
+      tenant, consistent with D13-D17); and the four compatibility cells
+      in the addendum. Specify, do not implement; both hubs implement
+      against the same fixtures.
+
+  - id: HUB-REG-CRM
+    title: "cgm-remote-monitor: accept registrations and derive typed storage, validation and query from them"
+    parcel: platform
+    repo: cgm-remote-monitor
+    branch: ""
+    base: origin/dev
+    state: not-started
+    pr: []
+    blast_radius: >
+      Not designed yet. Expected: the .well-known capability document, a
+      registration submit/read endpoint behind a feature flag, per-kind
+      validation of typed fields and extensions on write, and query by
+      declared fields. The conformance harness lives in this repository
+      (D12), requiring the shipping modules by path.
+    review: maintainer
+    operator_visible: >
+      Not written yet. It would say: controllers that publish a
+      registration get typed storage for their own features; nothing
+      changes for controllers that do not.
+    semver: minor
+    semver_reason: new optional endpoints and capability document behind a flag; existing writes unchanged
+    register: []
+    gates:
+      - no-gate: >
+          Not started; blocked on the grammar and the negotiation contract.
+          The behaviour gate will be the SPEC-REG-NEGOTIATE conformance
+          fixtures run against a booted server, plus a control showing an
+          unregistered controller's writes are byte-identical to before.
+    blocks_on: [SPEC-REG-NEGOTIATE]
+    evidence:
+      - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
+    notes: >
+      D18 and its addendum (maintainer, 2026-10-09 and 2026-10-12): the
+      hub derives typed API from a registration and stays an observer; it
+      never computes composition or dosing state. Which hub codebase
+      carries this (single-tenant cgm-remote-monitor first, or the
+      multitenant target only) is for the maintainer to decide when the
+      item starts; ask before designing.
+
+  - id: HUB-REG-NOCTURNE
+    title: "Nocturne: propose the registration grammar and negotiation as a shared contract, with the hub active-state evidence"
+    parcel: platform
+    repo: rag-nightscout-ecosystem-alignment
+    branch: main
+    base: main@7f1d1f86
+    state: not-started
+    pr: []
+    blast_radius: >
+      A proposal packet in this repository for the Nocturne maintainers:
+      the grammar, the capability document, the conformance fixtures, and
+      the LAB-HUB-ACTIVE-STATE record set and results. Nothing is filed or
+      sent by an agent; the maintainer sends it.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: proposal in this repository; ships nothing
+    register: []
+    gates:
+      - no-gate: >
+          Not started; blocked on the negotiation contract. Done when the
+          maintainer has sent the packet; that cannot be checked from here.
+    blocks_on: [SPEC-REG-NEGOTIATE]
+    evidence:
+      - tools/lab/hub-active-state/results/RESULTS.md
+      - docs/30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md
+    notes: >
+      Nocturne is a fellow hub implementation. Present the grammar and the
+      fixtures as a contract both hubs implement, and the lab results as
+      what each hub answers for the same records (devicestatus override
+      duration unit, profile fallback after a timed switch, AAPS
+      timeshift unit and sign, cancel spans, out-of-order backfill), not
+      as a comparison. StateSpan is the natural store for the applied
+      side; the proposal says what a registration would add (typed
+      metadata, requested vs applied, end reason).
+
   - id: LAB-HUB-ACTIVE-STATE
     title: "Lab: cgm-remote-monitor and Nocturne answer 'what is active at t' for the same intent records"
     parcel: platform

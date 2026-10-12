@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 200 |
-| runnable gates | 259 |
-| explicit `no-gate:` markers | 253 |
+| items | 203 |
+| runnable gates | 260 |
+| explicit `no-gate:` markers | 255 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 253 of the 512 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 255 of the 515 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 58 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-164, BFQ-165, BFQ-166, BFQ-167, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-TRIO-INTENT, SCHEMA-REG-EXT |
+| `not-started` | 61 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-164, BFQ-165, BFQ-166, BFQ-167, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-TRIO-INTENT, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, HUB-REG-CRM, HUB-REG-NOCTURNE |
 | `in-progress` | 3 | BFQ-46, BFQ-ENV, OID-LAB |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
@@ -6946,7 +6946,7 @@ flag rule: versioning policy section 5.7.
 
 ## Controller registration and intent observability
 
-`parcel: platform` &mdash; 3 items
+`parcel: platform` &mdash; 6 items
 
 D18 (maintainer, 2026-10-09): two-tier controller registration - well-known
 declarations for backwards compatibility, controller-owned typed registrations
@@ -6959,6 +6959,9 @@ reproduced ones.
 |---|---|---|---|---|---|
 | `LAB-TRIO-INTENT` | Simulator lab: Trio override expiry, temp-target upload repeats, downloaded temp-target echo | `not-started` | `main` | n/a | 1 run + 1 no-gate |
 | `SCHEMA-REG-EXT` | Registration grammar: must-ignore, typed extensions, open vocabularies, per-kind versions, horizons (D18 addendum rules 1-5) | `not-started` | `main` | n/a | 2 run |
+| `SPEC-REG-NEGOTIATE` | Registration negotiation: the hub capability document, submit and fallback contract (D18 addendum rule 6) | `not-started` | `main` | n/a | 1 run |
+| `HUB-REG-CRM` | cgm-remote-monitor: accept registrations and derive typed storage, validation and query from them | `not-started` | `-` | minor | 0 run + 1 no-gate |
+| `HUB-REG-NOCTURNE` | Nocturne: propose the registration grammar and negotiation as a shared contract, with the hub active-state evidence | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `LAB-HUB-ACTIVE-STATE` | Lab: cgm-remote-monitor and Nocturne answer 'what is active at t' for the same intent records | `done` | `main` | n/a | 1 run |
 
 ### `LAB-TRIO-INTENT` &mdash; Simulator lab: Trio override expiry, temp-target upload repeats, downloaded temp-target echo
@@ -7022,6 +7025,95 @@ reproduced ones.
 - `docs/30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md`
 
 **Notes.** Implements the D18 addendum (execution plan §2.6.1, maintainer 2026-10-12), rules 1-5. Every extensible field is typed: controller data is accepted only with a type declaration. (1) must-ignore for unknown grammar fields within v1, plus `extensions` keyed by a reverse-DNS namespace, each with a type declaration. (2) settings.fields[], replayInputs[] and extension fields become objects: a restricted JSON Schema fragment for the type (fix the subset and say why), unit, range, horizon, sensitivity label, evidence; reuse the typed field descriptions already in controller-settings.schema.json rather than restating them. (3) endedEncoding, command transport, replayInputs[].status and the discriminator test take a shared value or other + controllerTerm. (4) per-kind version, served versions, one stored version, optional lossless mapping; no conversion without one. (5) horizon per document, kind and field (cycle, span, effective-dated, definition, aggregate) with cadence and retention; availability gains experimental. Keep every change additive to v1 unless a rule cannot be, and if so stop and report. The generated registrations should gain types only where the evidence gives them; omit rather than guess. Update the hub-sync architecture doc's schema field list and the landscape §10 row. Rule 6 (negotiation) and the hub-derived API are hub implementation and are out of scope here.
+
+### `SPEC-REG-NEGOTIATE` &mdash; Registration negotiation: the hub capability document, submit and fallback contract (D18 addendum rule 6)
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `main` |
+| base | `main@7f1d1f86` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| blocks on | `SCHEMA-REG-EXT` |
+
+**Blast radius.** New specs/sync/hub-capabilities.schema.json, a negotiation section in the hub- sync architecture doc, and conformance fixtures under specs/sync/conformance/ that any hub implementation is tested against. Ships nothing.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** specification in this repository; ships nothing
+
+**Gates.**
+
+- `[unit]` `python -m pytest -q tools/nsschema/test_registration_negotiation.py`
+  - FAILS until the capability schema and the conformance fixtures exist. RED on 2026-10-12 (the test file does not exist). The tests check every fixture against the schemas and the documented outcome: accepted, accepted with ignored fields, rejected (untyped extension, unsupported grammar major), and fallback to the well-known carrier, each with a passing control.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+
+**Notes.** D18 addendum rule 6 (maintainer, 2026-10-12). The hub publishes the grammar versions, kinds, versions and capabilities it supports at a .well-known address; a controller submits its registration and reads back what was accepted; anything not accepted is written as its well-known carrier (stateSpans[].wire). Specify: the capability document; the submit request and response (accepted, ignored, rejected with reasons); how a registration is updated and retired by the controller that owns it (D18: the controller owns the lifecycle); authorisation (which credential may register for a tenant, consistent with D13-D17); and the four compatibility cells in the addendum. Specify, do not implement; both hubs implement against the same fixtures.
+
+### `HUB-REG-CRM` &mdash; cgm-remote-monitor: accept registrations and derive typed storage, validation and query from them
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `origin/dev` |
+| worktree | `-` |
+| semver | `minor` |
+| review | maintainer |
+| blocks on | `SPEC-REG-NEGOTIATE` |
+
+**Blast radius.** Not designed yet. Expected: the .well-known capability document, a registration submit/read endpoint behind a feature flag, per-kind validation of typed fields and extensions on write, and query by declared fields. The conformance harness lives in this repository (D12), requiring the shipping modules by path.
+
+**What an operator sees.** Not written yet. It would say: controllers that publish a registration get typed storage for their own features; nothing changes for controllers that do not.
+
+**Why `minor`.** new optional endpoints and capability document behind a flag; existing writes unchanged
+
+**Gates.**
+
+- **NO GATE** &mdash; Not started; blocked on the grammar and the negotiation contract. The behaviour gate will be the SPEC-REG-NEGOTIATE conformance fixtures run against a booted server, plus a control showing an unregistered controller's writes are byte-identical to before.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+
+**Notes.** D18 and its addendum (maintainer, 2026-10-09 and 2026-10-12): the hub derives typed API from a registration and stays an observer; it never computes composition or dosing state. Which hub codebase carries this (single-tenant cgm-remote-monitor first, or the multitenant target only) is for the maintainer to decide when the item starts; ask before designing.
+
+### `HUB-REG-NOCTURNE` &mdash; Nocturne: propose the registration grammar and negotiation as a shared contract, with the hub active-state evidence
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `main` |
+| base | `main@7f1d1f86` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| blocks on | `SPEC-REG-NEGOTIATE` |
+
+**Blast radius.** A proposal packet in this repository for the Nocturne maintainers: the grammar, the capability document, the conformance fixtures, and the LAB-HUB- ACTIVE-STATE record set and results. Nothing is filed or sent by an agent; the maintainer sends it.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** proposal in this repository; ships nothing
+
+**Gates.**
+
+- **NO GATE** &mdash; Not started; blocked on the negotiation contract. Done when the maintainer has sent the packet; that cannot be checked from here.
+
+**Evidence.**
+
+- `tools/lab/hub-active-state/results/RESULTS.md`
+- `docs/30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md`
+
+**Notes.** Nocturne is a fellow hub implementation. Present the grammar and the fixtures as a contract both hubs implement, and the lab results as what each hub answers for the same records (devicestatus override duration unit, profile fallback after a timed switch, AAPS timeshift unit and sign, cancel spans, out-of-order backfill), not as a comparison. StateSpan is the natural store for the applied side; the proposal says what a registration would add (typed metadata, requested vs applied, end reason).
 
 ### `LAB-HUB-ACTIVE-STATE` &mdash; Lab: cgm-remote-monitor and Nocturne answer 'what is active at t' for the same intent records
 
