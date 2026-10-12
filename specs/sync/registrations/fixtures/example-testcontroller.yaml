@@ -1,0 +1,177 @@
+# SYNTHETIC TEST FIXTURE. Describes no real controller, product or person.
+#
+# A controller-owned registration for a fictional controller ("Example"
+# TestController) that exercises every rule of the D18 addendum
+# (docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
+# §2.6.1). It is read by tools/nsschema/test_registration_grammar.py and
+# validated, never regenerated, by `python -m nsschema.sync_model --check`.
+#
+# Where each rule is exercised:
+#   1 must-ignore     spec.futureGrammarMember, stateSpans[0].futureSpanMember
+#   1 extensions      spec.extensions["com.example.testcontroller.adaptiveTargets"]
+#   2 typed fields    settings.fields, replayInputs, extension fields
+#   2 unlabelled      settings.fields[name=exampleUnlabelledSetting]
+#   3 other + term    endedEncoding, transport, replayInputs status,
+#                     discriminator test, endReasons
+#   4 versions        stateSpans[0] serves 1 and 2, stores 2, no mapping
+#   5 horizons        documents, kinds, fields, extension; an experimental
+#                     aggregate-horizon kind (stateSpans[1])
+apiVersion: nightscout.dev/sync/v1
+kind: ControllerStateModel
+metadata:
+  vendor: Example
+  product: TestController
+  algorithmFamily: other
+  tier: controller-owned
+  versionRange: "0.0.1-test"
+  source: synthetic fixture for tools/nsschema/test_registration_grammar.py
+spec:
+  cadence:
+    nominalSeconds: 300
+  futureGrammarMember:
+    note: a member a later v1 grammar might define; a v1 reader keeps it and ignores it
+  documents:
+  - collection: devicestatus
+    discriminator:
+      path: example
+      test:
+        value: other
+        controllerTerm: has-example-signature
+    decomposesTo:
+    - ApsSnapshot
+    horizon:
+      class: cycle
+      retention: P90D
+  - collection: settings
+    decomposesTo:
+    - TherapySettings
+    horizon:
+      class: effective-dated
+      retention: indefinite
+  stateSpans:
+  - category: Override
+    kind: ExampleOverride
+    futureSpanMember: true
+    slot: override
+    exclusiveWithinSlot: true
+    states:
+    - scheduled
+    - active
+    - ended
+    versions:
+      served:
+      - "1"
+      - "2"
+      stored: "2"
+    endReasons:
+    - reason: expired
+    - reason: other
+      controllerTerm: replacedByScheduleChange
+    wire:
+      collection: treatments
+      eventType: Temporary Override
+      identity:
+      - identifier
+      durationField: duration
+      durationUnit: minutes
+      endedEncoding:
+        value: other
+        controllerTerm: tombstone-record
+      endReasonPath: null
+  - category: ExampleAdaptationSummary
+    kind: DailyAdaptation
+    availability: experimental
+    version: "0.1"
+    horizon:
+      class: aggregate
+      cadence:
+        nominalSeconds: 86400
+      retention: P30D
+    wire:
+      collection: settings
+      documentIdentifier: example-adaptation
+  commands:
+  - transport:
+      value: other
+      controllerTerm: example-relay
+    hubInPath: optional
+    availability: experimental
+  replayInputs:
+  - input: exampleSensitivityScale
+    path: example.sensitivityScale
+    collection: devicestatus
+    status: recorded
+    type:
+      type: number
+      minimum: 0.1
+      maximum: 10
+    horizon:
+      class: cycle
+    sensitivity:
+      level: descriptive
+      category: health-derived
+  - input: exampleTrendModel
+    path: null
+    collection: null
+    status:
+      value: other
+      controllerTerm: computed-on-device-only
+  settings:
+    resource: ControllerSettings
+    effectiveDated: true
+    horizon:
+      class: effective-dated
+    fields:
+    - legacyNameOnlySetting
+    - name: maxIob
+      typeRef: https://nightscout.dev/schemas/sync/controller-settings.json#/properties/settings/properties/maxIob
+      range:
+        maximum: 30
+      sensitivity:
+        level: descriptive
+        category: therapy-setting
+    - name: exampleUnlabelledSetting
+      type:
+        type: string
+        enum:
+        - gentle
+        - standard
+  extensions:
+    com.example.testcontroller.adaptiveTargets:
+      version: "1"
+      availability: experimental
+      horizon:
+        class: definition
+      carrier:
+        collection: settings
+        documentIdentifier: example-targets
+      fields:
+      - name: targetSchedule
+        type:
+          type: array
+          items:
+            type: object
+            properties:
+              startMinute:
+                type: integer
+                minimum: 0
+                maximum: 1439
+              target:
+                type: number
+            required:
+            - startMinute
+            - target
+        unit: mg/dL
+        sensitivity:
+          level: descriptive
+          category: therapy-setting
+      - name: adaptationEnabled
+        type:
+          type: boolean
+        sensitivity:
+          level: descriptive
+          category: therapy-setting
+  sensitivity:
+    enforcesLocally: false
+    defaultProfile: clinical
+    unlabelledPolicy: withhold

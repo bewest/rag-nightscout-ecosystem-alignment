@@ -120,6 +120,8 @@ spec:
     - openaps.suggested.timestamp
     - openaps.suggested.units
     - openaps.version
+    horizon:
+      class: cycle
   - collection: entries
     decomposesTo:
     - SensorGlucose
@@ -497,6 +499,7 @@ spec:
     path: null
     collection: null
     status: absent
+    typeRef: https://nightscout.dev/schemas/sync/controller-settings.json#/properties/settings/properties/microBolusAllowed
   - input: profile.basalRate
     path: store.{}.basal[].value
     collection: profile
@@ -509,22 +512,27 @@ spec:
     path: store.{}.dia
     collection: profile
     status: recorded
+    typeRef: https://nightscout.dev/schemas/sync/controller-settings.json#/properties/settings/properties/dia
   - input: profile.dosingStrategy
     path: loopSettings.dosingStrategy
     collection: profile
     status: partial
+    typeRef: https://nightscout.dev/schemas/sync/controller-settings.json#/properties/settings/properties/dosingStrategy
   - input: profile.maxBasal
     path: loopSettings.maximumBasalRatePerHour
     collection: profile
     status: partial
+    typeRef: https://nightscout.dev/schemas/sync/controller-settings.json#/properties/settings/properties/maxBasal
   - input: profile.maxDailyBasal
     path: store.{}.basal[].value
     collection: profile
     status: derivable
+    typeRef: https://nightscout.dev/schemas/sync/controller-settings.json#/properties/settings/properties/maxDailyBasal
   - input: profile.maxIob
     path: null
     collection: null
     status: absent
+    typeRef: https://nightscout.dev/schemas/sync/controller-settings.json#/properties/settings/properties/maxIob
   - input: profile.sensitivity
     path: openaps.suggested.ISF
     collection: devicestatus
@@ -545,14 +553,20 @@ spec:
     path: units
     collection: profile
     status: recorded
+    typeRef: https://nightscout.dev/schemas/sync/controller-settings.json#/properties/settings/properties/units
   settings:
     resource: ControllerSettings
     effectiveDated: true
+    horizon:
+      class: effective-dated
     fields:
-    - profile.dosingStrategy
-    - profile.maxBasal
-    - profile.maxIob
-    - profile.suspendThreshold
+    - name: profile.dosingStrategy
+      typeRef: https://nightscout.dev/schemas/sync/controller-settings.json#/properties/settings/properties/dosingStrategy
+    - name: profile.maxBasal
+      typeRef: https://nightscout.dev/schemas/sync/controller-settings.json#/properties/settings/properties/maxBasal
+    - name: profile.maxIob
+      typeRef: https://nightscout.dev/schemas/sync/controller-settings.json#/properties/settings/properties/maxIob
+    - name: profile.suspendThreshold
   sensitivity:
     labelsSource: specs/jsonschema/generated/ (x-sensitivity, x-data-category)
     enforcesLocally: false

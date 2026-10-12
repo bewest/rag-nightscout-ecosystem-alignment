@@ -14,6 +14,9 @@ measured:
 * decomposition targets from the measured Nocturne V4 routing
 * replay inputs and their status from `dosing-input-sources.yaml`
 * settings fields from the same, restricted to what is or could be published
+* field types by reference (`typeRef`) to `controller-settings.schema.json`,
+  only where that schema's definition was read from this controller's own
+  algorithm family; otherwise the field stays untyped (D18 addendum rule 2)
 * intent declarations (`stateSpans`, `composition`, `commands`) from the
   intent/workflow landscape (2026-10-09) and the controller source it cites,
   each with its evidence; these are the well-known tier of D18
@@ -25,16 +28,25 @@ settings from screenshots.
 """
 
 import argparse
+import copy
 import json
+import re
 from pathlib import Path
 
 import jsonschema
 import yaml
 
-from . import corpus
+from . import corpus, settings_schema
 
 SCHEMA = "specs/sync/controller-state-model.schema.json"
 OUT_DIR = "specs/sync/registrations"
+# Hand-written registrations that exercise the grammar. --check validates
+# them; it never regenerates or compares them.
+FIXTURES_DIR = "specs/sync/registrations/fixtures"
+SETTINGS_SCHEMA = "specs/sync/controller-settings.schema.json"
+SETTINGS_PROPERTIES = "#/properties/settings/properties/"
+# The settings-schema source each algorithm family's types were read from.
+FAMILY_SOURCE = {"loop": settings_schema.LOOP_SRC, "oref0": settings_schema.OREF_SRC}
 
 # Source revisions the intent declarations below were read at. They are the
 # revisions in the landscape document's §1 table.
@@ -720,11 +732,35 @@ def _load(root, rel):
     return json.loads(path.read_text()) if path.is_file() else None
 
 
+def settings_type_ref(settings, name, family):
+    """typeRef for a settings field or replay input, or None (D18 rule 2).
+
+    Only a configuration input (settings_schema.NOT_CONFIGURATION excludes
+    per-cycle state) whose ControllerSettings definition was read from this
+    family's own source is typed. `suspendThreshold` is the case this
+    excludes: its definition is labelled oref0 but its type was read from
+    Loop's AlgorithmInput, so neither family gets it.
+    """
+    if name in settings_schema.NOT_CONFIGURATION:
+        return None
+    leaf = name.split(".")[-1]
+    definition = settings["properties"]["settings"]["properties"].get(leaf)
+    if not definition:
+        return None
+    if definition.get("x-algorithm") != family:
+        return None
+    if definition.get("x-source") != FAMILY_SOURCE.get(family):
+        return None
+    return settings["$id"] + SETTINGS_PROPERTIES + leaf
+
+
 def build(root: Path, key: str, spec: dict):
     census = _load(root, "reports/schema-census/devicestatus.census.json") or {"fields": []}
     vendor = _load(root, "reports/schema-census/vendor-surface.json") or {"surfaces": {}}
     dosing = yaml.safe_load(
         (root / "specs/nsschema/dosing-input-sources.yaml").read_text())
+    settings = json.loads((root / SETTINGS_SCHEMA).read_text())
+    family = spec["family"]
 
     observed = {f["path"] for f in census["fields"]}
     paths = sorted(p for p in observed
@@ -739,19 +775,29 @@ def build(root: Path, key: str, spec: dict):
         if entry.get("algorithm") != spec["family"]:
             continue
         sources = entry.get("sources") or []
-        replay.append({
+        row = {
             "input": entry["input"],
             "path": sources[0] if sources else None,
             "collection": entry.get("collection") if sources else None,
             "status": entry["kind"],
-        })
+        }
+        ref = settings_type_ref(settings, entry["input"], family)
+        if ref:
+            row["typeRef"] = ref
+        replay.append(row)
 
-    settings_fields = sorted(
-        e["input"] for e in dosing["inputs"]
-        if e.get("algorithm") == spec["family"]
-        and e["kind"] in ("absent", "partial")
-        and e["input"].startswith(("profile.", "automatic", "carb", "recommendation",
-                                   "use", "include", "max", "gradual")))
+    settings_fields = []
+    for name in sorted(
+            e["input"] for e in dosing["inputs"]
+            if e.get("algorithm") == family
+            and e["kind"] in ("absent", "partial")
+            and e["input"].startswith(("profile.", "automatic", "carb", "recommendation",
+                                       "use", "include", "max", "gradual"))):
+        field = {"name": name}
+        ref = settings_type_ref(settings, name, family)
+        if ref:
+            field["typeRef"] = ref
+        settings_fields.append(field)
 
     return {
         "apiVersion": "nightscout.dev/sync/v1",
@@ -776,6 +822,8 @@ def build(root: Path, key: str, spec: dict):
                                       "test": spec["discriminator"][1]},
                     "decomposesTo": spec["decomposes"],
                     "paths": paths,
+                    # Written once per loop cycle; its cadence is spec.cadence.
+                    "horizon": {"class": "cycle"},
                 },
                 {"collection": "entries", "decomposesTo": ["SensorGlucose"]},
                 {"collection": "treatments",
@@ -795,6 +843,7 @@ def build(root: Path, key: str, spec: dict):
             "settings": {
                 "resource": "ControllerSettings",
                 "effectiveDated": True,
+                "horizon": {"class": "effective-dated"},
                 "fields": settings_fields,
             },
             "sensitivity": {
@@ -823,7 +872,8 @@ def completeness(registration):
         return {}
     counts = {}
     for row in inputs:
-        counts[row["status"]] = counts.get(row["status"], 0) + 1
+        status = term_label(row["status"])
+        counts[status] = counts.get(status, 0) + 1
     recorded = counts.get("recorded", 0)
     return {
         "inputs": len(inputs),
@@ -832,6 +882,127 @@ def completeness(registration):
         "replayable_share": round(
             (recorded + counts.get("derivable", 0)) / len(inputs), 4),
     }
+
+
+# ── the grammar's processing rules (D18 addendum, rules 1-4) ───────────────
+#
+# JSON Schema validates; it cannot say "ignore". The published schema is
+# therefore open (no object sets additionalProperties: false), and these
+# functions state what a reader does with what validation lets through.
+
+# $defs that use sites extend with sibling properties; closing them would
+# reject the extension, so the strict view closes them at the use site.
+OPEN_BASES = {"carrier", "fieldTyping"}
+_SUBSCHEMA_MAPS = ("properties", "patternProperties", "$defs")
+_SUBSCHEMA_LISTS = ("allOf", "anyOf", "oneOf", "prefixItems")
+# Shape-bearing single subschemas. `if`/`then`/`else`/`not` are assertions
+# over the same instance and are left open: closing an `if` would make it
+# fail whenever any other member is present.
+_SUBSCHEMA_ONE = ("items", "additionalProperties")
+
+
+def strict_schema(schema):
+    """The grammar with every object closed: the view a v1 reader uses to
+    find members it does not know. Not a published schema."""
+    strict = copy.deepcopy(schema)
+
+    def close(node, base=False):
+        if not isinstance(node, dict):
+            return
+        open_already = "additionalProperties" in node or "unevaluatedProperties" in node
+        if ("properties" in node or "$ref" in node) and not open_already and not base:
+            node["unevaluatedProperties"] = False
+        for key in _SUBSCHEMA_MAPS:
+            for name, sub in (node.get(key) or {}).items():
+                close(sub, base=(key == "$defs" and name in OPEN_BASES))
+        for key in _SUBSCHEMA_LISTS:
+            for sub in node.get(key) or []:
+                close(sub)
+        for key in _SUBSCHEMA_ONE:
+            close(node.get(key))
+
+    close(strict)
+    return strict
+
+
+def _unexpected(error):
+    # "Unevaluated properties are not allowed ('a', 'b' were unexpected)"
+    tail = error.message.split("(", 1)[-1]
+    return re.findall(r"'([^']*)'", tail)
+
+
+def unknown_grammar_fields(registration, schema):
+    """Rule 1, must-ignore. The members a v1 reader does not know, as dotted
+    paths. A hub keeps them as written and neither interprets nor serves
+    them as data; they never make a registration invalid."""
+    found = set()
+
+    def walk(errors):
+        for error in errors:
+            if error.validator == "unevaluatedProperties":
+                where = ".".join(str(p) for p in error.absolute_path)
+                for name in _unexpected(error):
+                    found.add(f"{where}.{name}" if where else name)
+            walk(error.context or [])
+
+    walk(jsonschema.Draft202012Validator(strict_schema(schema)).iter_errors(registration))
+    return sorted(found)
+
+
+def term_label(value):
+    """Rule 3. How a hub renders an open-vocabulary value: the shared value,
+    or "other: <controllerTerm>"."""
+    if isinstance(value, dict) and value.get("value") == "other":
+        return f"other: {value['controllerTerm']}"
+    return value
+
+
+def version_plan(entry):
+    """Rule 4. For each served version of a kind or extension: the version
+    it is stored as, and the declared lossless mapping used, if any. Without
+    a mapping a version is stored and served as written; nothing converts."""
+    if "versions" in entry:
+        versions = entry["versions"]
+    elif "version" in entry:
+        versions = {"served": [entry["version"]], "stored": entry["version"]}
+    else:
+        return {}
+    stored = versions["stored"]
+    if stored not in versions["served"]:
+        raise ValueError(f"stored version {stored!r} is not served")
+    mappings = {(m["from"], m["to"]): m for m in versions.get("mappings") or []
+                if m.get("lossless") is True}
+    plan = {}
+    for version in versions["served"]:
+        mapping = mappings.get((version, stored)) if version != stored else None
+        plan[version] = {"storedAs": stored if mapping else version,
+                         "convertedVia": mapping}
+    return plan
+
+
+def field_disclosure(registration, field):
+    """Rule 2. A field's sensitivity label, or the registration's
+    unlabelledPolicy when it has none. An absent policy is `withhold`, the
+    schema's only safe default; a name-only (string) field is unlabelled."""
+    label = field.get("sensitivity") if isinstance(field, dict) else None
+    if label:
+        return {"labelled": label}
+    policy = (registration.get("spec", {}).get("sensitivity") or {}).get(
+        "unlabelledPolicy", "withhold")
+    return {"unlabelled": policy}
+
+
+def resolve_type_ref(root, ref):
+    """The definition a typeRef names, from a schema in specs/sync/."""
+    base, pointer = ref.split("#", 1)
+    for path in sorted((root / "specs" / "sync").glob("*.schema.json")):
+        schema = json.loads(path.read_text())
+        if schema.get("$id") == base:
+            node = schema
+            for part in pointer.strip("/").split("/"):
+                node = node[part.replace("~1", "/").replace("~0", "~")]
+            return node
+    raise KeyError(ref)
 
 
 def main(argv=None):
@@ -850,12 +1021,18 @@ def main(argv=None):
     stale = []
     for key, spec in CONTROLLERS.items():
         registration = build(root, key, spec)
-        # x- fields are informational; the schema does not allow them.
+        # x- fields are informational and not part of the grammar.
         checked = {k: v for k, v in registration.items() if not k.startswith("x-")}
         errors = sorted(validator.iter_errors(checked), key=lambda e: e.path)
         if errors:
             for error in errors[:3]:
                 print(f"  {key}: INVALID {list(error.path)}: {error.message}")
+            return 1
+        # Must-ignore would let a misspelt member through; the generator's
+        # own output may use only members the grammar defines.
+        unknown = unknown_grammar_fields(checked, schema)
+        if unknown:
+            print(f"  {key}: members the grammar does not define: {unknown}")
             return 1
 
         dest = out_dir / f"{key}.yaml"
@@ -872,6 +1049,18 @@ def main(argv=None):
               f"recorded {stats['recorded_share']:.0%}, "
               f"replayable {stats['replayable_share']:.0%}, "
               f"settings to publish: {len(registration['spec']['settings']['fields'])}")
+
+    # Fixtures are hand-written grammar exercises, not generator outputs:
+    # validated, never compared or rewritten.
+    for path in sorted((root / FIXTURES_DIR).glob("*.yaml")):
+        fixture = yaml.safe_load(path.read_text())
+        errors = list(validator.iter_errors(fixture))
+        if errors:
+            print(f"  fixture {path.name}: INVALID {list(errors[0].path)}: "
+                  f"{errors[0].message}")
+            return 1
+        print(f"  fixture {path.name}: valid; ignored members: "
+              f"{len(unknown_grammar_fields(fixture, schema))}")
 
     if args.check and stale:
         for path in stale:

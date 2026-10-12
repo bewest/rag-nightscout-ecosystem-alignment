@@ -1538,7 +1538,10 @@ def test_the_proposal_tutorial_still_runs_as_printed():
                           "carbAbsorptionModel", "gradualTransitionsThreshold"]
 
     inputs = {i["input"]: i for i in reg["spec"]["replayInputs"]}
-    assert inputs["maxBolus"] == {
+    # The printed example is abbreviated; since SCHEMA-REG-EXT (2026-10-12)
+    # the row also carries a typeRef, which the example does not show.
+    original = ("input", "path", "collection", "status")
+    assert {k: inputs["maxBolus"][k] for k in original} == {
         "input": "maxBolus", "path": "loopSettings.maximumBolus",
         "collection": "profile", "status": "recorded"}
     # "declared and unpublished" must stay expressible, or the example's

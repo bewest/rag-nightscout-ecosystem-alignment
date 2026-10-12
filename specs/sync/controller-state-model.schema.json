@@ -2,7 +2,7 @@
  "$schema": "https://json-schema.org/draft/2020-12/schema",
  "$id": "https://nightscout.dev/schemas/sync/controller-state-model.json",
  "title": "Controller state model registration",
- "description": "What a controller tells the hub about itself, once, so the hub can prepare a sync contract for it. The registration is the controller's live state model: the composite documents it writes, the primitives they decompose to, the intent kinds it exposes (slots, states, end reasons, wire carrier, requested vs applied), the dosing inputs it can supply, and the settings it will publish. Everything the hub offers back - the cursor, the batch endpoints, the allowed filters - is derived from this, so a controller never negotiates a query shape at request time.",
+ "description": "What a controller tells the hub about itself, once, so the hub can prepare a sync contract for it. The registration is the controller's live state model: the composite documents it writes, the primitives they decompose to, the intent kinds it exposes (slots, states, end reasons, wire carrier, requested vs applied), the dosing inputs it can supply, and the settings it will publish. Everything the hub offers back - the cursor, the batch endpoints, the allowed filters - is derived from this, so a controller never negotiates a query shape at request time. Grammar rules (D18 addendum, execution plan §2.6.1): within `nightscout.dev/sync/v1` a reader ignores grammar members it does not know (must-ignore: kept as written, not interpreted, not served as data), so no object here is closed; unknown *values* of a closed list are still rejected, and an open list takes `other` plus the controller's term. Controller-specific data is accepted only typed, under `spec.extensions`.",
  "type": "object",
  "required": [
   "apiVersion",
@@ -10,7 +10,6 @@
   "metadata",
   "spec"
  ],
- "additionalProperties": false,
  "properties": {
   "apiVersion": {
    "const": "nightscout.dev/sync/v1"
@@ -24,7 +23,6 @@
     "vendor",
     "product"
    ],
-   "additionalProperties": false,
    "properties": {
     "vendor": {
      "type": "string",
@@ -63,26 +61,10 @@
     "cadence",
     "documents"
    ],
-   "additionalProperties": false,
    "properties": {
     "cadence": {
-     "type": "object",
-     "description": "How often the controller expects to sync. The hub uses it to size pages and to tell a replay consumer what a gap means.",
-     "required": [
-      "nominalSeconds"
-     ],
-     "additionalProperties": false,
-     "properties": {
-      "nominalSeconds": {
-       "type": "integer",
-       "minimum": 1
-      },
-      "maxDeferralSeconds": {
-       "type": "integer",
-       "minimum": 0,
-       "description": "How long the controller may batch before it must flush. Bounds how stale a follower can be."
-      }
-     }
+     "$ref": "#/$defs/cadence",
+     "description": "The registration's default cadence. A document, kind, field or extension with its own horizon cadence (rule 5) overrides it for that item."
     },
     "documents": {
      "type": "array",
@@ -94,7 +76,6 @@
        "collection",
        "decomposesTo"
       ],
-      "additionalProperties": false,
       "properties": {
        "collection": {
         "enum": [
@@ -109,16 +90,23 @@
        "discriminator": {
         "type": "object",
         "description": "How the hub recognises this controller's documents in a shared collection - a devicestatus carrying a `loop` object rather than an `openaps` one. Deliberately structural, never the free-text device string.",
-        "additionalProperties": false,
         "properties": {
          "path": {
           "type": "string"
          },
          "test": {
-          "enum": [
-           "exists",
-           "is-object"
-          ]
+          "anyOf": [
+           {
+            "enum": [
+             "exists",
+             "is-object"
+            ]
+           },
+           {
+            "$ref": "#/$defs/otherTerm"
+           }
+          ],
+          "description": "Open vocabulary (D18 addendum rule 3): a discriminator test outside the shared list is written as `{value: other, controllerTerm: <term>}`; a bare unknown string is rejected."
          }
         }
        },
@@ -135,6 +123,9 @@
          "type": "string"
         },
         "description": "Dotted wire paths this controller writes in this collection."
+       },
+       "horizon": {
+        "$ref": "#/$defs/horizon"
        }
       }
      }
@@ -147,7 +138,6 @@
       "required": [
        "category"
       ],
-      "additionalProperties": false,
       "properties": {
        "category": {
         "type": "string",
@@ -158,11 +148,7 @@
         "description": "The controller's own name for this intent kind."
        },
        "availability": {
-        "enum": [
-         "released",
-         "dev-only"
-        ],
-        "description": "`dev-only`: present on the controller's development branch at the evidence commit and absent from its latest release. Absent means released."
+        "$ref": "#/$defs/availability"
        },
        "states": {
         "type": "array",
@@ -201,7 +187,6 @@
          "required": [
           "reason"
          ],
-         "additionalProperties": false,
          "properties": {
           "reason": {
            "enum": [
@@ -209,8 +194,10 @@
             "cancelled",
             "superseded",
             "deletedBeforeStart",
-            "endedByTrigger"
-           ]
+            "endedByTrigger",
+            "other"
+           ],
+           "description": "Shared end reason. `other` requires `controllerTerm` (rule 3); a hub renders it as \"other: <controllerTerm>\"."
           },
           "controllerTerm": {
            "type": "string"
@@ -221,6 +208,26 @@
             "type": "string"
            },
            "description": "For `endedByTrigger`: what ends it. Vocabulary: carbs, glucoseAbove, glucoseBelow, loopOff, chain."
+          }
+         },
+         "if": {
+          "properties": {
+           "reason": {
+            "const": "other"
+           }
+          },
+          "required": [
+           "reason"
+          ]
+         },
+         "then": {
+          "required": [
+           "controllerTerm"
+          ],
+          "properties": {
+           "controllerTerm": {
+            "minLength": 1
+           }
           }
          }
         }
@@ -233,7 +240,6 @@
          },
          {
           "$ref": "#/$defs/carrier",
-          "unevaluatedProperties": false,
           "properties": {
            "identity": {
             "type": "array",
@@ -259,7 +265,6 @@
              "field",
              "value"
             ],
-            "additionalProperties": false,
             "properties": {
              "field": {
               "type": "string"
@@ -271,14 +276,21 @@
             }
            },
            "endedEncoding": {
-            "enum": [
-             "amend-duration",
-             "delete-and-repost",
-             "repost-same-created_at",
-             "zero-duration-record",
-             "sampled-state"
-            ],
-            "description": "How an instance that ends early is written. `amend-duration`: the same instance is re-sent with a shorter duration. `delete-and-repost`: deleted and written again with the actual duration, under a new document id. `repost-same-created_at`: written again with the same created_at and the actual duration. `zero-duration-record`: a separate zero-duration record marks the end. `sampled-state`: no instance record; the current value is carried on every document and a change is the next differing value."
+            "description": "How an instance that ends early is written. `amend-duration`: the same instance is re-sent with a shorter duration. `delete-and-repost`: deleted and written again with the actual duration, under a new document id. `repost-same-created_at`: written again with the same created_at and the actual duration. `zero-duration-record`: a separate zero-duration record marks the end. `sampled-state`: no instance record; the current value is carried on every document and a change is the next differing value. Open vocabulary (D18 addendum rule 3): a ended encoding outside the shared list is written as `{value: other, controllerTerm: <term>}`; a bare unknown string is rejected.",
+            "anyOf": [
+             {
+              "enum": [
+               "amend-duration",
+               "delete-and-repost",
+               "repost-same-created_at",
+               "zero-duration-record",
+               "sampled-state"
+              ]
+             },
+             {
+              "$ref": "#/$defs/otherTerm"
+             }
+            ]
            },
            "cancelBeforeStartEncoding": {
             "enum": [
@@ -305,8 +317,7 @@
           "type": "null"
          },
          {
-          "$ref": "#/$defs/carrier",
-          "unevaluatedProperties": false
+          "$ref": "#/$defs/carrier"
          }
         ]
        },
@@ -317,15 +328,13 @@
           "type": "null"
          },
          {
-          "$ref": "#/$defs/carrier",
-          "unevaluatedProperties": false
+          "$ref": "#/$defs/carrier"
          }
         ]
        },
        "initiators": {
         "type": "object",
         "description": "Who or what started an instance, in the controller's own vocabulary.",
-        "additionalProperties": false,
         "properties": {
          "vocabulary": {
           "type": "string",
@@ -346,7 +355,6 @@
          },
          "wireProxy": {
           "type": "object",
-          "additionalProperties": false,
           "properties": {
            "path": {
             "type": "string"
@@ -363,7 +371,6 @@
        "definitions": {
         "type": "object",
         "description": "The presets or definitions an instance is made from.",
-        "additionalProperties": false,
         "properties": {
          "published": {
           "description": "Where definitions are published. null: not sent to the hub.",
@@ -372,8 +379,7 @@
             "type": "null"
            },
            {
-            "$ref": "#/$defs/carrier",
-            "unevaluatedProperties": false
+            "$ref": "#/$defs/carrier"
            }
           ]
          },
@@ -420,7 +426,6 @@
        "acceptsFromHub": {
         "type": "object",
         "description": "Which hub-originated intent of this kind the controller acts on (acceptance policy).",
-        "additionalProperties": false,
         "properties": {
          "channels": {
           "type": "array",
@@ -454,6 +459,16 @@
        },
        "evidence": {
         "$ref": "#/$defs/evidence"
+       },
+       "horizon": {
+        "$ref": "#/$defs/horizon",
+        "description": "Absent means `span`: a stateSpans entry is a time-ranged instance by definition. Declared when the kind is something else, such as an `aggregate`."
+       },
+       "version": {
+        "$ref": "#/$defs/version"
+       },
+       "versions": {
+        "$ref": "#/$defs/versions"
        }
       }
      }
@@ -465,7 +480,6 @@
       "reportedBy",
       "hubComputes"
      ],
-     "additionalProperties": false,
      "properties": {
       "reportedBy": {
        "const": "controller"
@@ -486,8 +500,7 @@
         {
          "type": "array",
          "items": {
-          "$ref": "#/$defs/carrier",
-          "unevaluatedProperties": false
+          "$ref": "#/$defs/carrier"
          }
         }
        ]
@@ -509,21 +522,25 @@
       "required": [
        "transport"
       ],
-      "additionalProperties": false,
       "properties": {
        "transport": {
-        "enum": [
-         "apns",
-         "sms",
-         "nightscout-settings",
-         "nightscout-treatment"
-        ]
+        "anyOf": [
+         {
+          "enum": [
+           "apns",
+           "sms",
+           "nightscout-settings",
+           "nightscout-treatment"
+          ]
+         },
+         {
+          "$ref": "#/$defs/otherTerm"
+         }
+        ],
+        "description": "Open vocabulary (D18 addendum rule 3): a transport outside the shared list is written as `{value: other, controllerTerm: <term>}`; a bare unknown string is rejected."
        },
        "availability": {
-        "enum": [
-         "released",
-         "dev-only"
-        ]
+        "$ref": "#/$defs/availability"
        },
        "hubInPath": {
         "enum": [
@@ -541,7 +558,6 @@
        },
        "acknowledgement": {
         "type": "object",
-        "additionalProperties": false,
         "properties": {
          "states": {
           "type": "array",
@@ -568,8 +584,7 @@
             "type": "null"
            },
            {
-            "$ref": "#/$defs/carrier",
-            "unevaluatedProperties": false
+            "$ref": "#/$defs/carrier"
            }
           ]
          }
@@ -590,7 +605,6 @@
        "input",
        "status"
       ],
-      "additionalProperties": false,
       "properties": {
        "input": {
         "type": "string"
@@ -608,20 +622,35 @@
         ]
        },
        "status": {
-        "enum": [
-         "recorded",
-         "derivable",
-         "partial",
-         "absent"
-        ]
+        "anyOf": [
+         {
+          "enum": [
+           "recorded",
+           "derivable",
+           "partial",
+           "absent"
+          ]
+         },
+         {
+          "$ref": "#/$defs/otherTerm"
+         }
+        ],
+        "description": "Open vocabulary (D18 addendum rule 3): a status outside the shared list is written as `{value: other, controllerTerm: <term>}`; a bare unknown string is rejected."
        }
-      }
+      },
+      "$ref": "#/$defs/fieldTyping",
+      "not": {
+       "required": [
+        "type",
+        "typeRef"
+       ]
+      },
+      "description": "One dosing input. Typing (rule 2) is optional here: an input declared without `type` or `typeRef` is named but untyped, as before."
      }
     },
     "settings": {
      "type": "object",
      "description": "The configuration snapshot this controller will publish. Versioned and effective-dated, because a setting that changed mid-history invalidates a replay that assumed one value.",
-     "additionalProperties": false,
      "properties": {
       "resource": {
        "type": "string"
@@ -632,15 +661,27 @@
       "fields": {
        "type": "array",
        "items": {
-        "type": "string"
-       }
+        "anyOf": [
+         {
+          "type": "string",
+          "description": "The 2026-09-11 form: a name only, untyped. Still valid."
+         },
+         {
+          "$ref": "#/$defs/fieldDeclaration"
+         }
+        ]
+       },
+       "description": "Settings this controller will publish. Each is a name (the original form) or a field declaration (rule 2). A typed declaration should reference the shared ControllerSettings definition with `typeRef` rather than restate it."
+      },
+      "horizon": {
+       "$ref": "#/$defs/horizon",
+       "description": "Normally `effective-dated`, matching `effectiveDated: true`."
       }
      }
     },
     "queryProfile": {
      "type": "object",
      "description": "What the hub will let this controller ask for. Derived from the registration rather than negotiated per request, which is how query cost stays bounded: there is no operator here that can reach storage without an index.",
-     "additionalProperties": false,
      "properties": {
       "filterableFields": {
        "type": "array",
@@ -670,7 +711,6 @@
     "sensitivity": {
      "type": "object",
      "description": "What this controller can enforce about sensitivity, declared at registration so the hub knows before the first byte arrives. A controller that can evaluate a projection locally need never put a field it is not authorised to share on the wire; one that cannot says so, and the hub enforces at ingest instead. Either way the policy is the same labelled-field projection, evaluated in a different place.",
-     "additionalProperties": false,
      "properties": {
       "labelsSource": {
        "type": "string",
@@ -699,6 +739,16 @@
        "description": "What the controller does with a field carrying no label. `withhold` is the only safe default: a field added upstream must be argued down, never silently up."
       }
      }
+    },
+    "extensions": {
+     "type": "object",
+     "description": "Rule 1. Controller-specific data, keyed by a reverse-DNS namespace the controller owns (for example `org.example.controller.feature`). Every extension declares its version and typed fields; an extension or field without a type declaration is rejected. The hub stores, validates and serves an extension as declared; it does not interpret it for dosing.",
+     "propertyNames": {
+      "$ref": "#/$defs/namespace"
+     },
+     "additionalProperties": {
+      "$ref": "#/$defs/extension"
+     }
     }
    }
   }
@@ -713,7 +763,6 @@
      "source",
      "basis"
     ],
-    "additionalProperties": false,
     "properties": {
      "claim": {
       "type": "string",
@@ -761,17 +810,24 @@
       "path",
       "test"
      ],
-     "additionalProperties": false,
      "properties": {
       "path": {
        "type": "string"
       },
       "test": {
-       "enum": [
-        "exists",
-        "is-object",
-        "equals"
-       ]
+       "anyOf": [
+        {
+         "enum": [
+          "exists",
+          "is-object",
+          "equals"
+         ]
+        },
+        {
+         "$ref": "#/$defs/otherTerm"
+        }
+       ],
+       "description": "Open vocabulary (D18 addendum rule 3): a discriminator test outside the shared list is written as `{value: other, controllerTerm: <term>}`; a bare unknown string is rejected."
       },
       "value": {
        "description": "The value compared when `test` is `equals`."
@@ -821,6 +877,413 @@
   "slotName": {
    "type": "string",
    "description": "A slot named by this registration; `coexistsWith` refers to slots by these names."
+  },
+  "cadence": {
+   "type": "object",
+   "description": "How often the controller expects to sync. The hub uses it to size pages and to tell a replay consumer what a gap means.",
+   "required": [
+    "nominalSeconds"
+   ],
+   "properties": {
+    "nominalSeconds": {
+     "type": "integer",
+     "minimum": 1
+    },
+    "maxDeferralSeconds": {
+     "type": "integer",
+     "minimum": 0,
+     "description": "How long the controller may batch before it must flush. Bounds how stale a follower can be."
+    }
+   }
+  },
+  "otherTerm": {
+   "type": "object",
+   "description": "Rule 3, the endReasons pattern applied to a scalar list: the shared value `other` with the controller's own term. A hub renders it as \"other: <controllerTerm>\" and never rejects the registration for it.",
+   "required": [
+    "value",
+    "controllerTerm"
+   ],
+   "properties": {
+    "value": {
+     "const": "other"
+    },
+    "controllerTerm": {
+     "type": "string",
+     "minLength": 1
+    },
+    "description": {
+     "type": "string"
+    }
+   }
+  },
+  "availability": {
+   "enum": [
+    "released",
+    "dev-only",
+    "experimental"
+   ],
+   "description": "Absent means released. `dev-only`: present on the controller's development branch at the evidence commit and absent from its latest release. `experimental` (rule 5): the hub stores it as declared, gives it no well-known mapping and makes no long-term promise for it."
+  },
+  "horizon": {
+   "type": "object",
+   "description": "Rule 5. What one value or record covers, and how long the hub keeps it. `cycle`: one controller cycle. `span`: a time-ranged instance with a start and an end. `effective-dated`: in force from a time until replaced. `definition`: a preset or template, valid until changed, not itself in force. `aggregate`: derived over a window of other records.",
+   "required": [
+    "class"
+   ],
+   "properties": {
+    "class": {
+     "enum": [
+      "cycle",
+      "span",
+      "effective-dated",
+      "definition",
+      "aggregate"
+     ]
+    },
+    "cadence": {
+     "$ref": "#/$defs/cadence"
+    },
+    "retention": {
+     "description": "How long the hub keeps it: an ISO 8601 duration (`P90D`) or `indefinite`. Absent: the hub's default.",
+     "anyOf": [
+      {
+       "type": "string",
+       "pattern": "^P(?=\\d|T\\d)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+      },
+      {
+       "const": "indefinite"
+      }
+     ]
+    },
+    "description": {
+     "type": "string"
+    }
+   }
+  },
+  "version": {
+   "type": "string",
+   "minLength": 1,
+   "description": "Rule 4. The version of this kind or extension as written. Equivalent to `versions: {served: [v], stored: v}`."
+  },
+  "versions": {
+   "type": "object",
+   "description": "Rule 4. Every version the controller writes (`served`), the one it writes now (`stored`, which must be one of `served`), and any lossless mapping between two of them. Without a mapping the hub stores and serves each version as written and never converts between them. That `stored` is one of `served` cannot be expressed in JSON Schema and is checked by tools/nsschema/sync_model.py `version_plan`.",
+   "required": [
+    "served",
+    "stored"
+   ],
+   "properties": {
+    "served": {
+     "type": "array",
+     "minItems": 1,
+     "uniqueItems": true,
+     "items": {
+      "$ref": "#/$defs/version"
+     }
+    },
+    "stored": {
+     "$ref": "#/$defs/version"
+    },
+    "mappings": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "required": [
+       "from",
+       "to",
+       "lossless"
+      ],
+      "properties": {
+       "from": {
+        "$ref": "#/$defs/version"
+       },
+       "to": {
+        "$ref": "#/$defs/version"
+       },
+       "lossless": {
+        "const": true,
+        "description": "Only a lossless mapping may be declared: a lossy one would let the hub change what the controller wrote."
+       },
+       "description": {
+        "type": "string"
+       },
+       "evidence": {
+        "$ref": "#/$defs/evidence"
+       }
+      }
+     }
+    }
+   }
+  },
+  "namespace": {
+   "type": "string",
+   "pattern": "^[a-z][a-z0-9-]*(\\.[A-Za-z0-9][A-Za-z0-9-]*)+$",
+   "description": "A reverse-DNS name the controller owns, such as `org.example.controller`; further labels name the feature."
+  },
+  "typeFragment": {
+   "type": "object",
+   "description": "Rule 2. A restricted JSON Schema fragment. The subset is the set of keywords from which a hub can derive storage (`type`, `format`), validation (`enum`, `minimum`, `maximum`, `required`) and index or nesting shape (`items`, `properties`) without evaluating a schema at query time. Left out: composition (`allOf`/`anyOf`/`oneOf`/`not`), conditionals, `$ref` (a registration may not import a remote schema; use the declaration's `typeRef`), `pattern` and `additionalProperties`. Unlike the grammar, the fragment is closed: an unknown keyword is a constraint the hub would silently not apply, so it is rejected. An `object` must list its `properties` and an `array` its `items`, so no declared type is an untyped bag; a typed object's undeclared members are not stored.",
+   "required": [
+    "type"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "type": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/primitiveType"
+      },
+      {
+       "type": "array",
+       "minItems": 1,
+       "uniqueItems": true,
+       "items": {
+        "$ref": "#/$defs/primitiveType"
+       }
+      }
+     ]
+    },
+    "enum": {
+     "type": "array",
+     "minItems": 1
+    },
+    "minimum": {
+     "type": "number"
+    },
+    "maximum": {
+     "type": "number"
+    },
+    "format": {
+     "enum": [
+      "date-time",
+      "date",
+      "time",
+      "duration",
+      "uuid",
+      "uri"
+     ]
+    },
+    "items": {
+     "$ref": "#/$defs/typeFragment"
+    },
+    "properties": {
+     "type": "object",
+     "additionalProperties": {
+      "$ref": "#/$defs/typeFragment"
+     }
+    },
+    "required": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "uniqueItems": true
+    },
+    "description": {
+     "type": "string"
+    }
+   },
+   "allOf": [
+    {
+     "if": {
+      "properties": {
+       "type": {
+        "const": "object"
+       }
+      }
+     },
+     "then": {
+      "required": [
+       "properties"
+      ]
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "type": {
+        "const": "array"
+       }
+      }
+     },
+     "then": {
+      "required": [
+       "items"
+      ]
+     }
+    }
+   ]
+  },
+  "primitiveType": {
+   "enum": [
+    "string",
+    "number",
+    "integer",
+    "boolean",
+    "object",
+    "array",
+    "null"
+   ]
+  },
+  "sensitivityLabel": {
+   "type": "object",
+   "description": "The two-axis label of specs/sync/sensitivity.yaml (`x-sensitivity`, `x-data-category` in the generated schemas). A field without one falls under `spec.sensitivity.unlabelledPolicy`, which defaults to `withhold`.",
+   "required": [
+    "level",
+    "category"
+   ],
+   "properties": {
+    "level": {
+     "enum": [
+      "secret",
+      "identifying",
+      "quasi-identifying",
+      "descriptive"
+     ]
+    },
+    "category": {
+     "enum": [
+      "credential",
+      "identity",
+      "device",
+      "health-measurement",
+      "health-derived",
+      "therapy-setting",
+      "temporal",
+      "location",
+      "free-text",
+      "vocabulary"
+     ]
+    }
+   }
+  },
+  "fieldTyping": {
+   "type": "object",
+   "description": "Rule 2. The typing members a field declaration may carry. `type` and `typeRef` are alternatives: `typeRef` points at a definition already published by Nightscout (for settings, the ControllerSettings schema), so a registration references a shared type instead of restating it.",
+   "properties": {
+    "type": {
+     "$ref": "#/$defs/typeFragment"
+    },
+    "typeRef": {
+     "type": "string",
+     "pattern": "^https://nightscout\\.dev/schemas/[A-Za-z0-9/._-]+#/.+$",
+     "description": "A JSON Pointer into a Nightscout-published schema, for example `https://nightscout.dev/schemas/sync/controller-settings.json#/properties/settings/properties/maxIob`. The definition it names must itself stay within the typeFragment subset."
+    },
+    "unit": {
+     "type": "string",
+     "description": "Unit of a numeric value, when the type does not carry one."
+    },
+    "range": {
+     "type": "object",
+     "description": "Bounds on a numeric value. Narrows the type's own bounds and never widens them: a hub applies both.",
+     "properties": {
+      "minimum": {
+       "type": "number"
+      },
+      "maximum": {
+       "type": "number"
+      }
+     }
+    },
+    "horizon": {
+     "$ref": "#/$defs/horizon"
+    },
+    "sensitivity": {
+     "$ref": "#/$defs/sensitivityLabel"
+    },
+    "evidence": {
+     "$ref": "#/$defs/evidence"
+    },
+    "description": {
+     "type": "string"
+    }
+   }
+  },
+  "fieldDeclaration": {
+   "type": "object",
+   "description": "Rule 2. A named field with optional typing. Used by `settings.fields`; extension fields must also be typed (typedFieldDeclaration).",
+   "required": [
+    "name"
+   ],
+   "$ref": "#/$defs/fieldTyping",
+   "not": {
+    "required": [
+     "type",
+     "typeRef"
+    ]
+   },
+   "properties": {
+    "name": {
+     "type": "string",
+     "minLength": 1
+    }
+   }
+  },
+  "typedFieldDeclaration": {
+   "description": "A field declaration that must carry `type` or `typeRef` (rule 1: an extension field without a type declaration is rejected).",
+   "$ref": "#/$defs/fieldDeclaration",
+   "anyOf": [
+    {
+     "required": [
+      "type"
+     ]
+    },
+    {
+     "required": [
+      "typeRef"
+     ]
+    }
+   ]
+  },
+  "extension": {
+   "type": "object",
+   "description": "Rule 1. One namespaced extension: its version (rule 4), its typed fields (rule 2), and optionally its horizon, availability and where today's documents carry it.",
+   "required": [
+    "fields"
+   ],
+   "anyOf": [
+    {
+     "required": [
+      "version"
+     ]
+    },
+    {
+     "required": [
+      "versions"
+     ]
+    }
+   ],
+   "properties": {
+    "version": {
+     "$ref": "#/$defs/version"
+    },
+    "versions": {
+     "$ref": "#/$defs/versions"
+    },
+    "availability": {
+     "$ref": "#/$defs/availability"
+    },
+    "horizon": {
+     "$ref": "#/$defs/horizon"
+    },
+    "carrier": {
+     "description": "Where today's documents carry this extension, if they do.",
+     "$ref": "#/$defs/carrier"
+    },
+    "fields": {
+     "type": "array",
+     "minItems": 1,
+     "items": {
+      "$ref": "#/$defs/typedFieldDeclaration"
+     }
+    },
+    "description": {
+     "type": "string"
+    },
+    "evidence": {
+     "$ref": "#/$defs/evidence"
+    }
+   }
   }
  }
 }

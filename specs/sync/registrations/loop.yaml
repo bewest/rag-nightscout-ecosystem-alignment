@@ -50,6 +50,8 @@ spec:
     - loop.recommendedBolus
     - loop.timestamp
     - loop.version
+    horizon:
+      class: cycle
   - collection: entries
     decomposesTo:
     - SensorGlucose
@@ -308,6 +310,7 @@ spec:
     path: null
     collection: null
     status: absent
+    typeRef: https://nightscout.dev/schemas/sync/controller-settings.json#/properties/settings/properties/automaticBolusApplicationFactor
   - input: basal
     path: store.{}.basal[].value
     collection: profile
@@ -316,6 +319,7 @@ spec:
     path: null
     collection: null
     status: absent
+    typeRef: https://nightscout.dev/schemas/sync/controller-settings.json#/properties/settings/properties/carbAbsorptionModel
   - input: carbEntries
     path: carbs
     collection: treatments
@@ -336,22 +340,27 @@ spec:
     path: null
     collection: null
     status: absent
+    typeRef: https://nightscout.dev/schemas/sync/controller-settings.json#/properties/settings/properties/gradualTransitionsThreshold
   - input: includePositiveVelocityAndRC
     path: null
     collection: null
     status: absent
+    typeRef: https://nightscout.dev/schemas/sync/controller-settings.json#/properties/settings/properties/includePositiveVelocityAndRC
   - input: maxActiveInsulinMultiplier
     path: null
     collection: null
     status: absent
+    typeRef: https://nightscout.dev/schemas/sync/controller-settings.json#/properties/settings/properties/maxActiveInsulinMultiplier
   - input: maxBasalRate
     path: loopSettings.maximumBasalRatePerHour
     collection: profile
     status: recorded
+    typeRef: https://nightscout.dev/schemas/sync/controller-settings.json#/properties/settings/properties/maxBasalRate
   - input: maxBolus
     path: loopSettings.maximumBolus
     collection: profile
     status: recorded
+    typeRef: https://nightscout.dev/schemas/sync/controller-settings.json#/properties/settings/properties/maxBolus
   - input: predictionStart
     path: created_at
     collection: devicestatus
@@ -360,10 +369,12 @@ spec:
     path: null
     collection: null
     status: absent
+    typeRef: https://nightscout.dev/schemas/sync/controller-settings.json#/properties/settings/properties/recommendationInsulinModel
   - input: recommendationType
     path: loopSettings.dosingStrategy
     collection: profile
     status: partial
+    typeRef: https://nightscout.dev/schemas/sync/controller-settings.json#/properties/settings/properties/recommendationType
   - input: sensitivity
     path: store.{}.sens[].value
     collection: profile
@@ -380,23 +391,36 @@ spec:
     path: null
     collection: null
     status: absent
+    typeRef: https://nightscout.dev/schemas/sync/controller-settings.json#/properties/settings/properties/useIntegralRetrospectiveCorrection
   - input: useMidAbsorptionISF
     path: null
     collection: null
     status: absent
+    typeRef: https://nightscout.dev/schemas/sync/controller-settings.json#/properties/settings/properties/useMidAbsorptionISF
   settings:
     resource: ControllerSettings
     effectiveDated: true
+    horizon:
+      class: effective-dated
     fields:
-    - automaticBolusApplicationFactor
-    - carbAbsorptionModel
-    - gradualTransitionsThreshold
-    - includePositiveVelocityAndRC
-    - maxActiveInsulinMultiplier
-    - recommendationInsulinModel
-    - recommendationType
-    - useIntegralRetrospectiveCorrection
-    - useMidAbsorptionISF
+    - name: automaticBolusApplicationFactor
+      typeRef: https://nightscout.dev/schemas/sync/controller-settings.json#/properties/settings/properties/automaticBolusApplicationFactor
+    - name: carbAbsorptionModel
+      typeRef: https://nightscout.dev/schemas/sync/controller-settings.json#/properties/settings/properties/carbAbsorptionModel
+    - name: gradualTransitionsThreshold
+      typeRef: https://nightscout.dev/schemas/sync/controller-settings.json#/properties/settings/properties/gradualTransitionsThreshold
+    - name: includePositiveVelocityAndRC
+      typeRef: https://nightscout.dev/schemas/sync/controller-settings.json#/properties/settings/properties/includePositiveVelocityAndRC
+    - name: maxActiveInsulinMultiplier
+      typeRef: https://nightscout.dev/schemas/sync/controller-settings.json#/properties/settings/properties/maxActiveInsulinMultiplier
+    - name: recommendationInsulinModel
+      typeRef: https://nightscout.dev/schemas/sync/controller-settings.json#/properties/settings/properties/recommendationInsulinModel
+    - name: recommendationType
+      typeRef: https://nightscout.dev/schemas/sync/controller-settings.json#/properties/settings/properties/recommendationType
+    - name: useIntegralRetrospectiveCorrection
+      typeRef: https://nightscout.dev/schemas/sync/controller-settings.json#/properties/settings/properties/useIntegralRetrospectiveCorrection
+    - name: useMidAbsorptionISF
+      typeRef: https://nightscout.dev/schemas/sync/controller-settings.json#/properties/settings/properties/useMidAbsorptionISF
   sensitivity:
     labelsSource: specs/jsonschema/generated/ (x-sensitivity, x-data-category)
     enforcesLocally: false
