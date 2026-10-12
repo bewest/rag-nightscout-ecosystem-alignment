@@ -25,7 +25,7 @@ Marks: **[M]** measured, by the script and output named, in
 | question | verdict |
 |---|---|
 | **1. explicit nulls** | **Yes, four uploaders send them on create, all through API v1 POST: tconnectsync, oref0, nightscout-connect and cgmsim-lib.** Loop, Trio, xDrip4iOS, xDrip+, AndroidAPS (dev and master) and nightscout-librelink-up do not [R]. The stored corpus cannot confirm or refute this: it has no uploader from that list, and its only nulls are `carbs`/`insulin`, which the v1 treatments **read** adds [M]. **Which fields matter:** the treatment nulls (tconnectsync and cgmsim-lib `carbs`/`insulin`/`duration`) are normalised away by v1 `prepareData` before storage [M]. The devicestatus nulls are stored verbatim [M]: tconnectsync `pump.battery.percent`, oref0 `openaps.iob`, nightscout-connect `librelinkup.sensor.*` and `librelinkup.patientDevice.*`. All of these clients re-send the identical body after a failure [R]. Under Q1b(ii) such a retry deletes keys that the first write stored as `null`: the stored shape changes, but no non-null value is lost. A stored **value** is lost only if a second writer filled the field in between. |
-| **2a. devicestatus (`created_at`, `device`)** | **3,078 groups (14,757 documents) are distinct records sharing the key. All are Loop, at all 11 sites with Loop devicestatus.** A further 4,001 groups (22,635 documents) are byte-identical retry copies, also all Loop. Trio and the phone-model uploader have 0 of either [M]. In every distinct group the members share `loop.timestamp` and differ in `loop.enacted.*` (1,457 groups differ only there), `uploader.battery`, `loop.predicted` and the dose recommendations [M]. Keying devicestatus on (`created_at`, `device`) with merge would fold these into one record. |
+| **2a. devicestatus (`created_at`, `device`)** | **3,078 groups (14,757 documents) are distinct records sharing the key. All are Loop, at all 11 sites with Loop devicestatus.** A further 4,001 groups (22,635 documents) are byte-identical retry copies, also all Loop. Trio and the phone-model uploader have 0 of either [M]. In every distinct group the members share `loop.timestamp` and differ in `loop.enacted.*` (1,457 groups differ only there), `uploader.battery`, `loop.predicted` and the dose recommendations [M]. Keying devicestatus on (`created_at`, `device`) with merge would fold these into one record. Many are retries of one report whose upload-time fields changed, and some are distinct decisions (§2.1.1) |
 | **2b. entries `date` vs `sysTime`** | **0 entries name instants 1 s or more apart.** 427,003 of 719,559 differ by less than 1 s, because `date` carries sub-second milliseconds and `sysTime` is second-resolution. 292,556 are exactly equal [M]. Per client: §2.2. |
 | **3. identical re-sends (Q2(b))** | **Every uploader re-sends records it already uploaded,** mostly as whole-batch retries after a lost reply [R]. The only deliberate re-send of unchanged records is xDrip+'s user-triggered backfill; no client has a periodic "touch" [R]. **AndroidAPS NSClientV3 is the only client that syncs by `srvModified`.** For a record whose content is unchanged it writes nothing to its database and uploads nothing, with one exception: an Announcement less than 60 min old raises its alarm notification again [R]. A re-delivered copy can also revert a pending local edit of a few fields, but only when the server copy differs from the local one, which an identical re-send by definition does not cause. The corpus cannot measure how often this happens: 1 of 1,589,356 stored documents carries `srvModified` and none carries `srvCreated` [M]. |
 
@@ -139,7 +139,7 @@ Under Q1b(ii), applied to the per-client facts above:
 
 - Distinct groups appear at 11 of the 12 sites, which is every site with Loop devicestatus.
 - Most distinct groups have 2 members (2,509). 178 have 10 or more members with 2 distinct bodies.
-- Loop `created_at` has millisecond resolution, and every distinct group shares `loop.timestamp`.
+- Loop `created_at` is stored with a `.000` millisecond part; Loop sends whole seconds (§2.1.1). Every distinct group shares `loop.timestamp`.
 
 What differs, counted in groups:
 
@@ -151,7 +151,7 @@ What differs, counted in groups:
 | `loop.automaticDoseRecommendation.*` together with `loop.predicted.values` | the next five combinations |
 | only `loop.failureReason` | 69 |
 
-**Reading.** These are different status reports from one Loop cycle carrying one `created_at`, not retries. Under Q3(a) with merge they would become one record, and the last report's `enacted` or recommendation would overwrite the earlier one.
+**Reading** (corrected by §2.1.1): these are either one stored decision re-sent by a whole-batch retry with fields read at upload time (B1), or two decisions in the same whole second (B2); the code does not say which is commoner. Under Q3(a) with merge they would become one record, and the last report's `enacted` or recommendation would overwrite the earlier one.
 
 **Non-vacuity** [M] (`control-results.txt`). A planted identical copy moved the identical-bodies count up by one group (2 documents). Two planted copies, each with one leaf changed (one with a nested `null`, one with an extra `loop` field), moved the distinct-bodies count up by two groups (4 documents).
 
