@@ -363,7 +363,9 @@ its proof is the three generated registrations still validating plus an unfamili
 registration that uses every rule. Rule 6 is specified as `SPEC-REG-NEGOTIATE` (capability
 document, submit and fallback contract, conformance fixtures); the API a hub derives from a
 registration is `HUB-REG-CRM` for cgm-remote-monitor and `HUB-REG-NOCTURNE`, a shared-contract
-proposal to Nocturne. All three follow `SCHEMA-REG-EXT`.
+proposal to Nocturne. All three follow `SCHEMA-REG-EXT`. *(2026-10-12: rules 1–5 are in the
+schema and generator; "where the grammar stands" above describes the grammar before them, and
+the hub-sync design §3.1 lists the result.)*
 
 ### 2.7 D12 — what each repository is for
 

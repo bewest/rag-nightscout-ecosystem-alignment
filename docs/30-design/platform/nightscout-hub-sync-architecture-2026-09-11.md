@@ -1,6 +1,6 @@
 # A hub-and-spoke sync model for AID controllers
 
-*Contributor-facing.* **Snapshot — describes 2026-09-11. Status: current as analysis; the design it sketches is carried forward by [PROPOSAL-controller-descriptions](PROPOSAL-controller-descriptions-2026-09-11.md) and [PROPOSAL-replay-fidelity-changes](PROPOSAL-replay-fidelity-changes-2026-09-11.md).** Current decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions). **Corrected in place 2026-10-12:** §3.1's description of `stateSpans` and the schema field list in §5.2 now match the schema as extended for D18 from [intent and workflow across the landscape](./nightscout-intent-workflow-landscape-2026-10-09.md) §9.
+*Contributor-facing.* **Snapshot — describes 2026-09-11. Status: current as analysis; the design it sketches is carried forward by [PROPOSAL-controller-descriptions](PROPOSAL-controller-descriptions-2026-09-11.md) and [PROPOSAL-replay-fidelity-changes](PROPOSAL-replay-fidelity-changes-2026-09-11.md).** Current decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions). **Corrected in place 2026-10-12:** §3.1's description of `stateSpans` and the schema field list in §5.2 now match the schema as extended for D18 from [intent and workflow across the landscape](./nightscout-intent-workflow-landscape-2026-10-09.md) §9. **Also 2026-10-12:** §3.1 lists `extensions` and the D18 addendum grammar rules 1–5 (`SCHEMA-REG-EXT`).
 
 Date: 2026-09-11. Fifth in a series
 with
@@ -137,9 +137,38 @@ A controller declares its live state model once, against
   *(Added 2026-10-12.)*
 * **replayInputs** — every dosing input it could supply, with `status` and a
   path; **an input it has but does not publish is declared with a null
-  path**, which is what makes completeness measurable rather than guessed
-* **settings** — the configuration snapshot it will publish, effective-dated
+  path**, which is what makes completeness measurable rather than guessed.
+  An input may also carry a type (below). *(Typing added 2026-10-12.)*
+* **settings** — the configuration snapshot it will publish, effective-dated.
+  `fields` takes a name, as before, or a typed field declaration (below).
+  *(Typing added 2026-10-12.)*
+* **extensions** — controller-specific data, keyed by a reverse-DNS namespace
+  the controller owns, each with its own version and typed fields. An extension
+  or field without a type declaration is rejected. *(Added 2026-10-12.)*
 * **cadence** and **queryProfile**
+
+*Grammar rules (added 2026-10-12, `SCHEMA-REG-EXT`; D18 addendum, execution plan
+§2.6.1).* Within `nightscout.dev/sync/v1` a reader ignores members it does not know:
+it keeps them as written and does not interpret or serve them, so no object in the
+schema is closed (`tools/nsschema/sync_model.py` `unknown_grammar_fields` lists them).
+A field declaration carries `type` — a restricted JSON Schema fragment (`type`,
+`enum`, `minimum`, `maximum`, `format`, `items`, `properties`, `required`; closed;
+an object must list its properties) — or `typeRef` to a Nightscout-published
+definition such as a ControllerSettings field, plus `unit`, `range`, `horizon`,
+`sensitivity` (the two-axis label of `specs/sync/sensitivity.yaml`) and `evidence`.
+A field with no label falls under `sensitivity.unlabelledPolicy`, `withhold` when
+absent. `endedEncoding`, command `transport`, `replayInputs[].status` and the
+discriminator `test` take a shared value or `{value: other, controllerTerm}`, and
+`endReasons` gains `other`. Each `stateSpans` kind and each extension may declare
+`version` or `versions` (`served`, one `stored`, optional lossless `mappings`);
+without a mapping nothing is converted. Documents, kinds, fields, settings and
+extensions may declare a `horizon` (`cycle`, `span`, `effective-dated`,
+`definition`, `aggregate`) with its own cadence and retention, and `availability`
+gains `experimental`. The generated registrations gained `typeRef` only where the
+ControllerSettings definition was read from the controller's own algorithm family,
+and horizons only for the `devicestatus` document (`cycle`) and `settings`
+(`effective-dated`); `specs/sync/registrations/fixtures/example-testcontroller.yaml`
+is a synthetic registration that uses every rule.
 
 Worked registrations for Loop, Trio and AndroidAPS are in
 `specs/sync/registrations/`, **generated from the census, the vendor
@@ -363,8 +392,9 @@ theirs, not ours. A catalogue entry describes the kind; liveness belongs to
 the instance. Adopting that split costs this series one new field group in
 `specs/sync/controller-state-model.schema.json` — which today has
 `cadence`, `documents`, `stateSpans`, `composition`, `commands`,
-`replayInputs`, `settings`, `queryProfile`, `sensitivity` and nothing about
-instances at all. (`composition` and `commands` added 2026-10-12.)
+`replayInputs`, `settings`, `queryProfile`, `sensitivity`, `extensions` and nothing about
+instances at all. (`composition` and `commands` added 2026-10-12; `extensions` added
+2026-10-12 by `SCHEMA-REG-EXT`, see §3.1.)
 
 **Two corrections we can offer back, because we measured them.** Both are
 small and both are the kind of thing only a corpus can catch:

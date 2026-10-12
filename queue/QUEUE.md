@@ -41,7 +41,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 61 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-164, BFQ-165, BFQ-166, BFQ-167, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-TRIO-INTENT, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, HUB-REG-CRM, HUB-REG-NOCTURNE |
+| `not-started` | 60 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-164, BFQ-165, BFQ-166, BFQ-167, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-TRIO-INTENT, SPEC-REG-NEGOTIATE, HUB-REG-CRM, HUB-REG-NOCTURNE |
 | `in-progress` | 3 | BFQ-46, BFQ-ENV, OID-LAB |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
@@ -49,7 +49,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `in-flight-upstream` | 1 | BFQ-09 |
 | `merged-upstream` | 87 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 6 | RT-PROPAGATION, RT-0, T30-RESEARCH, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG |
-| `done` | 7 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, DOC-VIEWS, DOC-LINKS, RT-SOAK, LAB-HUB-ACTIVE-STATE |
+| `done` | 8 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, DOC-VIEWS, DOC-LINKS, RT-SOAK, SCHEMA-REG-EXT, LAB-HUB-ACTIVE-STATE |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 3 | BFQ-71, BFQ-41, BFQ-141 |
 | `answered` | 1 | RT-D3 |
@@ -6958,7 +6958,7 @@ reproduced ones.
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
 | `LAB-TRIO-INTENT` | Simulator lab: Trio override expiry, temp-target upload repeats, downloaded temp-target echo | `not-started` | `main` | n/a | 1 run + 1 no-gate |
-| `SCHEMA-REG-EXT` | Registration grammar: must-ignore, typed extensions, open vocabularies, per-kind versions, horizons (D18 addendum rules 1-5) | `not-started` | `main` | n/a | 2 run |
+| `SCHEMA-REG-EXT` | Registration grammar: must-ignore, typed extensions, open vocabularies, per-kind versions, horizons (D18 addendum rules 1-5) | `done` | `main` | n/a | 2 run |
 | `SPEC-REG-NEGOTIATE` | Registration negotiation: the hub capability document, submit and fallback contract (D18 addendum rule 6) | `not-started` | `main` | n/a | 1 run |
 | `HUB-REG-CRM` | cgm-remote-monitor: accept registrations and derive typed storage, validation and query from them | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `HUB-REG-NOCTURNE` | Nocturne: propose the registration grammar and negotiation as a shared contract, with the hub active-state evidence | `not-started` | `main` | n/a | 0 run + 1 no-gate |
@@ -6998,7 +6998,7 @@ reproduced ones.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `done` |
 | repo | `rag-nightscout-ecosystem-alignment` |
 | branch | `main` |
 | base | `main@e3962cf6` |
@@ -7015,16 +7015,16 @@ reproduced ones.
 **Gates.**
 
 - `[unit]` `python -m pytest -q tools/nsschema/test_registration_grammar.py`
-  - FAILS until the grammar implements rules 1-5. RED on 2026-10-12 (the test file does not exist). The tests must show: the three generated registrations validate unchanged in meaning; an unfamiliar test registration exercising every rule validates; an unknown grammar field is ignored, not rejected; an extension without a type declaration is rejected; a field without a sensitivity label resolves to withhold; an unknown vocabulary term validates as other plus controllerTerm; two served versions of one kind with no mapping validate and are not converted. Each rejection test is paired with a control that passes.
+  - FAILS until the grammar implements rules 1-5. RED on 2026-10-12 (the test file does not exist). The tests must show: the three generated registrations validate unchanged in meaning; an unfamiliar test registration exercising every rule validates; an unknown grammar field is ignored, not rejected; an extension without a type declaration is rejected; a field without a sensitivity label resolves to withhold; an unknown vocabulary term validates as other plus controllerTerm; two served versions of one kind with no mapping validate and are not converted. Each rejection test is paired with a control that passes. GREEN on 2026-10-12 (46 tests). Non-vacuity: eleven weakenings of the schema or of sync_model.py (re-closing the root, untyped extension fields, otherTerm without controllerTerm, transport as any string, lossy mappings, endReasons other without a term, an open type fragment, object/array without shape, any namespace, unlabelled default send, converting without a mapping) each turned the matching test red, then were reverted.
 - `[unit]` _(cwd: `tools`)_ `python -m nsschema.sync_model --check`
-  - The committed registrations match the generator. GREEN on 2026-10-12; must stay green after the grammar change.
+  - The committed registrations match the generator. GREEN on 2026-10-12; must stay green after the grammar change. GREEN on 2026-10-12 after it: it also rejects a generated member the grammar does not define, and validates (never compares) the fixtures under specs/sync/registrations/fixtures/.
 
 **Evidence.**
 
 - `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 - `docs/30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md`
 
-**Notes.** Implements the D18 addendum (execution plan §2.6.1, maintainer 2026-10-12), rules 1-5. Every extensible field is typed: controller data is accepted only with a type declaration. (1) must-ignore for unknown grammar fields within v1, plus `extensions` keyed by a reverse-DNS namespace, each with a type declaration. (2) settings.fields[], replayInputs[] and extension fields become objects: a restricted JSON Schema fragment for the type (fix the subset and say why), unit, range, horizon, sensitivity label, evidence; reuse the typed field descriptions already in controller-settings.schema.json rather than restating them. (3) endedEncoding, command transport, replayInputs[].status and the discriminator test take a shared value or other + controllerTerm. (4) per-kind version, served versions, one stored version, optional lossless mapping; no conversion without one. (5) horizon per document, kind and field (cycle, span, effective-dated, definition, aggregate) with cadence and retention; availability gains experimental. Keep every change additive to v1 unless a rule cannot be, and if so stop and report. The generated registrations should gain types only where the evidence gives them; omit rather than guess. Update the hub-sync architecture doc's schema field list and the landscape §10 row. Rule 6 (negotiation) and the hub-derived API are hub implementation and are out of scope here.
+**Notes.** Implements the D18 addendum (execution plan §2.6.1, maintainer 2026-10-12), rules 1-5. Every extensible field is typed: controller data is accepted only with a type declaration. (1) must-ignore for unknown grammar fields within v1, plus `extensions` keyed by a reverse-DNS namespace, each with a type declaration. (2) settings.fields[], replayInputs[] and extension fields become objects: a restricted JSON Schema fragment for the type (fix the subset and say why), unit, range, horizon, sensitivity label, evidence; reuse the typed field descriptions already in controller-settings.schema.json rather than restating them. (3) endedEncoding, command transport, replayInputs[].status and the discriminator test take a shared value or other + controllerTerm. (4) per-kind version, served versions, one stored version, optional lossless mapping; no conversion without one. (5) horizon per document, kind and field (cycle, span, effective-dated, definition, aggregate) with cadence and retention; availability gains experimental. Keep every change additive to v1 unless a rule cannot be, and if so stop and report. The generated registrations should gain types only where the evidence gives them; omit rather than guess. Update the hub-sync architecture doc's schema field list and the landscape §10 row. Rule 6 (negotiation) and the hub-derived API are hub implementation and are out of scope here. Done 2026-10-12, additively: every registration valid before is valid after. Must-ignore is an open schema (no object closed) plus sync_model.unknown_grammar_fields, which reports what a v1 reader keeps without interpreting; --check holds the generator to known members. Type fragments are a closed subset (type, enum, minimum, maximum, format, items, properties, required). The registrations gained typeRef to controller-settings.schema.json only where the definition was read from the controller's own family (suspendThreshold and per-cycle state stay untyped), a cycle horizon on the devicestatus document and an effective-dated horizon on settings. endReasons also gained `other`. Fixture: specs/sync/registrations/fixtures/example-testcontroller.yaml.
 
 ### `SPEC-REG-NEGOTIATE` &mdash; Registration negotiation: the hub capability document, submit and fallback contract (D18 addendum rule 6)
 

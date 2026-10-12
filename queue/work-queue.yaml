@@ -13508,7 +13508,7 @@ items:
     repo: rag-nightscout-ecosystem-alignment
     branch: main
     base: main@e3962cf6
-    state: not-started
+    state: done
     pr: []
     blast_radius: >
       specs/sync/controller-state-model.schema.json (grammar), the
@@ -13534,13 +13534,23 @@ items:
           sensitivity label resolves to withhold; an unknown vocabulary
           term validates as other plus controllerTerm; two served versions
           of one kind with no mapping validate and are not converted.
-          Each rejection test is paired with a control that passes.
+          Each rejection test is paired with a control that passes. GREEN on
+          2026-10-12 (46 tests). Non-vacuity: eleven weakenings of the
+          schema or of sync_model.py (re-closing the root, untyped extension
+          fields, otherTerm without controllerTerm, transport as any string,
+          lossy mappings, endReasons other without a term, an open type
+          fragment, object/array without shape, any namespace, unlabelled
+          default send, converting without a mapping) each turned the
+          matching test red, then were reverted.
       - run: python -m nsschema.sync_model --check
         cwd: tools
         kind: unit
         describe: >
           The committed registrations match the generator. GREEN on
-          2026-10-12; must stay green after the grammar change.
+          2026-10-12; must stay green after the grammar change. GREEN on
+          2026-10-12 after it: it also rejects a generated member the
+          grammar does not define, and validates (never compares) the
+          fixtures under specs/sync/registrations/fixtures/.
     blocks_on: []
     evidence:
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
@@ -13568,6 +13578,19 @@ items:
       guess. Update the hub-sync architecture doc's schema field list and
       the landscape §10 row. Rule 6 (negotiation) and the hub-derived API
       are hub implementation and are out of scope here.
+
+      Done 2026-10-12, additively: every registration valid before is
+      valid after. Must-ignore is an open schema (no object closed) plus
+      sync_model.unknown_grammar_fields, which reports what a v1 reader
+      keeps without interpreting; --check holds the generator to known
+      members. Type fragments are a closed subset (type, enum, minimum,
+      maximum, format, items, properties, required). The registrations
+      gained typeRef to controller-settings.schema.json only where the
+      definition was read from the controller's own family
+      (suspendThreshold and per-cycle state stay untyped), a cycle
+      horizon on the devicestatus document and an effective-dated horizon
+      on settings. endReasons also gained `other`. Fixture:
+      specs/sync/registrations/fixtures/example-testcontroller.yaml.
 
   - id: SPEC-REG-NEGOTIATE
     title: "Registration negotiation: the hub capability document, submit and fallback contract (D18 addendum rule 6)"
