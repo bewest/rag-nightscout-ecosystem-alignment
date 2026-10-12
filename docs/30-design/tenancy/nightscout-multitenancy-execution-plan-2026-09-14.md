@@ -856,7 +856,8 @@ with 19 conflicting paths (`git merge-tree --write-tree --name-only official/cho
 conflicts across the v1 API and server storage modules, cost unmeasured. Against `official/dev`
 `295f1177` the seam is 271 behind / 545 ahead with 49 conflicting paths (the same two commands with
 `official/dev`). Whether the seam refreshes onto the modernization branch or onto `dev` depends on
-how the release train reaches `dev`, which is open (§5.1, queue `RT-PROPAGATION`). D9 stands.
+how the release train reaches `dev`: by merge, decided 2026-10-12 (§5.1, queue `RT-PROPAGATION`), so
+the seam refreshes onto the modernization branch. D9 stands.
 
 **Caveat:** #8605 (the modernization integration PR) has zero human reviews across its production
 lines, all by one author. That blocks *shipping* the stack, not *developing* against it. This plan
@@ -907,7 +908,8 @@ staleness costs no one until tenancy work resumes. The refresh waits for the 15.
 and for the release train's next propagation, and is done as the first step of `WRITE-CONTRACT`.
 Modernization work proceeds in parallel meanwhile. It converges with `dev`, not with the seam.
 
-**Open: how the release train reaches `dev`** (queue `RT-PROPAGATION`, maintainer). So far every
+**Decided 2026-10-12: the release train reaches `dev` by merge** (queue `RT-PROPAGATION`, maintainer),
+so the seam takes the merge row below. Before the decision, every
 propagation has been a merge: `e3b22034` on the modernization branch, and both local rehearsals
 (`rt/cut1` `ed21961f` and `rh/cut1` `c77797e0` each contain every commit of
 `chore/retire-jsdom`: `git rev-list --count official/chore/retire-jsdom ^rt/cut1` is 0). Queue

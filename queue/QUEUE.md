@@ -48,11 +48,11 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `blocked` | 23 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, BFQ-72, BFQ-52, BFQ-93, BFQ-95, BFQ-67, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-152, BFQ-154, BFQ-156 |
 | `in-flight-upstream` | 1 | BFQ-09 |
 | `merged-upstream` | 87 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
-| `needs-decision` | 6 | RT-PROPAGATION, RT-0, T30-RESEARCH, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG |
+| `needs-decision` | 5 | RT-0, T30-RESEARCH, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG |
 | `done` | 9 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, DOC-VIEWS, DOC-LINKS, RT-SOAK, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, LAB-HUB-ACTIVE-STATE |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 3 | BFQ-71, BFQ-41, BFQ-141 |
-| `answered` | 1 | RT-D3 |
+| `answered` | 2 | RT-D3, RT-PROPAGATION |
 
 ### Reaches an operator on today's release
 
@@ -1036,7 +1036,7 @@ that costs.
 | `RT-TRUST-ONE-SOURCE` | Every client-address consumer uses one TRUST_PROXY policy compiled from env | `merged-upstream` | `rt/trust-one-source` | patch | 3 run + 1 no-gate |
 | `RT-LOOP-REMOTE-ADDRESS` | Loop remote commands carry the proxy's address as their sender label | `merged-upstream` | `rt/trust-one-source` | patch | 2 run + 2 no-gate |
 | `RT-REBASE` | Cuts 1-5 are far behind dev and all five conflict | `gate-not-met` | `chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6, chore/mime-exposure-review` | n/a | 6 run + 1 no-gate |
-| `RT-PROPAGATION` | How the release train reaches dev: merge dev into the cuts, or rebase the cuts onto dev | `needs-decision` | `-` | n/a | 0 run + 1 no-gate |
+| `RT-PROPAGATION` | How the release train reaches dev: merge dev into the cuts, or rebase the cuts onto dev | `answered` | `-` | n/a | 0 run + 1 no-gate |
 | `RT-0` | Release 15.0.9 | `needs-decision` | `origin/dev` | minor | 2 run + 2 no-gate |
 | `RT-1` | Cut 1 - chore/retire-jsdom | `blocked` | `chore/retire-jsdom` | major | 2 run + 2 no-gate |
 | `RT-2` | Cut 2 - chore/build-runtime-separation | `blocked` | `chore/build-runtime-separation` | minor | 1 run + 1 no-gate |
@@ -1361,7 +1361,7 @@ that costs.
 
 | | |
 |---|---|
-| state (claimed) | `needs-decision` |
+| state (claimed) | `answered` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
 | base | `official/dev@295f1177` |
@@ -1384,7 +1384,7 @@ that costs.
 - `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 - `docs/60-research/tenancy/seam-propagation-rehearsal-2026-10-07.md`
 
-**Notes.** Merge keeps the seam's base, so SEAM-REFRESH is one merge into the seam tip, keeping the history of its 16 branches. Rebase rewrites the base, so the seam is re-parented onto dev instead: the Phase 1 prefix (seam/t1-2-e) after RT-3, which brings MongoDB driver 7, and the rest after RT-5, which carries 9e869662. Recorded as open at the maintainer's request, 2026-09-27. Rehearsed 2026-10-07 on the Phase 1 prefix (seam/t1-2-e a2690bd4; docs/60-research/tenancy/seam-propagation-rehearsal-2026-10-07.md; local branches prop/merge-prefix 16222c97 and prop/rebase-prefix b894ec76). Merge into modernization b1bdaca0: 8 paths, 14 hunks, 0 write-rule files, 2 design calls; suite 2476/4 against its base 2426/0. Rebase with `git rebase --rebase- merges --onto 43289dde 0a4109f6` (a plain rebase replays modernization's own commits and stops at 37 conflicting paths): 11 lib and 8 test paths, 58 hunks, 7 write-rule files, 11 design calls, 3 seam write sites left on the raw driver, 5 silent auto-merge hazards of which the suite misses one kind; suite 3611/5 against its base 3564/0. The prefix runs on driver 5.9.2 and Node 20 and 22, so the driver does not force the prefix after RT-3. Under merge, the 15.0.9 write rules, including treatment-fallback-key's $not/$type that the seam AST cannot express, arrive with the modernization branch's next merge of dev. Recommendation from session -69, for the maintainer to decide: merge.
+**Notes.** Merge keeps the seam's base, so SEAM-REFRESH is one merge into the seam tip, keeping the history of its 16 branches. Rebase rewrites the base, so the seam is re-parented onto dev instead: the Phase 1 prefix (seam/t1-2-e) after RT-3, which brings MongoDB driver 7, and the rest after RT-5, which carries 9e869662. Recorded as open at the maintainer's request, 2026-09-27. Rehearsed 2026-10-07 on the Phase 1 prefix (seam/t1-2-e a2690bd4; docs/60-research/tenancy/seam-propagation-rehearsal-2026-10-07.md; local branches prop/merge-prefix 16222c97 and prop/rebase-prefix b894ec76). Merge into modernization b1bdaca0: 8 paths, 14 hunks, 0 write-rule files, 2 design calls; suite 2476/4 against its base 2426/0. Rebase with `git rebase --rebase- merges --onto 43289dde 0a4109f6` (a plain rebase replays modernization's own commits and stops at 37 conflicting paths): 11 lib and 8 test paths, 58 hunks, 7 write-rule files, 11 design calls, 3 seam write sites left on the raw driver, 5 silent auto-merge hazards of which the suite misses one kind; suite 3611/5 against its base 3564/0. The prefix runs on driver 5.9.2 and Node 20 and 22, so the driver does not force the prefix after RT-3. Under merge, the 15.0.9 write rules, including treatment-fallback-key's $not/$type that the seam AST cannot express, arrive with the modernization branch's next merge of dev. Recommendation from session -69, for the maintainer to decide: merge. Decided by the maintainer 2026-10-12: merge. dev is merged into the cuts and into chore/nightscout-modernization, keeping their commits, and SEAM-REFRESH is one merge of the moved base into the seam tip. RT-REBASE catches the cuts up by merging dev into each, despite its name.
 
 ### `RT-0` &mdash; Release 15.0.9
 
@@ -6396,7 +6396,7 @@ alarm-readiness items, and the seam branch refresh.
 | worktree | `externals/work/crm-seam` |
 | semver | `n/a` |
 | review | maintainer |
-| blocks on | `RT-0`, `RT-PROPAGATION` |
+| blocks on | `RT-0` |
 
 **Blast radius.** 16 seam branches. GT1 measured the chain as LINEAR - all 15 others are ancestors of seam/t1-2-storage-interface (81a1f6ce), and that still holds. The base moved on 2026-09-21: dev was merged into chore/nightscout-modernization as e3b22034 ("Merge dev into modernization and reconcile regression coverage"), 0a4109f6..b1bdaca0, 68 commits. Measured 2026-09-22 against origin/chore/nightscout-modernization b1bdaca0: the seam is 68 behind its base and 50 ahead (`git rev-list --left-right --count origin/chore/nightscout- modernization...seam/t1-2-storage-interface`), and the trial-merge has 19 conflicting paths. Three are add/add supersessions rather than real conflicts: lib/server/query-operator-allowlist.js, lib/api/shared/query-error.js and tests/api-v1-operator-allowlist.test.js exist on BOTH sides because BF-04 was extracted out of the seam onto bf/operators and merged to dev via #8743, while the seam kept its own copy. Upstream's version wins on all three; BF-04's register detail prices that as the seam owing a $type node to its AST. The other sixteen are content conflicts across the v1 API and server storage modules - lib/api/{activity,entries,profile}/index.js, lib/server/{activity,ag gregate,devicestatus,entries,food,profile,query,treatments}.js, lib/authorization/storage.js, both swagger files, and two test files - and those are the actual cost.
 

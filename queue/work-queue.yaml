@@ -2745,7 +2745,7 @@ items:
     repo: cgm-remote-monitor
     branch: ""
     base: official/dev@295f1177
-    state: needs-decision
+    state: answered
     pr: []
     blast_radius: >
       A decision, no code. It decides whether the commits of cuts 1-5
@@ -2794,6 +2794,11 @@ items:
       AST cannot express, arrive with the modernization branch's next merge of
       dev. Recommendation from session -69, for the maintainer to decide:
       merge.
+
+      Decided by the maintainer 2026-10-12: merge. dev is merged into the
+      cuts and into chore/nightscout-modernization, keeping their commits,
+      and SEAM-REFRESH is one merge of the moved base into the seam tip.
+      RT-REBASE catches the cuts up by merging dev into each, despite its name.
 
   - id: RT-0
     title: Release 15.0.9
@@ -4898,7 +4903,7 @@ items:
           origin/dev...origin/chore/nightscout-modernization`). That is a
           re-basing decision, not a merge-conflict question. Now RT-PROPAGATION
           (2026-09-27).
-    blocks_on: [RT-0, RT-PROPAGATION]
+    blocks_on: [RT-0]
     evidence:
       - docs/60-research/remedial/gt1-branch-inventory-2026-09-15.md
       - docs/60-research/tenancy/seam-propagation-rehearsal-2026-10-07.md
