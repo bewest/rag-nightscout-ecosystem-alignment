@@ -155,6 +155,123 @@ What differs, counted in groups:
 
 **Non-vacuity** [M] (`control-results.txt`). A planted identical copy moved the identical-bodies count up by one group (2 documents). Two planted copies, each with one leaf changed (one with a nested `null`, one with an extra `loop` field), moved the distinct-bodies count up by two groups (4 documents).
 
+### 2.1.1 Loop's same-key devicestatus pairs
+
+Sources: `LoopWorkspace` `f8412858` with submodules Loop `c2fddb76`, LoopKit `325bd820` and
+NightscoutService `fe075ef0`; NightscoutKit `4ec9fd12`. NightscoutService tracks NightscoutKit
+`branch = main`, not a fixed revision (`NightscoutService.xcodeproj/project.pbxproj:1324-1327@fe075ef0`),
+so `4ec9fd12` is an assumption [R]. All citations below were read for this section. Paths are
+relative to `externals/` (`LoopWorkspace/<submodule>/…` for submodules).
+
+**Verdict: mixed, and neither half is (A).** No code path re-uploads a status once an enactment
+is confirmed. Same-key bodies differ for two reasons. (B1) A whole-batch retry re-uploads the
+same stored decision, and some fields are filled in at upload time, so they can change between
+attempts. (B2) Two distinct decisions fall in the same whole second. The code does not say which
+reason dominates.
+
+**Where the devicestatus is built [R].** Loop does not upload its `loop` decisions as
+devicestatus. The batch is walked in order. A `loop` decision is only remembered in
+`lastDosingDecisionForAutomaticDose`. A decision with reason `updateRemoteRecommendation`,
+`normalBolus`, `simpleBolus` or `watchBolus` becomes one devicestatus, paired with the
+remembered `loop` decision (`LoopWorkspace/NightscoutService/NightscoutServiceKit/NightscoutService.swift:101,284-297@fe075ef0`).
+`deviceStatus(automaticDoseDecision:)` takes `iob`, `cob`, `predicted`,
+`automaticDoseRecommendation` and `recommendedBolus` from the uploaded decision. It takes
+`enacted` and `failureReason` from the paired `loop` decision
+(`…/Extensions/StoredDosingDecision.swift:148-164@fe075ef0`). The function sets no
+`identifier` (same lines). NightscoutKit writes `identifier` only when one is set
+(`NightscoutKit/Sources/NightscoutKit/Models/DeviceStatus.swift:60-62@4ec9fd12`), so the server
+cannot tell a re-send from a new record.
+
+**`created_at` and `loop.timestamp` [R].** Both are the uploaded decision's `date`
+(`StoredDosingDecision.swift:149-150,153-155@fe075ef0`). The `date` defaults to `Date()` when
+the decision is built (`LoopWorkspace/LoopKit/LoopKit/DosingDecisionStore.swift:265@325bd820`;
+`LoopWorkspace/Loop/Loop/Managers/LoopDataManager.swift:966@c2fddb76`). NightscoutKit formats
+both with `.withInternetDateTime`, which has **whole-second** resolution
+(`Extensions/TimeFormat.swift:12,15-16`; `Extensions/ISO8601DateFormatter.swift:14-16@4ec9fd12`).
+So two decisions made in the same second get the same `created_at` and `loop.timestamp`.
+
+The corpus agrees [M, one-off aggregate script, not committed]. All 485,141 Loop devicestatus
+documents store `created_at` with a `.000` fraction, and `loop.timestamp` has no fraction. All of
+them report Loop version 3.x. §2.1's "millisecond resolution" is therefore the stored format;
+the values themselves are whole seconds.
+
+**`enacted` and `received` [R].** `enacted` exists only when the paired `loop` decision has an
+`automaticDoseRecommendation` and no errors. `received` is hard-coded `true`, and
+`enacted.timestamp` is that `loop` decision's `date` (`StoredDosingDecision.swift:63-70@fe075ef0`).
+Nothing sets `received` to `false` or updates a status that was already sent. The only
+devicestatus write is `postToNS` (POST) (`NightscoutKit/.../NightscoutClient.swift:646-648@4ec9fd12`).
+
+Corpus [M, same script]: in the distinct groups `received` is never `false`. In 1,743 groups
+`enacted` is present in some members and absent in others. In 170 groups every member has
+`enacted` but with different values, and in all 170 the `enacted.timestamp` differs.
+
+**What triggers an upload [R].** Every `storeDosingDecision` purges expired decisions, and the
+purge calls the delegate (`DosingDecisionStore.swift:35-49,85@325bd820`). The delegate is
+`triggerUpload(for: .dosingDecision)` (`Loop/Managers/DeviceDataManager.swift:1319-1321@c2fddb76`).
+So each stored decision starts an upload pass. `triggerUpload` for any data type also re-runs
+every type in `failedUploads` (`Loop/Managers/RemoteDataServicesManager.swift:182-196@c2fddb76`).
+
+Each loop stores a `loop` decision (`LoopDataManager.swift:497-511@c2fddb76`) and then calls
+`updateRemoteRecommendation()` (`:954`). That call stores an `updateRemoteRecommendation`
+decision only if carbs, glucose or dose data changed since the last one, and only if a manual
+bolus recommendation exists (`:187,201,216,520-542`). `updateRemoteRecommendation()` is also
+called after every `enactBolus` (`DeviceDataManager.swift:863`), from the watch
+(`Loop/Managers/WatchDataManager.swift:395`) and from bolus entry (`Loop/View Models/BolusEntryViewModel.swift:382`). A manual
+bolus stores its own decision (`LoopDataManager.swift:817-837`). Several decisions can therefore
+be stored within one second. Whether a given same-second pair came from these calls, and from
+which ones, is not settled by the code.
+
+**Retry: whole batch [R].** Uploads for one type run one at a time
+(`RemoteDataServicesManager.swift:347-385@c2fddb76`). Each pass queries up to 50 decisions after
+the saved anchor, ordered by `modificationCounter` (`NightscoutService.swift:274@fe075ef0`;
+`DosingDecisionStore.swift:197-198@325bd820`). The anchor advances only on success. On failure
+the type is added to `failedUploads`, and the same batch is queried again on the next trigger
+(`RemoteDataServicesManager.swift:363-371,106-111`). There is no timer and no backoff. The batch
+goes out as one POST. A reply whose array length differs from the number sent counts as a
+failure, even if the server stored the documents (`NightscoutClient.swift:479-491@4ec9fd12`).
+
+**Why a retried decision can get a different body (B1) [R].** Three inputs are read at upload
+time, not stored with the decision:
+
+- **Pairing.** `lastDosingDecisionForAutomaticDose` is reset to `nil` only after a successful
+  POST (`NightscoutService.swift:304-308`). After a failure it still holds the last `loop`
+  decision of the failed batch. On the retry, a status that comes before any `loop` decision in
+  the batch is paired with that later decision. On the first attempt it was paired with `nil` or
+  an earlier decision. So `enacted` appears, disappears, or moves to a later `timestamp`, while
+  `created_at` and `loop.timestamp` stay the same.
+- **Uploader battery.** `uploader.battery` (and `isCharging`) are read from `UIDevice.current`
+  each time the status is built (`StoredDosingDecision.swift:139-146`).
+- **Reservoir.** `pump.reservoir` is dropped once the reservoir reading is more than 15 minutes
+  older than the time the status is built (`StoredDosingDecision.swift:90-95`).
+
+The corpus fits B1 [M, same script]. The batch is in chronological order, so on a first attempt
+the paired `loop` decision cannot be later than the uploaded one. Yet 1,714 Loop documents have
+`enacted.timestamp` later than `loop.timestamp`, and 200 distinct groups contain such a member.
+Server insert times (the `_id` ObjectId time) are spread out within a group: in distinct groups,
+first to last, 1,300 are within 0 s, 1,237 within 5 s, 27 within 60 s, 245 within 10 min, 223
+within 1 h and 46 within 1 day. Along insert order, 2,873 distinct groups change body exactly
+once. That matches a first attempt followed by retries that all pair with the same stale
+decision.
+
+**Same-second distinct decisions (B2) [R].** `cob`, `predicted.values`,
+`automaticDoseRecommendation` and `recommendedBolus` come only from the uploaded decision
+(`StoredDosingDecision.swift:153-160`). A retry cannot change them. So the groups where they
+differ (for example, `recommendedBolus` differs in 271 of the 3,078 [M]) are distinct decisions
+whose dates round to the same second.
+
+**Not settled by the code:**
+
+- how a same-second pair is split across the triggers listed above;
+- why 1,300 distinct groups and 613 identical groups were inserted within the same second. A
+  retry needs a new trigger after a failed POST, so a gap of 0 s points to two passes in quick
+  succession or to a re-send below Loop (URLSession or a proxy). Neither is visible here;
+- whether Loop builds older than these commits behaved the same. The pairing logic dates from
+  NightscoutService `08abe27` (2022-07-18); the release history was not checked against it.
+
+This qualifies §2.1's **Reading**. Some distinct groups are separate reports (B2). Many others
+are retries of one report whose upload-time fields changed (B1). Under Q3(a) with merge, a B1
+group would keep only the last attempt's pairing and battery.
+
 ### 2.2 entries: `date` versus `sysTime`
 
 [M] `analyze.py` (`## entries date vs sysTime`) and `entdiff.py` (`entdiff-results.txt`).
