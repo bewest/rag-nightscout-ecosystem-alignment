@@ -1,7 +1,7 @@
 # WRITE-CONTRACT: the measured write matrix, and one write step behind the storage interface
 
-*Contributor-facing.* **Snapshot, 2026-10-07. Status: draft specification for queue `WRITE-CONTRACT`,
-awaiting the maintainer decisions in §6.** Nothing here is implemented. Measured against
+*Contributor-facing.* **Snapshot, 2026-10-07. Status: draft specification for queue `WRITE-CONTRACT`;
+the maintainer decided §6 on 2026-10-12 (§6.1), with Q1b and Q3 to be confirmed by measurement.** Nothing here is implemented. Measured against
 `cgm-remote-monitor` `official/dev` `43289dde` (the merge of #8806) and `official/master` `92d08342`
 (tag `15.0.8`); the as-built storage interface is `seam/t1-2-storage-interface` `81a1f6ce`. The
 decisions this builds on are in the
@@ -631,6 +631,18 @@ cell changed". Recommended: (a). Independently, U7 (C4) is live on 15.0.8 and co
 `dev` before `WRITE-CONTRACT`, which waits on `SEAM-REFRESH`.
 
 ---
+
+### 6.1 Decided, 2026-10-12
+
+| | decision | open part |
+|---|---|---|
+| Q1 | (a) merge on match, every collection and path; an explicit `PUT` still replaces | — |
+| Q1b | added: under merge, a field sent as `null` is removed (JSON Merge Patch, RFC 7386). Today every path stores `null` as `null` (`$set`: `lib/server/entries.js:143`, `lib/api3/storage/mongoCollection/modify.js:71` on `dev` `fade2299` [R]) | confirm by measuring whether any client sends explicit nulls on create or re-send |
+| Q2 | (b1) status quo per path: v1, v3 and in-process rewrite an identical re-send; the socket and devicestatus answer it unchanged. U2 is dropped | measure the impact of retries on clients that sync by `srvModified` |
+| Q3 | (a) entries `date`+`type`, devicestatus `created_at`+`device`, profile `created_at`, on every path | final once the corpus shows no client sends distinct records with one key |
+| Q4 | (a) the ±2 s match kept as the socket's `near` option; C5's missing event fixed by the step | retirement: on field evidence that AndroidAPS 3.4.x socket clients are gone, or decided later |
+| Q5 | (a) activity gets server dates and soft delete like the other five | — |
+| Q6 | (a) two releases: the step with today's matrix pinned (patch, G1), then the §3 changes (minor) | U7 (C4, BF-164) is held out: the AndroidAPS authors indicate the v3-only emission may be intended; it waits on a lab measurement and their answer |
 
 ## 7. Candidate defects found
 

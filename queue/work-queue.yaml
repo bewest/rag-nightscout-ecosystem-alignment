@@ -5023,6 +5023,21 @@ items:
       created_at+device collisions first. Found BF-164, BF-165 and BF-166.
       Still blocked on SEAM-REFRESH.
 
+      Maintainer decisions 2026-10-12 (spec section 6): Q1 merge on match,
+      every collection and path; Q1b a field sent as null is removed (JSON
+      Merge Patch), to be confirmed by a corpus and client-code measurement of
+      explicit nulls; Q2 keep each path's identical-re-send behaviour (b1:
+      v1, v3 and in-process rewrite, the socket and devicestatus answer
+      unchanged), with the impact on clients to be measured; Q3 entries
+      date+type, devicestatus created_at+device, profile created_at on every
+      path, final once the corpus shows no client collides; Q4 the socket's
+      +-2 s match kept as the socket's explicit near option, C5's missing
+      event fixed, retired on field evidence or decided later; Q5 activity
+      gets server dates and soft delete like the other five; Q6 two releases,
+      the step with today's matrix pinned (patch, gate G1), then the changes
+      (minor). U2 is dropped; U7 (every path reaches the storage socket) is
+      held out of the contract until BF-164's question is answered.
+
 
 # ---------------------------------------------------------------------------
 # PARCEL: docs-truth
@@ -12063,7 +12078,7 @@ items:
     repo: cgm-remote-monitor
     branch: ""
     base: official/dev@43289dde
-    state: not-started
+    state: needs-decision
     pr: []
     ships_to_operators_today: true
     blast_radius: >
@@ -12092,6 +12107,13 @@ items:
       only. Either a narrow fix on dev ahead of WRITE-CONTRACT or item 5 of
       WRITE-CONTRACT; not decided. AndroidAPS NSClientV3's reliance on the
       socket is read, not run.
+
+      Reclassified 2026-10-12 (maintainer): a behaviour question, not a fix.
+      The AndroidAPS authors indicate the v3-only emission may be intended
+      (v3 validates what it accepts). Next: a lab run timing when AndroidAPS
+      NSClientV3 in websocket mode receives a v1-written carb, and one question
+      to the AndroidAPS authors on whether broadcasting non-v3 writes would help
+      or harm. No dev fix until both are in.
   - id: BFQ-165
     title: "BF-165 - a treatment re-send matched by its fallback key is answered without _id"
     parcel: register-open

@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 144 | 44 | 6 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 144 | 43 | 7 |
 | **Modernization** | `release-train` | 32 | 5 | 1 |
 | **Multitenant** | `tenancy`, `platform` | 25 | 10 | 3 |
-| | **total** | **203** | **59** | **10** |
+| | **total** | **203** | **58** | **11** |
 
 <!-- END GENERATED: horizons -->
 
@@ -167,7 +167,7 @@ cover more than one `BF-`:
 | `BFQ-160` | `not-started` | BF-160 - the clock designer's link target is written with curly quotes |
 | `BFQ-161` | `not-started` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fi |
 | `BFQ-163` | `not-started` | BF-163 - compression 1.8.1 (every response) is inside a high memory-leak advisory fixed in |
-| `BFQ-164` | `not-started` | BF-164 - writes outside API v3 never reach the v3 storage socket |
+| `BFQ-164` | `needs-decision` | BF-164 - writes outside API v3 never reach the v3 storage socket |
 | `BFQ-165` | `not-started` | BF-165 - a treatment re-send matched by its fallback key is answered without _id |
 | `BFQ-166` | `not-started` | BF-166 - a profile re-sent with its own _id answers 500 |
 | `BFQ-168` | `merged-upstream` | BF-168 - the context chart's window sometimes cannot be dragged back to now |
@@ -206,7 +206,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  | 17 |  | 1 |  |  |  | **22** |
 | `release-train` | 5 |  | 5 |  | 5 |  | 13 | 1 | 1 |  |  | 2 | **32** |
-| `register-open` | 34 | 3 | 1 | 1 | 11 | 1 | 55 | 3 |  |  | 3 |  | **112** |
+| `register-open` | 33 | 3 | 1 | 1 | 11 | 1 | 55 | 4 |  |  | 3 |  | **112** |
 | `tenancy` | 7 |  |  | 1 | 7 |  |  | 1 | 2 | 1 |  |  | **19** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  | 2 |  |  |  | **10** |
 | `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |

@@ -41,14 +41,14 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 59 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-164, BFQ-165, BFQ-166, BFQ-167, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-TRIO-INTENT, HUB-REG-CRM, HUB-REG-NOCTURNE |
+| `not-started` | 58 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-TRIO-INTENT, HUB-REG-CRM, HUB-REG-NOCTURNE |
 | `in-progress` | 3 | BFQ-46, BFQ-ENV, OID-LAB |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
 | `blocked` | 23 | RT-D3-SUITE, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, BFQ-72, BFQ-52, BFQ-93, BFQ-95, BFQ-67, BFQ-66, BFQ-99, BFQ-100, BFQ-101, BFQ-152, BFQ-154, BFQ-156 |
 | `in-flight-upstream` | 1 | BFQ-09 |
 | `merged-upstream` | 87 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
-| `needs-decision` | 5 | RT-0, T30-RESEARCH, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG |
+| `needs-decision` | 6 | RT-0, T30-RESEARCH, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-164 |
 | `done` | 9 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, DOC-VIEWS, DOC-LINKS, RT-SOAK, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, LAB-HUB-ACTIVE-STATE |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 3 | BFQ-71, BFQ-41, BFQ-141 |
@@ -2216,7 +2216,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-161` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-162` | BF-162 - an explicit TRUST_PROXY address list reaches proxy-addr 2.0.7, inside a critical advisory fixed in 2.0.8 | `merged-upstream` | `bf/proxy-addr-2.0.8` | patch | 0 run + 1 no-gate |
 | `BFQ-163` | BF-163 - compression 1.8.1 (every response) is inside a high memory-leak advisory fixed in 1.8.2 | `not-started` | `-` | patch | 0 run + 1 no-gate |
-| `BFQ-164` | BF-164 - writes outside API v3 never reach the v3 storage socket | `not-started` | `-` | minor | 0 run + 1 no-gate |
+| `BFQ-164` | BF-164 - writes outside API v3 never reach the v3 storage socket | `needs-decision` | `-` | minor | 0 run + 1 no-gate |
 | `BFQ-165` | BF-165 - a treatment re-send matched by its fallback key is answered without _id | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-166` | BF-166 - a profile re-sent with its own _id answers 500 | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-167` | BF-167 - devicestatus remove()'s filter is not pinned by any test | `not-started` | `-` | n/a | 0 run + 1 no-gate |
@@ -5192,7 +5192,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `needs-decision` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
 | base | `official/dev@43289dde` |
@@ -5217,7 +5217,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
 
-**Notes.** Filed 2026-10-07 from the WRITE-CONTRACT write matrix. Present on 15.0.8 too. Overlaps BF-122's mechanism paragraph, whose fix covered history only. Either a narrow fix on dev ahead of WRITE-CONTRACT or item 5 of WRITE-CONTRACT; not decided. AndroidAPS NSClientV3's reliance on the socket is read, not run.
+**Notes.** Filed 2026-10-07 from the WRITE-CONTRACT write matrix. Present on 15.0.8 too. Overlaps BF-122's mechanism paragraph, whose fix covered history only. Either a narrow fix on dev ahead of WRITE-CONTRACT or item 5 of WRITE-CONTRACT; not decided. AndroidAPS NSClientV3's reliance on the socket is read, not run. Reclassified 2026-10-12 (maintainer): a behaviour question, not a fix. The AndroidAPS authors indicate the v3-only emission may be intended (v3 validates what it accepts). Next: a lab run timing when AndroidAPS NSClientV3 in websocket mode receives a v1-written carb, and one question to the AndroidAPS authors on whether broadcasting non-v3 writes would help or harm. No dev fix until both are in.
 
 ### `BFQ-165` &mdash; BF-165 - a treatment re-send matched by its fallback key is answered without _id
 
@@ -6450,7 +6450,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
 - `tools/qc/write-contract-matrix.js`
 
-**Notes.** Execution plan section 4.1. Absorbs OID-STORAGE-HELPER (the _id rule alone) if that has not landed on dev first; if it has, its helper moves behind the interface here. Under single, the change event carries the runtime-derived copy and replaces the separate emissions the cache, v3 history and the socket consume. Under multi the change feed (D6) is the event. BFQ-CAP02's loader runs imported documents through the same step. Ships to single-tenant operators as its own release, before any Phase 2 work. Spec drafted 2026-10-07 (docs/30-design/tenancy/write-contract-spec-2026-10-07.md), measured on dev 43289dde and 15.0.8 92d08342 with tools/qc/write-contract-matrix.js (336 cells per build; stored state differs between paths in 33 of 66 groups on dev, 47 on 15.0.8; a cross-path re-send without _id is stored twice in 38 of 66 path pairs; six one-line ablations each turn exactly their predicted cells red). Proposes one write(intent) step in lib/storage/write-step.js inside collectionFor, merge-on-match re-sends, one natural key per collection and one event per write; semver minor if merge-on-match is chosen. Its gates G1 to G8 are in spec §5 and replace the no-gate above when the item starts. Needs maintainer decisions Q1 to Q6 (spec §6); Q3's devicestatus key needs an ns- data corpus count of created_at+device collisions first. Found BF-164, BF-165 and BF-166. Still blocked on SEAM-REFRESH.
+**Notes.** Execution plan section 4.1. Absorbs OID-STORAGE-HELPER (the _id rule alone) if that has not landed on dev first; if it has, its helper moves behind the interface here. Under single, the change event carries the runtime-derived copy and replaces the separate emissions the cache, v3 history and the socket consume. Under multi the change feed (D6) is the event. BFQ-CAP02's loader runs imported documents through the same step. Ships to single-tenant operators as its own release, before any Phase 2 work. Spec drafted 2026-10-07 (docs/30-design/tenancy/write-contract-spec-2026-10-07.md), measured on dev 43289dde and 15.0.8 92d08342 with tools/qc/write-contract-matrix.js (336 cells per build; stored state differs between paths in 33 of 66 groups on dev, 47 on 15.0.8; a cross-path re-send without _id is stored twice in 38 of 66 path pairs; six one-line ablations each turn exactly their predicted cells red). Proposes one write(intent) step in lib/storage/write-step.js inside collectionFor, merge-on-match re-sends, one natural key per collection and one event per write; semver minor if merge-on-match is chosen. Its gates G1 to G8 are in spec §5 and replace the no-gate above when the item starts. Needs maintainer decisions Q1 to Q6 (spec §6); Q3's devicestatus key needs an ns- data corpus count of created_at+device collisions first. Found BF-164, BF-165 and BF-166. Still blocked on SEAM-REFRESH. Maintainer decisions 2026-10-12 (spec section 6): Q1 merge on match, every collection and path; Q1b a field sent as null is removed (JSON Merge Patch), to be confirmed by a corpus and client-code measurement of explicit nulls; Q2 keep each path's identical-re- send behaviour (b1: v1, v3 and in-process rewrite, the socket and devicestatus answer unchanged), with the impact on clients to be measured; Q3 entries date+type, devicestatus created_at+device, profile created_at on every path, final once the corpus shows no client collides; Q4 the socket's +-2 s match kept as the socket's explicit near option, C5's missing event fixed, retired on field evidence or decided later; Q5 activity gets server dates and soft delete like the other five; Q6 two releases, the step with today's matrix pinned (patch, gate G1), then the changes (minor). U2 is dropped; U7 (every path reaches the storage socket) is held out of the contract until BF-164's question is answered.
 
 ### `BFQ-66` &mdash; BF-66 - the deployment's own tokens fail its own tenant check
 
