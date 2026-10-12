@@ -11,6 +11,15 @@
  *   shared-key         - one deployment-wide signing key instead of one per tenant
  *   no-claim-check     - verify checks the signature only, not the tenant claim
  *   skip-client-check  - accept a Hydra token issued to ANY OAuth client, not this tenant's
+ *
+ * Options added for the cookie-scope variants (probes/cookie-edge.js, probes/cookie-handoff.js):
+ *   authenticators - async (req, tenant) -> {subject, via, ...} | {status, error} | null, tried
+ *                    before the built-in credentials (variant E: the edge assertion; H2: the
+ *                    tenant's own session)
+ *   cookiePath     - false: never read the Kratos session cookie (E and H2: a tenant backend
+ *                    must not authenticate with it)
+ *   routes         - async (req, res, tenant, url, send) -> true when it answered the request
+ *   echoExtra      - (req) -> object merged into the /api/echo answer
  */
 const crypto = require('crypto');
 const jwt = require('./jwt');
@@ -53,6 +62,14 @@ function create (opts) {
 
   async function init () { await pool.query(SCHEMA); }
 
+  function mint (tenant, subject, via, origin = null) {
+    const now = Math.floor(Date.now() / 1000);
+    const token = jwt.sign({ sub: subject, tenant: tenant.slug, tid: tenant.id, via, iat: now, exp: now + 3600 }, keyFor(tenant));
+    stats.minted++;
+    ev({ k: 'minted', tenant: tenant.slug, subject, via, origin });
+    return token;
+  }
+
   async function resolveTenant (host) {
     const m = rule.exec(String(host || '').toLowerCase());
     if (!m) return null;
@@ -63,7 +80,11 @@ function create (opts) {
   // -> {subject, via, client_id?} or {error, status}
   async function authenticate (req, tenant) {
     stats.credentialExaminations++;
-    const cookies = parseCookies(req.headers.cookie);
+    for (const fn of opts.authenticators || []) {
+      const a = await fn(req, tenant);
+      if (a) return a;
+    }
+    const cookies = opts.cookiePath === false ? {} : parseCookies(req.headers.cookie);
     const tokenHdr = req.headers['x-session-token'];
     const auth = req.headers.authorization || '';
     if (tokenHdr || cookies.ory_kratos_session) {
@@ -103,14 +124,17 @@ function create (opts) {
     stats.resolved++;
 
     if (url.pathname === '/__health') return send(res, 200, { ok: true, tenant: tenant.slug });
+    if (opts.routes && await opts.routes(req, res, tenant, url, send)) return;
 
     if (url.pathname === '/api/echo') {
       const c = parseCookies(req.headers.cookie);
       const names = Object.keys(c);
       // a digest, never the value: lets a probe prove WHICH session reached this host
       const sessionDigest = c.ory_kratos_session ? crypto.createHash('sha256').update(c.ory_kratos_session).digest('hex').slice(0, 16) : null;
-      ev({ k: 'echo', tenant: tenant.slug, cookieNames: names, sessionDigest, origin: req.headers.origin || null, method: req.method });
-      return send(res, 200, { tenant: tenant.slug, cookieNames: names, sessionDigest, origin: req.headers.origin || null });
+      const headerNames = Object.keys(req.headers).sort();
+      const extra = opts.echoExtra ? opts.echoExtra(req) : {};
+      ev(Object.assign({ k: 'echo', tenant: tenant.slug, cookieNames: names, sessionDigest, origin: req.headers.origin || null, method: req.method, headerNames }, extra));
+      return send(res, 200, Object.assign({ tenant: tenant.slug, cookieNames: names, sessionDigest, origin: req.headers.origin || null, headerNames }, extra));
     }
 
     if (url.pathname === '/api/nsjwt/exchange' && req.method === 'POST') {
@@ -120,10 +144,7 @@ function create (opts) {
         const r = await pool.query('SELECT role FROM tenant_members WHERE tenant_id = $1 AND subject_id = $2', [tenant.id, a.subject]);
         if (!r.rows.length) { ev({ k: 'exchange-deny', tenant: tenant.slug, why: 'not-a-member', subject: a.subject }); return send(res, 403, { error: 'not-a-member', tenant: tenant.slug, subject: a.subject }); }
       }
-      const now = Math.floor(Date.now() / 1000);              // 4. mint with THIS tenant's key
-      const token = jwt.sign({ sub: a.subject, tenant: tenant.slug, tid: tenant.id, via: a.via, iat: now, exp: now + 3600 }, keyFor(tenant));
-      stats.minted++;
-      ev({ k: 'minted', tenant: tenant.slug, subject: a.subject, via: a.via, origin: req.headers.origin || null });
+      const token = mint(tenant, a.subject, a.via, req.headers.origin || null); // 4. THIS tenant's key
       return send(res, 200, { token, tenant: tenant.slug, subject: a.subject, via: a.via });
     }
 
@@ -140,7 +161,7 @@ function create (opts) {
     return send(res, 404, { error: 'no-route', tenant: tenant.slug });
   }
 
-  return { init, handle, stats, breaks: [...breaks] };
+  return { init, handle, stats, breaks: [...breaks], mint, resolveTenant, ev };
 }
 
 module.exports = { create, parseCookies, SCHEMA };

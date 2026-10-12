@@ -1,0 +1,494 @@
+{
+  "probe": "cookie-edge",
+  "run": "2026-10-12-v26.2.0-cookie-variants",
+  "started": "2026-10-12T22:49:21.609Z",
+  "node": "v24.15.0",
+  "fixture": {
+    "U": "member of tenant-a only",
+    "W": "member of tenant-a and tenant-b",
+    "kratosCookie": "apex (variants/cookie-apex.yaml)"
+  },
+  "edgeDesign": "tenant from Host; Kratos whoami at the edge; X-Edge-Identity = b64url({sub,sid,tenant,iat,exp=iat+30}).HMAC-SHA256(per-process edge key shared in memory with the backend); ory_kratos_session and csrf_token_* removed from Cookie; non-GET/HEAD/OPTIONS refused unless Origin == tenant origin, or (no Origin) Sec-Fetch-Site == same-origin; both absent = allowed",
+  "browser": "Chrome 154.0.8037.57",
+  "flow": {
+    "coldA": {
+      "passwordEntered": true,
+      "finalUrl": "tenant-a.user-content.apex.test:44480/",
+      "app": {
+        "tenant": "tenant-a",
+        "sub": "e79e7dd1-3cf0-4d0a-a30f-add12d3adb33"
+      },
+      "body": null,
+      "navigations": 5,
+      "redirects": 3,
+      "chain": [
+        {
+          "method": "GET",
+          "url": "tenant-a.user-content.apex.test:44480/",
+          "redirect": false
+        },
+        {
+          "method": "GET",
+          "url": "auth.apex.test:44480/self-service/login/browser",
+          "redirect": true
+        },
+        {
+          "method": "GET",
+          "url": "auth.apex.test:44480/ui/login",
+          "redirect": true
+        },
+        {
+          "method": "POST",
+          "url": "auth.apex.test:44480/self-service/login",
+          "redirect": false
+        },
+        {
+          "method": "GET",
+          "url": "tenant-a.user-content.apex.test:44480/",
+          "redirect": true
+        }
+      ]
+    },
+    "thenB": {
+      "passwordEntered": false,
+      "finalUrl": "tenant-b.user-content.apex.test:44480/",
+      "app": {
+        "tenant": "tenant-b",
+        "sub": "e79e7dd1-3cf0-4d0a-a30f-add12d3adb33"
+      },
+      "body": null,
+      "navigations": 1,
+      "redirects": 0,
+      "chain": [
+        {
+          "method": "GET",
+          "url": "tenant-b.user-content.apex.test:44480/",
+          "redirect": false
+        }
+      ]
+    }
+  },
+  "cookieJar": [
+    {
+      "name": "csrf_token_*",
+      "domain": ".apex.test",
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "ory_kratos_session",
+      "domain": ".apex.test",
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "backendReceives": {
+    "A": {
+      "cookieNames": [],
+      "sessionDigest": null,
+      "headerNames": [
+        "accept",
+        "accept-encoding",
+        "accept-language",
+        "connection",
+        "host",
+        "upgrade-insecure-requests",
+        "user-agent",
+        "x-edge-identity"
+      ],
+      "edgeIdentity": {
+        "tenant": "tenant-a",
+        "ttl": 30
+      }
+    },
+    "B": {
+      "cookieNames": [],
+      "sessionDigest": null,
+      "headerNames": [
+        "accept",
+        "accept-encoding",
+        "accept-language",
+        "connection",
+        "host",
+        "upgrade-insecure-requests",
+        "user-agent",
+        "x-edge-identity"
+      ],
+      "edgeIdentity": {
+        "tenant": "tenant-b",
+        "ttl": 30
+      }
+    },
+    "edgeSaw": [
+      {
+        "tenant": "tenant-a",
+        "cookieNames": [
+          "csrf_token_*",
+          "ory_kratos_session"
+        ],
+        "sessionDigestMatchesBrowser": true
+      },
+      {
+        "tenant": "tenant-b",
+        "cookieNames": [
+          "csrf_token_*",
+          "ory_kratos_session"
+        ],
+        "sessionDigestMatchesBrowser": true
+      }
+    ]
+  },
+  "secFetchSiteSeenByEdge": [
+    "POST origin=present sec-fetch-site=null"
+  ],
+  "finished": "2026-10-12T22:49:23.742Z",
+  "total": 21,
+  "failed": 0,
+  "checks": [
+    {
+      "id": "intact.flow.cold-a",
+      "desc": "cold start on A: edge redirects to the Kratos login, one password entry, back on A",
+      "expect": {
+        "passwordEntered": true,
+        "lands": "tenant-a app"
+      },
+      "got": {
+        "passwordEntered": true,
+        "redirects": 3,
+        "navigations": 5,
+        "lands": "tenant-a"
+      },
+      "pass": true
+    },
+    {
+      "id": "intact.flow.then-b",
+      "desc": "then B: the apex session is already present, no redirect, no password; B mints for W",
+      "expect": {
+        "passwordEntered": false,
+        "redirects": 0,
+        "lands": "tenant-b app",
+        "exchange": 200
+      },
+      "got": {
+        "passwordEntered": false,
+        "redirects": 0,
+        "lands": "tenant-b",
+        "exchange": 200
+      },
+      "pass": true
+    },
+    {
+      "id": "intact.login",
+      "desc": "U logs in through the edge redirect; apex session cookie stored",
+      "expect": {
+        "session": true,
+        "domain": ".apex.test",
+        "lands": "tenant-a"
+      },
+      "got": {
+        "session": true,
+        "domain": ".apex.test",
+        "lands": "tenant-a"
+      },
+      "pass": true
+    },
+    {
+      "id": "intact.backend-receives",
+      "desc": "neither tenant backend receives the Kratos session or CSRF cookie (no Cookie header at all); each receives an edge assertion naming its own tenant and U",
+      "expect": {
+        "A": {
+          "kratosCookie": false,
+          "assertionTenant": "tenant-a"
+        },
+        "B": {
+          "kratosCookie": false,
+          "assertionTenant": "tenant-b"
+        }
+      },
+      "got": {
+        "A": {
+          "kratosCookie": false,
+          "assertionTenant": "tenant-a",
+          "sub": true
+        },
+        "B": {
+          "kratosCookie": false,
+          "assertionTenant": "tenant-b",
+          "sub": true
+        }
+      },
+      "pass": true
+    },
+    {
+      "id": "intact.edge-holds-session",
+      "desc": "the edge itself receives the session on both tenant hosts (same digest as the browser): the edge is the one process that holds a cross-tenant credential",
+      "expect": {
+        "A": true,
+        "B": true
+      },
+      "got": {
+        "A": true,
+        "B": true
+      },
+      "pass": true
+    },
+    {
+      "id": "intact.control.same-origin-a",
+      "desc": "control: a same-origin POST on A passes the edge and mints an A token from the edge assertion",
+      "expect": {
+        "status": 200,
+        "via": "edge-assertion",
+        "verify": 200
+      },
+      "got": {
+        "status": 200,
+        "via": "edge-assertion",
+        "verify": 200
+      },
+      "pass": true
+    },
+    {
+      "id": "intact.control.b-not-member",
+      "desc": "U is a member of A only: a same-origin POST on B passes the edge and B refuses for non-membership",
+      "expect": {
+        "status": 403,
+        "error": "not-a-member"
+      },
+      "got": {
+        "status": 403,
+        "error": "not-a-member"
+      },
+      "pass": true
+    },
+    {
+      "id": "intact.control.b-member",
+      "desc": "control: U added to B, the identical browser state mints a B token; removed again, refused",
+      "expect": {
+        "added": 200,
+        "tenant": "tenant-b",
+        "removed": 403
+      },
+      "got": {
+        "added": 200,
+        "tenant": "tenant-b",
+        "removed": 403
+      },
+      "pass": true
+    },
+    {
+      "id": "intact.cross-origin.fetch",
+      "desc": "a script on B's origin POSTs to A's exchange with credentials: the edge refuses it (Origin is B's) and A's backend never sees it",
+      "expect": {
+        "edgeRefused": true,
+        "why": "origin-mismatch",
+        "originSeen": "http://tenant-b.user-content.apex.test:44480",
+        "reachedBackend": 0,
+        "scriptCouldRead": false
+      },
+      "got": {
+        "edgeRefused": true,
+        "why": "origin-mismatch",
+        "originSeen": "http://tenant-b.user-content.apex.test:44480",
+        "secFetchSite": null,
+        "cookieSentToEdge": true,
+        "reachedBackend": 0,
+        "scriptCouldRead": false
+      },
+      "pass": true
+    },
+    {
+      "id": "intact.cross-origin.form",
+      "desc": "a form on B's origin POSTs to A's exchange (a navigation, no CORS): refused at the edge",
+      "expect": {
+        "status": 403,
+        "error": "cross-origin-refused",
+        "originSeen": "http://tenant-b.user-content.apex.test:44480",
+        "reachedBackend": 0
+      },
+      "got": {
+        "status": 403,
+        "error": "cross-origin-refused",
+        "originSeen": "http://tenant-b.user-content.apex.test:44480",
+        "reachedBackend": 0
+      },
+      "pass": true
+    },
+    {
+      "id": "intact.replay.b-backend-cookie",
+      "desc": "replay of the cookie as received by B's backend: B's backend received no session, so there is nothing to replay",
+      "expect": {
+        "sessionAtBBackend": null
+      },
+      "got": {
+        "sessionAtBBackend": null,
+        "cookieNames": []
+      },
+      "pass": true
+    },
+    {
+      "id": "intact.replay.b-assertion",
+      "desc": "what B's backend DID receive (its edge assertion), replayed to A: through the edge it is removed (no credential); straight to A's backend it fails the tenant binding. Control: the same assertion on B's backend authenticates U (then B's membership check refuses)",
+      "expect": {
+        "viaEdge": {
+          "status": 401,
+          "error": "no-credential"
+        },
+        "toABackend": {
+          "status": 401,
+          "error": "edge-assertion-tenant"
+        },
+        "onBBackend": {
+          "status": 403,
+          "error": "not-a-member"
+        }
+      },
+      "got": {
+        "viaEdge": {
+          "status": 401,
+          "error": "no-credential"
+        },
+        "toABackend": {
+          "status": 401,
+          "error": "edge-assertion-tenant"
+        },
+        "onBBackend": {
+          "status": 403,
+          "error": "not-a-member"
+        }
+      },
+      "pass": true
+    },
+    {
+      "id": "intact.replay.edge-cookie",
+      "desc": "the cookie as captured AT THE EDGE (same digest), replayed by a non-browser client to A: mints an A token (no Origin is allowed for non-browser clients); with Origin B refused; with a forged Origin A mints",
+      "expect": {
+        "noOrigin": 200,
+        "originB": 403,
+        "forgedOriginA": 200,
+        "tenant": "tenant-a"
+      },
+      "got": {
+        "noOrigin": 200,
+        "originB": 403,
+        "forgedOriginA": 200,
+        "tenant": "tenant-a"
+      },
+      "pass": true
+    },
+    {
+      "id": "intact.bypass",
+      "desc": "straight to A's backend (not through the edge): the Kratos cookie is not a credential there, and an assertion signed with another key fails",
+      "expect": {
+        "cookie": {
+          "status": 401,
+          "error": "no-credential"
+        },
+        "forged": {
+          "status": 401,
+          "error": "edge-assertion-signature"
+        }
+      },
+      "got": {
+        "cookie": {
+          "status": 401,
+          "error": "no-credential"
+        },
+        "forged": {
+          "status": 401,
+          "error": "edge-assertion-signature"
+        }
+      },
+      "pass": true
+    },
+    {
+      "id": "intact.logout",
+      "desc": "Kratos browser logout: the session ends everywhere at once (the edge asks Kratos each request) — new exchanges on A fail, A redirects to the login, the old cookie value is dead; a token minted BEFORE logout still verifies on A until its own exp",
+      "expect": {
+        "whoamiAfter": "401",
+        "cookieLeft": 0,
+        "exchangeAfter": 401,
+        "homeShowsLogin": true,
+        "oldCookieReplay": 401,
+        "tokenMintedBefore": 200
+      },
+      "got": {
+        "whoamiAfter": "401",
+        "cookieLeft": 0,
+        "exchangeAfter": 401,
+        "homeShowsLogin": true,
+        "oldCookieReplay": 401,
+        "tokenMintedBefore": 200,
+        "tokenExpIn": 3600
+      },
+      "pass": true
+    },
+    {
+      "id": "break.no-strip.live",
+      "desc": "liveness in this run: same-origin exchange on A",
+      "expect": 200,
+      "got": 200,
+      "pass": true
+    },
+    {
+      "id": "break.no-strip.red",
+      "desc": "BREAK no-strip: B's backend now receives U's session (same digest as the browser) and that cookie, replayed to A, mints an A token",
+      "expect": {
+        "sessionAtBBackend": "1d829fb42219095b",
+        "replay": 200,
+        "tenant": "tenant-a"
+      },
+      "got": {
+        "sessionAtBBackend": "1d829fb42219095b",
+        "replay": 200,
+        "tenant": "tenant-a"
+      },
+      "pass": true
+    },
+    {
+      "id": "break.no-strip.origin-still-holds",
+      "desc": "the origin check is independent of the strip: cross-origin from B still refused",
+      "expect": {
+        "scriptCouldRead": false,
+        "edgeRefused": true
+      },
+      "got": {
+        "scriptCouldRead": false,
+        "edgeRefused": true
+      },
+      "pass": true
+    },
+    {
+      "id": "break.no-origin-check.live",
+      "desc": "liveness in this run: same-origin exchange on A",
+      "expect": 200,
+      "got": 200,
+      "pass": true
+    },
+    {
+      "id": "break.no-origin-check.red",
+      "desc": "BREAK no-origin-check: the script on B's origin makes A's backend mint again (from the edge assertion; Origin B); the browser still withholds the response",
+      "expect": {
+        "minted": true,
+        "via": "edge-assertion",
+        "originSeen": "http://tenant-b.user-content.apex.test:44480",
+        "scriptCouldRead": false
+      },
+      "got": {
+        "minted": true,
+        "via": "edge-assertion",
+        "originSeen": "http://tenant-b.user-content.apex.test:44480",
+        "scriptCouldRead": false
+      },
+      "pass": true
+    },
+    {
+      "id": "break.no-origin-check.strip-still-holds",
+      "desc": "the strip is independent of the origin check: B's backend still receives no session",
+      "expect": null,
+      "got": null,
+      "pass": true
+    }
+  ]
+}

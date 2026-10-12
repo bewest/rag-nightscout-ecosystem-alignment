@@ -1,0 +1,294 @@
+
+=== node probes/proof.js
+PASS  setup.sessions  both identities hold a Kratos session from the ONE pool
+      expect: [200,200]
+      got:    [200,200]
+PASS  intact.live  liveness in this run: both tenant hosts answer, U exchanges and verifies on A
+      expect: [200,200,200,200]
+      got:    [200,200,200,200]
+PASS  intact.a.claims  the A token names tenant-a and U
+      expect: {"tenant":"tenant-a","sub":"a0b86639-ded6-472f-bb99-fbb8c9e3733a"}
+      got:    {"tenant":"tenant-a","sub":"a0b86639-ded6-472f-bb99-fbb8c9e3733a"}
+PASS  intact.b.exchange  U's session on B's host is refused for non-membership
+      expect: {"status":403,"error":"not-a-member"}
+      got:    {"status":403,"error":"not-a-member"}
+PASS  intact.b.verify  the A token presented to B fails as a SIGNATURE failure
+      expect: {"status":401,"error":"signature"}
+      got:    {"status":401,"error":"signature"}
+PASS  intact.b.live  B's own member V exchanges on B in the same run (B is alive, not just refusing)
+      expect: 200
+      got:    200
+PASS  intact.b-to-a.verify  a B token presented to A fails as a signature failure (the reverse direction)
+      expect: {"status":401,"error":"signature"}
+      got:    {"status":401,"error":"signature"}
+PASS  intact.resolve-first  an unknown slug and a host outside the rule are refused BEFORE any credential is examined
+      expect: {"unknownSlug":404,"offRule":404,"credentialExaminationsDelta":0}
+      got:    {"unknownSlug":404,"offRule":404,"credentialExaminationsDelta":0}
+PASS  intact.no-credential  on A, no credential -> 401 and a junk session token -> 401 (A refuses without a session)
+      expect: {"none":401,"junk":401}
+      got:    {"none":401,"junk":401}
+PASS  control.b.exchange  CONTROL: with U added to B, the same session on B's host mints a B token that verifies on B
+      expect: {"exchange":200,"verify":200,"claim":"tenant-b"}
+      got:    {"exchange":200,"verify":200,"claim":"tenant-b"}
+PASS  control.b.verify-a-token  CONTROL: membership in B does not make the A token valid on B (still a signature failure)
+      expect: {"status":401,"error":"signature"}
+      got:    {"status":401,"error":"signature"}
+PASS  control.b.restored  U removed from B -> refused again (the refusal tracks the membership row)
+      expect: 403
+      got:    403
+PASS  revoke.kratos  after Kratos revokes all of U's sessions, U can no longer exchange on A
+      expect: {"listSessions":200,"revoke":204,"exchange":401}
+      got:    {"listSessions":200,"revoke":204,"exchange":401}
+PASS  revoke.minted-survives  a Nightscout token minted before the revocation still verifies on A until its own exp (nsjwt has no revocation link to Kratos)
+      expect: 200
+      got:    200
+PASS  break.skip-membership.live  liveness in this run: both tenant hosts answer, U exchanges and verifies on A
+      expect: [200,200,200,200]
+      got:    [200,200,200,200]
+PASS  break.skip-membership.red  BREAK skip-membership: the probe goes red - U's session on B mints a B token for a non-member
+      expect: {"status":200,"tenant":"tenant-b","sub":"a0b86639-ded6-472f-bb99-fbb8c9e3733a"}
+      got:    {"status":200,"tenant":"tenant-b","sub":"a0b86639-ded6-472f-bb99-fbb8c9e3733a"}
+PASS  break.skip-membership.usable  and that token is accepted by B (a working cross-tenant credential)
+      expect: 200
+      got:    200
+PASS  break.no-claim-check.live  liveness in this run: both tenant hosts answer, U exchanges and verifies on A
+      expect: [200,200,200,200]
+      got:    [200,200,200,200]
+PASS  break.no-claim-check.still-green  claim check removed, per-tenant keys intact: the A token on B is STILL a signature failure (D14 alone holds)
+      expect: {"status":401,"error":"signature"}
+      got:    {"status":401,"error":"signature"}
+PASS  break.shared-key.live  liveness in this run: both tenant hosts answer, U exchanges and verifies on A
+      expect: [200,200,200,200]
+      got:    [200,200,200,200]
+PASS  break.shared-key.claim-catches  BREAK shared-key: the signature now passes on B; only the tenant-claim check refuses it
+      expect: {"status":401,"error":"tenant-claim"}
+      got:    {"status":401,"error":"tenant-claim"}
+PASS  break.shared-key+no-claim-check.live  liveness in this run: both tenant hosts answer, U exchanges and verifies on A
+      expect: [200,200,200,200]
+      got:    [200,200,200,200]
+PASS  break.shared-key+no-claim-check.red  BREAK shared-key + no claim check: the probe goes red - the A token is accepted by B
+      expect: {"status":200,"claim":"tenant-a"}
+      got:    {"status":200,"claim":"tenant-a"}
+
+proof: 23/23 checks as expected -> results/2026-10-12-v26.2.0-cookie-variants/proof.json
+
+=== node probes/cookies.js
+PASS  login.ok  browser login through the ONE pool succeeds and lands on tenant-a
+      expect: {"session":true,"whoami":"200"}
+      got:    {"session":true,"whoami":"200","sessionCookieDomain":"auth.apex.test"}
+PASS  scope.neither  host-only cookie on auth.apex.test: the session cookie reaches NEITHER tenant host
+      expect: {"A":false,"B":false}
+      got:    {"A":false,"B":false}
+PASS  exchange.a.no-cookie  so a tenant host cannot use the cookie path at all: A answers no-credential
+      expect: {"status":401,"error":"no-credential"}
+      got:    {"status":401,"error":"no-credential"}
+PASS  exchange.a.explicit  control: the same session, handed to A explicitly, mints an A token (the session is live; only the scope withheld it)
+      expect: 200
+      got:    200
+PASS  per-tenant-proxy  Kratos proxied under A's host still names its single base_url in the flow: form actions go to the auth host, while the CSRF cookie was set host-only on A
+      expect: {"status":200,"actionHost":"auth.apex.test","csrfCookieDomainAttr":"none (host-only on tenant-a)"}
+      got:    {"status":200,"actionHost":"auth.apex.test","setCookie":["csrf_token_*=…; Path=/; Max-Age=31536000; HttpOnly; SameSite=Lax"]}
+
+cookies-host-only: 5/5 checks as expected -> results/2026-10-12-v26.2.0-cookie-variants/cookies-host-only.json
+
+=== node probes/cookie-handoff.js
+PASS  intact.flow.cold-a  cold start on A: A -> auth /exchange -> Kratos login (one password) -> auth /exchange -> A callback -> A
+      expect: {"passwordEntered":true,"lands":"tenant-a app"}
+      got:    {"passwordEntered":true,"redirects":6,"navigations":8,"lands":"tenant-a"}
+PASS  intact.flow.then-b  then B: SSO without a password (auth host already holds the Kratos session); B mints for W
+      expect: {"passwordEntered":false,"lands":"tenant-b app","exchange":200}
+      got:    {"passwordEntered":false,"redirects":3,"navigations":4,"lands":"tenant-b","exchange":200}
+PASS  intact.happy-a  happy path on A: host-only Kratos cookie on the auth host; A gets its own session and mints from it
+      expect: {"kratosCookieDomain":"auth.apex.test","lands":"tenant-a","exchange":200,"via":"tenant-session","verify":200}
+      got:    {"kratosCookieDomain":"auth.apex.test","lands":"tenant-a","exchange":200,"via":"tenant-session","verify":200}
+PASS  intact.backend-receives  tenant backends never receive the Kratos cookie: A receives only its own tenant session cookie, B (no session there) receives no cookie
+      expect: {"A":["ns_session"],"B":[]}
+      got:    {"A":["ns_session"],"B":[]}
+PASS  intact.replay.a-session-at-b  A's tenant session cookie replayed to B: not a session there (sessions are keyed by tenant); control: the same value replayed to A mints
+      expect: {"atB":{"status":401,"error":"no-credential"},"atA":200}
+      got:    {"atB":{"status":401,"error":"no-credential"},"atA":200}
+PASS  intact.b-not-member  U on B: B redirects to the auth host, which refuses (403 not-a-member) and does not redirect back; no password asked
+      expect: {"finalHost":"auth.apex.test","error":"not-a-member","passwordEntered":false}
+      got:    {"finalUrl":"auth.apex.test:44480/exchange","body":"{\"error\":\"not-a-member\",\"at\":\"auth-host\",\"tenant\":\"tenant-b\"}","redirects":1,"passwordEntered":false}
+PASS  intact.bind.live  liveness in this run: U is issued an A code, A redeems it, the token verifies on A
+      expect: {"issue":302,"redeem":200,"verify":200,"sub":"U"}
+      got:    {"issue":302,"redeem":200,"verify":200,"sub":"U"}
+PASS  intact.code-for-a-at-b  a code issued for A redeemed at B: refused wrong-tenant, through B's callback and server-to-server; the attempt burns the code (A's own redemption afterwards: code-used)
+      expect: {"viaBCallback":{"status":400,"error":"wrong-tenant"},"serverToServer":{"status":400,"error":"wrong-tenant"},"aAfter":"code-used"}
+      got:    {"viaBCallback":{"status":400,"error":"wrong-tenant","at":"auth-host"},"serverToServer":{"status":400,"error":"wrong-tenant"},"aAfter":"code-used"}
+PASS  intact.twice  a code redeemed twice: the first succeeds, the second is refused code-used
+      expect: {"first":200,"second":{"status":400,"error":"code-used"}}
+      got:    {"first":200,"second":{"status":400,"error":"code-used"}}
+PASS  intact.return-to  return_to must be on A's registered origin: own origin redirected (first and last); sibling tenant, unregistered slug, foreign host and the tricks refused at the auth host
+      expect: ["own-tenant:302","sibling-tenant:400","unregistered-slug:400","foreign:400","suffix-append:400","userinfo:400","other-port:400","https-scheme:400","scheme-relative:400","own-tenant-again:302"]
+      got:    ["own-tenant:302","sibling-tenant:400 return-to-not-tenant-origin","unregistered-slug:400 return-to-not-tenant-origin","foreign:400 return-to-not-tenant-origin","suffix-append:400 return-to-not-tenant-origin","userinfo:400 return-to-not-tenant-origin","other-port:400 return-to-not-tenant-origin","https-scheme:400 return-to-not-tenant-origin","scheme-relative:400 return-to-not-tenant-origin","own-tenant-again:302"]
+PASS  intact.state-mismatch  state mismatch: A's callback refuses a state that is not its state cookie (before redeeming: the code stays redeemable with the right state); the auth host refuses a redemption whose state is not the code's
+      expect: {"atTenant":"tenant-state-mismatch","atAuthHost":{"status":400,"error":"state-mismatch"},"codeStillRedeemable":200}
+      got:    {"atTenant":"tenant-state-mismatch","atAuthHost":{"status":400,"error":"state-mismatch"},"codeStillRedeemable":200}
+FAIL  intact.cross-origin.with-a-session  brief's prediction: a script on B's origin POSTing to A with credentials has nothing to send and A mints nothing
+      expect: {"reachedAWithCredential":false,"minted":false}
+      got:    {"reachedAWithCredential":true,"minted":true,"via":"tenant-session","originSeen":"http://tenant-b.user-content.apex.test:44480","scriptCouldRead":false}
+FAIL  intact.cross-origin.form-with-a-session  brief's prediction, as a form POST from B's origin (a navigation): nothing sent, nothing minted
+      expect: {"minted":false}
+      got:    {"status":200,"minted":true,"via":"tenant-session","originSeen":"http://tenant-b.user-content.apex.test:44480"}
+PASS  intact.cross-origin.kratos-only  with only the Kratos session in the browser (host-only on the auth host), B's script has nothing to send: A refuses no-credential
+      expect: {"kratosSessionInBrowser":true,"atA":"no-credential","minted":false}
+      got:    {"kratosSessionInBrowser":true,"atA":"no-credential","minted":false,"scriptCouldRead":false}
+PASS  intact.control.b-member  control: U added to B, the same browser reaches B's app without a password and B mints; U removed again, B's exchange refuses (B's tenant session stays, its membership check does not)
+      expect: {"lands":"tenant-b","passwordEntered":false,"exchange":200,"removed":403}
+      got:    {"lands":"tenant-b","passwordEntered":false,"redirects":3,"exchange":200,"removed":403,"removedError":"not-a-member"}
+PASS  intact.logout  Kratos browser logout at the auth host ends the Kratos session only: A's and B's own tenant sessions survive (apps load, A still mints NEW tokens), a token minted before logout verifies; a tenant with no session yet (C) now asks for the password
+      expect: {"whoamiAfter":"401","aApp":true,"bApp":true,"aMintsAfterLogout":200,"tokenMintedBefore":200,"coldCAsksPassword":true}
+      got:    {"whoamiAfter":"401","aApp":true,"bApp":true,"aMintsAfterLogout":200,"tokenMintedBefore":200,"coldCAsksPassword":true,"coldCRedirects":3}
+PASS  expiry.live  liveness in this run: U is issued an A code, A redeems it, the token verifies on A
+      expect: {"issue":302,"redeem":200,"verify":200,"sub":"U"}
+      got:    {"issue":302,"redeem":200,"verify":200,"sub":"U"}
+PASS  expiry.expired  a code redeemed after its TTL (1500 ms in this phase, 2200 ms wait) is refused code-expired
+      expect: {"status":400,"error":"code-expired"}
+      got:    {"status":400,"error":"code-expired"}
+PASS  diag.strict.live  liveness in this run: U is issued an A code, A redeems it, the token verifies on A
+      expect: {"issue":302,"redeem":200,"verify":200,"sub":"U"}
+      got:    {"issue":302,"redeem":200,"verify":200,"sub":"U"}
+PASS  diag.strict.cross-origin  diagnostic: with the tenant session cookie SameSite=Strict, B's script POSTing to A still sends it (same site) and A mints
+      expect: {"cookieSameSite":"Strict","minted":true,"via":"tenant-session","originSeen":"http://tenant-b.user-content.apex.test:44480"}
+      got:    {"lands":"tenant-a","cookieSameSite":"Strict","minted":true,"via":"tenant-session","originSeen":"http://tenant-b.user-content.apex.test:44480","scriptCouldRead":false}
+PASS  break.no-tenant-binding.live  liveness in this run: U is issued an A code, A redeems it, the token verifies on A
+      expect: {"issue":302,"redeem":200,"verify":200,"sub":"U"}
+      got:    {"issue":302,"redeem":200,"verify":200,"sub":"U"}
+PASS  break.no-tenant-binding.red  BREAK no-tenant-binding: B's backend redeems A's code and gets a B token for U, who is not a member of B; B accepts it
+      expect: {"redeem":200,"tenant":"tenant-b","sub":"U","verifyOnB":200}
+      got:    {"redeem":200,"tenant":"tenant-b","sub":"U","verifyOnB":200}
+PASS  break.no-single-use.live  liveness in this run: U is issued an A code, A redeems it, the token verifies on A
+      expect: {"issue":302,"redeem":200,"verify":200,"sub":"U"}
+      got:    {"issue":302,"redeem":200,"verify":200,"sub":"U"}
+PASS  break.no-single-use.red  BREAK no-single-use: the same code redeems again and again, each time for an A token (identical tokens when minted in the same second: same claims, deterministic HS256)
+      expect: {"first":200,"second":200,"third":200}
+      got:    {"first":200,"second":200,"third":200,"distinctTokens":1}
+PASS  break.no-return-to-check.live  liveness in this run: U is issued an A code, A redeems it, the token verifies on A
+      expect: {"issue":302,"redeem":200,"verify":200,"sub":"U"}
+      got:    {"issue":302,"redeem":200,"verify":200,"sub":"U"}
+PASS  break.no-return-to-check.red  BREAK no-return-to-check: the auth host redirects to a foreign host and to a sibling tenant, each carrying a live A code (an open redirect that leaks codes)
+      expect: {"foreign":{"status":302,"host":"evil.test","code":true},"sibling":{"status":302,"host":"tenant-b.user-content.apex.test:44480","code":true}}
+      got:    {"foreign":{"status":302,"host":"evil.test","code":true},"sibling":{"status":302,"host":"tenant-b.user-content.apex.test:44480","code":true}}
+
+cookie-handoff: 24/26 checks as expected -> results/2026-10-12-v26.2.0-cookie-variants/cookie-handoff.json
+
+=== node probes/cookies.js
+PASS  login.ok  browser login through the ONE pool succeeds and lands on tenant-a
+      expect: {"session":true,"whoami":"200"}
+      got:    {"session":true,"whoami":"200","sessionCookieDomain":".apex.test"}
+PASS  scope.reaches-both  apex cookie domain: the session cookie reaches BOTH tenant hosts
+      expect: {"A":true,"B":true}
+      got:    {"A":true,"B":true}
+PASS  exchange.a  positive: cookie-path exchange on A mints an A token
+      expect: {"status":200,"via":"kratos-session-cookie"}
+      got:    {"status":200,"via":"kratos-session-cookie"}
+PASS  exchange.b  probe: the same cookie arrives at B and B refuses for non-membership
+      expect: {"status":403,"error":"not-a-member"}
+      got:    {"status":403,"error":"not-a-member"}
+PASS  exchange.b.control  control: U added to B, the identical browser state now mints a B token
+      expect: {"status":200,"tenant":"tenant-b"}
+      got:    {"status":200,"tenant":"tenant-b"}
+PASS  cross-origin.b-to-a  a script on B's origin POSTs to A's exchange: the session cookie is sent (tenants are same-site) and A mints; the browser withholds the response from B's script (no CORS)
+      expect: {"serverMinted":true,"viaCookie":true,"originSeen":"http://tenant-b.user-content.apex.test:44480","scriptCouldRead":false}
+      got:    {"serverMinted":true,"viaCookie":true,"originSeen":"http://tenant-b.user-content.apex.test:44480","scriptCouldRead":false}
+PASS  replay.b-cookie-at-a  the session cookie B's host received (same digest), replayed by a non-browser client to A, mints an A token
+      expect: {"sameSessionAtB":true,"status":200,"tenant":"tenant-a"}
+      got:    {"sameSessionAtB":true,"status":200,"tenant":"tenant-a"}
+PASS  attrs  session cookie attributes as set by Kratos --dev over http (production sets Secure)
+      expect: {"httpOnly":true,"sameSite":"Lax"}
+      got:    {"httpOnly":true,"sameSite":"Lax","secure":false}
+
+cookies-apex: 8/8 checks as expected -> results/2026-10-12-v26.2.0-cookie-variants/cookies-apex.json
+
+=== node probes/cookie-edge.js
+PASS  intact.flow.cold-a  cold start on A: edge redirects to the Kratos login, one password entry, back on A
+      expect: {"passwordEntered":true,"lands":"tenant-a app"}
+      got:    {"passwordEntered":true,"redirects":3,"navigations":5,"lands":"tenant-a"}
+PASS  intact.flow.then-b  then B: the apex session is already present, no redirect, no password; B mints for W
+      expect: {"passwordEntered":false,"redirects":0,"lands":"tenant-b app","exchange":200}
+      got:    {"passwordEntered":false,"redirects":0,"lands":"tenant-b","exchange":200}
+PASS  intact.login  U logs in through the edge redirect; apex session cookie stored
+      expect: {"session":true,"domain":".apex.test","lands":"tenant-a"}
+      got:    {"session":true,"domain":".apex.test","lands":"tenant-a"}
+PASS  intact.backend-receives  neither tenant backend receives the Kratos session or CSRF cookie (no Cookie header at all); each receives an edge assertion naming its own tenant and U
+      expect: {"A":{"kratosCookie":false,"assertionTenant":"tenant-a"},"B":{"kratosCookie":false,"assertionTenant":"tenant-b"}}
+      got:    {"A":{"kratosCookie":false,"assertionTenant":"tenant-a","sub":true},"B":{"kratosCookie":false,"assertionTenant":"tenant-b","sub":true}}
+PASS  intact.edge-holds-session  the edge itself receives the session on both tenant hosts (same digest as the browser): the edge is the one process that holds a cross-tenant credential
+      expect: {"A":true,"B":true}
+      got:    {"A":true,"B":true}
+PASS  intact.control.same-origin-a  control: a same-origin POST on A passes the edge and mints an A token from the edge assertion
+      expect: {"status":200,"via":"edge-assertion","verify":200}
+      got:    {"status":200,"via":"edge-assertion","verify":200}
+PASS  intact.control.b-not-member  U is a member of A only: a same-origin POST on B passes the edge and B refuses for non-membership
+      expect: {"status":403,"error":"not-a-member"}
+      got:    {"status":403,"error":"not-a-member"}
+PASS  intact.control.b-member  control: U added to B, the identical browser state mints a B token; removed again, refused
+      expect: {"added":200,"tenant":"tenant-b","removed":403}
+      got:    {"added":200,"tenant":"tenant-b","removed":403}
+PASS  intact.cross-origin.fetch  a script on B's origin POSTs to A's exchange with credentials: the edge refuses it (Origin is B's) and A's backend never sees it
+      expect: {"edgeRefused":true,"why":"origin-mismatch","originSeen":"http://tenant-b.user-content.apex.test:44480","reachedBackend":0,"scriptCouldRead":false}
+      got:    {"edgeRefused":true,"why":"origin-mismatch","originSeen":"http://tenant-b.user-content.apex.test:44480","secFetchSite":null,"cookieSentToEdge":true,"reachedBackend":0,"scriptCouldRead":false}
+PASS  intact.cross-origin.form  a form on B's origin POSTs to A's exchange (a navigation, no CORS): refused at the edge
+      expect: {"status":403,"error":"cross-origin-refused","originSeen":"http://tenant-b.user-content.apex.test:44480","reachedBackend":0}
+      got:    {"status":403,"error":"cross-origin-refused","originSeen":"http://tenant-b.user-content.apex.test:44480","reachedBackend":0}
+PASS  intact.replay.b-backend-cookie  replay of the cookie as received by B's backend: B's backend received no session, so there is nothing to replay
+      expect: {"sessionAtBBackend":null}
+      got:    {"sessionAtBBackend":null,"cookieNames":[]}
+PASS  intact.replay.b-assertion  what B's backend DID receive (its edge assertion), replayed to A: through the edge it is removed (no credential); straight to A's backend it fails the tenant binding. Control: the same assertion on B's backend authenticates U (then B's membership check refuses)
+      expect: {"viaEdge":{"status":401,"error":"no-credential"},"toABackend":{"status":401,"error":"edge-assertion-tenant"},"onBBackend":{"status":403,"error":"not-a-member"}}
+      got:    {"viaEdge":{"status":401,"error":"no-credential"},"toABackend":{"status":401,"error":"edge-assertion-tenant"},"onBBackend":{"status":403,"error":"not-a-member"}}
+PASS  intact.replay.edge-cookie  the cookie as captured AT THE EDGE (same digest), replayed by a non-browser client to A: mints an A token (no Origin is allowed for non-browser clients); with Origin B refused; with a forged Origin A mints
+      expect: {"noOrigin":200,"originB":403,"forgedOriginA":200,"tenant":"tenant-a"}
+      got:    {"noOrigin":200,"originB":403,"forgedOriginA":200,"tenant":"tenant-a"}
+PASS  intact.bypass  straight to A's backend (not through the edge): the Kratos cookie is not a credential there, and an assertion signed with another key fails
+      expect: {"cookie":{"status":401,"error":"no-credential"},"forged":{"status":401,"error":"edge-assertion-signature"}}
+      got:    {"cookie":{"status":401,"error":"no-credential"},"forged":{"status":401,"error":"edge-assertion-signature"}}
+PASS  intact.logout  Kratos browser logout: the session ends everywhere at once (the edge asks Kratos each request) — new exchanges on A fail, A redirects to the login, the old cookie value is dead; a token minted BEFORE logout still verifies on A until its own exp
+      expect: {"whoamiAfter":"401","cookieLeft":0,"exchangeAfter":401,"homeShowsLogin":true,"oldCookieReplay":401,"tokenMintedBefore":200}
+      got:    {"whoamiAfter":"401","cookieLeft":0,"exchangeAfter":401,"homeShowsLogin":true,"oldCookieReplay":401,"tokenMintedBefore":200,"tokenExpIn":3600}
+PASS  break.no-strip.live  liveness in this run: same-origin exchange on A
+      expect: 200
+      got:    200
+PASS  break.no-strip.red  BREAK no-strip: B's backend now receives U's session (same digest as the browser) and that cookie, replayed to A, mints an A token
+      expect: {"sessionAtBBackend":"02009b16436c742a","replay":200,"tenant":"tenant-a"}
+      got:    {"sessionAtBBackend":"02009b16436c742a","replay":200,"tenant":"tenant-a"}
+PASS  break.no-strip.origin-still-holds  the origin check is independent of the strip: cross-origin from B still refused
+      expect: {"scriptCouldRead":false,"edgeRefused":true}
+      got:    {"scriptCouldRead":false,"edgeRefused":true}
+PASS  break.no-origin-check.live  liveness in this run: same-origin exchange on A
+      expect: 200
+      got:    200
+PASS  break.no-origin-check.red  BREAK no-origin-check: the script on B's origin makes A's backend mint again (from the edge assertion; Origin B); the browser still withholds the response
+      expect: {"minted":true,"via":"edge-assertion","originSeen":"http://tenant-b.user-content.apex.test:44480","scriptCouldRead":false}
+      got:    {"minted":true,"via":"edge-assertion","originSeen":"http://tenant-b.user-content.apex.test:44480","scriptCouldRead":false}
+PASS  break.no-origin-check.strip-still-holds  the strip is independent of the origin check: B's backend still receives no session
+      expect: null
+      got:    null
+
+cookie-edge: 21/21 checks as expected -> results/2026-10-12-v26.2.0-cookie-variants/cookie-edge.json
+
+=== node probes/cookies.js
+PASS  login.fails  cookie domain outside the auth host: the browser login cannot complete and no session cookie is stored
+      expect: {"sessionCookie":false,"whoamiOnAuthHost":"401"}
+      got:    {"sessionCookie":false,"whoamiOnAuthHost":"401","finalUrl":"http://auth.apex.test:44480/ui/login?flow=3855d5c1-2829-498e-83d0-8efae12790ee"}
+PASS  live  liveness in this run: Kratos native login and the A exchange still succeed
+      expect: [200,200]
+      got:    [200,200]
+PASS  scope.neither  user-content cookie domain: no session exists, so neither tenant host receives one
+      expect: {"A":false,"B":false}
+      got:    {"A":false,"B":false}
+
+cookies-user-content: 3/3 checks as expected -> results/2026-10-12-v26.2.0-cookie-variants/cookies-user-content.json
+run 2026-10-12-v26.2.0-cookie-variants  2026-10-12T22:50:12Z
+image /ory-proof-kratos-1 oryd/kratos:v26.2.0@sha256:2a13bb8d362c7a7ae33bd7c0f5168aee46921f15c916a06346db91c06dc76643
+image /ory-proof-hydra-1 oryd/hydra:v26.2.0@sha256:ff67c7fb5f95074fa53374d41151713554960504b340cd3f95b09e65deaea2a9
+chrome Google Chrome 154.0.8037.57   node v24.15.0
+ok       cookie-edge                 21/21
+MISMATCH cookie-handoff              24/26
+         not as predicted: intact.cross-origin.with-a-session
+         not as predicted: intact.cross-origin.form-with-a-session
+ok       cookies-apex                8/8
+ok       cookies-host-only           5/5
+ok       cookies-user-content        3/3
+ok       proof                       23/23

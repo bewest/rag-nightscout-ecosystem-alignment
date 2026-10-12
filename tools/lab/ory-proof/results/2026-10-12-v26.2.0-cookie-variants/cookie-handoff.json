@@ -1,0 +1,760 @@
+{
+  "probe": "cookie-handoff",
+  "run": "2026-10-12-v26.2.0-cookie-variants",
+  "started": "2026-10-12T22:49:53.361Z",
+  "node": "v24.15.0",
+  "fixture": {
+    "U": "member of tenant-a only",
+    "W": "member of tenant-a, tenant-b, tenant-c",
+    "kratosCookie": "host-only on auth.apex.test (default config)"
+  },
+  "browser": "Chrome 154.0.8037.57",
+  "flow": {
+    "coldA": {
+      "passwordEntered": true,
+      "finalUrl": "tenant-a.user-content.apex.test:44480/",
+      "app": {
+        "tenant": "tenant-a",
+        "sub": "864bcf2c-99ce-446f-b479-f3cae43f8c2a"
+      },
+      "body": null,
+      "navigations": 8,
+      "redirects": 6,
+      "chain": [
+        {
+          "method": "GET",
+          "url": "tenant-a.user-content.apex.test:44480/",
+          "redirect": false
+        },
+        {
+          "method": "GET",
+          "url": "auth.apex.test:44480/exchange",
+          "redirect": true
+        },
+        {
+          "method": "GET",
+          "url": "auth.apex.test:44480/self-service/login/browser",
+          "redirect": true
+        },
+        {
+          "method": "GET",
+          "url": "auth.apex.test:44480/ui/login",
+          "redirect": true
+        },
+        {
+          "method": "POST",
+          "url": "auth.apex.test:44480/self-service/login",
+          "redirect": false
+        },
+        {
+          "method": "GET",
+          "url": "auth.apex.test:44480/exchange",
+          "redirect": true
+        },
+        {
+          "method": "GET",
+          "url": "tenant-a.user-content.apex.test:44480/handoff/callback",
+          "redirect": true
+        },
+        {
+          "method": "GET",
+          "url": "tenant-a.user-content.apex.test:44480/",
+          "redirect": true
+        }
+      ]
+    },
+    "thenB": {
+      "passwordEntered": false,
+      "finalUrl": "tenant-b.user-content.apex.test:44480/",
+      "app": {
+        "tenant": "tenant-b",
+        "sub": "864bcf2c-99ce-446f-b479-f3cae43f8c2a"
+      },
+      "body": null,
+      "navigations": 4,
+      "redirects": 3,
+      "chain": [
+        {
+          "method": "GET",
+          "url": "tenant-b.user-content.apex.test:44480/",
+          "redirect": false
+        },
+        {
+          "method": "GET",
+          "url": "auth.apex.test:44480/exchange",
+          "redirect": true
+        },
+        {
+          "method": "GET",
+          "url": "tenant-b.user-content.apex.test:44480/handoff/callback",
+          "redirect": true
+        },
+        {
+          "method": "GET",
+          "url": "tenant-b.user-content.apex.test:44480/",
+          "redirect": true
+        }
+      ]
+    }
+  },
+  "cookieJarW": [
+    {
+      "name": "csrf_token_*",
+      "domain": "auth.apex.test",
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "ory_kratos_session",
+      "domain": "auth.apex.test",
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "ns_session",
+      "domain": "tenant-a.user-content.apex.test",
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "ns_session",
+      "domain": "tenant-b.user-content.apex.test",
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "backendReceives": {
+    "A": {
+      "cookieNames": [
+        "ns_session"
+      ],
+      "headerNames": [
+        "accept",
+        "accept-encoding",
+        "accept-language",
+        "connection",
+        "cookie",
+        "host",
+        "upgrade-insecure-requests",
+        "user-agent"
+      ]
+    },
+    "B": {
+      "cookieNames": [],
+      "headerNames": [
+        "accept",
+        "accept-encoding",
+        "accept-language",
+        "connection",
+        "host",
+        "upgrade-insecure-requests",
+        "user-agent"
+      ]
+    }
+  },
+  "returnTo": [
+    {
+      "name": "own-tenant",
+      "want": 302,
+      "status": 302,
+      "error": null,
+      "locHost": "tenant-a.user-content.apex.test:44480"
+    },
+    {
+      "name": "sibling-tenant",
+      "want": 400,
+      "status": 400,
+      "error": "return-to-not-tenant-origin",
+      "locHost": null
+    },
+    {
+      "name": "unregistered-slug",
+      "want": 400,
+      "status": 400,
+      "error": "return-to-not-tenant-origin",
+      "locHost": null
+    },
+    {
+      "name": "foreign",
+      "want": 400,
+      "status": 400,
+      "error": "return-to-not-tenant-origin",
+      "locHost": null
+    },
+    {
+      "name": "suffix-append",
+      "want": 400,
+      "status": 400,
+      "error": "return-to-not-tenant-origin",
+      "locHost": null
+    },
+    {
+      "name": "userinfo",
+      "want": 400,
+      "status": 400,
+      "error": "return-to-not-tenant-origin",
+      "locHost": null
+    },
+    {
+      "name": "other-port",
+      "want": 400,
+      "status": 400,
+      "error": "return-to-not-tenant-origin",
+      "locHost": null
+    },
+    {
+      "name": "https-scheme",
+      "want": 400,
+      "status": 400,
+      "error": "return-to-not-tenant-origin",
+      "locHost": null
+    },
+    {
+      "name": "scheme-relative",
+      "want": 400,
+      "status": 400,
+      "error": "return-to-not-tenant-origin",
+      "locHost": null
+    },
+    {
+      "name": "own-tenant-again",
+      "want": 302,
+      "status": 302,
+      "error": null,
+      "locHost": "tenant-a.user-content.apex.test:44480"
+    }
+  ],
+  "cookieJarU": [
+    {
+      "name": "csrf_token_*",
+      "domain": "auth.apex.test",
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "ory_kratos_session",
+      "domain": "auth.apex.test",
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "ns_session",
+      "domain": "tenant-a.user-content.apex.test",
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "ns_handoff_state",
+      "domain": "tenant-b.user-content.apex.test",
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "crossOriginWithTenantSession": {
+    "events": [
+      {
+        "k": "minted",
+        "via": "tenant-session",
+        "why": null,
+        "origin": "http://tenant-b.user-content.apex.test:44480"
+      }
+    ],
+    "scriptCouldRead": false
+  },
+  "finished": "2026-10-12T22:49:58.201Z",
+  "total": 26,
+  "failed": 2,
+  "checks": [
+    {
+      "id": "intact.flow.cold-a",
+      "desc": "cold start on A: A -> auth /exchange -> Kratos login (one password) -> auth /exchange -> A callback -> A",
+      "expect": {
+        "passwordEntered": true,
+        "lands": "tenant-a app"
+      },
+      "got": {
+        "passwordEntered": true,
+        "redirects": 6,
+        "navigations": 8,
+        "lands": "tenant-a"
+      },
+      "pass": true
+    },
+    {
+      "id": "intact.flow.then-b",
+      "desc": "then B: SSO without a password (auth host already holds the Kratos session); B mints for W",
+      "expect": {
+        "passwordEntered": false,
+        "lands": "tenant-b app",
+        "exchange": 200
+      },
+      "got": {
+        "passwordEntered": false,
+        "redirects": 3,
+        "navigations": 4,
+        "lands": "tenant-b",
+        "exchange": 200
+      },
+      "pass": true
+    },
+    {
+      "id": "intact.happy-a",
+      "desc": "happy path on A: host-only Kratos cookie on the auth host; A gets its own session and mints from it",
+      "expect": {
+        "kratosCookieDomain": "auth.apex.test",
+        "lands": "tenant-a",
+        "exchange": 200,
+        "via": "tenant-session",
+        "verify": 200
+      },
+      "got": {
+        "kratosCookieDomain": "auth.apex.test",
+        "lands": "tenant-a",
+        "exchange": 200,
+        "via": "tenant-session",
+        "verify": 200
+      },
+      "pass": true
+    },
+    {
+      "id": "intact.backend-receives",
+      "desc": "tenant backends never receive the Kratos cookie: A receives only its own tenant session cookie, B (no session there) receives no cookie",
+      "expect": {
+        "A": [
+          "ns_session"
+        ],
+        "B": []
+      },
+      "got": {
+        "A": [
+          "ns_session"
+        ],
+        "B": []
+      },
+      "pass": true
+    },
+    {
+      "id": "intact.replay.a-session-at-b",
+      "desc": "A's tenant session cookie replayed to B: not a session there (sessions are keyed by tenant); control: the same value replayed to A mints",
+      "expect": {
+        "atB": {
+          "status": 401,
+          "error": "no-credential"
+        },
+        "atA": 200
+      },
+      "got": {
+        "atB": {
+          "status": 401,
+          "error": "no-credential"
+        },
+        "atA": 200
+      },
+      "pass": true
+    },
+    {
+      "id": "intact.b-not-member",
+      "desc": "U on B: B redirects to the auth host, which refuses (403 not-a-member) and does not redirect back; no password asked",
+      "expect": {
+        "finalHost": "auth.apex.test",
+        "error": "not-a-member",
+        "passwordEntered": false
+      },
+      "got": {
+        "finalUrl": "auth.apex.test:44480/exchange",
+        "body": "{\"error\":\"not-a-member\",\"at\":\"auth-host\",\"tenant\":\"tenant-b\"}",
+        "redirects": 1,
+        "passwordEntered": false
+      },
+      "pass": true
+    },
+    {
+      "id": "intact.bind.live",
+      "desc": "liveness in this run: U is issued an A code, A redeems it, the token verifies on A",
+      "expect": {
+        "issue": 302,
+        "redeem": 200,
+        "verify": 200,
+        "sub": "U"
+      },
+      "got": {
+        "issue": 302,
+        "redeem": 200,
+        "verify": 200,
+        "sub": "U"
+      },
+      "pass": true
+    },
+    {
+      "id": "intact.code-for-a-at-b",
+      "desc": "a code issued for A redeemed at B: refused wrong-tenant, through B's callback and server-to-server; the attempt burns the code (A's own redemption afterwards: code-used)",
+      "expect": {
+        "viaBCallback": {
+          "status": 400,
+          "error": "wrong-tenant"
+        },
+        "serverToServer": {
+          "status": 400,
+          "error": "wrong-tenant"
+        },
+        "aAfter": "code-used"
+      },
+      "got": {
+        "viaBCallback": {
+          "status": 400,
+          "error": "wrong-tenant",
+          "at": "auth-host"
+        },
+        "serverToServer": {
+          "status": 400,
+          "error": "wrong-tenant"
+        },
+        "aAfter": "code-used"
+      },
+      "pass": true
+    },
+    {
+      "id": "intact.twice",
+      "desc": "a code redeemed twice: the first succeeds, the second is refused code-used",
+      "expect": {
+        "first": 200,
+        "second": {
+          "status": 400,
+          "error": "code-used"
+        }
+      },
+      "got": {
+        "first": 200,
+        "second": {
+          "status": 400,
+          "error": "code-used"
+        }
+      },
+      "pass": true
+    },
+    {
+      "id": "intact.return-to",
+      "desc": "return_to must be on A's registered origin: own origin redirected (first and last); sibling tenant, unregistered slug, foreign host and the tricks refused at the auth host",
+      "expect": [
+        "own-tenant:302",
+        "sibling-tenant:400",
+        "unregistered-slug:400",
+        "foreign:400",
+        "suffix-append:400",
+        "userinfo:400",
+        "other-port:400",
+        "https-scheme:400",
+        "scheme-relative:400",
+        "own-tenant-again:302"
+      ],
+      "got": [
+        "own-tenant:302",
+        "sibling-tenant:400 return-to-not-tenant-origin",
+        "unregistered-slug:400 return-to-not-tenant-origin",
+        "foreign:400 return-to-not-tenant-origin",
+        "suffix-append:400 return-to-not-tenant-origin",
+        "userinfo:400 return-to-not-tenant-origin",
+        "other-port:400 return-to-not-tenant-origin",
+        "https-scheme:400 return-to-not-tenant-origin",
+        "scheme-relative:400 return-to-not-tenant-origin",
+        "own-tenant-again:302"
+      ],
+      "pass": true
+    },
+    {
+      "id": "intact.state-mismatch",
+      "desc": "state mismatch: A's callback refuses a state that is not its state cookie (before redeeming: the code stays redeemable with the right state); the auth host refuses a redemption whose state is not the code's",
+      "expect": {
+        "atTenant": "tenant-state-mismatch",
+        "atAuthHost": {
+          "status": 400,
+          "error": "state-mismatch"
+        },
+        "codeStillRedeemable": 200
+      },
+      "got": {
+        "atTenant": "tenant-state-mismatch",
+        "atAuthHost": {
+          "status": 400,
+          "error": "state-mismatch"
+        },
+        "codeStillRedeemable": 200
+      },
+      "pass": true
+    },
+    {
+      "id": "intact.cross-origin.with-a-session",
+      "desc": "brief's prediction: a script on B's origin POSTing to A with credentials has nothing to send and A mints nothing",
+      "expect": {
+        "reachedAWithCredential": false,
+        "minted": false
+      },
+      "got": {
+        "reachedAWithCredential": true,
+        "minted": true,
+        "via": "tenant-session",
+        "originSeen": "http://tenant-b.user-content.apex.test:44480",
+        "scriptCouldRead": false
+      },
+      "pass": false
+    },
+    {
+      "id": "intact.cross-origin.form-with-a-session",
+      "desc": "brief's prediction, as a form POST from B's origin (a navigation): nothing sent, nothing minted",
+      "expect": {
+        "minted": false
+      },
+      "got": {
+        "status": 200,
+        "minted": true,
+        "via": "tenant-session",
+        "originSeen": "http://tenant-b.user-content.apex.test:44480"
+      },
+      "pass": false
+    },
+    {
+      "id": "intact.cross-origin.kratos-only",
+      "desc": "with only the Kratos session in the browser (host-only on the auth host), B's script has nothing to send: A refuses no-credential",
+      "expect": {
+        "kratosSessionInBrowser": true,
+        "atA": "no-credential",
+        "minted": false
+      },
+      "got": {
+        "kratosSessionInBrowser": true,
+        "atA": "no-credential",
+        "minted": false,
+        "scriptCouldRead": false
+      },
+      "pass": true
+    },
+    {
+      "id": "intact.control.b-member",
+      "desc": "control: U added to B, the same browser reaches B's app without a password and B mints; U removed again, B's exchange refuses (B's tenant session stays, its membership check does not)",
+      "expect": {
+        "lands": "tenant-b",
+        "passwordEntered": false,
+        "exchange": 200,
+        "removed": 403
+      },
+      "got": {
+        "lands": "tenant-b",
+        "passwordEntered": false,
+        "redirects": 3,
+        "exchange": 200,
+        "removed": 403,
+        "removedError": "not-a-member"
+      },
+      "pass": true
+    },
+    {
+      "id": "intact.logout",
+      "desc": "Kratos browser logout at the auth host ends the Kratos session only: A's and B's own tenant sessions survive (apps load, A still mints NEW tokens), a token minted before logout verifies; a tenant with no session yet (C) now asks for the password",
+      "expect": {
+        "whoamiAfter": "401",
+        "aApp": true,
+        "bApp": true,
+        "aMintsAfterLogout": 200,
+        "tokenMintedBefore": 200,
+        "coldCAsksPassword": true
+      },
+      "got": {
+        "whoamiAfter": "401",
+        "aApp": true,
+        "bApp": true,
+        "aMintsAfterLogout": 200,
+        "tokenMintedBefore": 200,
+        "coldCAsksPassword": true,
+        "coldCRedirects": 3
+      },
+      "pass": true
+    },
+    {
+      "id": "expiry.live",
+      "desc": "liveness in this run: U is issued an A code, A redeems it, the token verifies on A",
+      "expect": {
+        "issue": 302,
+        "redeem": 200,
+        "verify": 200,
+        "sub": "U"
+      },
+      "got": {
+        "issue": 302,
+        "redeem": 200,
+        "verify": 200,
+        "sub": "U"
+      },
+      "pass": true
+    },
+    {
+      "id": "expiry.expired",
+      "desc": "a code redeemed after its TTL (1500 ms in this phase, 2200 ms wait) is refused code-expired",
+      "expect": {
+        "status": 400,
+        "error": "code-expired"
+      },
+      "got": {
+        "status": 400,
+        "error": "code-expired"
+      },
+      "pass": true
+    },
+    {
+      "id": "diag.strict.live",
+      "desc": "liveness in this run: U is issued an A code, A redeems it, the token verifies on A",
+      "expect": {
+        "issue": 302,
+        "redeem": 200,
+        "verify": 200,
+        "sub": "U"
+      },
+      "got": {
+        "issue": 302,
+        "redeem": 200,
+        "verify": 200,
+        "sub": "U"
+      },
+      "pass": true
+    },
+    {
+      "id": "diag.strict.cross-origin",
+      "desc": "diagnostic: with the tenant session cookie SameSite=Strict, B's script POSTing to A still sends it (same site) and A mints",
+      "expect": {
+        "cookieSameSite": "Strict",
+        "minted": true,
+        "via": "tenant-session",
+        "originSeen": "http://tenant-b.user-content.apex.test:44480"
+      },
+      "got": {
+        "lands": "tenant-a",
+        "cookieSameSite": "Strict",
+        "minted": true,
+        "via": "tenant-session",
+        "originSeen": "http://tenant-b.user-content.apex.test:44480",
+        "scriptCouldRead": false
+      },
+      "pass": true
+    },
+    {
+      "id": "break.no-tenant-binding.live",
+      "desc": "liveness in this run: U is issued an A code, A redeems it, the token verifies on A",
+      "expect": {
+        "issue": 302,
+        "redeem": 200,
+        "verify": 200,
+        "sub": "U"
+      },
+      "got": {
+        "issue": 302,
+        "redeem": 200,
+        "verify": 200,
+        "sub": "U"
+      },
+      "pass": true
+    },
+    {
+      "id": "break.no-tenant-binding.red",
+      "desc": "BREAK no-tenant-binding: B's backend redeems A's code and gets a B token for U, who is not a member of B; B accepts it",
+      "expect": {
+        "redeem": 200,
+        "tenant": "tenant-b",
+        "sub": "U",
+        "verifyOnB": 200
+      },
+      "got": {
+        "redeem": 200,
+        "tenant": "tenant-b",
+        "sub": "U",
+        "verifyOnB": 200
+      },
+      "pass": true
+    },
+    {
+      "id": "break.no-single-use.live",
+      "desc": "liveness in this run: U is issued an A code, A redeems it, the token verifies on A",
+      "expect": {
+        "issue": 302,
+        "redeem": 200,
+        "verify": 200,
+        "sub": "U"
+      },
+      "got": {
+        "issue": 302,
+        "redeem": 200,
+        "verify": 200,
+        "sub": "U"
+      },
+      "pass": true
+    },
+    {
+      "id": "break.no-single-use.red",
+      "desc": "BREAK no-single-use: the same code redeems again and again, each time for an A token (identical tokens when minted in the same second: same claims, deterministic HS256)",
+      "expect": {
+        "first": 200,
+        "second": 200,
+        "third": 200
+      },
+      "got": {
+        "first": 200,
+        "second": 200,
+        "third": 200,
+        "distinctTokens": 1
+      },
+      "pass": true
+    },
+    {
+      "id": "break.no-return-to-check.live",
+      "desc": "liveness in this run: U is issued an A code, A redeems it, the token verifies on A",
+      "expect": {
+        "issue": 302,
+        "redeem": 200,
+        "verify": 200,
+        "sub": "U"
+      },
+      "got": {
+        "issue": 302,
+        "redeem": 200,
+        "verify": 200,
+        "sub": "U"
+      },
+      "pass": true
+    },
+    {
+      "id": "break.no-return-to-check.red",
+      "desc": "BREAK no-return-to-check: the auth host redirects to a foreign host and to a sibling tenant, each carrying a live A code (an open redirect that leaks codes)",
+      "expect": {
+        "foreign": {
+          "status": 302,
+          "host": "evil.test",
+          "code": true
+        },
+        "sibling": {
+          "status": 302,
+          "host": "tenant-b.user-content.apex.test:44480",
+          "code": true
+        }
+      },
+      "got": {
+        "foreign": {
+          "status": 302,
+          "host": "evil.test",
+          "code": true
+        },
+        "sibling": {
+          "status": 302,
+          "host": "tenant-b.user-content.apex.test:44480",
+          "code": true
+        }
+      },
+      "pass": true
+    }
+  ]
+}

@@ -33,19 +33,22 @@ function req (host, method, p, opts = {}) {
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-async function startServer (breaks = '', label = 'server') {
+// extra: {LAB_MODE, EDGE_BREAK, HANDOFF_BREAK, HANDOFF_CODE_TTL_MS} for the cookie-scope variants
+async function startServer (breaks = '', label = 'server', extra = {}) {
   const logDir = path.join(ROOT, 'results', 'raw');
   fs.mkdirSync(logDir, { recursive: true });
   const out = fs.openSync(path.join(logDir, `${label}.log`), 'a');
   // detached: true makes Node call setsid(), so the server leads its own process group
   const child = spawn(process.execPath, [path.join(ROOT, 'lab-server.js')], {
-    env: Object.assign({}, process.env, { NSJWT_BREAK: breaks }), stdio: ['ignore', out, out], detached: true
+    env: Object.assign({}, process.env, { NSJWT_BREAK: breaks, LAB_MODE: '', EDGE_BREAK: '', HANDOFF_BREAK: '' }, extra), stdio: ['ignore', out, out], detached: true
   });
   child.unref();
   for (let i = 0; i < 100; i++) {
     try {
       const h = await req(env.CONTROL_HOST, 'GET', '/health');
-      if (h.status === 200 && h.body.breaks.join(',') === breaks.split(',').filter(Boolean).join(',')) {
+      const norm = (x) => String(x || '').split(',').filter(Boolean).join(',');
+      if (h.status === 200 && h.body.breaks.join(',') === norm(breaks) && (h.body.mode || '') === (extra.LAB_MODE || '') &&
+          (h.body.edgeBreaks || []).join(',') === norm(extra.EDGE_BREAK) && (h.body.handoffBreaks || []).join(',') === norm(extra.HANDOFF_BREAK)) {
         return { pid: child.pid, health: h.body, stop: () => stopServer(child) };
       }
     } catch (e) { /* not up yet */ }

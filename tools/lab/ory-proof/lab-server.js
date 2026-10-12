@@ -9,11 +9,21 @@
  *   lab.control                       -> stats/event log for probes
  * Browsers reach it with Chromium --host-resolver-rules; scripts set the Host header.
  * NSJWT_BREAK is passed through to lib/nsjwt.js.
+ *
+ * LAB_MODE selects a cookie-scope design (docs/60-research/tenancy/ory-cookie-variants-2026-10-12.md):
+ *   (unset)  - as above (the 2026-10-07 proof)
+ *   edge     - variant E: tenant hosts go through lib/edge.js, which proxies to the nsjwt backend
+ *              on EDGE_BACKEND_PORT (default 44481, 127.0.0.1); EDGE_BREAK passed through
+ *   handoff  - variant H2: auth host also serves /exchange and /exchange/redeem (lib/handoff.js);
+ *              tenant hosts authenticate with their own tenant session; HANDOFF_BREAK passed through
  */
 const http = require('http');
 const { Pool } = require('pg');
 const env = require('./lib/env');
 const nsjwt = require('./lib/nsjwt');
+const edgeLib = require('./lib/edge');
+const handoffLib = require('./lib/handoff');
+const MODE = process.env.LAB_MODE || '';
 
 const AUTH = env.ORIGIN(env.AUTH_HOST);
 const events = [];
@@ -111,22 +121,43 @@ async function ui (req, res) {
 
 async function main () {
   const pool = new Pool({ connectionString: env.pgUrl('nsjwt'), max: 4 });
-  const ns = nsjwt.create({ pool, env, breaks: process.env.NSJWT_BREAK });
+  const nsOpts = { pool, env, breaks: process.env.NSJWT_BREAK };
+  let edge = null; let handoff = null;
+  const backendPort = parseInt(process.env.EDGE_BACKEND_PORT || '44481', 10);
+  const ns = nsjwt.create(nsOpts);
+  if (MODE === 'edge') {
+    edge = edgeLib.create({ env, resolveTenant: ns.resolveTenant, backendPort, breaks: process.env.EDGE_BREAK });
+    Object.assign(nsOpts, { cookiePath: false, authenticators: [edge.authenticator], echoExtra: edge.echoExtra, routes: edge.routes });
+  } else if (MODE === 'handoff') {
+    handoff = handoffLib.create({ env, ns, pool, breaks: process.env.HANDOFF_BREAK });
+    Object.assign(nsOpts, { cookiePath: false, authenticators: [handoff.authenticator], routes: handoff.routes });
+  } else if (MODE) throw new Error(`unknown LAB_MODE ${MODE}`);
   await ns.init();
   const rule = new RegExp(env.TENANT_HOST_RULE);
+  if (edge) {
+    // the tenant backend: reachable only on 127.0.0.1:backendPort, i.e. only through the edge
+    const backend = http.createServer((req, res) => ns.handle(req, res).catch((e) => { console.error(e); if (!res.headersSent) json(res, 500, { error: String(e) }); }));
+    await new Promise((resolve) => backend.listen(backendPort, '127.0.0.1', resolve));
+  }
+  const health = () => ({ ok: true, mode: MODE, breaks: ns.breaks, edgeBreaks: edge ? edge.breaks : [], handoffBreaks: handoff ? handoff.breaks : [], handoffTtlMs: handoff ? handoff.ttl : null, handoffSessionSameSite: handoff ? handoff.sameSite : null, backendPort: edge ? backendPort : null, pid: process.pid });
 
   const server = http.createServer((req, res) => {
     const host = String(req.headers.host || '').toLowerCase().replace(/:\d+$/, '');
     const go = async () => {
       if (host === env.CONTROL_HOST) {
-        if (req.url === '/health') return json(res, 200, { ok: true, breaks: ns.breaks, pid: process.pid });
-        if (req.url === '/events') return json(res, 200, { lab: events, nsjwt: ns.stats });
-        if (req.url === '/reset') { events.length = 0; ns.stats.events.length = 0; return json(res, 200, { ok: true }); }
+        if (req.url === '/health') return json(res, 200, health());
+        if (req.url === '/events') return json(res, 200, { lab: events, nsjwt: ns.stats, edge: edge ? edge.stats : null });
+        if (req.url === '/reset') { events.length = 0; ns.stats.events.length = 0; if (edge) edge.stats.events.length = 0; return json(res, 200, { ok: true }); }
+        // lab only: lets a probe act as a tenant backend at the redeem endpoint
+        const m = /^\/handoff\/redeem-secret\?tenant=([a-z0-9-]+)$/.exec(req.url);
+        if (m && handoff) return json(res, 200, { secret: handoff.secretFor(m[1]) });
         return json(res, 404, {});
       }
+      if (host === env.AUTH_HOST && handoff && /^\/exchange(\/redeem)?(\?|$)/.test(req.url)) return handoff.authHandle(req, res);
       if (host === env.AUTH_HOST) return req.url.startsWith('/ui/') ? ui(req, res) : proxy(req, res, env.KRATOS_PUBLIC);
       if (host === env.HYDRA_HOST) return proxy(req, res, env.HYDRA_PUBLIC);
       if (rule.test(host) && req.url.startsWith('/.ory/')) return proxy(req, res, env.KRATOS_PUBLIC, '/.ory');
+      if (edge) return edge.handle(req, res);
       return ns.handle(req, res);
     };
     go().catch((e) => { console.error(e); if (!res.headersSent) json(res, 500, { error: String(e) }); });

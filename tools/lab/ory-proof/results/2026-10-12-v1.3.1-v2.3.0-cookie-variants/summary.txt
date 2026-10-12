@@ -1,0 +1,12 @@
+run 2026-10-12-v1.3.1-v2.3.0-cookie-variants (renamed after the run: KRATOS_IMAGE/HYDRA_IMAGE were unset, so compose defaults ran)  2026-10-12T22:49:26Z
+image /ory-proof-kratos-1 oryd/kratos:v1.3.1@sha256:fe2428f103a6240c064b6ea77d3088610865c55fcebccb30355857eccdc25b4b
+image /ory-proof-hydra-1 oryd/hydra:v2.3.0@sha256:b94007e19a1f7f78157e7f4ea340da8a55b5f104a0f1198755c256f38ef32b4b
+chrome Google Chrome 154.0.8037.57   node v24.15.0
+ok       cookie-edge                 21/21
+MISMATCH cookie-handoff              24/26
+         not as predicted: intact.cross-origin.with-a-session
+         not as predicted: intact.cross-origin.form-with-a-session
+ok       cookies-apex                8/8
+ok       cookies-host-only           5/5
+ok       cookies-user-content        3/3
+ok       proof                       23/23
