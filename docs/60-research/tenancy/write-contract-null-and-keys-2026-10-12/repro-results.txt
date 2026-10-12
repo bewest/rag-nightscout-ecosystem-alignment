@@ -1,0 +1,32 @@
+# dev-fade2299 mongo 7.0.43
+v1 POST treatments 200
+  v1 treatment: stored nulls=['labNested.a', 'labNull', 'reason'] stored keys=['absolute', 'created_at', 'duration', 'enteredBy', 'eventType', 'labNested', 'labNull', 'notes', 'reason', 'srvCreated', 'srvModified', 'utcOffset']
+v1 POST treatments (control, no nulls) 200
+  v1 treatment control: stored nulls=[] stored keys=['created_at', 'enteredBy', 'eventType', 'notes', 'srvCreated', 'srvModified', 'utcOffset']
+  v1 GET of control: status 200 True value None insulin None
+v1 POST entries 200
+  v1 entry: stored nulls=['direction', 'labNested.a', 'noise'] stored keys=['date', 'dateString', 'device', 'direction', 'labNested', 'noise', 'sgv', 'srvCreated', 'srvModified', 'sysTime', 'type', 'utcOffset']
+v1 POST devicestatus 200
+  v1 devicestatus: stored nulls=['labNull', 'pump.battery', 'uploader.battery'] stored keys=['created_at', 'device', 'labNull', 'pump', 'srvCreated', 'srvModified', 'uploader', 'utcOffset']
+v1 POST profile 200
+  v1 profile: stored nulls=['labNull', 'mills'] stored keys=['created_at', 'defaultProfile', 'enteredBy', 'labNull', 'mills', 'srvCreated', 'srvModified', 'startDate', 'store']
+v3 POST treatments 401 {"status":401,"message":"Missing or bad access token or JWT"}
+  v3 treatment: NOT STORED
+  re-send step 1 (reason set): stored nulls=[] stored keys=['created_at', 'duration', 'enteredBy', 'eventType', 'reason', 'srvCreated', 'srvModified', 'syncIdentifier', 'targetBottom', 'targetTop', 'utcOffset']
+  re-send step 2 (reason null): stored nulls=['reason'] stored keys=['created_at', 'duration', 'enteredBy', 'eventType', 'reason', 'srvCreated', 'srvModified', 'syncIdentifier', 'targetBottom', 'targetTop', 'utcOffset']
+# v15.0.8-92d08342 mongo 7.0.43
+v1 POST treatments 200
+  v1 treatment: stored nulls=['labNested.a', 'labNull', 'reason'] stored keys=['absolute', 'created_at', 'duration', 'enteredBy', 'eventType', 'labNested', 'labNull', 'notes', 'reason', 'utcOffset']
+v1 POST treatments (control, no nulls) 200
+  v1 treatment control: stored nulls=[] stored keys=['created_at', 'enteredBy', 'eventType', 'notes', 'utcOffset']
+  v1 GET of control: status 200 True value None insulin None
+v1 POST entries 200
+  v1 entry: stored nulls=['direction', 'labNested.a', 'noise'] stored keys=['date', 'dateString', 'device', 'direction', 'labNested', 'noise', 'sgv', 'sysTime', 'type', 'utcOffset']
+v1 POST devicestatus 200
+  v1 devicestatus: stored nulls=['labNull', 'pump.battery', 'uploader.battery'] stored keys=['created_at', 'device', 'labNull', 'pump', 'uploader', 'utcOffset']
+v1 POST profile 200
+  v1 profile: stored nulls=['labNull', 'mills'] stored keys=['created_at', 'defaultProfile', 'enteredBy', 'labNull', 'mills', 'startDate', 'store']
+v3 POST treatments 401 {"status":401,"message":"Missing or bad access token or JWT"}
+  v3 treatment: NOT STORED
+  re-send step 1 (reason set): stored nulls=[] stored keys=['created_at', 'duration', 'enteredBy', 'eventType', 'reason', 'syncIdentifier', 'targetBottom', 'targetTop', 'utcOffset']
+  re-send step 2 (reason null): stored nulls=['reason'] stored keys=['created_at', 'duration', 'enteredBy', 'eventType', 'reason', 'syncIdentifier', 'targetBottom', 'targetTop', 'utcOffset']

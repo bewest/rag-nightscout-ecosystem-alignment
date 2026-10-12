@@ -1,0 +1,19 @@
+  t=copy.deepcopy(d[0]); t['_id']='e1'; t['sysTime']=datetime.utcfromtimestamp((t['date']+300000)/1000).isoformat()+'Z'; d.append(t)
+CONTROL DELTA nulls ('devicestatus', 'Loop', 'pump.plantedNested') 0 -> 1
+CONTROL DELTA nulls ('treatments', 'Loop', 'carbs') 252545 -> 252546
+CONTROL DELTA nulls ('treatments', 'Loop', 'insulin') 162054 -> 162055
+CONTROL DELTA nulls ('treatments', 'Loop', 'plantedNull') 0 -> 1
+CONTROL DELTA nulldocs ('devicestatus', 'Loop') 0 -> 1
+CONTROL DELTA nulldocs ('treatments', 'Loop') 257326 -> 257327
+CONTROL DELTA docs ('devicestatus', 'Loop') 485141 -> 485144
+CONTROL DELTA docs ('entries', 'CGM manager (Dexcom <model> <tx>)') 220675 -> 220676
+CONTROL DELTA docs ('treatments', 'Loop') 257326 -> 257327
+CONTROL DELTA dsgroups ('instant', 'Loop', 'distinct bodies', 'docs') 14757 -> 14761
+CONTROL DELTA dsgroups ('instant', 'Loop', 'identical bodies (retry duplicate)', 'groups') 4001 -> 4002
+CONTROL DELTA dsgroups ('string', 'Loop', 'identical bodies (retry duplicate)', 'docs') 22635 -> 22637
+CONTROL DELTA dsgroups ('string', 'Loop', 'distinct bodies', 'groups') 3078 -> 3080
+CONTROL DELTA dsgroups ('instant', 'Loop', 'identical bodies (retry duplicate)', 'docs') 22635 -> 22637
+CONTROL DELTA dsgroups ('string', 'Loop', 'distinct bodies', 'docs') 14757 -> 14761
+CONTROL DELTA dsgroups ('instant', 'Loop', 'distinct bodies', 'groups') 3078 -> 3080
+CONTROL DELTA dsgroups ('string', 'Loop', 'identical bodies (retry duplicate)', 'groups') 4001 -> 4002
+CONTROL DELTA entdiff ('CGM manager (Dexcom <model> <tx>)', 'differ >=60 s') 0 -> 1

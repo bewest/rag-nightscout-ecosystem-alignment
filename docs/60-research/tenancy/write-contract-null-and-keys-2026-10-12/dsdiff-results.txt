@@ -1,0 +1,4 @@
+sites with distinct-body groups: 11 of 12
+(group size, distinct bodies) top: [((2, 2), 2509), ((10, 2), 178), ((4, 2), 91), ((10, 3), 56), ((3, 2), 55), ((6, 2), 36), ((10, 6), 26), ((5, 2), 25), ((8, 2), 24), ((7, 2), 22), ((10, 4), 16), ((4, 3), 10)]
+identical-only group sizes: [(2, 1670), (3, 522), (4, 286), (5, 279), (6, 248), (7, 177), (8, 146), (9, 107), (10, 566)]
+differing paths (groups): [('loop.enacted', 1913), ('loop.predicted', 832), ('loop.automaticDoseRecommendation', 661), ('uploader.battery', 409), ('loop.cob', 387), ('loop.recommendedBolus', 271), ('loop.failureReason', 122), ('override.duration', 34), ('override.multiplier', 31), ('override.active', 31), ('override.currentCorrectionRange', 31), ('override.name', 31), ('pump.reservoir', 19), ('loop.iob', 13), ('loop.name', 1), ('pump.reservoir_display_override', 1), ('loop.version', 1), ('pump.pumpID', 1), ('pump.reservoir_level_override', 1)]

@@ -1,0 +1,13 @@
+1457 ['loop.enacted.bolusVolume', 'loop.enacted.duration', 'loop.enacted.rate', 'loop.enacted.received', 'loop.enacted.timestamp']
+329 ['uploader.battery']
+148 ['loop.cob.cob', 'loop.predicted.values']
+83 ['loop.automaticDoseRecommendation.bolusVolume', 'loop.automaticDoseRecommendation.tempBasalAdjustment.duration', 'loop.automaticDoseRecommendation.tempBasalAdjustment.rate', 'loop.automaticDoseRecommendation.timestamp', 'loop.predicted.values']
+72 ['loop.automaticDoseRecommendation.bolusVolume', 'loop.automaticDoseRecommendation.timestamp', 'loop.predicted.values', 'loop.recommendedBolus']
+70 ['loop.enacted.timestamp']
+69 ['loop.failureReason']
+61 ['loop.automaticDoseRecommendation.bolusVolume', 'loop.automaticDoseRecommendation.timestamp', 'loop.predicted.values']
+61 ['loop.automaticDoseRecommendation.bolusVolume', 'loop.automaticDoseRecommendation.tempBasalAdjustment.duration', 'loop.automaticDoseRecommendation.tempBasalAdjustment.rate', 'loop.automaticDoseRecommendation.timestamp', 'loop.predicted.values', 'loop.recommendedBolus']
+49 ['loop.automaticDoseRecommendation.bolusVolume', 'loop.automaticDoseRecommendation.timestamp', 'loop.enacted.bolusVolume', 'loop.enacted.duration', 'loop.enacted.rate', 'loop.enacted.received', 'loop.enacted.timestamp', 'loop.predicted.values']
+47 ['loop.automaticDoseRecommendation.bolusVolume', 'loop.automaticDoseRecommendation.timestamp', 'loop.enacted.bolusVolume', 'loop.enacted.duration', 'loop.enacted.rate', 'loop.enacted.received', 'loop.enacted.timestamp']
+44 ['loop.enacted.bolusVolume', 'loop.enacted.duration', 'loop.enacted.rate', 'loop.enacted.received', 'loop.enacted.timestamp', 'loop.predicted.values']
+Counter({'same loop.timestamp': 3078})

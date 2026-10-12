@@ -1,0 +1,67 @@
+## docs
+485141	devicestatus	Loop
+61368	devicestatus	Trio
+15181	devicestatus	uploader-only (phone-model device)
+220675	entries	CGM manager (Dexcom <model> <tx>)
+128294	entries	Dexcom app bundle id
+13096	entries	LibreLinkUp
+75	entries	Loop
+18856	entries	Trio bundle id
+48864	entries	no-device
+320	entries	other
+244429	entries	redacted device
+28773	entries	share2
+16177	entries	xDrip+ (WebFollower)
+110	profile	enteredBy:Loop (enteredBy=Loop)
+1	profile	no-enteredBy
+257326	treatments	Loop
+2052	treatments	Loop (enteredBy=Loop)
+50	treatments	Loop (remote command)
+48130	treatments	Trio
+2	treatments	other free-text
+436	treatments	xDrip4iOS
+## nulldocs
+257326	treatments	Loop
+2052	treatments	Loop (enteredBy=Loop)
+50	treatments	Loop (remote command)
+48130	treatments	Trio
+2	treatments	other free-text
+436	treatments	xDrip4iOS
+## deepdocs
+## nulls (collection, client, field path)
+252545	treatments	Loop	carbs
+162054	treatments	Loop	insulin
+2052	treatments	Loop (enteredBy=Loop)	carbs
+2052	treatments	Loop (enteredBy=Loop)	insulin
+50	treatments	Loop (remote command)	carbs
+50	treatments	Loop (remote command)	insulin
+40707	treatments	Trio	carbs
+35794	treatments	Trio	insulin
+2	treatments	other free-text	carbs
+2	treatments	other free-text	insulin
+221	treatments	xDrip4iOS	carbs
+264	treatments	xDrip4iOS	insulin
+## devicestatus (created_at,device) groups with >1 doc
+14757	instant	Loop	distinct bodies	docs
+3078	instant	Loop	distinct bodies	groups
+22635	instant	Loop	identical bodies (retry duplicate)	docs
+4001	instant	Loop	identical bodies (retry duplicate)	groups
+14757	string	Loop	distinct bodies	docs
+3078	string	Loop	distinct bodies	groups
+22635	string	Loop	identical bodies (retry duplicate)	docs
+4001	string	Loop	identical bodies (retry duplicate)	groups
+## entries date vs sysTime
+220675	CGM manager (Dexcom <model> <tx>)	differ <1 s
+41403	Dexcom app bundle id	differ <1 s
+86891	Dexcom app bundle id	same instant (exact ms)
+13096	LibreLinkUp	same instant (exact ms)
+75	Loop	differ <1 s
+18856	Trio bundle id	differ <1 s
+48841	no-device	differ <1 s
+23	no-device	same instant (exact ms)
+95	other	differ <1 s
+225	other	same instant (exact ms)
+97058	redacted device	differ <1 s
+147371	redacted device	same instant (exact ms)
+28773	share2	same instant (exact ms)
+16177	xDrip+ (WebFollower)	same instant (exact ms)

@@ -1,0 +1,12 @@
+# 1337 wc_dev
+subject create 200
+v3 POST treatments 201: stored nulls=['carbs', 'insulin', 'labNested.a', 'labNull']
+v3 POST entries 201: stored nulls=['direction', 'labNested.a']
+v3 POST devicestatus 201: stored nulls=['labNull', 'pump.battery']
+v1 duration/absolute stored as 0 0
+# 1338 wc_1508
+subject create 200
+v3 POST treatments 201: stored nulls=['carbs', 'insulin', 'labNested.a', 'labNull']
+v3 POST entries 201: stored nulls=['direction', 'labNested.a']
+v3 POST devicestatus 201: stored nulls=['labNull', 'pump.battery']
+v1 duration/absolute stored as 0 0
