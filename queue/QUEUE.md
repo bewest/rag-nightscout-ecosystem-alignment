@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 199 |
-| runnable gates | 257 |
+| items | 200 |
+| runnable gates | 259 |
 | explicit `no-gate:` markers | 253 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 253 of the 510 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 253 of the 512 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 57 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-164, BFQ-165, BFQ-166, BFQ-167, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-TRIO-INTENT |
+| `not-started` | 58 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-164, BFQ-165, BFQ-166, BFQ-167, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-TRIO-INTENT, SCHEMA-REG-EXT |
 | `in-progress` | 3 | BFQ-46, BFQ-ENV, OID-LAB |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
@@ -6946,7 +6946,7 @@ flag rule: versioning policy section 5.7.
 
 ## Controller registration and intent observability
 
-`parcel: platform` &mdash; 2 items
+`parcel: platform` &mdash; 3 items
 
 D18 (maintainer, 2026-10-09): two-tier controller registration - well-known
 declarations for backwards compatibility, controller-owned typed registrations
@@ -6958,6 +6958,7 @@ reproduced ones.
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
 | `LAB-TRIO-INTENT` | Simulator lab: Trio override expiry, temp-target upload repeats, downloaded temp-target echo | `not-started` | `main` | n/a | 1 run + 1 no-gate |
+| `SCHEMA-REG-EXT` | Registration grammar: must-ignore, typed extensions, open vocabularies, per-kind versions, horizons (D18 addendum rules 1-5) | `not-started` | `main` | n/a | 2 run |
 | `LAB-HUB-ACTIVE-STATE` | Lab: cgm-remote-monitor and Nocturne answer 'what is active at t' for the same intent records | `done` | `main` | n/a | 1 run |
 
 ### `LAB-TRIO-INTENT` &mdash; Simulator lab: Trio override expiry, temp-target upload repeats, downloaded temp-target echo
@@ -6989,6 +6990,38 @@ reproduced ones.
 - `docs/30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md`
 
 **Notes.** Three read-derived hypotheses from Trio e41c9db37, each to be reproduced or refuted, with a control. (1) Timed override expiry: the algorithm's override query (NSPredicate.lastActiveOverride in OverrideStored+helper.swift, used by OpenAPS.swift) selects on `enabled` and a 24 h start window, not on duration; the only expiry path found is the Home view countdown (HomeRootView+BottomControls.swift). Start a timed override, move the app to the background past its end, and record whether the next determinations still apply the override's percentage, target and SMB settings, and when the override record is closed. Control: the same override with the app in the foreground. A timer elsewhere that the read missed would refute it; report either way, and report a reproduction to Trio maintainers before any public statement. (2) Temp-target upload repeats: the temp-target upload mappers pass no `id`, while updateTempTargetsAsUploaded matches `id IN ids` (NightscoutManager.swift); count POSTs of one temp target to a fixture Nightscout over an hour. (3) Downloaded temp-target echo: FetchTreatmentsManager enables a temp target entered in Nightscout by another client and leaves isUploadedToNS false; record whether Trio re-uploads it and with which enteredBy. Use a local Nightscout fixture with synthetic data only.
+
+### `SCHEMA-REG-EXT` &mdash; Registration grammar: must-ignore, typed extensions, open vocabularies, per-kind versions, horizons (D18 addendum rules 1-5)
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `main` |
+| base | `main@e3962cf6` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** specs/sync/controller-state-model.schema.json (grammar), the generator tools/nsschema/sync_model.py and its regenerated specs/sync/registrations/{loop,trio,androidaps}.yaml, a new test registration under specs/sync/registrations/fixtures/, and tools/nsschema tests. Ships nothing; no hub code changes.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** specification and tooling in this repository; ships nothing
+
+**Gates.**
+
+- `[unit]` `python -m pytest -q tools/nsschema/test_registration_grammar.py`
+  - FAILS until the grammar implements rules 1-5. RED on 2026-10-12 (the test file does not exist). The tests must show: the three generated registrations validate unchanged in meaning; an unfamiliar test registration exercising every rule validates; an unknown grammar field is ignored, not rejected; an extension without a type declaration is rejected; a field without a sensitivity label resolves to withhold; an unknown vocabulary term validates as other plus controllerTerm; two served versions of one kind with no mapping validate and are not converted. Each rejection test is paired with a control that passes.
+- `[unit]` _(cwd: `tools`)_ `python -m nsschema.sync_model --check`
+  - The committed registrations match the generator. GREEN on 2026-10-12; must stay green after the grammar change.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md`
+
+**Notes.** Implements the D18 addendum (execution plan §2.6.1, maintainer 2026-10-12), rules 1-5. Every extensible field is typed: controller data is accepted only with a type declaration. (1) must-ignore for unknown grammar fields within v1, plus `extensions` keyed by a reverse-DNS namespace, each with a type declaration. (2) settings.fields[], replayInputs[] and extension fields become objects: a restricted JSON Schema fragment for the type (fix the subset and say why), unit, range, horizon, sensitivity label, evidence; reuse the typed field descriptions already in controller-settings.schema.json rather than restating them. (3) endedEncoding, command transport, replayInputs[].status and the discriminator test take a shared value or other + controllerTerm. (4) per-kind version, served versions, one stored version, optional lossless mapping; no conversion without one. (5) horizon per document, kind and field (cycle, span, effective-dated, definition, aggregate) with cadence and retention; availability gains experimental. Keep every change additive to v1 unless a rule cannot be, and if so stop and report. The generated registrations should gain types only where the evidence gives them; omit rather than guess. Update the hub-sync architecture doc's schema field list and the landscape §10 row. Rule 6 (negotiation) and the hub-derived API are hub implementation and are out of scope here.
 
 ### `LAB-HUB-ACTIVE-STATE` &mdash; Lab: cgm-remote-monitor and Nocturne answer 'what is active at t' for the same intent records
 

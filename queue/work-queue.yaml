@@ -13502,6 +13502,73 @@ items:
       re-uploads it and with which enteredBy. Use a local Nightscout
       fixture with synthetic data only.
 
+  - id: SCHEMA-REG-EXT
+    title: "Registration grammar: must-ignore, typed extensions, open vocabularies, per-kind versions, horizons (D18 addendum rules 1-5)"
+    parcel: platform
+    repo: rag-nightscout-ecosystem-alignment
+    branch: main
+    base: main@e3962cf6
+    state: not-started
+    pr: []
+    blast_radius: >
+      specs/sync/controller-state-model.schema.json (grammar), the
+      generator tools/nsschema/sync_model.py and its regenerated
+      specs/sync/registrations/{loop,trio,androidaps}.yaml, a new test
+      registration under specs/sync/registrations/fixtures/, and
+      tools/nsschema tests. Ships nothing; no hub code changes.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: specification and tooling in this repository; ships nothing
+    register: []
+    gates:
+      - run: python -m pytest -q tools/nsschema/test_registration_grammar.py
+        kind: unit
+        describe: >
+          FAILS until the grammar implements rules 1-5. RED on 2026-10-12
+          (the test file does not exist). The tests must show: the three
+          generated registrations validate unchanged in meaning; an
+          unfamiliar test registration exercising every rule validates; an
+          unknown grammar field is ignored, not rejected; an extension
+          without a type declaration is rejected; a field without a
+          sensitivity label resolves to withhold; an unknown vocabulary
+          term validates as other plus controllerTerm; two served versions
+          of one kind with no mapping validate and are not converted.
+          Each rejection test is paired with a control that passes.
+      - run: python -m nsschema.sync_model --check
+        cwd: tools
+        kind: unit
+        describe: >
+          The committed registrations match the generator. GREEN on
+          2026-10-12; must stay green after the grammar change.
+    blocks_on: []
+    evidence:
+      - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
+      - docs/30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md
+    notes: >
+      Implements the D18 addendum (execution plan §2.6.1, maintainer
+      2026-10-12), rules 1-5. Every extensible field is typed: controller
+      data is accepted only with a type declaration. (1) must-ignore for
+      unknown grammar fields within v1, plus `extensions` keyed by a
+      reverse-DNS namespace, each with a type declaration. (2)
+      settings.fields[], replayInputs[] and extension fields become
+      objects: a restricted JSON Schema fragment for the type (fix the
+      subset and say why), unit, range, horizon, sensitivity label,
+      evidence; reuse the typed field descriptions already in
+      controller-settings.schema.json rather than restating them. (3)
+      endedEncoding, command transport, replayInputs[].status and the
+      discriminator test take a shared value or other + controllerTerm.
+      (4) per-kind version, served versions, one stored version, optional
+      lossless mapping; no conversion without one. (5) horizon per
+      document, kind and field (cycle, span, effective-dated, definition,
+      aggregate) with cadence and retention; availability gains
+      experimental. Keep every change additive to v1 unless a rule cannot
+      be, and if so stop and report. The generated registrations should
+      gain types only where the evidence gives them; omit rather than
+      guess. Update the hub-sync architecture doc's schema field list and
+      the landscape §10 row. Rule 6 (negotiation) and the hub-derived API
+      are hub implementation and are out of scope here.
+
   - id: LAB-HUB-ACTIVE-STATE
     title: "Lab: cgm-remote-monitor and Nocturne answer 'what is active at t' for the same intent records"
     parcel: platform

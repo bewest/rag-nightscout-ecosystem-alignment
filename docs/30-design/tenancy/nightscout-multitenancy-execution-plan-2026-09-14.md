@@ -3,7 +3,7 @@
 *Contributor- and maintainer-facing.*
 
 **Status: living document — the decision record.** Decisions D1–D18 are the maintainer's
-(2026-09-14 to 2026-09-16, and D18 on 2026-10-09) and are all **adopted**, except **D17 row 2**
+(2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12) and are all **adopted**, except **D17 row 2**
 (Ory Kratos as one cohort-wide human-identity pool), which is **held** pending queue item
 `T30-ORY-PROOF`. Each
 decision carries the evidence that settled it. Task definitions follow in §6. **Item state lives
@@ -142,7 +142,7 @@ preference.
 | **D15** | **Configuration source diverges by entrypoint.** `single` reads the process environment; hosted entrypoints read per-tenant configuration from the database, administered by the tenant owner. Env-sourced configuration must not reach the multi path | maintainer, 2026-09-15 — §2.8 |
 | **D16** | **Three listeners, three audiences** — consumer/data (`ns-api`, plus `single`), tenant-owner configuration (`ns-tenant-admin`), platform operator (`ns-admin`). **Prerequisite: tenant resolution and credential verification extract into one module before the third listener exists** | maintainer, 2026-09-16 — §2.9 |
 | **D17** | **The auth plane splits by audience, not by build-versus-buy.** Adopted: devices and the data path keep a **native per-tenant credential permanently**; Hydra is **deferred**; D7 is **unchanged**. **Held, not adopted:** human identity via one cohort-wide Ory Kratos pool, hosted-only — conditional on `T30-ORY-PROOF`. D14 holds either way: Nightscout mints its own per-tenant token after authentication | maintainer, 2026-09-16 — §2.9 |
-| **D18** | **Controller registration has two tiers.** *Well-known* declarations ship with the hub, so legacy writers are described with no controller change (backwards compatibility). *Controller-owned* registrations are dynamic and typed: a controller declares its own definitions — intent kinds, states, transitions, initiators, effect fields, command contract — and the hub offers typed API for them, so controller-unique features have a home other than untyped `devicestatus`. Adoption follows the WHATWG pattern: specify what happens now, leave room to extend; the controller owns its registration's lifecycle. **Roles:** the hub (Nightscout, Nocturne) is responsible for observability; the controller is responsible for sending data accurately and for syncing and reconciling. The hub records a controller's composition and reconciliation results; it does not compute dosing state | maintainer, 2026-10-09 — §2.6.1 |
+| **D18** | **Controller registration has two tiers.** *Well-known* declarations ship with the hub, so legacy writers are described with no controller change (backwards compatibility). *Controller-owned* registrations are dynamic and typed: a controller declares its own definitions — intent kinds, states, transitions, initiators, effect fields, command contract — and the hub offers typed API for them, so controller-unique features have a home other than untyped `devicestatus`. Adoption follows the WHATWG pattern: specify what happens now, leave room to extend; the controller owns its registration's lifecycle. **Roles:** the hub (Nightscout, Nocturne) is responsible for observability; the controller is responsible for sending data accurately and for syncing and reconciling. The hub records a controller's composition and reconciliation results; it does not compute dosing state. **Addendum (2026-10-12):** every extensible field is typed; the grammar is must-ignore with typed, namespaced extensions, open vocabularies, per-kind versions, declared horizons and hub/controller negotiation, so neither side releases in lockstep | maintainer, 2026-10-09 and 2026-10-12 — §2.6.1 |
 
 **Amendment carried with D13, true however D17 row 2 lands:** *credentials are per-tenant,
 identity is per-cohort, authorization is per-tenant.* Isolation rests on the authorization layer
@@ -319,6 +319,49 @@ outside the hub's role.
 **What D18 supersedes:** [controller descriptions](../platform/PROPOSAL-controller-descriptions-2026-09-11.md)
 §4 ("static descriptions, not CRD-style, no new endpoints"). The well-known tier keeps every
 property §4 lists; the controller-owned tier is the addition.
+
+#### D18 addendum — an extensible grammar (maintainer, 2026-10-12)
+
+**Goal.** A controller adds a setting, an algorithm input, an intent kind or a new version of a
+data model without the hub shipping a release first, and an older or newer hub and controller
+still interoperate. **Every extensible field is typed:** the hub accepts controller-specific data
+only together with a declaration of its type, never as an untyped bag.
+
+**Where the grammar stands** (`specs/sync/controller-state-model.schema.json`, `e9634479`). A new
+intent kind needs no hub change: `stateSpans[].category` is open and `endReasons` maps a
+controller's own term onto a shared value. Everything else is closed: every object sets
+`additionalProperties: false`, `apiVersion` is the constant `nightscout.dev/sync/v1`, `x-` fields
+are stripped before validation, `settings.fields` and `replayInputs` name a field without typing
+it, `endedEncoding`, command `transport` and `replayInputs[].status` are fixed lists, versioning is
+per registration (`metadata.versionRange`), and `cadence` is one value per controller. The settings
+document (`controller-settings.schema.json`) is already open and partly typed (`x-source`,
+`x-algorithm`, `x-status-today`); the registration does not reference it.
+
+**Rules.**
+
+| # | rule | what it removes |
+|---|---|---|
+| 1 | **Must-ignore, plus typed extensions.** Within a major grammar version a hub ignores grammar fields it does not know (kept, not interpreted, not served as data). Controller-specific data goes under `extensions`, keyed by a reverse-DNS namespace the controller owns; each extension carries a type declaration (rule 2) and is stored, validated and served as declared. An extension without a type declaration is rejected. | lockstep on new declarations |
+| 2 | **Typed field declarations.** `settings.fields[]`, `replayInputs[]` and extension fields are objects: a type as a restricted JSON Schema fragment, unit, range, horizon (rule 5), sensitivity label and evidence. The hub derives validation, indexing and query from the declaration. A field with no sensitivity label falls under the existing `unlabelledPolicy: withhold`. | untyped settings and inputs |
+| 3 | **Open vocabularies.** Every closed list a controller may need to extend takes a shared value, or `other` with the controller's own term, as `endReasons` does now. A hub renders an unknown term as "other: *term*" instead of rejecting the registration. | lockstep on new encodings |
+| 4 | **Per-kind versions.** Each intent kind and each extension has its own version. A registration may declare several served versions and one stored version, and optionally a lossless mapping between two versions. Without a declared mapping the hub serves each version as written and never converts. | lockstep on model changes; side-by-side migration |
+| 5 | **Horizons.** Each document, kind and field declares its horizon — `cycle`, `span`, `effective-dated`, `definition` or `aggregate` — with its own cadence and retention. `availability` gains `experimental`: the hub stores it as declared, gives it no well-known mapping and makes no long-term promise. | one cadence per controller; no place for derived or trial models |
+| 6 | **Negotiation.** The hub publishes the grammar versions and capabilities it supports at a `.well-known` address; the controller submits its registration; anything the hub does not accept, the controller writes as its well-known carrier (`stateSpans[].wire`). | lockstep in both directions |
+
+**The roles do not change.** Typing tells the hub how to store, validate, index and render a value,
+not what it means for dosing. The hub still records what the controller reports (D18).
+
+**Compatibility.**
+
+| | older hub | newer hub |
+|---|---|---|
+| **older controller** | today's documents | the well-known tier describes them |
+| **newer controller** | falls back to its well-known carriers (rule 6) | typed registration, extensions and versions |
+
+**Status.** Rules 1–5 are schema and generator work in this repository, queued as `SCHEMA-REG-EXT`;
+its proof is the three generated registrations still validating plus an unfamiliar test
+registration that uses every rule. Rule 6 and the API a hub derives from a registration are hub
+implementation, not yet queued.
 
 ### 2.7 D12 — what each repository is for
 
