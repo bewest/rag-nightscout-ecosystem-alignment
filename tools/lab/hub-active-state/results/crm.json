@@ -1,0 +1,1265 @@
+{
+  "hub": "cgm-remote-monitor",
+  "tree": "crm-fade2299",
+  "version": "15.0.9",
+  "cases": [
+    {
+      "id": "c1-tt-cancel",
+      "role": "case",
+      "of": null,
+      "queries": [
+        {
+          "label": "T0+10",
+          "t": "2026-01-15T00:10:00.000Z",
+          "answers": {
+            "tt": {
+              "key": "c1-tt",
+              "detail": [
+                {
+                  "id": "c1-tt",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": 20,
+                  "targetTop": 140
+                }
+              ],
+              "processed": [
+                {
+                  "id": "c1-tt",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": 20
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "T0+30",
+          "t": "2026-01-15T00:30:00.000Z",
+          "answers": {
+            "tt": {
+              "key": "none",
+              "detail": [],
+              "processed": [
+                {
+                  "id": "c1-tt",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": 20
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "T0+70",
+          "t": "2026-01-15T01:10:00.000Z",
+          "answers": {
+            "tt": {
+              "key": "none",
+              "detail": [],
+              "processed": [
+                {
+                  "id": "c1-tt",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": 20
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c1-ctl",
+      "role": "control",
+      "of": "c1-tt-cancel",
+      "queries": [
+        {
+          "label": "T0+10",
+          "t": "2026-01-15T00:10:00.000Z",
+          "answers": {
+            "tt": {
+              "key": "c1-tt",
+              "detail": [
+                {
+                  "id": "c1-tt",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": 60,
+                  "targetTop": 140
+                }
+              ],
+              "processed": [
+                {
+                  "id": "c1-tt",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": 60
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "T0+30",
+          "t": "2026-01-15T00:30:00.000Z",
+          "answers": {
+            "tt": {
+              "key": "c1-tt",
+              "detail": [
+                {
+                  "id": "c1-tt",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": 60,
+                  "targetTop": 140
+                }
+              ],
+              "processed": [
+                {
+                  "id": "c1-tt",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": 60
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "T0+70",
+          "t": "2026-01-15T01:10:00.000Z",
+          "answers": {
+            "tt": {
+              "key": "none",
+              "detail": [],
+              "processed": [
+                {
+                  "id": "c1-tt",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": 60
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c1-perturb",
+      "role": "perturbation",
+      "of": "c1-tt-cancel",
+      "queries": [
+        {
+          "label": "T0+10",
+          "t": "2026-01-15T00:10:00.000Z",
+          "answers": {
+            "tt": {
+              "key": "c1-tt",
+              "detail": [
+                {
+                  "id": "c1-tt",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": 40,
+                  "targetTop": 140
+                }
+              ],
+              "processed": [
+                {
+                  "id": "c1-tt",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": 40
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "T0+30",
+          "t": "2026-01-15T00:30:00.000Z",
+          "answers": {
+            "tt": {
+              "key": "c1-tt",
+              "detail": [
+                {
+                  "id": "c1-tt",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": 40,
+                  "targetTop": 140
+                }
+              ],
+              "processed": [
+                {
+                  "id": "c1-tt",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": 40
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "T0+70",
+          "t": "2026-01-15T01:10:00.000Z",
+          "answers": {
+            "tt": {
+              "key": "none",
+              "detail": [],
+              "processed": [
+                {
+                  "id": "c1-tt",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": 40
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c2-ov-cancel",
+      "role": "case",
+      "of": null,
+      "queries": [
+        {
+          "label": "T0+10",
+          "t": "2026-01-15T00:10:00.000Z",
+          "answers": {
+            "override_tx": {
+              "key": "c2-ov",
+              "detail": [
+                {
+                  "id": "c2-ov",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": 60
+                }
+              ],
+              "stored": [
+                "c2-ov:Temporary Override",
+                "c2-cancel:Temporary Override Cancel"
+              ]
+            }
+          }
+        },
+        {
+          "label": "T0+30",
+          "t": "2026-01-15T00:30:00.000Z",
+          "answers": {
+            "override_tx": {
+              "key": "c2-ov",
+              "detail": [
+                {
+                  "id": "c2-ov",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": 60
+                }
+              ],
+              "stored": [
+                "c2-ov:Temporary Override",
+                "c2-cancel:Temporary Override Cancel"
+              ]
+            }
+          }
+        },
+        {
+          "label": "T0+70",
+          "t": "2026-01-15T01:10:00.000Z",
+          "answers": {
+            "override_tx": {
+              "key": "none",
+              "detail": [],
+              "stored": [
+                "c2-ov:Temporary Override",
+                "c2-cancel:Temporary Override Cancel"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c2-ctl",
+      "role": "control",
+      "of": "c2-ov-cancel",
+      "queries": [
+        {
+          "label": "T0+10",
+          "t": "2026-01-15T00:10:00.000Z",
+          "answers": {
+            "override_tx": {
+              "key": "c2-ov",
+              "detail": [
+                {
+                  "id": "c2-ov",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": 20
+                }
+              ],
+              "stored": [
+                "c2-ov:Temporary Override"
+              ]
+            }
+          }
+        },
+        {
+          "label": "T0+30",
+          "t": "2026-01-15T00:30:00.000Z",
+          "answers": {
+            "override_tx": {
+              "key": "none",
+              "detail": [],
+              "stored": [
+                "c2-ov:Temporary Override"
+              ]
+            }
+          }
+        },
+        {
+          "label": "T0+70",
+          "t": "2026-01-15T01:10:00.000Z",
+          "answers": {
+            "override_tx": {
+              "key": "none",
+              "detail": [],
+              "stored": [
+                "c2-ov:Temporary Override"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c2-perturb",
+      "role": "perturbation",
+      "of": "c2-ov-cancel",
+      "queries": [
+        {
+          "label": "T0+10",
+          "t": "2026-01-15T00:10:00.000Z",
+          "answers": {
+            "override_tx": {
+              "key": "c2-ov",
+              "detail": [
+                {
+                  "id": "c2-ov",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": 25
+                }
+              ],
+              "stored": [
+                "c2-ov:Temporary Override",
+                "c2-cancel:Temporary Override Cancel"
+              ]
+            }
+          }
+        },
+        {
+          "label": "T0+30",
+          "t": "2026-01-15T00:30:00.000Z",
+          "answers": {
+            "override_tx": {
+              "key": "none",
+              "detail": [],
+              "stored": [
+                "c2-ov:Temporary Override",
+                "c2-cancel:Temporary Override Cancel"
+              ]
+            }
+          }
+        },
+        {
+          "label": "T0+70",
+          "t": "2026-01-15T01:10:00.000Z",
+          "answers": {
+            "override_tx": {
+              "key": "none",
+              "detail": [],
+              "stored": [
+                "c2-ov:Temporary Override",
+                "c2-cancel:Temporary Override Cancel"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c3-loop-ds-override",
+      "role": "case",
+      "of": null,
+      "queries": [
+        {
+          "label": "T0+12",
+          "t": "2026-01-15T00:12:00.000Z",
+          "answers": {
+            "override_ds": {
+              "key": "active",
+              "detail": {
+                "fromDevicestatusAt": "2026-01-15T00:10:00.000Z",
+                "active": true,
+                "durationField": 1200,
+                "end": "2026-01-15T00:30:00.000Z"
+              }
+            }
+          }
+        },
+        {
+          "label": "T0+40",
+          "t": "2026-01-15T00:40:00.000Z",
+          "answers": {
+            "override_ds": {
+              "key": "none",
+              "detail": {
+                "fromDevicestatusAt": "2026-01-15T00:35:00.000Z",
+                "active": false,
+                "end": null
+              }
+            }
+          }
+        },
+        {
+          "label": "T0+120",
+          "t": "2026-01-15T02:00:00.000Z",
+          "answers": {
+            "override_ds": {
+              "key": "none",
+              "detail": {
+                "fromDevicestatusAt": "2026-01-15T00:35:00.000Z",
+                "active": false,
+                "end": null
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c3-ctl",
+      "role": "control",
+      "of": "c3-loop-ds-override",
+      "queries": [
+        {
+          "label": "T0+12",
+          "t": "2026-01-15T00:12:00.000Z",
+          "answers": {
+            "override_ds": {
+              "key": "active",
+              "detail": {
+                "fromDevicestatusAt": "2026-01-15T00:10:00.000Z",
+                "active": true,
+                "end": null
+              }
+            }
+          }
+        },
+        {
+          "label": "T0+27",
+          "t": "2026-01-15T00:27:00.000Z",
+          "answers": {
+            "override_ds": {
+              "key": "active",
+              "detail": {
+                "fromDevicestatusAt": "2026-01-15T00:25:00.000Z",
+                "active": true,
+                "end": null
+              }
+            }
+          }
+        },
+        {
+          "label": "T0+120",
+          "t": "2026-01-15T02:00:00.000Z",
+          "answers": {
+            "override_ds": {
+              "key": "active",
+              "detail": {
+                "fromDevicestatusAt": "2026-01-15T00:25:00.000Z",
+                "active": true,
+                "end": null
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c3-perturb",
+      "role": "perturbation",
+      "of": "c3-loop-ds-override",
+      "queries": [
+        {
+          "label": "T0+12",
+          "t": "2026-01-15T00:12:00.000Z",
+          "answers": {
+            "override_ds": {
+              "key": "active",
+              "detail": {
+                "fromDevicestatusAt": "2026-01-15T00:10:00.000Z",
+                "active": true,
+                "durationField": 3000,
+                "end": "2026-01-15T01:00:00.000Z"
+              }
+            }
+          }
+        },
+        {
+          "label": "T0+40",
+          "t": "2026-01-15T00:40:00.000Z",
+          "answers": {
+            "override_ds": {
+              "key": "active",
+              "detail": {
+                "fromDevicestatusAt": "2026-01-15T00:25:00.000Z",
+                "active": true,
+                "durationField": 2100,
+                "end": "2026-01-15T01:00:00.000Z"
+              }
+            }
+          }
+        },
+        {
+          "label": "T0+120",
+          "t": "2026-01-15T02:00:00.000Z",
+          "answers": {
+            "override_ds": {
+              "key": "none",
+              "detail": {
+                "fromDevicestatusAt": "2026-01-15T00:25:00.000Z",
+                "active": true,
+                "durationField": 2100,
+                "end": "2026-01-15T01:00:00.000Z"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c3-perturb-short",
+      "role": "perturbation",
+      "of": "c3-loop-ds-override",
+      "queries": [
+        {
+          "label": "T0+12",
+          "t": "2026-01-15T00:12:00.000Z",
+          "answers": {
+            "override_ds": {
+              "key": "none",
+              "detail": {
+                "fromDevicestatusAt": "2026-01-15T00:00:00.000Z",
+                "active": true,
+                "durationField": 60,
+                "end": "2026-01-15T00:01:00.000Z"
+              }
+            }
+          }
+        },
+        {
+          "label": "T0+40",
+          "t": "2026-01-15T00:40:00.000Z",
+          "answers": {
+            "override_ds": {
+              "key": "none",
+              "detail": {
+                "fromDevicestatusAt": "2026-01-15T00:00:00.000Z",
+                "active": true,
+                "durationField": 60,
+                "end": "2026-01-15T00:01:00.000Z"
+              }
+            }
+          }
+        },
+        {
+          "label": "T0+120",
+          "t": "2026-01-15T02:00:00.000Z",
+          "answers": {
+            "override_ds": {
+              "key": "none",
+              "detail": {
+                "fromDevicestatusAt": "2026-01-15T00:00:00.000Z",
+                "active": true,
+                "durationField": 60,
+                "end": "2026-01-15T00:01:00.000Z"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c4-ps-timed-after-permanent",
+      "role": "case",
+      "of": null,
+      "queries": [
+        {
+          "label": "T0+30",
+          "t": "2026-01-15T00:30:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Weekend basal=0.800",
+              "detail": {
+                "name": "Weekend",
+                "switchId": "c4-ps-perm",
+                "basal": 0.8,
+                "aapsAdjustment": null
+              }
+            }
+          }
+        },
+        {
+          "label": "T0+90",
+          "t": "2026-01-15T01:30:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Exercise basal=0.500",
+              "detail": {
+                "name": "Exercise",
+                "switchId": "c4-ps-timed",
+                "basal": 0.5,
+                "aapsAdjustment": null
+              }
+            }
+          }
+        },
+        {
+          "label": "T0+150",
+          "t": "2026-01-15T02:30:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Weekend basal=0.800",
+              "detail": {
+                "name": "Weekend",
+                "switchId": "c4-ps-perm",
+                "basal": 0.8,
+                "aapsAdjustment": null
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c4-ctl",
+      "role": "control",
+      "of": "c4-ps-timed-after-permanent",
+      "queries": [
+        {
+          "label": "T0+30",
+          "t": "2026-01-15T00:30:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Weekend basal=0.800",
+              "detail": {
+                "name": "Weekend",
+                "switchId": "c4-ps-perm",
+                "basal": 0.8,
+                "aapsAdjustment": null
+              }
+            }
+          }
+        },
+        {
+          "label": "T0+90",
+          "t": "2026-01-15T01:30:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Weekend basal=0.800",
+              "detail": {
+                "name": "Weekend",
+                "switchId": "c4-ps-perm",
+                "basal": 0.8,
+                "aapsAdjustment": null
+              }
+            }
+          }
+        },
+        {
+          "label": "T0+150",
+          "t": "2026-01-15T02:30:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Weekend basal=0.800",
+              "detail": {
+                "name": "Weekend",
+                "switchId": "c4-ps-perm",
+                "basal": 0.8,
+                "aapsAdjustment": null
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c4-perturb",
+      "role": "perturbation",
+      "of": "c4-ps-timed-after-permanent",
+      "queries": [
+        {
+          "label": "T0+30",
+          "t": "2026-01-15T00:30:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Weekend basal=0.800",
+              "detail": {
+                "name": "Weekend",
+                "switchId": "c4-ps-perm",
+                "basal": 0.8,
+                "aapsAdjustment": null
+              }
+            }
+          }
+        },
+        {
+          "label": "T0+90",
+          "t": "2026-01-15T01:30:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Exercise basal=0.500",
+              "detail": {
+                "name": "Exercise",
+                "switchId": "c4-ps-timed",
+                "basal": 0.5,
+                "aapsAdjustment": null
+              }
+            }
+          }
+        },
+        {
+          "label": "T0+150",
+          "t": "2026-01-15T02:30:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Exercise basal=0.500",
+              "detail": {
+                "name": "Exercise",
+                "switchId": "c4-ps-timed",
+                "basal": 0.5,
+                "aapsAdjustment": null
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c5-aaps-timeshift-ms",
+      "role": "case",
+      "of": null,
+      "queries": [
+        {
+          "label": "T0+300",
+          "t": "2026-01-15T05:00:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Default basal=1.150",
+              "detail": {
+                "name": "Default",
+                "switchId": "c5-ps",
+                "basal": 1.15,
+                "aapsAdjustment": {
+                  "percentage": 100,
+                  "timeshiftHours": 2
+                }
+              }
+            }
+          }
+        },
+        {
+          "label": "T0+600",
+          "t": "2026-01-15T10:00:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Default basal=1.400",
+              "detail": {
+                "name": "Default",
+                "switchId": "c5-ps",
+                "basal": 1.4,
+                "aapsAdjustment": {
+                  "percentage": 100,
+                  "timeshiftHours": 2
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c5-ctl",
+      "role": "control",
+      "of": "c5-aaps-timeshift-ms",
+      "queries": [
+        {
+          "label": "T0+300",
+          "t": "2026-01-15T05:00:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Default basal=1.250",
+              "detail": {
+                "name": "Default",
+                "switchId": "c5-ps",
+                "basal": 1.25,
+                "aapsAdjustment": null
+              }
+            }
+          }
+        },
+        {
+          "label": "T0+600",
+          "t": "2026-01-15T10:00:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Default basal=1.500",
+              "detail": {
+                "name": "Default",
+                "switchId": "c5-ps",
+                "basal": 1.5,
+                "aapsAdjustment": null
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c5-perturb",
+      "role": "perturbation",
+      "of": "c5-ctl",
+      "queries": [
+        {
+          "label": "T0+300",
+          "t": "2026-01-15T05:00:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Default basal=2.500",
+              "detail": {
+                "name": "Default",
+                "switchId": "c5-ps",
+                "basal": 2.5,
+                "aapsAdjustment": {
+                  "percentage": 200,
+                  "timeshiftHours": 0
+                }
+              }
+            }
+          }
+        },
+        {
+          "label": "T0+600",
+          "t": "2026-01-15T10:00:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Default basal=3.000",
+              "detail": {
+                "name": "Default",
+                "switchId": "c5-ps",
+                "basal": 3,
+                "aapsAdjustment": {
+                  "percentage": 200,
+                  "timeshiftHours": 0
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c5-perturb-hours",
+      "role": "perturbation",
+      "of": "c5-aaps-timeshift-ms",
+      "queries": [
+        {
+          "label": "T0+300",
+          "t": "2026-01-15T05:00:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Default basal=1.250",
+              "detail": {
+                "name": "Default",
+                "switchId": "c5-ps",
+                "basal": 1.25,
+                "aapsAdjustment": null
+              }
+            }
+          }
+        },
+        {
+          "label": "T0+600",
+          "t": "2026-01-15T10:00:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Default basal=1.500",
+              "detail": {
+                "name": "Default",
+                "switchId": "c5-ps",
+                "basal": 1.5,
+                "aapsAdjustment": null
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c6-tt-same-ms",
+      "role": "case",
+      "of": null,
+      "queries": [
+        {
+          "label": "T0+10",
+          "t": "2026-01-15T00:10:00.000Z",
+          "answers": {
+            "tt": {
+              "key": "c6-tt-a",
+              "detail": [
+                {
+                  "id": "c6-tt-a",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": 60,
+                  "targetTop": 140
+                }
+              ],
+              "processed": [
+                {
+                  "id": "c6-tt-a",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": 60
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "T0+45",
+          "t": "2026-01-15T00:45:00.000Z",
+          "answers": {
+            "tt": {
+              "key": "c6-tt-a",
+              "detail": [
+                {
+                  "id": "c6-tt-a",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": 60,
+                  "targetTop": 140
+                }
+              ],
+              "processed": [
+                {
+                  "id": "c6-tt-a",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": 60
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c6-ctl",
+      "role": "control",
+      "of": "c6-tt-same-ms",
+      "queries": [
+        {
+          "label": "T0+10",
+          "t": "2026-01-15T00:10:00.000Z",
+          "answers": {
+            "tt": {
+              "key": "c6-tt-a",
+              "detail": [
+                {
+                  "id": "c6-tt-a",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": 60,
+                  "targetTop": 140
+                }
+              ],
+              "processed": [
+                {
+                  "id": "c6-tt-a",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": 60
+                },
+                {
+                  "id": "c6-tt-b",
+                  "start": "2026-01-15T01:30:00.000Z",
+                  "minutes": 30
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "T0+45",
+          "t": "2026-01-15T00:45:00.000Z",
+          "answers": {
+            "tt": {
+              "key": "c6-tt-a",
+              "detail": [
+                {
+                  "id": "c6-tt-a",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": 60,
+                  "targetTop": 140
+                }
+              ],
+              "processed": [
+                {
+                  "id": "c6-tt-a",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": 60
+                },
+                {
+                  "id": "c6-tt-b",
+                  "start": "2026-01-15T01:30:00.000Z",
+                  "minutes": 30
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "T0+100",
+          "t": "2026-01-15T01:40:00.000Z",
+          "answers": {
+            "tt": {
+              "key": "c6-tt-b",
+              "detail": [
+                {
+                  "id": "c6-tt-b",
+                  "start": "2026-01-15T01:30:00.000Z",
+                  "minutes": 30,
+                  "targetTop": 100
+                }
+              ],
+              "processed": [
+                {
+                  "id": "c6-tt-a",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": 60
+                },
+                {
+                  "id": "c6-tt-b",
+                  "start": "2026-01-15T01:30:00.000Z",
+                  "minutes": 30
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c6-perturb",
+      "role": "perturbation",
+      "of": "c6-tt-same-ms",
+      "queries": [
+        {
+          "label": "T0+10",
+          "t": "2026-01-15T00:10:00.000Z",
+          "answers": {
+            "tt": {
+              "key": "c6-tt-b",
+              "detail": [
+                {
+                  "id": "c6-tt-b",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": 30,
+                  "targetTop": 100
+                }
+              ],
+              "processed": [
+                {
+                  "id": "c6-tt-b",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": 30
+                }
+              ]
+            }
+          }
+        },
+        {
+          "label": "T0+45",
+          "t": "2026-01-15T00:45:00.000Z",
+          "answers": {
+            "tt": {
+              "key": "none",
+              "detail": [],
+              "processed": [
+                {
+                  "id": "c6-tt-b",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": 30
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c7-ov-backfill",
+      "role": "case",
+      "of": null,
+      "queries": [
+        {
+          "label": "T0+30",
+          "t": "2026-01-15T00:30:00.000Z",
+          "answers": {
+            "override_tx": {
+              "key": "c7-ov-earlier",
+              "detail": [
+                {
+                  "id": "c7-ov-earlier",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": "indefinite"
+                }
+              ],
+              "stored": [
+                "c7-ov-earlier:Temporary Override",
+                "c7-ov-later:Temporary Override"
+              ]
+            }
+          }
+        },
+        {
+          "label": "T0+90",
+          "t": "2026-01-15T01:30:00.000Z",
+          "answers": {
+            "override_tx": {
+              "key": "c7-ov-earlier+c7-ov-later",
+              "detail": [
+                {
+                  "id": "c7-ov-earlier",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": "indefinite"
+                },
+                {
+                  "id": "c7-ov-later",
+                  "start": "2026-01-15T01:00:00.000Z",
+                  "minutes": "indefinite"
+                }
+              ],
+              "stored": [
+                "c7-ov-earlier:Temporary Override",
+                "c7-ov-later:Temporary Override"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c7-ctl",
+      "role": "control",
+      "of": "c7-ov-backfill",
+      "queries": [
+        {
+          "label": "T0+15",
+          "t": "2026-01-15T00:15:00.000Z",
+          "answers": {
+            "override_tx": {
+              "key": "c7-ov-earlier",
+              "detail": [
+                {
+                  "id": "c7-ov-earlier",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": 30
+                }
+              ],
+              "stored": [
+                "c7-ov-earlier:Temporary Override",
+                "c7-ov-later:Temporary Override"
+              ]
+            }
+          }
+        },
+        {
+          "label": "T0+45",
+          "t": "2026-01-15T00:45:00.000Z",
+          "answers": {
+            "override_tx": {
+              "key": "none",
+              "detail": [],
+              "stored": [
+                "c7-ov-earlier:Temporary Override",
+                "c7-ov-later:Temporary Override"
+              ]
+            }
+          }
+        },
+        {
+          "label": "T0+75",
+          "t": "2026-01-15T01:15:00.000Z",
+          "answers": {
+            "override_tx": {
+              "key": "c7-ov-later",
+              "detail": [
+                {
+                  "id": "c7-ov-later",
+                  "start": "2026-01-15T01:00:00.000Z",
+                  "minutes": 30
+                }
+              ],
+              "stored": [
+                "c7-ov-earlier:Temporary Override",
+                "c7-ov-later:Temporary Override"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c7-perturb",
+      "role": "perturbation",
+      "of": "c7-ov-backfill",
+      "queries": [
+        {
+          "label": "T0+30",
+          "t": "2026-01-15T00:30:00.000Z",
+          "answers": {
+            "override_tx": {
+              "key": "c7-ov-earlier",
+              "detail": [
+                {
+                  "id": "c7-ov-earlier",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": "indefinite"
+                }
+              ],
+              "stored": [
+                "c7-ov-earlier:Temporary Override",
+                "c7-ov-later:Temporary Override"
+              ]
+            }
+          }
+        },
+        {
+          "label": "T0+90",
+          "t": "2026-01-15T01:30:00.000Z",
+          "answers": {
+            "override_tx": {
+              "key": "c7-ov-earlier+c7-ov-later",
+              "detail": [
+                {
+                  "id": "c7-ov-earlier",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "minutes": "indefinite"
+                },
+                {
+                  "id": "c7-ov-later",
+                  "start": "2026-01-15T01:00:00.000Z",
+                  "minutes": "indefinite"
+                }
+              ],
+              "stored": [
+                "c7-ov-earlier:Temporary Override",
+                "c7-ov-later:Temporary Override"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

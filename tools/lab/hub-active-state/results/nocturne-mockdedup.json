@@ -1,0 +1,3122 @@
+{
+  "hub": "nocturne",
+  "dedup": "mocked",
+  "cases": [
+    {
+      "id": "c1-tt-cancel",
+      "role": "case",
+      "of": null,
+      "writes": [
+        {
+          "id": "lab-profile-1",
+          "collection": "profile",
+          "created": 15,
+          "error": null
+        },
+        {
+          "id": "c1-tt",
+          "collection": "treatments",
+          "created": 1,
+          "updated": 0,
+          "createdTypes": [
+            "StateSpan"
+          ],
+          "error": null
+        },
+        {
+          "id": "c1-cancel",
+          "collection": "treatments",
+          "created": 1,
+          "updated": 0,
+          "createdTypes": [
+            "StateSpan"
+          ],
+          "error": null
+        }
+      ],
+      "spans": [
+        {
+          "originalId": "c1-tt",
+          "category": "TemporaryTarget",
+          "state": "Active",
+          "start": "2026-01-15T00:00:00.000Z",
+          "end": "2026-01-15T01:00:00.000Z",
+          "superseded": false
+        },
+        {
+          "originalId": "c1-cancel",
+          "category": "TemporaryTarget",
+          "state": "Cancelled",
+          "start": "2026-01-15T00:20:00.000Z",
+          "end": null,
+          "superseded": false
+        }
+      ],
+      "dedupLinks": [],
+      "queries": [
+        {
+          "label": "T0\u002B10",
+          "t": "2026-01-15T00:10:00.000Z",
+          "answers": {
+            "tt": {
+              "key": "c1-tt",
+              "keyActiveState": "c1-tt",
+              "keySet": "c1-tt",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c1-tt",
+                  "state": "Active",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T01:00:00.000Z"
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c1-tt",
+                  "state": "Active",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T01:00:00.000Z"
+                },
+                "covering": [
+                  {
+                    "originalId": "c1-tt",
+                    "state": "Active",
+                    "start": "2026-01-15T00:00:00.000Z",
+                    "end": "2026-01-15T01:00:00.000Z"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B30",
+          "t": "2026-01-15T00:30:00.000Z",
+          "answers": {
+            "tt": {
+              "key": "none",
+              "keyActiveState": "c1-tt",
+              "keySet": "c1-cancel\u002Bc1-tt",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c1-cancel",
+                  "state": "Cancelled",
+                  "start": "2026-01-15T00:20:00.000Z",
+                  "end": null
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c1-tt",
+                  "state": "Active",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T01:00:00.000Z"
+                },
+                "covering": [
+                  {
+                    "originalId": "c1-cancel",
+                    "state": "Cancelled",
+                    "start": "2026-01-15T00:20:00.000Z",
+                    "end": null
+                  },
+                  {
+                    "originalId": "c1-tt",
+                    "state": "Active",
+                    "start": "2026-01-15T00:00:00.000Z",
+                    "end": "2026-01-15T01:00:00.000Z"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B70",
+          "t": "2026-01-15T01:10:00.000Z",
+          "answers": {
+            "tt": {
+              "key": "none",
+              "keyActiveState": "none",
+              "keySet": "c1-cancel",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c1-cancel",
+                  "state": "Cancelled",
+                  "start": "2026-01-15T00:20:00.000Z",
+                  "end": null
+                },
+                "getActiveAt_activeState": null,
+                "covering": [
+                  {
+                    "originalId": "c1-cancel",
+                    "state": "Cancelled",
+                    "start": "2026-01-15T00:20:00.000Z",
+                    "end": null
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c1-ctl",
+      "role": "control",
+      "of": "c1-tt-cancel",
+      "writes": [
+        {
+          "id": "lab-profile-1",
+          "collection": "profile",
+          "created": 15,
+          "error": null
+        },
+        {
+          "id": "c1-tt",
+          "collection": "treatments",
+          "created": 1,
+          "updated": 0,
+          "createdTypes": [
+            "StateSpan"
+          ],
+          "error": null
+        }
+      ],
+      "spans": [
+        {
+          "originalId": "c1-tt",
+          "category": "TemporaryTarget",
+          "state": "Active",
+          "start": "2026-01-15T00:00:00.000Z",
+          "end": "2026-01-15T01:00:00.000Z",
+          "superseded": false
+        }
+      ],
+      "dedupLinks": [],
+      "queries": [
+        {
+          "label": "T0\u002B10",
+          "t": "2026-01-15T00:10:00.000Z",
+          "answers": {
+            "tt": {
+              "key": "c1-tt",
+              "keyActiveState": "c1-tt",
+              "keySet": "c1-tt",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c1-tt",
+                  "state": "Active",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T01:00:00.000Z"
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c1-tt",
+                  "state": "Active",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T01:00:00.000Z"
+                },
+                "covering": [
+                  {
+                    "originalId": "c1-tt",
+                    "state": "Active",
+                    "start": "2026-01-15T00:00:00.000Z",
+                    "end": "2026-01-15T01:00:00.000Z"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B30",
+          "t": "2026-01-15T00:30:00.000Z",
+          "answers": {
+            "tt": {
+              "key": "c1-tt",
+              "keyActiveState": "c1-tt",
+              "keySet": "c1-tt",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c1-tt",
+                  "state": "Active",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T01:00:00.000Z"
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c1-tt",
+                  "state": "Active",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T01:00:00.000Z"
+                },
+                "covering": [
+                  {
+                    "originalId": "c1-tt",
+                    "state": "Active",
+                    "start": "2026-01-15T00:00:00.000Z",
+                    "end": "2026-01-15T01:00:00.000Z"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B70",
+          "t": "2026-01-15T01:10:00.000Z",
+          "answers": {
+            "tt": {
+              "key": "none",
+              "keyActiveState": "none",
+              "keySet": "none",
+              "detail": {
+                "getActiveAt_anyState": null,
+                "getActiveAt_activeState": null,
+                "covering": []
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c1-perturb",
+      "role": "perturbation",
+      "of": "c1-tt-cancel",
+      "writes": [
+        {
+          "id": "lab-profile-1",
+          "collection": "profile",
+          "created": 15,
+          "error": null
+        },
+        {
+          "id": "c1-tt",
+          "collection": "treatments",
+          "created": 1,
+          "updated": 0,
+          "createdTypes": [
+            "StateSpan"
+          ],
+          "error": null
+        },
+        {
+          "id": "c1-cancel",
+          "collection": "treatments",
+          "created": 1,
+          "updated": 0,
+          "createdTypes": [
+            "StateSpan"
+          ],
+          "error": null
+        }
+      ],
+      "spans": [
+        {
+          "originalId": "c1-tt",
+          "category": "TemporaryTarget",
+          "state": "Active",
+          "start": "2026-01-15T00:00:00.000Z",
+          "end": "2026-01-15T01:00:00.000Z",
+          "superseded": false
+        },
+        {
+          "originalId": "c1-cancel",
+          "category": "TemporaryTarget",
+          "state": "Cancelled",
+          "start": "2026-01-15T00:40:00.000Z",
+          "end": null,
+          "superseded": false
+        }
+      ],
+      "dedupLinks": [],
+      "queries": [
+        {
+          "label": "T0\u002B10",
+          "t": "2026-01-15T00:10:00.000Z",
+          "answers": {
+            "tt": {
+              "key": "c1-tt",
+              "keyActiveState": "c1-tt",
+              "keySet": "c1-tt",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c1-tt",
+                  "state": "Active",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T01:00:00.000Z"
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c1-tt",
+                  "state": "Active",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T01:00:00.000Z"
+                },
+                "covering": [
+                  {
+                    "originalId": "c1-tt",
+                    "state": "Active",
+                    "start": "2026-01-15T00:00:00.000Z",
+                    "end": "2026-01-15T01:00:00.000Z"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B30",
+          "t": "2026-01-15T00:30:00.000Z",
+          "answers": {
+            "tt": {
+              "key": "c1-tt",
+              "keyActiveState": "c1-tt",
+              "keySet": "c1-tt",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c1-tt",
+                  "state": "Active",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T01:00:00.000Z"
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c1-tt",
+                  "state": "Active",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T01:00:00.000Z"
+                },
+                "covering": [
+                  {
+                    "originalId": "c1-tt",
+                    "state": "Active",
+                    "start": "2026-01-15T00:00:00.000Z",
+                    "end": "2026-01-15T01:00:00.000Z"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B70",
+          "t": "2026-01-15T01:10:00.000Z",
+          "answers": {
+            "tt": {
+              "key": "none",
+              "keyActiveState": "none",
+              "keySet": "c1-cancel",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c1-cancel",
+                  "state": "Cancelled",
+                  "start": "2026-01-15T00:40:00.000Z",
+                  "end": null
+                },
+                "getActiveAt_activeState": null,
+                "covering": [
+                  {
+                    "originalId": "c1-cancel",
+                    "state": "Cancelled",
+                    "start": "2026-01-15T00:40:00.000Z",
+                    "end": null
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c2-ov-cancel",
+      "role": "case",
+      "of": null,
+      "writes": [
+        {
+          "id": "lab-profile-1",
+          "collection": "profile",
+          "created": 15,
+          "error": null
+        },
+        {
+          "id": "c2-ov",
+          "collection": "treatments",
+          "created": 1,
+          "updated": 0,
+          "createdTypes": [
+            "StateSpan"
+          ],
+          "error": null
+        },
+        {
+          "id": "c2-cancel",
+          "collection": "treatments",
+          "created": 0,
+          "updated": 0,
+          "createdTypes": [],
+          "error": null
+        }
+      ],
+      "spans": [
+        {
+          "originalId": "c2-ov",
+          "category": "Override",
+          "state": "Custom",
+          "start": "2026-01-15T00:00:00.000Z",
+          "end": "2026-01-15T01:00:00.000Z",
+          "superseded": false
+        }
+      ],
+      "dedupLinks": [],
+      "queries": [
+        {
+          "label": "T0\u002B10",
+          "t": "2026-01-15T00:10:00.000Z",
+          "answers": {
+            "override_tx": {
+              "key": "c2-ov",
+              "keyActiveState": "c2-ov",
+              "keySet": "c2-ov",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c2-ov",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T01:00:00.000Z"
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c2-ov",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T01:00:00.000Z"
+                },
+                "covering": [
+                  {
+                    "originalId": "c2-ov",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:00:00.000Z",
+                    "end": "2026-01-15T01:00:00.000Z"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B30",
+          "t": "2026-01-15T00:30:00.000Z",
+          "answers": {
+            "override_tx": {
+              "key": "c2-ov",
+              "keyActiveState": "c2-ov",
+              "keySet": "c2-ov",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c2-ov",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T01:00:00.000Z"
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c2-ov",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T01:00:00.000Z"
+                },
+                "covering": [
+                  {
+                    "originalId": "c2-ov",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:00:00.000Z",
+                    "end": "2026-01-15T01:00:00.000Z"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B70",
+          "t": "2026-01-15T01:10:00.000Z",
+          "answers": {
+            "override_tx": {
+              "key": "none",
+              "keyActiveState": "none",
+              "keySet": "none",
+              "detail": {
+                "getActiveAt_anyState": null,
+                "getActiveAt_activeState": null,
+                "covering": []
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c2-ctl",
+      "role": "control",
+      "of": "c2-ov-cancel",
+      "writes": [
+        {
+          "id": "lab-profile-1",
+          "collection": "profile",
+          "created": 15,
+          "error": null
+        },
+        {
+          "id": "c2-ov",
+          "collection": "treatments",
+          "created": 1,
+          "updated": 0,
+          "createdTypes": [
+            "StateSpan"
+          ],
+          "error": null
+        },
+        {
+          "id": "c2-ov",
+          "collection": "treatments",
+          "created": 1,
+          "updated": 0,
+          "createdTypes": [
+            "StateSpan"
+          ],
+          "error": null
+        }
+      ],
+      "spans": [
+        {
+          "originalId": "c2-ov",
+          "category": "Override",
+          "state": "Custom",
+          "start": "2026-01-15T00:00:00.000Z",
+          "end": "2026-01-15T00:20:00.000Z",
+          "superseded": false
+        }
+      ],
+      "dedupLinks": [],
+      "queries": [
+        {
+          "label": "T0\u002B10",
+          "t": "2026-01-15T00:10:00.000Z",
+          "answers": {
+            "override_tx": {
+              "key": "c2-ov",
+              "keyActiveState": "c2-ov",
+              "keySet": "c2-ov",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c2-ov",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T00:20:00.000Z"
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c2-ov",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T00:20:00.000Z"
+                },
+                "covering": [
+                  {
+                    "originalId": "c2-ov",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:00:00.000Z",
+                    "end": "2026-01-15T00:20:00.000Z"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B30",
+          "t": "2026-01-15T00:30:00.000Z",
+          "answers": {
+            "override_tx": {
+              "key": "none",
+              "keyActiveState": "none",
+              "keySet": "none",
+              "detail": {
+                "getActiveAt_anyState": null,
+                "getActiveAt_activeState": null,
+                "covering": []
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B70",
+          "t": "2026-01-15T01:10:00.000Z",
+          "answers": {
+            "override_tx": {
+              "key": "none",
+              "keyActiveState": "none",
+              "keySet": "none",
+              "detail": {
+                "getActiveAt_anyState": null,
+                "getActiveAt_activeState": null,
+                "covering": []
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c2-perturb",
+      "role": "perturbation",
+      "of": "c2-ov-cancel",
+      "writes": [
+        {
+          "id": "lab-profile-1",
+          "collection": "profile",
+          "created": 15,
+          "error": null
+        },
+        {
+          "id": "c2-ov",
+          "collection": "treatments",
+          "created": 1,
+          "updated": 0,
+          "createdTypes": [
+            "StateSpan"
+          ],
+          "error": null
+        },
+        {
+          "id": "c2-cancel",
+          "collection": "treatments",
+          "created": 0,
+          "updated": 0,
+          "createdTypes": [],
+          "error": null
+        }
+      ],
+      "spans": [
+        {
+          "originalId": "c2-ov",
+          "category": "Override",
+          "state": "Custom",
+          "start": "2026-01-15T00:00:00.000Z",
+          "end": "2026-01-15T00:25:00.000Z",
+          "superseded": false
+        }
+      ],
+      "dedupLinks": [],
+      "queries": [
+        {
+          "label": "T0\u002B10",
+          "t": "2026-01-15T00:10:00.000Z",
+          "answers": {
+            "override_tx": {
+              "key": "c2-ov",
+              "keyActiveState": "c2-ov",
+              "keySet": "c2-ov",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c2-ov",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T00:25:00.000Z"
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c2-ov",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T00:25:00.000Z"
+                },
+                "covering": [
+                  {
+                    "originalId": "c2-ov",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:00:00.000Z",
+                    "end": "2026-01-15T00:25:00.000Z"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B30",
+          "t": "2026-01-15T00:30:00.000Z",
+          "answers": {
+            "override_tx": {
+              "key": "none",
+              "keyActiveState": "none",
+              "keySet": "none",
+              "detail": {
+                "getActiveAt_anyState": null,
+                "getActiveAt_activeState": null,
+                "covering": []
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B70",
+          "t": "2026-01-15T01:10:00.000Z",
+          "answers": {
+            "override_tx": {
+              "key": "none",
+              "keyActiveState": "none",
+              "keySet": "none",
+              "detail": {
+                "getActiveAt_anyState": null,
+                "getActiveAt_activeState": null,
+                "covering": []
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c3-loop-ds-override",
+      "role": "case",
+      "of": null,
+      "writes": [
+        {
+          "id": "lab-profile-1",
+          "collection": "profile",
+          "created": 15,
+          "error": null
+        },
+        {
+          "id": "c3-ds-0",
+          "collection": "devicestatus",
+          "created": 2,
+          "updated": 0,
+          "createdTypes": [
+            "null (mocked repository)",
+            "StateSpan"
+          ],
+          "error": null
+        },
+        {
+          "id": "c3-ds-5",
+          "collection": "devicestatus",
+          "created": 2,
+          "updated": 0,
+          "createdTypes": [
+            "null (mocked repository)",
+            "StateSpan"
+          ],
+          "error": null
+        },
+        {
+          "id": "c3-ds-10",
+          "collection": "devicestatus",
+          "created": 2,
+          "updated": 0,
+          "createdTypes": [
+            "null (mocked repository)",
+            "StateSpan"
+          ],
+          "error": null
+        },
+        {
+          "id": "c3-ds-15",
+          "collection": "devicestatus",
+          "created": 2,
+          "updated": 0,
+          "createdTypes": [
+            "null (mocked repository)",
+            "StateSpan"
+          ],
+          "error": null
+        },
+        {
+          "id": "c3-ds-20",
+          "collection": "devicestatus",
+          "created": 2,
+          "updated": 0,
+          "createdTypes": [
+            "null (mocked repository)",
+            "StateSpan"
+          ],
+          "error": null
+        },
+        {
+          "id": "c3-ds-25",
+          "collection": "devicestatus",
+          "created": 2,
+          "updated": 0,
+          "createdTypes": [
+            "null (mocked repository)",
+            "StateSpan"
+          ],
+          "error": null
+        },
+        {
+          "id": "c3-ds-30",
+          "collection": "devicestatus",
+          "created": 1,
+          "updated": 0,
+          "createdTypes": [
+            "null (mocked repository)"
+          ],
+          "error": null
+        },
+        {
+          "id": "c3-ds-35",
+          "collection": "devicestatus",
+          "created": 1,
+          "updated": 0,
+          "createdTypes": [
+            "null (mocked repository)"
+          ],
+          "error": null
+        }
+      ],
+      "spans": [
+        {
+          "originalId": "c3-ds-0",
+          "category": "Override",
+          "state": "Custom",
+          "start": "2026-01-15T00:00:00.000Z",
+          "end": "2026-01-16T06:00:00.000Z",
+          "superseded": false
+        },
+        {
+          "originalId": "c3-ds-5",
+          "category": "Override",
+          "state": "Custom",
+          "start": "2026-01-15T00:05:00.000Z",
+          "end": "2026-01-16T01:05:00.000Z",
+          "superseded": false
+        },
+        {
+          "originalId": "c3-ds-10",
+          "category": "Override",
+          "state": "Custom",
+          "start": "2026-01-15T00:10:00.000Z",
+          "end": "2026-01-15T20:10:00.000Z",
+          "superseded": false
+        },
+        {
+          "originalId": "c3-ds-15",
+          "category": "Override",
+          "state": "Custom",
+          "start": "2026-01-15T00:15:00.000Z",
+          "end": "2026-01-15T15:15:00.000Z",
+          "superseded": false
+        },
+        {
+          "originalId": "c3-ds-20",
+          "category": "Override",
+          "state": "Custom",
+          "start": "2026-01-15T00:20:00.000Z",
+          "end": "2026-01-15T10:20:00.000Z",
+          "superseded": false
+        },
+        {
+          "originalId": "c3-ds-25",
+          "category": "Override",
+          "state": "Custom",
+          "start": "2026-01-15T00:25:00.000Z",
+          "end": "2026-01-15T05:25:00.000Z",
+          "superseded": false
+        }
+      ],
+      "dedupLinks": [],
+      "queries": [
+        {
+          "label": "T0\u002B12",
+          "t": "2026-01-15T00:12:00.000Z",
+          "answers": {
+            "override_ds": {
+              "key": "active",
+              "keyActiveState": "c3-ds-10",
+              "keySet": "c3-ds-0\u002Bc3-ds-10\u002Bc3-ds-5",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c3-ds-10",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:10:00.000Z",
+                  "end": "2026-01-15T20:10:00.000Z"
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c3-ds-10",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:10:00.000Z",
+                  "end": "2026-01-15T20:10:00.000Z"
+                },
+                "covering": [
+                  {
+                    "originalId": "c3-ds-10",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:10:00.000Z",
+                    "end": "2026-01-15T20:10:00.000Z"
+                  },
+                  {
+                    "originalId": "c3-ds-5",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:05:00.000Z",
+                    "end": "2026-01-16T01:05:00.000Z"
+                  },
+                  {
+                    "originalId": "c3-ds-0",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:00:00.000Z",
+                    "end": "2026-01-16T06:00:00.000Z"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B40",
+          "t": "2026-01-15T00:40:00.000Z",
+          "answers": {
+            "override_ds": {
+              "key": "active",
+              "keyActiveState": "c3-ds-25",
+              "keySet": "c3-ds-0\u002Bc3-ds-10\u002Bc3-ds-15\u002Bc3-ds-20\u002Bc3-ds-25\u002Bc3-ds-5",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c3-ds-25",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:25:00.000Z",
+                  "end": "2026-01-15T05:25:00.000Z"
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c3-ds-25",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:25:00.000Z",
+                  "end": "2026-01-15T05:25:00.000Z"
+                },
+                "covering": [
+                  {
+                    "originalId": "c3-ds-25",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:25:00.000Z",
+                    "end": "2026-01-15T05:25:00.000Z"
+                  },
+                  {
+                    "originalId": "c3-ds-20",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:20:00.000Z",
+                    "end": "2026-01-15T10:20:00.000Z"
+                  },
+                  {
+                    "originalId": "c3-ds-15",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:15:00.000Z",
+                    "end": "2026-01-15T15:15:00.000Z"
+                  },
+                  {
+                    "originalId": "c3-ds-10",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:10:00.000Z",
+                    "end": "2026-01-15T20:10:00.000Z"
+                  },
+                  {
+                    "originalId": "c3-ds-5",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:05:00.000Z",
+                    "end": "2026-01-16T01:05:00.000Z"
+                  },
+                  {
+                    "originalId": "c3-ds-0",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:00:00.000Z",
+                    "end": "2026-01-16T06:00:00.000Z"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B120",
+          "t": "2026-01-15T02:00:00.000Z",
+          "answers": {
+            "override_ds": {
+              "key": "active",
+              "keyActiveState": "c3-ds-25",
+              "keySet": "c3-ds-0\u002Bc3-ds-10\u002Bc3-ds-15\u002Bc3-ds-20\u002Bc3-ds-25\u002Bc3-ds-5",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c3-ds-25",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:25:00.000Z",
+                  "end": "2026-01-15T05:25:00.000Z"
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c3-ds-25",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:25:00.000Z",
+                  "end": "2026-01-15T05:25:00.000Z"
+                },
+                "covering": [
+                  {
+                    "originalId": "c3-ds-25",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:25:00.000Z",
+                    "end": "2026-01-15T05:25:00.000Z"
+                  },
+                  {
+                    "originalId": "c3-ds-20",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:20:00.000Z",
+                    "end": "2026-01-15T10:20:00.000Z"
+                  },
+                  {
+                    "originalId": "c3-ds-15",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:15:00.000Z",
+                    "end": "2026-01-15T15:15:00.000Z"
+                  },
+                  {
+                    "originalId": "c3-ds-10",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:10:00.000Z",
+                    "end": "2026-01-15T20:10:00.000Z"
+                  },
+                  {
+                    "originalId": "c3-ds-5",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:05:00.000Z",
+                    "end": "2026-01-16T01:05:00.000Z"
+                  },
+                  {
+                    "originalId": "c3-ds-0",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:00:00.000Z",
+                    "end": "2026-01-16T06:00:00.000Z"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c3-ctl",
+      "role": "control",
+      "of": "c3-loop-ds-override",
+      "writes": [
+        {
+          "id": "lab-profile-1",
+          "collection": "profile",
+          "created": 15,
+          "error": null
+        },
+        {
+          "id": "c3c-ds-0",
+          "collection": "devicestatus",
+          "created": 2,
+          "updated": 0,
+          "createdTypes": [
+            "null (mocked repository)",
+            "StateSpan"
+          ],
+          "error": null
+        },
+        {
+          "id": "c3c-ds-5",
+          "collection": "devicestatus",
+          "created": 2,
+          "updated": 0,
+          "createdTypes": [
+            "null (mocked repository)",
+            "StateSpan"
+          ],
+          "error": null
+        },
+        {
+          "id": "c3c-ds-10",
+          "collection": "devicestatus",
+          "created": 2,
+          "updated": 0,
+          "createdTypes": [
+            "null (mocked repository)",
+            "StateSpan"
+          ],
+          "error": null
+        },
+        {
+          "id": "c3c-ds-15",
+          "collection": "devicestatus",
+          "created": 2,
+          "updated": 0,
+          "createdTypes": [
+            "null (mocked repository)",
+            "StateSpan"
+          ],
+          "error": null
+        },
+        {
+          "id": "c3c-ds-20",
+          "collection": "devicestatus",
+          "created": 2,
+          "updated": 0,
+          "createdTypes": [
+            "null (mocked repository)",
+            "StateSpan"
+          ],
+          "error": null
+        },
+        {
+          "id": "c3c-ds-25",
+          "collection": "devicestatus",
+          "created": 2,
+          "updated": 0,
+          "createdTypes": [
+            "null (mocked repository)",
+            "StateSpan"
+          ],
+          "error": null
+        }
+      ],
+      "spans": [
+        {
+          "originalId": "c3c-ds-0",
+          "category": "Override",
+          "state": "Custom",
+          "start": "2026-01-15T00:00:00.000Z",
+          "end": "2026-01-15T00:05:00.000Z",
+          "superseded": true
+        },
+        {
+          "originalId": "c3c-ds-5",
+          "category": "Override",
+          "state": "Custom",
+          "start": "2026-01-15T00:05:00.000Z",
+          "end": "2026-01-15T00:10:00.000Z",
+          "superseded": true
+        },
+        {
+          "originalId": "c3c-ds-10",
+          "category": "Override",
+          "state": "Custom",
+          "start": "2026-01-15T00:10:00.000Z",
+          "end": "2026-01-15T00:15:00.000Z",
+          "superseded": true
+        },
+        {
+          "originalId": "c3c-ds-15",
+          "category": "Override",
+          "state": "Custom",
+          "start": "2026-01-15T00:15:00.000Z",
+          "end": "2026-01-15T00:20:00.000Z",
+          "superseded": true
+        },
+        {
+          "originalId": "c3c-ds-20",
+          "category": "Override",
+          "state": "Custom",
+          "start": "2026-01-15T00:20:00.000Z",
+          "end": "2026-01-15T00:25:00.000Z",
+          "superseded": true
+        },
+        {
+          "originalId": "c3c-ds-25",
+          "category": "Override",
+          "state": "Custom",
+          "start": "2026-01-15T00:25:00.000Z",
+          "end": null,
+          "superseded": false
+        }
+      ],
+      "dedupLinks": [],
+      "queries": [
+        {
+          "label": "T0\u002B12",
+          "t": "2026-01-15T00:12:00.000Z",
+          "answers": {
+            "override_ds": {
+              "key": "active",
+              "keyActiveState": "c3c-ds-10",
+              "keySet": "c3c-ds-10",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c3c-ds-10",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:10:00.000Z",
+                  "end": "2026-01-15T00:15:00.000Z"
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c3c-ds-10",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:10:00.000Z",
+                  "end": "2026-01-15T00:15:00.000Z"
+                },
+                "covering": [
+                  {
+                    "originalId": "c3c-ds-10",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:10:00.000Z",
+                    "end": "2026-01-15T00:15:00.000Z"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B27",
+          "t": "2026-01-15T00:27:00.000Z",
+          "answers": {
+            "override_ds": {
+              "key": "active",
+              "keyActiveState": "c3c-ds-25",
+              "keySet": "c3c-ds-25",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c3c-ds-25",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:25:00.000Z",
+                  "end": null
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c3c-ds-25",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:25:00.000Z",
+                  "end": null
+                },
+                "covering": [
+                  {
+                    "originalId": "c3c-ds-25",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:25:00.000Z",
+                    "end": null
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B120",
+          "t": "2026-01-15T02:00:00.000Z",
+          "answers": {
+            "override_ds": {
+              "key": "active",
+              "keyActiveState": "c3c-ds-25",
+              "keySet": "c3c-ds-25",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c3c-ds-25",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:25:00.000Z",
+                  "end": null
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c3c-ds-25",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:25:00.000Z",
+                  "end": null
+                },
+                "covering": [
+                  {
+                    "originalId": "c3c-ds-25",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:25:00.000Z",
+                    "end": null
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c3-perturb",
+      "role": "perturbation",
+      "of": "c3-loop-ds-override",
+      "writes": [
+        {
+          "id": "lab-profile-1",
+          "collection": "profile",
+          "created": 15,
+          "error": null
+        },
+        {
+          "id": "c3p-ds-0",
+          "collection": "devicestatus",
+          "created": 2,
+          "updated": 0,
+          "createdTypes": [
+            "null (mocked repository)",
+            "StateSpan"
+          ],
+          "error": null
+        },
+        {
+          "id": "c3p-ds-5",
+          "collection": "devicestatus",
+          "created": 2,
+          "updated": 0,
+          "createdTypes": [
+            "null (mocked repository)",
+            "StateSpan"
+          ],
+          "error": null
+        },
+        {
+          "id": "c3p-ds-10",
+          "collection": "devicestatus",
+          "created": 2,
+          "updated": 0,
+          "createdTypes": [
+            "null (mocked repository)",
+            "StateSpan"
+          ],
+          "error": null
+        },
+        {
+          "id": "c3p-ds-15",
+          "collection": "devicestatus",
+          "created": 2,
+          "updated": 0,
+          "createdTypes": [
+            "null (mocked repository)",
+            "StateSpan"
+          ],
+          "error": null
+        },
+        {
+          "id": "c3p-ds-20",
+          "collection": "devicestatus",
+          "created": 2,
+          "updated": 0,
+          "createdTypes": [
+            "null (mocked repository)",
+            "StateSpan"
+          ],
+          "error": null
+        },
+        {
+          "id": "c3p-ds-25",
+          "collection": "devicestatus",
+          "created": 2,
+          "updated": 0,
+          "createdTypes": [
+            "null (mocked repository)",
+            "StateSpan"
+          ],
+          "error": null
+        }
+      ],
+      "spans": [
+        {
+          "originalId": "c3p-ds-0",
+          "category": "Override",
+          "state": "Custom",
+          "start": "2026-01-15T00:00:00.000Z",
+          "end": "2026-01-17T12:00:00.000Z",
+          "superseded": false
+        },
+        {
+          "originalId": "c3p-ds-5",
+          "category": "Override",
+          "state": "Custom",
+          "start": "2026-01-15T00:05:00.000Z",
+          "end": "2026-01-17T07:05:00.000Z",
+          "superseded": false
+        },
+        {
+          "originalId": "c3p-ds-10",
+          "category": "Override",
+          "state": "Custom",
+          "start": "2026-01-15T00:10:00.000Z",
+          "end": "2026-01-17T02:10:00.000Z",
+          "superseded": false
+        },
+        {
+          "originalId": "c3p-ds-15",
+          "category": "Override",
+          "state": "Custom",
+          "start": "2026-01-15T00:15:00.000Z",
+          "end": "2026-01-16T21:15:00.000Z",
+          "superseded": false
+        },
+        {
+          "originalId": "c3p-ds-20",
+          "category": "Override",
+          "state": "Custom",
+          "start": "2026-01-15T00:20:00.000Z",
+          "end": "2026-01-16T16:20:00.000Z",
+          "superseded": false
+        },
+        {
+          "originalId": "c3p-ds-25",
+          "category": "Override",
+          "state": "Custom",
+          "start": "2026-01-15T00:25:00.000Z",
+          "end": "2026-01-16T11:25:00.000Z",
+          "superseded": false
+        }
+      ],
+      "dedupLinks": [],
+      "queries": [
+        {
+          "label": "T0\u002B12",
+          "t": "2026-01-15T00:12:00.000Z",
+          "answers": {
+            "override_ds": {
+              "key": "active",
+              "keyActiveState": "c3p-ds-10",
+              "keySet": "c3p-ds-0\u002Bc3p-ds-10\u002Bc3p-ds-5",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c3p-ds-10",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:10:00.000Z",
+                  "end": "2026-01-17T02:10:00.000Z"
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c3p-ds-10",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:10:00.000Z",
+                  "end": "2026-01-17T02:10:00.000Z"
+                },
+                "covering": [
+                  {
+                    "originalId": "c3p-ds-10",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:10:00.000Z",
+                    "end": "2026-01-17T02:10:00.000Z"
+                  },
+                  {
+                    "originalId": "c3p-ds-5",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:05:00.000Z",
+                    "end": "2026-01-17T07:05:00.000Z"
+                  },
+                  {
+                    "originalId": "c3p-ds-0",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:00:00.000Z",
+                    "end": "2026-01-17T12:00:00.000Z"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B40",
+          "t": "2026-01-15T00:40:00.000Z",
+          "answers": {
+            "override_ds": {
+              "key": "active",
+              "keyActiveState": "c3p-ds-25",
+              "keySet": "c3p-ds-0\u002Bc3p-ds-10\u002Bc3p-ds-15\u002Bc3p-ds-20\u002Bc3p-ds-25\u002Bc3p-ds-5",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c3p-ds-25",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:25:00.000Z",
+                  "end": "2026-01-16T11:25:00.000Z"
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c3p-ds-25",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:25:00.000Z",
+                  "end": "2026-01-16T11:25:00.000Z"
+                },
+                "covering": [
+                  {
+                    "originalId": "c3p-ds-25",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:25:00.000Z",
+                    "end": "2026-01-16T11:25:00.000Z"
+                  },
+                  {
+                    "originalId": "c3p-ds-20",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:20:00.000Z",
+                    "end": "2026-01-16T16:20:00.000Z"
+                  },
+                  {
+                    "originalId": "c3p-ds-15",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:15:00.000Z",
+                    "end": "2026-01-16T21:15:00.000Z"
+                  },
+                  {
+                    "originalId": "c3p-ds-10",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:10:00.000Z",
+                    "end": "2026-01-17T02:10:00.000Z"
+                  },
+                  {
+                    "originalId": "c3p-ds-5",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:05:00.000Z",
+                    "end": "2026-01-17T07:05:00.000Z"
+                  },
+                  {
+                    "originalId": "c3p-ds-0",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:00:00.000Z",
+                    "end": "2026-01-17T12:00:00.000Z"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B120",
+          "t": "2026-01-15T02:00:00.000Z",
+          "answers": {
+            "override_ds": {
+              "key": "active",
+              "keyActiveState": "c3p-ds-25",
+              "keySet": "c3p-ds-0\u002Bc3p-ds-10\u002Bc3p-ds-15\u002Bc3p-ds-20\u002Bc3p-ds-25\u002Bc3p-ds-5",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c3p-ds-25",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:25:00.000Z",
+                  "end": "2026-01-16T11:25:00.000Z"
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c3p-ds-25",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:25:00.000Z",
+                  "end": "2026-01-16T11:25:00.000Z"
+                },
+                "covering": [
+                  {
+                    "originalId": "c3p-ds-25",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:25:00.000Z",
+                    "end": "2026-01-16T11:25:00.000Z"
+                  },
+                  {
+                    "originalId": "c3p-ds-20",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:20:00.000Z",
+                    "end": "2026-01-16T16:20:00.000Z"
+                  },
+                  {
+                    "originalId": "c3p-ds-15",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:15:00.000Z",
+                    "end": "2026-01-16T21:15:00.000Z"
+                  },
+                  {
+                    "originalId": "c3p-ds-10",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:10:00.000Z",
+                    "end": "2026-01-17T02:10:00.000Z"
+                  },
+                  {
+                    "originalId": "c3p-ds-5",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:05:00.000Z",
+                    "end": "2026-01-17T07:05:00.000Z"
+                  },
+                  {
+                    "originalId": "c3p-ds-0",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:00:00.000Z",
+                    "end": "2026-01-17T12:00:00.000Z"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c3-perturb-short",
+      "role": "perturbation",
+      "of": "c3-loop-ds-override",
+      "writes": [
+        {
+          "id": "lab-profile-1",
+          "collection": "profile",
+          "created": 15,
+          "error": null
+        },
+        {
+          "id": "c3s-ds-0",
+          "collection": "devicestatus",
+          "created": 2,
+          "updated": 0,
+          "createdTypes": [
+            "null (mocked repository)",
+            "StateSpan"
+          ],
+          "error": null
+        }
+      ],
+      "spans": [
+        {
+          "originalId": "c3s-ds-0",
+          "category": "Override",
+          "state": "Custom",
+          "start": "2026-01-15T00:00:00.000Z",
+          "end": "2026-01-15T01:00:00.000Z",
+          "superseded": false
+        }
+      ],
+      "dedupLinks": [],
+      "queries": [
+        {
+          "label": "T0\u002B12",
+          "t": "2026-01-15T00:12:00.000Z",
+          "answers": {
+            "override_ds": {
+              "key": "active",
+              "keyActiveState": "c3s-ds-0",
+              "keySet": "c3s-ds-0",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c3s-ds-0",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T01:00:00.000Z"
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c3s-ds-0",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T01:00:00.000Z"
+                },
+                "covering": [
+                  {
+                    "originalId": "c3s-ds-0",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:00:00.000Z",
+                    "end": "2026-01-15T01:00:00.000Z"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B40",
+          "t": "2026-01-15T00:40:00.000Z",
+          "answers": {
+            "override_ds": {
+              "key": "active",
+              "keyActiveState": "c3s-ds-0",
+              "keySet": "c3s-ds-0",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c3s-ds-0",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T01:00:00.000Z"
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c3s-ds-0",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T01:00:00.000Z"
+                },
+                "covering": [
+                  {
+                    "originalId": "c3s-ds-0",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:00:00.000Z",
+                    "end": "2026-01-15T01:00:00.000Z"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B120",
+          "t": "2026-01-15T02:00:00.000Z",
+          "answers": {
+            "override_ds": {
+              "key": "none",
+              "keyActiveState": "none",
+              "keySet": "none",
+              "detail": {
+                "getActiveAt_anyState": null,
+                "getActiveAt_activeState": null,
+                "covering": []
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c4-ps-timed-after-permanent",
+      "role": "case",
+      "of": null,
+      "writes": [
+        {
+          "id": "lab-profile-1",
+          "collection": "profile",
+          "created": 15,
+          "error": null
+        },
+        {
+          "id": "c4-ps-perm",
+          "collection": "treatments",
+          "created": 1,
+          "updated": 0,
+          "createdTypes": [
+            "StateSpan"
+          ],
+          "error": null
+        },
+        {
+          "id": "c4-ps-timed",
+          "collection": "treatments",
+          "created": 1,
+          "updated": 0,
+          "createdTypes": [
+            "StateSpan"
+          ],
+          "error": null
+        }
+      ],
+      "spans": [
+        {
+          "originalId": "c4-ps-perm",
+          "category": "Profile",
+          "state": "Active",
+          "start": "2026-01-15T00:00:00.000Z",
+          "end": "2026-01-15T01:00:00.000Z",
+          "superseded": true
+        },
+        {
+          "originalId": "c4-ps-timed",
+          "category": "Profile",
+          "state": "Active",
+          "start": "2026-01-15T01:00:00.000Z",
+          "end": "2026-01-15T02:00:00.000Z",
+          "superseded": false
+        }
+      ],
+      "dedupLinks": [],
+      "queries": [
+        {
+          "label": "T0\u002B30",
+          "t": "2026-01-15T00:30:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Weekend basal=0.800",
+              "detail": {
+                "activeProfileName": "Weekend",
+                "nameUsedForSchedule": "Weekend",
+                "basal": 0.8,
+                "circadianAdjustment": null
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B90",
+          "t": "2026-01-15T01:30:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Exercise basal=0.500",
+              "detail": {
+                "activeProfileName": "Exercise",
+                "nameUsedForSchedule": "Exercise",
+                "basal": 0.5,
+                "circadianAdjustment": null
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B150",
+          "t": "2026-01-15T02:30:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Default basal=1.100",
+              "detail": {
+                "activeProfileName": null,
+                "nameUsedForSchedule": "Default",
+                "basal": 1.1,
+                "circadianAdjustment": null
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c4-ctl",
+      "role": "control",
+      "of": "c4-ps-timed-after-permanent",
+      "writes": [
+        {
+          "id": "lab-profile-1",
+          "collection": "profile",
+          "created": 15,
+          "error": null
+        },
+        {
+          "id": "c4-ps-perm",
+          "collection": "treatments",
+          "created": 1,
+          "updated": 0,
+          "createdTypes": [
+            "StateSpan"
+          ],
+          "error": null
+        }
+      ],
+      "spans": [
+        {
+          "originalId": "c4-ps-perm",
+          "category": "Profile",
+          "state": "Active",
+          "start": "2026-01-15T00:00:00.000Z",
+          "end": null,
+          "superseded": false
+        }
+      ],
+      "dedupLinks": [],
+      "queries": [
+        {
+          "label": "T0\u002B30",
+          "t": "2026-01-15T00:30:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Weekend basal=0.800",
+              "detail": {
+                "activeProfileName": "Weekend",
+                "nameUsedForSchedule": "Weekend",
+                "basal": 0.8,
+                "circadianAdjustment": null
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B90",
+          "t": "2026-01-15T01:30:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Weekend basal=0.800",
+              "detail": {
+                "activeProfileName": "Weekend",
+                "nameUsedForSchedule": "Weekend",
+                "basal": 0.8,
+                "circadianAdjustment": null
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B150",
+          "t": "2026-01-15T02:30:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Weekend basal=0.800",
+              "detail": {
+                "activeProfileName": "Weekend",
+                "nameUsedForSchedule": "Weekend",
+                "basal": 0.8,
+                "circadianAdjustment": null
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c4-perturb",
+      "role": "perturbation",
+      "of": "c4-ps-timed-after-permanent",
+      "writes": [
+        {
+          "id": "lab-profile-1",
+          "collection": "profile",
+          "created": 15,
+          "error": null
+        },
+        {
+          "id": "c4-ps-perm",
+          "collection": "treatments",
+          "created": 1,
+          "updated": 0,
+          "createdTypes": [
+            "StateSpan"
+          ],
+          "error": null
+        },
+        {
+          "id": "c4-ps-timed",
+          "collection": "treatments",
+          "created": 1,
+          "updated": 0,
+          "createdTypes": [
+            "StateSpan"
+          ],
+          "error": null
+        }
+      ],
+      "spans": [
+        {
+          "originalId": "c4-ps-perm",
+          "category": "Profile",
+          "state": "Active",
+          "start": "2026-01-15T00:00:00.000Z",
+          "end": "2026-01-15T01:00:00.000Z",
+          "superseded": true
+        },
+        {
+          "originalId": "c4-ps-timed",
+          "category": "Profile",
+          "state": "Active",
+          "start": "2026-01-15T01:00:00.000Z",
+          "end": "2026-01-15T03:00:00.000Z",
+          "superseded": false
+        }
+      ],
+      "dedupLinks": [],
+      "queries": [
+        {
+          "label": "T0\u002B30",
+          "t": "2026-01-15T00:30:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Weekend basal=0.800",
+              "detail": {
+                "activeProfileName": "Weekend",
+                "nameUsedForSchedule": "Weekend",
+                "basal": 0.8,
+                "circadianAdjustment": null
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B90",
+          "t": "2026-01-15T01:30:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Exercise basal=0.500",
+              "detail": {
+                "activeProfileName": "Exercise",
+                "nameUsedForSchedule": "Exercise",
+                "basal": 0.5,
+                "circadianAdjustment": null
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B150",
+          "t": "2026-01-15T02:30:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Exercise basal=0.500",
+              "detail": {
+                "activeProfileName": "Exercise",
+                "nameUsedForSchedule": "Exercise",
+                "basal": 0.5,
+                "circadianAdjustment": null
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c5-aaps-timeshift-ms",
+      "role": "case",
+      "of": null,
+      "writes": [
+        {
+          "id": "lab-profile-1",
+          "collection": "profile",
+          "created": 15,
+          "error": null
+        },
+        {
+          "id": "c5-ps",
+          "collection": "treatments",
+          "created": 6,
+          "updated": 0,
+          "createdTypes": [
+            "StateSpan",
+            "TherapySettings",
+            "BasalSchedule",
+            "CarbRatioSchedule",
+            "SensitivitySchedule",
+            "TargetRangeSchedule"
+          ],
+          "error": null
+        }
+      ],
+      "spans": [
+        {
+          "originalId": "c5-ps",
+          "category": "Profile",
+          "state": "Active",
+          "start": "2026-01-15T00:00:00.000Z",
+          "end": null,
+          "superseded": false
+        }
+      ],
+      "dedupLinks": [],
+      "queries": [
+        {
+          "label": "T0\u002B300",
+          "t": "2026-01-15T05:00:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Default basal=1.250",
+              "detail": {
+                "activeProfileName": "Default",
+                "nameUsedForSchedule": "Default",
+                "basal": 1.25,
+                "circadianAdjustment": {
+                  "percentage": 100,
+                  "timeshiftMs": 0
+                }
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B600",
+          "t": "2026-01-15T10:00:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Default basal=1.500",
+              "detail": {
+                "activeProfileName": "Default",
+                "nameUsedForSchedule": "Default",
+                "basal": 1.5,
+                "circadianAdjustment": {
+                  "percentage": 100,
+                  "timeshiftMs": 0
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c5-ctl",
+      "role": "control",
+      "of": "c5-aaps-timeshift-ms",
+      "writes": [
+        {
+          "id": "lab-profile-1",
+          "collection": "profile",
+          "created": 15,
+          "error": null
+        },
+        {
+          "id": "c5-ps",
+          "collection": "treatments",
+          "created": 6,
+          "updated": 0,
+          "createdTypes": [
+            "StateSpan",
+            "TherapySettings",
+            "BasalSchedule",
+            "CarbRatioSchedule",
+            "SensitivitySchedule",
+            "TargetRangeSchedule"
+          ],
+          "error": null
+        }
+      ],
+      "spans": [
+        {
+          "originalId": "c5-ps",
+          "category": "Profile",
+          "state": "Active",
+          "start": "2026-01-15T00:00:00.000Z",
+          "end": null,
+          "superseded": false
+        }
+      ],
+      "dedupLinks": [],
+      "queries": [
+        {
+          "label": "T0\u002B300",
+          "t": "2026-01-15T05:00:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Default basal=1.250",
+              "detail": {
+                "activeProfileName": "Default",
+                "nameUsedForSchedule": "Default",
+                "basal": 1.25,
+                "circadianAdjustment": {
+                  "percentage": 100,
+                  "timeshiftMs": 0
+                }
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B600",
+          "t": "2026-01-15T10:00:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Default basal=1.500",
+              "detail": {
+                "activeProfileName": "Default",
+                "nameUsedForSchedule": "Default",
+                "basal": 1.5,
+                "circadianAdjustment": {
+                  "percentage": 100,
+                  "timeshiftMs": 0
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c5-perturb",
+      "role": "perturbation",
+      "of": "c5-ctl",
+      "writes": [
+        {
+          "id": "lab-profile-1",
+          "collection": "profile",
+          "created": 15,
+          "error": null
+        },
+        {
+          "id": "c5-ps",
+          "collection": "treatments",
+          "created": 6,
+          "updated": 0,
+          "createdTypes": [
+            "StateSpan",
+            "TherapySettings",
+            "BasalSchedule",
+            "CarbRatioSchedule",
+            "SensitivitySchedule",
+            "TargetRangeSchedule"
+          ],
+          "error": null
+        }
+      ],
+      "spans": [
+        {
+          "originalId": "c5-ps",
+          "category": "Profile",
+          "state": "Active",
+          "start": "2026-01-15T00:00:00.000Z",
+          "end": null,
+          "superseded": false
+        }
+      ],
+      "dedupLinks": [],
+      "queries": [
+        {
+          "label": "T0\u002B300",
+          "t": "2026-01-15T05:00:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Default basal=2.500",
+              "detail": {
+                "activeProfileName": "Default",
+                "nameUsedForSchedule": "Default",
+                "basal": 2.5,
+                "circadianAdjustment": {
+                  "percentage": 200,
+                  "timeshiftMs": 0
+                }
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B600",
+          "t": "2026-01-15T10:00:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Default basal=3.000",
+              "detail": {
+                "activeProfileName": "Default",
+                "nameUsedForSchedule": "Default",
+                "basal": 3,
+                "circadianAdjustment": {
+                  "percentage": 200,
+                  "timeshiftMs": 0
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c5-perturb-hours",
+      "role": "perturbation",
+      "of": "c5-aaps-timeshift-ms",
+      "writes": [
+        {
+          "id": "lab-profile-1",
+          "collection": "profile",
+          "created": 15,
+          "error": null
+        },
+        {
+          "id": "c5-ps",
+          "collection": "treatments",
+          "created": 6,
+          "updated": 0,
+          "createdTypes": [
+            "StateSpan",
+            "TherapySettings",
+            "BasalSchedule",
+            "CarbRatioSchedule",
+            "SensitivitySchedule",
+            "TargetRangeSchedule"
+          ],
+          "error": null
+        }
+      ],
+      "spans": [
+        {
+          "originalId": "c5-ps",
+          "category": "Profile",
+          "state": "Active",
+          "start": "2026-01-15T00:00:00.000Z",
+          "end": null,
+          "superseded": false
+        }
+      ],
+      "dedupLinks": [],
+      "queries": [
+        {
+          "label": "T0\u002B300",
+          "t": "2026-01-15T05:00:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Default basal=1.350",
+              "detail": {
+                "activeProfileName": "Default",
+                "nameUsedForSchedule": "Default",
+                "basal": 1.35,
+                "circadianAdjustment": {
+                  "percentage": 100,
+                  "timeshiftMs": 7200000
+                }
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B600",
+          "t": "2026-01-15T10:00:00.000Z",
+          "answers": {
+            "profile": {
+              "key": "Default basal=1.600",
+              "detail": {
+                "activeProfileName": "Default",
+                "nameUsedForSchedule": "Default",
+                "basal": 1.6,
+                "circadianAdjustment": {
+                  "percentage": 100,
+                  "timeshiftMs": 7200000
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c6-tt-same-ms",
+      "role": "case",
+      "of": null,
+      "writes": [
+        {
+          "id": "lab-profile-1",
+          "collection": "profile",
+          "created": 15,
+          "error": null
+        },
+        {
+          "id": "c6-tt-a",
+          "collection": "treatments",
+          "created": 1,
+          "updated": 0,
+          "createdTypes": [
+            "StateSpan"
+          ],
+          "error": null
+        },
+        {
+          "id": "c6-tt-b",
+          "collection": "treatments",
+          "created": 1,
+          "updated": 0,
+          "createdTypes": [
+            "StateSpan"
+          ],
+          "error": null
+        }
+      ],
+      "spans": [
+        {
+          "originalId": "c6-tt-a",
+          "category": "TemporaryTarget",
+          "state": "Active",
+          "start": "2026-01-15T00:00:00.000Z",
+          "end": "2026-01-15T01:00:00.000Z",
+          "superseded": false
+        },
+        {
+          "originalId": "c6-tt-b",
+          "category": "TemporaryTarget",
+          "state": "Active",
+          "start": "2026-01-15T00:00:00.000Z",
+          "end": "2026-01-15T00:30:00.000Z",
+          "superseded": false
+        }
+      ],
+      "dedupLinks": [],
+      "queries": [
+        {
+          "label": "T0\u002B10",
+          "t": "2026-01-15T00:10:00.000Z",
+          "answers": {
+            "tt": {
+              "key": "c6-tt-a",
+              "keyActiveState": "c6-tt-a",
+              "keySet": "c6-tt-a\u002Bc6-tt-b",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c6-tt-a",
+                  "state": "Active",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T01:00:00.000Z"
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c6-tt-a",
+                  "state": "Active",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T01:00:00.000Z"
+                },
+                "covering": [
+                  {
+                    "originalId": "c6-tt-a",
+                    "state": "Active",
+                    "start": "2026-01-15T00:00:00.000Z",
+                    "end": "2026-01-15T01:00:00.000Z"
+                  },
+                  {
+                    "originalId": "c6-tt-b",
+                    "state": "Active",
+                    "start": "2026-01-15T00:00:00.000Z",
+                    "end": "2026-01-15T00:30:00.000Z"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B45",
+          "t": "2026-01-15T00:45:00.000Z",
+          "answers": {
+            "tt": {
+              "key": "c6-tt-a",
+              "keyActiveState": "c6-tt-a",
+              "keySet": "c6-tt-a",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c6-tt-a",
+                  "state": "Active",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T01:00:00.000Z"
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c6-tt-a",
+                  "state": "Active",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T01:00:00.000Z"
+                },
+                "covering": [
+                  {
+                    "originalId": "c6-tt-a",
+                    "state": "Active",
+                    "start": "2026-01-15T00:00:00.000Z",
+                    "end": "2026-01-15T01:00:00.000Z"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c6-ctl",
+      "role": "control",
+      "of": "c6-tt-same-ms",
+      "writes": [
+        {
+          "id": "lab-profile-1",
+          "collection": "profile",
+          "created": 15,
+          "error": null
+        },
+        {
+          "id": "c6-tt-a",
+          "collection": "treatments",
+          "created": 1,
+          "updated": 0,
+          "createdTypes": [
+            "StateSpan"
+          ],
+          "error": null
+        },
+        {
+          "id": "c6-tt-b",
+          "collection": "treatments",
+          "created": 1,
+          "updated": 0,
+          "createdTypes": [
+            "StateSpan"
+          ],
+          "error": null
+        }
+      ],
+      "spans": [
+        {
+          "originalId": "c6-tt-a",
+          "category": "TemporaryTarget",
+          "state": "Active",
+          "start": "2026-01-15T00:00:00.000Z",
+          "end": "2026-01-15T01:00:00.000Z",
+          "superseded": false
+        },
+        {
+          "originalId": "c6-tt-b",
+          "category": "TemporaryTarget",
+          "state": "Active",
+          "start": "2026-01-15T01:30:00.000Z",
+          "end": "2026-01-15T02:00:00.000Z",
+          "superseded": false
+        }
+      ],
+      "dedupLinks": [],
+      "queries": [
+        {
+          "label": "T0\u002B10",
+          "t": "2026-01-15T00:10:00.000Z",
+          "answers": {
+            "tt": {
+              "key": "c6-tt-a",
+              "keyActiveState": "c6-tt-a",
+              "keySet": "c6-tt-a",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c6-tt-a",
+                  "state": "Active",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T01:00:00.000Z"
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c6-tt-a",
+                  "state": "Active",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T01:00:00.000Z"
+                },
+                "covering": [
+                  {
+                    "originalId": "c6-tt-a",
+                    "state": "Active",
+                    "start": "2026-01-15T00:00:00.000Z",
+                    "end": "2026-01-15T01:00:00.000Z"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B45",
+          "t": "2026-01-15T00:45:00.000Z",
+          "answers": {
+            "tt": {
+              "key": "c6-tt-a",
+              "keyActiveState": "c6-tt-a",
+              "keySet": "c6-tt-a",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c6-tt-a",
+                  "state": "Active",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T01:00:00.000Z"
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c6-tt-a",
+                  "state": "Active",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T01:00:00.000Z"
+                },
+                "covering": [
+                  {
+                    "originalId": "c6-tt-a",
+                    "state": "Active",
+                    "start": "2026-01-15T00:00:00.000Z",
+                    "end": "2026-01-15T01:00:00.000Z"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B100",
+          "t": "2026-01-15T01:40:00.000Z",
+          "answers": {
+            "tt": {
+              "key": "c6-tt-b",
+              "keyActiveState": "c6-tt-b",
+              "keySet": "c6-tt-b",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c6-tt-b",
+                  "state": "Active",
+                  "start": "2026-01-15T01:30:00.000Z",
+                  "end": "2026-01-15T02:00:00.000Z"
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c6-tt-b",
+                  "state": "Active",
+                  "start": "2026-01-15T01:30:00.000Z",
+                  "end": "2026-01-15T02:00:00.000Z"
+                },
+                "covering": [
+                  {
+                    "originalId": "c6-tt-b",
+                    "state": "Active",
+                    "start": "2026-01-15T01:30:00.000Z",
+                    "end": "2026-01-15T02:00:00.000Z"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c6-perturb",
+      "role": "perturbation",
+      "of": "c6-tt-same-ms",
+      "writes": [
+        {
+          "id": "lab-profile-1",
+          "collection": "profile",
+          "created": 15,
+          "error": null
+        },
+        {
+          "id": "c6-tt-b",
+          "collection": "treatments",
+          "created": 1,
+          "updated": 0,
+          "createdTypes": [
+            "StateSpan"
+          ],
+          "error": null
+        },
+        {
+          "id": "c6-tt-a",
+          "collection": "treatments",
+          "created": 1,
+          "updated": 0,
+          "createdTypes": [
+            "StateSpan"
+          ],
+          "error": null
+        }
+      ],
+      "spans": [
+        {
+          "originalId": "c6-tt-b",
+          "category": "TemporaryTarget",
+          "state": "Active",
+          "start": "2026-01-15T00:00:00.000Z",
+          "end": "2026-01-15T00:30:00.000Z",
+          "superseded": false
+        },
+        {
+          "originalId": "c6-tt-a",
+          "category": "TemporaryTarget",
+          "state": "Active",
+          "start": "2026-01-15T00:00:00.000Z",
+          "end": "2026-01-15T01:00:00.000Z",
+          "superseded": false
+        }
+      ],
+      "dedupLinks": [],
+      "queries": [
+        {
+          "label": "T0\u002B10",
+          "t": "2026-01-15T00:10:00.000Z",
+          "answers": {
+            "tt": {
+              "key": "c6-tt-b",
+              "keyActiveState": "c6-tt-b",
+              "keySet": "c6-tt-a\u002Bc6-tt-b",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c6-tt-b",
+                  "state": "Active",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T00:30:00.000Z"
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c6-tt-b",
+                  "state": "Active",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T00:30:00.000Z"
+                },
+                "covering": [
+                  {
+                    "originalId": "c6-tt-b",
+                    "state": "Active",
+                    "start": "2026-01-15T00:00:00.000Z",
+                    "end": "2026-01-15T00:30:00.000Z"
+                  },
+                  {
+                    "originalId": "c6-tt-a",
+                    "state": "Active",
+                    "start": "2026-01-15T00:00:00.000Z",
+                    "end": "2026-01-15T01:00:00.000Z"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B45",
+          "t": "2026-01-15T00:45:00.000Z",
+          "answers": {
+            "tt": {
+              "key": "c6-tt-a",
+              "keyActiveState": "c6-tt-a",
+              "keySet": "c6-tt-a",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c6-tt-a",
+                  "state": "Active",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T01:00:00.000Z"
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c6-tt-a",
+                  "state": "Active",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T01:00:00.000Z"
+                },
+                "covering": [
+                  {
+                    "originalId": "c6-tt-a",
+                    "state": "Active",
+                    "start": "2026-01-15T00:00:00.000Z",
+                    "end": "2026-01-15T01:00:00.000Z"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c7-ov-backfill",
+      "role": "case",
+      "of": null,
+      "writes": [
+        {
+          "id": "lab-profile-1",
+          "collection": "profile",
+          "created": 15,
+          "error": null
+        },
+        {
+          "id": "c7-ov-later",
+          "collection": "treatments",
+          "created": 1,
+          "updated": 0,
+          "createdTypes": [
+            "StateSpan"
+          ],
+          "error": null
+        },
+        {
+          "id": "c7-ov-earlier",
+          "collection": "treatments",
+          "created": 1,
+          "updated": 0,
+          "createdTypes": [
+            "StateSpan"
+          ],
+          "error": null
+        }
+      ],
+      "spans": [
+        {
+          "originalId": "c7-ov-earlier",
+          "category": "Override",
+          "state": "Custom",
+          "start": "2026-01-15T00:00:00.000Z",
+          "end": null,
+          "superseded": false
+        },
+        {
+          "originalId": "c7-ov-later",
+          "category": "Override",
+          "state": "Custom",
+          "start": "2026-01-15T01:00:00.000Z",
+          "end": null,
+          "superseded": false
+        }
+      ],
+      "dedupLinks": [],
+      "queries": [
+        {
+          "label": "T0\u002B30",
+          "t": "2026-01-15T00:30:00.000Z",
+          "answers": {
+            "override_tx": {
+              "key": "c7-ov-earlier",
+              "keyActiveState": "c7-ov-earlier",
+              "keySet": "c7-ov-earlier",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c7-ov-earlier",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": null
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c7-ov-earlier",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": null
+                },
+                "covering": [
+                  {
+                    "originalId": "c7-ov-earlier",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:00:00.000Z",
+                    "end": null
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B90",
+          "t": "2026-01-15T01:30:00.000Z",
+          "answers": {
+            "override_tx": {
+              "key": "c7-ov-later",
+              "keyActiveState": "c7-ov-later",
+              "keySet": "c7-ov-earlier\u002Bc7-ov-later",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c7-ov-later",
+                  "state": "Custom",
+                  "start": "2026-01-15T01:00:00.000Z",
+                  "end": null
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c7-ov-later",
+                  "state": "Custom",
+                  "start": "2026-01-15T01:00:00.000Z",
+                  "end": null
+                },
+                "covering": [
+                  {
+                    "originalId": "c7-ov-later",
+                    "state": "Custom",
+                    "start": "2026-01-15T01:00:00.000Z",
+                    "end": null
+                  },
+                  {
+                    "originalId": "c7-ov-earlier",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:00:00.000Z",
+                    "end": null
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c7-ctl",
+      "role": "control",
+      "of": "c7-ov-backfill",
+      "writes": [
+        {
+          "id": "lab-profile-1",
+          "collection": "profile",
+          "created": 15,
+          "error": null
+        },
+        {
+          "id": "c7-ov-later",
+          "collection": "treatments",
+          "created": 1,
+          "updated": 0,
+          "createdTypes": [
+            "StateSpan"
+          ],
+          "error": null
+        },
+        {
+          "id": "c7-ov-earlier",
+          "collection": "treatments",
+          "created": 1,
+          "updated": 0,
+          "createdTypes": [
+            "StateSpan"
+          ],
+          "error": null
+        }
+      ],
+      "spans": [
+        {
+          "originalId": "c7-ov-earlier",
+          "category": "Override",
+          "state": "Custom",
+          "start": "2026-01-15T00:00:00.000Z",
+          "end": "2026-01-15T00:30:00.000Z",
+          "superseded": false
+        },
+        {
+          "originalId": "c7-ov-later",
+          "category": "Override",
+          "state": "Custom",
+          "start": "2026-01-15T01:00:00.000Z",
+          "end": "2026-01-15T01:30:00.000Z",
+          "superseded": false
+        }
+      ],
+      "dedupLinks": [],
+      "queries": [
+        {
+          "label": "T0\u002B15",
+          "t": "2026-01-15T00:15:00.000Z",
+          "answers": {
+            "override_tx": {
+              "key": "c7-ov-earlier",
+              "keyActiveState": "c7-ov-earlier",
+              "keySet": "c7-ov-earlier",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c7-ov-earlier",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T00:30:00.000Z"
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c7-ov-earlier",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T00:30:00.000Z"
+                },
+                "covering": [
+                  {
+                    "originalId": "c7-ov-earlier",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:00:00.000Z",
+                    "end": "2026-01-15T00:30:00.000Z"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B45",
+          "t": "2026-01-15T00:45:00.000Z",
+          "answers": {
+            "override_tx": {
+              "key": "none",
+              "keyActiveState": "none",
+              "keySet": "none",
+              "detail": {
+                "getActiveAt_anyState": null,
+                "getActiveAt_activeState": null,
+                "covering": []
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B75",
+          "t": "2026-01-15T01:15:00.000Z",
+          "answers": {
+            "override_tx": {
+              "key": "c7-ov-later",
+              "keyActiveState": "c7-ov-later",
+              "keySet": "c7-ov-later",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c7-ov-later",
+                  "state": "Custom",
+                  "start": "2026-01-15T01:00:00.000Z",
+                  "end": "2026-01-15T01:30:00.000Z"
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c7-ov-later",
+                  "state": "Custom",
+                  "start": "2026-01-15T01:00:00.000Z",
+                  "end": "2026-01-15T01:30:00.000Z"
+                },
+                "covering": [
+                  {
+                    "originalId": "c7-ov-later",
+                    "state": "Custom",
+                    "start": "2026-01-15T01:00:00.000Z",
+                    "end": "2026-01-15T01:30:00.000Z"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "c7-perturb",
+      "role": "perturbation",
+      "of": "c7-ov-backfill",
+      "writes": [
+        {
+          "id": "lab-profile-1",
+          "collection": "profile",
+          "created": 15,
+          "error": null
+        },
+        {
+          "id": "c7-ov-earlier",
+          "collection": "treatments",
+          "created": 1,
+          "updated": 0,
+          "createdTypes": [
+            "StateSpan"
+          ],
+          "error": null
+        },
+        {
+          "id": "c7-ov-later",
+          "collection": "treatments",
+          "created": 1,
+          "updated": 0,
+          "createdTypes": [
+            "StateSpan"
+          ],
+          "error": null
+        }
+      ],
+      "spans": [
+        {
+          "originalId": "c7-ov-earlier",
+          "category": "Override",
+          "state": "Custom",
+          "start": "2026-01-15T00:00:00.000Z",
+          "end": "2026-01-15T01:00:00.000Z",
+          "superseded": true
+        },
+        {
+          "originalId": "c7-ov-later",
+          "category": "Override",
+          "state": "Custom",
+          "start": "2026-01-15T01:00:00.000Z",
+          "end": null,
+          "superseded": false
+        }
+      ],
+      "dedupLinks": [],
+      "queries": [
+        {
+          "label": "T0\u002B30",
+          "t": "2026-01-15T00:30:00.000Z",
+          "answers": {
+            "override_tx": {
+              "key": "c7-ov-earlier",
+              "keyActiveState": "c7-ov-earlier",
+              "keySet": "c7-ov-earlier",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c7-ov-earlier",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T01:00:00.000Z"
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c7-ov-earlier",
+                  "state": "Custom",
+                  "start": "2026-01-15T00:00:00.000Z",
+                  "end": "2026-01-15T01:00:00.000Z"
+                },
+                "covering": [
+                  {
+                    "originalId": "c7-ov-earlier",
+                    "state": "Custom",
+                    "start": "2026-01-15T00:00:00.000Z",
+                    "end": "2026-01-15T01:00:00.000Z"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "label": "T0\u002B90",
+          "t": "2026-01-15T01:30:00.000Z",
+          "answers": {
+            "override_tx": {
+              "key": "c7-ov-later",
+              "keyActiveState": "c7-ov-later",
+              "keySet": "c7-ov-later",
+              "detail": {
+                "getActiveAt_anyState": {
+                  "originalId": "c7-ov-later",
+                  "state": "Custom",
+                  "start": "2026-01-15T01:00:00.000Z",
+                  "end": null
+                },
+                "getActiveAt_activeState": {
+                  "originalId": "c7-ov-later",
+                  "state": "Custom",
+                  "start": "2026-01-15T01:00:00.000Z",
+                  "end": null
+                },
+                "covering": [
+                  {
+                    "originalId": "c7-ov-later",
+                    "state": "Custom",
+                    "start": "2026-01-15T01:00:00.000Z",
+                    "end": null
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
