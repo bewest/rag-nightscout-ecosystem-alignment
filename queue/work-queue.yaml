@@ -4947,6 +4947,14 @@ items:
       other lib, 0 write-rule; 50 against dev = 11 write-rule, 21 of them the
       modernization branch's own).
 
+      Decided by the maintainer 2026-10-12: the conf.pipeline hook on the v1
+      count path is removed. count() takes a filter only, and a supplied
+      pipeline is an error, as the seam already does. The modernization test
+      "keeps the server-side conf.pipeline hook working"
+      (tests/api-v1-count-pipeline.test.js) is rewritten to assert the
+      refusal. Nothing in the tree supplies one (all three construction sites
+      pass {}); BF-70 kept it as a minimal change, not for a user.
+
   - id: WRITE-CONTRACT
     title: "One write step behind the storage interface: _id form, srv dates, soft delete, re-send identity, one change event"
     parcel: tenancy

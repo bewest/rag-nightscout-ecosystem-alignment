@@ -2,5 +2,5 @@
 # usage: runserver.sh <crm dir> <port> <dbname>
 cd "$1"
 export MONGODB_URI="mongodb://127.0.0.1:27099/$3" PORT=$2 HOSTNAME=127.0.0.1 INSECURE_USE_HTTP=true
-export API_SECRET="$(cat /tmp/claude-1000/-home-bewest-src-rag-nightscout-ecosystem-alignment/a75d6076-e940-4d28-93d9-d9ff0d61c8b1/scratchpad/secret.txt)" ENABLE="careportal" DISPLAY_UNITS=mg/dl AUTH_DEFAULT_ROLES=denied NODE_ENV=production
+export API_SECRET="${WC_API_SECRET:?set WC_API_SECRET}" ENABLE="careportal" DISPLAY_UNITS=mg/dl AUTH_DEFAULT_ROLES=denied NODE_ENV=production
 exec node lib/server/server.js
