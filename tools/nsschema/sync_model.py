@@ -399,6 +399,8 @@ _AAPS_SPANS = [
             "channels": ["treatment-download"],
             "preference": "NsClientAcceptProfileSwitch",
             "default": False,
+            "description": "The preference is bypassed on the AAPSClient build and during a "
+                           "full sync, which apply inbound records regardless.",
         },
         "evidence": [
             ev("PS -> EPS written only if the pump accepts; EPS uploaded as Note recognised "
@@ -417,7 +419,7 @@ _AAPS_SPANS = [
                "invalidate = v3 soft delete", f"{LANDSCAPE} §4, §7"),
             ev("NsClientAcceptProfileSwitch, default false",
                f"{AAPS} core/keys/src/commonMain/kotlin/app/aaps/core/keys/BooleanKey.kt:223"),
-            ev("inbound PS and EPS gated by the preference",
+            ev("inbound PS and EPS gated by the preference, or AAPSCLIENT, or a full sync",
                f"{AAPS} plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/"
                "nsclientV3/NsIncomingDataProcessor.kt:188-200"),
         ],
@@ -451,6 +453,8 @@ _AAPS_SPANS = [
             "channels": ["treatment-download"],
             "preference": "NsClientAcceptTempTarget",
             "default": False,
+            "description": "The preference is bypassed on the AAPSClient build and during a "
+                           "full sync, which apply inbound records regardless.",
         },
         "evidence": [
             ev("reason vocabulary",
@@ -461,6 +465,9 @@ _AAPS_SPANS = [
                "Automation is the only initiator on the wire", f"{LANDSCAPE} §3.3, §3 P5"),
             ev("NsClientAcceptTempTarget, default false",
                f"{AAPS} core/keys/src/commonMain/kotlin/app/aaps/core/keys/BooleanKey.kt:222"),
+            ev("inbound TT gated by the preference, or AAPSCLIENT, or a full sync",
+               f"{AAPS} plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/"
+               "nsclientV3/NsIncomingDataProcessor.kt:171"),
         ],
     },
     {
@@ -514,6 +521,8 @@ _AAPS_SPANS = [
             "channels": ["treatment-download"],
             "preference": "NsClientAcceptRunningMode",
             "default": False,
+            "description": "The preference is bypassed on the AAPSClient build and during a "
+                           "full sync, which apply inbound records regardless.",
         },
         "evidence": [
             ev("requested layer and constraint-forced layer (autoForced, reasons), both "
@@ -526,6 +535,9 @@ _AAPS_SPANS = [
                f"{AAPS} core/data/src/commonMain/kotlin/app/aaps/core/data/model/RM.kt:43-63"),
             ev("NsClientAcceptRunningMode, default false",
                f"{AAPS} core/keys/src/commonMain/kotlin/app/aaps/core/keys/BooleanKey.kt:227"),
+            ev("inbound RM gated by the preference, or AAPSCLIENT, or a full sync",
+               f"{AAPS} plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/"
+               "nsclientV3/NsIncomingDataProcessor.kt:226"),
         ],
     },
     {

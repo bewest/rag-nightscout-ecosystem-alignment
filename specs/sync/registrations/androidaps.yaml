@@ -203,6 +203,8 @@ spec:
       - treatment-download
       preference: NsClientAcceptProfileSwitch
       default: false
+      description: The preference is bypassed on the AAPSClient build and during a full sync,
+        which apply inbound records regardless.
     evidence:
     - claim: PS -> EPS written only if the pump accepts; EPS uploaded as Note recognised by
         originalProfileName
@@ -228,7 +230,7 @@ spec:
     - claim: NsClientAcceptProfileSwitch, default false
       source: AndroidAPS 7e1d537d49 core/keys/src/commonMain/kotlin/app/aaps/core/keys/BooleanKey.kt:223
       basis: read
-    - claim: inbound PS and EPS gated by the preference
+    - claim: inbound PS and EPS gated by the preference, or AAPSCLIENT, or a full sync
       source: AndroidAPS 7e1d537d49 plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/nsclientV3/NsIncomingDataProcessor.kt:188-200
       basis: read
   - category: TemporaryTarget
@@ -282,6 +284,8 @@ spec:
       - treatment-download
       preference: NsClientAcceptTempTarget
       default: false
+      description: The preference is bypassed on the AAPSClient build and during a full sync,
+        which apply inbound records regardless.
     evidence:
     - claim: reason vocabulary
       source: AndroidAPS 7e1d537d49 core/data/src/commonMain/kotlin/app/aaps/core/data/model/TT.kt:36-42
@@ -296,6 +300,9 @@ spec:
       basis: read
     - claim: NsClientAcceptTempTarget, default false
       source: AndroidAPS 7e1d537d49 core/keys/src/commonMain/kotlin/app/aaps/core/keys/BooleanKey.kt:222
+      basis: read
+    - claim: inbound TT gated by the preference, or AAPSCLIENT, or a full sync
+      source: AndroidAPS 7e1d537d49 plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/nsclientV3/NsIncomingDataProcessor.kt:171
       basis: read
   - category: LoopMode
     kind: RunningMode
@@ -374,6 +381,8 @@ spec:
       - treatment-download
       preference: NsClientAcceptRunningMode
       default: false
+      description: The preference is bypassed on the AAPSClient build and during a full sync,
+        which apply inbound records regardless.
     evidence:
     - claim: requested layer and constraint-forced layer (autoForced, reasons), both uploaded
         as OpenAPS Offline; temporary over permanent
@@ -389,6 +398,9 @@ spec:
       basis: read
     - claim: NsClientAcceptRunningMode, default false
       source: AndroidAPS 7e1d537d49 core/keys/src/commonMain/kotlin/app/aaps/core/keys/BooleanKey.kt:227
+      basis: read
+    - claim: inbound RM gated by the preference, or AAPSCLIENT, or a full sync
+      source: AndroidAPS 7e1d537d49 plugins/sync/src/commonMain/kotlin/app/aaps/plugins/sync/nsclientV3/NsIncomingDataProcessor.kt:226
       basis: read
   - category: Scene
     kind: Scene
