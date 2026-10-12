@@ -1,6 +1,6 @@
 # A hub-and-spoke sync model for AID controllers
 
-*Contributor-facing.* **Snapshot — describes 2026-09-11. Status: current as analysis; the design it sketches is carried forward by [PROPOSAL-controller-descriptions](PROPOSAL-controller-descriptions-2026-09-11.md) and [PROPOSAL-replay-fidelity-changes](PROPOSAL-replay-fidelity-changes-2026-09-11.md).** Current decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
+*Contributor-facing.* **Snapshot — describes 2026-09-11. Status: current as analysis; the design it sketches is carried forward by [PROPOSAL-controller-descriptions](PROPOSAL-controller-descriptions-2026-09-11.md) and [PROPOSAL-replay-fidelity-changes](PROPOSAL-replay-fidelity-changes-2026-09-11.md).** Current decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions). **Corrected in place 2026-10-12:** §3.1's description of `stateSpans` and the schema field list in §5.2 now match the schema as extended for D18 from [intent and workflow across the landscape](./nightscout-intent-workflow-landscape-2026-10-09.md) §9.
 
 Date: 2026-09-11. Fifth in a series
 with
@@ -119,8 +119,22 @@ A controller declares its live state model once, against
 * **documents** — the composite wire documents it writes, each with a
   *structural* discriminator (a devicestatus carrying a `loop` object rather
   than an `openaps` one) and the primitive types it decomposes to
-* **stateSpans** — the state machine it exposes, as categories with states
-  and a supersession rule
+* **stateSpans** — the intent kinds it exposes, one entry per kind: the slot
+  it occupies and which slots coexist, its states and end reasons, the wire
+  carrier today's documents use (eventType, identity, duration unit,
+  indefinite sentinel, how "ended" is encoded), where the request and the
+  applied effect are each recorded, the initiator vocabulary, the definitions
+  it is made from, and which hub-originated intent the controller accepts.
+  Each entry carries evidence marked `read` (from source) or `measured`. The
+  2026-09-11 form was categories with states and a supersession rule; that
+  form still validates. *(Corrected 2026-10-12.)*
+* **composition** — how overlapping intents combine, declared as reported by
+  the controller (`reportedBy: controller`, `hubComputes: false`), with where
+  the result is published or `null`. Under D18 the hub records the result and
+  does not compute it. *(Added 2026-10-12.)*
+* **commands** — how remote commands reach the controller: transport, whether
+  the hub is in the path, authorisation, expiry and acknowledgement.
+  *(Added 2026-10-12.)*
 * **replayInputs** — every dosing input it could supply, with `status` and a
   path; **an input it has but does not publish is declared with a null
   path**, which is what makes completeness measurable rather than guessed
@@ -348,8 +362,9 @@ missing half**, and it carves the problem at a joint this series did not:
 theirs, not ours. A catalogue entry describes the kind; liveness belongs to
 the instance. Adopting that split costs this series one new field group in
 `specs/sync/controller-state-model.schema.json` — which today has
-`cadence`, `documents`, `stateSpans`, `replayInputs`, `settings`,
-`queryProfile`, `sensitivity` and nothing about instances at all.
+`cadence`, `documents`, `stateSpans`, `composition`, `commands`,
+`replayInputs`, `settings`, `queryProfile`, `sensitivity` and nothing about
+instances at all. (`composition` and `commands` added 2026-10-12.)
 
 **Two corrections we can offer back, because we measured them.** Both are
 small and both are the kind of thing only a corpus can catch:

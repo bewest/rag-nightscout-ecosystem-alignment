@@ -3,6 +3,8 @@
 *Contributor-facing.* **Snapshot — describes 2026-10-09. Status: current; the evidence for D18.** Every claim is **read-derived** (from source, a hypothesis about behaviour) unless marked
 **measured**. Sources and commits are in §1. Current decisions: [execution plan
 §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
+**Corrected in place 2026-10-12:** the §10 rows for the hub-sync design and `specs/sync/registrations/` record what the
+registrations now declare and what remains.
 
 **The question.** Nightscout's API v1 and v3 manage *entities*: create, read, update and delete
 documents in `treatments`, `devicestatus`, `profile`. AID controllers increasingly manage
@@ -248,9 +250,9 @@ Derived from §3–§8. Each element is something at least one controller does t
 | Document | Consistent | Needs revising |
 |---|---|---|
 | [Controller descriptions](PROPOSAL-controller-descriptions-2026-09-11.md) | kind/instance split, `decomposesTo` (D11), `.well-known` catalogue | §4 ("static, not CRD-style, no new endpoints") is superseded in part by D18; it describes the well-known tier |
-| [Hub-and-spoke sync](nightscout-hub-sync-architecture-2026-09-11.md) | registration-derived contract, cursor + batch | `stateSpans` in the schema has no slots, end reasons, initiators or command contract |
+| [Hub-and-spoke sync](nightscout-hub-sync-architecture-2026-09-11.md) | registration-derived contract, cursor + batch | `stateSpans` in the schema has no slots, end reasons, initiators or command contract. *2026-10-12: the schema now has them (see the next row); the document is corrected in place* |
 | [Effects and versioning](nightscout-effects-and-versioning-2026-09-11.md) | effect vs motivation; `TherapyEffect` as a span | AAPS percentage is an insulin-needs scale; Trio "481" is 399 distinct; Trio `notes` is a preset name |
-| `specs/sync/registrations/{loop,trio,androidaps}.yaml` | structural discriminators | intent spans have no wire path; missing pre-meal, RunningMode, `dosingMode`, PS/EPS pair, composition |
+| `specs/sync/registrations/{loop,trio,androidaps}.yaml` | structural discriminators. **Since 2026-10-12** (`make schema-sync-model`, schema extended additively): every intent kind declares its slot and which slots coexist, states, the wire carrier (§4), requested vs applied, initiators, definitions and acceptance policy, each with `read`/`measured` evidence; `composition` is declared as reported by the controller and `commands` per §6. Added: Loop pre-meal (declared with `wire: null`, not published), Loop `dosingEnabled`, Trio `dosingMode` (§3.2; the `dosingMode` in this row's original text is Trio's), AAPS RunningMode, the AAPS PS → EPS pair, dev-only AAPS Scene. AAPS `Override` removed | still undeclared, because this document does not establish them: iAPS (no registration exists); end-reason vocabularies for Trio override and temp target and for AAPS profile switch; AAPS `Sources` values; command vocabularies; where AAPS reports the composed target; a `scheduled` state for any kind except Loop's override. The declarations are read-derived except the counts §3 marks **measured** |
 | Upstream RFC | Definition/Instance, DeliveryRequest/Observation/Reconciliation, kind vs instance | request types for override/TT/carbs/mode; `requested`/`rejected` states; hub-side composition in `conflict-resolution.md`; `bridge-rules.md` reads `devicestatus.loop.override` and AAPS `devicestatus.configuration`, neither of which is on the wire |
 | Nocturne `StateSpan` | right container for observed state; supersession; overlap for activity categories | no request/applied distinction, no end reason, metadata untyped; the §5 unit and cancel differences |
 

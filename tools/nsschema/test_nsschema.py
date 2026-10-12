@@ -1240,6 +1240,104 @@ def test_completeness_is_reported_not_assumed():
     assert stats["replayable_share"] >= stats["recorded_share"]
 
 
+# ── intent declarations (D18, landscape §9) ─────────────────────────────
+
+def _registration(key):
+    root = corpus.repo_root()
+    return sync_model.build(root, key, sync_model.CONTROLLERS[key])
+
+
+def _spans(key):
+    return _registration(key)["spec"]["stateSpans"]
+
+
+def test_androidaps_declares_no_override_span():
+    # AAPS has no override. Its equivalent is the ProfileSwitch request and
+    # the EffectiveProfileSwitch written once the pump accepts it (landscape
+    # §3.3); declaring "Override" told a hub to expect records AAPS never writes.
+    spans = _spans("androidaps")
+    assert "Override" not in {s["category"] for s in spans}
+    ps = next(s for s in spans if s.get("kind") == "ProfileSwitch")
+    assert ps["requested"]["eventType"] == "Profile Switch"
+    assert ps["applied"]["eventType"] == "Note"
+    assert ps["applied"]["discriminator"] == {
+        "path": "originalProfileName", "test": "exists"}
+    assert ps["applied"]["linkToRequest"] is None  # originalPsId is not sent
+    assert "RunningMode" in {s.get("kind") for s in spans}
+
+
+def test_loop_declares_premeal_as_a_concurrent_unpublished_slot():
+    spans = {s["slot"]: s for s in _spans("loop")}
+    assert {"override", "preMeal"} <= set(spans)
+    assert "preMeal" in spans["override"]["coexistsWith"]
+    assert "override" in spans["preMeal"]["coexistsWith"]
+    # Known-unpublished is stated, not left out: pre-meal has no wire record.
+    assert spans["preMeal"]["wire"] is None
+
+
+def test_trio_declares_dosing_mode_on_devicestatus():
+    mode = next(s for s in _spans("trio") if s.get("kind") == "DosingMode")
+    assert mode["wire"]["paths"] == ["openaps.dosingMode"]
+    assert mode["wire"]["endedEncoding"] == "sampled-state"
+
+
+@pytest.mark.parametrize("key", sorted(sync_model.CONTROLLERS))
+def test_every_intent_span_declares_its_wire_carrier(key):
+    # The landscape §10 gap was "intent spans have no wire path". Every span
+    # now says where today's documents carry it, or null for "not published",
+    # and says where that statement comes from.
+    for span in _spans(key):
+        assert "wire" in span, (key, span["category"])
+        if span["wire"] is not None:
+            assert span["wire"]["collection"], (key, span["category"])
+        assert span.get("evidence"), (key, span["category"])
+        assert all(e["basis"] in ("read", "measured") for e in span["evidence"])
+
+
+def test_only_declared_unpublished_spans_have_a_null_wire():
+    unpublished = {(key, s["category"])
+                   for key in sync_model.CONTROLLERS
+                   for s in _spans(key) if s["wire"] is None}
+    assert unpublished == {("loop", "PreMealTarget")}
+
+
+@pytest.mark.parametrize("key", sorted(sync_model.CONTROLLERS))
+def test_composition_is_reported_by_the_controller(key):
+    # D18: the hub records the controller's composition result; it never
+    # computes one.
+    registration = _registration(key)
+    composition = registration["spec"]["composition"]
+    assert composition["reportedBy"] == "controller"
+    assert composition["hubComputes"] is False
+    assert registration["metadata"]["tier"] == "well-known"
+
+
+def test_a_hub_computed_composition_is_rejected_by_the_schema():
+    schema = json.loads((corpus.repo_root() / sync_model.SCHEMA).read_text())
+    registration = _registration("trio")
+    checked = {k: v for k, v in registration.items() if not k.startswith("x-")}
+    checked["spec"]["composition"]["reportedBy"] = "hub"
+    assert list(jsonschema.Draft202012Validator(schema).iter_errors(checked))
+
+
+def test_a_legacy_state_span_still_validates():
+    # The intent fields are additive: a registration written against the
+    # 2026-09-11 schema stays valid.
+    schema = json.loads((corpus.repo_root() / sync_model.SCHEMA).read_text())
+    registration = _registration("loop")
+    checked = {k: v for k, v in registration.items() if not k.startswith("x-")}
+    checked["metadata"].pop("tier")
+    for key in ("composition", "commands"):
+        checked["spec"].pop(key)
+    checked["spec"]["stateSpans"] = [
+        {"category": "Override", "states": ["active", "inactive"], "supersedes": True}]
+    jsonschema.Draft202012Validator(schema).validate(checked)
+
+
+def test_committed_registrations_match_the_generator():
+    assert sync_model.main(["--check"]) == 0
+
+
 # ── therapy effects ─────────────────────────────────────────────────────
 
 from nsschema import effects  # noqa: E402

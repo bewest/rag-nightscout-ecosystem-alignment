@@ -2,7 +2,7 @@
  "$schema": "https://json-schema.org/draft/2020-12/schema",
  "$id": "https://nightscout.dev/schemas/sync/controller-state-model.json",
  "title": "Controller state model registration",
- "description": "What a controller tells the hub about itself, once, so the hub can prepare a sync contract for it. The registration is the controller's live state model: the composite documents it writes, the primitives they decompose to, the state machine it exposes, the dosing inputs it can supply, and the settings it will publish. Everything the hub offers back - the cursor, the batch endpoints, the allowed filters - is derived from this, so a controller never negotiates a query shape at request time.",
+ "description": "What a controller tells the hub about itself, once, so the hub can prepare a sync contract for it. The registration is the controller's live state model: the composite documents it writes, the primitives they decompose to, the intent kinds it exposes (slots, states, end reasons, wire carrier, requested vs applied), the dosing inputs it can supply, and the settings it will publish. Everything the hub offers back - the cursor, the batch endpoints, the allowed filters - is derived from this, so a controller never negotiates a query shape at request time.",
  "type": "object",
  "required": [
   "apiVersion",
@@ -47,6 +47,13 @@
     "source": {
      "type": "string",
      "description": "Where this registration was derived from."
+    },
+    "tier": {
+     "enum": [
+      "well-known",
+      "controller-owned"
+     ],
+     "description": "D18. `well-known`: shipped by the hub and generated from measurement, so a controller is described as it writes today with no change on its side. `controller-owned`: published by the controller, per release, to declare typed definitions for its own features."
     }
    }
   },
@@ -134,7 +141,7 @@
     },
     "stateSpans": {
      "type": "array",
-     "description": "The state machine this controller exposes, as time-ranged spans rather than point events. Categories the hub can render, query and reconcile across sources.",
+     "description": "The intent kinds this controller exposes as time-ranged spans: which slots exist and which coexist, their states and end reasons, how today's documents carry them, and where requested and applied differ (landscape §9). The hub records and renders what the controller reports; it does not reconcile spans across controllers.",
      "items": {
       "type": "object",
       "required": [
@@ -143,17 +150,433 @@
       "additionalProperties": false,
       "properties": {
        "category": {
-        "type": "string"
+        "type": "string",
+        "description": "The span category the hub renders and queries this kind under."
+       },
+       "kind": {
+        "type": "string",
+        "description": "The controller's own name for this intent kind."
+       },
+       "availability": {
+        "enum": [
+         "released",
+         "dev-only"
+        ],
+        "description": "`dev-only`: present on the controller's development branch at the evidence commit and absent from its latest release. Absent means released."
        },
        "states": {
         "type": "array",
         "items": {
          "type": "string"
-        }
+        },
+        "description": "Lifecycle states an instance passes through. The vocabulary is `scheduled` (exists, not yet started), `active` and `ended`; registrations generated before 2026-10-12 used `active`/`inactive`."
        },
        "supersedes": {
         "type": "boolean",
-        "description": "Whether a later span from this controller supersedes an overlapping one, which is how two controllers or a human and a controller are reconciled."
+        "description": "Whether a later instance of this kind from this controller ends an overlapping earlier one, as the controller does it. The hub reads this to render and query the controller's own records; it does not reconcile between controllers, or between a person and a controller (D18)."
+       },
+       "slot": {
+        "$ref": "#/$defs/slotName"
+       },
+       "exclusiveWithinSlot": {
+        "type": "boolean",
+        "description": "At most one instance is active in this slot at a time."
+       },
+       "coexistsWith": {
+        "type": "array",
+        "items": {
+         "$ref": "#/$defs/slotName"
+        },
+        "description": "Slots that can be active at the same time as this one. How they combine is the controller's composition (spec.composition)."
+       },
+       "overlay": {
+        "type": "boolean",
+        "description": "A timed instance applies over an open-ended one, and the open-ended one applies again when the timed one ends."
+       },
+       "endReasons": {
+        "type": "array",
+        "description": "Why an instance ends, in the shared vocabulary, with the controller's own term where it has one.",
+        "items": {
+         "type": "object",
+         "required": [
+          "reason"
+         ],
+         "additionalProperties": false,
+         "properties": {
+          "reason": {
+           "enum": [
+            "expired",
+            "cancelled",
+            "superseded",
+            "deletedBeforeStart",
+            "endedByTrigger"
+           ]
+          },
+          "controllerTerm": {
+           "type": "string"
+          },
+          "triggers": {
+           "type": "array",
+           "items": {
+            "type": "string"
+           },
+           "description": "For `endedByTrigger`: what ends it. Vocabulary: carbs, glucoseAbove, glucoseBelow, loopOff, chain."
+          }
+         }
+        }
+       },
+       "wire": {
+        "description": "The wire carrier: how today's documents represent instances of this kind (landscape §4). null: the controller keeps the intent and publishes no instance record.",
+        "oneOf": [
+         {
+          "type": "null"
+         },
+         {
+          "$ref": "#/$defs/carrier",
+          "unevaluatedProperties": false,
+          "properties": {
+           "identity": {
+            "type": "array",
+            "items": {
+             "type": "string"
+            },
+            "description": "The fields that identify one instance across amendments."
+           },
+           "durationField": {
+            "type": "string"
+           },
+           "durationUnit": {
+            "enum": [
+             "seconds",
+             "minutes",
+             "milliseconds"
+            ]
+           },
+           "indefinite": {
+            "type": "object",
+            "description": "How an open-ended instance is written.",
+            "required": [
+             "field",
+             "value"
+            ],
+            "additionalProperties": false,
+            "properties": {
+             "field": {
+              "type": "string"
+             },
+             "value": {},
+             "description": {
+              "type": "string"
+             }
+            }
+           },
+           "endedEncoding": {
+            "enum": [
+             "amend-duration",
+             "delete-and-repost",
+             "repost-same-created_at",
+             "zero-duration-record",
+             "sampled-state"
+            ],
+            "description": "How an instance that ends early is written. `amend-duration`: the same instance is re-sent with a shorter duration. `delete-and-repost`: deleted and written again with the actual duration, under a new document id. `repost-same-created_at`: written again with the same created_at and the actual duration. `zero-duration-record`: a separate zero-duration record marks the end. `sampled-state`: no instance record; the current value is carried on every document and a change is the next differing value."
+           },
+           "cancelBeforeStartEncoding": {
+            "enum": [
+             "delete",
+             "soft-delete",
+             "zero-duration-record"
+            ]
+           },
+           "endReasonPath": {
+            "type": [
+             "string",
+             "null"
+            ],
+            "description": "The field carrying the end reason. null: the reason is not sent and can only be inferred from the encoding."
+           }
+          }
+         }
+        ]
+       },
+       "requested": {
+        "description": "Where the request is recorded, when it is a different record from the applied effect. null: the request is not published.",
+        "oneOf": [
+         {
+          "type": "null"
+         },
+         {
+          "$ref": "#/$defs/carrier",
+          "unevaluatedProperties": false
+         }
+        ]
+       },
+       "applied": {
+        "description": "Where the controller reports what it applied. null: the applied state is not published.",
+        "oneOf": [
+         {
+          "type": "null"
+         },
+         {
+          "$ref": "#/$defs/carrier",
+          "unevaluatedProperties": false
+         }
+        ]
+       },
+       "initiators": {
+        "type": "object",
+        "description": "Who or what started an instance, in the controller's own vocabulary.",
+        "additionalProperties": false,
+        "properties": {
+         "vocabulary": {
+          "type": "string",
+          "description": "The controller's type name."
+         },
+         "values": {
+          "type": "array",
+          "items": {
+           "type": "string"
+          }
+         },
+         "wirePath": {
+          "type": [
+           "string",
+           "null"
+          ],
+          "description": "The field that carries the initiator. null: not sent."
+         },
+         "wireProxy": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+           "path": {
+            "type": "string"
+           },
+           "value": {}
+          },
+          "description": "A wire value that stands in for one initiator when the vocabulary itself is not sent."
+         },
+         "description": {
+          "type": "string"
+         }
+        }
+       },
+       "definitions": {
+        "type": "object",
+        "description": "The presets or definitions an instance is made from.",
+        "additionalProperties": false,
+        "properties": {
+         "published": {
+          "description": "Where definitions are published. null: not sent to the hub.",
+          "oneOf": [
+           {
+            "type": "null"
+           },
+           {
+            "$ref": "#/$defs/carrier",
+            "unevaluatedProperties": false
+           }
+          ]
+         },
+         "idField": {
+          "type": [
+           "string",
+           "null"
+          ],
+          "description": "The stable definition id on the wire. null: definitions have no id on the wire."
+         },
+         "referencedBy": {
+          "enum": [
+           "id",
+           "name",
+           "copy"
+          ],
+          "description": "How an instance refers to its definition: by id, by name, or by copying the definition's values into the instance."
+         },
+         "fields": {
+          "type": "array",
+          "items": {
+           "type": "string"
+          },
+          "description": "Definition fields that are published."
+         },
+         "unpublishedFields": {
+          "type": "array",
+          "items": {
+           "type": "string"
+          }
+         },
+         "controllerUniqueFields": {
+          "type": "array",
+          "items": {
+           "type": "string"
+          },
+          "description": "Fields no other controller has, which need a typed home."
+         },
+         "description": {
+          "type": "string"
+         }
+        }
+       },
+       "acceptsFromHub": {
+        "type": "object",
+        "description": "Which hub-originated intent of this kind the controller acts on (acceptance policy).",
+        "additionalProperties": false,
+        "properties": {
+         "channels": {
+          "type": "array",
+          "items": {
+           "enum": [
+            "command",
+            "treatment-download"
+           ]
+          },
+          "description": "`command`: a remote command delivered to the controller. `treatment-download`: the controller reads treatments written by other clients and applies them. Empty: none."
+         },
+         "preference": {
+          "type": "string",
+          "description": "The controller setting that gates acceptance."
+         },
+         "default": {
+          "type": "boolean",
+          "description": "The setting's default."
+         },
+         "acknowledged": {
+          "type": [
+           "boolean",
+           "null"
+          ],
+          "description": "Whether acceptance or rejection is written back where the hub can see it."
+         },
+         "description": {
+          "type": "string"
+         }
+        }
+       },
+       "evidence": {
+        "$ref": "#/$defs/evidence"
+       }
+      }
+     }
+    },
+    "composition": {
+     "type": "object",
+     "description": "How overlapping intents combine (landscape §7). The rule is the controller's and depends on its algorithm settings; the hub records the result the controller reports and never computes it (D18).",
+     "required": [
+      "reportedBy",
+      "hubComputes"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "reportedBy": {
+       "const": "controller"
+      },
+      "hubComputes": {
+       "const": false
+      },
+      "rule": {
+       "type": "string",
+       "description": "The controller's rule, as read from its source. Informational: no consumer evaluates it."
+      },
+      "result": {
+       "description": "Where the controller publishes the combined result. null: not published.",
+       "oneOf": [
+        {
+         "type": "null"
+        },
+        {
+         "type": "array",
+         "items": {
+          "$ref": "#/$defs/carrier",
+          "unevaluatedProperties": false
+         }
+        }
+       ]
+      },
+      "linkedToIntents": {
+       "type": "boolean",
+       "description": "Whether the published result names the intent instances it was computed from."
+      },
+      "evidence": {
+       "$ref": "#/$defs/evidence"
+      }
+     }
+    },
+    "commands": {
+     "type": "array",
+     "description": "How remote commands reach this controller (landscape §6).",
+     "items": {
+      "type": "object",
+      "required": [
+       "transport"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "transport": {
+        "enum": [
+         "apns",
+         "sms",
+         "nightscout-settings",
+         "nightscout-treatment"
+        ]
+       },
+       "availability": {
+        "enum": [
+         "released",
+         "dev-only"
+        ]
+       },
+       "hubInPath": {
+        "enum": [
+         "no",
+         "optional",
+         "yes"
+        ],
+        "description": "`optional`: a hub can originate the command, and other senders reach the controller directly."
+       },
+       "authorisation": {
+        "type": "string"
+       },
+       "expiry": {
+        "type": "string"
+       },
+       "acknowledgement": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "states": {
+          "type": "array",
+          "items": {
+           "type": "string"
+          }
+         },
+         "replyChannel": {
+          "type": [
+           "string",
+           "null"
+          ],
+          "description": "Where a reply goes. null: no reply."
+         },
+         "correlationId": {
+          "type": [
+           "boolean",
+           "null"
+          ]
+         },
+         "failureRecord": {
+          "oneOf": [
+           {
+            "type": "null"
+           },
+           {
+            "$ref": "#/$defs/carrier",
+            "unevaluatedProperties": false
+           }
+          ]
+         }
+        }
+       },
+       "evidence": {
+        "$ref": "#/$defs/evidence"
        }
       }
      }
@@ -278,6 +701,126 @@
      }
     }
    }
+  }
+ },
+ "$defs": {
+  "evidence": {
+   "type": "array",
+   "description": "Where each statement in the enclosing block comes from. `read` means derived from source code (a statement about behaviour that was not run); `measured` means counted in the corpus or observed in a run.",
+   "items": {
+    "type": "object",
+    "required": [
+     "source",
+     "basis"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "claim": {
+      "type": "string",
+      "description": "The statement this entry supports."
+     },
+     "source": {
+      "type": "string",
+      "description": "`<repo> <commit> <path>:<line>` for a read, or the tool, report or document section for a measurement."
+     },
+     "basis": {
+      "enum": [
+       "read",
+       "measured"
+      ]
+     }
+    }
+   }
+  },
+  "carrier": {
+   "type": "object",
+   "description": "Where a controller's record of something sits on today's wire: the collection, how the documents are recognised, and the fields that carry the content.",
+   "properties": {
+    "collection": {
+     "enum": [
+      "entries",
+      "treatments",
+      "devicestatus",
+      "profile",
+      "activity",
+      "settings"
+     ]
+    },
+    "eventType": {
+     "type": "string",
+     "description": "The `treatments` eventType, when the carrier is a treatment."
+    },
+    "documentIdentifier": {
+     "type": "string",
+     "description": "The fixed document identifier, when the carrier is a single named document (for example in the v3 `settings` collection)."
+    },
+    "discriminator": {
+     "type": "object",
+     "description": "A structural test that separates these documents from others with the same collection and eventType.",
+     "required": [
+      "path",
+      "test"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "path": {
+       "type": "string"
+      },
+      "test": {
+       "enum": [
+        "exists",
+        "is-object",
+        "equals"
+       ]
+      },
+      "value": {
+       "description": "The value compared when `test` is `equals`."
+      }
+     }
+    },
+    "paths": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "description": "Dotted paths that carry the content."
+    },
+    "vocabularies": {
+     "type": "object",
+     "description": "Closed value sets carried on the wire, keyed by path.",
+     "additionalProperties": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     }
+    },
+    "unpublishedFields": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "description": "Fields the controller holds for this record and does not send."
+    },
+    "writtenWhen": {
+     "type": "string",
+     "description": "The condition under which the controller writes this record."
+    },
+    "linkToRequest": {
+     "type": [
+      "string",
+      "null"
+     ],
+     "description": "The field that links an applied record back to its request. null: no link is published."
+    },
+    "description": {
+     "type": "string"
+    }
+   }
+  },
+  "slotName": {
+   "type": "string",
+   "description": "A slot named by this registration; `coexistsWith` refers to slots by these names."
   }
  }
 }
