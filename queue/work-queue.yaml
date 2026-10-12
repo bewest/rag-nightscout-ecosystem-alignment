@@ -13598,7 +13598,7 @@ items:
     repo: rag-nightscout-ecosystem-alignment
     branch: main
     base: main@7f1d1f86
-    state: not-started
+    state: done
     pr: []
     blast_radius: >
       New specs/sync/hub-capabilities.schema.json, a negotiation section in
@@ -13619,10 +13619,27 @@ items:
           check every fixture against the schemas and the documented
           outcome: accepted, accepted with ignored fields, rejected (untyped
           extension, unsupported grammar major), and fallback to the
-          well-known carrier, each with a passing control.
+          well-known carrier, each with a passing control. GREEN on
+          2026-10-12 (179 tests over 21 conformance cases). Non-vacuity:
+          eighteen weakenings, one at a time, each turned the matching
+          test red and were reverted: in tools/nsschema/negotiate.py,
+          namespace ownership unchecked, untyped extension fields
+          undetected, grammar major unchecked, type keywords outside the
+          hub subset accepted, the interprets list not applied, a stale
+          etag accepted, no no-op on an identical retry, the etag ignoring
+          state, typed fallback for rejected elements, typed fallback for
+          a non-accepted outcome, tenant namespace claims unchecked,
+          retire without owning the namespaces, availability unchecked; in
+          the schemas, a rejected element without reasons, a reason code
+          open to any string, an etag of any form, a capability document
+          without the type keyword, and horizon classes drifting from the
+          grammar.
     blocks_on: [SCHEMA-REG-EXT]
     evidence:
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
+      - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md
+      - specs/sync/hub-capabilities.schema.json
+      - specs/sync/registration-submit.schema.json
     notes: >
       D18 addendum rule 6 (maintainer, 2026-10-12). The hub publishes the
       grammar versions, kinds, versions and capabilities it supports at a
@@ -13636,6 +13653,27 @@ items:
       tenant, consistent with D13-D17); and the four compatibility cells
       in the addendum. Specify, do not implement; both hubs implement
       against the same fixtures.
+
+      Done 2026-10-12; hub-sync design §3.5. Capability document at
+      /.well-known/nightscout/sync, beside the controller-descriptions
+      catalogue at /.well-known/nightscout/controllers; unauthenticated,
+      deployment-level, and listing no tenant's registrations. A
+      registration is the resource <submit.href>/<vendor>/<product>: PUT
+      with If-None-Match: * or If-Match, DELETE to retire; the etag is a
+      SHA-256 of the canonical registration and state, and an identical
+      resubmission is a no-op. Results per element (stateSpans,
+      extensions, typed settings and replay inputs): accepted, accepted
+      with ignored members, or rejected with reasons; anything not
+      accepted is written as its carrier. Retire keeps stored data and
+      the frozen declaration and stops typed writes. Authorisation: the
+      device's native per-tenant credential on the data listener, a
+      proposed api:registrations:create/delete permission, and per-tenant
+      namespace roots. Ten open questions for the maintainer are listed
+      in §3.5 (where namespace roots come from, namespace scope,
+      API_SECRET in single mode, binding to a credential, owner override,
+      identity granularity, dual writes, re-checking, retired data, which
+      hub first). tools/nsschema/negotiate.py is a reference used only to
+      check the cases.
 
   - id: HUB-REG-CRM
     title: "cgm-remote-monitor: accept registrations and derive typed storage, validation and query from them"
@@ -13667,6 +13705,8 @@ items:
           unregistered controller's writes are byte-identical to before.
     blocks_on: [SPEC-REG-NEGOTIATE]
     evidence:
+      - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md
+      - specs/sync/registration-submit.schema.json
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
     notes: >
       D18 and its addendum (maintainer, 2026-10-09 and 2026-10-12): the
@@ -13700,6 +13740,8 @@ items:
           maintainer has sent the packet; that cannot be checked from here.
     blocks_on: [SPEC-REG-NEGOTIATE]
     evidence:
+      - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md
+      - specs/sync/registration-submit.schema.json
       - tools/lab/hub-active-state/results/RESULTS.md
       - docs/30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md
     notes: >

@@ -1,0 +1,659 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://nightscout.dev/schemas/sync/registration-submit.json",
+ "title": "Registration submit contract",
+ "description": "D18 addendum rule 6 (execution plan §2.6.1; queue item SPEC-REG-NEGOTIATE). A controller submits its controller-owned registration (controller-state-model.schema.json) to the `submit.href` its hub publishes in the capability document (hub-capabilities.schema.json), reads back per element what was accepted, and writes the well-known carrier for anything not accepted. One registration per tenant per identity (`metadata.vendor`, `metadata.product`) is the resource `<submit.href>/<vendor>/<product>`: `PUT` submits or updates it, `GET` reads it with its current element results, `DELETE` retires it. This file defines the request as the conformance fixtures model it, the response, the controller's fallback, and the conformance case (specs/sync/conformance/). The prose contract, including the open questions, is in the hub-sync design §3.5. Must-ignore applies: no object is closed, and a controller treats an element result or reason code it does not know as not accepted.",
+ "$ref": "#/$defs/response",
+ "$defs": {
+  "identity": {
+   "type": "object",
+   "description": "A registration's identity within a tenant: `metadata.vendor` and `metadata.product`. `versionRange` is an attribute of the registration, not part of its identity: a new controller release updates the same registration and keeps older served versions under rule 4.",
+   "required": [
+    "vendor",
+    "product"
+   ],
+   "properties": {
+    "vendor": {
+     "type": "string",
+     "minLength": 1
+    },
+    "product": {
+     "type": "string",
+     "minLength": 1
+    }
+   }
+  },
+  "etag": {
+   "type": "string",
+   "pattern": "^sha256:[0-9a-f]{64}$",
+   "description": "The registration's entity tag: `sha256:` and the lowercase hex SHA-256 of the RFC 8785 canonical JSON of `{\"registration\": <the registration as submitted>, \"state\": <state>}`. It changes whenever the stored registration or its state changes and never on a no-op. Sent and compared as an HTTP strong entity tag (quoted on the wire)."
+  },
+  "request": {
+   "type": "object",
+   "description": "One request, as the fixtures model it. `submit` is `PUT <submit.href>/<vendor>/<product>` with the registration as the body; `retire` is `DELETE` on the same resource with no body. Every request carries exactly one precondition: `ifNoneMatch: \"*\"` to create, `ifMatch: <etag>` to update or retire. A request with none is answered 428 (`precondition-required`), so no update is ever blind.",
+   "required": [
+    "action",
+    "identity",
+    "preconditions"
+   ],
+   "properties": {
+    "action": {
+     "enum": [
+      "submit",
+      "retire"
+     ]
+    },
+    "identity": {
+     "$ref": "#/$defs/identity"
+    },
+    "preconditions": {
+     "type": "object",
+     "maxProperties": 1,
+     "properties": {
+      "ifMatch": {
+       "$ref": "#/$defs/etag"
+      },
+      "ifNoneMatch": {
+       "const": "*"
+      }
+     }
+    }
+   }
+  },
+  "reason": {
+   "type": "object",
+   "description": "Why a registration or an element was not accepted, or why a request changed nothing. `code` is an open vocabulary (rule 3): a hub uses `other` with its own `term` for a reason not listed, and a controller treats any reason it does not know as not accepted.",
+   "required": [
+    "code"
+   ],
+   "properties": {
+    "code": {
+     "enum": [
+      "not-authorised",
+      "unsupported-grammar-major",
+      "invalid-registration",
+      "identity-mismatch",
+      "wrong-tier",
+      "limit-exceeded",
+      "precondition-required",
+      "stale-etag",
+      "registration-exists",
+      "not-found",
+      "untyped-extension",
+      "unsupported-type-keyword",
+      "namespace-not-owned",
+      "namespace-claimed",
+      "version-plan-invalid",
+      "unsupported-horizon",
+      "unsupported-availability",
+      "not-interpreted",
+      "invalid-element",
+      "other"
+     ]
+    },
+    "term": {
+     "type": "string",
+     "minLength": 1,
+     "description": "The hub's own term, when `code` is `other`."
+    },
+    "path": {
+     "type": "string",
+     "description": "The dotted path in the registration the reason is about, in the form tools/nsschema/sync_model.py `unknown_grammar_fields` uses."
+    },
+    "detail": {
+     "type": "string",
+     "description": "Human-readable. A controller must not parse it."
+    }
+   },
+   "if": {
+    "properties": {
+     "code": {
+      "const": "other"
+     }
+    },
+    "required": [
+     "code"
+    ]
+   },
+   "then": {
+    "required": [
+     "term"
+    ]
+   }
+  },
+  "elementResult": {
+   "type": "object",
+   "description": "The result for one element of a stored registration. Elements: `stateSpans/<kind or category>`, `extensions/<namespace>`, `settings.fields/<name>` and `replayInputs/<input>` (the last two for typed fields only). `accepted-with-ignored-members`: accepted, and the listed members of the element are ignored (rule 1). `rejected`: the hub offers no typed API for the element; the controller writes its well-known carrier.",
+   "required": [
+    "element",
+    "result"
+   ],
+   "properties": {
+    "element": {
+     "type": "string",
+     "pattern": "^(stateSpans|extensions|settings\\.fields|replayInputs)/.+$"
+    },
+    "result": {
+     "enum": [
+      "accepted",
+      "accepted-with-ignored-members",
+      "rejected"
+     ]
+    },
+    "ignored": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "reasons": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/reason"
+     }
+    }
+   },
+   "allOf": [
+    {
+     "if": {
+      "properties": {
+       "result": {
+        "const": "rejected"
+       }
+      },
+      "required": [
+       "result"
+      ]
+     },
+     "then": {
+      "required": [
+       "reasons"
+      ],
+      "properties": {
+       "reasons": {
+        "minItems": 1
+       }
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "result": {
+        "const": "accepted-with-ignored-members"
+       }
+      },
+      "required": [
+       "result"
+      ]
+     },
+     "then": {
+      "required": [
+       "ignored"
+      ],
+      "properties": {
+       "ignored": {
+        "minItems": 1
+       }
+      }
+     }
+    }
+   ]
+  },
+  "response": {
+   "type": "object",
+   "description": "The hub's answer to a submit, retire or read. `outcome`: `accepted` (stored; every element accepted, possibly with ignored members), `partial` (stored; at least one element rejected), `rejected` (nothing stored or changed; `reasons` says why), `precondition-failed` (nothing changed; `current` carries the stored etag and state), `not-found` (nothing stored under this identity), `retired` (the registration is retired; stored data is kept). `noop`: the request asked for what was already stored, so nothing changed and the etag is the stored one (a retried create or update succeeds; RFC 9110 §13.1.1 allows a 2xx for If-Match when the requested change has already been applied, and this contract applies the same rule to a create's If-None-Match).",
+   "required": [
+    "apiVersion",
+    "kind",
+    "status",
+    "outcome"
+   ],
+   "properties": {
+    "apiVersion": {
+     "const": "nightscout.dev/sync/v1"
+    },
+    "kind": {
+     "const": "RegistrationResponse"
+    },
+    "status": {
+     "type": "integer",
+     "enum": [
+      200,
+      201,
+      403,
+      404,
+      412,
+      413,
+      422,
+      428
+     ],
+     "description": "The HTTP status. 201 created; 200 updated, retired, read or no-op; 403 the credential may not do this; 404 not found; 412 a precondition failed; 413 too large; 422 rejected for its content; 428 no precondition sent."
+    },
+    "outcome": {
+     "enum": [
+      "accepted",
+      "partial",
+      "rejected",
+      "precondition-failed",
+      "not-found",
+      "retired"
+     ]
+    },
+    "noop": {
+     "type": "boolean"
+    },
+    "registration": {
+     "type": "object",
+     "description": "The stored registration's identity, state and etag after the request. Absent when nothing is stored.",
+     "required": [
+      "vendor",
+      "product",
+      "state",
+      "etag"
+     ],
+     "properties": {
+      "vendor": {
+       "type": "string"
+      },
+      "product": {
+       "type": "string"
+      },
+      "versionRange": {
+       "type": "string"
+      },
+      "state": {
+       "enum": [
+        "active",
+        "retired"
+       ]
+      },
+      "etag": {
+       "$ref": "#/$defs/etag"
+      }
+     }
+    },
+    "current": {
+     "type": "object",
+     "description": "With `precondition-failed`: what is stored now, so the controller can read it and resubmit.",
+     "required": [
+      "state",
+      "etag"
+     ],
+     "properties": {
+      "state": {
+       "enum": [
+        "active",
+        "retired"
+       ]
+      },
+      "etag": {
+       "$ref": "#/$defs/etag"
+      }
+     }
+    },
+    "reasons": {
+     "type": "array",
+     "description": "Registration-level reasons: why the request was rejected or changed nothing.",
+     "items": {
+      "$ref": "#/$defs/reason"
+     }
+    },
+    "ignored": {
+     "type": "array",
+     "description": "Rule 1. Members outside any element that the hub ignores, as dotted paths.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "elements": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/elementResult"
+     }
+    }
+   },
+   "allOf": [
+    {
+     "if": {
+      "properties": {
+       "outcome": {
+        "enum": [
+         "rejected",
+         "precondition-failed",
+         "not-found"
+        ]
+       }
+      },
+      "required": [
+       "outcome"
+      ]
+     },
+     "then": {
+      "required": [
+       "reasons"
+      ],
+      "properties": {
+       "reasons": {
+        "minItems": 1
+       },
+       "elements": {
+        "maxItems": 0
+       }
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "outcome": {
+        "enum": [
+         "accepted",
+         "partial",
+         "retired"
+        ]
+       }
+      },
+      "required": [
+       "outcome"
+      ]
+     },
+     "then": {
+      "required": [
+       "registration"
+      ]
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "outcome": {
+        "const": "precondition-failed"
+       }
+      },
+      "required": [
+       "outcome"
+      ]
+     },
+     "then": {
+      "properties": {
+       "status": {
+        "enum": [
+         412,
+         428
+        ]
+       }
+      }
+     }
+    }
+   ]
+  },
+  "fallbackEntry": {
+   "type": "object",
+   "description": "What the controller writes for one element. `typed`: through the typed API the hub derived. `carrier`: the element's well-known carrier (`stateSpans[].wire`, or an extension's `carrier`), as today's documents. `untyped`: a typed setting or replay input is written where it is today and the hub treats it as name-only. `none`: the element has no well-known carrier, so the hub receives nothing for it.",
+   "required": [
+    "write"
+   ],
+   "properties": {
+    "write": {
+     "enum": [
+      "typed",
+      "carrier",
+      "untyped",
+      "none"
+     ]
+    },
+    "carrier": {
+     "type": "object"
+    }
+   },
+   "if": {
+    "properties": {
+     "write": {
+      "const": "carrier"
+     }
+    },
+    "required": [
+     "write"
+    ]
+   },
+   "then": {
+    "required": [
+     "carrier"
+    ]
+   }
+  },
+  "fallback": {
+   "type": "object",
+   "description": "The controller's write plan, one entry per element of its registration, keyed by element id.",
+   "propertyNames": {
+    "pattern": "^(stateSpans|extensions|settings\\.fields|replayInputs)/.+$"
+   },
+   "additionalProperties": {
+    "$ref": "#/$defs/fallbackEntry"
+   }
+  },
+  "storedRegistration": {
+   "type": "object",
+   "required": [
+    "state",
+    "etag",
+    "registration"
+   ],
+   "properties": {
+    "state": {
+     "enum": [
+      "active",
+      "retired"
+     ]
+    },
+    "etag": {
+     "$ref": "#/$defs/etag"
+    },
+    "registration": {
+     "type": "object"
+    }
+   }
+  },
+  "conformanceCase": {
+   "type": "object",
+   "description": "One conformance case (specs/sync/conformance/*.yaml): a hub's capability document and stored state, a submitter, a controller's registration and request, and the expected response and controller fallback. All content is synthetic. A hub implementation passes a case when, booted with `capabilities` and `hubState` and sent `request` with `registration` by a credential holding `submitter`, it answers `expected.response` (reason `detail` strings are not compared) and stores `expected.storedAfter` where the case states it.",
+   "required": [
+    "id",
+    "title",
+    "capabilities",
+    "registration",
+    "request",
+    "expected"
+   ],
+   "properties": {
+    "id": {
+     "type": "string",
+     "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "title": {
+     "type": "string"
+    },
+    "description": {
+     "type": "string"
+    },
+    "control": {
+     "type": "string",
+     "description": "For a case whose request is rejected, fails a precondition or rejects an element: the id of the passing case that differs from it only in the aspect under test."
+    },
+    "cell": {
+     "enum": [
+      "older-controller/older-hub",
+      "older-controller/newer-hub",
+      "newer-controller/older-hub",
+      "newer-controller/newer-hub"
+     ],
+     "description": "The D18 addendum compatibility cell this case exercises."
+    },
+    "capabilities": {
+     "description": "The hub's capability document. null: the hub publishes none (an older hub; `/.well-known/nightscout/sync` answers 404).",
+     "oneOf": [
+      {
+       "type": "null"
+      },
+      {
+       "type": "object"
+      }
+     ]
+    },
+    "wellKnownRegistrations": {
+     "type": "object",
+     "description": "The well-known registrations the capability document links to, keyed by `href`.",
+     "additionalProperties": {
+      "type": "object"
+     }
+    },
+    "hubState": {
+     "type": "object",
+     "properties": {
+      "registrations": {
+       "type": "array",
+       "items": {
+        "$ref": "#/$defs/storedRegistration"
+       }
+      }
+     }
+    },
+    "submitter": {
+     "type": "object",
+     "description": "What the submitting credential holds on this tenant: its permissions (shiro-style, `*` a wildcard part) and the namespace roots it may claim. How a credential comes to hold namespace roots is an open question (hub-sync design §3.5); the case states the outcome given them.",
+     "properties": {
+      "permissions": {
+       "type": "array",
+       "items": {
+        "type": "string"
+       }
+      },
+      "namespaceRoots": {
+       "type": "array",
+       "items": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "registration": {
+     "description": "The controller's registration. null: an older controller that has none.",
+     "oneOf": [
+      {
+       "type": "null"
+      },
+      {
+       "type": "object"
+      }
+     ]
+    },
+    "grammarValid": {
+     "type": "boolean",
+     "description": "Whether `registration` validates against controller-state-model.schema.json. Stated so a case cannot pass by testing an invalid registration where a valid one was meant."
+    },
+    "request": {
+     "description": "null: the controller sends nothing.",
+     "oneOf": [
+      {
+       "type": "null"
+      },
+      {
+       "$ref": "#/$defs/request"
+      }
+     ]
+    },
+    "writes": {
+     "type": "array",
+     "description": "For an older controller: documents it writes today, to show which well-known registration describes each.",
+     "items": {
+      "type": "object",
+      "required": [
+       "collection",
+       "document"
+      ],
+      "properties": {
+       "collection": {
+        "type": "string"
+       },
+       "document": {
+        "type": "object"
+       }
+      }
+     }
+    },
+    "expected": {
+     "type": "object",
+     "required": [
+      "controllerWouldSubmit",
+      "response",
+      "fallback"
+     ],
+     "properties": {
+      "controllerWouldSubmit": {
+       "type": "boolean",
+       "description": "Whether a controller following the contract submits at all, given the capability document: it does when the document exists, offers `submit`, and lists its grammar major. A case may still send a request the controller would not, to test the hub."
+      },
+      "response": {
+       "oneOf": [
+        {
+         "type": "null"
+        },
+        {
+         "$ref": "#/$defs/response"
+        }
+       ]
+      },
+      "fallback": {
+       "oneOf": [
+        {
+         "type": "null"
+        },
+        {
+         "$ref": "#/$defs/fallback"
+        }
+       ]
+      },
+      "describedBy": {
+       "type": "array",
+       "description": "For `writes`: the well-known registration (and element, when a kind's wire carrier matches) that describes each write.",
+       "items": {
+        "type": "object",
+        "required": [
+         "write",
+         "href"
+        ],
+        "properties": {
+         "write": {
+          "type": "integer",
+          "minimum": 0
+         },
+         "href": {
+          "type": [
+           "string",
+           "null"
+          ]
+         },
+         "element": {
+          "type": "string"
+         }
+        }
+       }
+      },
+      "storedAfter": {
+       "description": "The stored registration after the request, or null when none is stored.",
+       "oneOf": [
+        {
+         "type": "null"
+        },
+        {
+         "$ref": "#/$defs/storedRegistration"
+        }
+       ]
+      }
+     }
+    }
+   }
+  }
+ }
+}

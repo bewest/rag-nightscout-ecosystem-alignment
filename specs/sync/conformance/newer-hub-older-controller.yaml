@@ -1,0 +1,133 @@
+# SYNTHETIC CONFORMANCE CASE. Describes no real controller, product or person.
+# Contract: docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md §3.5.
+# Schema: specs/sync/registration-submit.schema.json#/$defs/conformanceCase.
+# Checked by tools/nsschema/test_registration_negotiation.py; `detail` strings are
+# not compared.
+id: newer-hub-older-controller
+title: An older controller submits nothing; the hub's well-known registration describes its
+  writes
+description: Rule 6, older controller and newer hub. The controller has no registration and
+  writes today's documents. The hub's well-known tier describes them by structural discriminator
+  and wire carrier; a document no well-known registration matches is stored as today.
+cell: older-controller/newer-hub
+capabilities:
+  apiVersion: nightscout.dev/sync/v1
+  kind: HubCapabilities
+  hub:
+    product: Example Hub
+    version: 0.0.0-test
+  grammar:
+    versions:
+    - apiVersion: nightscout.dev/sync/v1
+      major: 1
+      minor: 1
+    interprets:
+    - apiVersion
+    - kind
+    - metadata
+    - spec
+  horizons:
+    classes:
+    - cycle
+    - span
+    - effective-dated
+    - definition
+    - aggregate
+    availability:
+    - released
+    - dev-only
+    - experimental
+  typeFragment:
+    keywords:
+    - type
+    - enum
+    - minimum
+    - maximum
+    - format
+    - items
+    - properties
+    - required
+    - description
+  limits:
+    maxRegistrationBytes: 65536
+    maxExtensions: 8
+    maxFieldsPerExtension: 32
+    maxTypeDepth: 4
+  wellKnown:
+    catalogue: /.well-known/nightscout/controllers
+    kinds:
+    - id: example-legacy
+      vendor: Example
+      product: LegacyController
+      versionRange: 0.x-test
+      href: /.well-known/nightscout/controllers/example-legacy
+  submit:
+    href: /api/v4/registrations
+    tiers:
+    - controller-owned
+    permissions:
+      submit: api:registrations:create
+      retire: api:registrations:delete
+wellKnownRegistrations:
+  /.well-known/nightscout/controllers/example-legacy:
+    apiVersion: nightscout.dev/sync/v1
+    kind: ControllerStateModel
+    metadata:
+      vendor: Example
+      product: LegacyController
+      algorithmFamily: other
+      tier: well-known
+      versionRange: 0.x-test
+      source: synthetic well-known registration for a conformance case
+    spec:
+      cadence:
+        nominalSeconds: 300
+      documents:
+      - collection: devicestatus
+        discriminator:
+          path: exampleLegacy
+          test: is-object
+        decomposesTo:
+        - ApsSnapshot
+      stateSpans:
+      - category: Override
+        kind: LegacyOverride
+        wire:
+          collection: treatments
+          eventType: Temporary Override
+          durationField: duration
+          durationUnit: minutes
+hubState:
+  registrations: []
+submitter:
+  permissions:
+  - api:registrations:create
+  namespaceRoots:
+  - com.example.negotiation
+registration: null
+request: null
+writes:
+- collection: devicestatus
+  document:
+    exampleLegacy:
+      cycle: 1
+- collection: treatments
+  document:
+    eventType: Temporary Override
+    duration: 60
+- collection: devicestatus
+  document:
+    unrelated:
+      cycle: 1
+expected:
+  controllerWouldSubmit: false
+  response: null
+  fallback: null
+  describedBy:
+  - write: 0
+    href: /.well-known/nightscout/controllers/example-legacy
+  - write: 1
+    href: /.well-known/nightscout/controllers/example-legacy
+    element: stateSpans/LegacyOverride
+  - write: 2
+    href: null

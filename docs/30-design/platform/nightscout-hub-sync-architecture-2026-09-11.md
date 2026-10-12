@@ -1,6 +1,6 @@
 # A hub-and-spoke sync model for AID controllers
 
-*Contributor-facing.* **Snapshot — describes 2026-09-11. Status: current as analysis; the design it sketches is carried forward by [PROPOSAL-controller-descriptions](PROPOSAL-controller-descriptions-2026-09-11.md) and [PROPOSAL-replay-fidelity-changes](PROPOSAL-replay-fidelity-changes-2026-09-11.md).** Current decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions). **Corrected in place 2026-10-12:** §3.1's description of `stateSpans` and the schema field list in §5.2 now match the schema as extended for D18 from [intent and workflow across the landscape](./nightscout-intent-workflow-landscape-2026-10-09.md) §9. **Also 2026-10-12:** §3.1 lists `extensions` and the D18 addendum grammar rules 1–5 (`SCHEMA-REG-EXT`).
+*Contributor-facing.* **Snapshot — describes 2026-09-11. Status: current as analysis; the design it sketches is carried forward by [PROPOSAL-controller-descriptions](PROPOSAL-controller-descriptions-2026-09-11.md) and [PROPOSAL-replay-fidelity-changes](PROPOSAL-replay-fidelity-changes-2026-09-11.md).** Current decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions). **Corrected in place 2026-10-12:** §3.1's description of `stateSpans` and the schema field list in §5.2 now match the schema as extended for D18 from [intent and workflow across the landscape](./nightscout-intent-workflow-landscape-2026-10-09.md) §9. **Also 2026-10-12:** §3.1 lists `extensions` and the D18 addendum grammar rules 1–5 (`SCHEMA-REG-EXT`). **Also 2026-10-12:** §3.5 specifies negotiation, D18 addendum rule 6 (`SPEC-REG-NEGOTIATE`): the capability document, the submit, update and retire contract, the fallback rule, authorisation with open questions, and the conformance cases.
 
 Date: 2026-09-11. Fifth in a series
 with
@@ -267,6 +267,206 @@ guard, no index requirement and no `maxTimeMS` anywhere in the query path.
 A sync API that accepts arbitrary filters inherits that. One that answers
 only the shapes a registration declared does not.
 
+### 3.5 Negotiation
+
+*Added 2026-10-12 (`SPEC-REG-NEGOTIATE`; D18 addendum rule 6, execution plan §2.6.1).
+Specified, not implemented: no hub serves any of this.* The hub publishes what it supports;
+the controller submits its controller-owned registration and reads back, per element, what
+was accepted; for anything not accepted it writes the element's well-known carrier.
+
+| file | what it is |
+|---|---|
+| `specs/sync/hub-capabilities.schema.json` | the capability document |
+| `specs/sync/registration-submit.schema.json` | request, response, fallback and conformance-case shapes |
+| `specs/sync/conformance/*.yaml` | 21 synthetic conformance cases; both hubs implement against them |
+| `tools/nsschema/negotiate.py` | a reference decision function that computes each case's expected response and fallback. It checks that the cases are self-consistent; it is not a hub |
+| `tools/nsschema/test_registration_negotiation.py` | the queue gate |
+
+**The capability document: `GET /.well-known/nightscout/sync`.** One well-known suffix,
+`nightscout` (RFC 8615), with one path per concern beside the catalogue at
+`/.well-known/nightscout/controllers` ([controller descriptions](./PROPOSAL-controller-descriptions-2026-09-11.md)
+§2.1). It has the catalogue's properties: unauthenticated, cacheable, and about the hub
+software rather than a person. It is served on every host the hub answers; in
+`TENANCY_MODE=multi` that is each tenant's host (Host → slug, D10), with the same
+deployment-level content. **It lists no tenant's submitted registrations**, because which
+controller a person uses is not public; a tenant's registrations are read with a credential
+(below). Members:
+
+| member | states |
+|---|---|
+| `grammar.versions[]` | each grammar major the hub reads (`apiVersion`, `major`) and the `minor` it implements. A registration carries no minor: within a major the hub ignores what it does not know (rule 1) |
+| `grammar.interprets[]` | the grammar members the hub interprets, as dotted paths with `*` for an array item or map key (`spec.stateSpans.*.wire`); an entry covers its subtree. It must cover the members the contract reads (`apiVersion`, `kind`, `metadata.vendor`, `metadata.product`, `metadata.tier`, `spec.cadence`, `spec.documents.*.collection`, `spec.documents.*.decomposesTo`) |
+| `horizons.classes[]`, `horizons.availability[]` | the horizon classes and availability values the hub stores (rule 5) |
+| `typeFragment.keywords[]`, `typeFragment.formats[]` | the subset of the grammar's type-fragment keywords the hub can store, validate and index; must include `type` (rule 2) |
+| `limits` | `maxRegistrationBytes` (RFC 8785 canonical JSON), `maxExtensions`, `maxFieldsPerExtension`, `maxTypeDepth` |
+| `wellKnown.catalogue`, `wellKnown.kinds[]` | the well-known tier: each shipped registration's vendor, product, version range and `href` |
+| `submit.href`, `submit.tiers`, `submit.permissions` | where a controller-owned registration is submitted, and the permissions a credential needs. Absent: the hub takes no submissions (for example, a feature flag is off) |
+
+The document is must-ignore like the grammar: no object is closed, and its vocabularies
+(horizon classes, availability, keywords, formats) are closed lists that match the grammar's,
+which the gate checks.
+
+**Elements.** The response reports per element, and the fallback is decided per element:
+
+| element id | from | well-known carrier when not accepted |
+|---|---|---|
+| `stateSpans/<kind, else category>` | `spec.stateSpans[]` | its `wire` (`write: carrier`); `none` when `wire` is null |
+| `extensions/<namespace>` | `spec.extensions` | its `carrier`; `none` when it declares none |
+| `settings.fields/<name>` | a `settings.fields[]` entry with `type` or `typeRef` | written as today, name-only (`write: untyped`) |
+| `replayInputs/<input>` | a `replayInputs[]` entry with `type` or `typeRef` | written as today, name-only (`write: untyped`) |
+
+Everything else in the registration (documents, cadence, composition, commands, query
+profile, sensitivity, untyped settings and inputs) belongs to the registration as a whole.
+
+**Identity and resource.** A registration's identity within a tenant is `metadata.vendor`
+and `metadata.product`. `versionRange` is an attribute, not identity: a new release updates
+the same registration, and older model versions stay served under rule 4. One registration
+is the resource `<submit.href>/<vendor>/<product>` (each segment percent-encoded):
+
+| method | meaning | precondition (required) |
+|---|---|---|
+| `PUT` | submit: create, or update | `If-None-Match: *` to create; `If-Match: <etag>` to update |
+| `GET` | read the stored registration with its current element results | none |
+| `DELETE` | retire | `If-Match: <etag>` |
+
+**Order of checks.** (1) authorisation (403); (2) preconditions — none sent is 428, a failed
+one is 412 with the current etag and state, and retiring an identity with nothing stored is 404 (RFC 9110 §13.2.1 evaluates preconditions after
+authorisation and before the content); (3) the registration as a whole — `apiVersion` not
+among `grammar.versions` (`unsupported-grammar-major`), wrong `kind` or a grammar-invalid
+registration outside `spec.extensions` (`invalid-registration`), identity differing from the
+resource (`identity-mismatch`), a tier other than `controller-owned` (`wrong-tier`), over
+`maxRegistrationBytes` (413) or `maxExtensions` (`limit-exceeded`) — each rejects the whole
+registration (422 unless stated) and stores nothing; (4) each element.
+
+**Element results.** `accepted`; `accepted-with-ignored-members`, with the ignored members
+as dotted paths; or `rejected`, with reasons. Ignored members are those the grammar does not
+define (`tools/nsschema/sync_model.py` `unknown_grammar_fields`) plus those `interprets` does
+not cover; they are kept as written and not interpreted (rule 1). Ignored members outside
+any element are listed at registration level. An element is not accepted when a member that
+defines it is ignored (`not-interpreted`): a kind's `category`; an extension's `fields`,
+`version`/`versions` and each field's `name`, `type`, `typeRef`; a typed setting's or input's
+name and type. Otherwise an element is rejected for: `namespace-not-owned`,
+`namespace-claimed` (another registration on the tenant declares it), `untyped-extension`,
+`unsupported-type-keyword` (a keyword or format outside `typeFragment`, including in a
+`typeRef` target), `limit-exceeded` (`maxFieldsPerExtension`, `maxTypeDepth`),
+`invalid-element` (an extension that fails the grammar), `version-plan-invalid`,
+`unsupported-availability`, `unsupported-horizon`. Declared availability and horizons are
+checked only where the hub interprets them. Reason codes are an open vocabulary (`other` with
+the hub's `term`); `detail` is for people and is not compared by the conformance cases.
+Outcome: `accepted` when every element is accepted, `partial` when at least one is rejected —
+both store the registration as written (201 on create, 200 on update).
+
+**Concurrency and idempotency.** The etag is `sha256:` and the hex SHA-256 of the RFC 8785
+canonical JSON of `{"registration": <as submitted>, "state": <active|retired>}`, so it changes
+on every change of content or state. A request whose content and state are already stored
+succeeds as a no-op (`noop: true`, 200, the stored etag), so a create retried after a lost
+response does not fail (RFC 9110 §13.1.1 allows a 2xx for `If-Match` when the change has already been
+applied; the contract applies the same rule to a create's `If-None-Match`). A stale `If-Match` with different content is 412 `stale-etag`; `If-None-Match: *`
+over different content is 412 `registration-exists`. A hub evaluates a stored registration
+against its current capabilities on every read, so an element's result can change after a hub
+upgrade; the stored registration and its etag do not.
+
+**Retire.** Only the owning controller retires (D18). Retiring sets the state to `retired`,
+changes the etag and keeps the declaration, frozen: data already stored under it stays stored
+and readable as declared, and no typed write is accepted for its kinds or extensions. Its
+namespaces stay claimed while it is stored. A later `PUT` with the retired etag reactivates it.
+The controller writes its carriers from the moment it retires.
+
+**Fallback (the controller's side).** An element is written through the typed API only when
+the response to *this* registration has outcome `accepted` or `partial` and the element's
+result is `accepted` or `accepted-with-ignored-members`. Everything else — a rejected
+element, an element result or reason the controller does not know, a rejected registration,
+a failed precondition, a retired registration, no response, no capability document, no
+`submit`, or a grammar major the hub does not list — falls back per the elements table. A
+controller that depends on an ignored member may treat that element as not accepted; the
+conformance cases assume it does not. The capability document carries everything the
+response depends on except the tenant's stored registrations and the credential's grants, so
+a controller can predict the result before it submits; the response is authoritative.
+
+| | older hub | newer hub |
+|---|---|---|
+| **older controller** | no capability document, no registration: today's documents (`older-hub-older-controller`) | the controller submits nothing; the hub's well-known registration describes its writes by structural discriminator and wire carrier (`newer-hub-older-controller`) |
+| **newer controller** | no capability document, or no `submit`, or its grammar major not listed: it submits nothing and writes every element as its carrier (`older-hub-no-capabilities`, `hub-without-submit`, `rejected-unsupported-grammar-major`) | typed registration, extensions and versions; per-element fallback for what is not accepted (the remaining cases) |
+
+**Authorisation.** What follows from D13–D17, and what does not:
+
+- **The submitter is the controller, a device.** Under D17 row 1 a device holds the native
+  per-tenant credential, never Ory; so submit, update, read and retire are on the data
+  listener (`ns-api`, and `single`), with that credential. In `TENANCY_MODE=multi` there is
+  no deployment secret (D13); the credential's token is signed with the tenant's key (D14),
+  so a registration is per tenant and a token for tenant A cannot register on tenant B. A
+  controller on two tenants registers twice.
+- **Permission.** Submitting needs `api:registrations:create` and retiring needs
+  `api:registrations:delete`, shiro-style like the existing `api:<collection>:<action>`
+  permissions, granted by the tenant owner to the controller's subject on `ns-tenant-admin`
+  (D16). The names are proposals.
+- **Namespace ownership.** A credential holds a set of namespace roots on its tenant. A
+  registration may declare an extension namespace equal to or below one of them
+  (`com.example` covers `com.example.negotiation.targets`; `com.examplefoo` does not), and
+  not one another registration on the tenant already declares. Retiring needs roots covering
+  every namespace the stored registration declares. The conformance cases state the outcome
+  given the roots, independent of how the roots are granted.
+- **Storage.** Registrations are tenant data: per-tenant, under RLS (D3), never in the
+  public capability document. Authorisation is per tenant, as the D13 amendment requires.
+
+**Open questions for the maintainer.** None of these is decided by D13–D18; the cases do not
+depend on the answers.
+
+1. **Where namespace roots come from.** Granted by the tenant owner per subject on
+   `ns-tenant-admin`; derived from a client identity such as Nocturne's RFC 7591
+   `software_id` (§2.2 of the controller-descriptions proposal), which would need third-party
+   client registration that D17 defers with Hydra; or both.
+2. **Scope of a namespace.** Per tenant (what the cases assume, consistent with "authorization
+   is per-tenant"), or deployment-wide, or verified against DNS control of the reverse-DNS
+   name. A per-tenant namespace can mean two things on two tenants, which matters to any
+   reader that spans tenants.
+3. **`API_SECRET` in single mode.** It grants `*`. Whether it also holds every namespace root,
+   or a controller must register with a subject token, is open. D13 removes it only in multi
+   mode.
+4. **Binding a registration to a credential.** Whether any credential with the permission and
+   the namespace roots may update or retire a registration (what the cases assume), or only
+   the subject that created it — which matters when an app is reinstalled or its token rotated.
+5. **The tenant owner and a controller-owned registration.** D18 gives the controller the
+   lifecycle. Whether the owner may also retire or block one from `ns-tenant-admin` is open.
+6. **Identity granularity.** `(vendor, product)` per tenant assumes one live release per
+   controller per tenant. Two phones on two releases would share one registration; whether
+   `versionRange` should join the identity is open.
+7. **Writing both typed and carrier.** A controller may keep writing carriers for accepted
+   elements so older readers still see them. The hub would then hold one intent twice; whether
+   it should link or deduplicate them, and on what key, is open.
+8. **Re-checking.** When a controller re-reads its registration or the capability document
+   (each launch, each release, on a timer) after a hub upgrade or downgrade.
+9. **Retired data.** How long a retired declaration keeps typed reads available, beyond each
+   item's declared horizon retention.
+10. **Which hub first** (already open on `HUB-REG-CRM`): single-tenant cgm-remote-monitor, or
+    the multitenant target only.
+
+**The cases.**
+
+| case | cell | outcome |
+|---|---|---|
+| `accepted` | newer/newer | 201 accepted; both elements typed — the control for most rejections |
+| `accepted-with-ignored-members` | newer/newer | hub v1.0 without document horizons; unknown members listed and kept |
+| `rejected-untyped-extension` | newer/newer | extension rejected; kind typed, extension to its carrier |
+| `rejected-type-keyword-outside-subset` | newer/newer | hub has no `minimum`/`maximum`; extension rejected |
+| `rejected-namespace-not-owned` | newer/newer | credential's root does not cover the namespace |
+| `rejected-namespace-claimed` | newer/newer | another registration on the tenant declares the namespace |
+| `rejected-unsupported-availability` | newer/newer | experimental kind on a hub that stores no experimental kinds |
+| `extensions-not-interpreted` | newer/newer | hub does not interpret `spec.extensions` |
+| `rejected-limit-exceeded` | newer/newer | over `maxExtensions`; rejected whole |
+| `not-authorised` | newer/newer | no `api:registrations:create`; 403 |
+| `rejected-unsupported-grammar-major` | newer/older | v2 registration to a v1 hub; 422, every element to its carrier |
+| `older-hub-no-capabilities` | newer/older | no capability document; nothing submitted |
+| `hub-without-submit` | newer/older | capability document without `submit`; nothing submitted |
+| `newer-hub-older-controller` | older/newer | no registration; well-known registration describes the writes |
+| `older-hub-older-controller` | older/older | nothing negotiated |
+| `update-accepted` | newer/newer | `If-Match` current etag; 200 |
+| `update-stale-etag` | newer/newer | 412 `stale-etag` with the current etag; carriers until resubmitted |
+| `create-retry-noop` | newer/newer | identical create retried; 200 `noop` |
+| `create-exists` | newer/newer | create over different content; 412 `registration-exists` |
+| `retire` | newer/newer | 200 retired; declaration kept; carriers from then on |
+| `retire-not-authorised` | newer/newer | credential does not own the namespaces; 403 |
+
 ## 4. Replay, and why physicians cannot see the settings
 
 ### 4.1 The workaround that proves the gap
@@ -470,13 +670,16 @@ alone.
   the corpus.
 * **The registration's own lifecycle.** How a controller updates a
   registration when it ships a new build, and what the hub does with
-  in-flight data under the old one.
+  in-flight data under the old one. *(2026-10-12: specified in §3.5 — update
+  by `If-Match`, retire keeps stored data and the frozen declaration. Not
+  measured: no hub implements it.)*
 
 ## 8. References
 
 * `make schema-sync-cost` → `reports/schema-census/sync-cost.json`
 * `make schema-sync-model` → `specs/sync/registrations/{loop,trio,androidaps}.yaml`
 * `specs/sync/controller-state-model.schema.json`
+* `specs/sync/hub-capabilities.schema.json`, `specs/sync/registration-submit.schema.json`, `specs/sync/conformance/` — negotiation (§3.5)
 * `specs/conformance/observability-profile.yaml` — the obligations a registration would formalise
 * `externals/oref-digital-twin/` — `DESIGN.md` §2, `replay/inputs.py`, `settings/schema.py`
 * Nocturne: `Core.Models/StateSpan.cs`, `API/Services/V4/TreatmentDecomposer.cs`

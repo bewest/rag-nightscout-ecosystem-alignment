@@ -41,7 +41,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 60 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-164, BFQ-165, BFQ-166, BFQ-167, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-TRIO-INTENT, SPEC-REG-NEGOTIATE, HUB-REG-CRM, HUB-REG-NOCTURNE |
+| `not-started` | 59 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-164, BFQ-165, BFQ-166, BFQ-167, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-TRIO-INTENT, HUB-REG-CRM, HUB-REG-NOCTURNE |
 | `in-progress` | 3 | BFQ-46, BFQ-ENV, OID-LAB |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
@@ -49,7 +49,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `in-flight-upstream` | 1 | BFQ-09 |
 | `merged-upstream` | 87 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 6 | RT-PROPAGATION, RT-0, T30-RESEARCH, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG |
-| `done` | 8 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, DOC-VIEWS, DOC-LINKS, RT-SOAK, SCHEMA-REG-EXT, LAB-HUB-ACTIVE-STATE |
+| `done` | 9 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, DOC-VIEWS, DOC-LINKS, RT-SOAK, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, LAB-HUB-ACTIVE-STATE |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 3 | BFQ-71, BFQ-41, BFQ-141 |
 | `answered` | 1 | RT-D3 |
@@ -6959,7 +6959,7 @@ reproduced ones.
 |---|---|---|---|---|---|
 | `LAB-TRIO-INTENT` | Simulator lab: Trio override expiry, temp-target upload repeats, downloaded temp-target echo | `not-started` | `main` | n/a | 1 run + 1 no-gate |
 | `SCHEMA-REG-EXT` | Registration grammar: must-ignore, typed extensions, open vocabularies, per-kind versions, horizons (D18 addendum rules 1-5) | `done` | `main` | n/a | 2 run |
-| `SPEC-REG-NEGOTIATE` | Registration negotiation: the hub capability document, submit and fallback contract (D18 addendum rule 6) | `not-started` | `main` | n/a | 1 run |
+| `SPEC-REG-NEGOTIATE` | Registration negotiation: the hub capability document, submit and fallback contract (D18 addendum rule 6) | `done` | `main` | n/a | 1 run |
 | `HUB-REG-CRM` | cgm-remote-monitor: accept registrations and derive typed storage, validation and query from them | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `HUB-REG-NOCTURNE` | Nocturne: propose the registration grammar and negotiation as a shared contract, with the hub active-state evidence | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `LAB-HUB-ACTIVE-STATE` | Lab: cgm-remote-monitor and Nocturne answer 'what is active at t' for the same intent records | `done` | `main` | n/a | 1 run |
@@ -7030,7 +7030,7 @@ reproduced ones.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `done` |
 | repo | `rag-nightscout-ecosystem-alignment` |
 | branch | `main` |
 | base | `main@7f1d1f86` |
@@ -7048,13 +7048,16 @@ reproduced ones.
 **Gates.**
 
 - `[unit]` `python -m pytest -q tools/nsschema/test_registration_negotiation.py`
-  - FAILS until the capability schema and the conformance fixtures exist. RED on 2026-10-12 (the test file does not exist). The tests check every fixture against the schemas and the documented outcome: accepted, accepted with ignored fields, rejected (untyped extension, unsupported grammar major), and fallback to the well-known carrier, each with a passing control.
+  - FAILS until the capability schema and the conformance fixtures exist. RED on 2026-10-12 (the test file does not exist). The tests check every fixture against the schemas and the documented outcome: accepted, accepted with ignored fields, rejected (untyped extension, unsupported grammar major), and fallback to the well-known carrier, each with a passing control. GREEN on 2026-10-12 (179 tests over 21 conformance cases). Non-vacuity: eighteen weakenings, one at a time, each turned the matching test red and were reverted: in tools/nsschema/negotiate.py, namespace ownership unchecked, untyped extension fields undetected, grammar major unchecked, type keywords outside the hub subset accepted, the interprets list not applied, a stale etag accepted, no no-op on an identical retry, the etag ignoring state, typed fallback for rejected elements, typed fallback for a non-accepted outcome, tenant namespace claims unchecked, retire without owning the namespaces, availability unchecked; in the schemas, a rejected element without reasons, a reason code open to any string, an etag of any form, a capability document without the type keyword, and horizon classes drifting from the grammar.
 
 **Evidence.**
 
 - `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md`
+- `specs/sync/hub-capabilities.schema.json`
+- `specs/sync/registration-submit.schema.json`
 
-**Notes.** D18 addendum rule 6 (maintainer, 2026-10-12). The hub publishes the grammar versions, kinds, versions and capabilities it supports at a .well-known address; a controller submits its registration and reads back what was accepted; anything not accepted is written as its well-known carrier (stateSpans[].wire). Specify: the capability document; the submit request and response (accepted, ignored, rejected with reasons); how a registration is updated and retired by the controller that owns it (D18: the controller owns the lifecycle); authorisation (which credential may register for a tenant, consistent with D13-D17); and the four compatibility cells in the addendum. Specify, do not implement; both hubs implement against the same fixtures.
+**Notes.** D18 addendum rule 6 (maintainer, 2026-10-12). The hub publishes the grammar versions, kinds, versions and capabilities it supports at a .well-known address; a controller submits its registration and reads back what was accepted; anything not accepted is written as its well-known carrier (stateSpans[].wire). Specify: the capability document; the submit request and response (accepted, ignored, rejected with reasons); how a registration is updated and retired by the controller that owns it (D18: the controller owns the lifecycle); authorisation (which credential may register for a tenant, consistent with D13-D17); and the four compatibility cells in the addendum. Specify, do not implement; both hubs implement against the same fixtures. Done 2026-10-12; hub-sync design §3.5. Capability document at /.well- known/nightscout/sync, beside the controller-descriptions catalogue at /.well- known/nightscout/controllers; unauthenticated, deployment-level, and listing no tenant's registrations. A registration is the resource <submit.href>/<vendor>/<product>: PUT with If-None-Match: * or If-Match, DELETE to retire; the etag is a SHA-256 of the canonical registration and state, and an identical resubmission is a no-op. Results per element (stateSpans, extensions, typed settings and replay inputs): accepted, accepted with ignored members, or rejected with reasons; anything not accepted is written as its carrier. Retire keeps stored data and the frozen declaration and stops typed writes. Authorisation: the device's native per-tenant credential on the data listener, a proposed api:registrations:create/delete permission, and per-tenant namespace roots. Ten open questions for the maintainer are listed in §3.5 (where namespace roots come from, namespace scope, API_SECRET in single mode, binding to a credential, owner override, identity granularity, dual writes, re-checking, retired data, which hub first). tools/nsschema/negotiate.py is a reference used only to check the cases.
 
 ### `HUB-REG-CRM` &mdash; cgm-remote-monitor: accept registrations and derive typed storage, validation and query from them
 
@@ -7081,6 +7084,8 @@ reproduced ones.
 
 **Evidence.**
 
+- `docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md`
+- `specs/sync/registration-submit.schema.json`
 - `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 
 **Notes.** D18 and its addendum (maintainer, 2026-10-09 and 2026-10-12): the hub derives typed API from a registration and stays an observer; it never computes composition or dosing state. Which hub codebase carries this (single-tenant cgm-remote-monitor first, or the multitenant target only) is for the maintainer to decide when the item starts; ask before designing.
@@ -7110,6 +7115,8 @@ reproduced ones.
 
 **Evidence.**
 
+- `docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md`
+- `specs/sync/registration-submit.schema.json`
 - `tools/lab/hub-active-state/results/RESULTS.md`
 - `docs/30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md`
 

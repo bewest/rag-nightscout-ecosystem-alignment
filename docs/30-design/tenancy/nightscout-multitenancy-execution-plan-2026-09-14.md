@@ -365,7 +365,13 @@ document, submit and fallback contract, conformance fixtures); the API a hub der
 registration is `HUB-REG-CRM` for cgm-remote-monitor and `HUB-REG-NOCTURNE`, a shared-contract
 proposal to Nocturne. All three follow `SCHEMA-REG-EXT`. *(2026-10-12: rules 1–5 are in the
 schema and generator; "where the grammar stands" above describes the grammar before them, and
-the hub-sync design §3.1 lists the result.)*
+the hub-sync design §3.1 lists the result.)* *(2026-10-12: rule 6 is specified —
+[hub-sync design §3.5](../platform/nightscout-hub-sync-architecture-2026-09-11.md#35-negotiation),
+`specs/sync/hub-capabilities.schema.json` (served at `/.well-known/nightscout/sync`),
+`specs/sync/registration-submit.schema.json` and 21 conformance cases under
+`specs/sync/conformance/`, checked by `tools/nsschema/test_registration_negotiation.py`.
+Authorisation follows D13–D17 where they settle it; ten points they do not settle are listed
+there as open questions.)*
 
 ### 2.7 D12 — what each repository is for
 

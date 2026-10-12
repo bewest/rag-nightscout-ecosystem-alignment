@@ -1,0 +1,32 @@
+# SYNTHETIC CONFORMANCE CASE. Describes no real controller, product or person.
+# Contract: docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md §3.5.
+# Schema: specs/sync/registration-submit.schema.json#/$defs/conformanceCase.
+# Checked by tools/nsschema/test_registration_negotiation.py; `detail` strings are
+# not compared.
+id: older-hub-older-controller
+title: 'An older controller against an older hub: today''s documents, nothing negotiated'
+description: 'Rule 6, the first compatibility cell. No capability document, no registration,
+  no request: the controller writes today''s documents and the hub stores them as today.'
+cell: older-controller/older-hub
+capabilities: null
+hubState:
+  registrations: []
+submitter:
+  permissions:
+  - api:registrations:create
+  namespaceRoots:
+  - com.example.negotiation
+registration: null
+request: null
+writes:
+- collection: devicestatus
+  document:
+    exampleLegacy:
+      cycle: 1
+expected:
+  controllerWouldSubmit: false
+  response: null
+  fallback: null
+  describedBy:
+  - write: 0
+    href: null
