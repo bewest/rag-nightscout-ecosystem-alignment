@@ -5,7 +5,7 @@
 **Status: living document — the decision record.** Decisions D1–D18 are the maintainer's
 (2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12) and are all **adopted**, except **D17 row 2**
 (Ory Kratos as one cohort-wide human-identity pool), which since 2026-10-12 is **adopted in principle,
-gated** on the cookie scope and the compliance question (`T30-ORY-PROOF` held). Each
+gated** on the edge's production conditions and the compliance question (`T30-ORY-PROOF` held; cookie scope E chosen). Each
 decision carries the evidence that settled it. Task definitions follow in §6. **Item state lives
 in [`queue/work-queue.yaml`](../../../queue/work-queue.yaml)** (rendered as
 [`queue/QUEUE.md`](../../../queue/QUEUE.md), measured by `make queue-status`); defect facts live
@@ -53,7 +53,8 @@ Measured 2026-09-27 against `cgm-remote-monitor` `official/dev` `295f1177` and
 - **Open tenancy work:** T3.0 (configuration surface and credential root). `T30-SCHEMA-CRED` is
   done on local branch `seam/t30-schema-cred` `65ce54b9` (2026-10-07). `T30-ORY-PROOF` is done and
   its condition held ([Ory proof](../../60-research/tenancy/ory-proof-2026-10-07.md)); D17 row 2
-  stays held until the maintainer adopts it and picks the cookie scope. `T30-SCHEMA-CONFIG` waits on
+  was adopted in principle on 2026-10-12, gated, with cookie scope E (apex behind a hardened edge); no real identities until the
+  edge's production conditions are measured over https and the compliance question has an owner. `T30-SCHEMA-CONFIG` waits on
   `T30-RESEARCH` (config half) and those two decisions (identity half).
 - **`TENANCY_MODE=multi` is developer-only**, and under it alarms and live updates are withheld
   (§2.10, §7a).
@@ -141,7 +142,7 @@ preference.
 | **D14** | **Per-tenant JWT signing key**, stored with tenant configuration. Tenant resolution runs before any credential is examined, so the correct key is known at verify time; cross-tenant token reuse becomes a *signature* failure rather than a claim-check failure | maintainer, 2026-09-15 — §2.8 |
 | **D15** | **Configuration source diverges by entrypoint.** `single` reads the process environment; hosted entrypoints read per-tenant configuration from the database, administered by the tenant owner. Env-sourced configuration must not reach the multi path | maintainer, 2026-09-15 — §2.8 |
 | **D16** | **Three listeners, three audiences** — consumer/data (`ns-api`, plus `single`), tenant-owner configuration (`ns-tenant-admin`), platform operator (`ns-admin`). **Prerequisite: tenant resolution and credential verification extract into one module before the third listener exists** | maintainer, 2026-09-16 — §2.9 |
-| **D17** | **The auth plane splits by audience, not by build-versus-buy.** Adopted: devices and the data path keep a **native per-tenant credential permanently**; Hydra is **deferred**; D7 is **unchanged**. **Adopted in principle, gated (2026-10-12):** human identity via one cohort-wide Ory Kratos pool, hosted-only; no real identities until the cookie scope is measured and decided and the compliance question has an owner. D14 holds either way: Nightscout mints its own per-tenant token after authentication | maintainer, 2026-09-16 — §2.9 |
+| **D17** | **The auth plane splits by audience, not by build-versus-buy.** Adopted: devices and the data path keep a **native per-tenant credential permanently**; Hydra is **deferred**; D7 is **unchanged**. **Adopted in principle, gated (2026-10-12):** human identity via one cohort-wide Ory Kratos pool, hosted-only; cookie scope E (apex behind a hardened edge, 2026-10-12); no real identities until the edge's production conditions are measured over https and the compliance question has an owner. D14 holds either way: Nightscout mints its own per-tenant token after authentication | maintainer, 2026-09-16 — §2.9 |
 | **D18** | **Controller registration has two tiers.** *Well-known* declarations ship with the hub, so legacy writers are described with no controller change (backwards compatibility). *Controller-owned* registrations are dynamic and typed: a controller declares its own definitions — intent kinds, states, transitions, initiators, effect fields, command contract — and the hub offers typed API for them, so controller-unique features have a home other than untyped `devicestatus`. Adoption follows the WHATWG pattern: specify what happens now, leave room to extend; the controller owns its registration's lifecycle. **Roles:** the hub (Nightscout, Nocturne) is responsible for observability; the controller is responsible for sending data accurately and for syncing and reconciling. The hub records a controller's composition and reconciliation results; it does not compute dosing state. **Addendum (2026-10-12):** every extensible field is typed; the grammar is must-ignore with typed, namespaced extensions, open vocabularies, per-kind versions, declared horizons and hub/controller negotiation, so neither side releases in lockstep | maintainer, 2026-10-09 and 2026-10-12 — §2.6.1 |
 
 **Amendment carried with D13, true however D17 row 2 lands:** *credentials are per-tenant,
@@ -530,7 +531,7 @@ lands on `T30-WIRING`.
 | audience | decision | status |
 |---|---|---|
 | devices and uploaders | native per-tenant credential, **never Ory** | **ADOPTED.** Forced by D1 — an uploader cannot run an OAuth flow |
-| tenant owners and caregivers | Ory Kratos, one cohort-wide pool, hosted-only | **HELD — direction of travel, not adopted.** Conditional on `T30-ORY-PROOF` |
+| tenant owners and caregivers | Ory Kratos, one cohort-wide pool, hosted-only | **ADOPTED IN PRINCIPLE, GATED** (maintainer, 2026-10-12): `T30-ORY-PROOF` held 23/23. **Cookie scope: E, the apex cookie behind a hardened edge** ([cookie variants](../../60-research/tenancy/ory-cookie-variants-2026-10-12.md), 21/21 measured). Four production conditions: the edge strips the Kratos and CSRF cookies before any tenant backend; it refuses cross-origin writes, WebSocket upgrades included; every path to a tenant backend (API, socket.io) goes through it; and it is measured over https. No real identities until those hold and the compliance question has an owner. Host-only with a hand-off (H2) needed an origin check in every tenant and logout propagation, because tenants under one domain are same-site |
 | third-party apps | Hydra **deferred** | **ADOPTED.** Nothing needs delegated access today; deferring costs nothing |
 | platform operator | D7 unchanged | **ADOPTED** |
 

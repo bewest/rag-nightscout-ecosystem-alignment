@@ -4402,6 +4402,16 @@ items:
       recovery or MFA columns are ours
       (docs/60-research/tenancy/ory-proof-2026-10-07.md §7).
 
+      D17 row 2 adopted in principle, gated, and its cookie scope decided
+      (maintainer, 2026-10-12): E, the apex cookie behind a hardened edge
+      (docs/60-research/tenancy/ory-cookie-variants-2026-10-12.md). Hydra stays
+      deferred, so the identity half needs no per-tenant OAuth client column.
+      The edge passes a short-lived assertion bound to the tenant, which the
+      exchange verifies. Before real identities exist, four things must be
+      measured over https behind the production edge: the cookie strip, the
+      origin check on writes and WebSocket upgrades, every path to a tenant
+      going through the edge, and the compliance question having an owner.
+
   - id: T30-ORY-PROOF
     title: Stand up Kratos 1.x and Hydra 2.x and try to make one pool serve two tenants
     parcel: tenancy
