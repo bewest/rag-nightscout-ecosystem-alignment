@@ -2,8 +2,8 @@
 
 *Contributor- and maintainer-facing.*
 
-**Status: living document — the decision record.** Decisions D1–D18 are the maintainer's
-(2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12) and are all **adopted**, except **D17 row 2**
+**Status: living document — the decision record.** Decisions D1–D19 are the maintainer's
+(2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12, D19 on 2026-10-14) and are all **adopted**, except **D17 row 2**
 (Ory Kratos as one cohort-wide human-identity pool), which since 2026-10-12 is **adopted in principle,
 gated** on the edge's production conditions and the compliance question (`T30-ORY-PROOF` held; cookie scope E chosen). Each
 decision carries the evidence that settled it. Task definitions follow in §6. **Item state lives
@@ -144,6 +144,7 @@ preference.
 | **D16** | **Three listeners, three audiences** — consumer/data (`ns-api`, plus `single`), tenant-owner configuration (`ns-tenant-admin`), platform operator (`ns-admin`). **Prerequisite: tenant resolution and credential verification extract into one module before the third listener exists** | maintainer, 2026-09-16 — §2.9 |
 | **D17** | **The auth plane splits by audience, not by build-versus-buy.** Adopted: devices and the data path keep a **native per-tenant credential permanently**; Hydra is **deferred**; D7 is **unchanged**. **Adopted in principle, gated (2026-10-12):** human identity via one cohort-wide Ory Kratos pool, hosted-only; cookie scope E (apex behind a hardened edge, 2026-10-12); no real identities until the edge's production conditions are measured over https and the compliance question has an owner. D14 holds either way: Nightscout mints its own per-tenant token after authentication | maintainer, 2026-09-16 — §2.9 |
 | **D18** | **Controller registration has two tiers.** *Well-known* declarations ship with the hub, so legacy writers are described with no controller change (backwards compatibility). *Controller-owned* registrations are dynamic and typed: a controller declares its own definitions — intent kinds, states, transitions, initiators, effect fields, command contract — and the hub offers typed API for them, so controller-unique features have a home other than untyped `devicestatus`. Adoption follows the WHATWG pattern: specify what happens now, leave room to extend; the controller owns its registration's lifecycle. **Roles:** the hub (Nightscout, Nocturne) is responsible for observability; the controller is responsible for sending data accurately and for syncing and reconciling. The hub records a controller's composition and reconciliation results; it does not compute dosing state. **Addendum (2026-10-12):** every extensible field is typed; the grammar is must-ignore with typed, namespaced extensions, open vocabularies, per-kind versions, declared horizons and hub/controller negotiation, so neither side releases in lockstep | maintainer, 2026-10-09 and 2026-10-12 — §2.6.1 |
+| **D19** | **A registration separates the definition from the instance.** A *definition* says what a controller's data means; it is immutable, identified by the hash of its content, and many coexist under one `(vendor, product)`. An *instance* is one connected copy of a controller (phone, simulator, lab rig, agent): it names the definition it runs, holds a lease, declares a provenance (`device` or `simulated`) on each channel role it plays, and carries typed labels. Among `device`-provenance instances each channel role has one source of record, handed off by release, lease lapse or owner transfer; an overlapping writer is flagged, never silently resolved, and a command has one destination. Registered instances write typed records only for accepted elements; older readers get a declared, read-only view in today's shapes. The hub still decides nothing about dosing | maintainer, 2026-10-14 — §2.6.2 |
 
 **Amendment carried with D13, true however D17 row 2 lands:** *credentials are per-tenant,
 identity is per-cohort, authorization is per-tenant.* Isolation rests on the authorization layer
@@ -372,7 +373,52 @@ the hub-sync design §3.1 lists the result.)* *(2026-10-12: rule 6 is specified 
 `specs/sync/registration-submit.schema.json` and 21 conformance cases under
 `specs/sync/conformance/`, checked by `tools/nsschema/test_registration_negotiation.py`.
 Authorisation follows D13–D17 where they settle it; ten points they do not settle are listed
-there as open questions.)*
+there as open questions.)* *(2026-10-14: the ten questions are decided — hub-sync design §3.5, "Decisions" — and question 6
+became D19, §2.6.2; the spec and cases are amended under `SPEC-REG-DECISIONS`.)*
+
+### 2.6.2 D19 — definitions and instances (maintainer, 2026-10-14)
+
+D18 registers what a controller's data means. It does not say which copy of a controller is
+connected. Several copies on one site are expected, not exceptional: a development build or
+simulator beside the phone that doses, a lab rig, a phone migration with old and new phones both
+running, and later cooperating agents acting as controllers of different kinds. Keying one
+registration per `(vendor, product)` per tenant makes those copies overwrite one another. D19
+separates the two.
+
+| layer | what it says | identity | lifecycle |
+|---|---|---|---|
+| **definition** | what the data means: kinds, settings, inputs, extensions, versions, carriers (D18 and its addendum) | the hash of its content; many per `(vendor, product)` | immutable; written by the controller |
+| **instance** | which copy is connected, which definition it runs, which channel roles it plays | opaque, issued by the hub or supplied by the controller | a lease the instance renews; it lapses without housekeeping |
+
+**Prior art.** cgm-remote-monitor's agent control plane RFC (`docs/proposals/agent-control-plane-rfc.md`,
+2026-01-01; read at official `b5ddd662`) already splits `ControllerKindDefinition` from
+`ControllerInstanceRegistration`, with `lastSeenAt` as liveness, and plans agents as a later
+phase. The [hub-sync design §5.2](../platform/nightscout-hub-sync-architecture-2026-09-11.md#52-liveness-and-channel-ownership--open-here-already-drafted-upstream)
+maps it and the [control-plane reconciliation](nightscout-control-plane-reconciliation-2026-09-11.md)
+§3.3 corrects it: instance identity must not come from the free-text `devicestatus.device`,
+which is recorded only as an observed alias. D19 adopts that split and correction, and fills the
+gap the reconciliation (§5) finds in both trees: what happens when two instances write to one
+site.
+
+**Rules.**
+
+| # | rule |
+|---|---|
+| 1 | **Definitions are content-addressed.** A definition's id is `sha256:` and the hex SHA-256 of its RFC 8785 canonical JSON. Any number coexist under one `(vendor, product)`; ten simulators on one build share one definition. Namespaces (§3.5) belong to `(vendor, product)`, so releases of one product never clash. A definition whose kind is exactly a well-known kind references the catalogue kind and version instead of copying it, and gets the hub's native storage and the catalogue's carrier mapping. |
+| 2 | **Meaning conflicts are rejected.** One kind at one version has one meaning (addendum rule 4). A definition that types an existing kind and version differently is rejected as `version-conflict`; a different meaning is a new version. Definitions that agree but cover different versions coexist. |
+| 3 | **Read selection.** Writes need no selection: each instance names its definition. A view chooses a version per kind by this order: the operator's capability document limits what is accepted at all; the tenant owner may pin a version for the site's default views, or block (§3.5 question 5); otherwise the newest version a live `device`-provenance instance uses; a lab or development view selects its own instances by label. |
+| 4 | **Instances.** An instance names its definition, renews a lease whose length the hub states in its capability document, and lapses when it stops renewing. It carries no hardware identifiers; anything identifying is a typed, sensitivity-labelled field (addendum rule 2). |
+| 5 | **Roles with provenance.** An instance declares the channel roles it plays: *source* of a channel (a kind, slot or document it writes) or *command sink* (hub-originated intent it accepts, `acceptsFromHub`). Each role carries a required provenance, `device` or `simulated`, because one instance can mix them (a development build with a real CGM and a simulated pump). Only `device`-provenance data is therapy data in default views and exports. Role types are an open vocabulary (addendum rule 3), so roles such as proposing versus acting can be added for agents. |
+| 6 | **One source of record per role.** Among `device`-provenance instances each channel role has one holder. A second claimant is refused that role (`role-held`) and writes the well-known carrier, and the hub flags the overlap on the owner's views (the warning GAP-SYNC-030 records as missing). The role passes by release, lease lapse or owner transfer. `simulated` roles never compete with `device` roles. A command channel therefore has one destination. The hub decides only which instance is the typed source of record; it never stops, directs or composes dosing. |
+| 7 | **Labels.** An instance carries labels: string keys and string values, keys in reverse-DNS form as extensions are, with a few well-known keys under `nightscout.dev/` (purpose, build, migration group; the values are set by the spec). Labels distinguish, select and filter instances. Provenance, not a label, decides what is therapy data. |
+| 8 | **Older readers.** A registered instance writes typed records only for accepted elements. The hub serves older readers (v1, v3 and their consumers) a declared, read-only view in today's shapes, from the catalogue's mapping for well-known kinds or the definition's `wire` carrier; each projected document is labelled as projected, is never stored as a source, and carries the ids of the entities decomposition already assigns. A view for older readers is not a conversion between typed versions under addendum rule 4. Writing both typed record and carrier, linked by (instance, the controller's record id), is for an element with no declared carrier mapping, or while an app moves over. Prior art: Nocturne's `V4ToLegacyProjectionService` (read at `42275c812`) already serves its v1–v3 reads from V4 records — glucose to entries; boluses, carbs and device events to treatments. |
+| 9 | **Retention.** A definition is kept while any stored record references it; each record's declared horizon retention decides when the record goes. Ageing out means a definition is no longer current, never that it is deleted while data depends on it. |
+
+**The roles do not change.** The hub records which instance wrote what and in which role; the
+controller still owns what it declares and how it doses (D18).
+
+**Status.** Specified as `SPEC-REG-INSTANCE`; the hub work (`HUB-REG-CRM`, `HUB-REG-NOCTURNE`)
+follows it.
 
 ### 2.7 D12 — what each repository is for
 

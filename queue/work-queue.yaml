@@ -13727,6 +13727,96 @@ items:
       hub first). tools/nsschema/negotiate.py is a reference used only to
       check the cases.
 
+  - id: SPEC-REG-DECISIONS
+    title: "Registration negotiation: apply the 2026-10-14 decisions to the contract and conformance cases"
+    parcel: platform
+    repo: rag-nightscout-ecosystem-alignment
+    branch: main
+    base: main@fbff1894
+    state: not-started
+    pr: []
+    blast_radius: >
+      specs/sync/registration-submit.schema.json, specs/sync/hub-capabilities.schema.json,
+      specs/sync/conformance/, tools/nsschema/negotiate.py and its tests, and
+      the hub-sync design §3.5 contract text. Ships nothing.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: specification in this repository; ships nothing
+    register: []
+    gates:
+      - run: python -m pytest -q tools/nsschema/test_registration_negotiation.py
+        kind: unit
+        describe: >
+          GREEN on 2026-10-12 (179 tests) for the pre-decision contract, so
+          a pass today proves nothing about this item. Done when new cases
+          exist and pass for: first-to-claim namespaces with no stated roots
+          (and owner-granted roots still refusing namespace-not-owned);
+          not-registration-owner (403) for another subject, with token
+          rotation on the same subject as the passing control; owner
+          release and transfer; blocked-by-owner and unblock; owner retire;
+          freeing a retired registration's namespaces; the credential kind
+          recorded; a 429/503 not treated as a fallback while a definite
+          refusal is; a dual-write element declaring its link. Each
+          rejection paired with a passing control, and each new rule shown
+          non-vacuous by a weakening that turns its test red.
+    blocks_on: [SPEC-REG-NEGOTIATE]
+    evidence:
+      - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md
+      - specs/sync/registration-submit.schema.json
+    notes: >
+      Decisions on the ten §3.5 questions (maintainer, 2026-10-14); each
+      "Change:" line in §3.5 "Decisions" is one piece of this item.
+      Questions 6 and the D19 parts of 7 and 9 belong to SPEC-REG-INSTANCE.
+
+  - id: SPEC-REG-INSTANCE
+    title: "Registration definitions and instances: content-addressed definitions, leased instances, channel roles with provenance, labels (D19)"
+    parcel: platform
+    repo: rag-nightscout-ecosystem-alignment
+    branch: main
+    base: main@fbff1894
+    state: not-started
+    pr: []
+    blast_radius: >
+      The grammar (specs/sync/controller-state-model.schema.json) split
+      into a definition and a new instance schema, the submit contract and
+      capability document, conformance cases, tools/nsschema and the
+      hub-sync design. Ships nothing.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: specification in this repository; ships nothing
+    register: []
+    gates:
+      - no-gate: >
+          Not started. The gate will be a test file over new conformance
+          cases: a definition id reproduced from canonical JSON; two
+          definitions under one product coexisting; version-conflict for one
+          kind and version typed two ways, with a differing-version control;
+          a well-known-identical kind referenced, not copied; an instance
+          lease lapsing; role-held for a second device-provenance source,
+          with a simulated claimant as the control; handoff by release,
+          lapse and owner transfer; one destination per command channel;
+          labels typed as strings under reverse-DNS keys; the read-selection
+          order; the projected carrier view labelled and carrying the
+          decomposed entities' ids; a definition kept while referenced.
+          Each with a passing control and a weakening shown to turn it red.
+    blocks_on: [SPEC-REG-DECISIONS]
+    evidence:
+      - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
+      - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md
+      - docs/30-design/tenancy/nightscout-control-plane-reconciliation-2026-09-11.md
+    notes: >
+      D19 (maintainer, 2026-10-14), execution plan §2.6.2. Build on the
+      upstream RFC's ControllerKindDefinition / ControllerInstanceRegistration
+      split (cgm-remote-monitor docs/proposals, read at official b5ddd662)
+      with the reconciliation §3.3 correction: instance identity is opaque,
+      never devicestatus.device, which is recorded as an observed alias. The
+      instance carries no hardware identifiers. Prior art for rule 8:
+      Nocturne's V4ToLegacyProjectionService (read at 42275c812). Set the
+      well-known nightscout.dev/ label keys and values, and the lease length
+      field in the capability document.
+
   - id: HUB-REG-CRM
     title: "cgm-remote-monitor: accept registrations and derive typed storage, validation and query from them"
     parcel: platform
@@ -13755,7 +13845,7 @@ items:
           The behaviour gate will be the SPEC-REG-NEGOTIATE conformance
           fixtures run against a booted server, plus a control showing an
           unregistered controller's writes are byte-identical to before.
-    blocks_on: [SPEC-REG-NEGOTIATE]
+    blocks_on: [SPEC-REG-DECISIONS, SPEC-REG-INSTANCE]
     evidence:
       - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md
       - specs/sync/registration-submit.schema.json
@@ -13763,10 +13853,12 @@ items:
     notes: >
       D18 and its addendum (maintainer, 2026-10-09 and 2026-10-12): the
       hub derives typed API from a registration and stays an observer; it
-      never computes composition or dosing state. Which hub codebase
-      carries this (single-tenant cgm-remote-monitor first, or the
-      multitenant target only) is for the maintainer to decide when the
-      item starts; ask before designing.
+      never computes composition or dosing state. cgm-remote-monitor is
+      the first hub (maintainer, 2026-10-14, §3.5 question 10); the
+      specifications are then proposed to Nocturne and the open-source AID
+      controllers. Whether single-tenant or multi mode comes first is not
+      stated; ask before designing. D19 rule 8 adds serving older readers a
+      projected view from typed records, which Nocturne already does.
 
   - id: HUB-REG-NOCTURNE
     title: "Nocturne: propose the registration grammar and negotiation as a shared contract, with the hub active-state evidence"
@@ -13788,9 +13880,9 @@ items:
     register: []
     gates:
       - no-gate: >
-          Not started; blocked on the negotiation contract. Done when the
+          Not started; blocked on the amended contract and D19. Done when the
           maintainer has sent the packet; that cannot be checked from here.
-    blocks_on: [SPEC-REG-NEGOTIATE]
+    blocks_on: [SPEC-REG-DECISIONS, SPEC-REG-INSTANCE]
     evidence:
       - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md
       - specs/sync/registration-submit.schema.json
@@ -13805,6 +13897,50 @@ items:
       as a comparison. StateSpan is the natural store for the applied
       side; the proposal says what a registration would add (typed
       metadata, requested vs applied, end reason).
+      D19 rule 8 (older readers served a projected view from typed
+      records) is the pattern Nocturne's V4ToLegacyProjectionService
+      already ships (read at 42275c812); present the declared mapping as
+      the shared part, with overrides and temp targets, where the lab
+      measured the hubs differing, as the cases that need it most.
+
+  - id: PROPOSAL-REG-CONTROLLERS
+    title: "Open-source AID controllers: propose registration, instances and negotiation, with pre-filled declarations"
+    parcel: platform
+    repo: rag-nightscout-ecosystem-alignment
+    branch: main
+    base: main@fbff1894
+    state: not-started
+    pr: []
+    blast_radius: >
+      A proposal packet in this repository for the Loop, Trio, AAPS and
+      iAPS maintainers: what a controller gains (typed extensions,
+      per-kind versions, no lockstep with hub releases), the generated
+      well-known registration for their controller as a starting
+      definition, the instance and fallback rules, and a namespace
+      conventions list. Nothing is filed or sent by an agent; the
+      maintainer sends it.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: proposal in this repository; ships nothing
+    register: []
+    gates:
+      - no-gate: >
+          Not started; blocked on the amended contract and D19. Done when the
+          maintainer has sent the packet; that cannot be checked from here.
+    blocks_on: [SPEC-REG-DECISIONS, SPEC-REG-INSTANCE]
+    evidence:
+      - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
+      - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md
+      - specs/sync/registrations/
+      - docs/30-design/tenancy/nightscout-control-plane-reconciliation-2026-09-11.md
+    notes: >
+      §3.5 question 10 (maintainer, 2026-10-14). The upstream RFC's
+      integration-questionnaire.md already asks these maintainers a version
+      of the instance question; the reconciliation §7 recommends pre-filling
+      it, so the packet answers from measurement and source and marks each
+      cell measured, from source, or ask. The namespace list (§3.5 question
+      2) records use; it is not a check.
 
   - id: LAB-HUB-ACTIVE-STATE
     title: "Lab: cgm-remote-monitor and Nocturne answer 'what is active at t' for the same intent records"

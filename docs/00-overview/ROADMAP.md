@@ -11,7 +11,7 @@ live in these places, and this page links to them:
 | what | where it is decided |
 |---|---|
 | the release train and each release's number | [versioning policy §8.3](../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md#83-the-release-train) |
-| tenancy decisions D1–D18 and the tenancy task definitions | [multitenancy execution plan](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) |
+| tenancy decisions D1–D19 and the tenancy task definitions | [multitenancy execution plan](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) |
 | defect facts, and what ships to operators today | [backfix register](../30-design/remedial/nightscout-backfix-register.md) |
 | each item's state, gate and blockers | `queue/work-queue.yaml`; `make queue-status` measures it |
 

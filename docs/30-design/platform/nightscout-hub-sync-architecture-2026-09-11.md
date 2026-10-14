@@ -1,6 +1,6 @@
 # A hub-and-spoke sync model for AID controllers
 
-*Contributor-facing.* **Snapshot — describes 2026-09-11. Status: current as analysis; the design it sketches is carried forward by [PROPOSAL-controller-descriptions](PROPOSAL-controller-descriptions-2026-09-11.md) and [PROPOSAL-replay-fidelity-changes](PROPOSAL-replay-fidelity-changes-2026-09-11.md).** Current decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions). **Corrected in place 2026-10-12:** §3.1's description of `stateSpans` and the schema field list in §5.2 now match the schema as extended for D18 from [intent and workflow across the landscape](./nightscout-intent-workflow-landscape-2026-10-09.md) §9. **Also 2026-10-12:** §3.1 lists `extensions` and the D18 addendum grammar rules 1–5 (`SCHEMA-REG-EXT`). **Also 2026-10-12:** §3.5 specifies negotiation, D18 addendum rule 6 (`SPEC-REG-NEGOTIATE`): the capability document, the submit, update and retire contract, the fallback rule, authorisation with open questions, and the conformance cases.
+*Contributor-facing.* **Snapshot — describes 2026-09-11. Status: current as analysis; the design it sketches is carried forward by [PROPOSAL-controller-descriptions](PROPOSAL-controller-descriptions-2026-09-11.md) and [PROPOSAL-replay-fidelity-changes](PROPOSAL-replay-fidelity-changes-2026-09-11.md).** Current decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions). **Corrected in place 2026-10-12:** §3.1's description of `stateSpans` and the schema field list in §5.2 now match the schema as extended for D18 from [intent and workflow across the landscape](./nightscout-intent-workflow-landscape-2026-10-09.md) §9. **Also 2026-10-12:** §3.1 lists `extensions` and the D18 addendum grammar rules 1–5 (`SCHEMA-REG-EXT`). **Also 2026-10-12:** §3.5 specifies negotiation, D18 addendum rule 6 (`SPEC-REG-NEGOTIATE`): the capability document, the submit, update and retire contract, the fallback rule, authorisation with open questions, and the conformance cases. **Also 2026-10-14:** §3.5's ten open questions are decided ("Decisions"), with the contract changes they imply listed for `SPEC-REG-DECISIONS`; §5.2's kind/instance split is adopted as D19.
 
 Date: 2026-09-11. Fifth in a series
 with
@@ -409,37 +409,59 @@ a controller can predict the result before it submits; the response is authorita
 - **Storage.** Registrations are tenant data: per-tenant, under RLS (D3), never in the
   public capability document. Authorisation is per tenant, as the D13 amendment requires.
 
-**Open questions for the maintainer.** None of these is decided by D13–D18; the cases do not
-depend on the answers.
+**Decisions (maintainer, 2026-10-14).** The ten questions D13–D18 left open. Where a decision
+changes the contract above, the change is listed and is not yet in the schemas or cases; it is
+queued as `SPEC-REG-DECISIONS`. Question 6 became D19 ([execution plan §2.6.2](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#262-d19--definitions-and-instances-maintainer-2026-10-14)), queued as `SPEC-REG-INSTANCE`.
 
-1. **Where namespace roots come from.** Granted by the tenant owner per subject on
-   `ns-tenant-admin`; derived from a client identity such as Nocturne's RFC 7591
-   `software_id` (§2.2 of the controller-descriptions proposal), which would need third-party
-   client registration that D17 defers with Hydra; or both.
-2. **Scope of a namespace.** Per tenant (what the cases assume, consistent with "authorization
-   is per-tenant"), or deployment-wide, or verified against DNS control of the reverse-DNS
-   name. A per-tenant namespace can mean two things on two tenants, which matters to any
-   reader that spans tenants.
-3. **`API_SECRET` in single mode.** It grants `*`. Whether it also holds every namespace root,
-   or a controller must register with a subject token, is open. D13 removes it only in multi
-   mode.
-4. **Binding a registration to a credential.** Whether any credential with the permission and
-   the namespace roots may update or retire a registration (what the cases assume), or only
-   the subject that created it — which matters when an app is reinstalled or its token rotated.
-5. **The tenant owner and a controller-owned registration.** D18 gives the controller the
-   lifecycle. Whether the owner may also retire or block one from `ns-tenant-admin` is open.
-6. **Identity granularity.** `(vendor, product)` per tenant assumes one live release per
-   controller per tenant. Two phones on two releases would share one registration; whether
-   `versionRange` should join the identity is open.
-7. **Writing both typed and carrier.** A controller may keep writing carriers for accepted
-   elements so older readers still see them. The hub would then hold one intent twice; whether
-   it should link or deduplicate them, and on what key, is open.
-8. **Re-checking.** When a controller re-reads its registration or the capability document
-   (each launch, each release, on a timer) after a hub upgrade or downgrade.
-9. **Retired data.** How long a retired declaration keeps typed reads available, beyond each
-   item's declared horizon retention.
-10. **Which hub first** (already open on `HUB-REG-CRM`): single-tenant cgm-remote-monitor, or
-    the multitenant target only.
+1. **Where namespace roots come from: first to claim.** A credential with
+   `api:registrations:create` may claim any namespace no registration on the tenant holds; a
+   second claimant is rejected `namespace-claimed`, as now. Owner-granted roots remain an
+   optional restriction a hub may support (`namespace-not-owned` stays); a verified client
+   identity (`software_id`) may later restrict further. Basis: `(vendor, product)` is already
+   self-asserted and first to claim (412 `registration-exists`), the owner already chose the
+   credential, and losing a claim falls back to carriers. A namespace string proves nothing
+   about authorship: readers attribute typed records to the writing registration and
+   credential. *Change:* a submitter without stated roots may claim any unclaimed namespace.
+2. **Scope: per tenant**, as the cases assume. A deployment-wide claim would let one tenant
+   block another and reveal another tenant's controller. Readers that span tenants interpret a
+   field by the declaration carried with it, not by its namespace. The community may keep a
+   published list of namespace conventions, as a record of use, never a check. DNS
+   verification, if ever added, labels a claim as verified rather than gating it.
+3. **`API_SECRET` in single mode may register.** The hub records the kind of credential that
+   registered, and the owner's admin view shows registrations made with the shared secret;
+   documentation steers controllers toward subject tokens. Multi mode has no deployment secret
+   (D13). *Change:* the stored registration records its credential kind.
+4. **A registration is bound to the subject that created it**, not to a token, so token
+   rotation needs nothing. Another subject is refused 403 `not-registration-owner`. The owner
+   may release or transfer a registration to another subject. A registration made with
+   `API_SECRET` is bound to the shared secret. *Change:* new reason and case; retire is
+   authorised by subject binding, and namespace ownership no longer decides it.
+5. **The owner may retire, block and unblock, never edit.** A block makes the hub refuse that
+   `(vendor, product)` on the tenant (`blocked-by-owner`); the controller writes its carriers,
+   data already stored stays frozen as on retire, and unblocking restores it. The owner may
+   also free a retired registration's namespaces. Accepting is already the hub's side of
+   negotiation, so a block does not change what the controller declares (D18). *Change:* the
+   owner as a second retirer, the block state and its reason, and namespace release.
+6. **Two live releases or copies on one tenant:** D19. The definition (what data means) and the
+   instance (which copy is connected, in which roles) are separate resources.
+7. **Typed and carrier for the same intent.** A registered instance writes typed records only
+   for accepted elements, and the hub serves older readers a declared, read-only, labelled view
+   in today's shapes (D19 rule 8). Writing both, linked by (instance, the controller's record
+   id), is for elements with no declared carrier mapping and for migration; counting follows
+   the link. *Change:* the fallback rule gains the view; a dual-write element declares it.
+8. **Re-checking: at launch and after a controller release.** A lease renewal does not re-read
+   the capability document. A refusal does not trigger a re-check, so an overloaded hub is not
+   met with a surge of reads: a 429 or 503 is retried with backoff and is not a fallback; a
+   definite refusal (`blocked-by-owner`, a retired or missing registration, a typed route
+   answering 404 after a hub rollback) sends that record as its carrier, and the element is
+   treated as not accepted until the next re-check. *Change:* the fallback rule distinguishes
+   load refusals from definite ones.
+9. **Retired data stays readable while it is stored.** A definition is kept while any stored
+   record references it; each record's declared horizon retention decides when the record
+   goes (D19 rule 9).
+10. **Which hub first: cgm-remote-monitor.** The specifications are then proposed to the
+    community for adoption by Nocturne and the open-source AID controllers
+    (`HUB-REG-NOCTURNE`, `PROPOSAL-REG-CONTROLLERS`).
 
 **The cases.**
 
@@ -558,6 +580,8 @@ is the clearest thing to put behind a registered contract rather than to
 retrofit into the collection API.
 
 ### 5.2 Liveness and channel ownership — open here, already drafted upstream
+
+*(2026-10-14: answered by D19 — [execution plan §2.6.2](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#262-d19--definitions-and-instances-maintainer-2026-10-14) — which adopts the RFC's kind/instance split with the reconciliation's identity correction and settles two writers on one site; what follows is the map as written on 2026-09-11.)*
 
 **This section is an open question, not a design.** It is written as a
 reconciliation target because the honest finding is that cgm-remote-monitor

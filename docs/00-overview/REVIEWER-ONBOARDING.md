@@ -54,7 +54,7 @@ If you only read two, read **1** and **3**.
 Then, by horizon, when you need it:
 
 - **Modernization** — [`../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md`](../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md)
-- **Multitenancy** — [`../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) (decisions D1–D18)
+- **Multitenancy** — [`../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) (decisions D1–D19)
 - **Research and measurements** — `../60-research/{remedial,modernization,tenancy}/`, filed by horizon
 
 ---
