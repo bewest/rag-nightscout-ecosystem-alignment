@@ -738,7 +738,7 @@
      ]
     }
    },
-   "description": "A registration as the hub stores it. `registration` is null only for a pre-emptive block. The binding, credential kind, `blockedFrom` and freed namespaces are stored beside the registration, outside the etag.",
+   "description": "A registration as the hub stores it. `registration` is null only for a pre-emptive block. The binding is in the etag; credential kind, `blockedFrom` and freed namespaces are stored beside the registration, outside it.",
    "allOf": [
     {
      "if": {
@@ -966,7 +966,7 @@
     },
     "typedWrite": {
      "type": "object",
-     "description": "A later typed write for one element that the hub refuses (decision 8), after the request's response set the write plan. `status` is the HTTP status of the refusal; `retryAfter` the Retry-After seconds, when sent; `reason` the refusal's reason, when given.",
+     "description": "A later typed write for one element that the hub refuses (decision 8), after the request's response set the write plan. `status` is the HTTP status of the refusal: 429 or any 5xx is a load refusal, retried with backoff; any other is definite. `retryAfter` the Retry-After seconds, when sent; `reason` the refusal's reason, when given; `deadlinePassed` true when the record's delivery deadline (the controller's) has passed under load refusals, so the record is sent as its carrier and the element stays accepted.",
      "required": [
       "element",
       "status"
@@ -984,6 +984,9 @@
       "retryAfter": {
        "type": "integer",
        "minimum": 0
+      },
+      "deadlinePassed": {
+       "type": "boolean"
       },
       "reason": {
        "$ref": "#/$defs/reason"
@@ -1080,7 +1083,7 @@
       },
       "typedWrite": {
        "type": "object",
-       "description": "What the controller does about the refused typed write. `retry-backoff`: a load refusal (429 or 503, with or without Retry-After); the record is retried, not written as its carrier and not dropped. `carrier-this-record`: a definite refusal; that record is sent as its carrier and the element is not accepted until the next re-check. `recheck` is always false: a refusal never makes the controller re-read the capability document or its registration. `fallback`: the write plan afterwards.",
+       "description": "What the controller does about the refused typed write. `retry-backoff`: a load refusal (429 or any 5xx, with or without Retry-After); the record is retried, not written as its carrier and not dropped. `carrier-this-record`: a definite refusal, after which the element is not accepted until the next re-check; or a load refusal past the record's delivery deadline, after which the element stays accepted. `recheck` is always false: a refusal never makes the controller re-read the capability document or its registration. `fallback`: the write plan afterwards.",
        "required": [
         "action",
         "recheck",

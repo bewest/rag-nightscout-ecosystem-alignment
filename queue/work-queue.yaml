@@ -13796,6 +13796,15 @@ items:
           typed-and-carrier without its link; a typed-write outcome that may
           re-check; a dual-write link without its carrier path; the grammar
           without dualWriteLink on stateSpans (strict view).
+          Amended 2026-10-15 (maintainer): the etag covers the binding, and
+          every 5xx is a load refusal with a delivery deadline after which
+          that record goes as its carrier. GREEN: 460 tests over 55 cases
+          (typed-write-load-502, typed-write-load-deadline-passed added;
+          the unknown-status test now uses 418 instead of 500, marked
+          CHANGED in the file). Weakenings, each red then reverted: the
+          etag without the binding (81 tests red); load as 429/503 only
+          (3 red, incl. typed-write-load-502); the deadline ignored
+          (typed-write-load-deadline-passed red).
     blocks_on: [SPEC-REG-NEGOTIATE]
     evidence:
       - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md
@@ -13813,7 +13822,7 @@ items:
       namespaces until the owner frees them. A registration is bound to
       the credential that wrote it (boundTo: a subject id, never a token,
       or api-secret) and records credentialKind (subject, api-secret or
-      other+term), both returned with it and neither in the etag. Another
+      other+term), both returned with it; the binding is in the etag (2026-10-15), the credential kind is not. Another
       credential updating or retiring is 403 not-registration-owner in
       step (1), before preconditions; retire needs the binding and
       api:registrations:delete, not namespace roots. The owner's actions
@@ -13831,7 +13840,7 @@ items:
       identical content (200, not a no-op); credentialKind is the kind
       that last created or updated it; reactivation reclaims a freed
       namespace only if no other registration holds it; a typed-write
-      refusal with a status other than 429 or 503 is definite. Element
+      refusal with a status other than 429 or 503 is definite (amended 2026-10-15: 429 or any 5xx is load, with a delivery deadline; the binding is in the etag). Element
       results may carry carrierView (served, not-served, other+term; an
       unknown value is not accepted); the grammar gains dualWriteLink
       (typedIdPath, carrierIdPath) on stateSpans and extensions; accepted

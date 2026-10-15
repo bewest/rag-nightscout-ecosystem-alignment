@@ -6,7 +6,7 @@
 id: owner-transfer
 title: The owner transfers a registration to a named subject
 description: Decision 4. Transfer binds the registration to the named subject; the subject
-  it was bound to is refused not-registration-owner from then on. The etag does not change.
+  it was bound to is refused not-registration-owner from then on. The etag changes (the binding is in its input, 2026-10-15), so a racing owner action meets 412.
 cell: newer-controller/newer-hub
 capabilities:
   apiVersion: nightscout.dev/sync/v1
@@ -67,7 +67,7 @@ hubState:
       vendor: Example
       product: NegotiationController
     state: active
-    etag: sha256:7d5ee7460eb39dcadfcd25ff01596f921b433d2cc38390a2d97a5a0bafca323c
+    etag: sha256:3aaaa298028f1593078375fd1ade48a265aedf04f1d5bd2b5d20b40d3a231c5d
     boundTo:
       kind: subject
       subject: subject-test-controller-a
@@ -136,7 +136,7 @@ request:
     vendor: Example
     product: NegotiationController
   preconditions:
-    ifMatch: sha256:7d5ee7460eb39dcadfcd25ff01596f921b433d2cc38390a2d97a5a0bafca323c
+    ifMatch: sha256:3aaaa298028f1593078375fd1ade48a265aedf04f1d5bd2b5d20b40d3a231c5d
   transferTo: &id001
     kind: subject
     subject: subject-test-controller-b
@@ -153,7 +153,7 @@ expected:
       product: NegotiationController
       versionRange: 1.0.0-test
       state: active
-      etag: sha256:7d5ee7460eb39dcadfcd25ff01596f921b433d2cc38390a2d97a5a0bafca323c
+      etag: sha256:a4b38efb7080cff0ec8b3292d293923f2e5e2a55d1de7190333a094956ef215d
       boundTo: *id001
       credentialKind: subject
   fallback: null
@@ -162,7 +162,7 @@ expected:
       vendor: Example
       product: NegotiationController
     state: active
-    etag: sha256:7d5ee7460eb39dcadfcd25ff01596f921b433d2cc38390a2d97a5a0bafca323c
+    etag: sha256:a4b38efb7080cff0ec8b3292d293923f2e5e2a55d1de7190333a094956ef215d
     boundTo: *id001
     credentialKind: subject
     registration: *id002

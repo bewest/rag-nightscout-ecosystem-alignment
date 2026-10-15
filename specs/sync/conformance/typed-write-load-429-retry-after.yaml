@@ -146,7 +146,7 @@ expected:
       product: NegotiationController
       versionRange: 1.0.0-test
       state: active
-      etag: sha256:7d5ee7460eb39dcadfcd25ff01596f921b433d2cc38390a2d97a5a0bafca323c
+      etag: sha256:3aaaa298028f1593078375fd1ade48a265aedf04f1d5bd2b5d20b40d3a231c5d
       boundTo:
         kind: subject
         subject: subject-test-controller-a

@@ -65,9 +65,13 @@ def canonical_json(value):
                       ensure_ascii=False).encode("utf-8")
 
 
-def etag(registration, state):
+def etag(registration, state, bound_to=None):
+    """Over {registration, state, boundTo}: a change of content, state or
+    binding (decision 4's release and transfer) changes it, so two owner
+    actions racing on one registration are detected like any other update.
+    Credential kind and freed namespaces are outside it."""
     digest = hashlib.sha256(canonical_json(
-        {"registration": registration, "state": state})).hexdigest()
+        {"registration": registration, "state": state, "boundTo": bound_to})).hexdigest()
     return f"sha256:{digest}"
 
 
@@ -467,11 +471,11 @@ def _registered(stored):
 
 def _stored(identity, registration, state, *, boundTo=None, credentialKind=None,
             blockedFrom=None, freedNamespaces=None):
-    """A stored registration, members in a fixed order. Binding, credential
-    kind and freed namespaces are not in the etag: its input stays
-    {registration, state}."""
+    """A stored registration, members in a fixed order. The etag covers the
+    binding; credential kind and freed namespaces are not in it."""
     out = {"identity": {"vendor": identity[0], "product": identity[1]},
-           "state": state, "etag": etag(registration, state)}
+           "state": state, "etag": etag(registration, state,
+                                        boundTo if registration is not None else None)}
     if state == "blocked" and blockedFrom is not None:
         out["blockedFrom"] = blockedFrom
     if registration is not None:
@@ -736,7 +740,7 @@ def fallback(registration, response):
     """The controller's write plan. An element is written through the typed
     API only when the response to *this* registration accepted it; anything
     else — rejected, an unknown result, no response (including a submit
-    answered 429 or 503), a rejected, retired or blocked registration, a
+    answered 429 or any 5xx), a rejected, retired or blocked registration, a
     failed precondition — falls back to the well-known carrier.
 
     An accepted element is written typed only, unless the hub serves no
@@ -764,15 +768,21 @@ def fallback(registration, response):
     return plan
 
 
-# Decision 8. A typed write refused for load is retried with backoff (after
-# Retry-After when sent); the record is neither dropped nor written as its
-# carrier. Any other refusal is definite — blocked-by-owner, a retired or
-# missing registration, a typed route answering 404 after a hub rollback,
-# or a status the controller does not know (rule 3) — and sends that record
-# as its carrier; the element is not accepted until the next re-check. A
-# refusal never triggers a re-check: the controller re-reads the capability
-# document and its registration at launch and after a controller release.
-LOAD_REFUSALS = (429, 503)
+# Decision 8 (amended 2026-10-15). A typed write refused for load — 429 or
+# any 5xx, since a server or gateway error says nothing about whether the
+# element is accepted — is retried with backoff (after Retry-After when
+# sent); the record is not dropped and the write plan does not change. A
+# record still unwritten when its delivery deadline passes is sent as its
+# carrier, so a typed route failing persistently never holds data back from
+# older readers; the element stays accepted for the next record. Any other
+# refusal is definite — blocked-by-owner, a retired or missing registration,
+# a typed route answering 404 after a hub rollback, or a 4xx the controller
+# does not know (rule 3) — and sends that record as its carrier; the element
+# is not accepted until the next re-check. A refusal never triggers a
+# re-check: the controller re-reads the capability document and its
+# registration at launch and after a controller release.
+def is_load_refusal(status):
+    return status == 429 or 500 <= status <= 599
 
 
 def typed_write_refused(registration, plan, refusal):
@@ -782,10 +792,13 @@ def typed_write_refused(registration, plan, refusal):
     if plan.get(eid, {}).get("write") not in ("typed", "typed-and-carrier"):
         raise ValueError(f"{eid} is not written typed; no typed write was refused")
     after = copy.deepcopy(plan)
-    if refusal["status"] in LOAD_REFUSALS:
-        outcome = {"action": "retry-backoff", "recheck": False}
-        if "retryAfter" in refusal:
-            outcome["retryAfterSeconds"] = refusal["retryAfter"]
+    if is_load_refusal(refusal["status"]):
+        if refusal.get("deadlinePassed"):
+            outcome = {"action": "carrier-this-record", "recheck": False}
+        else:
+            outcome = {"action": "retry-backoff", "recheck": False}
+            if "retryAfter" in refusal:
+                outcome["retryAfterSeconds"] = refusal["retryAfter"]
     else:
         outcome = {"action": "carrier-this-record", "recheck": False}
         node, kind = next((e[3], e[4]) for e in elements(registration) if e[0] == eid)

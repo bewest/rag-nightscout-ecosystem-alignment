@@ -6,8 +6,8 @@
 id: owner-release
 title: The owner releases a registration from its subject
 description: 'Decision 4. Release unbinds the registration (boundTo null); the next credential
-  with the permission that updates it is bound to it (released-update-binds). The etag does
-  not change: the binding is not in its input.'
+  with the permission that updates it is bound to it (released-update-binds). The etag changes:
+  the binding is in its input (maintainer, 2026-10-15).'
 cell: newer-controller/newer-hub
 capabilities:
   apiVersion: nightscout.dev/sync/v1
@@ -68,7 +68,7 @@ hubState:
       vendor: Example
       product: NegotiationController
     state: active
-    etag: sha256:7d5ee7460eb39dcadfcd25ff01596f921b433d2cc38390a2d97a5a0bafca323c
+    etag: sha256:3aaaa298028f1593078375fd1ade48a265aedf04f1d5bd2b5d20b40d3a231c5d
     boundTo:
       kind: subject
       subject: subject-test-controller-a
@@ -137,7 +137,7 @@ request:
     vendor: Example
     product: NegotiationController
   preconditions:
-    ifMatch: sha256:7d5ee7460eb39dcadfcd25ff01596f921b433d2cc38390a2d97a5a0bafca323c
+    ifMatch: sha256:3aaaa298028f1593078375fd1ade48a265aedf04f1d5bd2b5d20b40d3a231c5d
 expected:
   controllerWouldSubmit: false
   response:
@@ -151,7 +151,7 @@ expected:
       product: NegotiationController
       versionRange: 1.0.0-test
       state: active
-      etag: sha256:7d5ee7460eb39dcadfcd25ff01596f921b433d2cc38390a2d97a5a0bafca323c
+      etag: sha256:c6e6e97d7ef2f028a52efca7bdce5cf26cd26614f07ef9ef87d4350f75f247de
       boundTo: null
       credentialKind: subject
   fallback: null
@@ -160,7 +160,7 @@ expected:
       vendor: Example
       product: NegotiationController
     state: active
-    etag: sha256:7d5ee7460eb39dcadfcd25ff01596f921b433d2cc38390a2d97a5a0bafca323c
+    etag: sha256:c6e6e97d7ef2f028a52efca7bdce5cf26cd26614f07ef9ef87d4350f75f247de
     boundTo: null
     credentialKind: subject
     registration: *id001

@@ -67,7 +67,7 @@ hubState:
       vendor: Example
       product: NegotiationController
     state: blocked
-    etag: sha256:8af6e5b980e779003301af8d9fb6544b22654000ef9f57bd965ff897d615e4ee
+    etag: sha256:e4a65e80183d9bf030e594ed38fae8f6cd99ec4dc7e7bb6fbeddd715f1d5f663
     blockedFrom: active
     boundTo: &id001
       kind: subject
@@ -137,7 +137,7 @@ request:
     vendor: Example
     product: NegotiationController
   preconditions:
-    ifMatch: sha256:8af6e5b980e779003301af8d9fb6544b22654000ef9f57bd965ff897d615e4ee
+    ifMatch: sha256:e4a65e80183d9bf030e594ed38fae8f6cd99ec4dc7e7bb6fbeddd715f1d5f663
 expected:
   controllerWouldSubmit: false
   response:
@@ -151,7 +151,7 @@ expected:
       product: NegotiationController
       versionRange: 1.0.0-test
       state: active
-      etag: sha256:7d5ee7460eb39dcadfcd25ff01596f921b433d2cc38390a2d97a5a0bafca323c
+      etag: sha256:3aaaa298028f1593078375fd1ade48a265aedf04f1d5bd2b5d20b40d3a231c5d
       boundTo: *id001
       credentialKind: subject
   fallback: null
@@ -160,7 +160,7 @@ expected:
       vendor: Example
       product: NegotiationController
     state: active
-    etag: sha256:7d5ee7460eb39dcadfcd25ff01596f921b433d2cc38390a2d97a5a0bafca323c
+    etag: sha256:3aaaa298028f1593078375fd1ade48a265aedf04f1d5bd2b5d20b40d3a231c5d
     boundTo: *id001
     credentialKind: subject
     registration: *id002

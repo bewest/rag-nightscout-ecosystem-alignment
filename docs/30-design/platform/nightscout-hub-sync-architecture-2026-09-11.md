@@ -391,12 +391,12 @@ records to the registration and its bound credential: a namespace string proves 
 authorship. `SPEC-REG-INSTANCE` binds instances; this binding leaves room for that.
 
 **Concurrency and idempotency.** The etag is `sha256:` and the hex SHA-256 of the RFC 8785
-canonical JSON of `{"registration": <as submitted>, "state": <active|retired|blocked>}`
-(`registration` is null for a pre-emptive block), so it changes on every change of content or
-state, including a block and an unblock. The binding, the credential kind and freed namespaces
-are stored beside the registration and are not in the etag: a release, a transfer or freeing
-namespaces leaves it unchanged, and the precondition on those owner actions guards against
-acting on content or a state the owner has not read. A request whose content and state are already stored
+canonical JSON of `{"registration": <as submitted>, "state": <active|retired|blocked>,
+"boundTo": <binding or null>}` (`registration` and `boundTo` are null for a pre-emptive block),
+so it changes on every change of content, state or binding, including a block, an unblock, a
+release and a transfer; two owner actions racing on one registration therefore meet a 412
+(maintainer, 2026-10-15). The credential kind and freed namespaces are stored beside the
+registration and are not in the etag: freeing namespaces leaves it unchanged. A request whose content and state are already stored
 succeeds as a no-op (`noop: true`, 200, the stored etag), so a create retried after a lost
 response does not fail (RFC 9110 §13.1.1 allows a 2xx for `If-Match` when the change has already been
 applied; the contract applies the same rule to a create's `If-None-Match`). A stale `If-Match` with different content is 412 `stale-etag`; `If-None-Match: *`
@@ -442,7 +442,7 @@ the response to *this* registration has outcome `accepted` or `partial` and the 
 result is `accepted` or `accepted-with-ignored-members`. Everything else — a rejected
 element, an element result, reason or `carrierView` the controller does not know, a rejected
 registration, a failed precondition, a retired or blocked registration, no response (a submit
-answered 429 or 503 is no response), no capability document, no
+answered 429 or any 5xx is no response), no capability document, no
 `submit`, or a grammar major the hub does not list — falls back per the elements table. An
 accepted element whose `carrierView` is `served` is written typed only; one whose view is not
 served is written typed only, or typed and as its carrier when the element declares
@@ -458,10 +458,14 @@ a controller can predict most of the result before it submits; the response is a
 **Re-checking and refused typed writes** (decision 8). A controller reads the capability
 document and its registration at launch and after a controller release; never on a timer and
 never because a request was refused, so an overloaded hub is not met with a surge of reads. A
-typed write refused for load — 429 or 503, with or without `Retry-After` — is retried with
-backoff (no sooner than `Retry-After` when sent); it is not written as its carrier and the
-record is not dropped. Any other refusal of a typed write is definite: `blocked-by-owner`, a
-retired or missing registration, a typed route answering 404 after a hub rollback, or a status
+typed write refused for load — 429 or any 5xx, with or without `Retry-After` (maintainer,
+2026-10-15: a server or gateway error says nothing about whether the element is accepted) — is
+retried with backoff (no sooner than `Retry-After` when sent); it is not written as its carrier,
+the record is not dropped and the write plan does not change. A record still refused when its
+delivery deadline passes is sent as its carrier, so a typed route failing persistently never
+holds data back from older readers; the element stays accepted for the next record. The deadline
+is the controller's. Any other refusal of a typed write is definite: `blocked-by-owner`, a
+retired or missing registration, a typed route answering 404 after a hub rollback, or a 4xx
 the controller does not know. The controller sends that record as its carrier and treats the
 element as not accepted until its next re-check. The cases model this as `typedWrite` (the
 refusal) and `expected.typedWrite` (`retry-backoff` or `carrier-this-record`, `recheck: false`,
@@ -528,7 +532,7 @@ schemas and the cases on 2026-10-15 (`SPEC-REG-DECISIONS`). Question 6 became D1
    rotation needs nothing. Another subject is refused 403 `not-registration-owner`. The owner
    may release or transfer a registration to another subject. A registration made with
    `API_SECRET` is bound to the shared secret. *Change:* new reason and case; retire is
-   authorised by subject binding, and namespace ownership no longer decides it. (done 2026-10-15, `SPEC-REG-DECISIONS`)
+   authorised by subject binding, and namespace ownership no longer decides it. (done 2026-10-15, `SPEC-REG-DECISIONS`; the binding was put into the etag the same day, so a release or transfer changes it)
 5. **The owner may retire, block and unblock, never edit.** A block makes the hub refuse that
    `(vendor, product)` on the tenant (`blocked-by-owner`); the controller writes its carriers,
    data already stored stays frozen as on retire, and unblocking restores it. The owner may
@@ -544,7 +548,9 @@ schemas and the cases on 2026-10-15 (`SPEC-REG-DECISIONS`). Question 6 became D1
    the link. *Change:* the fallback rule gains the view; a dual-write element declares it. (done 2026-10-15, `SPEC-REG-DECISIONS`, as `carrierView` and `dualWriteLink`; the view's mapping and the instance-scoped link are `SPEC-REG-INSTANCE`'s)
 8. **Re-checking: at launch and after a controller release.** A lease renewal does not re-read
    the capability document. A refusal does not trigger a re-check, so an overloaded hub is not
-   met with a surge of reads: a 429 or 503 is retried with backoff and is not a fallback; a
+   met with a surge of reads: a 429 or 503 is retried with backoff and is not a fallback
+   (2026-10-15: every 5xx counts as load, and a record past its delivery deadline goes as its
+   carrier without changing the plan); a
    definite refusal (`blocked-by-owner`, a retired or missing registration, a typed route
    answering 404 after a hub rollback) sends that record as its carrier, and the element is
    treated as not accepted until the next re-check. *Change:* the fallback rule distinguishes
@@ -602,15 +608,17 @@ schemas and the cases on 2026-10-15 (`SPEC-REG-DECISIONS`). Question 6 became D1
 | `blocked-pre-emptive-create` | newer/newer | create after a pre-emptive block; 403 `blocked-by-owner` |
 | `owner-unblock` | newer/newer | back to `active`, with the pre-block etag |
 | `owner-unblock-retired` | newer/newer | retired before the block; stays `retired` |
-| `owner-release` | newer/newer | `boundTo: null`; etag unchanged |
+| `owner-release` | newer/newer | `boundTo: null`; etag changes (it covers the binding) |
 | `released-update-binds` | newer/newer | another subject updates a released registration and is bound to it |
-| `owner-transfer` | newer/newer | bound to a named subject; etag unchanged |
+| `owner-transfer` | newer/newer | bound to a named subject; etag changes, so a racing owner action meets 412 |
 | `owner-free-namespaces` | newer/newer | retired registration's namespaces freed |
 | `owner-free-namespaces-not-retired` | newer/newer | active registration; 409 `not-retired` |
 | `accepted-dual-write-view-not-served` | newer/newer | no carrier view, `dualWriteLink` declared; typed and carrier (decision 7) |
 | `accepted-dual-write-view-served` | newer/newer | `carrierView: served`; typed only |
 | `typed-write-load-503` | newer/newer | typed write 503, no `Retry-After`; retry with backoff, no carrier, no re-check (decision 8) |
 | `typed-write-load-429-retry-after` | newer/newer | typed write 429 with `Retry-After: 30`; retry after it |
+| `typed-write-load-502` | newer/newer | typed write 502; load, like 503: retry with backoff |
+| `typed-write-load-deadline-passed` | newer/newer | 503 past the record's delivery deadline; that record as its carrier, element stays typed |
 | `typed-write-blocked-by-owner` | newer/newer | typed write 403 `blocked-by-owner`; that record as its carrier, no re-check |
 | `typed-write-route-404` | newer/newer | typed route 404 after a rollback; that record as its carrier, no re-check |
 

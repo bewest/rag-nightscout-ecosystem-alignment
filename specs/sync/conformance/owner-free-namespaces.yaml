@@ -68,7 +68,7 @@ hubState:
       vendor: Example
       product: OtherController
     state: retired
-    etag: sha256:c523b2f3e0d208f8778f0b00bb287363e505f80db6a82076e1a78aa4c50e8dbb
+    etag: sha256:e59031df77dbd9f405788b04058fd5d40f62de36717b5b8b60342d5cec96b556
     boundTo: &id001
       kind: subject
       subject: subject-test-controller-b
@@ -137,7 +137,7 @@ request:
     vendor: Example
     product: OtherController
   preconditions:
-    ifMatch: sha256:c523b2f3e0d208f8778f0b00bb287363e505f80db6a82076e1a78aa4c50e8dbb
+    ifMatch: sha256:e59031df77dbd9f405788b04058fd5d40f62de36717b5b8b60342d5cec96b556
 expected:
   controllerWouldSubmit: false
   response:
@@ -151,7 +151,7 @@ expected:
       product: OtherController
       versionRange: 1.0.0-test
       state: retired
-      etag: sha256:c523b2f3e0d208f8778f0b00bb287363e505f80db6a82076e1a78aa4c50e8dbb
+      etag: sha256:e59031df77dbd9f405788b04058fd5d40f62de36717b5b8b60342d5cec96b556
       boundTo: *id001
       credentialKind: subject
       freedNamespaces: &id002
@@ -162,7 +162,7 @@ expected:
       vendor: Example
       product: OtherController
     state: retired
-    etag: sha256:c523b2f3e0d208f8778f0b00bb287363e505f80db6a82076e1a78aa4c50e8dbb
+    etag: sha256:e59031df77dbd9f405788b04058fd5d40f62de36717b5b8b60342d5cec96b556
     boundTo: *id001
     credentialKind: subject
     freedNamespaces: *id002

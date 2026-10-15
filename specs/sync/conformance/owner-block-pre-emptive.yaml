@@ -90,12 +90,12 @@ expected:
       vendor: Example
       product: NegotiationController
       state: blocked
-      etag: sha256:fff91023e7b50fa61bc4f854720773d608b5cfda999eac25f689baeb225167ac
+      etag: sha256:970c52dae7655b5c1a1d4e56eb61633c0ad342a019d123f0962b2ffd92f4eeaa
   fallback: null
   storedAfter:
     identity:
       vendor: Example
       product: NegotiationController
     state: blocked
-    etag: sha256:fff91023e7b50fa61bc4f854720773d608b5cfda999eac25f689baeb225167ac
+    etag: sha256:970c52dae7655b5c1a1d4e56eb61633c0ad342a019d123f0962b2ffd92f4eeaa
     registration: null

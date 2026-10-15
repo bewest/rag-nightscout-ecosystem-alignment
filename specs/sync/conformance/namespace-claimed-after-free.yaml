@@ -68,7 +68,7 @@ hubState:
       vendor: Example
       product: OtherController
     state: retired
-    etag: sha256:c523b2f3e0d208f8778f0b00bb287363e505f80db6a82076e1a78aa4c50e8dbb
+    etag: sha256:e59031df77dbd9f405788b04058fd5d40f62de36717b5b8b60342d5cec96b556
     boundTo:
       kind: subject
       subject: subject-test-controller-b
@@ -205,7 +205,7 @@ expected:
       product: NegotiationController
       versionRange: 1.0.0-test
       state: active
-      etag: sha256:7d5ee7460eb39dcadfcd25ff01596f921b433d2cc38390a2d97a5a0bafca323c
+      etag: sha256:3aaaa298028f1593078375fd1ade48a265aedf04f1d5bd2b5d20b40d3a231c5d
       boundTo: &id001
         kind: subject
         subject: subject-test-controller-a
@@ -226,7 +226,7 @@ expected:
       vendor: Example
       product: NegotiationController
     state: active
-    etag: sha256:7d5ee7460eb39dcadfcd25ff01596f921b433d2cc38390a2d97a5a0bafca323c
+    etag: sha256:3aaaa298028f1593078375fd1ade48a265aedf04f1d5bd2b5d20b40d3a231c5d
     boundTo: *id001
     credentialKind: subject
     registration: *id002

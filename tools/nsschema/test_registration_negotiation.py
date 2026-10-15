@@ -47,6 +47,7 @@ REQUIRED = {
     "accepted-dual-write-view-not-served", "accepted-dual-write-view-served",
     "typed-write-load-503", "typed-write-load-429-retry-after",
     "typed-write-blocked-by-owner", "typed-write-route-404",
+    "typed-write-load-502", "typed-write-load-deadline-passed",
 }
 CELLS = {"older-controller/older-hub", "older-controller/newer-hub",
          "newer-controller/older-hub", "newer-controller/newer-hub"}
@@ -146,12 +147,14 @@ def test_case_etags_follow_the_derivation(cid):
     if case["expected"].get("storedAfter"):
         stored.append(case["expected"]["storedAfter"])
     for entry in stored:
-        assert entry["etag"] == negotiate.etag(entry["registration"], entry["state"])
+        assert entry["etag"] == negotiate.etag(entry["registration"], entry["state"],
+                                               entry.get("boundTo"))
     response = case["expected"]["response"]
     if response and "registration" in response:
         summary = response["registration"]
         if response["outcome"] in ("accepted", "partial") and not response.get("noop"):
-            assert summary["etag"] == negotiate.etag(case["registration"], summary["state"])
+            assert summary["etag"] == negotiate.etag(case["registration"], summary["state"],
+                                                     summary.get("boundTo"))
         if case["expected"].get("storedAfter"):
             assert summary["etag"] == case["expected"]["storedAfter"]["etag"]
         assert {"vendor": summary["vendor"], "product": summary["product"]} == \
@@ -487,17 +490,46 @@ def test_a_released_registration_binds_its_next_writer():
     assert (response["status"], response["noop"]) == (200, True)
 
 
-def test_binding_and_credential_kind_are_outside_the_etag():
-    # Decisions 3 and 4: the etag's input stays {registration, state}.
-    for cid in ("owner-release", "owner-transfer", "owner-free-namespaces"):
+def test_the_etag_covers_the_binding_but_not_credential_kind_or_freed_namespaces():
+    # Decision 4 (amended 2026-10-15): release and transfer change the etag,
+    # so two owner actions racing on one registration meet a 412.
+    for cid in ("owner-release", "owner-transfer"):
         before = CASES[cid]["hubState"]["registrations"][0]
         after = CASES[cid]["expected"]["storedAfter"]
-        assert after["etag"] == before["etag"], cid
-        assert after != before, cid
+        assert after["registration"] == before["registration"], cid
+        assert after["state"] == before["state"], cid
+        assert after["boundTo"] != before["boundTo"], cid
+        assert after["etag"] != before["etag"], cid
+    # Freeing namespaces changes neither binding nor etag.
+    before = CASES["owner-free-namespaces"]["hubState"]["registrations"][0]
+    after = CASES["owner-free-namespaces"]["expected"]["storedAfter"]
+    assert after != before and after["etag"] == before["etag"]
+    # Credential kind is outside: the same content and binding kind under
+    # different credential kinds would share an etag; the shared secret's
+    # binding differs from a subject's, so its etag differs.
     secret = CASES["accepted-api-secret-single"]["expected"]
     assert secret["storedAfter"]["credentialKind"] == "api-secret"
     assert secret["response"]["registration"]["credentialKind"] == "api-secret"
-    assert secret["storedAfter"]["etag"] == CASES["accepted"]["expected"]["storedAfter"]["etag"]
+    reg, state = secret["storedAfter"]["registration"], secret["storedAfter"]["state"]
+    bound = secret["storedAfter"]["boundTo"]
+    assert negotiate.etag(reg, state, bound) == secret["storedAfter"]["etag"]
+    assert negotiate.etag(reg, state, {"kind": "subject", "subject": "subject-x"}) != \
+        secret["storedAfter"]["etag"]
+
+
+def test_a_transfer_racing_another_owner_action_fails_its_precondition():
+    # Two owner sessions both read the registration, one transfers it; the
+    # other's transfer with the etag it read now meets 412.
+    case = CASES["owner-transfer"]
+    stale = case["hubState"]["registrations"][0]["etag"]
+    hub = {"registrations": [case["expected"]["storedAfter"]]}
+    response, _ = _run("owner-transfer", hubState=hub,
+                       request={"preconditions": {"ifMatch": stale}})
+    assert response["status"] == 412
+    # Control: the same transfer with the current etag succeeds.
+    response, _ = _run("owner-transfer", hubState=hub,
+                       request={"preconditions": {"ifMatch": hub["registrations"][0]["etag"]}})
+    assert response["status"] == 200
 
 
 def test_a_block_changes_the_etag_and_unblocking_restores_it():
@@ -638,7 +670,16 @@ def test_a_refused_typed_write_is_retried_for_load_and_carried_when_definite(cid
     assert outcome["recheck"] is False
     others = {k: v for k, v in outcome["fallback"].items() if k != refusal["element"]}
     assert others == {k: v for k, v in before.items() if k != refusal["element"]}
-    if refusal["status"] in (429, 503):
+    load = refusal["status"] == 429 or 500 <= refusal["status"] <= 599
+    if load and refusal.get("deadlinePassed"):
+        # Only this record goes as its carrier; the element stays typed.
+        assert outcome["action"] == "carrier-this-record"
+        assert outcome["fallback"] == before
+        control = CASES[case["control"]]
+        assert control["expected"]["typedWrite"]["action"] == "retry-backoff"
+        assert {k: v for k, v in case["typedWrite"].items() if k != "deadlinePassed"} == \
+            control["typedWrite"]
+    elif load:
         assert outcome["action"] == "retry-backoff"
         assert outcome["fallback"] == before
     else:
@@ -656,26 +697,35 @@ def test_a_refused_typed_write_is_retried_for_load_and_carried_when_definite(cid
 def test_both_kinds_of_typed_write_refusal_are_covered():
     statuses = {CASES[c]["typedWrite"]["status"] for c in TYPED_WRITE}
     assert {429, 503} <= statuses and statuses - {429, 503}
+    # A 5xx other than 503 is load too, and a passed deadline is covered.
+    assert any(500 <= s <= 599 and s != 503 for s in statuses)
+    assert any(CASES[c]["typedWrite"].get("deadlinePassed") for c in TYPED_WRITE)
+    assert all(negotiate.is_load_refusal(s) == (s == 429 or 500 <= s <= 599)
+               for s in (400, 403, 404, 409, 410, 429, 500, 502, 503, 504))
     assert any("retryAfter" in CASES[c]["typedWrite"] for c in TYPED_WRITE)
     assert any("retryAfter" not in CASES[c]["typedWrite"] and
                CASES[c]["typedWrite"]["status"] in (429, 503) for c in TYPED_WRITE)
 
 
 def test_a_typed_write_refused_with_an_unknown_status_is_definite():
+    # CHANGED 2026-10-15 (maintainer): this test used 500 as the unknown
+    # status and expected a definite refusal. Every 5xx is now a load
+    # refusal, so the unknown status is a 4xx the controller does not know.
     reg = CASES["typed-write-load-503"]["registration"]
     plan = CASES["typed-write-load-503"]["expected"]["fallback"]
     element = "extensions/com.example.negotiation.targets"
-    assert negotiate.typed_write_refused(reg, plan, {"element": element, "status": 500})[
+    assert negotiate.typed_write_refused(reg, plan, {"element": element, "status": 418})[
         "action"] == "carrier-this-record"
-    assert negotiate.typed_write_refused(reg, plan, {"element": element, "status": 503})[
-        "action"] == "retry-backoff"
+    for status in (500, 502, 503, 504):
+        assert negotiate.typed_write_refused(reg, plan, {"element": element, "status": status})[
+            "action"] == "retry-backoff"
 
 
 def test_a_submit_answered_429_or_503_is_no_response():
     # Decision 8 keeps the existing rule: a submit refused for load is "no
     # response", so every element is written as its carrier.
     reg = CASES["accepted"]["registration"]
-    for response in (None, {"status": 503}, {"status": 429}):
+    for response in (None, {"status": 503}, {"status": 429}, {"status": 500}, {"status": 502}):
         assert all(e["write"] != "typed" for e in negotiate.fallback(reg, response).values())
     assert all(e["write"] == "typed" for e in
                negotiate.fallback(reg, CASES["accepted"]["expected"]["response"]).values())
