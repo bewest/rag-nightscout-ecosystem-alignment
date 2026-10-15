@@ -66,6 +66,8 @@ capabilities:
 hubState:
   registrations: []
 submitter:
+  credentialKind: subject
+  subject: subject-test-controller-a
   permissions:
   - api:registrations:create
   namespaceRoots:
@@ -98,7 +100,7 @@ registration:
       - active
       - ended
       version: '1'
-      wire:
+      wire: &id001
         collection: treatments
         eventType: Temporary Override
         durationField: duration
@@ -106,7 +108,7 @@ registration:
     extensions:
       com.example.negotiation.targets:
         version: '1'
-        carrier:
+        carrier: &id002
           collection: settings
           documentIdentifier: example-targets
         fields:
@@ -142,14 +144,8 @@ expected:
   fallback:
     stateSpans/ExampleOverride:
       write: carrier
-      carrier:
-        collection: treatments
-        eventType: Temporary Override
-        durationField: duration
-        durationUnit: minutes
+      carrier: *id001
     extensions/com.example.negotiation.targets:
       write: carrier
-      carrier:
-        collection: settings
-        documentIdentifier: example-targets
+      carrier: *id002
   storedAfter: null

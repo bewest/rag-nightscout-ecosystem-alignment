@@ -23,8 +23,8 @@ current and the prose is stale.
 |---|---|---:|---:|---:|
 | **Remedial** | `phase0`, `register-open`, `docs-truth` | 144 | 43 | 7 |
 | **Modernization** | `release-train` | 32 | 5 | 1 |
-| **Multitenant** | `tenancy`, `platform` | 28 | 13 | 3 |
-| | **total** | **206** | **61** | **11** |
+| **Multitenant** | `tenancy`, `platform` | 28 | 12 | 3 |
+| | **total** | **206** | **60** | **11** |
 
 <!-- END GENERATED: horizons -->
 
@@ -210,7 +210,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 | `tenancy` | 7 |  |  | 1 | 7 |  |  | 1 | 2 | 1 |  |  | **19** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  | 2 |  |  |  | **10** |
 | `backfix2` |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
-| `platform` | 6 |  |  |  |  |  |  |  | 3 |  |  |  | **9** |
+| `platform` | 5 |  |  |  |  |  |  |  | 4 |  |  |  | **9** |
 
 <!-- END GENERATED: state-matrix -->
 

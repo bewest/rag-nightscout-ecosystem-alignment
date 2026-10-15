@@ -65,6 +65,8 @@ capabilities:
 hubState:
   registrations: []
 submitter:
+  credentialKind: subject
+  subject: subject-test-controller-a
   permissions:
   - api:treatments:create
   namespaceRoots:

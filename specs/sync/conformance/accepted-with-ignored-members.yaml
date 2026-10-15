@@ -77,6 +77,8 @@ capabilities:
 hubState:
   registrations: []
 submitter:
+  credentialKind: subject
+  subject: subject-test-controller-a
   permissions:
   - api:registrations:create
   namespaceRoots:
@@ -159,6 +161,10 @@ expected:
       versionRange: 1.0.0-test
       state: active
       etag: sha256:a19968fc66c25ca7cdf5cf5f91461beaa19b8e1f51f96ccc34bdcb531ee96680
+      boundTo:
+        kind: subject
+        subject: subject-test-controller-a
+      credentialKind: subject
     ignored:
     - spec.documents.0.horizon
     - spec.futureGrammarMember

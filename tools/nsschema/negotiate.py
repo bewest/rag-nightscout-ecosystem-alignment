@@ -1,7 +1,7 @@
 """negotiate.py — reference decision function for registration negotiation.
 
-D18 addendum rule 6 (execution plan §2.6.1; queue item SPEC-REG-NEGOTIATE;
-contract in the hub-sync design §3.5, schemas
+D18 addendum rule 6 (execution plan §2.6.1; queue items SPEC-REG-NEGOTIATE
+and SPEC-REG-DECISIONS; contract in the hub-sync design §3.5, schemas
 `specs/sync/hub-capabilities.schema.json` and
 `specs/sync/registration-submit.schema.json`).
 
@@ -9,7 +9,8 @@ contract in the hub-sync design §3.5, schemas
 cases under `specs/sync/conformance/` are self-consistent: given a hub's
 capability document, its stored registrations, a submitter and a request, it
 computes the response the contract requires, and given that response it
-computes the controller's write plan (the fallback). It stores nothing,
+computes the controller's write plan (the fallback) and what the controller
+does when a typed write is refused. It stores nothing,
 serves nothing and is never run by a hub. A hub implements the contract in
 its own code and is tested against the same cases.
 
@@ -217,12 +218,23 @@ def _owns(roots, namespace):
     return any(r == "*" or namespace == r or namespace.startswith(r + ".") for r in roots)
 
 
+def _declared_namespaces(registration):
+    return list(((registration or {}).get("spec") or {}).get("extensions") or {})
+
+
 def _claimed_elsewhere(hub_state, identity, namespace):
+    """First to claim, per tenant (decisions 1 and 2): another stored
+    registration that declares the namespace holds it, whatever its state,
+    until the owner frees it on that registration (decision 5)."""
     for stored in (hub_state or {}).get("registrations") or []:
+        if stored.get("registration") is None:
+            continue  # a pre-emptive block declares nothing
         meta = stored["registration"]["metadata"]
         if (meta["vendor"], meta["product"]) == identity:
             continue
-        if namespace in ((stored["registration"].get("spec") or {}).get("extensions") or {}):
+        if namespace in (stored.get("freedNamespaces") or []):
+            continue
+        if namespace in _declared_namespaces(stored["registration"]):
             return f"{meta['vendor']}/{meta['product']}"
     return None
 
@@ -269,12 +281,18 @@ def _declared_checks(caps, node, path, ignored):
     return reasons
 
 
-def evaluate(caps, hub_state, submitter, registration, grammar):
+def evaluate(caps, hub_state, submitter, registration, grammar, views=None):
     """The per-element results and registration-level ignored members for a
-    registration that passed the registration-level checks."""
+    registration that passed the registration-level checks. `views`: for
+    each element id, whether this hub serves older readers a projected
+    carrier view of it (`served`, `not-served`); reported on accepted
+    elements only. How a hub decides that is SPEC-REG-INSTANCE's."""
     meta = registration["metadata"]
     identity = (meta["vendor"], meta["product"])
-    roots = submitter.get("namespaceRoots") or []
+    # Decision 1: a submitter with no stated roots may claim any namespace
+    # no other registration on the tenant holds; stated roots (a list, even
+    # an empty one) restrict it to them.
+    roots = submitter.get("namespaceRoots")
     limits = caps.get("limits") or {}
     extension_schema = jsonschema.Draft202012Validator(
         {"$ref": "#/$defs/extension", "$defs": grammar["$defs"]})
@@ -287,7 +305,7 @@ def evaluate(caps, hub_state, submitter, registration, grammar):
         reasons = []
         if kind == "extensions":
             ns = eid.split("/", 1)[1]
-            if not _owns(roots, ns):
+            if roots is not None and not _owns(roots, ns):
                 reasons.append(_reason("namespace-not-owned", path,
                                        "the submitting credential holds no root covering this namespace"))
             owner = _claimed_elsewhere(hub_state, identity, ns)
@@ -353,10 +371,13 @@ def evaluate(caps, hub_state, submitter, registration, grammar):
             continue
         inside = [q for q in ignored if q.startswith(path + ".")]
         if inside:
-            results.append({"element": eid, "result": "accepted-with-ignored-members",
-                            "ignored": inside})
+            result = {"element": eid, "result": "accepted-with-ignored-members",
+                      "ignored": inside}
         else:
-            results.append({"element": eid, "result": "accepted"})
+            result = {"element": eid, "result": "accepted"}
+        if eid in (views or {}):
+            result["carrierView"] = views[eid]
+        results.append(result)
     top = [q for q in ignored if not any(q.startswith(p + ".") for p in prefixes)]
     return top, results
 
@@ -375,6 +396,39 @@ def permitted(grants, wanted):
     return False
 
 
+# The controller's actions run on the data listener with the device's
+# credential; the owner's on the tenant-owner listener (D16), or with
+# API_SECRET in single mode (decisions 3 and 5). The owner never edits a
+# registration's content, so `submit` is the controller's alone.
+CONTROLLER_ACTIONS = ("submit", "retire")
+OWNER_ACTIONS = ("retire", "block", "unblock", "release", "transfer", "free-namespaces")
+OWNER_LISTENER = "ns-tenant-admin"
+
+
+def binding_of(submitter):
+    """What a registration written by this credential is bound to (decision
+    4): its subject, never its token, so rotating a token changes nothing.
+    The shared secret has no subject: any holder of it is the same binding."""
+    kind = submitter.get("credentialKind")
+    if kind == "api-secret":
+        return {"kind": "api-secret"}
+    return {"kind": kind, "subject": submitter.get("subject")}
+
+
+def bound_to(stored, submitter):
+    """Whether the credential may act as the registration's controller. A
+    released registration (bound to nothing) is open to the next credential
+    with the permission, which then binds it."""
+    bound = stored.get("boundTo")
+    return bound is None or canonical_json(bound) == canonical_json(binding_of(submitter))
+
+
+def owner_authorised(request, submitter):
+    if request.get("listener") == OWNER_LISTENER:
+        return True
+    return request.get("listener") == "single" and submitter.get("credentialKind") == "api-secret"
+
+
 def _response(status, outcome, **members):
     response = {"apiVersion": GRAMMAR_API, "kind": "RegistrationResponse",
                 "status": status, "outcome": outcome}
@@ -382,12 +436,17 @@ def _response(status, outcome, **members):
     return response
 
 
-def _summary(stored):
-    meta = stored["registration"]["metadata"]
-    summary = {"vendor": meta["vendor"], "product": meta["product"]}
+def _summary(stored, identity):
+    summary = {"vendor": identity[0], "product": identity[1]}
+    meta = (stored.get("registration") or {}).get("metadata") or {}
     if "versionRange" in meta:
         summary["versionRange"] = meta["versionRange"]
     summary.update({"state": stored["state"], "etag": stored["etag"]})
+    for key in ("blockedFrom", "boundTo", "credentialKind"):
+        if key in stored:
+            summary[key] = stored[key]
+    if stored.get("freedNamespaces"):
+        summary["freedNamespaces"] = stored["freedNamespaces"]
     return summary
 
 
@@ -397,25 +456,51 @@ def _current(stored):
 
 def _find(hub_state, identity):
     for stored in (hub_state or {}).get("registrations") or []:
-        meta = stored["registration"]["metadata"]
-        if (meta["vendor"], meta["product"]) == identity:
+        if (stored["identity"]["vendor"], stored["identity"]["product"]) == identity:
             return stored
     return None
 
 
-def _store(registration, state):
-    return {"state": state, "etag": etag(registration, state),
-            "registration": registration}
+def _registered(stored):
+    return stored is not None and stored.get("registration") is not None
 
 
-def _accepted(caps, hub_state, submitter, registration, grammar, stored_after, status, noop):
-    top, results = evaluate(caps, hub_state, submitter, registration, grammar)
+def _stored(identity, registration, state, *, boundTo=None, credentialKind=None,
+            blockedFrom=None, freedNamespaces=None):
+    """A stored registration, members in a fixed order. Binding, credential
+    kind and freed namespaces are not in the etag: its input stays
+    {registration, state}."""
+    out = {"identity": {"vendor": identity[0], "product": identity[1]},
+           "state": state, "etag": etag(registration, state)}
+    if state == "blocked" and blockedFrom is not None:
+        out["blockedFrom"] = blockedFrom
+    if registration is not None:
+        out["boundTo"] = boundTo
+        out["credentialKind"] = credentialKind
+    if freedNamespaces:
+        out["freedNamespaces"] = list(freedNamespaces)
+    out["registration"] = registration
+    return out
+
+
+def _restate(stored, state=None, **changes):
+    members = {k: stored.get(k) for k in ("boundTo", "credentialKind", "blockedFrom",
+                                          "freedNamespaces")}
+    members.update(changes)
+    identity = (stored["identity"]["vendor"], stored["identity"]["product"])
+    return _stored(identity, stored["registration"], state or stored["state"], **members)
+
+
+def _accepted(caps, hub_state, submitter, registration, grammar, stored_after, status, noop,
+              views):
+    top, results = evaluate(caps, hub_state, submitter, registration, grammar, views)
     outcome = "partial" if any(r["result"] == "rejected" for r in results) else "accepted"
-    return _response(status, outcome, noop=noop, registration=_summary(stored_after),
+    identity = (stored_after["identity"]["vendor"], stored_after["identity"]["product"])
+    return _response(status, outcome, noop=noop, registration=_summary(stored_after, identity),
                      ignored=top, elements=results), stored_after
 
 
-def negotiate(caps, hub_state, submitter, registration, request, grammar=None):
+def negotiate(caps, hub_state, submitter, registration, request, grammar=None, views=None):
     """The response a hub with `caps` and `hub_state` gives `request`, and
     the stored registration afterwards (None when none is stored)."""
     grammar = grammar or _load(GRAMMAR_SCHEMA)
@@ -423,50 +508,69 @@ def negotiate(caps, hub_state, submitter, registration, request, grammar=None):
         raise ValueError("this hub offers no submit endpoint; nothing is negotiated")
     identity = (request["identity"]["vendor"], request["identity"]["product"])
     stored = _find(hub_state, identity)
-    action = request["action"]
-    pre = request.get("preconditions") or {}
+    if request.get("actor", "controller") == "owner":
+        return _owner(submitter, request, identity, stored)
+    return _controller(caps, hub_state, submitter, registration, request, grammar, views,
+                       identity, stored)
 
+
+def _rejecter(stored):
     def reject(status, code, path=None, detail=None):
         return _response(status, "rejected", reasons=[_reason(code, path, detail)]), stored
 
     def failed(status, code, detail=None):
         return _response(status, "precondition-failed", reasons=[_reason(code, None, detail)],
                          current=_current(stored) if stored else None), stored
+    return reject, failed
 
-    # 1. Authorisation.
+
+def _controller(caps, hub_state, submitter, registration, request, grammar, views,
+                identity, stored):
+    action = request["action"]
+    pre = request.get("preconditions") or {}
+    reject, failed = _rejecter(stored)
+    registered = _registered(stored)
+
+    # 1. Authorisation: the permission, then the binding (decision 4). A
+    # different subject, or API_SECRET against a subject-bound registration,
+    # is refused before any precondition is evaluated.
+    if action not in CONTROLLER_ACTIONS:
+        return reject(403, "not-authorised", None, f"only the tenant owner may {action}")
     if not permitted(submitter.get("permissions"), PERMISSION[action]):
         return reject(403, "not-authorised", None, f"needs {PERMISSION[action]}")
+    if registered and not bound_to(stored, submitter):
+        return reject(403, "not-registration-owner", None,
+                      "the registration is bound to another credential")
 
     # 2. Preconditions (RFC 9110 §13.2.1: after authorisation, before the content).
     if not pre:
         return failed(428, "precondition-required", "send If-None-Match: * or If-Match")
     if action == "retire":
-        if stored is None:
-            return _response(404, "not-found", reasons=[_reason("not-found")]), None
-        for ns in (stored["registration"].get("spec") or {}).get("extensions") or {}:
-            if not _owns(submitter.get("namespaceRoots") or [], ns):
-                return reject(403, "not-authorised", f"spec.extensions.{ns}",
-                              "the credential does not own every namespace of the registration")
+        if not registered:
+            return _response(404, "not-found", reasons=[_reason("not-found")]), stored
         if "ifMatch" not in pre:
             return failed(412, "registration-exists", "retire needs If-Match")
         if pre["ifMatch"] != stored["etag"]:
             return failed(412, "stale-etag")
-        if stored["state"] == "retired":
-            return _response(200, "retired", noop=True, registration=_summary(stored),
-                             elements=[]), stored
-        after = _store(stored["registration"], "retired")
-        return _response(200, "retired", noop=False, registration=_summary(after),
-                         elements=[]), after
+        if stored["state"] == "blocked":
+            return reject(403, "blocked-by-owner")
+        return _retire(stored, identity)
 
-    same = stored is not None and stored["state"] == "active" and \
+    same = registered and stored["state"] == "active" and \
         canonical_json(stored["registration"]) == canonical_json(registration)
-    if "ifNoneMatch" in pre and stored is not None and not same:
+    if "ifNoneMatch" in pre and registered and not same:
         return failed(412, "registration-exists")
     if "ifMatch" in pre:
-        if stored is None:
+        if not registered:
             return failed(412, "not-found")
         if pre["ifMatch"] != stored["etag"] and not same:
             return failed(412, "stale-etag")
+    # The owner's block (decision 5), after the preconditions: a controller
+    # holding the etag from before the block gets 412 and reads `blocked`.
+    # A pre-emptive block stores no registration, so a create's
+    # If-None-Match: * passes and the block answers.
+    if stored is not None and stored["state"] == "blocked":
+        return reject(403, "blocked-by-owner")
 
     # 3. Registration-level content checks.
     api = registration.get("apiVersion")
@@ -506,12 +610,99 @@ def negotiate(caps, hub_state, submitter, registration, request, grammar=None):
         return reject(422, "invalid-registration", "spec",
                       "two elements share an id (stateSpans kind, setting or input name)")
 
-    # 4. Elements.
-    if same:
-        return _accepted(caps, hub_state, submitter, registration, grammar, stored, 200, True)
-    after = _store(registration, "active")
+    # 4. Elements. A write binds an unbound registration to the writer and
+    # records the writer's credential kind (decisions 3 and 4).
+    if same and stored.get("boundTo") is not None:
+        return _accepted(caps, hub_state, submitter, registration, grammar, stored, 200, True,
+                         views)
+    # A namespace the owner freed stays freed while another registration
+    # holds it; otherwise this registration claims it again.
+    freed = [ns for ns in (stored or {}).get("freedNamespaces") or []
+             if ns in _declared_namespaces(registration)
+             and _claimed_elsewhere(hub_state, identity, ns)]
+    after = _stored(identity, registration, "active", boundTo=binding_of(submitter),
+                    credentialKind=submitter.get("credentialKind"), freedNamespaces=freed)
     return _accepted(caps, hub_state, submitter, registration, grammar, after,
-                     201 if stored is None else 200, False)
+                     201 if not registered else 200, False, views)
+
+
+def _retire(stored, identity):
+    if stored["state"] == "retired":
+        return _response(200, "retired", noop=True, registration=_summary(stored, identity),
+                         elements=[]), stored
+    after = _restate(stored, "retired")
+    return _response(200, "retired", noop=False, registration=_summary(after, identity),
+                     elements=[]), after
+
+
+def _owner(submitter, request, identity, stored):
+    """The tenant owner's actions (decision 5): retire, block, unblock,
+    release, transfer, and free a retired registration's namespaces; never
+    edit content. Each carries exactly one precondition."""
+    action = request["action"]
+    pre = request.get("preconditions") or {}
+    reject, failed = _rejecter(stored)
+    registered = _registered(stored)
+
+    def applied(status, after, noop):
+        summary = _summary(after, identity) if after is not None else None
+        return _response(status, "applied", noop=noop, registration=summary), after
+
+    # 1. Authorisation.
+    if action not in OWNER_ACTIONS:
+        return reject(403, "not-authorised", None, "the owner never edits a registration")
+    if not owner_authorised(request, submitter):
+        return reject(403, "not-authorised", None,
+                      "owner actions are on ns-tenant-admin, or API_SECRET in single mode")
+
+    # 2. Preconditions.
+    if not pre:
+        return failed(428, "precondition-required", "send If-None-Match: * or If-Match")
+    if action == "block" and stored is None:
+        if "ifNoneMatch" not in pre:
+            return failed(412, "not-found")
+        # A pre-emptive block: nothing is registered, the identity is refused.
+        return applied(201, _stored(identity, None, "blocked"), False)
+    if stored is None or (not registered and action not in ("block", "unblock")):
+        return _response(404, "not-found", reasons=[_reason("not-found")]), stored
+    if "ifMatch" not in pre:
+        return failed(412, "registration-exists", f"{action} needs If-Match")
+    if pre["ifMatch"] != stored["etag"]:
+        return failed(412, "stale-etag")
+
+    # 3. The action.
+    if action == "block":
+        if stored["state"] == "blocked":
+            return applied(200, stored, True)
+        return applied(200, _restate(stored, "blocked", blockedFrom=stored["state"]), False)
+    if action == "unblock":
+        if stored["state"] != "blocked":
+            return applied(200, stored, True)
+        if not registered:
+            return applied(200, None, False)
+        # Unblocking restores the state the block interrupted: a registration
+        # retired before the block stays retired.
+        return applied(200, _restate(stored, stored["blockedFrom"], blockedFrom=None), False)
+    if action == "retire":
+        if stored["state"] == "blocked":
+            return reject(409, "blocked-by-owner", None, "unblock before retiring")
+        return _retire(stored, identity)
+    if action == "release":
+        if stored.get("boundTo") is None:
+            return applied(200, stored, True)
+        return applied(200, _restate(stored, boundTo=None), False)
+    if action == "transfer":
+        target = request["transferTo"]
+        if canonical_json(stored.get("boundTo")) == canonical_json(target):
+            return applied(200, stored, True)
+        return applied(200, _restate(stored, boundTo=target), False)
+    # free-namespaces
+    if stored["state"] != "retired":
+        return reject(409, "not-retired", None, "only a retired registration's namespaces are freed")
+    declared = _declared_namespaces(stored["registration"])
+    if sorted(stored.get("freedNamespaces") or []) == sorted(declared):
+        return applied(200, stored, True)
+    return applied(200, _restate(stored, freedNamespaces=declared), False)
 
 
 # ── the controller's side ─────────────────────────────────────────────
@@ -528,32 +719,79 @@ def should_submit(caps, registration):
 
 
 ACCEPTED = ("accepted", "accepted-with-ignored-members")
+CARRIER_VIEWS = ("served", "not-served")
+
+
+def _not_accepted(kind, node):
+    if kind == "stateSpans":
+        wire = node.get("wire")
+        return {"write": "carrier", "carrier": wire} if wire else {"write": "none"}
+    if kind == "extensions":
+        carrier = node.get("carrier")
+        return {"write": "carrier", "carrier": carrier} if carrier else {"write": "none"}
+    return {"write": "untyped"}
 
 
 def fallback(registration, response):
     """The controller's write plan. An element is written through the typed
     API only when the response to *this* registration accepted it; anything
-    else — rejected, an unknown result, no response, a rejected or retired
-    registration, a failed precondition — falls back to the well-known
-    carrier."""
+    else — rejected, an unknown result, no response (including a submit
+    answered 429 or 503), a rejected, retired or blocked registration, a
+    failed precondition — falls back to the well-known carrier.
+
+    An accepted element is written typed only, unless the hub serves no
+    projected carrier view of it and it declares a dual-write link: then
+    typed and carrier, linked (decision 7). A `carrierView` the controller
+    does not know is not accepted (rule 3)."""
     if not registration:
         return None
     results = {}
     if response and response.get("outcome") in ("accepted", "partial"):
-        results = {e["element"]: e.get("result") for e in response.get("elements") or []}
+        results = {e["element"]: e for e in response.get("elements") or []}
     plan = {}
     for eid, _path, _defining, node, kind in elements(registration):
-        if results.get(eid) in ACCEPTED:
-            plan[eid] = {"write": "typed"}
-        elif kind == "stateSpans":
-            wire = node.get("wire")
-            plan[eid] = {"write": "carrier", "carrier": wire} if wire else {"write": "none"}
-        elif kind == "extensions":
-            carrier = node.get("carrier")
-            plan[eid] = {"write": "carrier", "carrier": carrier} if carrier else {"write": "none"}
+        result = results.get(eid) or {}
+        view = result.get("carrierView", "not-served")
+        if result.get("result") not in ACCEPTED or view not in CARRIER_VIEWS:
+            plan[eid] = _not_accepted(kind, node)
+            continue
+        carrier = _not_accepted(kind, node)
+        if view == "not-served" and node.get("dualWriteLink") and carrier["write"] == "carrier":
+            plan[eid] = {"write": "typed-and-carrier", "carrier": carrier["carrier"],
+                         "link": node["dualWriteLink"]}
         else:
-            plan[eid] = {"write": "untyped"}
+            plan[eid] = {"write": "typed"}
     return plan
+
+
+# Decision 8. A typed write refused for load is retried with backoff (after
+# Retry-After when sent); the record is neither dropped nor written as its
+# carrier. Any other refusal is definite — blocked-by-owner, a retired or
+# missing registration, a typed route answering 404 after a hub rollback,
+# or a status the controller does not know (rule 3) — and sends that record
+# as its carrier; the element is not accepted until the next re-check. A
+# refusal never triggers a re-check: the controller re-reads the capability
+# document and its registration at launch and after a controller release.
+LOAD_REFUSALS = (429, 503)
+
+
+def typed_write_refused(registration, plan, refusal):
+    """What the controller does when one typed write for `refusal.element`
+    is refused, and its write plan afterwards."""
+    eid = refusal["element"]
+    if plan.get(eid, {}).get("write") not in ("typed", "typed-and-carrier"):
+        raise ValueError(f"{eid} is not written typed; no typed write was refused")
+    after = copy.deepcopy(plan)
+    if refusal["status"] in LOAD_REFUSALS:
+        outcome = {"action": "retry-backoff", "recheck": False}
+        if "retryAfter" in refusal:
+            outcome["retryAfterSeconds"] = refusal["retryAfter"]
+    else:
+        outcome = {"action": "carrier-this-record", "recheck": False}
+        node, kind = next((e[3], e[4]) for e in elements(registration) if e[0] == eid)
+        after[eid] = _not_accepted(kind, node)
+    outcome["fallback"] = after
+    return outcome
 
 
 # ── an older controller against a newer hub ───────────────────────────
@@ -621,12 +859,16 @@ def run_case(case, grammar=None):
     response, stored_after = None, None
     if request is not None:
         response, stored_after = negotiate(caps, case.get("hubState"), case.get("submitter") or {},
-                                           registration, request, grammar)
+                                           registration, request, grammar,
+                                           case.get("carrierViews"))
     result = {
         "controllerWouldSubmit": should_submit(caps, registration),
         "response": response,
         "fallback": fallback(registration, response),
     }
+    if "typedWrite" in case:
+        result["typedWrite"] = typed_write_refused(registration, result["fallback"],
+                                                   case["typedWrite"])
     if "writes" in case:
         result["describedBy"] = described_by(caps, case.get("wellKnownRegistrations"),
                                              case["writes"])

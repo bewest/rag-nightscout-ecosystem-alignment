@@ -2,7 +2,7 @@
  "$schema": "https://json-schema.org/draft/2020-12/schema",
  "$id": "https://nightscout.dev/schemas/sync/registration-submit.json",
  "title": "Registration submit contract",
- "description": "D18 addendum rule 6 (execution plan §2.6.1; queue item SPEC-REG-NEGOTIATE). A controller submits its controller-owned registration (controller-state-model.schema.json) to the `submit.href` its hub publishes in the capability document (hub-capabilities.schema.json), reads back per element what was accepted, and writes the well-known carrier for anything not accepted. One registration per tenant per identity (`metadata.vendor`, `metadata.product`) is the resource `<submit.href>/<vendor>/<product>`: `PUT` submits or updates it, `GET` reads it with its current element results, `DELETE` retires it. This file defines the request as the conformance fixtures model it, the response, the controller's fallback, and the conformance case (specs/sync/conformance/). The prose contract, including the open questions, is in the hub-sync design §3.5. Must-ignore applies: no object is closed, and a controller treats an element result or reason code it does not know as not accepted.",
+ "description": "D18 addendum rule 6 (execution plan §2.6.1; queue items SPEC-REG-NEGOTIATE and SPEC-REG-DECISIONS). A controller submits its controller-owned registration (controller-state-model.schema.json) to the `submit.href` its hub publishes in the capability document (hub-capabilities.schema.json), reads back per element what was accepted, and writes the well-known carrier for anything not accepted. One registration per tenant per identity (`metadata.vendor`, `metadata.product`) is the resource `<submit.href>/<vendor>/<product>`: `PUT` submits or updates it, `GET` reads it with its current element results, `DELETE` retires it. A registration is bound to the credential that created it (its subject, or the shared API_SECRET in single mode); the tenant owner may retire, block, unblock, release, transfer it and free a retired registration's namespaces on the tenant-owner listener, and never edits it. This file defines the request as the conformance fixtures model it, the response, the controller's fallback and its handling of a refused typed write, and the conformance case (specs/sync/conformance/). The prose contract, including the 2026-10-14 decisions, is in the hub-sync design §3.5. Must-ignore applies: no object is closed, and a controller treats an element result, reason code or carrier view it does not know as not accepted.",
  "$ref": "#/$defs/response",
  "$defs": {
   "identity": {
@@ -26,11 +26,105 @@
   "etag": {
    "type": "string",
    "pattern": "^sha256:[0-9a-f]{64}$",
-   "description": "The registration's entity tag: `sha256:` and the lowercase hex SHA-256 of the RFC 8785 canonical JSON of `{\"registration\": <the registration as submitted>, \"state\": <state>}`. It changes whenever the stored registration or its state changes and never on a no-op. Sent and compared as an HTTP strong entity tag (quoted on the wire)."
+   "description": "The registration's entity tag: `sha256:` and the lowercase hex SHA-256 of the RFC 8785 canonical JSON of `{\"registration\": <the registration as submitted>, \"state\": <state>}` (`registration` is null for a pre-emptive block). It changes whenever the stored registration or its state changes, including a block and an unblock, and never on a no-op. The binding, the credential kind and freed namespaces are not in it, so a release, a transfer or freeing namespaces leaves it unchanged. Sent and compared as an HTTP strong entity tag (quoted on the wire)."
+  },
+  "otherTerm": {
+   "type": "object",
+   "description": "Rule 3 for a hub-side vocabulary: the shared value `other` with the hub's own term. A reader renders it as \"other: <term>\"; a controller treats it as a value it does not know.",
+   "required": [
+    "value",
+    "term"
+   ],
+   "properties": {
+    "value": {
+     "const": "other"
+    },
+    "term": {
+     "type": "string",
+     "minLength": 1
+    }
+   }
+  },
+  "credentialKind": {
+   "description": "The kind of credential (decision 3). `subject`: a per-tenant subject's token (the device's native credential, D17 row 1). `api-secret`: the deployment's shared API_SECRET, which exists only in single mode (D13). Open vocabulary (rule 3).",
+   "anyOf": [
+    {
+     "enum": [
+      "subject",
+      "api-secret"
+     ]
+    },
+    {
+     "$ref": "#/$defs/otherTerm"
+    }
+   ]
+  },
+  "binding": {
+   "type": "object",
+   "description": "What a registration is bound to (decision 4): the subject that created it, never its token, so a token rotated on the same subject changes nothing; or the shared secret, which any holder of it presents. A request from any other credential to update or retire the registration is refused 403 `not-registration-owner`. SPEC-REG-INSTANCE binds instances rather than (vendor, product); this shape leaves room for that.",
+   "required": [
+    "kind"
+   ],
+   "properties": {
+    "kind": {
+     "$ref": "#/$defs/credentialKind"
+    },
+    "subject": {
+     "type": "string",
+     "minLength": 1,
+     "description": "The subject's opaque id on the tenant. Required when `kind` is `subject`."
+    }
+   },
+   "allOf": [
+    {
+     "if": {
+      "properties": {
+       "kind": {
+        "const": "subject"
+       }
+      },
+      "required": [
+       "kind"
+      ]
+     },
+     "then": {
+      "required": [
+       "subject"
+      ]
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "kind": {
+        "const": "api-secret"
+       }
+      },
+      "required": [
+       "kind"
+      ]
+     },
+     "then": {
+      "not": {
+       "required": [
+        "subject"
+       ]
+      }
+     }
+    }
+   ]
+  },
+  "state": {
+   "enum": [
+    "active",
+    "retired",
+    "blocked"
+   ],
+   "description": "`active`: typed writes accepted for accepted elements. `retired`: by the controller or the owner; the declaration is kept, frozen, and no typed write is accepted. `blocked`: by the owner (decision 5); the hub refuses the identity on the tenant (403 `blocked-by-owner`), data already stored stays frozen as on retire."
   },
   "request": {
    "type": "object",
-   "description": "One request, as the fixtures model it. `submit` is `PUT <submit.href>/<vendor>/<product>` with the registration as the body; `retire` is `DELETE` on the same resource with no body. Every request carries exactly one precondition: `ifNoneMatch: \"*\"` to create, `ifMatch: <etag>` to update or retire. A request with none is answered 428 (`precondition-required`), so no update is ever blind.",
+   "description": "One request, as the fixtures model it. The controller's `submit` is `PUT <submit.href>/<vendor>/<product>` with the registration as the body and its `retire` is `DELETE` on the same resource, both on the data listener (`ns-api`, or `single`). The owner's actions (`actor: owner`) are on the tenant-owner listener `ns-tenant-admin` (D16), or with API_SECRET on `single`; their paths are proposals: `retire` is `DELETE`, the others `POST <admin registrations path>/<vendor>/<product>/<action>`. Every request carries exactly one precondition: `ifNoneMatch: \"*\"` to create or to block an identity with nothing stored, `ifMatch: <etag>` otherwise. A request with none is answered 428 (`precondition-required`), so no change is ever blind. `action`, `actor` and `listener` model the method, path and listener of the request, not a vocabulary a controller reads, and are closed.",
    "required": [
     "action",
     "identity",
@@ -40,8 +134,29 @@
     "action": {
      "enum": [
       "submit",
-      "retire"
-     ]
+      "retire",
+      "block",
+      "unblock",
+      "release",
+      "transfer",
+      "free-namespaces"
+     ],
+     "description": "`submit` and `retire` by the controller; `retire`, `block`, `unblock`, `release`, `transfer` and `free-namespaces` by the owner (decision 5). The owner never submits."
+    },
+    "actor": {
+     "enum": [
+      "controller",
+      "owner"
+     ],
+     "description": "Absent means `controller`."
+    },
+    "listener": {
+     "enum": [
+      "ns-api",
+      "ns-tenant-admin",
+      "single"
+     ],
+     "description": "D16. Absent means the data listener. An owner action is authorised on `ns-tenant-admin`, whose listener authenticates the tenant owner (D16; D17 row 2), or on `single` with API_SECRET."
     },
     "identity": {
      "$ref": "#/$defs/identity"
@@ -57,12 +172,80 @@
        "const": "*"
       }
      }
+    },
+    "transferTo": {
+     "$ref": "#/$defs/binding",
+     "description": "With `transfer`: the binding the registration takes."
     }
-   }
+   },
+   "allOf": [
+    {
+     "if": {
+      "properties": {
+       "action": {
+        "enum": [
+         "block",
+         "unblock",
+         "release",
+         "transfer",
+         "free-namespaces"
+        ]
+       }
+      },
+      "required": [
+       "action"
+      ]
+     },
+     "then": {
+      "required": [
+       "actor"
+      ],
+      "properties": {
+       "actor": {
+        "const": "owner"
+       }
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "actor": {
+        "const": "owner"
+       }
+      },
+      "required": [
+       "actor"
+      ]
+     },
+     "then": {
+      "required": [
+       "listener"
+      ]
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "action": {
+        "const": "transfer"
+       }
+      },
+      "required": [
+       "action"
+      ]
+     },
+     "then": {
+      "required": [
+       "transferTo"
+      ]
+     }
+    }
+   ]
   },
   "reason": {
    "type": "object",
-   "description": "Why a registration or an element was not accepted, or why a request changed nothing. `code` is an open vocabulary (rule 3): a hub uses `other` with its own `term` for a reason not listed, and a controller treats any reason it does not know as not accepted.",
+   "description": "Why a registration, an element or a typed write was not accepted, or why a request changed nothing. `code` is an open vocabulary (rule 3): a hub uses `other` with its own `term` for a reason not listed, and a controller treats any reason it does not know as not accepted. `not-registration-owner` (403): the registration is bound to another credential. `blocked-by-owner`: the tenant owner blocked the identity (403 to the controller; 409 to an owner retiring a blocked registration). `not-retired` (409): only a retired registration's namespaces are freed.",
    "required": [
     "code"
    ],
@@ -70,6 +253,9 @@
     "code": {
      "enum": [
       "not-authorised",
+      "not-registration-owner",
+      "blocked-by-owner",
+      "not-retired",
       "unsupported-grammar-major",
       "invalid-registration",
       "identity-mismatch",
@@ -151,6 +337,20 @@
      "items": {
       "$ref": "#/$defs/reason"
      }
+    },
+    "carrierView": {
+     "description": "On an accepted element (decision 7): whether the hub serves older readers a projected, read-only view of its typed records in the carrier's shape. `served`: the controller writes typed only. `not-served`, or absent: typed only, or typed and carrier when the element declares `dualWriteLink`. Open vocabulary (rule 3); a value the controller does not know is not accepted, so the element is written as its carrier. SPEC-REG-INSTANCE specifies the view's mapping.",
+     "anyOf": [
+      {
+       "enum": [
+        "served",
+        "not-served"
+       ]
+      },
+      {
+       "$ref": "#/$defs/otherTerm"
+      }
+     ]
     }
    },
    "allOf": [
@@ -202,7 +402,7 @@
   },
   "response": {
    "type": "object",
-   "description": "The hub's answer to a submit, retire or read. `outcome`: `accepted` (stored; every element accepted, possibly with ignored members), `partial` (stored; at least one element rejected), `rejected` (nothing stored or changed; `reasons` says why), `precondition-failed` (nothing changed; `current` carries the stored etag and state), `not-found` (nothing stored under this identity), `retired` (the registration is retired; stored data is kept). `noop`: the request asked for what was already stored, so nothing changed and the etag is the stored one (a retried create or update succeeds; RFC 9110 §13.1.1 allows a 2xx for If-Match when the requested change has already been applied, and this contract applies the same rule to a create's If-None-Match).",
+   "description": "The hub's answer to a submit, retire or read. `outcome`: `accepted` (stored; every element accepted, possibly with ignored members), `partial` (stored; at least one element rejected), `rejected` (nothing stored or changed; `reasons` says why), `precondition-failed` (nothing changed; `current` carries the stored etag and state), `not-found` (nothing stored under this identity), `retired` (the registration is retired; stored data is kept), `applied` (an owner action other than retire took effect; `registration` is absent when nothing remains stored). `noop`: the request asked for what was already stored, so nothing changed and the etag is the stored one (a retried create or update succeeds; RFC 9110 §13.1.1 allows a 2xx for If-Match when the requested change has already been applied, and this contract applies the same rule to a create's If-None-Match).",
    "required": [
     "apiVersion",
     "kind",
@@ -223,12 +423,13 @@
       201,
       403,
       404,
+      409,
       412,
       413,
       422,
       428
      ],
-     "description": "The HTTP status. 201 created; 200 updated, retired, read or no-op; 403 the credential may not do this; 404 not found; 412 a precondition failed; 413 too large; 422 rejected for its content; 428 no precondition sent."
+     "description": "The HTTP status. 201 created (including a pre-emptive block); 200 updated, retired, read, applied or no-op; 403 the credential may not do this, or the owner blocked the identity; 404 not found; 409 the request conflicts with the registration's state; 412 a precondition failed; 413 too large; 422 rejected for its content; 428 no precondition sent."
     },
     "outcome": {
      "enum": [
@@ -237,7 +438,8 @@
       "rejected",
       "precondition-failed",
       "not-found",
-      "retired"
+      "retired",
+      "applied"
      ]
     },
     "noop": {
@@ -245,7 +447,7 @@
     },
     "registration": {
      "type": "object",
-     "description": "The stored registration's identity, state and etag after the request. Absent when nothing is stored.",
+     "description": "The stored registration's identity, state and etag after the request, with what it is bound to and the kind of credential that last wrote it (decisions 3 and 4). Absent when nothing is stored.",
      "required": [
       "vendor",
       "product",
@@ -263,13 +465,39 @@
        "type": "string"
       },
       "state": {
-       "enum": [
-        "active",
-        "retired"
-       ]
+       "$ref": "#/$defs/state"
       },
       "etag": {
        "$ref": "#/$defs/etag"
+      },
+      "blockedFrom": {
+       "enum": [
+        "active",
+        "retired"
+       ],
+       "description": "With state `blocked`: the state the block interrupted, which unblocking restores. Absent for a pre-emptive block, which stores no registration; unblocking that removes it."
+      },
+      "boundTo": {
+       "description": "null: released by the owner; the next credential with the permission to update it binds it.",
+       "oneOf": [
+        {
+         "type": "null"
+        },
+        {
+         "$ref": "#/$defs/binding"
+        }
+       ]
+      },
+      "credentialKind": {
+       "$ref": "#/$defs/credentialKind",
+       "description": "The kind of credential that last created or updated the registration; the owner's view shows registrations made with the shared secret (decision 3). Owner actions do not change it."
+      },
+      "freedNamespaces": {
+       "type": "array",
+       "items": {
+        "type": "string"
+       },
+       "description": "Namespaces of this registration the owner freed after it was retired (decision 5). A freed namespace is not held by this registration, so another may claim it."
       }
      }
     },
@@ -282,10 +510,7 @@
      ],
      "properties": {
       "state": {
-       "enum": [
-        "active",
-        "retired"
-       ]
+       "$ref": "#/$defs/state"
       },
       "etag": {
        "$ref": "#/$defs/etag"
@@ -390,7 +615,7 @@
   },
   "fallbackEntry": {
    "type": "object",
-   "description": "What the controller writes for one element. `typed`: through the typed API the hub derived. `carrier`: the element's well-known carrier (`stateSpans[].wire`, or an extension's `carrier`), as today's documents. `untyped`: a typed setting or replay input is written where it is today and the hub treats it as name-only. `none`: the element has no well-known carrier, so the hub receives nothing for it.",
+   "description": "What the controller writes for one element. `typed`: through the typed API the hub derived. `typed-and-carrier`: an accepted element the hub serves no carrier view of, declaring `dualWriteLink`: written typed and as its carrier, the two linked by the controller's record id (decision 7). `carrier`: the element's well-known carrier (`stateSpans[].wire`, or an extension's `carrier`), as today's documents. `untyped`: a typed setting or replay input is written where it is today and the hub treats it as name-only. `none`: the element has no well-known carrier, so the hub receives nothing for it.",
    "required": [
     "write"
    ],
@@ -398,6 +623,7 @@
     "write": {
      "enum": [
       "typed",
+      "typed-and-carrier",
       "carrier",
       "untyped",
       "none"
@@ -405,23 +631,49 @@
     },
     "carrier": {
      "type": "object"
+    },
+    "link": {
+     "type": "object",
+     "description": "With `typed-and-carrier`: the element's `dualWriteLink`."
     }
    },
-   "if": {
-    "properties": {
-     "write": {
-      "const": "carrier"
+   "allOf": [
+    {
+     "if": {
+      "properties": {
+       "write": {
+        "const": "carrier"
+       }
+      },
+      "required": [
+       "write"
+      ]
+     },
+     "then": {
+      "required": [
+       "carrier"
+      ]
      }
     },
-    "required": [
-     "write"
-    ]
-   },
-   "then": {
-    "required": [
-     "carrier"
-    ]
-   }
+    {
+     "if": {
+      "properties": {
+       "write": {
+        "const": "typed-and-carrier"
+       }
+      },
+      "required": [
+       "write"
+      ]
+     },
+     "then": {
+      "required": [
+       "carrier",
+       "link"
+      ]
+     }
+    }
+   ]
   },
   "fallback": {
    "type": "object",
@@ -436,28 +688,128 @@
   "storedRegistration": {
    "type": "object",
    "required": [
+    "identity",
     "state",
     "etag",
     "registration"
    ],
    "properties": {
+    "identity": {
+     "$ref": "#/$defs/identity"
+    },
     "state": {
-     "enum": [
-      "active",
-      "retired"
-     ]
+     "$ref": "#/$defs/state"
     },
     "etag": {
      "$ref": "#/$defs/etag"
     },
+    "blockedFrom": {
+     "enum": [
+      "active",
+      "retired"
+     ],
+     "description": "With state `blocked`: the state the block interrupted, which unblocking restores. Absent for a pre-emptive block, which stores no registration; unblocking that removes it."
+    },
+    "boundTo": {
+     "description": "null: released (decision 4).",
+     "oneOf": [
+      {
+       "type": "null"
+      },
+      {
+       "$ref": "#/$defs/binding"
+      }
+     ]
+    },
+    "credentialKind": {
+     "$ref": "#/$defs/credentialKind"
+    },
+    "freedNamespaces": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "description": "Namespaces of this registration the owner freed after it was retired (decision 5). A freed namespace is not held by this registration, so another may claim it."
+    },
     "registration": {
-     "type": "object"
+     "type": [
+      "object",
+      "null"
+     ]
     }
-   }
+   },
+   "description": "A registration as the hub stores it. `registration` is null only for a pre-emptive block. The binding, credential kind, `blockedFrom` and freed namespaces are stored beside the registration, outside the etag.",
+   "allOf": [
+    {
+     "if": {
+      "properties": {
+       "registration": {
+        "type": "null"
+       }
+      },
+      "required": [
+       "registration"
+      ]
+     },
+     "then": {
+      "properties": {
+       "state": {
+        "const": "blocked"
+       }
+      },
+      "not": {
+       "anyOf": [
+        {
+         "required": [
+          "boundTo"
+         ]
+        },
+        {
+         "required": [
+          "credentialKind"
+         ]
+        },
+        {
+         "required": [
+          "blockedFrom"
+         ]
+        }
+       ]
+      }
+     },
+     "else": {
+      "required": [
+       "boundTo",
+       "credentialKind"
+      ]
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "state": {
+        "const": "blocked"
+       },
+       "registration": {
+        "type": "object"
+       }
+      },
+      "required": [
+       "state",
+       "registration"
+      ]
+     },
+     "then": {
+      "required": [
+       "blockedFrom"
+      ]
+     }
+    }
+   ]
   },
   "conformanceCase": {
    "type": "object",
-   "description": "One conformance case (specs/sync/conformance/*.yaml): a hub's capability document and stored state, a submitter, a controller's registration and request, and the expected response and controller fallback. All content is synthetic. A hub implementation passes a case when, booted with `capabilities` and `hubState` and sent `request` with `registration` by a credential holding `submitter`, it answers `expected.response` (reason `detail` strings are not compared) and stores `expected.storedAfter` where the case states it.",
+   "description": "One conformance case (specs/sync/conformance/*.yaml): a hub's capability document and stored state, a submitter, a controller's registration and request, and the expected response and controller fallback. All content is synthetic. A hub implementation passes a case when, booted with `capabilities` and `hubState` and sent `request` with `registration` by a credential holding `submitter`, it answers `expected.response` (reason `detail` strings are not compared) and stores `expected.storedAfter` where the case states it. A case with `typedWrite` also states what a controller does when a later typed write is refused (`expected.typedWrite`).",
    "required": [
     "id",
     "title",
@@ -479,7 +831,7 @@
     },
     "control": {
      "type": "string",
-     "description": "For a case whose request is rejected, fails a precondition or rejects an element: the id of the passing case that differs from it only in the aspect under test."
+     "description": "For a case whose request is rejected, fails a precondition or rejects an element: the id of the passing case that differs from it only in the aspect under test. For a case whose typed write is refused definitely: the case whose typed write is refused for load, differing only in `typedWrite`."
     },
     "cell": {
      "enum": [
@@ -519,10 +871,44 @@
       }
      }
     },
+    "carrierViews": {
+     "type": "object",
+     "description": "For each element id: what this hub reports as the element's `carrierView` when it accepts it (decision 7). An element not listed has none, which means not served. How a hub decides is SPEC-REG-INSTANCE's.",
+     "propertyNames": {
+      "pattern": "^(stateSpans|extensions|settings\\.fields|replayInputs)/.+$"
+     },
+     "additionalProperties": {
+      "anyOf": [
+       {
+        "enum": [
+         "served",
+         "not-served"
+        ]
+       },
+       {
+        "$ref": "#/$defs/otherTerm"
+       }
+      ]
+     }
+    },
     "submitter": {
      "type": "object",
-     "description": "What the submitting credential holds on this tenant: its permissions (shiro-style, `*` a wildcard part) and the namespace roots it may claim. How a credential comes to hold namespace roots is an open question (hub-sync design §3.5); the case states the outcome given them.",
+     "description": "The credential sending the request: its kind and subject (decisions 3 and 4), its permissions on this tenant (shiro-style, `*` a wildcard part) and, when the hub restricts namespaces, the roots it may claim. No `namespaceRoots`: first to claim (decision 1). A list, even an empty one: the hub restricts the credential to it. `token` labels the token presented; binding ignores it. All values are synthetic.",
+     "required": [
+      "credentialKind"
+     ],
      "properties": {
+      "credentialKind": {
+       "$ref": "#/$defs/credentialKind"
+      },
+      "subject": {
+       "type": "string",
+       "minLength": 1
+      },
+      "token": {
+       "type": "string",
+       "minLength": 1
+      },
       "permissions": {
        "type": "array",
        "items": {
@@ -535,10 +921,25 @@
         "type": "string"
        }
       }
+     },
+     "if": {
+      "properties": {
+       "credentialKind": {
+        "const": "subject"
+       }
+      },
+      "required": [
+       "credentialKind"
+      ]
+     },
+     "then": {
+      "required": [
+       "subject"
+      ]
      }
     },
     "registration": {
-     "description": "The controller's registration. null: an older controller that has none.",
+     "description": "The controller's registration. null: an older controller that has none, or an owner action, which carries no registration (then `expected.fallback` is null and `controllerWouldSubmit` false).",
      "oneOf": [
       {
        "type": "null"
@@ -562,6 +963,32 @@
        "$ref": "#/$defs/request"
       }
      ]
+    },
+    "typedWrite": {
+     "type": "object",
+     "description": "A later typed write for one element that the hub refuses (decision 8), after the request's response set the write plan. `status` is the HTTP status of the refusal; `retryAfter` the Retry-After seconds, when sent; `reason` the refusal's reason, when given.",
+     "required": [
+      "element",
+      "status"
+     ],
+     "properties": {
+      "element": {
+       "type": "string",
+       "pattern": "^(stateSpans|extensions|settings\\.fields|replayInputs)/.+$"
+      },
+      "status": {
+       "type": "integer",
+       "minimum": 400,
+       "maximum": 599
+      },
+      "retryAfter": {
+       "type": "integer",
+       "minimum": 0
+      },
+      "reason": {
+       "$ref": "#/$defs/reason"
+      }
+     }
     },
     "writes": {
      "type": "array",
@@ -650,6 +1077,33 @@
          "$ref": "#/$defs/storedRegistration"
         }
        ]
+      },
+      "typedWrite": {
+       "type": "object",
+       "description": "What the controller does about the refused typed write. `retry-backoff`: a load refusal (429 or 503, with or without Retry-After); the record is retried, not written as its carrier and not dropped. `carrier-this-record`: a definite refusal; that record is sent as its carrier and the element is not accepted until the next re-check. `recheck` is always false: a refusal never makes the controller re-read the capability document or its registration. `fallback`: the write plan afterwards.",
+       "required": [
+        "action",
+        "recheck",
+        "fallback"
+       ],
+       "properties": {
+        "action": {
+         "enum": [
+          "retry-backoff",
+          "carrier-this-record"
+         ]
+        },
+        "recheck": {
+         "const": false
+        },
+        "retryAfterSeconds": {
+         "type": "integer",
+         "minimum": 0
+        },
+        "fallback": {
+         "$ref": "#/$defs/fallback"
+        }
+       }
       }
      }
     }

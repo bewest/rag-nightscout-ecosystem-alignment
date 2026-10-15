@@ -1,0 +1,169 @@
+# SYNTHETIC CONFORMANCE CASE. Describes no real controller, product or person.
+# Contract: docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md §3.5.
+# Schema: specs/sync/registration-submit.schema.json#/$defs/conformanceCase.
+# Checked by tools/nsschema/test_registration_negotiation.py; `detail` strings are
+# not compared.
+id: owner-free-namespaces
+title: The owner frees a retired registration's namespaces
+description: Decision 5. Only a retired registration's namespaces are freed; the declaration
+  stays as written and data stored under it stays readable, but the namespace is no longer
+  held, so another registration may claim it (namespace-claimed-after-free).
+cell: newer-controller/newer-hub
+capabilities:
+  apiVersion: nightscout.dev/sync/v1
+  kind: HubCapabilities
+  hub:
+    product: Example Hub
+    version: 0.0.0-test
+  grammar:
+    versions:
+    - apiVersion: nightscout.dev/sync/v1
+      major: 1
+      minor: 1
+    interprets:
+    - apiVersion
+    - kind
+    - metadata
+    - spec
+  horizons:
+    classes:
+    - cycle
+    - span
+    - effective-dated
+    - definition
+    - aggregate
+    availability:
+    - released
+    - dev-only
+    - experimental
+  typeFragment:
+    keywords:
+    - type
+    - enum
+    - minimum
+    - maximum
+    - format
+    - items
+    - properties
+    - required
+    - description
+  limits:
+    maxRegistrationBytes: 65536
+    maxExtensions: 8
+    maxFieldsPerExtension: 32
+    maxTypeDepth: 4
+  wellKnown:
+    catalogue: /.well-known/nightscout/controllers
+    kinds: []
+  submit:
+    href: /api/v4/registrations
+    tiers:
+    - controller-owned
+    permissions:
+      submit: api:registrations:create
+      retire: api:registrations:delete
+hubState:
+  registrations:
+  - identity:
+      vendor: Example
+      product: OtherController
+    state: retired
+    etag: sha256:c523b2f3e0d208f8778f0b00bb287363e505f80db6a82076e1a78aa4c50e8dbb
+    boundTo: &id001
+      kind: subject
+      subject: subject-test-controller-b
+    credentialKind: subject
+    registration: &id003
+      apiVersion: nightscout.dev/sync/v1
+      kind: ControllerStateModel
+      metadata:
+        vendor: Example
+        product: OtherController
+        algorithmFamily: other
+        tier: controller-owned
+        versionRange: 1.0.0-test
+      spec:
+        cadence:
+          nominalSeconds: 300
+        documents:
+        - collection: devicestatus
+          discriminator:
+            path: example
+            test: is-object
+          decomposesTo:
+          - ApsSnapshot
+        stateSpans:
+        - category: Override
+          kind: ExampleOverride
+          slot: override
+          states:
+          - scheduled
+          - active
+          - ended
+          version: '1'
+          wire:
+            collection: treatments
+            eventType: Temporary Override
+            durationField: duration
+            durationUnit: minutes
+        extensions:
+          com.example.negotiation.targets:
+            version: '1'
+            carrier:
+              collection: settings
+              documentIdentifier: example-targets
+            fields:
+            - name: target
+              type:
+                type: number
+                minimum: 70
+                maximum: 180
+              unit: mg/dL
+              sensitivity:
+                level: descriptive
+                category: therapy-setting
+        sensitivity:
+          unlabelledPolicy: withhold
+submitter:
+  credentialKind: subject
+  subject: subject-test-tenant-owner
+  permissions: []
+registration: null
+request:
+  action: free-namespaces
+  actor: owner
+  listener: ns-tenant-admin
+  identity:
+    vendor: Example
+    product: OtherController
+  preconditions:
+    ifMatch: sha256:c523b2f3e0d208f8778f0b00bb287363e505f80db6a82076e1a78aa4c50e8dbb
+expected:
+  controllerWouldSubmit: false
+  response:
+    apiVersion: nightscout.dev/sync/v1
+    kind: RegistrationResponse
+    status: 200
+    outcome: applied
+    noop: false
+    registration:
+      vendor: Example
+      product: OtherController
+      versionRange: 1.0.0-test
+      state: retired
+      etag: sha256:c523b2f3e0d208f8778f0b00bb287363e505f80db6a82076e1a78aa4c50e8dbb
+      boundTo: *id001
+      credentialKind: subject
+      freedNamespaces: &id002
+      - com.example.negotiation.targets
+  fallback: null
+  storedAfter:
+    identity:
+      vendor: Example
+      product: OtherController
+    state: retired
+    etag: sha256:c523b2f3e0d208f8778f0b00bb287363e505f80db6a82076e1a78aa4c50e8dbb
+    boundTo: *id001
+    credentialKind: subject
+    freedNamespaces: *id002
+    registration: *id003

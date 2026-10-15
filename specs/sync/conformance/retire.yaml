@@ -64,9 +64,16 @@ capabilities:
       retire: api:registrations:delete
 hubState:
   registrations:
-  - state: active
+  - identity:
+      vendor: Example
+      product: NegotiationController
+    state: active
     etag: sha256:7d5ee7460eb39dcadfcd25ff01596f921b433d2cc38390a2d97a5a0bafca323c
-    registration:
+    boundTo: &id001
+      kind: subject
+      subject: subject-test-controller-a
+    credentialKind: subject
+    registration: &id004
       apiVersion: nightscout.dev/sync/v1
       kind: ControllerStateModel
       metadata:
@@ -118,6 +125,8 @@ hubState:
         sensitivity:
           unlabelledPolicy: withhold
 submitter:
+  credentialKind: subject
+  subject: subject-test-controller-a
   permissions:
   - api:registrations:delete
   namespaceRoots:
@@ -150,7 +159,7 @@ registration:
       - active
       - ended
       version: '1'
-      wire: &id001
+      wire: &id002
         collection: treatments
         eventType: Temporary Override
         durationField: duration
@@ -158,7 +167,7 @@ registration:
     extensions:
       com.example.negotiation.targets:
         version: '1'
-        carrier: &id002
+        carrier: &id003
           collection: settings
           documentIdentifier: example-targets
         fields:
@@ -195,65 +204,22 @@ expected:
       versionRange: 1.0.0-test
       state: retired
       etag: sha256:844755ad3b48ee735c5202b981d51698f65ea9cdfb7955ad82dec447cb802eac
+      boundTo: *id001
+      credentialKind: subject
     elements: []
   fallback:
     stateSpans/ExampleOverride:
       write: carrier
-      carrier: *id001
+      carrier: *id002
     extensions/com.example.negotiation.targets:
       write: carrier
-      carrier: *id002
+      carrier: *id003
   storedAfter:
+    identity:
+      vendor: Example
+      product: NegotiationController
     state: retired
     etag: sha256:844755ad3b48ee735c5202b981d51698f65ea9cdfb7955ad82dec447cb802eac
-    registration:
-      apiVersion: nightscout.dev/sync/v1
-      kind: ControllerStateModel
-      metadata:
-        vendor: Example
-        product: NegotiationController
-        algorithmFamily: other
-        tier: controller-owned
-        versionRange: 1.0.0-test
-      spec:
-        cadence:
-          nominalSeconds: 300
-        documents:
-        - collection: devicestatus
-          discriminator:
-            path: example
-            test: is-object
-          decomposesTo:
-          - ApsSnapshot
-        stateSpans:
-        - category: Override
-          kind: ExampleOverride
-          slot: override
-          states:
-          - scheduled
-          - active
-          - ended
-          version: '1'
-          wire:
-            collection: treatments
-            eventType: Temporary Override
-            durationField: duration
-            durationUnit: minutes
-        extensions:
-          com.example.negotiation.targets:
-            version: '1'
-            carrier:
-              collection: settings
-              documentIdentifier: example-targets
-            fields:
-            - name: target
-              type:
-                type: number
-                minimum: 70
-                maximum: 180
-              unit: mg/dL
-              sensitivity:
-                level: descriptive
-                category: therapy-setting
-        sensitivity:
-          unlabelledPolicy: withhold
+    boundTo: *id001
+    credentialKind: subject
+    registration: *id004

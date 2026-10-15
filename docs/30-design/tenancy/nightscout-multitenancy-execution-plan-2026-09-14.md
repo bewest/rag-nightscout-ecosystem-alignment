@@ -374,7 +374,13 @@ the hub-sync design §3.1 lists the result.)* *(2026-10-12: rule 6 is specified 
 `specs/sync/conformance/`, checked by `tools/nsschema/test_registration_negotiation.py`.
 Authorisation follows D13–D17 where they settle it; ten points they do not settle are listed
 there as open questions.)* *(2026-10-14: the ten questions are decided — hub-sync design §3.5, "Decisions" — and question 6
-became D19, §2.6.2; the spec and cases are amended under `SPEC-REG-DECISIONS`.)*
+became D19, §2.6.2; the spec and cases are amended under `SPEC-REG-DECISIONS`.)* *(2026-10-15:
+`SPEC-REG-DECISIONS` is done — the hub-sync design §3.5, the submit schema (the capability
+document is unchanged), the grammar's
+`dualWriteLink` and 53 conformance cases now carry first-to-claim namespaces, binding to the
+creating subject, the owner's actions on `ns-tenant-admin` and the `blocked` state, the recorded
+credential kind, carrier views, and the load-versus-definite rule for refused typed writes. The
+D19 parts of questions 7 and 9 remain `SPEC-REG-INSTANCE`'s.)*
 
 ### 2.6.2 D19 — definitions and instances (maintainer, 2026-10-14)
 

@@ -41,7 +41,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 61 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-TRIO-INTENT, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, HUB-REG-CRM, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
+| `not-started` | 60 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-TRIO-INTENT, SPEC-REG-INSTANCE, HUB-REG-CRM, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
 | `in-progress` | 3 | BFQ-46, BFQ-ENV, OID-LAB |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
@@ -49,7 +49,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `in-flight-upstream` | 1 | BFQ-09 |
 | `merged-upstream` | 87 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 6 | RT-0, T30-RESEARCH, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-164 |
-| `done` | 9 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, DOC-VIEWS, DOC-LINKS, RT-SOAK, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, LAB-HUB-ACTIVE-STATE |
+| `done` | 10 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, DOC-VIEWS, DOC-LINKS, RT-SOAK, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, LAB-HUB-ACTIVE-STATE |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 3 | BFQ-71, BFQ-41, BFQ-141 |
 | `answered` | 2 | RT-D3, RT-PROPAGATION |
@@ -6960,7 +6960,7 @@ reproduced ones.
 | `LAB-TRIO-INTENT` | Simulator lab: Trio override expiry, temp-target upload repeats, downloaded temp-target echo | `not-started` | `main` | n/a | 1 run + 1 no-gate |
 | `SCHEMA-REG-EXT` | Registration grammar: must-ignore, typed extensions, open vocabularies, per-kind versions, horizons (D18 addendum rules 1-5) | `done` | `main` | n/a | 2 run |
 | `SPEC-REG-NEGOTIATE` | Registration negotiation: the hub capability document, submit and fallback contract (D18 addendum rule 6) | `done` | `main` | n/a | 1 run |
-| `SPEC-REG-DECISIONS` | Registration negotiation: apply the 2026-10-14 decisions to the contract and conformance cases | `not-started` | `main` | n/a | 1 run |
+| `SPEC-REG-DECISIONS` | Registration negotiation: apply the 2026-10-14 decisions to the contract and conformance cases | `done` | `main` | n/a | 1 run |
 | `SPEC-REG-INSTANCE` | Registration definitions and instances: content-addressed definitions, leased instances, channel roles with provenance, labels (D19) | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `HUB-REG-CRM` | cgm-remote-monitor: accept registrations and derive typed storage, validation and query from them | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `HUB-REG-NOCTURNE` | Nocturne: propose the registration grammar and negotiation as a shared contract, with the hub active-state evidence | `not-started` | `main` | n/a | 0 run + 1 no-gate |
@@ -7066,16 +7066,16 @@ reproduced ones.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `done` |
 | repo | `rag-nightscout-ecosystem-alignment` |
 | branch | `main` |
-| base | `main@fbff1894` |
+| base | `main@46177424` |
 | worktree | `-` |
 | semver | `n/a` |
 | review | maintainer |
 | blocks on | `SPEC-REG-NEGOTIATE` |
 
-**Blast radius.** specs/sync/registration-submit.schema.json, specs/sync/hub- capabilities.schema.json, specs/sync/conformance/, tools/nsschema/negotiate.py and its tests, and the hub-sync design §3.5 contract text. Ships nothing.
+**Blast radius.** specs/sync/registration-submit.schema.json, specs/sync/controller-state- model.schema.json (an additive dualWriteLink), specs/sync/conformance/, tools/nsschema/negotiate.py and its tests, and the hub-sync design §3.5 contract text. Ships nothing.
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
@@ -7084,14 +7084,15 @@ reproduced ones.
 **Gates.**
 
 - `[unit]` `python -m pytest -q tools/nsschema/test_registration_negotiation.py`
-  - GREEN on 2026-10-12 (179 tests) for the pre-decision contract, so a pass today proves nothing about this item. Done when new cases exist and pass for: first-to-claim namespaces with no stated roots (and owner-granted roots still refusing namespace-not-owned); not-registration-owner (403) for another subject, with token rotation on the same subject as the passing control; owner release and transfer; blocked-by-owner and unblock; owner retire; freeing a retired registration's namespaces; the credential kind recorded; a 429/503 not treated as a fallback while a definite refusal is; a dual-write element declaring its link. Each rejection paired with a passing control, and each new rule shown non-vacuous by a weakening that turns its test red.
+  - GREEN on 2026-10-12 (179 tests) for the pre-decision contract, so a pass then proved nothing about this item. Done when new cases exist and pass for: first-to-claim namespaces with no stated roots (and owner-granted roots still refusing namespace-not-owned); not-registration-owner (403) for another subject, with token rotation on the same subject as the passing control; owner release and transfer; blocked-by-owner and unblock; owner retire; freeing a retired registration's namespaces; the credential kind recorded; a 429/503 not treated as a fallback while a definite refusal is; a dual-write element declaring its link. Each rejection paired with a passing control, and each new rule shown non-vacuous by a weakening that turns its test red. GREEN on 2026-10-15: 443 tests over 53 conformance cases (21 earlier, 32 new; retire-not-authorised reworked); the earlier 21 reproduce their earlier outcomes with only the submitter's subject and credential kind and the stored binding added. tools/nsschema 807 passed in the item's worktree (1 failed and 15 skipped there need the gitignored externals/ checkout, as before the item); sync_model --check green with the three generated registrations byte-identical. Non-vacuity: 47 weakenings, one at a time, each turned the matching test red for the behaviour it broke and was reverted. In tools/nsschema/negotiate.py: no stated roots treated as no roots; stated roots ignored; claims unchecked without roots; binding unchecked; API_SECRET passing any binding; binding by token as well as subject; binding checked after the preconditions; retire still needing namespace roots; the retire permission unchecked; the credential kind not recorded; owner actions on the data listener; API_SECRET refused as owner on single; any credential on single as owner; the owner editing content; the block not refusing the controller; the block checked before the preconditions; a pre-emptive block failing If-None-Match; the etag ignoring the blocked state; unblock always to active; owner retire of a blocked registration; release not unbinding; a released registration not binding its next writer; transfer ignored; freeing an active registration's namespaces; freed namespaces still held; retired registrations holding nothing; reactivation always reclaiming freed namespaces; 503 as definite; 429 as definite; definite refusals retried; a refusal triggering a re-check; a refusal falling back the whole registration; carrierView served ignored; the dual-write link ignored; an unknown carrierView accepted; the hub reporting no carrierView. In the schemas: credentialKind any string; a binding without its subject rule; carrierView any string; the new reason codes removed; state without blocked; a null registration in any state; owner actions without actor, listener or transferTo; typed-and-carrier without its link; a typed-write outcome that may re-check; a dual-write link without its carrier path; the grammar without dualWriteLink on stateSpans (strict view).
 
 **Evidence.**
 
 - `docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md`
 - `specs/sync/registration-submit.schema.json`
+- `specs/sync/controller-state-model.schema.json`
 
-**Notes.** Decisions on the ten §3.5 questions (maintainer, 2026-10-14); each "Change:" line in §3.5 "Decisions" is one piece of this item. Questions 6 and the D19 parts of 7 and 9 belong to SPEC-REG-INSTANCE.
+**Notes.** Decisions on the ten §3.5 questions (maintainer, 2026-10-14); each "Change:" line in §3.5 "Decisions" is one piece of this item. Questions 6 and the D19 parts of 7 and 9 belong to SPEC-REG-INSTANCE. Done 2026-10-15; hub-sync design §3.5. Namespaces are first to claim per tenant: no stated roots, any namespace no other registration holds; stated roots (even an empty list) restrict the credential (namespace-not-owned); a retired registration holds its namespaces until the owner frees them. A registration is bound to the credential that wrote it (boundTo: a subject id, never a token, or api-secret) and records credentialKind (subject, api-secret or other+term), both returned with it and neither in the etag. Another credential updating or retiring is 403 not- registration-owner in step (1), before preconditions; retire needs the binding and api:registrations:delete, not namespace roots. The owner's actions (retire, block, unblock, release, transfer, free-namespaces; never submit) run on ns-tenant-admin, or with API_SECRET on single; paths are proposals. State gains blocked: the etag changes, the controller's stale If-Match gets 412 with current.state blocked, a write with the current etag gets 403 blocked-by-owner (checked after the preconditions); a pre-emptive block stores no registration and a create for it is 403. Rules chosen here, for the maintainer to confirm: unblock restores the state the block interrupted, so a registration retired before the block stays retired; the owner unblocks before retiring a blocked registration (409); a released registration is bound by its next writer even on identical content (200, not a no-op); credentialKind is the kind that last created or updated it; reactivation reclaims a freed namespace only if no other registration holds it; a typed-write refusal with a status other than 429 or 503 is definite. Element results may carry carrierView (served, not- served, other+term; an unknown value is not accepted); the grammar gains dualWriteLink (typedIdPath, carrierIdPath) on stateSpans and extensions; accepted and not served with a link is written typed and as its carrier. SPEC- REG-INSTANCE scopes the link by instance and specifies the view's mapping. A refused typed write is modelled as typedWrite -> expected.typedWrite (retry- backoff or carrier-this-record, recheck false). The capability document is unchanged.
 
 ### `SPEC-REG-INSTANCE` &mdash; Registration definitions and instances: content-addressed definitions, leased instances, channel roles with provenance, labels (D19)
 

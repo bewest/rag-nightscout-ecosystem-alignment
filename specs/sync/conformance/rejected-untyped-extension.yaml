@@ -65,6 +65,8 @@ capabilities:
 hubState:
   registrations: []
 submitter:
+  credentialKind: subject
+  subject: subject-test-controller-a
   permissions:
   - api:registrations:create
   namespaceRoots:
@@ -105,7 +107,7 @@ registration:
     extensions:
       com.example.negotiation.targets:
         version: '1'
-        carrier:
+        carrier: &id001
           collection: settings
           documentIdentifier: example-targets
         fields:
@@ -138,6 +140,10 @@ expected:
       versionRange: 1.0.0-test
       state: active
       etag: sha256:60e684a1f2c8f071c3dfebadea261d5255fa8592d7ccb0271fea0a7b65dafe4d
+      boundTo:
+        kind: subject
+        subject: subject-test-controller-a
+      credentialKind: subject
     ignored: []
     elements:
     - element: stateSpans/ExampleOverride
@@ -152,6 +158,4 @@ expected:
       write: typed
     extensions/com.example.negotiation.targets:
       write: carrier
-      carrier:
-        collection: settings
-        documentIdentifier: example-targets
+      carrier: *id001

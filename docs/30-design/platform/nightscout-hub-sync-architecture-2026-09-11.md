@@ -1,6 +1,6 @@
 # A hub-and-spoke sync model for AID controllers
 
-*Contributor-facing.* **Snapshot — describes 2026-09-11. Status: current as analysis; the design it sketches is carried forward by [PROPOSAL-controller-descriptions](PROPOSAL-controller-descriptions-2026-09-11.md) and [PROPOSAL-replay-fidelity-changes](PROPOSAL-replay-fidelity-changes-2026-09-11.md).** Current decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions). **Corrected in place 2026-10-12:** §3.1's description of `stateSpans` and the schema field list in §5.2 now match the schema as extended for D18 from [intent and workflow across the landscape](./nightscout-intent-workflow-landscape-2026-10-09.md) §9. **Also 2026-10-12:** §3.1 lists `extensions` and the D18 addendum grammar rules 1–5 (`SCHEMA-REG-EXT`). **Also 2026-10-12:** §3.5 specifies negotiation, D18 addendum rule 6 (`SPEC-REG-NEGOTIATE`): the capability document, the submit, update and retire contract, the fallback rule, authorisation with open questions, and the conformance cases. **Also 2026-10-14:** §3.5's ten open questions are decided ("Decisions"), with the contract changes they imply listed for `SPEC-REG-DECISIONS`; §5.2's kind/instance split is adopted as D19.
+*Contributor-facing.* **Snapshot — describes 2026-09-11. Status: current as analysis; the design it sketches is carried forward by [PROPOSAL-controller-descriptions](PROPOSAL-controller-descriptions-2026-09-11.md) and [PROPOSAL-replay-fidelity-changes](PROPOSAL-replay-fidelity-changes-2026-09-11.md).** Current decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions). **Corrected in place 2026-10-12:** §3.1's description of `stateSpans` and the schema field list in §5.2 now match the schema as extended for D18 from [intent and workflow across the landscape](./nightscout-intent-workflow-landscape-2026-10-09.md) §9. **Also 2026-10-12:** §3.1 lists `extensions` and the D18 addendum grammar rules 1–5 (`SCHEMA-REG-EXT`). **Also 2026-10-12:** §3.5 specifies negotiation, D18 addendum rule 6 (`SPEC-REG-NEGOTIATE`): the capability document, the submit, update and retire contract, the fallback rule, authorisation with open questions, and the conformance cases. **Also 2026-10-14:** §3.5's ten open questions are decided ("Decisions"), with the contract changes they imply listed for `SPEC-REG-DECISIONS`; §5.2's kind/instance split is adopted as D19. **Also 2026-10-15:** §3.5 is amended for those decisions (`SPEC-REG-DECISIONS`): first-to-claim namespaces, binding to the creating subject, the owner's actions on `ns-tenant-admin` and the `blocked` state, the credential kind, carrier views and dual-write links, and refused typed writes; 53 conformance cases.
 
 Date: 2026-09-11. Fifth in a series
 with
@@ -270,6 +270,7 @@ only the shapes a registration declared does not.
 ### 3.5 Negotiation
 
 *Added 2026-10-12 (`SPEC-REG-NEGOTIATE`; D18 addendum rule 6, execution plan §2.6.1).
+Amended 2026-10-15 for the decisions of 2026-10-14 below (`SPEC-REG-DECISIONS`).
 Specified, not implemented: no hub serves any of this.* The hub publishes what it supports;
 the controller submits its controller-owned registration and reads back, per element, what
 was accepted; for anything not accepted it writes the element's well-known carrier.
@@ -277,9 +278,9 @@ was accepted; for anything not accepted it writes the element's well-known carri
 | file | what it is |
 |---|---|
 | `specs/sync/hub-capabilities.schema.json` | the capability document |
-| `specs/sync/registration-submit.schema.json` | request, response, fallback and conformance-case shapes |
-| `specs/sync/conformance/*.yaml` | 21 synthetic conformance cases; both hubs implement against them |
-| `tools/nsschema/negotiate.py` | a reference decision function that computes each case's expected response and fallback. It checks that the cases are self-consistent; it is not a hub |
+| `specs/sync/registration-submit.schema.json` | request, response, stored registration, fallback, refused-typed-write and conformance-case shapes |
+| `specs/sync/conformance/*.yaml` | 53 synthetic conformance cases; both hubs implement against them |
+| `tools/nsschema/negotiate.py` | a reference decision function that computes each case's expected response, stored registration, fallback and handling of a refused typed write. It checks that the cases are self-consistent; it is not a hub |
 | `tools/nsschema/test_registration_negotiation.py` | the queue gate |
 
 **The capability document: `GET /.well-known/nightscout/sync`.** One well-known suffix,
@@ -323,15 +324,30 @@ and `metadata.product`. `versionRange` is an attribute, not identity: a new rele
 the same registration, and older model versions stay served under rule 4. One registration
 is the resource `<submit.href>/<vendor>/<product>` (each segment percent-encoded):
 
-| method | meaning | precondition (required) |
-|---|---|---|
-| `PUT` | submit: create, or update | `If-None-Match: *` to create; `If-Match: <etag>` to update |
-| `GET` | read the stored registration with its current element results | none |
-| `DELETE` | retire | `If-Match: <etag>` |
+| method | who, where | meaning | precondition (required) |
+|---|---|---|---|
+| `PUT` | controller, data listener | submit: create, or update | `If-None-Match: *` to create; `If-Match: <etag>` to update |
+| `GET` | controller, data listener | read the stored registration with its current element results, binding and credential kind | none |
+| `DELETE` | controller, data listener | retire | `If-Match: <etag>` |
+| `DELETE` | owner, `ns-tenant-admin` | retire | `If-Match: <etag>` |
+| `POST …/block` | owner, `ns-tenant-admin` | block | `If-Match: <etag>`; `If-None-Match: *` when nothing is stored |
+| `POST …/unblock`, `…/release`, `…/transfer`, `…/free-namespaces` | owner, `ns-tenant-admin` | see "The owner's actions" | `If-Match: <etag>` |
 
-**Order of checks.** (1) authorisation (403); (2) preconditions — none sent is 428, a failed
+The owner's paths are proposals: the admin listener's registrations path and the action
+segments are not settled. In `single` mode there is one listener, and `API_SECRET` there may
+perform every owner action (decision 3).
+
+**Order of checks.** (1) authorisation (403) — the permission, then the binding: a registration
+is bound to the credential that created it, and any other credential that updates or retires it
+is refused `not-registration-owner` before any precondition is evaluated; an owner action is
+authorised by its listener (`ns-tenant-admin`, or `single` with `API_SECRET`) and refused
+`not-authorised` elsewhere; (2) preconditions — none sent is 428, a failed
 one is 412 with the current etag and state, and retiring an identity with nothing stored is 404 (RFC 9110 §13.2.1 evaluates preconditions after
-authorisation and before the content); (3) the registration as a whole — `apiVersion` not
+authorisation and before the content); then the owner's block: a write to a blocked identity is
+403 `blocked-by-owner`. The block is checked after the preconditions so a controller holding the
+etag from before the block gets 412, whose `current.state` says `blocked`. A pre-emptive block
+stores no registration, so a create's `If-None-Match: *` passes and the block answers 403;
+(3) the registration as a whole — `apiVersion` not
 among `grammar.versions` (`unsupported-grammar-major`), wrong `kind` or a grammar-invalid
 registration outside `spec.extensions` (`invalid-registration`), identity differing from the
 resource (`identity-mismatch`), a tier other than `controller-owned` (`wrong-tier`), over
@@ -345,8 +361,10 @@ not cover; they are kept as written and not interpreted (rule 1). Ignored member
 any element are listed at registration level. An element is not accepted when a member that
 defines it is ignored (`not-interpreted`): a kind's `category`; an extension's `fields`,
 `version`/`versions` and each field's `name`, `type`, `typeRef`; a typed setting's or input's
-name and type. Otherwise an element is rejected for: `namespace-not-owned`,
-`namespace-claimed` (another registration on the tenant declares it), `untyped-extension`,
+name and type. Otherwise an element is rejected for: `namespace-not-owned` (only when the
+credential has stated namespace roots, an optional hub restriction; decision 1),
+`namespace-claimed` (another registration on the tenant holds it: declares it and the owner
+has not freed it, whatever that registration's state), `untyped-extension`,
 `unsupported-type-keyword` (a keyword or format outside `typeFragment`, including in a
 `typeRef` target), `limit-exceeded` (`maxFieldsPerExtension`, `maxTypeDepth`),
 `invalid-element` (an extension that fails the grammar), `version-plan-invalid`,
@@ -354,11 +372,31 @@ name and type. Otherwise an element is rejected for: `namespace-not-owned`,
 checked only where the hub interprets them. Reason codes are an open vocabulary (`other` with
 the hub's `term`); `detail` is for people and is not compared by the conformance cases.
 Outcome: `accepted` when every element is accepted, `partial` when at least one is rejected —
-both store the registration as written (201 on create, 200 on update).
+both store the registration as written (201 on create, 200 on update). An accepted element may
+also carry `carrierView`: `served` when the hub serves older readers a projected, read-only view
+of its typed records in the carrier's shape, `not-served` or absent when it does not (decision
+7; how a hub decides, and the view's mapping, are `SPEC-REG-INSTANCE`'s). `carrierView` is an
+open vocabulary; a value the controller does not know is not accepted.
+
+**Binding and credential kind** (decisions 3 and 4). A create or update binds the registration
+to the credential that wrote it: `boundTo: {kind: subject, subject: <opaque id>}`, never the
+token, so a token rotated on the same subject changes nothing; or `{kind: api-secret}` for the
+shared secret in single mode, which any holder of the secret presents. The stored registration
+also records `credentialKind` (`subject`, `api-secret`, or `other` with the hub's term), the
+kind of credential that last created or updated it; both are returned with the registration.
+`API_SECRET` against a subject-bound registration is `not-registration-owner` on the data path.
+A released registration (`boundTo: null`) is bound by the next credential with the permission
+that updates it, even with identical content (200, not a no-op). Readers attribute typed
+records to the registration and its bound credential: a namespace string proves nothing about
+authorship. `SPEC-REG-INSTANCE` binds instances; this binding leaves room for that.
 
 **Concurrency and idempotency.** The etag is `sha256:` and the hex SHA-256 of the RFC 8785
-canonical JSON of `{"registration": <as submitted>, "state": <active|retired>}`, so it changes
-on every change of content or state. A request whose content and state are already stored
+canonical JSON of `{"registration": <as submitted>, "state": <active|retired|blocked>}`
+(`registration` is null for a pre-emptive block), so it changes on every change of content or
+state, including a block and an unblock. The binding, the credential kind and freed namespaces
+are stored beside the registration and are not in the etag: a release, a transfer or freeing
+namespaces leaves it unchanged, and the precondition on those owner actions guards against
+acting on content or a state the owner has not read. A request whose content and state are already stored
 succeeds as a no-op (`noop: true`, 200, the stored etag), so a create retried after a lost
 response does not fail (RFC 9110 §13.1.1 allows a 2xx for `If-Match` when the change has already been
 applied; the contract applies the same rule to a create's `If-None-Match`). A stale `If-Match` with different content is 412 `stale-etag`; `If-None-Match: *`
@@ -366,22 +404,68 @@ over different content is 412 `registration-exists`. A hub evaluates a stored re
 against its current capabilities on every read, so an element's result can change after a hub
 upgrade; the stored registration and its etag do not.
 
-**Retire.** Only the owning controller retires (D18). Retiring sets the state to `retired`,
-changes the etag and keeps the declaration, frozen: data already stored under it stays stored
+**Retire.** The controller the registration is bound to retires it (D18), with
+`api:registrations:delete`; namespace roots do not decide it (decision 4). The tenant owner may
+also retire it (decision 5). Retiring sets the state to `retired`,
+changes the etag and keeps the declaration and the binding, frozen: data already stored under it stays stored
 and readable as declared, and no typed write is accepted for its kinds or extensions. Its
-namespaces stay claimed while it is stored. A later `PUT` with the retired etag reactivates it.
+namespaces stay claimed while it is stored, until the owner frees them. A later `PUT` with the
+retired etag reactivates it; a namespace the owner freed is claimed again on reactivation only
+if no other registration holds it by then, and otherwise stays freed and that extension is
+rejected `namespace-claimed`.
 The controller writes its carriers from the moment it retires.
+
+**The owner's actions** (decision 5; `ns-tenant-admin`, or `API_SECRET` in single mode). The
+owner may retire, block, unblock, release, transfer and free namespaces, and never edits a
+registration's content (an owner `PUT` is 403 `not-authorised`). An action other than retire
+answers outcome `applied` with the registration after it; a request for what is already the case
+is a no-op.
+
+- **Block** sets the state to `blocked` and records the state it interrupted (`blockedFrom`); the
+  etag changes, the declaration and binding are kept, and data already stored stays frozen as on
+  retire. The controller's writes and typed writes are refused 403 `blocked-by-owner` and it
+  writes its carriers. With `If-None-Match: *` the owner blocks an identity with nothing stored
+  (a pre-emptive block, stored with no registration); a create for it is then 403
+  `blocked-by-owner`.
+- **Unblock** restores the state the block interrupted: `active`, or `retired` if the
+  registration was retired before the block; unblocking a pre-emptive block removes it. Unblocking
+  never reactivates a retired registration; the controller does that with a `PUT`, as above.
+  The owner unblocks before retiring a blocked registration (409 `blocked-by-owner` otherwise).
+- **Release** unbinds the registration (`boundTo: null`); the next credential with the permission
+  that updates it is bound to it. **Transfer** binds it to a named subject. Neither changes the etag.
+- **Free namespaces** applies to a retired registration only (409 `not-retired` otherwise): its
+  namespaces are no longer held by it, so another registration may claim them. The declaration
+  stays as written and data stored under it stays readable.
 
 **Fallback (the controller's side).** An element is written through the typed API only when
 the response to *this* registration has outcome `accepted` or `partial` and the element's
 result is `accepted` or `accepted-with-ignored-members`. Everything else — a rejected
-element, an element result or reason the controller does not know, a rejected registration,
-a failed precondition, a retired registration, no response, no capability document, no
-`submit`, or a grammar major the hub does not list — falls back per the elements table. A
+element, an element result, reason or `carrierView` the controller does not know, a rejected
+registration, a failed precondition, a retired or blocked registration, no response (a submit
+answered 429 or 503 is no response), no capability document, no
+`submit`, or a grammar major the hub does not list — falls back per the elements table. An
+accepted element whose `carrierView` is `served` is written typed only; one whose view is not
+served is written typed only, or typed and as its carrier when the element declares
+`dualWriteLink` (decision 7): the dotted paths of the controller's record id in the typed record
+(`typedIdPath`) and in the carrier (`carrierIdPath`), so counting and de-duplication follow the
+link. `SPEC-REG-INSTANCE` scopes the link by instance and specifies the view's mapping. A
 controller that depends on an ignored member may treat that element as not accepted; the
 conformance cases assume it does not. The capability document carries everything the
-response depends on except the tenant's stored registrations and the credential's grants, so
-a controller can predict the result before it submits; the response is authoritative.
+response depends on except the tenant's stored registrations (with their bindings and blocks),
+the credential's grants and whether the hub serves a carrier view of an element, so
+a controller can predict most of the result before it submits; the response is authoritative.
+
+**Re-checking and refused typed writes** (decision 8). A controller reads the capability
+document and its registration at launch and after a controller release; never on a timer and
+never because a request was refused, so an overloaded hub is not met with a surge of reads. A
+typed write refused for load — 429 or 503, with or without `Retry-After` — is retried with
+backoff (no sooner than `Retry-After` when sent); it is not written as its carrier and the
+record is not dropped. Any other refusal of a typed write is definite: `blocked-by-owner`, a
+retired or missing registration, a typed route answering 404 after a hub rollback, or a status
+the controller does not know. The controller sends that record as its carrier and treats the
+element as not accepted until its next re-check. The cases model this as `typedWrite` (the
+refusal) and `expected.typedWrite` (`retry-backoff` or `carrier-this-record`, `recheck: false`,
+and the write plan afterwards).
 
 | | older hub | newer hub |
 |---|---|---|
@@ -395,23 +479,32 @@ a controller can predict the result before it submits; the response is authorita
   listener (`ns-api`, and `single`), with that credential. In `TENANCY_MODE=multi` there is
   no deployment secret (D13); the credential's token is signed with the tenant's key (D14),
   so a registration is per tenant and a token for tenant A cannot register on tenant B. A
-  controller on two tenants registers twice.
-- **Permission.** Submitting needs `api:registrations:create` and retiring needs
+  controller on two tenants registers twice. In single mode `API_SECRET` may also register
+  (decision 3); the registration records `credentialKind: api-secret` and is bound to the
+  shared secret.
+- **Permission and binding.** Submitting needs `api:registrations:create` and retiring needs
   `api:registrations:delete`, shiro-style like the existing `api:<collection>:<action>`
   permissions, granted by the tenant owner to the controller's subject on `ns-tenant-admin`
-  (D16). The names are proposals.
-- **Namespace ownership.** A credential holds a set of namespace roots on its tenant. A
-  registration may declare an extension namespace equal to or below one of them
-  (`com.example` covers `com.example.negotiation.targets`; `com.examplefoo` does not), and
-  not one another registration on the tenant already declares. Retiring needs roots covering
-  every namespace the stored registration declares. The conformance cases state the outcome
-  given the roots, independent of how the roots are granted.
+  (D16). The names are proposals. Updating and retiring also need the binding: the subject the
+  registration is bound to, or the shared secret for a registration bound to it (decision 4).
+- **Namespaces: first to claim, per tenant** (decisions 1 and 2). A credential with no stated
+  namespace roots may claim any namespace no other registration on the tenant holds. A hub may
+  also restrict a credential to owner-granted roots: a registration may then declare an
+  extension namespace equal to or below one of them
+  (`com.example` covers `com.example.negotiation.targets`; `com.examplefoo` does not), else
+  `namespace-not-owned`. Either way a namespace another registration on the tenant holds is
+  `namespace-claimed`. Readers attribute typed records to the registration and its bound
+  credential, never to the namespace string.
+- **The owner.** On `ns-tenant-admin` (D16; the owner's authentication there is D17 row 2) the
+  tenant owner retires, blocks, unblocks, releases, transfers and frees a retired
+  registration's namespaces; in single mode `API_SECRET` may do the same on `single`. An owner
+  action on the data listener is 403 `not-authorised`.
 - **Storage.** Registrations are tenant data: per-tenant, under RLS (D3), never in the
   public capability document. Authorisation is per tenant, as the D13 amendment requires.
 
 **Decisions (maintainer, 2026-10-14).** The ten questions D13–D18 left open. Where a decision
-changes the contract above, the change is listed and is not yet in the schemas or cases; it is
-queued as `SPEC-REG-DECISIONS`. Question 6 became D19 ([execution plan §2.6.2](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#262-d19--definitions-and-instances-maintainer-2026-10-14)), queued as `SPEC-REG-INSTANCE`.
+changes the contract above, the change is listed; each was applied to the contract above, the
+schemas and the cases on 2026-10-15 (`SPEC-REG-DECISIONS`). Question 6 became D19 ([execution plan §2.6.2](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#262-d19--definitions-and-instances-maintainer-2026-10-14)), queued as `SPEC-REG-INSTANCE`.
 
 1. **Where namespace roots come from: first to claim.** A credential with
    `api:registrations:create` may claim any namespace no registration on the tenant holds; a
@@ -421,7 +514,7 @@ queued as `SPEC-REG-DECISIONS`. Question 6 became D19 ([execution plan §2.6.2](
    self-asserted and first to claim (412 `registration-exists`), the owner already chose the
    credential, and losing a claim falls back to carriers. A namespace string proves nothing
    about authorship: readers attribute typed records to the writing registration and
-   credential. *Change:* a submitter without stated roots may claim any unclaimed namespace.
+   credential. *Change:* a submitter without stated roots may claim any unclaimed namespace. (done 2026-10-15, `SPEC-REG-DECISIONS`)
 2. **Scope: per tenant**, as the cases assume. A deployment-wide claim would let one tenant
    block another and reveal another tenant's controller. Readers that span tenants interpret a
    field by the declaration carried with it, not by its namespace. The community may keep a
@@ -430,32 +523,32 @@ queued as `SPEC-REG-DECISIONS`. Question 6 became D19 ([execution plan §2.6.2](
 3. **`API_SECRET` in single mode may register.** The hub records the kind of credential that
    registered, and the owner's admin view shows registrations made with the shared secret;
    documentation steers controllers toward subject tokens. Multi mode has no deployment secret
-   (D13). *Change:* the stored registration records its credential kind.
+   (D13). *Change:* the stored registration records its credential kind. (done 2026-10-15, `SPEC-REG-DECISIONS`)
 4. **A registration is bound to the subject that created it**, not to a token, so token
    rotation needs nothing. Another subject is refused 403 `not-registration-owner`. The owner
    may release or transfer a registration to another subject. A registration made with
    `API_SECRET` is bound to the shared secret. *Change:* new reason and case; retire is
-   authorised by subject binding, and namespace ownership no longer decides it.
+   authorised by subject binding, and namespace ownership no longer decides it. (done 2026-10-15, `SPEC-REG-DECISIONS`)
 5. **The owner may retire, block and unblock, never edit.** A block makes the hub refuse that
    `(vendor, product)` on the tenant (`blocked-by-owner`); the controller writes its carriers,
    data already stored stays frozen as on retire, and unblocking restores it. The owner may
    also free a retired registration's namespaces. Accepting is already the hub's side of
    negotiation, so a block does not change what the controller declares (D18). *Change:* the
-   owner as a second retirer, the block state and its reason, and namespace release.
+   owner as a second retirer, the block state and its reason, and namespace release. (done 2026-10-15, `SPEC-REG-DECISIONS`)
 6. **Two live releases or copies on one tenant:** D19. The definition (what data means) and the
    instance (which copy is connected, in which roles) are separate resources.
 7. **Typed and carrier for the same intent.** A registered instance writes typed records only
    for accepted elements, and the hub serves older readers a declared, read-only, labelled view
    in today's shapes (D19 rule 8). Writing both, linked by (instance, the controller's record
    id), is for elements with no declared carrier mapping and for migration; counting follows
-   the link. *Change:* the fallback rule gains the view; a dual-write element declares it.
+   the link. *Change:* the fallback rule gains the view; a dual-write element declares it. (done 2026-10-15, `SPEC-REG-DECISIONS`, as `carrierView` and `dualWriteLink`; the view's mapping and the instance-scoped link are `SPEC-REG-INSTANCE`'s)
 8. **Re-checking: at launch and after a controller release.** A lease renewal does not re-read
    the capability document. A refusal does not trigger a re-check, so an overloaded hub is not
    met with a surge of reads: a 429 or 503 is retried with backoff and is not a fallback; a
    definite refusal (`blocked-by-owner`, a retired or missing registration, a typed route
    answering 404 after a hub rollback) sends that record as its carrier, and the element is
    treated as not accepted until the next re-check. *Change:* the fallback rule distinguishes
-   load refusals from definite ones.
+   load refusals from definite ones. (done 2026-10-15, `SPEC-REG-DECISIONS`)
 9. **Retired data stays readable while it is stored.** A definition is kept while any stored
    record references it; each record's declared horizon retention decides when the record
    goes (D19 rule 9).
@@ -487,7 +580,44 @@ queued as `SPEC-REG-DECISIONS`. Question 6 became D19 ([execution plan §2.6.2](
 | `create-retry-noop` | newer/newer | identical create retried; 200 `noop` |
 | `create-exists` | newer/newer | create over different content; 412 `registration-exists` |
 | `retire` | newer/newer | 200 retired; declaration kept; carriers from then on |
-| `retire-not-authorised` | newer/newer | credential does not own the namespaces; 403 |
+| `retire-not-authorised` | newer/newer | no `api:registrations:delete`; 403. *Changed 2026-10-15:* until then it asserted that retiring needs roots covering every namespace (decision 4 removed that rule) |
+| `accepted-first-to-claim` | newer/newer | no stated roots; unclaimed namespace accepted (decision 1) |
+| `rejected-namespace-claimed-first-to-claim` | newer/newer | no stated roots; namespace held by another registration; `namespace-claimed` |
+| `rejected-namespace-claimed-retired` | newer/newer | the holder is retired but has not had its namespaces freed; `namespace-claimed` |
+| `namespace-claimed-after-free` | newer/newer | the owner freed the retired holder's namespace; accepted |
+| `accepted-api-secret-single` | newer/newer | `API_SECRET` on `single`; `credentialKind: api-secret`, bound to the secret (decision 3) |
+| `update-token-rotated` | newer/newer | bound subject, new token; 200 (decision 4) |
+| `update-not-registration-owner` | newer/newer | another subject; 403 `not-registration-owner` |
+| `update-api-secret-bound` | newer/newer | secret-bound registration updated with the secret; 200 |
+| `update-api-secret-not-owner` | newer/newer | `API_SECRET` against a subject-bound registration; 403 `not-registration-owner` |
+| `retire-not-registration-owner` | newer/newer | another subject retires; 403 `not-registration-owner` |
+| `retire-roots-not-required` | newer/newer | bound subject without covering roots retires; 200 |
+| `owner-retire` | newer/newer | owner on `ns-tenant-admin`; 200 retired (decision 5) |
+| `owner-action-on-data-listener` | newer/newer | the same on `ns-api`; 403 `not-authorised` |
+| `owner-block` | newer/newer | `blocked`, `blockedFrom: active`, etag changes |
+| `owner-block-api-secret-single` | newer/newer | `API_SECRET` on `single` blocks; applied |
+| `blocked-update-stale-etag` | newer/newer | controller's pre-block etag; 412, `current.state: blocked` |
+| `blocked-by-owner` | newer/newer | controller's current etag on a blocked registration; 403 `blocked-by-owner` |
+| `owner-block-pre-emptive` | newer/newer | nothing stored, `If-None-Match: *`; 201, stored with no registration |
+| `blocked-pre-emptive-create` | newer/newer | create after a pre-emptive block; 403 `blocked-by-owner` |
+| `owner-unblock` | newer/newer | back to `active`, with the pre-block etag |
+| `owner-unblock-retired` | newer/newer | retired before the block; stays `retired` |
+| `owner-release` | newer/newer | `boundTo: null`; etag unchanged |
+| `released-update-binds` | newer/newer | another subject updates a released registration and is bound to it |
+| `owner-transfer` | newer/newer | bound to a named subject; etag unchanged |
+| `owner-free-namespaces` | newer/newer | retired registration's namespaces freed |
+| `owner-free-namespaces-not-retired` | newer/newer | active registration; 409 `not-retired` |
+| `accepted-dual-write-view-not-served` | newer/newer | no carrier view, `dualWriteLink` declared; typed and carrier (decision 7) |
+| `accepted-dual-write-view-served` | newer/newer | `carrierView: served`; typed only |
+| `typed-write-load-503` | newer/newer | typed write 503, no `Retry-After`; retry with backoff, no carrier, no re-check (decision 8) |
+| `typed-write-load-429-retry-after` | newer/newer | typed write 429 with `Retry-After: 30`; retry after it |
+| `typed-write-blocked-by-owner` | newer/newer | typed write 403 `blocked-by-owner`; that record as its carrier, no re-check |
+| `typed-write-route-404` | newer/newer | typed route 404 after a rollback; that record as its carrier, no re-check |
+
+The 21 cases that predate the decisions keep their outcomes; each now states the submitter's
+subject and credential kind, and each stored registration its identity, binding and credential
+kind (measured 2026-10-15: the reference reproduces every earlier expected outcome with only
+those members added).
 
 ## 4. Replay, and why physicians cannot see the settings
 

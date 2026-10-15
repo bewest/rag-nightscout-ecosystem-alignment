@@ -64,6 +64,8 @@ capabilities:
 hubState:
   registrations: []
 submitter:
+  credentialKind: subject
+  subject: subject-test-controller-a
   permissions:
   - api:registrations:create
   namespaceRoots:
@@ -141,6 +143,10 @@ expected:
       versionRange: 1.0.0-test
       state: active
       etag: sha256:7d5ee7460eb39dcadfcd25ff01596f921b433d2cc38390a2d97a5a0bafca323c
+      boundTo:
+        kind: subject
+        subject: subject-test-controller-a
+      credentialKind: subject
     ignored: []
     elements:
     - element: stateSpans/ExampleOverride

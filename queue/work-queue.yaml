@@ -13732,13 +13732,13 @@ items:
     parcel: platform
     repo: rag-nightscout-ecosystem-alignment
     branch: main
-    base: main@fbff1894
-    state: not-started
+    base: main@46177424
+    state: done
     pr: []
     blast_radius: >
-      specs/sync/registration-submit.schema.json, specs/sync/hub-capabilities.schema.json,
-      specs/sync/conformance/, tools/nsschema/negotiate.py and its tests, and
-      the hub-sync design §3.5 contract text. Ships nothing.
+      specs/sync/registration-submit.schema.json, specs/sync/controller-state-model.schema.json
+      (an additive dualWriteLink), specs/sync/conformance/, tools/nsschema/negotiate.py and its
+      tests, and the hub-sync design §3.5 contract text. Ships nothing.
     review: maintainer
     operator_visible: ""
     semver: n/a
@@ -13749,7 +13749,7 @@ items:
         kind: unit
         describe: >
           GREEN on 2026-10-12 (179 tests) for the pre-decision contract, so
-          a pass today proves nothing about this item. Done when new cases
+          a pass then proved nothing about this item. Done when new cases
           exist and pass for: first-to-claim namespaces with no stated roots
           (and owner-granted roots still refusing namespace-not-owned);
           not-registration-owner (403) for another subject, with token
@@ -13759,15 +13759,87 @@ items:
           recorded; a 429/503 not treated as a fallback while a definite
           refusal is; a dual-write element declaring its link. Each
           rejection paired with a passing control, and each new rule shown
-          non-vacuous by a weakening that turns its test red.
+          non-vacuous by a weakening that turns its test red. GREEN on
+          2026-10-15: 443 tests over 53 conformance cases (21 earlier, 32
+          new; retire-not-authorised reworked); the earlier 21 reproduce
+          their earlier outcomes with only the submitter's subject and
+          credential kind and the stored binding added. tools/nsschema
+          807 passed in the item's worktree (1 failed and 15 skipped there
+          need the gitignored externals/ checkout, as before the item);
+          sync_model --check green with the three generated registrations
+          byte-identical. Non-vacuity: 47 weakenings, one at a time, each
+          turned the matching test red for the behaviour it broke and was
+          reverted. In tools/nsschema/negotiate.py: no stated roots treated
+          as no roots; stated roots ignored; claims unchecked without roots;
+          binding unchecked; API_SECRET passing any binding; binding by
+          token as well as subject; binding checked after the
+          preconditions; retire still needing namespace roots; the retire
+          permission unchecked; the credential kind not recorded; owner
+          actions on the data listener; API_SECRET refused as owner on
+          single; any credential on single as owner; the owner editing
+          content; the block not refusing the controller; the block checked
+          before the preconditions; a pre-emptive block failing
+          If-None-Match; the etag ignoring the blocked state; unblock
+          always to active; owner retire of a blocked registration; release
+          not unbinding; a released registration not binding its next
+          writer; transfer ignored; freeing an active registration's
+          namespaces; freed namespaces still held; retired registrations
+          holding nothing; reactivation always reclaiming freed namespaces;
+          503 as definite; 429 as definite; definite refusals retried; a
+          refusal triggering a re-check; a refusal falling back the whole
+          registration; carrierView served ignored; the dual-write link
+          ignored; an unknown carrierView accepted; the hub reporting no
+          carrierView. In the schemas: credentialKind any string; a binding
+          without its subject rule; carrierView any string; the new reason
+          codes removed; state without blocked; a null registration in any
+          state; owner actions without actor, listener or transferTo;
+          typed-and-carrier without its link; a typed-write outcome that may
+          re-check; a dual-write link without its carrier path; the grammar
+          without dualWriteLink on stateSpans (strict view).
     blocks_on: [SPEC-REG-NEGOTIATE]
     evidence:
       - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md
       - specs/sync/registration-submit.schema.json
+      - specs/sync/controller-state-model.schema.json
     notes: >
       Decisions on the ten §3.5 questions (maintainer, 2026-10-14); each
       "Change:" line in §3.5 "Decisions" is one piece of this item.
       Questions 6 and the D19 parts of 7 and 9 belong to SPEC-REG-INSTANCE.
+
+      Done 2026-10-15; hub-sync design §3.5. Namespaces are first to
+      claim per tenant: no stated roots, any namespace no other
+      registration holds; stated roots (even an empty list) restrict the
+      credential (namespace-not-owned); a retired registration holds its
+      namespaces until the owner frees them. A registration is bound to
+      the credential that wrote it (boundTo: a subject id, never a token,
+      or api-secret) and records credentialKind (subject, api-secret or
+      other+term), both returned with it and neither in the etag. Another
+      credential updating or retiring is 403 not-registration-owner in
+      step (1), before preconditions; retire needs the binding and
+      api:registrations:delete, not namespace roots. The owner's actions
+      (retire, block, unblock, release, transfer, free-namespaces; never
+      submit) run on ns-tenant-admin, or with API_SECRET on single; paths
+      are proposals. State gains blocked: the etag changes, the
+      controller's stale If-Match gets 412 with current.state blocked, a
+      write with the current etag gets 403 blocked-by-owner (checked
+      after the preconditions); a pre-emptive block stores no
+      registration and a create for it is 403. Rules chosen here, for the
+      maintainer to confirm: unblock restores the state the block
+      interrupted, so a registration retired before the block stays
+      retired; the owner unblocks before retiring a blocked registration
+      (409); a released registration is bound by its next writer even on
+      identical content (200, not a no-op); credentialKind is the kind
+      that last created or updated it; reactivation reclaims a freed
+      namespace only if no other registration holds it; a typed-write
+      refusal with a status other than 429 or 503 is definite. Element
+      results may carry carrierView (served, not-served, other+term; an
+      unknown value is not accepted); the grammar gains dualWriteLink
+      (typedIdPath, carrierIdPath) on stateSpans and extensions; accepted
+      and not served with a link is written typed and as its carrier.
+      SPEC-REG-INSTANCE scopes the link by instance and specifies the
+      view's mapping. A refused typed write is modelled as typedWrite ->
+      expected.typedWrite (retry-backoff or carrier-this-record, recheck
+      false). The capability document is unchanged.
 
   - id: SPEC-REG-INSTANCE
     title: "Registration definitions and instances: content-addressed definitions, leased instances, channel roles with provenance, labels (D19)"

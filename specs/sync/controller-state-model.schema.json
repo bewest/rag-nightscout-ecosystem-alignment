@@ -310,6 +310,9 @@
          }
         ]
        },
+       "dualWriteLink": {
+        "$ref": "#/$defs/dualWriteLink"
+       },
        "requested": {
         "description": "Where the request is recorded, when it is a different record from the applied effect. null: the request is not published.",
         "oneOf": [
@@ -874,6 +877,26 @@
     }
    }
   },
+  "dualWriteLink": {
+   "type": "object",
+   "description": "Decision 7 (hub-sync design §3.5; SPEC-REG-DECISIONS). Declares that, when the hub accepts this element but serves older readers no projected view of it in the carrier's shape, the controller writes each record both typed and as its well-known carrier, and how the two are linked: the dotted path of the controller's own record id in the typed record and in the carrier document. Counting and de-duplication follow the link. Without it an accepted element is written typed only. SPEC-REG-INSTANCE scopes the link key by instance and specifies the projected view's mapping.",
+   "required": [
+    "typedIdPath",
+    "carrierIdPath"
+   ],
+   "properties": {
+    "typedIdPath": {
+     "type": "string",
+     "minLength": 1,
+     "description": "Where the controller's record id sits in the typed record."
+    },
+    "carrierIdPath": {
+     "type": "string",
+     "minLength": 1,
+     "description": "Where the same id sits in the carrier document."
+    }
+   }
+  },
   "slotName": {
    "type": "string",
    "description": "A slot named by this registration; `coexistsWith` refers to slots by these names."
@@ -1269,6 +1292,9 @@
     "carrier": {
      "description": "Where today's documents carry this extension, if they do.",
      "$ref": "#/$defs/carrier"
+    },
+    "dualWriteLink": {
+     "$ref": "#/$defs/dualWriteLink"
     },
     "fields": {
      "type": "array",

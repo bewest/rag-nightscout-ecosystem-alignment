@@ -3,10 +3,18 @@
 # Schema: specs/sync/registration-submit.schema.json#/$defs/conformanceCase.
 # Checked by tools/nsschema/test_registration_negotiation.py; `detail` strings are
 # not compared.
+#
+# CHANGED 2026-10-15 (SPEC-REG-DECISIONS, decision 4). Until then this case asserted
+# that retiring needs namespace roots covering every namespace of the registration
+# (403 not-authorised at spec.extensions.<ns>). Retire is now authorised by the
+# binding plus api:registrations:delete, and namespace ownership no longer decides it:
+# that old request now succeeds (retire-roots-not-required), and another subject is
+# refused not-registration-owner (retire-not-registration-owner). This case now
+# asserts the missing-permission 403.
 id: retire-not-authorised
-title: A credential that does not own every namespace of the registration cannot retire it
-description: 'The registration declares com.example.negotiation.targets; the credential holds
-  only com.example.othercontroller. Control: retire.'
+title: A credential without api:registrations:delete cannot retire, even when bound
+description: 'The bound subject holds api:registrations:create but not api:registrations:delete:
+  403 not-authorised. Control: retire.'
 cell: newer-controller/newer-hub
 control: retire
 capabilities:
@@ -65,8 +73,15 @@ capabilities:
 hubState:
   registrations:
   - &id003
+    identity:
+      vendor: Example
+      product: NegotiationController
     state: active
     etag: sha256:7d5ee7460eb39dcadfcd25ff01596f921b433d2cc38390a2d97a5a0bafca323c
+    boundTo:
+      kind: subject
+      subject: subject-test-controller-a
+    credentialKind: subject
     registration:
       apiVersion: nightscout.dev/sync/v1
       kind: ControllerStateModel
@@ -119,10 +134,12 @@ hubState:
         sensitivity:
           unlabelledPolicy: withhold
 submitter:
+  credentialKind: subject
+  subject: subject-test-controller-a
   permissions:
-  - api:registrations:delete
+  - api:registrations:create
   namespaceRoots:
-  - com.example.othercontroller
+  - com.example.negotiation
 registration:
   apiVersion: nightscout.dev/sync/v1
   kind: ControllerStateModel
@@ -191,7 +208,6 @@ expected:
     outcome: rejected
     reasons:
     - code: not-authorised
-      path: spec.extensions.com.example.negotiation.targets
   fallback:
     stateSpans/ExampleOverride:
       write: carrier

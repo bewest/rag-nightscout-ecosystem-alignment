@@ -64,8 +64,15 @@ capabilities:
       retire: api:registrations:delete
 hubState:
   registrations:
-  - state: active
+  - identity:
+      vendor: Example
+      product: OtherController
+    state: active
     etag: sha256:6b7612a859c5115d89fcb4748add292cf7b5fdaf6b6be8db5b11fc29f694fc5e
+    boundTo:
+      kind: subject
+      subject: subject-test-controller-b
+    credentialKind: subject
     registration:
       apiVersion: nightscout.dev/sync/v1
       kind: ControllerStateModel
@@ -118,6 +125,8 @@ hubState:
         sensitivity:
           unlabelledPolicy: withhold
 submitter:
+  credentialKind: subject
+  subject: subject-test-controller-a
   permissions:
   - api:registrations:create
   namespaceRoots:
@@ -195,6 +204,10 @@ expected:
       versionRange: 1.0.0-test
       state: active
       etag: sha256:7d5ee7460eb39dcadfcd25ff01596f921b433d2cc38390a2d97a5a0bafca323c
+      boundTo:
+        kind: subject
+        subject: subject-test-controller-a
+      credentialKind: subject
     ignored: []
     elements:
     - element: stateSpans/ExampleOverride

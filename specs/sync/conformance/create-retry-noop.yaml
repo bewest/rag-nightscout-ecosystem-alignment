@@ -65,9 +65,16 @@ capabilities:
       retire: api:registrations:delete
 hubState:
   registrations:
-  - &id001
+  - &id002
+    identity:
+      vendor: Example
+      product: NegotiationController
     state: active
     etag: sha256:7d5ee7460eb39dcadfcd25ff01596f921b433d2cc38390a2d97a5a0bafca323c
+    boundTo: &id001
+      kind: subject
+      subject: subject-test-controller-a
+    credentialKind: subject
     registration:
       apiVersion: nightscout.dev/sync/v1
       kind: ControllerStateModel
@@ -120,6 +127,8 @@ hubState:
         sensitivity:
           unlabelledPolicy: withhold
 submitter:
+  credentialKind: subject
+  subject: subject-test-controller-a
   permissions:
   - api:registrations:create
   namespaceRoots:
@@ -197,6 +206,8 @@ expected:
       versionRange: 1.0.0-test
       state: active
       etag: sha256:7d5ee7460eb39dcadfcd25ff01596f921b433d2cc38390a2d97a5a0bafca323c
+      boundTo: *id001
+      credentialKind: subject
     ignored: []
     elements:
     - element: stateSpans/ExampleOverride
@@ -208,4 +219,4 @@ expected:
       write: typed
     extensions/com.example.negotiation.targets:
       write: typed
-  storedAfter: *id001
+  storedAfter: *id002
