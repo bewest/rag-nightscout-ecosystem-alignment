@@ -313,6 +313,9 @@
        "dualWriteLink": {
         "$ref": "#/$defs/dualWriteLink"
        },
+       "wellKnownRef": {
+        "$ref": "#/$defs/wellKnownRef"
+       },
        "requested": {
         "description": "Where the request is recorded, when it is a different record from the applied effect. null: the request is not published.",
         "oneOf": [
@@ -879,7 +882,7 @@
   },
   "dualWriteLink": {
    "type": "object",
-   "description": "Decision 7 (hub-sync design §3.5; SPEC-REG-DECISIONS). Declares that, when the hub accepts this element but serves older readers no projected view of it in the carrier's shape, the controller writes each record both typed and as its well-known carrier, and how the two are linked: the dotted path of the controller's own record id in the typed record and in the carrier document. Counting and de-duplication follow the link. Without it an accepted element is written typed only. SPEC-REG-INSTANCE scopes the link key by instance and specifies the projected view's mapping.",
+   "description": "Decision 7 (hub-sync design §3.5; SPEC-REG-DECISIONS). Declares that, when the hub accepts this element but serves older readers no projected view of it in the carrier's shape, the controller writes each record both typed and as its well-known carrier, and how the two are linked: the dotted path of the controller's own record id in the typed record and in the carrier document. Counting and de-duplication follow the link. Without it an accepted element is written typed only. The link key is (instance id, the controller's record id) (D19; SPEC-REG-INSTANCE, hub-sync design §3.6): the instance id travels with each write, typed or carrier, so equal record ids from two instances are never linked to each other.",
    "required": [
     "typedIdPath",
     "carrierIdPath"
@@ -899,7 +902,7 @@
   },
   "slotName": {
    "type": "string",
-   "description": "A slot named by this registration; `coexistsWith` refers to slots by these names."
+   "description": "A slot named by this registration; `coexistsWith` refers to slots by these names. Under D19 (SPEC-REG-INSTANCE, hub-sync design §3.6) a slot name with no `/` is also the channel that a `source` or `command-sink` role names, across every product on the tenant, so two registrations that name the same slot contend for its roles. The grammar fixes no shared list of slot names."
   },
   "cadence": {
    "type": "object",
@@ -1308,6 +1311,31 @@
     },
     "evidence": {
      "$ref": "#/$defs/evidence"
+    }
+   }
+  },
+  "wellKnownRef": {
+   "type": "object",
+   "description": "D19 rule 1 (SPEC-REG-INSTANCE; hub-sync design §3.6). This stateSpans kind is exactly a kind of the hub's well-known catalogue: the entry names that kind and version instead of copying it, and carries only `category` and `kind` (both the catalogue kind's), this reference, and the non-meaning members `availability`, `description` and `evidence`; a restated member is rejected `invalid-element`. Its meaning, version, slot and well-known carrier are the catalogue kind's, and the hub gives it native storage and the catalogue's carrier mapping. A reference to a kind the hub's catalogue does not have at that version is rejected `unknown-well-known-kind`, and the controller writes the referenced kind's carrier, which it knows. A catalogue kind can be referenced only when it declares a version; the generated well-known registrations (specs/sync/registrations/) declare none yet.",
+   "required": [
+    "catalogue",
+    "kind",
+    "version"
+   ],
+   "properties": {
+    "catalogue": {
+     "type": "string",
+     "minLength": 1,
+     "description": "The catalogue registration's `id` in the capability document's `wellKnown.kinds[]`."
+    },
+    "kind": {
+     "type": "string",
+     "minLength": 1,
+     "description": "The catalogue kind's `kind`, or its `category` when it declares no kind."
+    },
+    "version": {
+     "$ref": "#/$defs/version",
+     "description": "The catalogue kind's stored version."
     }
    }
   }

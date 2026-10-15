@@ -75,6 +75,153 @@ def etag(registration, state, bound_to=None):
     return f"sha256:{digest}"
 
 
+def definition_id(definition):
+    """D19 rule 1 (SPEC-REG-INSTANCE): a definition is content-addressed, its
+    id `sha256:` and the hex SHA-256 of the RFC 8785 canonical JSON of the
+    definition document as submitted."""
+    return f"sha256:{hashlib.sha256(canonical_json(definition)).hexdigest()}"
+
+
+# ── D19 rule 2: one kind at one version has one meaning ───────────────
+#
+# The members that give a stateSpans kind, an extension and an extension
+# field its meaning. Everything else is not meaning: `description`,
+# `evidence` and a carrier's `writtenWhen` (prose, at any depth below a
+# meaning member), `availability` (a promise level, not a typing),
+# `version`/`versions` (the key, and the plan that serves older versions),
+# metadata such as `source`, and members the grammar does not define (rule 1:
+# a hub does not interpret them, so they cannot carry meaning to it).
+SPAN_MEANING = ("category", "kind", "slot", "exclusiveWithinSlot", "coexistsWith", "overlay",
+                "supersedes", "states", "endReasons", "wire", "dualWriteLink", "requested",
+                "applied", "initiators", "definitions", "acceptsFromHub", "horizon")
+EXTENSION_MEANING = ("carrier", "dualWriteLink", "horizon", "fields")
+FIELD_MEANING = ("name", "type", "typeRef", "unit", "range", "horizon", "sensitivity")
+NOT_MEANING = frozenset({"description", "evidence", "writtenWhen"})
+# Map-valued members whose keys are data (paths), never member names.
+_MEANING_MAPS = frozenset({"vocabularies", "properties"})
+# A stateSpans entry that references a well-known kind carries only these.
+REFERENCE_MEMBERS = frozenset({"category", "kind", "wellKnownRef", "availability",
+                               "description", "evidence"})
+
+
+def _norm(value, is_map=False):
+    """Order carries no meaning: an array of strings compares as a sorted
+    list, an array of objects as a sorted list of their canonical forms."""
+    if isinstance(value, dict):
+        return {k: _norm(v, k in _MEANING_MAPS) for k, v in value.items()
+                if is_map or k not in NOT_MEANING}
+    if isinstance(value, list):
+        items = [_norm(v) for v in value]
+        if all(isinstance(v, str) for v in items):
+            return sorted(items)
+        return sorted(items, key=canonical_json)
+    return value
+
+
+def meaning(kind, node):
+    """The meaning of a stateSpans entry or an extension (already resolved
+    from a well-known reference), as a comparable value."""
+    if kind == "stateSpans":
+        return _norm({k: node[k] for k in SPAN_MEANING if k in node})
+    picked = {k: node[k] for k in EXTENSION_MEANING if k in node and k != "fields"}
+    fields = {}
+    for field in node.get("fields") or []:
+        if isinstance(field, dict) and "name" in field:
+            fields[field["name"]] = {k: field[k] for k in FIELD_MEANING if k in field}
+    picked["fields"] = fields
+    return _norm(picked)
+
+
+def stored_version(node):
+    """The version an entry's meaning is declared at: its stored version, or
+    a referenced catalogue kind's version; None when it declares none (an
+    unversioned kind is one version for this rule)."""
+    if isinstance(node.get("wellKnownRef"), dict):
+        return node["wellKnownRef"].get("version")
+    if isinstance(node.get("versions"), dict):
+        return node["versions"].get("stored")
+    return node.get("version")
+
+
+def _catalogue(caps, well_known):
+    """The hub's well-known catalogue: id → registration."""
+    out = {}
+    for entry in ((caps or {}).get("wellKnown") or {}).get("kinds") or []:
+        reg = (well_known or {}).get(entry.get("href"))
+        if reg and entry.get("id"):
+            out[entry["id"]] = reg
+    return out
+
+
+def resolve_reference(caps, well_known, node):
+    """The catalogue stateSpans entry a `wellKnownRef` names, or None. A
+    catalogue kind is found by its catalogue id and its `kind` (else
+    `category`), and has a version only when it declares one: a reference
+    names that kind's stored version. The generated well-known registrations
+    declare no kind versions, so none of their kinds can be referenced yet."""
+    ref = node.get("wellKnownRef")
+    if not isinstance(ref, dict):
+        return None
+    reg = _catalogue(caps, well_known).get(ref.get("catalogue"))
+    if not reg:
+        return None
+    for span in (reg.get("spec") or {}).get("stateSpans") or []:
+        if (span.get("kind") or span.get("category")) != ref.get("kind"):
+            continue
+        version = stored_version(span)
+        if version is not None and version == ref.get("version"):
+            return span
+    return None
+
+
+def _resolved(caps, well_known, kind, node):
+    """The node whose members give an element its meaning and carrier."""
+    if kind == "stateSpans" and isinstance(node.get("wellKnownRef"), dict):
+        return resolve_reference(caps, well_known, node)
+    return node
+
+
+def product_definitions(hub_state, identity):
+    """Every definition stored for (vendor, product): the definitions added
+    at <product>/definitions/<id> and the product resource's current
+    registration (every definition the hub accepts is also stored
+    content-addressed), keyed by definition id."""
+    out = {}
+    for entry in (hub_state or {}).get("definitions") or []:
+        if (entry["identity"]["vendor"], entry["identity"]["product"]) == identity:
+            out[entry["definitionId"]] = entry["definition"]
+    stored = _find(hub_state, identity)
+    if stored is not None and stored.get("registration") is not None:
+        out.setdefault(definition_id(stored["registration"]), stored["registration"])
+    return out
+
+
+def version_conflicts(caps, hub_state, well_known, identity, definition):
+    """For each stateSpans kind and extension of `definition`: the stored
+    definition of the same product that declares the same element at the
+    same version with a different meaning, if any."""
+    out = {}
+    stored = product_definitions(hub_state, identity)
+    mine = definition_id(definition)
+    for eid, _path, _defining, node, kind in elements(definition):
+        if kind not in ("stateSpans", "extensions"):
+            continue
+        resolved = _resolved(caps, well_known, kind, node)
+        if resolved is None:
+            continue
+        version, wanted = stored_version(node), meaning(kind, resolved)
+        for did, other in sorted(stored.items()):
+            if did == mine:
+                continue
+            for oid, _p, _d, onode, okind in elements(other):
+                if oid != eid or stored_version(onode) != version:
+                    continue
+                oresolved = _resolved(caps, well_known, okind, onode)
+                if oresolved is not None and meaning(okind, oresolved) != wanted:
+                    out.setdefault(eid, did)
+    return out
+
+
 # ── the capability document ───────────────────────────────────────────
 
 def _covers(entry, norm):
@@ -162,7 +309,8 @@ def elements(registration):
     for i, span in enumerate(spec.get("stateSpans") or []):
         name = span.get("kind") or span.get("category")
         path = f"spec.stateSpans.{i}"
-        out.append((f"stateSpans/{name}", path, [f"{path}.category"], span, "stateSpans"))
+        defining = [f"{path}.category"] + ([f"{path}.wellKnownRef"] if "wellKnownRef" in span else [])
+        out.append((f"stateSpans/{name}", path, defining, span, "stateSpans"))
     for ns, ext in (spec.get("extensions") or {}).items():
         path = f"spec.extensions.{ns}"
         defining = [f"{path}.fields"]
@@ -226,20 +374,43 @@ def _declared_namespaces(registration):
     return list(((registration or {}).get("spec") or {}).get("extensions") or {})
 
 
-def _claimed_elsewhere(hub_state, identity, namespace):
-    """First to claim, per tenant (decisions 1 and 2): another stored
-    registration that declares the namespace holds it, whatever its state,
-    until the owner frees it on that registration (decision 5)."""
+def product_namespaces(hub_state, identity):
+    """The namespaces (vendor, product) declares across all its stored
+    definitions (D19 rule 1: namespaces belong to the product)."""
+    found = []
+    for definition in product_definitions(hub_state, identity).values():
+        for ns in _declared_namespaces(definition):
+            if ns not in found:
+                found.append(ns)
+    return found
+
+
+def _identities(hub_state):
+    seen = []
     for stored in (hub_state or {}).get("registrations") or []:
-        if stored.get("registration") is None:
-            continue  # a pre-emptive block declares nothing
-        meta = stored["registration"]["metadata"]
-        if (meta["vendor"], meta["product"]) == identity:
+        ident = (stored["identity"]["vendor"], stored["identity"]["product"])
+        if ident not in seen:
+            seen.append(ident)
+    for entry in (hub_state or {}).get("definitions") or []:
+        ident = (entry["identity"]["vendor"], entry["identity"]["product"])
+        if ident not in seen:
+            seen.append(ident)
+    return seen
+
+
+def _claimed_elsewhere(hub_state, identity, namespace):
+    """First to claim, per tenant (decisions 1 and 2): another product that
+    declares the namespace in any of its stored definitions holds it,
+    whatever its state, until the owner frees it on that product's
+    registration (decision 5)."""
+    for other in _identities(hub_state):
+        if other == identity:
             continue
-        if namespace in (stored.get("freedNamespaces") or []):
+        stored = _find(hub_state, other)
+        if namespace in ((stored or {}).get("freedNamespaces") or []):
             continue
-        if namespace in _declared_namespaces(stored["registration"]):
-            return f"{meta['vendor']}/{meta['product']}"
+        if namespace in product_namespaces(hub_state, other):
+            return f"{other[0]}/{other[1]}"
     return None
 
 
@@ -285,14 +456,50 @@ def _declared_checks(caps, node, path, ignored):
     return reasons
 
 
-def evaluate(caps, hub_state, submitter, registration, grammar, views=None):
+def has_carrier_mapping(caps, well_known, kind, node):
+    """D19 rule 8: a projected view needs a declared mapping — the
+    catalogue's carrier for a referenced well-known kind, the kind's `wire`,
+    or an extension's `carrier`. Typed settings and replay inputs declare
+    none in grammar v1."""
+    if kind == "stateSpans":
+        resolved = _resolved(caps, well_known, kind, node)
+        return bool(resolved and resolved.get("wire"))
+    if kind == "extensions":
+        return bool(node.get("carrier"))
+    return False
+
+
+def _reference_checks(caps, well_known, node, path):
+    """A stateSpans entry with `wellKnownRef` (D19 rule 1) names a kind the
+    hub's catalogue has, at a version that kind declares, and restates none
+    of its meaning: it carries only category, kind, the reference and
+    non-meaning members, and its category and kind are the catalogue's."""
+    target = resolve_reference(caps, well_known, node)
+    if target is None:
+        return [_reason("unknown-well-known-kind", f"{path}.wellKnownRef",
+                        "the hub's catalogue has no such kind at that version")]
+    extra = sorted(set(node) - REFERENCE_MEMBERS)
+    if extra:
+        return [_reason("invalid-element", f"{path}.{extra[0]}",
+                        "a reference does not restate the referenced kind")]
+    if node.get("category") != target.get("category") or \
+            node.get("kind", target.get("kind")) != target.get("kind"):
+        return [_reason("invalid-element", path,
+                        "category and kind must be the referenced kind's")]
+    return []
+
+
+def evaluate(caps, hub_state, submitter, registration, grammar, views=None, well_known=None):
     """The per-element results and registration-level ignored members for a
     registration that passed the registration-level checks. `views`: for
     each element id, whether this hub serves older readers a projected
     carrier view of it (`served`, `not-served`); reported on accepted
-    elements only. How a hub decides that is SPEC-REG-INSTANCE's."""
+    elements only, and `served` only for an element with a declared carrier
+    mapping (D19 rule 8; otherwise `not-served`). `well_known`: the
+    catalogue's registrations by href, for `wellKnownRef`."""
     meta = registration["metadata"]
     identity = (meta["vendor"], meta["product"])
+    conflicts = version_conflicts(caps, hub_state, well_known, identity, registration)
     # Decision 1: a submitter with no stated roots may claim any namespace
     # no other registration on the tenant holds; stated roots (a list, even
     # an empty one) restrict it to them.
@@ -335,11 +542,16 @@ def evaluate(caps, hub_state, submitter, registration, grammar, views=None):
                     reasons.append(_reason("invalid-element", path, errors[0].message))
         elif kind in ("settings", "replayInputs"):
             reasons += _field_checks(caps, node, path)
+        elif kind == "stateSpans" and "wellKnownRef" in node:
+            reasons += _reference_checks(caps, well_known, node, path)
         if not reasons and kind in ("stateSpans", "extensions"):
             try:
                 sync_model.version_plan(node)
             except (ValueError, KeyError, TypeError) as error:
                 reasons.append(_reason("version-plan-invalid", path, str(error)))
+        if not reasons and eid in conflicts:
+            reasons.append(_reason("version-conflict", path,
+                                   f"typed differently at this version by {conflicts[eid]}"))
         pre[eid] = reasons
 
     # Pass 2: what the hub ignores. Members the grammar does not define are
@@ -380,7 +592,10 @@ def evaluate(caps, hub_state, submitter, registration, grammar, views=None):
         else:
             result = {"element": eid, "result": "accepted"}
         if eid in (views or {}):
-            result["carrierView"] = views[eid]
+            view = views[eid]
+            if view == "served" and not has_carrier_mapping(caps, well_known, kind, node):
+                view = "not-served"
+            result["carrierView"] = view
         results.append(result)
     top = [q for q in ignored if not any(q.startswith(p + ".") for p in prefixes)]
     return top, results
@@ -496,15 +711,19 @@ def _restate(stored, state=None, **changes):
 
 
 def _accepted(caps, hub_state, submitter, registration, grammar, stored_after, status, noop,
-              views):
-    top, results = evaluate(caps, hub_state, submitter, registration, grammar, views)
+              views, well_known=None):
+    top, results = evaluate(caps, hub_state, submitter, registration, grammar, views, well_known)
     outcome = "partial" if any(r["result"] == "rejected" for r in results) else "accepted"
     identity = (stored_after["identity"]["vendor"], stored_after["identity"]["product"])
-    return _response(status, outcome, noop=noop, registration=_summary(stored_after, identity),
+    # D19 rule 1: the response names the id the hub computed for the
+    # definition it stored, so a controller can check its own canonical form.
+    return _response(status, outcome, noop=noop, definitionId=definition_id(registration),
+                     registration=_summary(stored_after, identity),
                      ignored=top, elements=results), stored_after
 
 
-def negotiate(caps, hub_state, submitter, registration, request, grammar=None, views=None):
+def negotiate(caps, hub_state, submitter, registration, request, grammar=None, views=None,
+              well_known=None):
     """The response a hub with `caps` and `hub_state` gives `request`, and
     the stored registration afterwards (None when none is stored)."""
     grammar = grammar or _load(GRAMMAR_SCHEMA)
@@ -513,9 +732,9 @@ def negotiate(caps, hub_state, submitter, registration, request, grammar=None, v
     identity = (request["identity"]["vendor"], request["identity"]["product"])
     stored = _find(hub_state, identity)
     if request.get("actor", "controller") == "owner":
-        return _owner(submitter, request, identity, stored)
+        return _owner(submitter, request, identity, stored, hub_state)
     return _controller(caps, hub_state, submitter, registration, request, grammar, views,
-                       identity, stored)
+                       identity, stored, well_known)
 
 
 def _rejecter(stored):
@@ -529,7 +748,7 @@ def _rejecter(stored):
 
 
 def _controller(caps, hub_state, submitter, registration, request, grammar, views,
-                identity, stored):
+                identity, stored, well_known=None):
     action = request["action"]
     pre = request.get("preconditions") or {}
     reject, failed = _rejecter(stored)
@@ -577,6 +796,29 @@ def _controller(caps, hub_state, submitter, registration, request, grammar, view
         return reject(403, "blocked-by-owner")
 
     # 3. Registration-level content checks.
+    refusal = content_refusal(caps, registration, identity, grammar, reject)
+    if refusal is not None:
+        return refusal
+
+    # 4. Elements. A write binds an unbound registration to the writer and
+    # records the writer's credential kind (decisions 3 and 4).
+    if same and stored.get("boundTo") is not None:
+        return _accepted(caps, hub_state, submitter, registration, grammar, stored, 200, True,
+                         views, well_known)
+    # A namespace the owner freed stays freed while another registration
+    # holds it; otherwise this registration claims it again.
+    freed = [ns for ns in (stored or {}).get("freedNamespaces") or []
+             if ns in _declared_namespaces(registration)
+             and _claimed_elsewhere(hub_state, identity, ns)]
+    after = _stored(identity, registration, "active", boundTo=binding_of(submitter),
+                    credentialKind=submitter.get("credentialKind"), freedNamespaces=freed)
+    return _accepted(caps, hub_state, submitter, registration, grammar, after,
+                     201 if not registered else 200, False, views, well_known)
+
+
+def content_refusal(caps, registration, identity, grammar, reject):
+    """Step (3), the registration as a whole; also applied to a definition
+    added at <product>/definitions/<id> (D19). None when it passes."""
     api = registration.get("apiVersion")
     if api not in [v["apiVersion"] for v in caps["grammar"]["versions"]]:
         return reject(422, "unsupported-grammar-major", "apiVersion",
@@ -613,21 +855,7 @@ def _controller(caps, hub_state, submitter, registration, request, grammar, view
     if len(ids) != len(set(ids)):
         return reject(422, "invalid-registration", "spec",
                       "two elements share an id (stateSpans kind, setting or input name)")
-
-    # 4. Elements. A write binds an unbound registration to the writer and
-    # records the writer's credential kind (decisions 3 and 4).
-    if same and stored.get("boundTo") is not None:
-        return _accepted(caps, hub_state, submitter, registration, grammar, stored, 200, True,
-                         views)
-    # A namespace the owner freed stays freed while another registration
-    # holds it; otherwise this registration claims it again.
-    freed = [ns for ns in (stored or {}).get("freedNamespaces") or []
-             if ns in _declared_namespaces(registration)
-             and _claimed_elsewhere(hub_state, identity, ns)]
-    after = _stored(identity, registration, "active", boundTo=binding_of(submitter),
-                    credentialKind=submitter.get("credentialKind"), freedNamespaces=freed)
-    return _accepted(caps, hub_state, submitter, registration, grammar, after,
-                     201 if not registered else 200, False, views)
+    return None
 
 
 def _retire(stored, identity):
@@ -639,7 +867,7 @@ def _retire(stored, identity):
                      elements=[]), after
 
 
-def _owner(submitter, request, identity, stored):
+def _owner(submitter, request, identity, stored, hub_state=None):
     """The tenant owner's actions (decision 5): retire, block, unblock,
     release, transfer, and free a retired registration's namespaces; never
     edit content. Each carries exactly one precondition."""
@@ -703,7 +931,8 @@ def _owner(submitter, request, identity, stored):
     # free-namespaces
     if stored["state"] != "retired":
         return reject(409, "not-retired", None, "only a retired registration's namespaces are freed")
-    declared = _declared_namespaces(stored["registration"])
+    # Namespaces belong to the product (D19 rule 1): every stored definition's.
+    declared = product_namespaces(hub_state or {"registrations": [stored]}, identity)
     if sorted(stored.get("freedNamespaces") or []) == sorted(declared):
         return applied(200, stored, True)
     return applied(200, _restate(stored, freedNamespaces=declared), False)
@@ -726,7 +955,11 @@ ACCEPTED = ("accepted", "accepted-with-ignored-members")
 CARRIER_VIEWS = ("served", "not-served")
 
 
-def _not_accepted(kind, node):
+def _not_accepted(kind, node, caps=None, well_known=None):
+    """The element's well-known carrier. A kind that references a well-known
+    kind (D19 rule 1) writes the catalogue kind's carrier."""
+    if kind == "stateSpans" and "wellKnownRef" in node:
+        node = resolve_reference(caps, well_known, node) or {}
     if kind == "stateSpans":
         wire = node.get("wire")
         return {"write": "carrier", "carrier": wire} if wire else {"write": "none"}
@@ -736,7 +969,7 @@ def _not_accepted(kind, node):
     return {"write": "untyped"}
 
 
-def fallback(registration, response):
+def fallback(registration, response, caps=None, well_known=None):
     """The controller's write plan. An element is written through the typed
     API only when the response to *this* registration accepted it; anything
     else — rejected, an unknown result, no response (including a submit
@@ -757,9 +990,9 @@ def fallback(registration, response):
         result = results.get(eid) or {}
         view = result.get("carrierView", "not-served")
         if result.get("result") not in ACCEPTED or view not in CARRIER_VIEWS:
-            plan[eid] = _not_accepted(kind, node)
+            plan[eid] = _not_accepted(kind, node, caps, well_known)
             continue
-        carrier = _not_accepted(kind, node)
+        carrier = _not_accepted(kind, node, caps, well_known)
         if view == "not-served" and node.get("dualWriteLink") and carrier["write"] == "carrier":
             plan[eid] = {"write": "typed-and-carrier", "carrier": carrier["carrier"],
                          "link": node["dualWriteLink"]}
@@ -785,7 +1018,7 @@ def is_load_refusal(status):
     return status == 429 or 500 <= status <= 599
 
 
-def typed_write_refused(registration, plan, refusal):
+def typed_write_refused(registration, plan, refusal, caps=None, well_known=None):
     """What the controller does when one typed write for `refusal.element`
     is refused, and its write plan afterwards."""
     eid = refusal["element"]
@@ -802,7 +1035,7 @@ def typed_write_refused(registration, plan, refusal):
     else:
         outcome = {"action": "carrier-this-record", "recheck": False}
         node, kind = next((e[3], e[4]) for e in elements(registration) if e[0] == eid)
-        after[eid] = _not_accepted(kind, node)
+        after[eid] = _not_accepted(kind, node, caps, well_known)
     outcome["fallback"] = after
     return outcome
 
@@ -873,11 +1106,12 @@ def run_case(case, grammar=None):
     if request is not None:
         response, stored_after = negotiate(caps, case.get("hubState"), case.get("submitter") or {},
                                            registration, request, grammar,
-                                           case.get("carrierViews"))
+                                           case.get("carrierViews"),
+                                           case.get("wellKnownRegistrations"))
     result = {
         "controllerWouldSubmit": should_submit(caps, registration),
         "response": response,
-        "fallback": fallback(registration, response),
+        "fallback": fallback(registration, response, caps, case.get("wellKnownRegistrations")),
     }
     if "typedWrite" in case:
         result["typedWrite"] = typed_write_refused(registration, result["fallback"],

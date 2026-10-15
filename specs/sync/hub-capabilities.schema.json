@@ -242,6 +242,90 @@
      }
     }
    }
+  },
+  "instances": {
+   "type": "object",
+   "description": "D19 (execution plan §2.6.2; SPEC-REG-INSTANCE; hub-sync design §3.6). Present: the hub stores definitions at `<submit.href>/<vendor>/<product>/definitions/<definitionId>` and instances at `<submit.href>/<vendor>/<product>/instances/<instanceId>`, and requires an instance id on every typed write (an instance-less typed write is refused `instance-required`, a definite refusal, so that record goes as its carrier). Writes with no instance — older controllers and the well-known tier — are attributed to an implicit unregistered instance of the product and never refused for exclusivity. Absent: the hub takes neither resource and typed writes need no instance (SPEC-REG-NEGOTIATE as it stands). A controller reads this at launch and after a controller release, never on a lease renewal (decision 8).",
+   "required": [
+    "leaseSeconds",
+    "roles",
+    "channels"
+   ],
+   "properties": {
+    "leaseSeconds": {
+     "type": "integer",
+     "minimum": 60,
+     "description": "Rule 4. How long an instance's lease runs from each create or renewal; `leaseExpiresAt` in each response is that time. An instance that does not renew lapses: it holds no roles, and a role it held is granted to a claimant on the claimant's next renewal, never automatically."
+    },
+    "instanceId": {
+     "enum": [
+      "uuid-v4"
+     ],
+     "description": "The instance id form the hub accepts: a random lowercase UUID version 4 (122 random bits). Absent means `uuid-v4`."
+    },
+    "roles": {
+     "type": "array",
+     "minItems": 1,
+     "uniqueItems": true,
+     "description": "Rule 5. The roles the hub grants: the shared `source` and `command-sink`, and any `{value: other, controllerTerm}` it knows. A role not listed is refused `unsupported-role`. Every listed role is exclusive among live `device`-provenance instances (rule 6).",
+     "items": {
+      "anyOf": [
+       {
+        "enum": [
+         "source",
+         "command-sink"
+        ]
+       },
+       {
+        "type": "object",
+        "required": [
+         "value",
+         "controllerTerm"
+        ],
+        "properties": {
+         "value": {
+          "const": "other"
+         },
+         "controllerTerm": {
+          "type": "string",
+          "minLength": 1
+         }
+        }
+       }
+      ]
+     }
+    },
+    "channels": {
+     "type": "array",
+     "minItems": 1,
+     "uniqueItems": true,
+     "description": "Rule 5. The channel forms the hub derives from a definition: `slot`, the slot name a stateSpans kind declares (shared across products on the tenant); `element`, `<vendor>/<product>/<element id>` for every other element. Closed: a form outside the list is invalid.",
+     "items": {
+      "enum": [
+       "slot",
+       "element"
+      ]
+     }
+    },
+    "labels": {
+     "type": "object",
+     "description": "Rule 7. Bounds on an instance's labels; a label over them refuses the instance `invalid-label`. Absent: no stated bound.",
+     "properties": {
+      "maxLabels": {
+       "type": "integer",
+       "minimum": 0
+      },
+      "maxKeyLength": {
+       "type": "integer",
+       "minimum": 1
+      },
+      "maxValueLength": {
+       "type": "integer",
+       "minimum": 0
+      }
+     }
+    }
+   }
   }
  }
 }

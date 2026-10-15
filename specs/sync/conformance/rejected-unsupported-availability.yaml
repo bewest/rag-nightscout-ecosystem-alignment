@@ -138,6 +138,7 @@ expected:
     status: 201
     outcome: partial
     noop: false
+    definitionId: sha256:19d78ed7cfe099129a60fbe376ed18247f61289c1395c6eb742ef915e97ab5c6
     registration:
       vendor: Example
       product: NegotiationController

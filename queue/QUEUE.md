@@ -32,16 +32,16 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 206 |
-| runnable gates | 261 |
-| explicit `no-gate:` markers | 257 |
+| runnable gates | 262 |
+| explicit `no-gate:` markers | 256 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 257 of the 518 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 256 of the 518 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 60 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-TRIO-INTENT, SPEC-REG-INSTANCE, HUB-REG-CRM, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
+| `not-started` | 59 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-TRIO-INTENT, HUB-REG-CRM, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
 | `in-progress` | 3 | BFQ-46, BFQ-ENV, OID-LAB |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
@@ -49,7 +49,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `in-flight-upstream` | 1 | BFQ-09 |
 | `merged-upstream` | 87 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 6 | RT-0, T30-RESEARCH, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-164 |
-| `done` | 10 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, DOC-VIEWS, DOC-LINKS, RT-SOAK, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, LAB-HUB-ACTIVE-STATE |
+| `done` | 11 | P0-TAG, T30-SCHEMA-CRED, T30-ORY-PROOF, DOC-VIEWS, DOC-LINKS, RT-SOAK, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, LAB-HUB-ACTIVE-STATE |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 3 | BFQ-71, BFQ-41, BFQ-141 |
 | `answered` | 2 | RT-D3, RT-PROPAGATION |
@@ -6961,7 +6961,7 @@ reproduced ones.
 | `SCHEMA-REG-EXT` | Registration grammar: must-ignore, typed extensions, open vocabularies, per-kind versions, horizons (D18 addendum rules 1-5) | `done` | `main` | n/a | 2 run |
 | `SPEC-REG-NEGOTIATE` | Registration negotiation: the hub capability document, submit and fallback contract (D18 addendum rule 6) | `done` | `main` | n/a | 1 run |
 | `SPEC-REG-DECISIONS` | Registration negotiation: apply the 2026-10-14 decisions to the contract and conformance cases | `done` | `main` | n/a | 1 run |
-| `SPEC-REG-INSTANCE` | Registration definitions and instances: content-addressed definitions, leased instances, channel roles with provenance, labels (D19) | `not-started` | `main` | n/a | 0 run + 1 no-gate |
+| `SPEC-REG-INSTANCE` | Registration definitions and instances: content-addressed definitions, leased instances, channel roles with provenance, labels (D19) | `done` | `main` | n/a | 1 run |
 | `HUB-REG-CRM` | cgm-remote-monitor: accept registrations and derive typed storage, validation and query from them | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `HUB-REG-NOCTURNE` | Nocturne: propose the registration grammar and negotiation as a shared contract, with the hub active-state evidence | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `PROPOSAL-REG-CONTROLLERS` | Open-source AID controllers: propose registration, instances and negotiation, with pre-filled declarations | `not-started` | `main` | n/a | 0 run + 1 no-gate |
@@ -7098,7 +7098,7 @@ reproduced ones.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `done` |
 | repo | `rag-nightscout-ecosystem-alignment` |
 | branch | `main` |
 | base | `main@fbff1894` |
@@ -7107,7 +7107,7 @@ reproduced ones.
 | review | maintainer |
 | blocks on | `SPEC-REG-DECISIONS` |
 
-**Blast radius.** The grammar (specs/sync/controller-state-model.schema.json) split into a definition and a new instance schema, the submit contract and capability document, conformance cases, tools/nsschema and the hub-sync design. Ships nothing.
+**Blast radius.** New specs/sync/controller-instance.schema.json; additive changes to the grammar (stateSpans[].wellKnownRef), the capability document (instances) and the submit schema (reason codes, definitionId on product responses, the instance and definition shapes and case); 86 new conformance cases under specs/sync/conformance/instances/, and definitionId added to the 26 accepted or partial §3.5 cases; tools/nsschema/negotiate.py extended, tools/nsschema/instances.py and its tests new; the hub-sync design §3.6. Ships nothing.
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
@@ -7115,15 +7115,18 @@ reproduced ones.
 
 **Gates.**
 
-- **NO GATE** &mdash; Not started. The gate will be a test file over new conformance cases: a definition id reproduced from canonical JSON; two definitions under one product coexisting; version-conflict for one kind and version typed two ways, with a differing-version control; a well-known-identical kind referenced, not copied; an instance lease lapsing; role-held for a second device-provenance source, with a simulated claimant as the control; handoff by release, lapse and owner transfer; one destination per command channel; labels typed as strings under reverse-DNS keys; the read-selection order; the projected carrier view labelled and carrying the decomposed entities' ids; a definition kept while referenced. Each with a passing control and a weakening shown to turn it red.
+- `[unit]` `python -m pytest -q tools/nsschema/test_registration_instances.py`
+  - RED on 2026-10-15 before the item (the test file and the cases did not exist). GREEN on 2026-10-15: 545 tests over 86 conformance cases in specs/sync/conformance/instances/: a definition id reproduced from canonical JSON; two definitions under one product coexisting with the product etag unchanged; version-conflict for a kind and for an extension typed two ways at one version, with the retyping at a new version and a description-only change as controls, on definition PUTs and on product updates; a well-known kind referenced, an unknown reference, a restating reference, an identical copy agreeing and a differing copy conflicting; leases set, renewed and lapsing; role-held for a second device source with a simulated claimant as the control; overlaps on the owner's listing; handoff by release, DELETE, lapse and owner transfer, and no auto-assignment after a lapse; one command destination, never a simulated sink; labels as strings under reverse-DNS keys with the dev.nightscout/ well-known keys; the read-selection order (capability limits, owner pin, live device source, newest stored, label selector); the projected view labelled, read-only and carrying the typed id, and served only with a declared mapping; retention while referenced; the dual-write link scoped by instance; instance-required, and the four compatibility cells. Every refusal names a passing control. In the same run test_registration_negotiation.py stays 460 passed: the 55 §3.5 cases keep their meaning, the 26 accepted or partial ones gaining only definitionId (measured: the reference reproduces every other member). tools/nsschema in the item's worktree: 1369 passed, 1 failed and 15 skipped, the same failure and skips as before the item (they need the gitignored externals/ checkout; baseline 824 passed, 1 failed, 15 skipped). sync_model --check green, the three generated registrations byte-identical. Non-vacuity: 66 weakenings, one at a time, each turned the matching test red and was reverted. In negotiate.py: the definition id over non-canonical JSON (156 red; some of them by KeyError, the hash test by assertion); version conflicts not reported; version ignored in the comparison; nested prose compared; a span's description compared (needs both the member list and the prose filter weakened: weakening the list alone left everything green, because the prose filter also drops it); availability compared; wire dropped from the meaning members; array order compared; references unchecked; a reference restating the kind; namespace claims from current registrations only; a carrier view served without a mapping; product responses without definitionId. In instances.py: the replaced registration not kept as a definition; the definition PUT's hash, binding, no-op and block unchecked; the instance id form unchecked; an instance's definition looked up across products; the instance binding unchecked; provenance open; unlisted roles granted; channels not derived from the definition; command-sink on any channel; exclusivity off; simulated roles contending; a lapsed instance still holding (the one-holder guard also raises); a lapsed role auto-assigned to a live claimant; overlaps not listed; the instance etag covering the lease; the instance etag ignoring granted roles; the transfer's precondition, claim check and listener unchecked; a command routed to a simulated sink; label key form, reserved prefix, string values (reference and schema together) and the other reading unchecked; typed writes without an instance or a source role accepted; exclusivity blocking a carrier write; the dual-write link not scoped by instance; the observed alias not withheld; the owner pin, the capability limits, the live device step and the label selector ignored in selection; a pin to an unstored version; the projection marker removed; the projected identifier not the typed id; projected documents writable; retention ignoring records or live instances; a refused source role keeping the typed plan. In the schemas: provenance open; provenance not required (with a missing one read as device); role names open to any string; the label key pattern loosened; a hardware identifier added to the instance; a granted role with any provenance; the new reason codes removed; the lease without a minimum; channel forms open; the grammar without wellKnownRef (strict view). Four weakenings that first went red by an exception rather than an assertion were rewritten so the reference completes and the assertion fails.
 
 **Evidence.**
 
 - `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 - `docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md`
 - `docs/30-design/tenancy/nightscout-control-plane-reconciliation-2026-09-11.md`
+- `specs/sync/controller-instance.schema.json`
+- `specs/sync/registration-submit.schema.json`
 
-**Notes.** D19 (maintainer, 2026-10-14), execution plan §2.6.2. Build on the upstream RFC's ControllerKindDefinition / ControllerInstanceRegistration split (cgm- remote-monitor docs/proposals, read at official b5ddd662) with the reconciliation §3.3 correction: instance identity is opaque, never devicestatus.device, which is recorded as an observed alias. The instance carries no hardware identifiers. Prior art for rule 8: Nocturne's V4ToLegacyProjectionService (read at 42275c812). Set the well-known nightscout.dev/ label keys and values, and the lease length field in the capability document.
+**Notes.** D19 (maintainer, 2026-10-14), execution plan §2.6.2. Build on the upstream RFC's ControllerKindDefinition / ControllerInstanceRegistration split (cgm- remote-monitor docs/proposals, read at official b5ddd662) with the reconciliation §3.3 correction: instance identity is opaque, never devicestatus.device, which is recorded as an observed alias. The instance carries no hardware identifiers. Prior art for rule 8: Nocturne's V4ToLegacyProjectionService (read at 42275c812). Set the well-known nightscout.dev/ label keys and values (corrected 2026-10-15: reverse-DNS, `dev.nightscout/`), and the lease length field in the capability document. Done 2026-10-15; hub-sync design §3.6. Three resources under one product: the §3.5 product resource unchanged (its accepted or partial responses also name the definitionId), definitions added immutably at <product>/definitions/<definitionId> by the product's binding (If-None-Match: * only; the body's RFC 8785 hash must be the path id, definition-id-mismatch; an identical retry is a no-op; the product's etag never moves), and instances at <product>/instances/<instanceId>. Namespaces belong to the product across all its definitions. version-conflict compares, within a product, an element's stored version and its meaning; the meaning members are listed in §3.6 (availability, description, evidence and prose are not meaning; sensitivity is). A stateSpans entry may name a versioned catalogue kind with wellKnownRef (unknown-well-known-kind otherwise); the generated registrations declare no kind versions, so their kinds cannot be referenced yet. An instance id is a random lowercase UUID v4 (invalid-instance-id otherwise); the body names a stored definition of the product, roles {channel, role, provenance} and string labels; the lease is the capability document's instances.leaseSeconds; the instance is bound to its creating subject; its etag covers the body, binding and granted roles but not the lease. A channel is a declared slot name (shared across products: the grammar's slot names are free strings, override, preMeal, loopMode, temporaryTarget, profileSwitch, runningMode and scene in the generated registrations) or <vendor>/<product>/<element id>. Among live device instances each (channel, role) has one holder: role-held for a second claimant, which writes its carrier; overlaps on the owner's listing; handoff by drop, DELETE, lapse or the owner's transfer-role, never automatic; a command goes to the device command-sink holder or is refused no-command- destination. Labels: dev.nightscout/purpose, build and migration-group. Read selection: capability limits, owner pin (pin-version/unpin-version, their own etag), newest live device source version, newest stored; a label selector uses matching instances only. Projected view: served only with a declared mapping, marked projectedFrom, read-only (projected-read-only), identifier and _id the typed id verbatim (Nocturne sets the projected Id to the V4 record's Id, read- derived). Retention: kept while a record, a live instance or the product's current registration references it. A hub advertising instances refuses an instance-less typed write instance-required; writes with no instance go to the product's unregistered instance and carrier writes are never refused for exclusivity. Choices made beyond the settled points are listed in §3.6 for the maintainer to confirm. Fixed in passing: the submit schema's etag description still excluded the binding after the 2026-10-15 amendment, and §3.5's file table said 53 cases.
 
 ### `HUB-REG-CRM` &mdash; cgm-remote-monitor: accept registrations and derive typed storage, validation and query from them
 
@@ -7146,7 +7149,7 @@ reproduced ones.
 
 **Gates.**
 
-- **NO GATE** &mdash; Not started; blocked on the grammar and the negotiation contract. The behaviour gate will be the SPEC-REG-NEGOTIATE conformance fixtures run against a booted server, plus a control showing an unregistered controller's writes are byte-identical to before.
+- **NO GATE** &mdash; Not started. The grammar, the negotiation contract and D19 are specified (SPEC-REG-DECISIONS and SPEC-REG-INSTANCE, 2026-10-15). The behaviour gate will be the conformance fixtures of SPEC-REG-NEGOTIATE and SPEC-REG-INSTANCE (specs/sync/conformance/ and its instances/) run against a booted server, plus a control showing an unregistered controller's writes are byte-identical to before.
 
 **Evidence.**
 
@@ -7177,7 +7180,7 @@ reproduced ones.
 
 **Gates.**
 
-- **NO GATE** &mdash; Not started; blocked on the amended contract and D19. Done when the maintainer has sent the packet; that cannot be checked from here.
+- **NO GATE** &mdash; Not started. The amended contract and D19 are specified (SPEC-REG-DECISIONS and SPEC-REG-INSTANCE, 2026-10-15). Done when the maintainer has sent the packet; that cannot be checked from here.
 
 **Evidence.**
 
@@ -7209,7 +7212,7 @@ reproduced ones.
 
 **Gates.**
 
-- **NO GATE** &mdash; Not started; blocked on the amended contract and D19. Done when the maintainer has sent the packet; that cannot be checked from here.
+- **NO GATE** &mdash; Not started. The amended contract and D19 are specified (SPEC-REG-DECISIONS and SPEC-REG-INSTANCE, 2026-10-15). Done when the maintainer has sent the packet; that cannot be checked from here.
 
 **Evidence.**
 

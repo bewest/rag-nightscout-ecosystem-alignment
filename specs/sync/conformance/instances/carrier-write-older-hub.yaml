@@ -1,0 +1,36 @@
+# SYNTHETIC CONFORMANCE CASE. Describes no real controller, product, device or person.
+# Contract: docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md §3.6.
+# Schema: specs/sync/registration-submit.schema.json#/$defs/instanceCase.
+# Checked by tools/nsschema/test_registration_instances.py; `detail` strings are
+# not compared.
+id: carrier-write-older-hub
+title: An older hub takes today's documents
+description: 'The older-controller/older-hub cell: no capability document; the controller registers no
+  instance and writes as today.'
+cell: older-controller/older-hub
+now: '2026-10-15T12:00:00Z'
+capabilities: null
+hubState: {}
+submitter:
+  credentialKind: subject
+  subject: subject-test-controller-a
+  token: token-test-a-1
+  permissions:
+  - api:registrations:create
+  - api:registrations:delete
+request:
+  action: write
+  write:
+    as: carrier
+    collection: treatments
+body: null
+expected:
+  controllerWouldRegister: false
+  response:
+    apiVersion: nightscout.dev/sync/v1
+    kind: InstanceResponse
+    status: 200
+    outcome: written
+    write:
+      accepted: true
+      as: carrier

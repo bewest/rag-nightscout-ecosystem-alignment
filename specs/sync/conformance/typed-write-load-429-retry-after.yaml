@@ -141,6 +141,7 @@ expected:
     status: 201
     outcome: accepted
     noop: false
+    definitionId: sha256:a72ab7f1cf322ebd8b226ce78a030d86865a1c1b8c5b647e670c9ac17b0f064d
     registration:
       vendor: Example
       product: NegotiationController
