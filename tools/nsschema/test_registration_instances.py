@@ -605,6 +605,16 @@ def test_the_owner_transfer_is_preconditioned_and_on_the_admin_listener():
     assert _response("instance-renew-after-transfer-stale")["status"] == 412
     assert _role_results("instance-renew-after-transfer")[("override", '"command-sink"')] == \
         ("refused", ["role-held"])
+    # A role moves only to a live instance: the same transfer with the to
+    # instance's lease lapsed is refused, against the live control above.
+    case = copy.deepcopy(CASES["owner-transfer-role"])
+    target = instances.find_instance(case["hubState"], case["request"]["transferRole"]["to"])
+    assert instances.live(target, case["now"])
+    target["leaseExpiresAt"] = "2026-10-15T11:59:59Z"
+    assert not instances.live(target, case["now"])
+    response = instances.run_case(case, GRAMMAR)["response"]
+    assert (response["status"], _codes(response)) == (409, ["not-live"])
+    assert _response("owner-transfer-role")["status"] == 200
 
 
 def test_a_command_channel_has_one_destination():
