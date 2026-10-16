@@ -7593,6 +7593,8 @@
       
         
       
+        
+      
     
     
     
@@ -7648,6 +7650,8 @@
       
         
           
+        
+      
         
       
         
@@ -8041,6 +8045,8 @@
       
         
           
+        
+      
         
       
         
@@ -8548,7 +8554,21 @@
 
 
 <h1 id="trio-ios-app-_id-field-technical-deep-dive">Trio iOS App: <code>_id</code> Field Technical Deep Dive<a class="headerlink" href="#trio-ios-app-_id-field-technical-deep-dive" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-03-18 at <code>79ee9ee0</code>.</em></p>
+<p><em>Living document, last changed 2026-10-16 at <code>dd02d8ed</code>.</em></p>
+<blockquote>
+<p><strong>Correction (2026-10-16, <code>SPEC-REG-AMEND</code>; source read at Trio <code>e41c9db37</code>, corpus measured
+with <code>make schema-quirks</code>).</strong> The statement that Trio's <code>id</code> maps to <code>_id</code> holds for the carbs
+and temporary-target models, not for <code>NightscoutTreatment</code>: <code>CarbsEntry.swift:29</code> and
+<code>TempTarget.swift:50</code> encode <code>case id = "_id"</code>, while <code>NightscoutTreatment.swift:62</code> encodes
+<code>case id</code> with no key, so a treatment built as <code>NightscoutTreatment</code> is sent with its UUID in the
+member <code>id</code>, not <code>_id</code>. cgm-remote-monitor does not read <code>id</code>: it matches such a treatment by
+<code>created_at</code> + <code>eventType</code> (write contract <code>treatment-fallback-key</code>; <code>lib/server/treatments.js:383-405</code>
+at <code>crm-write</code> <code>239f8c25</code>). Measured over the 2026-04-01 and 2026-04-26 snapshots: 55,939 stored
+treatments on one site carry a UUID <code>id</code>, each with <code>enteredBy: Trio</code>, a server-assigned 24-hex
+<code>_id</code> and no <code>identifier</code> (registry entry <code>QUIRK-TREATMENTS-007</code>). At the same commit
+<code>BloodGlucose</code>'s coding keys hold both <code>_id</code> (<code>legacyId</code>) and <code>id</code> (<code>BloodGlucose.swift:60-62</code>);
+the glucose statements were not re-checked. The text below is kept as written.</p>
+</blockquote>
 <h2 id="architecture-overview">Architecture Overview<a class="headerlink" href="#architecture-overview" title="Permanent link">&para;</a></h2>
 <p>Trio's <code>_id</code> field implementation is part of a three-tier identification system:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>┌─────────────────────────────────────────────────────┐
@@ -8794,6 +8814,9 @@
 <a id="__codelineno-5-42" name="__codelineno-5-42" href="#__codelineno-5-42"></a><span class="p">}</span>
 </code></pre></div></p>
 <p><strong>Key Points</strong>:
+- <em>Corrected 2026-10-16:</em> the comment <code>// ← Maps to "_id" in JSON</code> above is wrong for this model:
+  <code>case id</code> has no explicit key, so <code>id</code> is encoded as <code>id</code> (<code>NightscoutTreatment.swift:62</code> at
+  <code>e41c9db37</code>); see the note at the top
 - <code>id</code> field is <code>String?</code> (not UUID)
 - Equality based on <code>createdAt</code> timestamp
 - Hashing also uses timestamp

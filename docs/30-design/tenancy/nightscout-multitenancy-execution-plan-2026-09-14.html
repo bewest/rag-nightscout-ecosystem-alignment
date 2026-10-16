@@ -4377,6 +4377,8 @@
       
         
       
+        
+      
     
     
     
@@ -4432,6 +4434,8 @@
       
         
           
+        
+      
         
       
         
@@ -4825,6 +4829,8 @@
       
         
           
+        
+      
         
       
         
@@ -5416,14 +5422,14 @@
 
 
 <h1 id="multitenancy-execution-plan-decisions-tasks-and-the-context-each-one-needs">Multitenancy execution plan: decisions, tasks, and the context each one needs<a class="headerlink" href="#multitenancy-execution-plan-decisions-tasks-and-the-context-each-one-needs" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-16 at <code>66403e0f</code>.</em></p>
+<p><em>Living document, last changed 2026-10-16 at <code>37816855</code>.</em></p>
 <p><em>Contributor- and maintainer-facing.</em></p>
 <p><strong>Status: living document — the decision record.</strong> Decisions D1–D20 are the maintainer's
 (2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12, D19 on 2026-10-14, D20 on 2026-10-16) and are all <strong>adopted</strong>, except <strong>D17 row 2</strong>
 (Ory Kratos as one cohort-wide human-identity pool), which since 2026-10-12 is <strong>adopted in principle,
 gated</strong> on the edge's production conditions and the compliance question (<code>T30-ORY-PROOF</code> held; cookie scope E chosen). Each
 decision carries the evidence that settled it. Task definitions follow in §6. <strong>Item state lives
-in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/66403e0f60af5d31fbf774106b0399dbcaa1244f/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
+in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/d9167f59429bf9f6b2ad41d941b2954422bb95ea/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
 <a href="../../../queue/QUEUE.html"><code>queue/QUEUE.md</code></a>, measured by <code>make queue-status</code>); defect facts live
 in the <a href="../remedial/nightscout-backfix-register.html">backfix register</a>. Measured facts below name
 their date and commit.</p>
@@ -6150,7 +6156,9 @@ without duplicating. Those are two jobs. Today's controllers, read-derived from 
 <a href="../../backlogs/uuid-identifier-lookup.html">UUID identifier backlog</a>, not re-checked against
 source: Loop sends no <code>_id</code> and caches the ObjectId the server returns, so a lost cache
 duplicates on re-send; Trio sends a UUID it generated in <code>_id</code>, which <code>UUID_HANDLING</code> moves to
-<code>identifier</code>; AAPS keeps the server's <code>_id</code> as its <code>nightscoutId</code> and reads <code>_id</code> with
+<code>identifier</code>; <em>(corrected 2026-10-16: Trio does so for carbs and temporary targets; its general treatment
+model sends the UUID as <code>id</code>, and Loop sends a UUID <code>_id</code> for overrides — read at Trio <code>e41c9db37</code> and
+LoopWorkspace <code>f8412858</code>; QUIRK-TREATMENTS-006 and -007)</em> AAPS keeps the server's <code>_id</code> as its <code>nightscoutId</code> and reads <code>_id</code> with
 <code>identifier</code> as a fallback.</p>
 <p><strong>Rules.</strong></p>
 <table>
@@ -6183,7 +6191,7 @@ duplicates on re-send; Trio sends a UUID it generated in <code>_id</code>, which
 </tr>
 <tr>
 <td>6</td>
-<td><strong><code>_id</code> is an ObjectId in single-tenant legacy mode.</strong> A hub declares its legacy id form in the capability document, <code>objectId</code> or <code>opaque</code>. cgm-remote-monitor in single-tenant mode declares <code>objectId</code>.</td>
+<td><strong><code>_id</code> is an ObjectId in single-tenant legacy mode.</strong> A hub declares its legacy id form in the capability document, <code>objectId</code> or <code>opaque</code>. cgm-remote-monitor in single-tenant mode declares <code>objectId</code>. <em>(amended 2026-10-16, walk-through rows 1 and 2: every hub's legacy surface serves 24-hex <code>_id</code> values the hub assigns, on either store; nothing is declared and there is no <code>opaque</code> form)</em></td>
 </tr>
 <tr>
 <td>7</td>
@@ -6191,7 +6199,7 @@ duplicates on re-send; Trio sends a UUID it generated in <code>_id</code>, which
 </tr>
 <tr>
 <td>8</td>
-<td><strong>Projected records follow rule 5.</strong> On an <code>objectId</code> hub, each projected document (D19 rule 8) gets an ObjectId the hub assigns when the typed record is written and stores with it, so it is the same on every read; its <code>identifier</code> is the typed id. An <code>opaque</code> hub may use the typed id for both.</td>
+<td><strong>Projected records follow rule 5.</strong> On an <code>objectId</code> hub, each projected document (D19 rule 8) gets an ObjectId the hub assigns when the typed record is written and stores with it, so it is the same on every read; its <code>identifier</code> is the typed id. An <code>opaque</code> hub may use the typed id for both. <em>(that sentence withdrawn 2026-10-16, walk-through row 2)</em></td>
 </tr>
 </tbody>
 </table>
@@ -6209,7 +6217,8 @@ the grammar's <code>sameAs</code>, the capability document's <code>legacyIdForm<
 <code>wellKnown.mappings</code>, the write reply's <code>ids</code>, and 29 cases under <code>specs/sync/conformance/quirks/</code>,
 checked by <code>tools/nsschema/test_registration_quirks.py</code>. Rules 1–8 are specified as written. Rule
 6's <code>objectId</code> declaration is scoped to single-tenant mode on MongoDB; single-tenant on PostgreSQL
-is open (<code>SPEC-REG-MODES</code>). Rule 8 changed the instance case <code>project-served</code>. "Recent" in rule 4
+is open (<code>SPEC-REG-MODES</code>) <em>(no longer open: decided 2026-10-16 in the walk-through below, rows 1
+and 2 — the shape is 24-hex on either store and the declaration is removed)</em>. Rule 8 changed the instance case <code>project-served</code>. "Recent" in rule 4
 is 365 days before the newest snapshot. The shared slot list ships <code>override</code>, <code>loopMode</code> and
 <code>temporaryTarget</code>, the names already used identically; the candidates are in §3.7. Two statements
 of the "Why <code>_id</code>" paragraph differ from source read for this item: Loop sends a UUID <code>_id</code> for
@@ -6289,6 +6298,16 @@ of the compatibility backlog; <code>SPEC-REG-AMEND</code> applies them to the co
 </tr>
 </tbody>
 </table>
+<p><em>(2026-10-16: <code>SPEC-REG-AMEND</code> is done — rows 1–9 applied to the
+<a href="../platform/nightscout-hub-sync-architecture-2026-09-11.html#37-version-scoped-quirks-and-the-two-ids">hub-sync design §3.5–§3.7</a>,
+the schemas, the reference and the cases: <code>legacyIdForm</code> and the two <code>opaque</code> cases removed; a
+slot shared only through the list or <code>sameAs</code>, with <code>slotNameObservations</code> on the owner's
+listing and two new cases; QUIRK-TREATMENTS-007 for Trio's <code>id</code>, re-measured at 55,939
+treatments on one site, and the Trio client-id analyses corrected; command-sink roles refused
+<code>not-registration-owner</code> without the binding or a transfer, with three new cases; the delivery
+deadline and its case removed; <code>bindingEvent</code> on the stored registration and <code>registrations</code> on
+the owner's listing, with one new case. The choices made beyond the rows are listed in the queue
+item.)</em></p>
 <h3 id="27-d12--what-each-repository-is-for">2.7 D12 — what each repository is for<a class="headerlink" href="#27-d12--what-each-repository-is-for" title="Permanent link">&para;</a></h3>
 <table>
 <thead>

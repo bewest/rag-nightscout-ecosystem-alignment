@@ -7432,6 +7432,8 @@
       
         
       
+        
+      
     
     
     
@@ -7487,6 +7489,8 @@
       
         
           
+        
+      
         
       
         
@@ -7890,6 +7894,8 @@
       
         
       
+        
+      
     
     
     
@@ -8226,7 +8232,21 @@
 
 
 <h1 id="trio-ios-app-_id-field-quick-reference">Trio iOS App: <code>_id</code> Field Quick Reference<a class="headerlink" href="#trio-ios-app-_id-field-quick-reference" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-03-18 at <code>79ee9ee0</code>.</em></p>
+<p><em>Living document, last changed 2026-10-16 at <code>dd02d8ed</code>.</em></p>
+<blockquote>
+<p><strong>Correction (2026-10-16, <code>SPEC-REG-AMEND</code>; source read at Trio <code>e41c9db37</code>, corpus measured
+with <code>make schema-quirks</code>).</strong> The statement that Trio's <code>id</code> maps to <code>_id</code> holds for the carbs
+and temporary-target models, not for <code>NightscoutTreatment</code>: <code>CarbsEntry.swift:29</code> and
+<code>TempTarget.swift:50</code> encode <code>case id = "_id"</code>, while <code>NightscoutTreatment.swift:62</code> encodes
+<code>case id</code> with no key, so a treatment built as <code>NightscoutTreatment</code> is sent with its UUID in the
+member <code>id</code>, not <code>_id</code>. cgm-remote-monitor does not read <code>id</code>: it matches such a treatment by
+<code>created_at</code> + <code>eventType</code> (write contract <code>treatment-fallback-key</code>; <code>lib/server/treatments.js:383-405</code>
+at <code>crm-write</code> <code>239f8c25</code>). Measured over the 2026-04-01 and 2026-04-26 snapshots: 55,939 stored
+treatments on one site carry a UUID <code>id</code>, each with <code>enteredBy: Trio</code>, a server-assigned 24-hex
+<code>_id</code> and no <code>identifier</code> (registry entry <code>QUIRK-TREATMENTS-007</code>). At the same commit
+<code>BloodGlucose</code>'s coding keys hold both <code>_id</code> (<code>legacyId</code>) and <code>id</code> (<code>BloodGlucose.swift:60-62</code>);
+the glucose statements were not re-checked. The text below is kept as written.</p>
+</blockquote>
 <h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -8274,11 +8294,13 @@
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>CarbsStorage.swift:383     → id: result.id?.uuidString
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>NightscoutTreatment.swift  → var id: String?  [maps to "_id" in JSON]
 </code></pre></div>
+<p><em>Corrected 2026-10-16: <code>NightscoutTreatment</code>'s <code>id</code> is encoded as <code>id</code>, not <code>_id</code> (<code>NightscoutTreatment.swift:62</code> at <code>e41c9db37</code>); see the note at the top.</em></p>
 <h3 id="upload-endpoints">Upload Endpoints<a class="headerlink" href="#upload-endpoints" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>POST /api/v1/entries.json         ← Glucose (with _id)
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>POST /api/v1/treatments.json      ← Treatments (with _id via id)
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>POST /api/v1/devicestatus.json    ← Device status (no _id)
 </code></pre></div>
+<p><em>Corrected 2026-10-16: treatments built as <code>NightscoutTreatment</code> carry the UUID as <code>id</code>, with no <code>_id</code>; carbs and temporary targets carry <code>_id</code>.</em></p>
 <h3 id="coredata-models">CoreData Models<a class="headerlink" href="#coredata-models" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>CarbEntryStored:    @NSManaged var id: UUID?
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>GlucoseStored:      @NSManaged var id: UUID?

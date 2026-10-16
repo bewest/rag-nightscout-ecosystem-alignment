@@ -4221,6 +4221,8 @@
       
         
       
+        
+      
     
     
     
@@ -4276,6 +4278,8 @@
       
         
           
+        
+      
         
       
         
@@ -4669,6 +4673,8 @@
       
         
           
+        
+      
         
       
         
@@ -5467,7 +5473,9 @@ A sync API that accepts arbitrary filters inherits that. One that answers
 only the shapes a registration declared does not.</p>
 <h3 id="35-negotiation">3.5 Negotiation<a class="headerlink" href="#35-negotiation" title="Permanent link">&para;</a></h3>
 <p><em>Added 2026-10-12 (<code>SPEC-REG-NEGOTIATE</code>; D18 addendum rule 6, execution plan §2.6.1).
-Amended 2026-10-15 for the decisions of 2026-10-14 below (<code>SPEC-REG-DECISIONS</code>).
+Amended 2026-10-15 for the decisions of 2026-10-14 below (<code>SPEC-REG-DECISIONS</code>), and 2026-10-16
+for the maintainer's walk-through of that day (<a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16">execution plan §2.6.3</a>,
+<code>SPEC-REG-AMEND</code>): no delivery deadline (row 8) and the binding event on the owner's listing (row 9).
 Specified, not implemented: no hub serves any of this.</em> The hub publishes what it supports;
 the controller submits its controller-owned registration and reads back, per element, what
 was accepted; for anything not accepted it writes the element's well-known carrier.</p>
@@ -5489,7 +5497,7 @@ was accepted; for anything not accepted it writes the element's well-known carri
 </tr>
 <tr>
 <td><code>specs/sync/conformance/*.yaml</code></td>
-<td>55 synthetic conformance cases (53 until the 2026-10-15 amendment; corrected 2026-10-15); both hubs implement against them. D19's are under <code>instances/</code> (§3.6)</td>
+<td>54 synthetic conformance cases (53 until the 2026-10-15 amendment, 55 until 2026-10-16, when <code>SPEC-REG-AMEND</code> removed the delivery-deadline case); both hubs implement against them. D19's are under <code>instances/</code> (§3.6)</td>
 </tr>
 <tr>
 <td><code>tools/nsschema/negotiate.py</code></td>
@@ -5687,7 +5695,12 @@ also records <code>credentialKind</code> (<code>subject</code>, <code>api-secret
 kind of credential that last created or updated it; both are returned with the registration.
 <code>API_SECRET</code> against a subject-bound registration is <code>not-registration-owner</code> on the data path.
 A released registration (<code>boundTo: null</code>) is bound by the next credential with the permission
-that updates it, even with identical content (200, not a no-op). Readers attribute typed
+that updates it, even with identical content (200, not a no-op). <strong>Decided 2026-10-16 (maintainer
+walk-through row 9):</strong> it binds to its next permitted writer, as specified, and the binding event
+and credential kind are shown on the owner's listing: the stored registration records
+<code>bindingEvent: next-writer</code> (kept by later updates under the same binding, cleared by a release or
+transfer, not in the etag), and the owner's instance listing (§3.6) lists every stored product
+with its <code>boundTo</code>, <code>credentialKind</code> and <code>bindingEvent</code> (<code>listing-shows-binding-event</code>). Readers attribute typed
 records to the registration and its bound credential: a namespace string proves nothing about
 authorship. <code>SPEC-REG-INSTANCE</code> binds instances; this binding leaves room for that (§3.6: an instance is bound to the subject that created it).</p>
 <p><strong>Concurrency and idempotency.</strong> The etag is <code>sha256:</code> and the hex SHA-256 of the RFC 8785
@@ -5757,16 +5770,18 @@ document and its registration at launch and after a controller release; never on
 never because a request was refused, so an overloaded hub is not met with a surge of reads. A
 typed write refused for load — 429 or any 5xx, with or without <code>Retry-After</code> (maintainer,
 2026-10-15: a server or gateway error says nothing about whether the element is accepted) — is
-retried with backoff (no sooner than <code>Retry-After</code> when sent); it is not written as its carrier,
-the record is not dropped and the write plan does not change. A record still refused when its
-delivery deadline passes is sent as its carrier, so a typed route failing persistently never
-holds data back from older readers; the element stays accepted for the next record. The deadline
-is the controller's. Any other refusal of a typed write is definite: <code>blocked-by-owner</code>, a
-retired or missing registration, a typed route answering 404 after a hub rollback, or a 4xx
-the controller does not know. The controller sends that record as its carrier and treats the
-element as not accepted until its next re-check. The cases model this as <code>typedWrite</code> (the
-refusal) and <code>expected.typedWrite</code> (<code>retry-backoff</code> or <code>carrier-this-record</code>, <code>recheck: false</code>,
-and the write plan afterwards).</p>
+retried with backoff (no sooner than <code>Retry-After</code> when sent) until it succeeds; it is never
+written as its carrier, the record is not dropped and the write plan does not change, so a write
+the hub stored before failing cannot appear twice. <em>(Changed 2026-10-16, maintainer walk-through
+row 8, <code>SPEC-REG-AMEND</code>: the delivery deadline added on 2026-10-15 is removed. It read: "A record
+still refused when its delivery deadline passes is sent as its carrier, so a typed route failing
+persistently never holds data back from older readers; the element stays accepted for the next
+record. The deadline is the controller's.")</em> Any other refusal of a typed write is definite:
+<code>blocked-by-owner</code>, a retired or missing registration, a typed route answering 404 after a hub
+rollback, or a 4xx the controller does not know. The controller sends that record as its carrier
+at once and treats the element as not accepted until its next re-check. The cases model this as
+<code>typedWrite</code> (the refusal) and <code>expected.typedWrite</code> (<code>retry-backoff</code> or <code>carrier-this-record</code>,
+<code>recheck: false</code>, and the write plan afterwards).</p>
 <table>
 <thead>
 <tr>
@@ -5862,7 +5877,9 @@ schemas and the cases on 2026-10-15 (<code>SPEC-REG-DECISIONS</code>). Question 
    the capability document. A refusal does not trigger a re-check, so an overloaded hub is not
    met with a surge of reads: a 429 or 503 is retried with backoff and is not a fallback
    (2026-10-15: every 5xx counts as load, and a record past its delivery deadline goes as its
-   carrier without changing the plan); a
+   carrier without changing the plan; <strong>decided 2026-10-16, maintainer walk-through row 8: the
+   delivery deadline is removed — a load-refused typed write is retried until it succeeds and is
+   never re-sent as its carrier; every 5xx still counts as load</strong>); a
    definite refusal (<code>blocked-by-owner</code>, a retired or missing registration, a typed route
    answering 404 after a hub rollback) sends that record as its carrier, and the element is
    treated as not accepted until the next re-check. <em>Change:</em> the fallback rule distinguishes
@@ -6145,11 +6162,6 @@ schemas and the cases on 2026-10-15 (<code>SPEC-REG-DECISIONS</code>). Question 
 <td>typed write 502; load, like 503: retry with backoff</td>
 </tr>
 <tr>
-<td><code>typed-write-load-deadline-passed</code></td>
-<td>newer/newer</td>
-<td>503 past the record's delivery deadline; that record as its carrier, element stays typed</td>
-</tr>
-<tr>
 <td><code>typed-write-blocked-by-owner</code></td>
 <td>newer/newer</td>
 <td>typed write 403 <code>blocked-by-owner</code>; that record as its carrier, no re-check</td>
@@ -6165,6 +6177,10 @@ schemas and the cases on 2026-10-15 (<code>SPEC-REG-DECISIONS</code>). Question 
 subject and credential kind, and each stored registration its identity, binding and credential
 kind (measured 2026-10-15: the reference reproduces every earlier expected outcome with only
 those members added).</p>
+<p><em>(2026-10-16, <code>SPEC-REG-AMEND</code>, the maintainer's walk-through rows 8 and 9: the case
+<code>typed-write-load-deadline-passed</code> is removed with the delivery deadline, so 54 cases remain;
+<code>released-update-binds</code> gains <code>bindingEvent: next-writer</code> on its response and stored
+registration, its only change, which the case says in-file.)</em></p>
 <h3 id="36-definitions-and-instances">3.6 Definitions and instances<a class="headerlink" href="#36-definitions-and-instances" title="Permanent link">&para;</a></h3>
 <p><em>Added 2026-10-15 (<code>SPEC-REG-INSTANCE</code>; D19, <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#262-d19--definitions-and-instances-maintainer-2026-10-14">execution plan §2.6.2</a>).
 Specified, not implemented: no hub serves any of this.</em> §3.5 registers what a controller's data
@@ -6199,7 +6215,7 @@ added under it.</p>
 </tr>
 <tr>
 <td><code>specs/sync/conformance/instances/*.yaml</code></td>
-<td>86 synthetic cases; the 55 of §3.5 are unchanged in meaning</td>
+<td>90 synthetic cases (86 until <code>SPEC-REG-AMEND</code> added four on 2026-10-16); the §3.5 cases are unchanged in meaning</td>
 </tr>
 <tr>
 <td><code>tools/nsschema/instances.py</code></td>
@@ -6392,6 +6408,17 @@ one that does not serves neither, and §3.5 applies unchanged. Paths are proposa
   <code>provenance</code> is required and closed: <code>device</code> or <code>simulated</code>. One instance may mix them (a
   development build with a real CGM and a simulated pump). An unknown provenance refuses that
   role (<code>unknown-provenance</code>), never the instance, and is never accepted.</li>
+<li><em>Command-sink roles need the binding</em> (decided 2026-10-16, maintainer walk-through row 7,
+  <code>SPEC-REG-AMEND</code>). A <code>command-sink</code> role goes only to an instance created by the subject the
+  product is bound to (the instance's binding equals the product's <code>boundTo</code>), or to one the owner
+  transfers it to with <code>transfer-role</code>; any other claim of it is refused <code>not-registration-owner</code>
+  for that role, after the channel checks and before exclusivity. Source roles stay open to any
+  permitted subject, so a development build with its own subject keeps writing its typed records.
+  A command-sink role an instance already holds is kept on its renewal, so a transferred role
+  survives the next renewal (<code>instance-command-sink-not-registration-owner</code>, control
+  <code>instance-create</code>; <code>owner-transfer-role-other-subject</code>; <code>instance-renew-transferred-command-sink</code>).
+  <code>instance-create-other-subject</code> now answers <code>partial</code>: its simulated command-sink claim is
+  refused, its source roles are granted.</li>
 <li><em>Channels.</em> For a stateSpans kind that declares a <code>slot</code>, the channel is that slot name; for
   every other element it is <code>&lt;vendor&gt;/&lt;product&gt;/&lt;element id&gt;</code>. A slot channel is shared across
   products on the tenant, so two controllers that name the same slot contend for its roles. A
@@ -6405,7 +6432,18 @@ one that does not serves neither, and §3.5 applies unchanged. Paths are proposa
   <code>runningMode</code> and Loop's and Trio's <code>loopMode</code> do not, though they name a similar state.
   <em>(2026-10-16, D20 rule 2: a definition may declare <code>sameAs</code> naming a slot of the hub's optional
   shared slot list, and its channel is then that slot; the list ships <code>override</code>, <code>loopMode</code> and
-  <code>temporaryTarget</code>; §3.7.)</em></li>
+  <code>temporaryTarget</code>; §3.7.)</em>
+  <strong>Decided 2026-10-16 (maintainer walk-through row 5, <code>SPEC-REG-AMEND</code>), replacing "A slot channel
+  is shared across products on the tenant, so two controllers that name the same slot contend for
+  its roles" and "Equal names contend" above:</strong> a slot is shared across products only through the
+  hub's shared slot list (<code>wellKnown.slots</code>) or a declared <code>sameAs</code>. A slot name the list does not
+  hold is the product's own channel: instances of one product still contend on it, and equal
+  unlisted names from different products do not (<code>equal-names-unlisted-do-not-contend</code>, §3.7). The
+  owner's listing records each such name used by two or more products as <code>slotNameObservations</code>
+  (<code>slot-name-observation-recorded</code>), for the catalogue to act on. The 20 cases here whose
+  instances of ControllerA and ControllerB contend on <code>override</code> now list <code>override</code> in their
+  capability documents, with their expectations unchanged; each says so in-file. A command for a
+  channel that is not shared names its product (<code>request.identity</code>).</li>
 <li><em>Exclusivity.</em> Among live <code>device</code>-provenance instances of active products on the tenant, each
   (channel, role) has one holder. A second claimant is refused that role <code>role-held</code>; its other
   roles are still granted, and it writes the elements on that channel as their carriers. The hub
@@ -6512,7 +6550,10 @@ from the mapping, and nothing the mapping does not declare. The projected docume
   write and stores, and <code>identifier</code> is the typed id; execution plan §2.6.3, <code>SPEC-REG-QUIRKS</code>.
   Specified in §3.7, rule 8: the case <code>project-served</code> changed its expected <code>_id</code>. The
   <code>objectId</code> declaration is scoped there to single-tenant mode on MongoDB; single-tenant on
-  PostgreSQL is open (<code>SPEC-REG-MODES</code>). The prior art above is in-memory: on the wire Nocturne
+  PostgreSQL is open (<code>SPEC-REG-MODES</code>). <em>(Decided 2026-10-16, maintainer walk-through rows 1
+  and 2: every hub's legacy surface serves 24-hex <code>_id</code> values the hub assigns, on either store;
+  there is no <code>opaque</code> form and nothing to declare, so this applies to every hub and the
+  PostgreSQL question is closed.)</em> The prior art above is in-memory: on the wire Nocturne
   writes <code>Id</code> and <code>Identifier</code> through <code>ObjectIdJsonConverter</code> as the UUID's first 24 hex digits
   (read-derived at <code>42275c812</code>, §3.7).)</em></li>
 </ul>
@@ -6527,9 +6568,18 @@ retention decides when the record goes.</p>
 to a live instance that claims it with <code>device</code> provenance, else 409 <code>role-not-granted</code>,
 <code>role-not-claimed</code> or <code>not-live</code>; precondition <code>If-Match</code> the etag of the instance it is moved
 from; both instances' etags change), <code>pin-version</code>, <code>unpin-version</code>, and the instance listing
-(every instance with its roles, labels and liveness, and the overlaps).</p>
+(every instance with its roles, labels and liveness, and the overlaps). <em>(2026-10-16,
+walk-through rows 5 and 9:)</em> the listing also carries <code>registrations</code>, every stored product with
+its binding, credential kind and binding event, and <code>slotNameObservations</code> when two products use
+one unshared slot name; <code>instance-overlap-listed</code>, <code>instance-overlap-holder-lapsed</code>,
+<code>listing-includes-withheld</code> and <code>listing-withholds-alias</code> gained <code>registrations</code> in their
+expectations, and the last two also <code>slotNameObservations</code> (their hub lists no slots and both
+products declare <code>override</code>), with nothing else changed. <code>transfer-role</code> is the one way an instance of another
+subject gets a command-sink role (row 7).</p>
 <p><strong>Choices made here for the maintainer to confirm.</strong> Creating an instance needs the permission,
-not the product's binding (a second subject may run a copy); a definition PUT never binds a
+not the product's binding (a second subject may run a copy) <em>(decided 2026-10-16, maintainer
+walk-through row 7: yes for the instance and its source roles; a command-sink role needs the
+product's binding or the owner's transfer, above)</em>; a definition PUT never binds a
 released product; definitions and instances are refused for a retired product (409
 <code>product-retired</code>); the instance etag covers granted roles, so a transfer reaches each instance as
 a 412 on its next renewal; every listed role, including an <code>other</code> role a hub lists, is exclusive
@@ -6538,14 +6588,20 @@ transfers only to a live instance that already claims the role with <code>device
 their own resource; "newest" is numeric by part; a label selector ignores provenance and pins;
 the product's current registration also keeps its definition from removal; typed settings fields
 and replay inputs are outside <code>version-conflict</code>; <code>devicestatus</code> and other documents are not
-channels (writes to them are attributed by instance, and their exclusivity is not specified);
+channels (writes to them are attributed by instance, and their exclusivity is not specified)
+<em>(decided 2026-10-16, row 10: loop-status exclusivity is left unspecified; <code>devicestatus</code> is not
+a channel until its decomposition is typed)</em>;
 <code>wellKnownRef</code> needs a versioned catalogue kind; the permission names reuse
 <code>api:registrations:create</code>/<code>delete</code>. The label prefix correction above was set with this item.</p>
-<p><strong>The cases.</strong> 86, under <code>specs/sync/conformance/instances/</code>, each with its time <code>now</code>, the hub's
-stored registrations, definitions, instances, pins and records, and the expected response and
-stored state. A refusal names the passing case that differs from it in the aspect under test.
-The 26 §3.5 cases whose response is <code>accepted</code> or <code>partial</code> gained only <code>definitionId</code> (measured
-2026-10-15: the reference reproduces every other member unchanged); the other 29 are unchanged.</p>
+<p><strong>The cases.</strong> 90 (86 until 2026-10-16), under <code>specs/sync/conformance/instances/</code>, each with its
+time <code>now</code>, the hub's stored registrations, definitions, instances, pins and records, and the
+expected response and stored state. A refusal names the passing case that differs from it in the
+aspect under test. The 26 §3.5 cases whose response is <code>accepted</code> or <code>partial</code> gained only
+<code>definitionId</code> (measured 2026-10-15: the reference reproduces every other member unchanged); the
+other 29 are unchanged. <em>(2026-10-16, <code>SPEC-REG-AMEND</code>: four cases added for rows 7 and 9; 20
+cases gained <code>wellKnown.slots: [override]</code> for row 5 with their expectations unchanged; four
+listing cases gained <code>registrations</code>, two of them also <code>slotNameObservations</code>; <code>instance-create-other-subject</code> changed its outcome for row
+7. Each says so in-file.)</em></p>
 <table>
 <thead>
 <tr>
@@ -6707,10 +6763,16 @@ The 26 §3.5 cases whose response is <code>accepted</code> or <code>partial</cod
 <td><code>instance-create</code></td>
 </tr>
 <tr>
+<td><code>instance-command-sink-not-registration-owner</code></td>
+<td>A command-sink role goes only to an instance of the product's bound subject (added 2026-10-16)</td>
+<td>201 partial; override command-sink: not-registration-owner</td>
+<td><code>instance-create</code></td>
+</tr>
+<tr>
 <td><code>instance-create-other-subject</code></td>
 <td>A second credential runs another copy of a registered product</td>
-<td>201 accepted</td>
-<td></td>
+<td>201 partial; override command-sink: not-registration-owner (was 201 accepted until 2026-10-16, row 7)</td>
+<td><code>instance-create</code></td>
 </tr>
 <tr>
 <td><code>instance-create-retry-noop</code></td>
@@ -6833,6 +6895,12 @@ The 26 §3.5 cases whose response is <code>accepted</code> or <code>partial</cod
 <td><code>instance-handoff-lapse</code></td>
 </tr>
 <tr>
+<td><code>instance-renew-transferred-command-sink</code></td>
+<td>A command-sink role the owner transferred is kept on renewal (added 2026-10-16)</td>
+<td>200 accepted</td>
+<td></td>
+</tr>
+<tr>
 <td><code>instance-renew</code></td>
 <td>An instance renews its lease with If-Match</td>
 <td>200 accepted</td>
@@ -6893,6 +6961,12 @@ The 26 §3.5 cases whose response is <code>accepted</code> or <code>partial</cod
 <td></td>
 </tr>
 <tr>
+<td><code>listing-shows-binding-event</code></td>
+<td>The owner's listing shows how a released registration was bound, and with what credential kind (added 2026-10-16)</td>
+<td>200 listed</td>
+<td></td>
+</tr>
+<tr>
 <td><code>listing-withholds-alias</code></td>
 <td>The owner's default listing withholds observed aliases</td>
 <td>200 listed</td>
@@ -6927,6 +7001,12 @@ The 26 §3.5 cases whose response is <code>accepted</code> or <code>partial</cod
 <td>A transfer on the data listener is refused</td>
 <td>403 rejected; not-authorised</td>
 <td><code>owner-transfer-role</code></td>
+</tr>
+<tr>
+<td><code>owner-transfer-role-other-subject</code></td>
+<td>The owner transfers a command-sink role to another subject's instance (added 2026-10-16)</td>
+<td>200 applied</td>
+<td></td>
 </tr>
 <tr>
 <td><code>owner-transfer-role-not-claimed</code></td>
@@ -7076,7 +7156,10 @@ The 26 §3.5 cases whose response is <code>accepted</code> or <code>partial</cod
 </table>
 <h3 id="37-version-scoped-quirks-and-the-two-ids">3.7 Version-scoped quirks and the two ids<a class="headerlink" href="#37-version-scoped-quirks-and-the-two-ids" title="Permanent link">&para;</a></h3>
 <p><em>Added 2026-10-16 (<code>SPEC-REG-QUIRKS</code>; D20, <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16">execution plan §2.6.3</a>).
-Specified, not implemented: no hub serves any of this.</em> The <a href="../../../specs/quirks/index.html">quirks registry</a>
+Specified, not implemented: no hub serves any of this. Amended the same day for the maintainer's
+walk-through (execution plan §2.6.3, rows 1–6, <code>SPEC-REG-AMEND</code>): the legacy id form is no longer
+declared, a slot is shared only through the list or <code>sameAs</code>, and Trio's <code>id</code> is a registry
+entry.</em> The <a href="../../../specs/quirks/index.html">quirks registry</a>
 recorded how stored documents deviate, per collection and project, with measured prevalence. D20
 adds the versions an entry affects and a measured lifecycle, applies them to slot names (which
 are shared channels under D19 rule 5) and to <code>_id</code>, and separates the two jobs an id does: the
@@ -7095,7 +7178,7 @@ sync identity the client assigns and the storage key the hub assigns.</p>
 </tr>
 <tr>
 <td><code>specs/quirks/{treatments,entries}.yaml</code></td>
-<td>QUIRK-TREATMENTS-006 and QUIRK-ENTRIES-004, today's <code>_id</code> handling (new entries)</td>
+<td>QUIRK-TREATMENTS-006 and QUIRK-ENTRIES-004, today's <code>_id</code> handling (new entries); QUIRK-TREATMENTS-007, Trio's <code>id</code> (added 2026-10-16, row 6)</td>
 </tr>
 <tr>
 <td><code>tools/nsschema/quirks.py</code></td>
@@ -7111,7 +7194,7 @@ sync identity the client assigns and the storage key the hub assigns.</p>
 </tr>
 <tr>
 <td><code>specs/sync/hub-capabilities.schema.json</code></td>
-<td>gains <code>legacyIdForm</code>, <code>wellKnown.slots</code> and <code>wellKnown.mappings</code></td>
+<td>gains <code>wellKnown.slots</code> and <code>wellKnown.mappings</code> (and gained <code>legacyIdForm</code>, removed 2026-10-16, row 2)</td>
 </tr>
 <tr>
 <td><code>specs/sync/registration-submit.schema.json</code></td>
@@ -7119,7 +7202,7 @@ sync identity the client assigns and the storage key the hub assigns.</p>
 </tr>
 <tr>
 <td><code>specs/sync/conformance/quirks/*.yaml</code></td>
-<td>29 synthetic cases, in the instance case format</td>
+<td>29 synthetic cases, in the instance case format (2026-10-16: two <code>opaque</code> cases removed, two row 5 cases added)</td>
 </tr>
 <tr>
 <td><code>tools/nsschema/quirks_registration.py</code></td>
@@ -7150,8 +7233,12 @@ attribution, and their measured rows are unchanged (measured 2026-10-16: the 17 
   <code>temporaryTarget</code> (Trio, AndroidAPS): the slot names more than one generated registration already
   uses with the same spelling, checked against <code>specs/sync/registrations/*.yaml</code> by the gate.
   Equal slot names already contend under §3.6, so listing them adds no contention; it makes them
-  names a definition can declare <code>sameAs</code>. It does not confirm that their users mean the same
-  thing: Loop's override is written as treatments <code>Temporary Override</code> and Trio's as <code>Exercise</code>.</li>
+  names a definition can declare <code>sameAs</code>. <strong>Decided otherwise 2026-10-16 (maintainer walk-through
+  row 5): a slot is shared only through this list or <code>sameAs</code>, so listing a name is what makes
+  equal names from different products one channel that contends; equal unlisted names do not
+  contend, and the owner's listing records them as <code>slotNameObservations</code></strong> (§3.6). It does not
+  confirm that their users mean the same thing: Loop's override is written as treatments
+  <code>Temporary Override</code> and Trio's as <code>Exercise</code>.</li>
 <li><em><code>sameAs</code>.</em> A stateSpans entry may declare <code>sameAs: &lt;shared slot&gt;</code> beside its <code>slot</code>. On a hub
   that interprets it and lists that slot, the entry's channel is the shared slot, so it contends
   with every entry that names or means the slot (D19 rule 6). Checks, at a product or definition
@@ -7163,6 +7250,8 @@ attribution, and their measured rows are unchanged (measured 2026-10-16: the 17 
   (§3.6's table): changing it at the same version is <code>version-conflict</code>. A <code>wellKnownRef</code> entry
   takes the catalogue kind's <code>sameAs</code> and restates none.</li>
 <li><em>Never by likeness.</em> Only an equal name or a declared <code>sameAs</code> puts two slots on one channel.
+  <em>(Amended 2026-10-16, row 5: across products, only a listed name or a declared <code>sameAs</code>; an
+  equal unlisted name is each product's own channel.)</em>
   AndroidAPS's <code>runningMode</code> and Loop's and Trio's <code>loopMode</code> stay separate channels until a
   definition or a catalogue mapping says otherwise; so do names that differ only in case.</li>
 <li><em>Catalogue mappings</em> cover versions released before registration, which change nothing on their
@@ -7206,16 +7295,26 @@ Declaration entries are measured by a hub's recorded mappings, which the corpus 
   re-send that matches answers with the stored ids and stores no second copy, so a client needs
   no cache of server ids. A typed re-send matches a stored typed record of the same product with
   the same identifier, whichever instance sent it (stable across devices).</li>
-<li><em>The cases model writes abstractly.</em> The 86 instance cases and the 55 negotiation cases send no
+<li><em>The cases model writes abstractly.</em> The 86 instance cases and the 55 negotiation cases (90 and
+  54 since 2026-10-16) send no
   record ids, and their replies are unchanged; the cases here send <code>write.sent</code> (the id members of
   a v1/v3 document) or <code>write.recordId</code> (a typed record's id) and get the ids.</li>
 </ul>
-<p><strong>Rule 6: the legacy id form.</strong> The capability document's <code>legacyIdForm</code> is <code>objectId</code> or
+<p><strong>Rule 6: the legacy id form.</strong> <em>Decided 2026-10-16 (maintainer walk-through rows 1 and 2,
+<code>SPEC-REG-AMEND</code>): <code>objectId</code> names the shape — a 24-hex value the hub assigns — not MongoDB's
+native type, on either store, and every hub's legacy surface (v1, v3) serves it. The capability
+member <code>legacyIdForm</code> and its <code>opaque</code> option are removed, with the cases <code>project-served-opaque</code>
+and <code>typed-write-opaque-hub</code>; a hub's own newer APIs may use other ids, and the sync identity is
+<code>identifier</code>. <code>UUID_HANDLING</code> already runs above the storage seam (<code>lib/server/treatments.js</code>,
+read at <code>crm-write</code> <code>239f8c25</code>), so a site keeps its ids across stores. The paragraph below is as
+written on 2026-10-16 before the walk-through; its <code>opaque</code> form and its PostgreSQL question no
+longer apply.</em> The capability document's <code>legacyIdForm</code> is <code>objectId</code> or
 <code>opaque</code>. On an <code>objectId</code> hub <code>_id</code> is always an ObjectId: one the hub assigns, or a client's
 24-hex or <code>{"$oid": …}</code> value kept as that ObjectId in lower case; a client <code>_id</code> that is not one
 is handled as the quirks registry says and never stored. cgm-remote-monitor in single-tenant mode
 on MongoDB declares <code>objectId</code>. A reader of a capability document without <code>legacyIdForm</code> assumes
-<code>objectId</code>, the legacy API's rule. <strong>Single-tenant mode on PostgreSQL is not decided here</strong>: the
+<code>objectId</code>, the legacy API's rule. <strong>Single-tenant mode on PostgreSQL is not decided here</strong> <em>(decided
+2026-10-16, row 1: the same 24-hex shape; no longer open)</em>: the
 backend follows the URI scheme there, the server mints a 24-hex text <code>_id</code>, and a client-supplied
 <code>_id</code> is stored as sent (read-derived on the seam chain at <code>81a1f6ce</code>:
 <code>lib/server/storage-backends.js:41-46</code>, <code>lib/storage/pgCollection/sql.js:64-78</code>,
@@ -7261,12 +7360,26 @@ so they become <code>historical</code> only through the hub's rule 3 records. Me
 </table>
 <p>Two read-derived statements of D20's own context differ from this source reading: Loop does send
 <code>_id</code> (a UUID) for overrides, though not for carbs and doses; and Trio 1.0.1 sends <code>id</code>, not <code>_id</code>
-(55,939 corpus treatments carry a UUID <code>id</code> member, measured; their writer is not attributed). Neither changes a rule.</p>
+(55,939 corpus treatments carry a UUID <code>id</code> member, measured; their writer is not attributed). Neither changes a rule.
+<em>(2026-10-16, walk-through row 6: recorded as QUIRK-TREATMENTS-007 with no new mapping. Trio's
+treatment model sends its UUID as <code>id</code> (<code>NightscoutTreatment.swift:62</code>, Trio <code>e41c9db37</code>); its
+carbs and temporary-target models send <code>_id</code> (<code>CarbsEntry.swift:29</code>, <code>TempTarget.swift:50</code>).
+cgm-remote-monitor does not read <code>id</code> and matches such treatments by <code>created_at</code> + <code>eventType</code>
+(<code>treatment-fallback-key</code>; <code>lib/server/treatments.js:383-405</code> at <code>crm-write</code> <code>239f8c25</code>).
+Re-measured with <code>make schema-quirks</code> over the same two snapshots: 55,939 treatments on one site
+(site <code>b</code>, 90.4% of its treatments), the newest
+document dated 2026-03-29, each with <code>enteredBy: Trio</code>, a server-assigned 24-hex <code>_id</code>
+and no <code>identifier</code>; eventTypes Temp Basal 32,706, SMB 11,837, Carb Correction 8,703, Bolus
+2,693. By co-occurrence (devicestatus <code>openaps.version</code>, same site, within 60 minutes): 0.6.0
+54,688, 0.5.1 1,185, unattributed 66. The writer is attributed by <code>enteredBy</code>, correcting "their
+writer is not attributed" above. Whether Trio should send <code>identifier</code> goes to
+<code>PROPOSAL-REG-CONTROLLERS</code>.)</em></p>
 <p><strong>Rule 8: projected records.</strong> On an <code>objectId</code> hub the typed write assigns an ObjectId and stores
 it with the typed record (<code>records[]._id</code>), one per projected document, so every projection of the
 record carries the same <code>_id</code>; its <code>identifier</code> is the typed id. A write aimed at the projected
 <code>_id</code> is refused <code>projected-read-only</code>, as one aimed at its identifier is. An <code>opaque</code> hub may use
-the typed id for both, which is what §3.6 specified before. <strong>This replaces §3.6's "typed id
+the typed id for both, which is what §3.6 specified before. <em>(Withdrawn 2026-10-16, walk-through
+row 2: there is no <code>opaque</code> hub; every hub stores and serves the assigned ObjectId.)</em> <strong>This replaces §3.6's "typed id
 verbatim in v1 <code>_id</code>" for <code>objectId</code> hubs</strong>: the instance case <code>project-served</code> changed its
 expected <code>_id</code> (and its record gained the stored <code>_id</code>), and <code>write-projected-read-only</code> and
 <code>write-stored-carrier</code> gained the stored <code>_id</code> in their hub state with their expectations
@@ -7278,7 +7391,9 @@ record's UUID (<code>src/Core/Nocturne.Core.Models/MongoObjectId.cs:38-61</code>
 range. Its comment gives the reason as AndroidAPS's strict 24-hex id check; no such check was
 found in AndroidAPS at <code>7e1d537d49</code>. A derived id is a different mechanism from a stored one: it
 needs no storage, and its first four bytes are the UUID v7's time bits, not an ObjectId timestamp.</p>
-<p><strong>The ObjectId's timestamp is the hub's receipt time</strong> (an assumption of this item): the first four
+<p><strong>The ObjectId's timestamp is the hub's receipt time</strong> (an assumption of this item; <strong>decided
+2026-10-16, maintainer walk-through row 3</strong>, as for every id the server generates today; readers
+take a record's time from <code>created_at</code>/<code>date</code>): the first four
 bytes of an assigned ObjectId are the time the hub received the write, as any MongoDB server
 assigns it, not the record's own time. A reader must not take an <code>_id</code>'s time as the record's.
 The cases pin it: every <code>assignedIds</code> value starts with the case's <code>now</code>.</p>
@@ -7288,22 +7403,28 @@ The cases pin it: every <code>assignedIds</code> value starts with the case's <c
    their names look alike" is read as: never by likeness (case, similar words, a shared category);
    equal names keep §3.6's contention, and the list is the vocabulary <code>sameAs</code> may name. The other
    reading — only listed slots are shared — would change the instance cases <code>instance-role-held</code>
-   and the overlaps cases, whose capability documents list no slots.</li>
+   and the overlaps cases, whose capability documents list no slots. <em>(Decided otherwise
+   2026-10-16, maintainer walk-through row 5: only listed slots and <code>sameAs</code> are shared, and equal
+   unlisted names are recorded as an observation; the 20 instance cases that test cross-product
+   contention now list <code>override</code>.)</em></li>
 <li><em>The shipped list</em> holds the three names already used identically, not an empty list.</li>
 <li><em><code>unknown-shared-slot</code> refuses the element</em>, rather than falling back to the slot's own name.</li>
 <li><em>Catalogue mappings need a known writer version</em>; with none the hub applies no mapping.</li>
-<li><em><code>legacyIdForm</code> absent is read as <code>objectId</code>.</em></li>
+<li><em><code>legacyIdForm</code> absent is read as <code>objectId</code>.</em> <em>(Withdrawn 2026-10-16, row 2: the member is
+   removed and every hub serves 24-hex ids.)</em></li>
 <li><em><code>identifier</code> is null in the reply</em> when the client sent none and the path assigns none.</li>
 <li><em>A typed re-send matches across instances of one product</em> (D20's "stable across devices"),
    unlike §3.6's dual-write link, which is scoped by instance.</li>
-<li><em>Recent is 365 days</em> before the newest snapshot's collection date.</li>
+<li><em>Recent is 365 days</em> before the newest snapshot's collection date. <em>(Decided 2026-10-16,
+   row 4: 365 days, a declared measurement parameter.)</em></li>
 <li><em><code>historical</code> needs a hub's instance listing</em>; without one the corpus alone never supports it.</li>
 <li><em>A mapping that erases its evidence</em> (<code>UUID_HANDLING</code>) makes <code>historical</code> depend on the hub's
     rule 3 records.</li>
 <li><em>A <code>proposed</code> entry never fails the check</em>; before, it was checked like an active one.</li>
 <li><em>Declaration entries are measured only by hub records</em>, and none is listed.</li>
-<li><em>The ObjectId timestamp is receipt time</em>, above.</li>
+<li><em>The ObjectId timestamp is receipt time</em>, above. <em>(Decided 2026-10-16, row 3.)</em></li>
 </ol>
+<p>Still open after the walk-through: 2, 3, 4, 6, 7, 9, 10, 11 and 12.</p>
 <p><strong>Slot candidates for <code>PROPOSAL-REG-CONTROLLERS</code></strong> (read 2026-10-16 from the generated
 registrations, <code>tools/nsschema/sync_model.py</code>; meaning not confirmed by any controller author):</p>
 <table>
@@ -7356,7 +7477,11 @@ registrations, <code>tools/nsschema/sync_model.py</code>; meaning not confirmed 
 </table>
 <p><strong>The cases.</strong> 29, under <code>specs/sync/conformance/quirks/</code>, in the instance case format; each
 refusal names a passing control. The 55 §3.5 cases and 86 §3.6 cases keep their meaning; the
-three §3.6 cases above changed for rule 8.</p>
+three §3.6 cases above changed for rule 8. <em>(2026-10-16, <code>SPEC-REG-AMEND</code>: <code>project-served-opaque</code>
+and <code>typed-write-opaque-hub</code> are removed with the <code>opaque</code> form (row 2);
+<code>equal-names-unlisted-do-not-contend</code> and <code>slot-name-observation-recorded</code> are added (row 5); the
+other 27 cases lost <code>legacyIdForm: objectId</code> from their capability documents with their
+expectations unchanged, each saying so in-file.)</em></p>
 <table>
 <thead>
 <tr>
@@ -7440,15 +7565,15 @@ three §3.6 cases above changed for rule 8.</p>
 <td></td>
 </tr>
 <tr>
+<td><code>equal-names-unlisted-do-not-contend</code></td>
+<td>Equal slot names that the shared list does not hold do not contend (added 2026-10-16)</td>
+<td>201 accepted; override source and command-sink: granted</td>
+<td>refused counterpart: <code>instance-role-held</code></td>
+</tr>
+<tr>
 <td><code>names-alike-do-not-contend</code></td>
 <td>Slots are never one because their names look alike</td>
 <td>201 accepted; runningMode source: granted</td>
-<td></td>
-</tr>
-<tr>
-<td><code>project-served-opaque</code></td>
-<td>An opaque hub projects the typed id as both ids</td>
-<td>200 projected; <code>_id</code> = identifier</td>
 <td></td>
 </tr>
 <tr>
@@ -7512,14 +7637,14 @@ three §3.6 cases above changed for rule 8.</p>
 <td><code>same-as-definition-accepted</code></td>
 </tr>
 <tr>
-<td><code>typed-write-assigns-objectid</code></td>
-<td>A typed write gets an ObjectId the hub assigns and stores</td>
-<td>200 written; ids new</td>
-<td></td>
+<td><code>slot-name-observation-recorded</code></td>
+<td>The owner's listing records an equal slot name from another product (added 2026-10-16)</td>
+<td>200 listed; slotNameObservations override, no overlap</td>
+<td>counterpart: <code>instance-overlap-listed</code></td>
 </tr>
 <tr>
-<td><code>typed-write-opaque-hub</code></td>
-<td>An opaque hub may use the typed id for both</td>
+<td><code>typed-write-assigns-objectid</code></td>
+<td>A typed write gets an ObjectId the hub assigns and stores</td>
 <td>200 written; ids new</td>
 <td></td>
 </tr>
