@@ -4,7 +4,7 @@
 foundation board, the maintainers of the ecosystem projects, and the community. **Recommendation**
 (part 3 of the overview; [how the overview is organised](README.md)). **DRAFT PROPOSAL
 for discussion.** Written 2026-09-29 against this repository at `37beb699` and cgm-remote-monitor
-`official/dev` `7000eb18`. The parts on consent, research access, cross-border data and regulatory
+`official/dev` `7000eb18`; §2b and §2c added 2026-10-16 at `faafc57c`. The parts on consent, research access, cross-border data and regulatory
 terms need review by the foundation's counsel and a privacy or quality professional before any
 decision rests on them (§9). Nothing here is decided.*
 
@@ -69,6 +69,40 @@ connector repository publishes a per-release test report. The
 [quality-system proposal](QUALITY-SYSTEM.md) proposes a shared kit for every layer: vector corpora,
 simulators, fixture suites, a change canary and one record shape. It also proposes how the
 requirements for it would be agreed.
+
+## 2b. Sponsoring and operating
+
+Stewarding a layer can mean two different things, and they carry different exposure:
+
+- **Sponsoring**: paying for, hosting or convening shared work that others carry out under their own
+  responsibility, such as conformance tests, documentation, an audit or a research pilot.
+- **Operating**: running a service that other people's data, or their therapy, depends on, and
+  answering for its availability, security and incidents.
+
+The proposal is that **the foundation sponsors by default and operates only by a recorded decision
+that names the operator, its contract, its insurance and its successor.** A service whose failure
+could interrupt someone's treatment, such as an authority that issues credentials for a device,
+needs an operator with its own contract, security controls, insurance and continuity plan. That
+operator may be a specialist organisation the foundation contracts with, or one that a
+manufacturer appoints; the foundation sponsoring the work does not make it the operator. Paying for
+a shared service also gives no control over any project's roadmap
+([COLLABORATION-MODEL](COLLABORATION-MODEL.md) rule 2).
+
+## 2c. Shared operations the layers depend on
+
+The five layers name technical assets. Four kinds of shared operation run across all of them, and
+none exists yet as shared work:
+
+| operation | what it covers | where it is proposed |
+|---|---|---|
+| complaints, incidents and support | one intake for reports from users, clinicians, developers and manufacturers; triage into support, complaints and security; investigation records and referral to the responsible manufacturer | [PARTNER-READINESS §6](PARTNER-READINESS.md#6-complaint-incident-and-support-handling) |
+| security coordination | security contacts, private vulnerability reporting, embargoed fixes, an SBOM per release | [PARTNER-READINESS §8](PARTNER-READINESS.md#8-order-of-work) |
+| partner and legal operations | agreements with manufacturers, the evidence a manufacturer asks for, the terms that carry data rights | [PARTNER-READINESS §3–§5](PARTNER-READINESS.md#3-what-a-manufacturer-will-need-to-see) |
+| administration | funding, insurance, contracts, continuity, published accounts | [accountability as an organisation grows](perspective/ACCOUNTABILITY-THRESHOLDS.md) |
+
+Each feeds the layers: a confirmed complaint becomes a test vector in layer 2 or 4, a security
+contact is part of what layer 3's trust federation recognises, and an agreement with a manufacturer
+is what keeps the devices beneath the layers (§2a) reachable.
 
 ## 3. Layer 1 — the reference implementation
 
@@ -222,7 +256,9 @@ recorded decision.
 
 **For the board:**
 
-1. Which layers the foundation takes on as stewardship, and which it leaves to the projects.
+1. Which layers the foundation takes on as stewardship, and which it leaves to the projects; and
+   whether it adopts the rule in §2b that it sponsors by default and operates only by a recorded
+   decision.
 2. How a proposal for any layer is submitted, reviewed and answered, and where decisions are
    published. [COLLABORATION-MODEL](COLLABORATION-MODEL.md) §5 proposes rules for this and for
    contributions, provider listings and disclosure, each borrowed from an organisation that uses

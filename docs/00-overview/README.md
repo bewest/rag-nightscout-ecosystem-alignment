@@ -25,6 +25,7 @@ and the volunteer-only view is stated beside the others.
 |---|---|
 | [When a DIY ecosystem becomes infrastructure](perspective/INFRASTRUCTURE-TRANSITION.md) | the conditions under which other open-source communities changed how their work was organised, which of those conditions can be measured here, and what the frame does not show |
 | [Precedents](perspective/PRECEDENTS.md) | one table of every organisation the proposals cite: how each is funded, who is paid, the commercial role, and size |
+| [Accountability as an organisation grows](perspective/ACCOUNTABILITY-THRESHOLDS.md) | the money, staffing and activity conditions that bring a US nonprofit new legal, financial and insurance duties, and which proposals would bring them |
 
 ## 3. Recommendations: the author's proposals
 
@@ -38,6 +39,7 @@ those interests and offers options, including no change. Nothing in them is deci
 | [Sponsored maintenance team](SPONSORED-TEAM-PROPOSAL.md) | a small paid team for review, release, compatibility and security work |
 | [Working together](COLLABORATION-MODEL.md) | rules for volunteers, app projects, servers, hosts and researchers working together |
 | [Quality system](QUALITY-SYSTEM.md) | a shared quality kit for every layer of the stack, and how its requirements would be agreed |
+| [Partner readiness](PARTNER-READINESS.md) | access tiers, the terms an agreement with a device manufacturer needs from both sides, and shared complaint, incident and security handling |
 
 ## The work itself
 
