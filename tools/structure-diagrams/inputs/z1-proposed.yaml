@@ -13,7 +13,7 @@ nodes:
   - {id: ops, label: "Shared operations:\nregistry, conformance,\ncomplaint intake,\nsecurity response", kind: commons, level: 3, column: 1, status: proposed}
   - {id: projects, label: "Open-source projects\n(DIY track continues)", kind: org, level: 4, column: 0}
   - {id: nsaas, label: "Nightscout-as-a-service\noperators", kind: entity, level: 4, column: 1}
-  - {id: laas, label: "Regulated controller\noperator (as Tidepool\ndid for Loop)", kind: entity, level: 4, column: 2, status: proposed}
+  - {id: laas, label: "Regulated controller\noperator (as Tidepool\ndid for Loop)", kind: entity, level: 4, column: 2, status: proposed, zoom: Z2b}
   - {id: people, label: "People with diabetes\nand caregivers", kind: human, level: 5, column: 1}
   - {id: devices, label: "Pumps, CGMs and\nthe person's own loop", kind: process, level: 6, column: 1, zoom: Z3}
 edges:

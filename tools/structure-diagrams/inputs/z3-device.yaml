@@ -1,6 +1,7 @@
 # Zoom into one person's loop (controller, actuator, sensor, process), and where an issued
 # credential touches it. PARTNER-READINESS §7: a credential service must not be able to stop
 # insulin delivery by being unreachable; previously authorised, bounded operation continues.
+# Z2b's cleared controller app is this loop too, with ACE pump and iCGM.
 # Generic: the same loop as tools/lab/stpa-diagrams/inputs/aid-loop.yaml with the credential added.
 title: "Z3 · One person's loop · where a credential touches it"
 nodes:

@@ -23,13 +23,15 @@ Every drawing is labelled by zoom level, so a box in one drawing can be opened u
 | Z0 | sector | governments, regulators, companies, clinicians and the commons around AID in general |
 | Z1 | ecosystem | the Nightscout ecosystem's parts, today and as proposed, with one view per stakeholder |
 | Z2 | one agreement | what one agreement with one manufacturer has to carry |
+| Z2b | one regulated controller | Loop-as-a-service: an entity that answers to a regulator for a controller built from an open-source codebase |
 | Z3 | one person's loop | the controller, pump, sensor and body, and where an issued credential touches them |
 | P1–P3 | precedents | SQLite, CNCF and the Apple Developer Program, each mapped onto Z1 or Z2 |
 
 A box marked `[zoom: Z2]` is drawn in more detail in Z2. Markers are used only where the link
 between two drawings would not be obvious otherwise: Z0's commons is the whole of Z1; Z1's
-credential authority is where the agreements of Z2 reach the projects; Z1's devices and Z2's device
-line are the loop drawn in Z3. The levels are views of one system, not separate systems, so the
+credential authority is where the agreements of Z2 reach the projects; Z1's regulated controller
+operator is Z2b; Z1's devices and Z2's device
+line and Z2b's controller app are the loop drawn in Z3. The levels are views of one system, not separate systems, so the
 same box can appear at several levels: the credential authority is in Z1, Z2 and Z3.
 
 ## Z0 · Sector
@@ -100,6 +102,41 @@ release is hosted or built by someone else again. The client's commands to the d
 requests; what comes back is the state the device applied, the split the
 [hub-sync architecture](../../30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md)
 already makes.
+
+## Z2b · One regulated controller: Loop-as-a-service
+
+![Z2b: a regulator classifies the pump and CGM and clears the controller operator; the pump and CGM manufacturers give the operator interface specifications and pairing; the operator releases one validated controller app, which commands only ACE pumps, reads only iCGMs and uploads to a Nightscout hub; the open-source project supplies the upstream source](diagrams/z2b-loop-as-a-service.svg)
+
+A proposal for discussion. Sources: the special controls for interoperable automated glycemic
+controllers (iAGC, 21 CFR 862.1356), integrated CGMs (iCGM, 862.1355) and alternate controller
+enabled pumps (ACE, 880.5730), as summarised in the
+[stack census cloud layer](../../60-research/programme/stack-census-2026-09-30/cloud-layer.md);
+[history](../observations/HISTORY.md) and [precedents](PRECEDENTS.md#tidepool-loop-20202023) for
+Tidepool Loop, cleared as an iAGC on 2023-01-23 (K203689); [partner readiness](../PARTNER-READINESS.md)
+§2 (tier C) and §7.
+
+What makes this a different drawing from Z2:
+
+- **The operator is the legal manufacturer of the controller.** It answers to the regulator for
+  one validated release and its updates. An open-source project supplies the source, and the DIY
+  track continues beside it, as DIY Loop did beside Tidepool Loop.
+- **The interfaces are regulated on both sides.** The iAGC controls ask for validated interface
+  specifications, secure authentication (pairing) and a process for sharing and validating the
+  interface with connected devices. The ACE pump and iCGM controls ask the device side for the
+  same. The pump and CGM manufacturers' edges to the operator are therefore agreements, not
+  protocols worked out by volunteers.
+- **The controller's inputs and outputs are restricted.** Under the iAGC regulation it takes
+  glucose only from iCGMs and commands only ACE pumps, unless the regulator determines otherwise.
+  An ACE pump must fall back safely when it loses the connection.
+- **Feedback has a record.** The regulation asks for a record of critical events. Together with
+  complaints, it returns to the operator and from there to the regulator, which the DIY loop in
+  Z1-today does not have.
+
+The drawing does not settle who operates such an entity, whether the foundation sponsors it
+([programme §2b](../ECOSYSTEM-PROGRAMME.md#2b-sponsoring-and-operating): sponsoring does not make
+the foundation the operator), or how fixes return to the open-source project. The regulatory
+summary above paraphrases the regulations; it is for regulatory counsel to confirm against the
+current text and any device-specific clearance.
 
 ## Z3 · One person's loop
 
