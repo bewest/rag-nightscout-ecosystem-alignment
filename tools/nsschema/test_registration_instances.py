@@ -516,6 +516,15 @@ def test_a_command_sink_role_needs_the_product_binding_or_the_owners_transfer():
     assert _role_results(refused["id"])[("override", '"command-sink"')] == \
         ("refused", ["not-registration-owner"])
     assert _role_results(control["id"])[("override", '"command-sink"')] == ("granted", [])
+    # A released product (boundTo null) grants no new command-sink role, even
+    # to the subject it was bound to, against the bound control above.
+    released = copy.deepcopy(control)
+    product = negotiate._find(released["hubState"], instances._ident(released["request"]["identity"]))
+    assert product["boundTo"] is not None
+    product["boundTo"] = None
+    roles = {(r["channel"], json.dumps(r["role"])): (r["result"], _codes(r))
+             for r in instances.run_case(released, GRAMMAR)["response"].get("roles") or []}
+    assert roles[("override", '"command-sink"')] == ("refused", ["not-registration-owner"])
     # Source roles stay open to any permitted subject.
     assert all(v == ("granted", []) for k, v in _role_results(refused["id"]).items()
                if k[1] == '"source"')
