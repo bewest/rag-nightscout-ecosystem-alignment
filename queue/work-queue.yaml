@@ -4532,6 +4532,43 @@ items:
       tenantClaim opens at L139 with verifyJWT at L144, so the range to change
       is 139-144.
 
+  - id: T30-TENANT-ADMIN
+    title: "cgm-remote-monitor: the ns-tenant-admin listener, a second bound socket inside ns-api (D16)"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: ""
+    base: seam/t1-2-storage-interface@81a1f6ce
+    state: not-started
+    pr: []
+    blast_radius: >
+      Not designed yet. Expected: a second listen() in the ns-api process
+      on its own bind address, serving only the tenant-owner surface,
+      authenticated and RLS-scoped, resolving the tenant through
+      T30-WIRING's extracted module. Multi mode only; single is unchanged.
+    review: maintainer
+    operator_visible: >
+      Not written yet. It would say: hosted deployments expose the tenant
+      owner's settings on a separate address from the data API.
+    semver: minor
+    semver_reason: a new listener in multi mode, which is developer-only; single unchanged
+    register: []
+    gates:
+      - no-gate: >
+          Not started. The gate will show the tenant-owner routes answer
+          on the second socket and not on the data socket (red when a route
+          answers on both; control: the same request on its own socket),
+          that a request resolves only its own tenant (red across tenants;
+          control: the owner's own tenant), and that single mode's
+          listeners are byte-identical to before.
+    blocks_on: [T30-WIRING]
+    evidence:
+      - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
+    notes: >
+      D16 (maintainer, 2026-09-16) set three listeners; the topology was
+      decided 2026-10-16 (maintainer): a second bound socket inside ns-api,
+      movable to its own process later without changing the contract
+      (execution plan §2.9). HUB-REG-CRM-ADMIN depends on it.
+
   - id: T31-REM
     title: T3.1 remainder - per-tenant signing key replaces the install-wide one
     parcel: tenancy
@@ -14171,6 +14208,42 @@ items:
       PROPOSAL-REG-CONTROLLERS are in §3.7: runningMode with loopMode
       (category LoopMode in all three), preMeal, profileSwitch and scene.
 
+  - id: SPEC-REG-AMEND
+    title: "Registration contract amended by the 2026-10-16 walk-through: 24-hex legacy ids everywhere, explicit slot sharing, command-sink binding, no delivery deadline"
+    parcel: platform
+    repo: rag-nightscout-ecosystem-alignment
+    branch: main
+    base: main@e9b72966
+    state: not-started
+    pr: []
+    blast_radius: >
+      Expected: the capability document loses legacyIdForm and the opaque
+      cases go; the slot rule becomes list-or-sameAs only with an
+      equal-name observation; command-sink roles need the binding or an
+      owner transfer; the delivery deadline and its case are removed from
+      negotiate.py, the schemas and §3.5; a Trio `id` registry entry with
+      no mapping; the Trio client-id analysis corrected. Ships nothing.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: specification in this repository; ships nothing
+    register: []
+    gates:
+      - no-gate: >
+          Not started. The gate will be the tools/nsschema suites with each
+          amended rule tested against a control and weakened to red for
+          the right reason, every changed or removed case called out in
+          its file and listed, and the cases not named by the walk-through
+          unchanged in meaning.
+    blocks_on: [SPEC-REG-QUIRKS]
+    evidence:
+      - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
+      - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md
+    notes: >
+      The decisions are the table "Decided in the 2026-10-16 walk-through"
+      in the execution plan §2.6.3, rows 1-9; rows 10-12 need no contract
+      change here (12 belongs to SPEC-REG-MODES and SPEC-REG-MIGRATE).
+
   - id: HUB-REG-CRM
     title: "cgm-remote-monitor: accept registrations and derive typed storage, validation and query from them, single-tenant first"
     parcel: platform
@@ -14239,7 +14312,7 @@ items:
           refusal, instance-required) is removed in turn and must turn its
           cases red, and one cell of the write matrix is perturbed and must
           turn the second control red.
-    blocks_on: [SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS]
+    blocks_on: [SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND]
     evidence:
       - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md
       - specs/sync/registration-submit.schema.json
@@ -14466,7 +14539,7 @@ items:
           the same request on ns-tenant-admin is applied), and when an owner
           on tenant A's host changes tenant B's registration, instance or pin
           (control: the same action on A's own is applied).
-    blocks_on: [HUB-REG-CRM-SEAM, T30-WIRING]
+    blocks_on: [HUB-REG-CRM-SEAM, T30-WIRING, T30-TENANT-ADMIN]
     evidence:
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
       - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md
@@ -14592,6 +14665,9 @@ items:
       Nightscout site into a tenant by URL and API secret or from MongoDB;
       the cases are offered to Nocturne as shared contract with
       HUB-REG-NOCTURNE, so a site's registrations travel to either hub.
+      Decided 2026-10-16 (maintainer): an `api-secret` binding moves to
+      the tenant's root credential, a new credential kind; the option of
+      importing it released is not taken.
 
   - id: HUB-REG-NOCTURNE
     title: "Nocturne: propose the registration grammar and negotiation as a shared contract, with the hub active-state evidence"
@@ -14616,7 +14692,7 @@ items:
           Not started. The amended contract and D19 are specified
           (SPEC-REG-DECISIONS and SPEC-REG-INSTANCE, 2026-10-15). Done when the
           maintainer has sent the packet; that cannot be checked from here.
-    blocks_on: [SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS]
+    blocks_on: [SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND]
     evidence:
       - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md
       - specs/sync/registration-submit.schema.json
@@ -14663,7 +14739,7 @@ items:
           Not started. The amended contract and D19 are specified
           (SPEC-REG-DECISIONS and SPEC-REG-INSTANCE, 2026-10-15). Done when the
           maintainer has sent the packet; that cannot be checked from here.
-    blocks_on: [SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS]
+    blocks_on: [SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND]
     evidence:
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
       - docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md

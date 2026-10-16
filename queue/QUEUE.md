@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 212 |
+| items | 214 |
 | runnable gates | 263 |
-| explicit `no-gate:` markers | 261 |
+| explicit `no-gate:` markers | 263 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 261 of the 524 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 263 of the 526 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 64 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-TRIO-INTENT, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-COMMANDS, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
+| `not-started` | 66 | RT-VERSION, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-96, BFQ-158, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-137, BFQ-145, BFQ-149, BFQ-157, BFQ-159, BFQ-160, BFQ-161, BFQ-163, BFQ-165, BFQ-166, BFQ-167, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-TRIO-INTENT, SPEC-REG-AMEND, HUB-REG-CRM, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-COMMANDS, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
 | `in-progress` | 3 | BFQ-46, BFQ-ENV, OID-LAB |
 | `gate-not-met` | 7 | RT-REBASE, DOC-EXPOSURE, BFQ-CONNECTOR, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, RT-PR-8730 |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
@@ -5890,7 +5890,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 ## Multitenancy programme
 
-`parcel: tenancy` &mdash; 19 items
+`parcel: tenancy` &mdash; 20 items
 
 T3.0 and the DONE-EXCEPT remainders it amends, T4.3, T4.4, the four open §7a
 alarm-readiness items, and the seam branch refresh.
@@ -5903,6 +5903,7 @@ alarm-readiness items, and the seam branch refresh.
 | `T30-SCHEMA-CONFIG` | T3.0 part 2b - per-tenant configuration table, and where human identity lives | `not-started` | `-` | n/a | 1 run + 2 no-gate |
 | `T30-ORY-PROOF` | Stand up Kratos 1.x and Hydra 2.x and try to make one pool serve two tenants | `done` | `ory/proof-2026-10-07` | n/a | 1 run + 3 no-gate |
 | `T30-WIRING` | T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT | `not-started` | `-` | n/a | 0 run + 1 no-gate |
+| `T30-TENANT-ADMIN` | cgm-remote-monitor: the ns-tenant-admin listener, a second bound socket inside ns-api (D16) | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `T31-REM` | T3.1 remainder - per-tenant signing key replaces the install-wide one | `blocked` | `seam/t1-2-storage-interface` | n/a | 0 run + 1 no-gate |
 | `T32-REM` | T3.2 remainder - platform.sql carries no config, secret or signing key | `blocked` | `seam/t1-2-storage-interface` | n/a | 0 run + 1 no-gate |
 | `T33-REM` | T3.3 remainder - the shared enclave, and language/levels per tenant | `blocked` | `seam/t1-2-storage-interface` | n/a | 0 run + 2 no-gate |
@@ -6119,6 +6120,35 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 
 **Notes.** Line references for the implementer (GT3, crm-seam): the plan's amendment table cites tenant-context.js:137 as T3.3's site, but L137 is a comment stating the rejected reasoning; the mechanism is PER_TENANT_ENV_KEYS at L143 and the copy loop at L278 (`if (PER_TENANT_ENV_KEYS.includes(key)) continue;`). enclave.js's key read is at line 30. tenant-middleware.js's tenantClaim opens at L139 with verifyJWT at L144, so the range to change is 139-144.
+
+### `T30-TENANT-ADMIN` &mdash; cgm-remote-monitor: the ns-tenant-admin listener, a second bound socket inside ns-api (D16)
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `seam/t1-2-storage-interface@81a1f6ce` |
+| worktree | `-` |
+| semver | `minor` |
+| review | maintainer |
+| blocks on | `T30-WIRING` |
+
+**Blast radius.** Not designed yet. Expected: a second listen() in the ns-api process on its own bind address, serving only the tenant-owner surface, authenticated and RLS- scoped, resolving the tenant through T30-WIRING's extracted module. Multi mode only; single is unchanged.
+
+**What an operator sees.** Not written yet. It would say: hosted deployments expose the tenant owner's settings on a separate address from the data API.
+
+**Why `minor`.** a new listener in multi mode, which is developer-only; single unchanged
+
+**Gates.**
+
+- **NO GATE** &mdash; Not started. The gate will show the tenant-owner routes answer on the second socket and not on the data socket (red when a route answers on both; control: the same request on its own socket), that a request resolves only its own tenant (red across tenants; control: the owner's own tenant), and that single mode's listeners are byte-identical to before.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+
+**Notes.** D16 (maintainer, 2026-09-16) set three listeners; the topology was decided 2026-10-16 (maintainer): a second bound socket inside ns-api, movable to its own process later without changing the contract (execution plan §2.9). HUB- REG-CRM-ADMIN depends on it.
 
 ### `T31-REM` &mdash; T3.1 remainder - per-tenant signing key replaces the install-wide one
 
@@ -6946,7 +6976,7 @@ flag rule: versioning policy section 5.7.
 
 ## Controller registration and intent observability
 
-`parcel: platform` &mdash; 15 items
+`parcel: platform` &mdash; 16 items
 
 D18 (maintainer, 2026-10-09): two-tier controller registration - well-known
 declarations for backwards compatibility, controller-owned typed registrations
@@ -6963,6 +6993,7 @@ reproduced ones.
 | `SPEC-REG-DECISIONS` | Registration negotiation: apply the 2026-10-14 decisions to the contract and conformance cases | `done` | `main` | n/a | 1 run |
 | `SPEC-REG-INSTANCE` | Registration definitions and instances: content-addressed definitions, leased instances, channel roles with provenance, labels (D19) | `done` | `main` | n/a | 1 run |
 | `SPEC-REG-QUIRKS` | Version-scoped quirks, the shared slot list and the two-id rule (D20) | `done` | `main` | n/a | 1 run |
+| `SPEC-REG-AMEND` | Registration contract amended by the 2026-10-16 walk-through: 24-hex legacy ids everywhere, explicit slot sharing, command-sink binding, no delivery deadline | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `HUB-REG-CRM` | cgm-remote-monitor: accept registrations and derive typed storage, validation and query from them, single-tenant first | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `SPEC-REG-MODES` | Registration contract in single and multi mode: storage key, credential kinds, owner listener, capability document scope, legacy id form | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `HUB-REG-CRM-SEAM` | cgm-remote-monitor: carry the registration store onto the storage seam, so single (MongoDB, PostgreSQL) and multi serve one contract | `not-started` | `-` | n/a | 0 run + 1 no-gate |
@@ -7167,6 +7198,36 @@ reproduced ones.
 
 **Notes.** D20 (maintainer, 2026-10-16): pave the cowpaths by scoping quirks to the vendor versions that produce them, with a measured path to historical and retired as AID and monitoring systems converge; catalogue entries for versions released before registration, self-declared mappings for newer ones. In single-tenant legacy mode `_id` must be an ObjectId (the maintainer: the one hard rule, historically unwritten, which many apps violated); `identifier` is the sync identity the client assigns. Which slots share a meaning (for example runningMode and loopMode) is not decided by this item: it lists candidates with evidence for PROPOSAL-REG-CONTROLLERS. Done 2026-10-16; hub-sync design §3.7. Registry: affects [{vendor, product, versions: range | unmeasured, seen, versionSource, evidence}], statuses proposed, active, historical, retired, mapping {action, flag, erasesEvidence}, declaration entries (applies_to: declarations), validated by quirk.schema.json; recent = 365 days before the newest snapshot (a declared parameter, --recent-days); historical also needs a hub's de-identified instance listing (--instances), unmeasured without one. UUID_HANDLING is QUIRK-TREATMENTS-006 (2,844 stored treatments on 9 sites, all Loop overrides by enteredBy scheme; Loop 3.2.3 to 3.12.1 by co-occurrence; Loop 3.14.8 sends it, read at LoopWorkspace f8412858) and QUIRK-ENTRIES-004 (88,070 entries on 2 sites; writer attributed to Trio by the backlog only; Trio 1.0.1 at e41c9db3 writes `id`, not `_id`); versions unmeasured as ranges; both erase their evidence, so they go historical only through hub records. Shared slot list (specs/sync/shared-slots.yaml): override, loopMode, temporaryTarget, the names already used identically by two generated registrations; it adds no contention, and sameAs may name them. sameAs is meaning; an unlisted one is unknown-shared-slot and its slot name derives no channel. Catalogue mappings (wellKnown.mappings) need a known writer version in range. legacyIdForm: crm single-tenant on MongoDB declares objectId; single-tenant on PostgreSQL is left open for SPEC-REG-MODES (the server mints a 24-hex text _id and keeps a client _id as sent, read on the seam chain at 81a1f6ce). Write replies return ids {identifier, _id} and matchedBy; re-sends match identifier first. Rule 8: the typed write assigns and stores an ObjectId (timestamp = receipt time, an assumption for the maintainer); an opaque hub may use the typed id. Prior art: Nocturne at 42275c812 serves the UUID's first 24 hex digits as _id and identifier on its legacy surface (MongoObjectId.Coerce), a derived rather than stored id. Read for this item and differing from D20's context paragraph: Loop sends a UUID _id for overrides; Trio 1.0.1 sends `id`. Thirteen choices beyond the rules are listed in §3.7 for confirmation, the first being that equal slot names still contend without a list. Slot candidates for PROPOSAL-REG-CONTROLLERS are in §3.7: runningMode with loopMode (category LoopMode in all three), preMeal, profileSwitch and scene.
 
+### `SPEC-REG-AMEND` &mdash; Registration contract amended by the 2026-10-16 walk-through: 24-hex legacy ids everywhere, explicit slot sharing, command-sink binding, no delivery deadline
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `main` |
+| base | `main@e9b72966` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| blocks on | `SPEC-REG-QUIRKS` |
+
+**Blast radius.** Expected: the capability document loses legacyIdForm and the opaque cases go; the slot rule becomes list-or-sameAs only with an equal-name observation; command-sink roles need the binding or an owner transfer; the delivery deadline and its case are removed from negotiate.py, the schemas and §3.5; a Trio `id` registry entry with no mapping; the Trio client-id analysis corrected. Ships nothing.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** specification in this repository; ships nothing
+
+**Gates.**
+
+- **NO GATE** &mdash; Not started. The gate will be the tools/nsschema suites with each amended rule tested against a control and weakened to red for the right reason, every changed or removed case called out in its file and listed, and the cases not named by the walk-through unchanged in meaning.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md`
+
+**Notes.** The decisions are the table "Decided in the 2026-10-16 walk-through" in the execution plan §2.6.3, rows 1-9; rows 10-12 need no contract change here (12 belongs to SPEC-REG-MODES and SPEC-REG-MIGRATE).
+
 ### `HUB-REG-CRM` &mdash; cgm-remote-monitor: accept registrations and derive typed storage, validation and query from them, single-tenant first
 
 | | |
@@ -7178,7 +7239,7 @@ reproduced ones.
 | worktree | `-` |
 | semver | `minor` |
 | review | maintainer |
-| blocks on | `SPEC-REG-DECISIONS`, `SPEC-REG-INSTANCE`, `SPEC-REG-QUIRKS` |
+| blocks on | `SPEC-REG-DECISIONS`, `SPEC-REG-INSTANCE`, `SPEC-REG-QUIRKS`, `SPEC-REG-AMEND` |
 
 **Blast radius.** Single-tenant first (maintainer, 2026-10-16). Built on origin/dev, which has no TENANCY_MODE, no storage interface and no tenant scope: measured at official/dev fade2299, lib/server/env.js reads no TENANCY_MODE and lib/storage/ holds only assert-no-query-javascript.js, mongo-storage.js and run-with-callback.js; the mode, the seam and tenant-scope.js exist only on the local seam chain (seam/t1-2-storage-interface 81a1f6ce). Expected, behind a feature flag that is off by default: GET /.well-known/nightscout/sync (hub- sync design §3.5) advertising `submit`, `instances` and the legacy id form `objectId` (D20 rule 6); the product, definition and instance resources of §3.5 and §3.6 on the `single` listener, for a subject's token or API_SECRET; the owner's actions (retire, block, unblock, release, transfer, free- namespaces, transfer-role, pin-version, unpin-version, the instance listing) with API_SECRET on `single`; typed writes for accepted elements, read selection, the projected read-only view (D19 rule 8) with a stored hub- assigned ObjectId `_id` and the typed id as `identifier` (D20 rule 8); new MongoDB collections for registrations, definitions, instances, pins and recorded mappings. Writers that do not register change in nothing. The conformance harness lives in this repository (D12), requires the shipping modules by path, and takes a mode parameter from its first commit, with only `single` on MongoDB implemented here.
 
@@ -7276,7 +7337,7 @@ reproduced ones.
 | worktree | `-` |
 | semver | `n/a` |
 | review | SECURITY - an owner action changes which controller may write typed data on a site |
-| blocks on | `HUB-REG-CRM-SEAM`, `T30-WIRING` |
+| blocks on | `HUB-REG-CRM-SEAM`, `T30-WIRING`, `T30-TENANT-ADMIN` |
 
 **Blast radius.** Expected: the owner's actions of §3.5 and §3.6 (retire, block, unblock, release, transfer, free-namespaces, transfer-role, pin-version, unpin-version, and the instance listing with overlaps and, on request, withheld aliases) on the tenant-owner listener in multi mode. In single mode they stay on `single` with API_SECRET (HUB-REG-CRM). The listener does not exist: D16's prerequisite (one module for tenant resolution and credential verification) lands on T30-WIRING, and whether ns-tenant-admin is its own process or a second bound socket in ns-api is open (execution plan §2.9).
 
@@ -7356,7 +7417,7 @@ reproduced ones.
 - `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
 - `docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md`
 
-**Notes.** What the evidence fixes and what it leaves open. Fixed: a definition id is the hash of its content (D19 rule 1), so it is the same on any hub; a subject keeps its id when a site moves (platform.sql's tenant_subject comment, seam/t30-schema-cred 65ce54b9), and a binding names the subject, not its token (§3.5 decision 4), so re-rooting every token on the tenant's subject-salt (§E.2) changes no binding. Open: an `api-secret` binding has no target once API_SECRET stops existing (D13, §E.2 one-way door 2); the options are to import it released (`boundTo: null`, an existing owner state) or bound to a new kind for the tenant root credential (SPEC-REG-MODES point 2), and either changes the etag because the etag covers `boundTo`. Subjects travel by a path of their own: exportTenant streams tenant-scoped tables except NOT_TENANT_DATA, which includes tenant_subject (platform-store.js:56 on seam/t30-schema-cred), so a registration exported without its subjects names subjects the import must also carry. Leases lapse during a move, so roles are re-claimed on the first renewal after it (§3.6, no automatic assignment); the owner's overlap listing shows the interval. Nocturne's tenant-admin MigrationController (api/v4/migration, read at 42275c812) imports a Nightscout site into a tenant by URL and API secret or from MongoDB; the cases are offered to Nocturne as shared contract with HUB-REG-NOCTURNE, so a site's registrations travel to either hub.
+**Notes.** What the evidence fixes and what it leaves open. Fixed: a definition id is the hash of its content (D19 rule 1), so it is the same on any hub; a subject keeps its id when a site moves (platform.sql's tenant_subject comment, seam/t30-schema-cred 65ce54b9), and a binding names the subject, not its token (§3.5 decision 4), so re-rooting every token on the tenant's subject-salt (§E.2) changes no binding. Open: an `api-secret` binding has no target once API_SECRET stops existing (D13, §E.2 one-way door 2); the options are to import it released (`boundTo: null`, an existing owner state) or bound to a new kind for the tenant root credential (SPEC-REG-MODES point 2), and either changes the etag because the etag covers `boundTo`. Subjects travel by a path of their own: exportTenant streams tenant-scoped tables except NOT_TENANT_DATA, which includes tenant_subject (platform-store.js:56 on seam/t30-schema-cred), so a registration exported without its subjects names subjects the import must also carry. Leases lapse during a move, so roles are re-claimed on the first renewal after it (§3.6, no automatic assignment); the owner's overlap listing shows the interval. Nocturne's tenant-admin MigrationController (api/v4/migration, read at 42275c812) imports a Nightscout site into a tenant by URL and API secret or from MongoDB; the cases are offered to Nocturne as shared contract with HUB-REG-NOCTURNE, so a site's registrations travel to either hub. Decided 2026-10-16 (maintainer): an `api- secret` binding moves to the tenant's root credential, a new credential kind; the option of importing it released is not taken.
 
 ### `HUB-REG-NOCTURNE` &mdash; Nocturne: propose the registration grammar and negotiation as a shared contract, with the hub active-state evidence
 
@@ -7369,7 +7430,7 @@ reproduced ones.
 | worktree | `-` |
 | semver | `n/a` |
 | review | maintainer |
-| blocks on | `SPEC-REG-DECISIONS`, `SPEC-REG-INSTANCE`, `SPEC-REG-QUIRKS` |
+| blocks on | `SPEC-REG-DECISIONS`, `SPEC-REG-INSTANCE`, `SPEC-REG-QUIRKS`, `SPEC-REG-AMEND` |
 
 **Blast radius.** A proposal packet in this repository for the Nocturne maintainers: the grammar, the capability document, the conformance fixtures, and the LAB-HUB- ACTIVE-STATE record set and results. Nothing is filed or sent by an agent; the maintainer sends it.
 
@@ -7401,7 +7462,7 @@ reproduced ones.
 | worktree | `-` |
 | semver | `n/a` |
 | review | maintainer |
-| blocks on | `SPEC-REG-DECISIONS`, `SPEC-REG-INSTANCE`, `SPEC-REG-QUIRKS` |
+| blocks on | `SPEC-REG-DECISIONS`, `SPEC-REG-INSTANCE`, `SPEC-REG-QUIRKS`, `SPEC-REG-AMEND` |
 
 **Blast radius.** A proposal packet in this repository for the Loop, Trio, AAPS and iAPS maintainers: what a controller gains (typed extensions, per-kind versions, no lockstep with hub releases), the generated well-known registration for their controller as a starting definition, the instance and fallback rules, and a namespace conventions list. Nothing is filed or sent by an agent; the maintainer sends it.
 

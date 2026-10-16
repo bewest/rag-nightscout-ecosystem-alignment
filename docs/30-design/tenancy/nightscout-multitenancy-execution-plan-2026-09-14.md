@@ -145,7 +145,7 @@ preference.
 | **D17** | **The auth plane splits by audience, not by build-versus-buy.** Adopted: devices and the data path keep a **native per-tenant credential permanently**; Hydra is **deferred**; D7 is **unchanged**. **Adopted in principle, gated (2026-10-12):** human identity via one cohort-wide Ory Kratos pool, hosted-only; cookie scope E (apex behind a hardened edge, 2026-10-12); no real identities until the edge's production conditions are measured over https and the compliance question has an owner. D14 holds either way: Nightscout mints its own per-tenant token after authentication | maintainer, 2026-09-16 — §2.9 |
 | **D18** | **Controller registration has two tiers.** *Well-known* declarations ship with the hub, so legacy writers are described with no controller change (backwards compatibility). *Controller-owned* registrations are dynamic and typed: a controller declares its own definitions — intent kinds, states, transitions, initiators, effect fields, command contract — and the hub offers typed API for them, so controller-unique features have a home other than untyped `devicestatus`. Adoption follows the WHATWG pattern: specify what happens now, leave room to extend; the controller owns its registration's lifecycle. **Roles:** the hub (Nightscout, Nocturne) is responsible for observability; the controller is responsible for sending data accurately and for syncing and reconciling. The hub records a controller's composition and reconciliation results; it does not compute dosing state. **Addendum (2026-10-12):** every extensible field is typed; the grammar is must-ignore with typed, namespaced extensions, open vocabularies, per-kind versions, declared horizons and hub/controller negotiation, so neither side releases in lockstep | maintainer, 2026-10-09 and 2026-10-12 — §2.6.1 |
 | **D19** | **A registration separates the definition from the instance.** A *definition* says what a controller's data means; it is immutable, identified by the hash of its content, and many coexist under one `(vendor, product)`. An *instance* is one connected copy of a controller (phone, simulator, lab rig, agent): it names the definition it runs, holds a lease, declares a provenance (`device` or `simulated`) on each channel role it plays, and carries typed labels. Among `device`-provenance instances each channel role has one source of record, handed off by release, lease lapse or owner transfer; an overlapping writer is flagged, never silently resolved, and a command has one destination. Registered instances write typed records only for accepted elements; older readers get a declared, read-only view in today's shapes. The hub still decides nothing about dosing. *(corrected 2026-10-15: reverse-DNS, `dev.nightscout/` — the well-known label prefix of rule 7; specified 2026-10-15, `SPEC-REG-INSTANCE`, hub-sync design §3.6)* | maintainer, 2026-10-14 — §2.6.2 |
-| **D20** | **Quirks are scoped to the versions that produce them, and identity has two fields under one rule.** A quirk names the `(vendor, product, versions)` it affects, for stored documents and for declarations alike; versions released before registration get their mapping from the catalogue, newer versions declare it themselves, the hub records each mapping it applies, and a quirk moves to historical and then retired as measurement shows the affected versions gone. `identifier` is the sync identity the client assigns; `_id` is the storage key the hub assigns and returns; in single-tenant legacy mode `_id` is an ObjectId. | maintainer, 2026-10-16 — §2.6.3 |
+| **D20** | **Quirks are scoped to the versions that produce them, and identity has two fields under one rule.** A quirk names the `(vendor, product, versions)` it affects, for stored documents and for declarations alike; versions released before registration get their mapping from the catalogue, newer versions declare it themselves, the hub records each mapping it applies, and a quirk moves to historical and then retired as measurement shows the affected versions gone. `identifier` is the sync identity the client assigns; `_id` is the storage key the hub assigns and returns; in single-tenant legacy mode `_id` is an ObjectId. *(amended 2026-10-16: every legacy surface serves 24-hex `_id` values; the opaque option is dropped — §2.6.3 walk-through)* | maintainer, 2026-10-16 — §2.6.3 |
 
 **Amendment carried with D13, true however D17 row 2 lands:** *credentials are per-tenant,
 identity is per-cohort, authorization is per-tenant.* Isolation rests on the authorization layer
@@ -505,6 +505,24 @@ overrides (LoopWorkspace `f8412858`), and Trio 1.0.1 sends its id as `id`, not `
 `e41c9db3`); no rule depends on them. The choices made beyond the rules are listed in §3.7 for
 confirmation.)*
 
+**Decided in the 2026-10-16 walk-through (maintainer).** These settle open points of §3.5–§3.7 and
+of the compatibility backlog; `SPEC-REG-AMEND` applies them to the contract and cases.
+
+| # | point | decision |
+|---|---|---|
+| 1 | single-tenant on PostgreSQL | `objectId` names the **shape** — a 24-hex value the hub assigns — not MongoDB's native type, on either store. `UUID_HANDLING` already runs above the storage seam (`lib/server/treatments.js`, read at `crm-write` `239f8c25`), so a site keeps its ids across stores |
+| 2 | legacy id form | **Every hub's legacy surface (v1, v3) serves 24-hex `_id` values the hub assigns.** The `opaque` option of rule 6 and the capability member `legacyIdForm` are dropped for now: Nocturne's legacy surface already coerces its UUIDs to 24 hex (read at `42275c812`, §3.7). A hub's own newer APIs may use other ids; the sync identity is `identifier`. Rule 8's "an opaque hub may use the typed id" is withdrawn |
+| 3 | an assigned ObjectId's time | the hub's **receipt time**, as for every id the server generates today; readers take a record's time from `created_at`/`date` |
+| 4 | "recent" in rule 4 | **365 days**, a declared measurement parameter |
+| 5 | equal slot names | **A slot is shared only through the shared list or `sameAs`.** Equal unlisted names from different products do not contend; the hub records an observation (same slot name as another product) on the owner's listing, for the catalogue to act on |
+| 6 | Trio's `id` member | recorded as a measured, version-scoped registry entry with **no new mapping**: Trio's treatment model sends its UUID as `id` (`NightscoutTreatment.swift:62`, Trio `e41c9db37`), while its carbs and temporary-target models send `_id` (`CarbsEntry.swift:29`, `TempTarget.swift:50`); cgm-remote-monitor matches such treatments by `created_at` + `eventType` (`treatment-fallback-key`). Whether Trio should send `identifier` goes to `PROPOSAL-REG-CONTROLLERS` |
+| 7 | command-sink roles | **A command-sink role goes only to an instance created by the product's bound subject, or one the owner transfers it to** (`transfer-role`); otherwise refused `not-registration-owner`. Source roles stay open to any permitted subject, so development builds keep working |
+| 8 | the delivery deadline | **removed** (it was added 2026-10-15 without being asked for). A typed write answered 5xx is retried with backoff until it succeeds; it is never re-sent as its carrier, so a write the hub stored before failing cannot appear twice. A definite 4xx refusal still sends the carrier at once (§3.5) |
+| 9 | a released registration | binds to its **next permitted writer**, as specified; the binding event and credential kind are shown on the owner's listing |
+| 10 | loop-status exclusivity | **left unspecified**: `devicestatus` is not a channel until its decomposition is typed |
+| 11 | `HUB-REG-CRM` | stays **one item** |
+| 12 | migrating an `api-secret` binding | binds to the **tenant's root credential**, a new credential kind (`SPEC-REG-MODES`, `SPEC-REG-MIGRATE`); the etag changes with `boundTo` |
+
 ### 2.7 D12 — what each repository is for
 
 | repository | role |
@@ -650,6 +668,10 @@ separation and the extraction prerequisite at no extra process; a separate proce
 failure domain, bind address and resource ceiling, which is what makes `ns-admin` worth a process
 under D7. D7's argument does not transfer automatically, because `ns-tenant-admin` is credentialed
 and RLS-scoped where `ns-admin` is neither. Decide before the third listener is built.
+*(Decided 2026-10-16, maintainer: a **second bound socket inside `ns-api`**, on its own bind
+address, sharing tenant resolution through `T30-WIRING`'s extracted module. The boundary is the
+socket, so it can move to its own process later without changing the contract. Built by
+`T30-TENANT-ADMIN`.)*
 
 **The prerequisite.** `lib/server/tenant-resolver.js` and `tenant-middleware.js` are the one module
 for the consumer path; the admin plane deliberately does not use them because it is cross-tenant.
